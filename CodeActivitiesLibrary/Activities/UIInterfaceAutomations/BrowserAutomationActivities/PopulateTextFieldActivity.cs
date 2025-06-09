@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
@@ -26,15 +25,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
-        [RequiredArgument]
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
-        public InArgument<string> FindType { get; set; }
+        [DefaultValue(ElementSelectorTypeEnum.XPath)]
+        public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
+            new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
 
-        [RequiredArgument]
-        [DisplayName("Search Keywords")]
-        [Description("The value used to locate the text field (e.g., 'username', '//input[@id='email']').")]
-        public InArgument<string> SearchKeywords { get; set; }
+        [DisplayName("Value To Find")]
+        [Description("The value used to locate the element (e.g., 'username', '//input[@id='email']').")]
+        public InArgument<string> ValueToFind { get; set; }
 
         [RequiredArgument]
         [DisplayName("Text To Populate")]
@@ -87,11 +86,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue("Ok")]
         public InArgument<string> DialogButtonToPress { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
 
         // ----------------------
         // Execution Logic
@@ -104,7 +98,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
             {
                 var driver = WebBrowserInstance.Get(context);
                 var findType = FindType.Get(context);
-                var searchKeywords = SearchKeywords.Get(context);
+                var searchKeywords = ValueToFind.Get(context);
                 var textToPopulate = TextToPopulate.Get(context);
                 var inputMode = InputMode.Get(context);
                 var fieldContentAction = FieldContentAction.Get(context);
@@ -117,9 +111,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                 if (driver == null)
                     throw new ArgumentException("Web browser instance cannot be null.");
-
-                if (string.IsNullOrWhiteSpace(findType))
-                    throw new ArgumentException("Find type must be specified.");
 
                 if (string.IsNullOrWhiteSpace(searchKeywords))
                     throw new ArgumentException("Search keywords must be specified.");
@@ -169,26 +160,19 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     foreach (var c in textToPopulate)
                     {
                         textField.SendKeys(c.ToString());
-                        Thread.Sleep(50); // Simulate typing delay
+                        Thread.Sleep(new Random().Next(30, 50)); // Simulate typing delay
                     }
                 }
                 else
                 {
                     if (usePhysicalKeystrokes)
-                    {
                         new Actions(driver).Click(textField).SendKeys(textToPopulate).Build().Perform();
-                    }
                     else
-                    {
                         textField.SendKeys(textToPopulate);
-                    }
                 }
 
                 // Optional: Unfocus the text box
-                if (unfocusAfterTyping)
-                {
-                    new Actions(driver).SendKeys(Keys.Tab).Build().Perform();
-                }
+                if (unfocusAfterTyping) new Actions(driver).SendKeys(Keys.Tab).Build().Perform();
 
                 // Optional: Wait for page to load
                 if (waitForPageLoad)
@@ -200,7 +184,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                 // Optional: Handle alert popup
                 if (IfDialogAppears.Get(context) != DialogActionEnum.DoNothing)
-                {
                     try
                     {
                         var alert = driver.SwitchTo().Alert();
@@ -214,7 +197,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     {
                         // No alert found — proceed normally
                     }
-                }
 
                 status = $"Successfully populated text field '{searchKeywords}' with '{textToPopulate}'.";
             }

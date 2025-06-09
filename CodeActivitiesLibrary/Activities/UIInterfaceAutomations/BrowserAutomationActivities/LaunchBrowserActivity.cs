@@ -1,17 +1,16 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Edge;
-using OpenQA.Selenium.Firefox;
-using System;
+﻿using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
+using CodeActivitiesLibrary.Extensions;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Edge;
+using OpenQA.Selenium.Firefox;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
+namespace CodeActivitiesLibrary.AppIntegrations.BrowserActivities
 {
     [DisplayName("Launch Browser")]
     [Description("Launches a web browser instance (Edge, Chrome, Firefox) with optional window state.")]
@@ -27,6 +26,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(BrowserTypeEnum.MicrosoftEdge)]
         public InArgument<BrowserTypeEnum> BrowserType { get; set; }
 
+
         [DisplayName("Launch with Url")]
         [Description(
             "If true, launches the browser with a specific url. If false, opens to the default homepage.")]
@@ -36,35 +36,41 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DisplayName("Launch Url")]
         [Description(
             "Launches the browser with a specific url. If not specified, the browser will open to its default homepage.")]
-        [RenderIfCondition(nameof(LaunchWithUrl), true)]
+        [RenderIfCondition(nameof(LaunchWithUrl), "True")]
         public InArgument<string> LaunchUrl { get; set; }
+
 
         [DisplayName("Browsing Mode")]
         [Description("Specifies whether to open in normal or private browsing mode.")]
         [DefaultValue(BrowsingModeEnum.Normal)]
         public InArgument<BrowsingModeEnum> BrowsingMode { get; set; }
 
+
         [DisplayName("User Data Storage Path")]
         [Description(
             "Path to store browser data (e.g., user profiles). Required if need for store data somewhere else.")]
         public InArgument<string> UserDataStoragePath { get; set; }
 
+
         [DisplayName("Custom Browser Name")]
         [Description("Name of the custom browser (required if 'Browser Type' is 'Custom').")]
-        [RenderIfCondition(nameof(BrowserType), BrowserTypeEnum.Custom)]
+        [RenderIfCondition(nameof(BrowserType), "Custom")]
         public InArgument<string> CustomBrowserName { get; set; }
+
 
         [DisplayName("Browser Executable Path")]
         [Description(
             "The path to the browser executable (e.g., firefox.exe, chrome.exe). Required if 'Browser Type' is 'Custom'.")]
-        [RenderIfCondition(nameof(BrowserType), BrowserTypeEnum.Custom)]
+        [RenderIfCondition(nameof(BrowserType), "Custom")]
         public InArgument<string> BrowserExecutablePath { get; set; }
+
 
         [DisplayName("Driver Executable Path")]
         [Description(
             "The path to the driver executable (e.g., geckodriver.exe for Firefox). Required if 'Browser Type' is 'Custom'.")]
-        [RenderIfCondition(nameof(BrowserType), BrowserTypeEnum.Custom)]
+        [RenderIfCondition(nameof(BrowserType), "Custom")]
         public InArgument<string> DriverExecutablePath { get; set; }
+
 
         [DisplayName("Window State")]
         [Description("Specifies the initial browser window state.")]
@@ -75,9 +81,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         // Output Arguments
         // ----------------------
 
-        [DisplayName("Browser Instance")]
-        [Description("Returns the WebDriver object for further automation steps.")]
-        public OutArgument<IWebDriver> BrowserInstance { get; set; }
+
+        [DisplayName("Web Browser")]
+        [Description("Returns the WebDriver (WebBrowser) object for further automation steps.")]
+        public OutArgument<IWebDriver> WebBrowser { get; set; }
+
 
         // ----------------------
         // Execution Logic
@@ -102,29 +110,29 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 switch (browserType)
                 {
                     case BrowserTypeEnum.MicrosoftEdge:
-                        {
-                            driver = OpenMicrosoftEdgeBrowser(browsingMode, launchWithUrl, launchUrl, userDataDir);
-                            break;
-                        }
+                    {
+                        driver = OpenMicrosoftEdgeBrowser(browsingMode, launchWithUrl, launchUrl, userDataDir);
+                        break;
+                    }
 
                     case BrowserTypeEnum.GoogleChrome:
-                        {
-                            driver = OpenChromeBrowser(browsingMode, launchWithUrl, launchUrl, userDataDir);
-                            break;
-                        }
+                    {
+                        driver = OpenChromeBrowser(browsingMode, launchWithUrl, launchUrl, userDataDir);
+                        break;
+                    }
 
                     case BrowserTypeEnum.MozillaFirefox:
-                        {
-                            driver = OpenFireFox(browsingMode, launchWithUrl, launchUrl, userDataDir);
-                            break;
-                        }
+                    {
+                        driver = OpenFireFox(browsingMode, launchWithUrl, launchUrl, userDataDir);
+                        break;
+                    }
 
                     case BrowserTypeEnum.Custom:
-                        {
-                            driver = OpenCustomBrowser(customBrowserName, browserExePath, driverExePath, browsingMode,
-                                launchWithUrl, launchUrl);
-                            break;
-                        }
+                    {
+                        driver = OpenCustomBrowser(customBrowserName, browserExePath, driverExePath, browsingMode,
+                            launchWithUrl, launchUrl);
+                        break;
+                    }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(browserType));
@@ -158,7 +166,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 driver = null;
             }
 
-            BrowserInstance.Set(context, driver);
+            WebBrowser.Set(context, driver);
             StatusMessage.Set(context, status);
             return;
 
@@ -232,18 +240,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                         Console.WriteLine($"Chrome user data: {userDataDir}");
                     }
 
-                    if (browsingMode == BrowsingModeEnum.Private)
-                    {
-                        arguments.Add("--incognito");
-                    }
+                    if (browsingMode == BrowsingModeEnum.Private) arguments.Add("--incognito");
 
                     if (launchWithUrl)
-                    {
                         if (!string.IsNullOrEmpty(launchUrl))
-                        {
                             arguments.Add($"--app={launchUrl}");
-                        }
-                    }
 
                     chromeOptions.AddArguments(arguments);
                     var chromeService = ChromeDriverService.CreateDefaultService();
@@ -323,7 +324,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                         "--no-sandbox",
                         "--disable-dev-shm-usage",
                         "--disable-gpu",
-                        "--disable-infobars",
+                        "--disable-infobars"
                     };
 
                     if (customBrowserName.Equals("firefox", StringComparison.OrdinalIgnoreCase))
@@ -343,17 +344,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                         }
 
                         if (launchWithUrl)
-                        {
                             if (!string.IsNullOrEmpty(launchUrl))
-                            {
                                 options.AddArgument($"--url={launchUrl}");
-                            }
-                        }
 
                         if (browsingMode == BrowsingModeEnum.Private)
-                        {
                             options.SetPreference("browser.privatebrowsing.autostart", true);
-                        }
 
                         return new FirefoxDriver(driverDir, options, TimeSpan.FromSeconds(30));
                     }
@@ -382,12 +377,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                             : "--start-maximized");
 
                         if (launchWithUrl)
-                        {
                             if (!string.IsNullOrEmpty(launchUrl))
-                            {
                                 options.AddArgument($"--app={launchUrl}");
-                            }
-                        }
 
                         return new ChromeDriver(driverDir, options, TimeSpan.FromSeconds(30));
                     }
@@ -416,12 +407,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                             : "--start-maximized");
 
                         if (launchWithUrl)
-                        {
                             if (!string.IsNullOrEmpty(launchUrl))
-                            {
                                 options.AddArgument($"--app={launchUrl}");
-                            }
-                        }
 
                         var service =
                             EdgeDriverService.CreateDefaultService(driverDir, Path.GetFileName(driverExePath));
@@ -439,9 +426,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 {
                     Console.WriteLine($"WebDriver Error ({customBrowserName}): {ex.Message}");
                     if (ex.Message.Contains("version"))
-                    {
                         Console.WriteLine("Please ensure browser and driver versions match");
-                    }
 
                     throw;
                 }
@@ -494,5 +479,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
         [Display(Name = "Private", Description = "Opens browser in private/incognito mode.")]
         Private
+    }
+
+    public enum WindowStateEnum
+    {
+        [Display(Name = "Maximized", Description = "Launches browser in maximized window state.")]
+        Maximized,
+
+        [Display(Name = "Minimized", Description = "Launches browser in minimized window state.")]
+        Minimized,
+
+        [Display(Name = "Normal", Description = "Launches browser in normal window state.")]
+        Normal
     }
 }

@@ -1,10 +1,10 @@
-using CodeActivitiesLibrary.Extensions;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -26,35 +26,33 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("The URL to navigate to after creating the new tab.")]
         public InArgument<string> UrlToNavigateTo { get; set; }
 
+
         [DisplayName("Wait for Page to Load")]
         [Description("If true, waits for the page to fully load before continuing.")]
         [DefaultValue(true)]
         public InArgument<bool> WaitForPageToLoad { get; set; }
+
 
         [DisplayName("Timeout for Page Load")]
         [Description("Maximum time (in seconds) to wait for the page to load.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutForWebpageToLoad { get; set; }
 
+
         [DisplayName("Handle Dialog")]
         [Description("Specifies what to do if a dialog appears after navigating.")]
         [DefaultValue(CreateTabDialogActionEnum.DoNothing)]
         public InArgument<CreateTabDialogActionEnum> IfAPopUpDialogAppears { get; set; }
+
 
         [DisplayName("Dialog Button to Press")]
         [Description("The button to press if a dialog appears (e.g., 'OK', 'Cancel').")]
         [DefaultValue("OK")]
         public InArgument<string> DialogButtonToPress { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
         [DisplayName("New Browser Instance")]
         [Description("Returns the newly created browser tab/window as an IWebDriver instance.")]
         public OutArgument<IWebDriver> NewBrowserInstance { get; set; }
-
 
 
         // ----------------------
@@ -99,7 +97,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                         // Handle any dialogs that appear
                         if (dialogAction != CreateTabDialogActionEnum.DoNothing)
-                        {
                             try
                             {
                                 var alert = newDriver.SwitchTo().Alert();
@@ -121,7 +118,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                             {
                                 // No dialog found — proceed normally
                             }
-                        }
                     }
 
                     status = $"Created new tab and navigated to '{url}'.";

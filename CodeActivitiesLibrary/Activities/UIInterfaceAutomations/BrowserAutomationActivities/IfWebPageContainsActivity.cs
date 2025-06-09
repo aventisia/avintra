@@ -31,19 +31,24 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
+        [DefaultValue(ElementSelectorTypeEnum.XPath)]
         [RenderIfCondition(nameof(CheckCondition), "ContainsElement")]
-        public InArgument<string> FindType { get; set; }
+        [RenderIfCondition(nameof(CheckCondition), "DoesNotContainElement")]
+        public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
+            new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
 
-
-        [DisplayName("Search Keywords")]
-        [Description("The value used to locate the element or text content.")]
+        [DisplayName("Value To Find")]
+        [Description("The value used to locate the element (e.g., 'username', '//input[@id='email']').")]
         [RenderIfCondition(nameof(CheckCondition), "ContainsElement")]
-        public InArgument<string> SearchKeywords { get; set; }
+        [RenderIfCondition(nameof(CheckCondition), "DoesNotContainElement")]
+        public InArgument<string> ValueToFind { get; set; }
+
 
         [DisplayName("Check UI Element State")]
         [Description("If true, checks whether the found element is enabled or disabled.")]
         [DefaultValue(false)]
         public InArgument<bool> CheckUiElementState { get; set; }
+
 
         [DisplayName("State")]
         [Description("Specifies the expected state of the element (enabled or disabled).")]
@@ -62,15 +67,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(SearchLocationEnum.Body)]
         public InArgument<SearchLocationEnum> SearchLocation { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
         [DisplayName("Result")]
         [Description("Returns true if the condition is met, otherwise false.")]
         public OutArgument<bool> Result { get; set; }
-
 
 
         // ----------------------
@@ -88,7 +87,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 var checkState = CheckUiElementState.Get(context);
                 var expectedState = State.Get(context);
                 var findType = FindType.Get(context);
-                var searchKeywords = SearchKeywords.Get(context);
+                var searchKeywords = ValueToFind.Get(context);
                 var textToSearch = TextToSearch.Get(context);
                 var searchLocation = SearchLocation.Get(context);
 
@@ -99,7 +98,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 {
                     case CheckConditionEnum.ContainsElement:
                     case CheckConditionEnum.DoesNotContainElement:
-                        if (string.IsNullOrWhiteSpace(findType) || string.IsNullOrWhiteSpace(searchKeywords))
+                        if (string.IsNullOrWhiteSpace(searchKeywords))
                             throw new ArgumentException(
                                 "Find type and search keywords must be specified when checking for an element.");
 
@@ -125,13 +124,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                             case CheckConditionEnum.ContainsText:
                             case CheckConditionEnum.DoesNotContainText:
                             default:
-                                {
-                                    result = false;
-                                    status = checkCondition == CheckConditionEnum.ContainsElement
-                                        ? $"No element found using '{findType}': '{searchKeywords}'."
-                                        : $"Element was found but should not exist.";
-                                    break;
-                                }
+                            {
+                                result = false;
+                                status = checkCondition == CheckConditionEnum.ContainsElement
+                                    ? $"No element found using '{findType}': '{searchKeywords}'."
+                                    : $"Element was found but should not exist.";
+                                break;
+                            }
                         }
 
                         // Optional: Check element state (enabled/disabled)
@@ -201,6 +200,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         }
     }
 
+    [Flags]
     public enum CheckConditionEnum
     {
         [Display(Name = "Contains Element", Description = "Checks if the web page contains a specific UI element.")]

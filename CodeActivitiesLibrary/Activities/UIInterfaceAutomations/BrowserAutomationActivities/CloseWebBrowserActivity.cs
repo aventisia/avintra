@@ -1,8 +1,8 @@
-using CodeActivitiesLibrary.Extensions;
 using OpenQA.Selenium;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -23,12 +23,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DisplayName("Close All Instances")]
         [Description("If true, closes all open browser windows and disposes of the driver.")]
         public InArgument<bool> CloseAllInstances { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
 
         // ----------------------
         // Execution Logic

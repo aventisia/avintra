@@ -32,16 +32,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         public InArgument<CaptureModeEnum> CaptureMode { get; set; }
 
 
+        [RequiredArgument]
         [DisplayName("Find Type")]
-        [Description("Specifies how to locate the element (e.g., ID, XPath, CssSelector).")]
-        [RenderIfCondition(nameof(CaptureMode), "SpecificElement")]
-        public InArgument<string> FindType { get; set; }
+        [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
+        [DefaultValue(ElementSelectorTypeEnum.XPath)]
+        public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
+            new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
 
-
-        [DisplayName("Search Keywords")]
+        [RequiredArgument]
+        [DisplayName("Value To Find")]
         [Description("The value used to locate the element (e.g., 'username', '//input[@id='email']').")]
-        [RenderIfCondition(nameof(CaptureMode), "SpecificElement")]
-        public InArgument<string> SearchKeywords { get; set; }
+        public InArgument<string> ValueToFind { get; set; }
 
         [RequiredArgument]
         [DisplayName("Save Mode")]
@@ -62,10 +63,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         public InArgument<ImageFormatEnum> ImageFormat { get; set; }
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-        // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
@@ -77,7 +74,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 var driver = WebBrowserInstance.Get(context);
                 var captureMode = CaptureMode.Get(context);
                 var findType = FindType.Get(context);
-                var searchKeywords = SearchKeywords.Get(context);
+                var searchKeywords = ValueToFind.Get(context);
                 var saveMode = SaveMode.Get(context);
                 var imageFilePath = ImageFilePath.Get(context);
                 var imageFormat = ImageFormat.Get(context);
@@ -91,24 +88,24 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 switch (captureMode)
                 {
                     case CaptureModeEnum.EntireWebPage:
-                        {
-                            ((IJavaScriptExecutor)driver).ExecuteScript("document.body.style.overflow = 'hidden';");
-                            var fullScreenDriver = driver as ITakesScreenshot;
-                            if (fullScreenDriver == null)
-                                throw new InvalidOperationException("Driver does not support taking screenshots.");
-                            fullPageScreenshot = fullScreenDriver.GetScreenshot();
-                            break;
-                        }
+                    {
+                        ((IJavaScriptExecutor)driver).ExecuteScript("document.body.style.overflow = 'hidden';");
+                        var fullScreenDriver = driver as ITakesScreenshot;
+                        if (fullScreenDriver == null)
+                            throw new InvalidOperationException("Driver does not support taking screenshots.");
+                        fullPageScreenshot = fullScreenDriver.GetScreenshot();
+                        break;
+                    }
 
                     case CaptureModeEnum.SpecificElement:
-                        {
-                            var element = BrowserAutomationHelper.FindElement(driver, findType, searchKeywords);
-                            if (element == null)
-                                throw new ArgumentException($"No element found using '{findType}': '{searchKeywords}'");
-                            var elementScreenshot = (element as ITakesScreenshot)?.GetScreenshot();
-                            fullPageScreenshot = elementScreenshot;
-                            break;
-                        }
+                    {
+                        var element = BrowserAutomationHelper.FindElement(driver, findType, searchKeywords);
+                        if (element == null)
+                            throw new ArgumentException($"No element found using '{findType}': '{searchKeywords}'");
+                        var elementScreenshot = (element as ITakesScreenshot)?.GetScreenshot();
+                        fullPageScreenshot = elementScreenshot;
+                        break;
+                    }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(captureMode), "Unsupported capture mode.");
@@ -120,31 +117,32 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 switch (saveMode)
                 {
                     case SaveModeEnum.Clipboard:
-                        {
-                            using (var ms = new MemoryStream(fullPageScreenshot?.AsByteArray))
+                    {
+                        if (fullPageScreenshot?.AsByteArray != null)
+                            using (var ms = new MemoryStream(fullPageScreenshot.AsByteArray))
                             using (var bitmap = new Bitmap(ms))
                             {
                                 Clipboard.SetImage(bitmap);
                             }
 
-                            status = $"Screenshot saved to clipboard in {imageFormat} format.";
-                            break;
-                        }
+                        status = $"Screenshot saved to clipboard in {imageFormat} format.";
+                        break;
+                    }
 
                     case SaveModeEnum.File:
-                        {
-                            if (string.IsNullOrWhiteSpace(imageFilePath))
-                                throw new ArgumentException("Image file path must be specified when saving to file.");
+                    {
+                        if (string.IsNullOrWhiteSpace(imageFilePath))
+                            throw new ArgumentException("Image file path must be specified when saving to file.");
 
-                            var directory = Path.GetDirectoryName(imageFilePath);
-                            if (directory != null && !Directory.Exists(directory))
-                                Directory.CreateDirectory(directory);
+                        var directory = Path.GetDirectoryName(imageFilePath);
+                        if (directory != null && !Directory.Exists(directory))
+                            Directory.CreateDirectory(directory);
 
-                            // var format = _GetImageFormat(imageFormat);
-                            fullPageScreenshot.SaveAsFile(imageFilePath);
-                            status = $"Screenshot saved to '{imageFilePath}' in {imageFormat} format.";
-                            break;
-                        }
+                        // var format = _GetImageFormat(imageFormat);
+                        fullPageScreenshot?.SaveAsFile(imageFilePath);
+                        status = $"Screenshot saved to '{imageFilePath}' in {imageFormat} format.";
+                        break;
+                    }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(saveMode), "Unsupported save mode.");

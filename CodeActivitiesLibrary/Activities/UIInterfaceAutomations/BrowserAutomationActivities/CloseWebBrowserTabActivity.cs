@@ -30,27 +30,24 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(CloseModeEnum.Current)]
         public InArgument<CloseModeEnum> CloseMode { get; set; }
 
+
         [DisplayName("Match Type")]
         [Description("Select whether to match by URL or Title when using 'ByTitleOrUrl' mode.")]
         [RenderIfCondition(nameof(CloseMode), "ByTitleOrUrl")]
         public InArgument<string> MatchType { get; set; }
+
 
         [DisplayName("Match Criteria")]
         [Description("Enter the URL or Title to match when using 'ByTitleOrUrl' mode.")]
         [RenderIfCondition(nameof(CloseMode), "ByTitleOrUrl")]
         public InArgument<string> MatchCriteria { get; set; }
 
+
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds before closing the tab automatically.")]
         [DefaultValue(60)]
         [RenderIfCondition(nameof(CloseMode), "AfterTimeout")]
         public InArgument<int> TimeoutSeconds { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
 
         // ----------------------
         // Execution Logic
@@ -141,10 +138,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                         sw.Start();
 
                         while (sw.Elapsed < timeout)
-                        {
                             // Wait until condition is met
                             Thread.Sleep(500);
-                        }
 
                         driver.Close();
                         status = "Tab closed due to timeout.";

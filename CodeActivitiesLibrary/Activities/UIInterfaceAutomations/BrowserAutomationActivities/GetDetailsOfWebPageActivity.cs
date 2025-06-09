@@ -1,9 +1,9 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -26,15 +26,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(WebPageDetailTypeEnum.WebPageTitle)]
         public InArgument<WebPageDetailTypeEnum> DetailType { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
         [DisplayName("Web Page Property")]
         [Description("The value retrieved from the web page based on the selected detail type.")]
         public OutArgument<string> OWebPagePropertyOutput { get; set; }
-
 
 
         // ----------------------

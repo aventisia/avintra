@@ -1,8 +1,7 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using CodeActivitiesLibrary.Extensions;
 
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
@@ -104,7 +103,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(false)]
         public InArgument<bool> CheckUiElementState { get; set; }
 
-        [Browsable(false)]
 
         [DisplayName("UI Element")]
         [Description("The UI element to look for in the web page.")]
@@ -121,10 +119,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(ElementStateEnum.Enabled)]
         public InArgument<ElementStateEnum> State { get; set; }
 
+
         [DisplayName("Fail With Timeout Error")]
         [Description("Specify whether to fail if the condition isn't met within the specified time.")]
         [DefaultValue(false)]
         public InArgument<bool> FailWithTimeoutError { get; set; }
+
 
         [DisplayName("Duration (Seconds)")]
         [Description("How long to wait before failing if the condition isn't met.")]

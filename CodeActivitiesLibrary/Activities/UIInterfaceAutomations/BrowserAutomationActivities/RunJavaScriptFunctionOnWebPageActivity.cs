@@ -1,9 +1,9 @@
-using CodeActivitiesLibrary.Extensions;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -26,29 +26,26 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
             "The JavaScript function to execute (e.g., 'document.getElementById(\"myId\").value = \"test\";')")]
         public InArgument<string> JavaScriptFunction { get; set; }
 
+
         [DisplayName("Arguments")]
         [Description("Optional arguments to pass to the script function.")]
         public InArgument<object[]> ScriptArguments { get; set; }
+
 
         [DisplayName("Wait for Completion")]
         [Description("If true, waits for the script to complete before continuing.")]
         [DefaultValue(true)]
         public InArgument<bool> WaitForCompletion { get; set; }
 
+
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for script completion before failing.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutSeconds { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
         [DisplayName("Result Output")]
         [Description("Returns the result of the JavaScript execution, if any.")]
         public OutArgument<object> Result { get; set; }
-
 
 
         // ----------------------

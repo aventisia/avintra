@@ -1,10 +1,10 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -24,12 +24,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [RequiredArgument]
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
-        public InArgument<string> FindType { get; set; }
+        [DefaultValue(ElementSelectorTypeEnum.XPath)]
+        public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
+            new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
 
         [RequiredArgument]
-        [DisplayName("Search Keywords")]
-        [Description("The value used to locate the element whose attribute will be updated.")]
-        public InArgument<string> SearchKeywords { get; set; }
+        [DisplayName("Value To Find")]
+        [Description("The value used to locate the element (e.g., 'username', '//input[@id='email']').")]
+        public InArgument<string> ValueToFind { get; set; }
 
         [RequiredArgument]
         [DisplayName("Attribute Name")]
@@ -41,20 +43,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("The new value to assign to the attribute.")]
         public InArgument<string> NewAttributeValue { get; set; }
 
+
         [DisplayName("Wait For Element")]
         [Description("If true, waits for the element to appear before setting its attribute.")]
         public InArgument<bool> WaitForElement { get; set; }
+
 
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for the element before failing.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutSeconds { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
 
         // ----------------------
         // Execution Logic
@@ -67,7 +65,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
             {
                 var driver = WebBrowserInstance.Get(context);
                 var findType = FindType.Get(context);
-                var searchKeywords = SearchKeywords.Get(context);
+                var searchKeywords = ValueToFind.Get(context);
                 var attributeName = AttributeName.Get(context);
                 var attributeValue = NewAttributeValue.Get(context);
                 var waitForElement = WaitForElement.Get(context);
@@ -75,9 +73,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                 if (driver == null)
                     throw new ArgumentException("Web browser instance cannot be null.");
-
-                if (string.IsNullOrWhiteSpace(findType))
-                    throw new ArgumentException("Find type must be specified.");
 
                 if (string.IsNullOrWhiteSpace(searchKeywords))
                     throw new ArgumentException("Search keywords must be specified.");

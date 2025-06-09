@@ -48,16 +48,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [RenderIfCondition(nameof(SwitchMode), "ByUrlFragment")]
         public InArgument<string> UrlFragment { get; set; }
 
+
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for the tab to become available.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutSeconds { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
 
 
         [DisplayName("Current Tab Title")]

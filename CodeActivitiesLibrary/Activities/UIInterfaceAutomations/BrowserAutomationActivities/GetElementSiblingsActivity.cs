@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -7,6 +6,7 @@ using System.Activities;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -25,32 +25,30 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
         [RequiredArgument]
         [DisplayName("Find Type")]
-        [Description("Specifies how to find the base element (e.g., ID, XPath, CssSelector).")]
-        public InArgument<string> FindType { get; set; }
+        [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
+        [DefaultValue(ElementSelectorTypeEnum.XPath)]
+        public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
+            new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
 
         [RequiredArgument]
-        [DisplayName("Search Keywords")]
-        [Description("The value used to locate the base element whose siblings will be retrieved.")]
-        public InArgument<string> SearchKeywords { get; set; }
+        [DisplayName("Value To Find")]
+        [Description("The value used to locate the element (e.g., 'username', '//input[@id='email']').")]
+        public InArgument<string> ValueToFind { get; set; }
+
 
         [DisplayName("Wait For Element")]
         [Description("If true, waits for the element to appear before retrieving its siblings.")]
         public InArgument<bool> WaitForElement { get; set; }
+
 
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for the element before failing.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutSeconds { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
         [DisplayName("Sibling Elements")]
         [Description("Returns a collection of sibling elements of the found element.")]
         public OutArgument<ReadOnlyCollection<IWebElement>> SiblingElements { get; set; }
-
 
 
         // ----------------------
@@ -65,15 +63,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
             {
                 var driver = WebBrowserInstance.Get(context);
                 var findType = FindType.Get(context);
-                var searchKeywords = SearchKeywords.Get(context);
+                var searchKeywords = ValueToFind.Get(context);
                 var waitForElement = WaitForElement.Get(context);
                 var timeout = TimeSpan.FromSeconds(TimeoutSeconds.Get(context));
 
                 if (driver == null)
                     throw new ArgumentException("Web browser instance cannot be null.");
-
-                if (string.IsNullOrWhiteSpace(findType))
-                    throw new ArgumentException("Find type must be specified.");
 
                 if (string.IsNullOrWhiteSpace(searchKeywords))
                     throw new ArgumentException("Search keywords must be specified.");

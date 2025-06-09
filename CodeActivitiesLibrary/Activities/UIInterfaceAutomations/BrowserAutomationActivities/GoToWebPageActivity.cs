@@ -1,5 +1,4 @@
 using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -34,30 +33,28 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [RenderIfCondition(nameof(NavigateAction), "ToUrl")]
         public InArgument<string> Url { get; set; }
 
+
         [DisplayName("Wait for Page to Load")]
         [Description("If true, waits for the page to fully load before continuing.")]
         public InArgument<bool> WaitForPageToLoad { get; set; }
+
 
         [DisplayName("Timeout for Page Load")]
         [Description("Maximum time in seconds to wait for the page to load.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutForPageLoad { get; set; }
 
+
         [DisplayName("Handle Dialog")]
         [Description("Specifies what to do if a dialog appears after navigating.")]
         [DefaultValue(DialogActionEnum.DoNothing)]
         public InArgument<DialogActionEnum> IfDialogAppears { get; set; }
 
+
         [DisplayName("Dialog Button to Press")]
         [Description("The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').")]
         [DefaultValue("Ok")]
         public InArgument<string> DialogButtonToPress { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
 
         // ----------------------
         // Execution Logic
@@ -116,7 +113,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                     // Optional: handle alert popup
                     if (dialogAction != DialogActionEnum.DoNothing)
-                    {
                         try
                         {
                             var alert = driver.SwitchTo().Alert();
@@ -133,7 +129,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                         {
                             // No alert found — continue
                         }
-                    }
                 }
             }
             catch (Exception ex)

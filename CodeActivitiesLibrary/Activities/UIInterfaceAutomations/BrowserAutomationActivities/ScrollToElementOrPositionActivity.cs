@@ -29,16 +29,19 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         public InArgument<ScrollModeEnum> ScrollMode { get; set; }
 
 
+        [RequiredArgument]
         [DisplayName("Find Type")]
-        [Description("Specifies how to find the element to scroll to (e.g., ID, XPath).")]
+        [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
+        [DefaultValue(ElementSelectorTypeEnum.XPath)]
         [RenderIfCondition(nameof(ScrollMode), "ByElement")]
-        public InArgument<string> FindType { get; set; }
+        public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
+            new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
 
-
-        [DisplayName("Search Keywords")]
-        [Description("The value used to locate the element to scroll to (e.g., 'username', '//input[@id='email']').")]
+        [RequiredArgument]
+        [DisplayName("Value To Find")]
+        [Description("The value used to locate the element (e.g., 'username', '//input[@id='email']').")]
         [RenderIfCondition(nameof(ScrollMode), "ByElement")]
-        public InArgument<string> SearchKeywords { get; set; }
+        public InArgument<string> ValueToFind { get; set; }
 
 
         [DisplayName("X Coordinate")]
@@ -52,24 +55,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [RenderIfCondition(nameof(ScrollMode), "ByCoordinates")]
         public InArgument<int> YCoordinate { get; set; }
 
+
         [DisplayName("Wait For Element")]
         [Description("If true, waits for the element to be present before scrolling.")]
         public InArgument<bool> WaitForElement { get; set; }
+
 
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for the element before failing.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutSeconds { get; set; }
 
+
         [DisplayName("Smooth Scroll")]
         [Description("If true, scrolls smoothly instead of jumping to the target.")]
         public InArgument<bool> SmoothScroll { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
 
         // ----------------------
         // Execution Logic
@@ -83,7 +83,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 var driver = WebBrowserInstance.Get(context);
                 var scrollMode = ScrollMode.Get(context);
                 var findType = FindType.Get(context);
-                var searchKeywords = SearchKeywords.Get(context);
+                var searchKeywords = ValueToFind.Get(context);
                 var xCoord = XCoordinate.Get(context);
                 var yCoord = YCoordinate.Get(context);
                 var smoothScroll = SmoothScroll.Get(context);
@@ -98,56 +98,52 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 switch (scrollMode)
                 {
                     case ScrollModeEnum.ByElement:
+                    {
+                        if (string.IsNullOrWhiteSpace(searchKeywords))
+                            throw new ArgumentException(
+                                "Search keywords must be specified when using 'ByElement' scroll mode.");
+
+                        // Locate the element
+                        var by = BrowserAutomationHelper.GetWebElementLocator(findType, searchKeywords);
+                        if (by == null)
+                            throw new ArgumentException($"Invalid find type provided: '{findType}'");
+
+                        IWebElement element = null;
+
+                        if (waitForElement && timeout.TotalSeconds > 0)
                         {
-                            if (string.IsNullOrWhiteSpace(findType))
-                                throw new ArgumentException(
-                                    "Find type must be specified when using 'ByElement' scroll mode.");
-
-                            if (string.IsNullOrWhiteSpace(searchKeywords))
-                                throw new ArgumentException(
-                                    "Search keywords must be specified when using 'ByElement' scroll mode.");
-
-                            // Locate the element
-                            var by = BrowserAutomationHelper.GetWebElementLocator(findType, searchKeywords);
-                            if (by == null)
-                                throw new ArgumentException($"Invalid find type provided: '{findType}'");
-
-                            IWebElement element = null;
-
-                            if (waitForElement && timeout.TotalSeconds > 0)
-                            {
-                                var wait = new WebDriverWait(driver, timeout);
-                                element = wait.Until(drv => drv.FindElement(by));
-                            }
-                            else
-                            {
-                                element = driver.FindElement(by);
-                            }
-
-                            if (element == null)
-                                throw new InvalidOperationException(
-                                    $"No element found using '{findType}': '{searchKeywords}'");
-
-                            // Scroll to element
-                            var behavior = smoothScroll ? "smooth" : "auto";
-                            jsExecutor.ExecuteScript(
-                                $"arguments[0].scrollIntoView({{ behavior: '{behavior}', block: 'center' }});",
-                                element);
-
-                            status = $"Successfully scrolled to element '{searchKeywords}'.";
-                            break;
+                            var wait = new WebDriverWait(driver, timeout);
+                            element = wait.Until(drv => drv.FindElement(by));
                         }
+                        else
+                        {
+                            element = driver.FindElement(by);
+                        }
+
+                        if (element == null)
+                            throw new InvalidOperationException(
+                                $"No element found using '{findType}': '{searchKeywords}'");
+
+                        // Scroll to element
+                        var behavior = smoothScroll ? "smooth" : "auto";
+                        jsExecutor.ExecuteScript(
+                            $"arguments[0].scrollIntoView({{ behavior: '{behavior}', block: 'center' }});",
+                            element);
+
+                        status = $"Successfully scrolled to element '{searchKeywords}'.";
+                        break;
+                    }
 
                     case ScrollModeEnum.ByCoordinates:
-                        {
-                            if (xCoord < 0 || yCoord < 0)
-                                throw new ArgumentException("Coordinates must be positive numbers.");
+                    {
+                        if (xCoord < 0 || yCoord < 0)
+                            throw new ArgumentException("Coordinates must be positive numbers.");
 
-                            // Scroll by X,Y
-                            jsExecutor.ExecuteScript($"window.scrollTo({xCoord}, {yCoord});");
-                            status = $"Scrolled to position ({xCoord}, {yCoord}).";
-                            break;
-                        }
+                        // Scroll by X,Y
+                        jsExecutor.ExecuteScript($"window.scrollTo({xCoord}, {yCoord});");
+                        status = $"Scrolled to position ({xCoord}, {yCoord}).";
+                        break;
+                    }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(scrollMode), "Unsupported scroll mode.");

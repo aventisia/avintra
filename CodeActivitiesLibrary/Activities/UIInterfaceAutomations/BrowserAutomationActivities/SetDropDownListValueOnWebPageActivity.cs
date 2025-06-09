@@ -1,6 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -9,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -28,12 +27,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [RequiredArgument]
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
-        public InArgument<string> FindType { get; set; }
+        [DefaultValue(ElementSelectorTypeEnum.XPath)]
+        public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
+            new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
 
         [RequiredArgument]
         [DisplayName("Search Keywords")]
         [Description("The value used to locate the drop-down list (e.g., 'country', '//select[@id='country']').")]
-        public InArgument<string> SearchKeywords { get; set; }
+        public InArgument<string> ValueToFind { get; set; }
 
         [RequiredArgument]
         [DisplayName("Operation")]
@@ -57,31 +58,29 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("Comma-separated indices of options to select.")]
         public InArgument<string> OptionIndices { get; set; }
 
+
         [DisplayName("Wait for Page Load")]
         [Description("If true, waits for the page to load after setting the dropdown value.")]
         [DefaultValue(true)]
         public InArgument<bool> WaitForPageLoad { get; set; }
+
 
         [DisplayName("Timeout for Page Load")]
         [Description("Maximum time in seconds to wait for the page to load.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutForPageLoad { get; set; }
 
+
         [DisplayName("Handle Dialog")]
         [Description("Specifies what to do if a dialog appears after setting the dropdown value.")]
         [DefaultValue(DialogActionEnum.DoNothing)]
         public InArgument<DialogActionEnum> IfDialogAppears { get; set; }
 
+
         [DisplayName("Dialog Button to Press")]
         [Description("The button to press if a dialog appears (e.g., 'Ok', 'Cancel').")]
         [DefaultValue("Ok")]
         public InArgument<string> DialogButtonToPress { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
 
         // ----------------------
         // Execution Logic
@@ -94,7 +93,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
             {
                 var driver = WebBrowserInstance.Get(context);
                 var findType = FindType.Get(context);
-                var searchKeywords = SearchKeywords.Get(context);
+                var searchKeywords = ValueToFind.Get(context);
                 var operation = Operation.Get(context);
                 var optionNames = OptionNames.Get(context);
                 var useRegex = UseRegularExpressions.Get(context);
@@ -106,9 +105,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                 if (driver == null)
                     throw new ArgumentException("Web browser instance cannot be null.");
-
-                if (string.IsNullOrWhiteSpace(findType))
-                    throw new ArgumentException("Find type must be specified.");
 
                 if (string.IsNullOrWhiteSpace(searchKeywords))
                     throw new ArgumentException("Search keywords must be specified.");
@@ -157,20 +153,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 else if (select.IsMultiple && operation == DropDownListOperationEnum.SelectOptionsByName)
                 {
                     var selectedOptions = new List<string>(optionNames.Split(','));
-                    foreach (var option in selectedOptions)
-                    {
-                        select.SelectByText(option.Trim());
-                    }
+                    foreach (var option in selectedOptions) select.SelectByText(option.Trim());
 
                     status = $"Selected multiple options from '{searchKeywords}' by name.";
                 }
                 else if (select.IsMultiple && operation == DropDownListOperationEnum.SelectOptionsByIndex)
                 {
                     var indices = Array.ConvertAll(optionIndices.Split(','), int.Parse);
-                    foreach (var index in indices)
-                    {
-                        select.SelectByIndex(index);
-                    }
+                    foreach (var index in indices) select.SelectByIndex(index);
 
                     status = $"Selected multiple options from '{searchKeywords}' by index.";
                 }
@@ -194,7 +184,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                 // Optional: Handle alert popup
                 if (dialogAction != DialogActionEnum.DoNothing)
-                {
                     try
                     {
                         var alert = driver.SwitchTo().Alert();
@@ -211,7 +200,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     {
                         // No alert found — continue normally
                     }
-                }
             }
             catch (Exception ex)
             {

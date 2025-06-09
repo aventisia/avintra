@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -7,6 +6,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -24,14 +25,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [RequiredArgument]
-        [DisplayName("UI Element")]
-        [Description("The selector (XPath, ID, etc.) used to locate the download link on the page.")]
-        public InArgument<string> UiElement { get; set; }
-
-        [RequiredArgument]
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
-        public InArgument<string> FindType { get; set; }
+        [DefaultValue(ElementSelectorTypeEnum.XPath)]
+        public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
+            new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
+
+        [RequiredArgument]
+        [DisplayName("Value To Find")]
+        [Description("The selector (XPath, ID, etc.) used to locate the download link on the page.")]
+        public InArgument<string> ValueToFind { get; set; }
+
 
         [RequiredArgument]
         [DisplayName("Destination Folder")]
@@ -48,11 +52,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("The maximum time to wait for the file to appear in the destination folder.")]
         public InArgument<int> MaxWaitTime { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
         [DisplayName("Downloaded File Output")]
         [Description("Returns the full path of the downloaded file.")]
         public OutArgument<string> DownloadedFile { get; set; }
@@ -68,7 +67,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
             try
             {
                 var driver = WebBrowserInstance.Get(context);
-                var uiElement = UiElement.Get(context);
+                var uiElement = ValueToFind.Get(context);
                 var findType = FindType.Get(context);
                 var destinationFolder = DestinationFolder.Get(context);
                 var waitForDownload = WaitForDownload.Get(context);
@@ -80,14 +79,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 if (string.IsNullOrWhiteSpace(uiElement))
                     throw new ArgumentException("UI Element cannot be empty.");
 
-                if (string.IsNullOrWhiteSpace(findType))
-                    throw new ArgumentException("Find type must be specified.");
-
                 if (!Directory.Exists(destinationFolder))
                     Directory.CreateDirectory(destinationFolder);
 
                 // Locate the download link
-                var by = GetLocator(findType, uiElement);
+                var by = BrowserAutomationHelper.GetWebElementLocator(findType, uiElement);
                 var element = driver.FindElement(by);
                 if (element == null)
                     throw new ArgumentException($"No element found using '{findType}': '{uiElement}'");
@@ -135,31 +131,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
             StatusMessage.Set(context, status);
             DownloadedFile.Set(context, downloadedFilePath);
-        }
-
-        private static By GetLocator(string findType, string searchValue)
-        {
-            switch (findType.ToLower())
-            {
-                case "id":
-                    return By.Id(searchValue);
-                case "name":
-                    return By.Name(searchValue);
-                case "xpath":
-                    return By.XPath(searchValue);
-                case "cssselector":
-                    return By.CssSelector(searchValue);
-                case "classname":
-                    return By.ClassName(searchValue);
-                case "linktext":
-                    return By.LinkText(searchValue);
-                case "partiallinktext":
-                    return By.PartialLinkText(searchValue);
-                case "tagname":
-                    return By.TagName(searchValue);
-                default:
-                    throw new ArgumentException($"Unsupported find type: {findType}");
-            }
         }
     }
 }

@@ -1,11 +1,10 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -26,38 +25,38 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [RequiredArgument]
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
-        public InArgument<string> FindType { get; set; }
+        [DefaultValue(ElementSelectorTypeEnum.XPath)]
+        public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
+            new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
 
         [RequiredArgument]
-        [DisplayName("Search Keywords")]
-        [Description("The value used to locate the button (e.g., 'submit', '//button[@id='login']').")]
-        public InArgument<string> SearchKeywords { get; set; }
+        [DisplayName("Value To Find")]
+        [Description("The value used to locate the element (e.g., 'username', '//input[@id='email']').")]
+        public InArgument<string> ValueToFind { get; set; }
+
 
         [DisplayName("Wait for Page Load")]
         [Description("If true, waits for the next page to load after pressing the button.")]
         [DefaultValue(true)]
         public InArgument<bool> WaitForPageLoad { get; set; }
 
+
         [DisplayName("Timeout for Page Load")]
         [Description("Maximum time in seconds to wait for the page to load.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutForPageLoad { get; set; }
+
 
         [DisplayName("Handle Dialog")]
         [Description("Specifies what to do if a dialog appears after the click.")]
         [DefaultValue(DialogActionEnum.DoNothing)]
         public InArgument<DialogActionEnum> IfDialogAppears { get; set; }
 
+
         [DisplayName("Dialog Button to Press")]
         [Description("The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').")]
         [DefaultValue("Ok")]
         public InArgument<string> DialogButtonToPress { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
 
         // ----------------------
         // Execution Logic
@@ -70,7 +69,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
             {
                 var driver = WebBrowserInstance.Get(context);
                 var findType = FindType.Get(context);
-                var searchKeywords = SearchKeywords.Get(context);
+                var searchKeywords = ValueToFind.Get(context);
                 var waitForPage = WaitForPageLoad.Get(context);
                 var timeout = TimeSpan.FromSeconds(TimeoutForPageLoad.Get(context));
                 var dialogAction = IfDialogAppears.Get(context);
@@ -78,9 +77,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                 if (driver == null)
                     throw new ArgumentException("Web browser instance cannot be null.");
-
-                if (string.IsNullOrWhiteSpace(findType))
-                    throw new ArgumentException("Find type must be specified.");
 
                 if (string.IsNullOrWhiteSpace(searchKeywords))
                     throw new ArgumentException("Search keywords must be specified.");
@@ -107,7 +103,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                 // Optional: Handle alert popup
                 if (dialogAction != DialogActionEnum.DoNothing)
-                {
                     try
                     {
                         var alert = driver.SwitchTo().Alert();
@@ -130,7 +125,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     {
                         // No alert found — continue
                     }
-                }
 
                 status = $"Successfully pressed button '{searchKeywords}' using '{findType}'.";
             }

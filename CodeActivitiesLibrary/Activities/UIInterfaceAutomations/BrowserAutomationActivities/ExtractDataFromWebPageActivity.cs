@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -7,6 +6,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using CodeActivitiesLibrary.Extensions;
 using DataTable = System.Data.DataTable;
 
 
@@ -25,16 +25,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
-        [Browsable(false)]
-
-        [DisplayName("UI Element")]
-        [Description("Select the UI element on the web page to extract data from.")]
-        public InArgument<string> UiElement { get; set; }
-
 
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
-        public InArgument<string> FindType { get; set; }
+        [DefaultValue(ElementSelectorTypeEnum.XPath)]
+        public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
+            new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
+
+        [DisplayName("Value To Find")]
+        [Description("The selector used to locate the link or button on the web page.")]
+        public InArgument<string> ValueToFind { get; set; }
 
 
         [DisplayName("Extraction Mode")]
@@ -80,11 +80,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(60)]
         public InArgument<int> Timeout { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
         [DisplayName("Excel Instance Output")]
         [Description("Returns the Excel instance if storing data in Excel.")]
         public OutArgument<string> ExcelInstanceOutput { get; set; }
@@ -105,7 +100,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
             try
             {
                 var driver = WebBrowserInstance.Get(context);
-                var uiElement = UiElement.Get(context);
+                var uiElement = ValueToFind.Get(context);
                 var findType = FindType.Get(context);
                 var extractionMode = ExtractionMode.Get(context);
                 var usePaging = UsePaging.Get(context);
@@ -121,9 +116,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                 if (string.IsNullOrWhiteSpace(uiElement))
                     throw new ArgumentException("UI Element must be specified.");
-
-                if (string.IsNullOrWhiteSpace(findType))
-                    throw new ArgumentException("Find type must be specified.");
 
                 // Locate the target element
                 var by = BrowserAutomationHelper.GetWebElementLocator(findType, uiElement);
@@ -184,10 +176,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
             // Process headers
             var headers = rows[0].FindElements(By.TagName("th"));
-            foreach (var header in headers)
-            {
-                table.Columns.Add(header.Text.Trim());
-            }
+            foreach (var header in headers) table.Columns.Add(header.Text.Trim());
 
             // Process rows
             for (var i = 1; i < rows.Count; i++)
@@ -196,10 +185,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 if (cells.Count == 0) continue;
 
                 var row = table.NewRow();
-                for (var j = 0; j < Math.Min(cells.Count, table.Columns.Count); j++)
-                {
-                    row[j] = cells[j].Text.Trim();
-                }
+                for (var j = 0; j < Math.Min(cells.Count, table.Columns.Count); j++) row[j] = cells[j].Text.Trim();
 
                 table.Rows.Add(row);
             }

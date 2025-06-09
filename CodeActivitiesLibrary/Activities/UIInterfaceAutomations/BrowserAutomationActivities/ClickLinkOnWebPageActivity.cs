@@ -1,6 +1,4 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
@@ -8,6 +6,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
@@ -24,67 +23,71 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("Enter or choose the variable that contains the web browser instance to work with.")]
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
-        [RequiredArgument]
-        [DisplayName("UI Element")]
-        [Description("The selector used to locate the link or button on the web page.")]
-        public InArgument<string> UiElement { get; set; }
 
         [RequiredArgument]
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
-        public InArgument<string> FindType { get; set; }
+        [DefaultValue(ElementSelectorTypeEnum.XPath)]
+        public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
+            new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
 
+        [RequiredArgument]
+        [DisplayName("Value To Find")]
+        [Description("The selector used to locate the link or button on the web page.")]
+        public InArgument<string> ValueToFind { get; set; }
 
         [DisplayName("Click Type")]
         [Description("Specifies the type of click to perform.")]
         [DefaultValue(ClickLinClickTypeEnum.LeftClick)]
         public InArgument<ClickLinClickTypeEnum> ClickType { get; set; }
 
+
         [DisplayName("Send Physical Click")]
         [Description("If true, simulates physical mouse movement before clicking.")]
         [DefaultValue(true)]
         public InArgument<bool> SendPhysicalClick { get; set; }
+
 
         [DisplayName("Wait for Page Load")]
         [Description("If true, waits for the next page to load after the click.")]
         [DefaultValue(true)]
         public InArgument<bool> WaitForPageLoad { get; set; }
 
+
         [DisplayName("Timeout for Page Load")]
         [Description("The maximum time (in seconds) to wait for the page to load.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutForPageLoad { get; set; }
+
 
         [DisplayName("Handle Dialog")]
         [Description("Specifies what to do if a dialog appears after the click.")]
         [DefaultValue(DialogActionEnum.DoNothing)]
         public InArgument<DialogActionEnum> IfDialogAppears { get; set; }
 
+
         [DisplayName("Dialog Button to Press")]
         [Description("The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').")]
         [DefaultValue("Ok")]
         public InArgument<string> DialogButtonToPress { get; set; }
+
 
         [DisplayName("Mouse Position Relative to Element")]
         [Description("Specifies where to position the mouse relative to the element before clicking.")]
         [DefaultValue(ClickLinMousePositionEnum.MiddleCenter)]
         public InArgument<ClickLinMousePositionEnum> MousePosition { get; set; }
 
+
         [DisplayName("Offset X")]
         [Description("Move the mouse this many pixels horizontally from the selected position.")]
         [DefaultValue(0)]
         public InArgument<int> OffsetX { get; set; }
 
+
         [DisplayName("Offset Y")]
         [Description("Move the mouse this many pixels vertically from the selected position.")]
         [DefaultValue(0)]
         public InArgument<int> OffsetY { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
 
         // ----------------------
         // Execution Logic
@@ -96,7 +99,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
             try
             {
                 var driver = WebBrowserInstance.Get(context);
-                var uiElement = UiElement.Get(context);
+                var uiElement = ValueToFind.Get(context);
                 var findType = FindType.Get(context);
                 var clickType = ClickType.Get(context);
                 var sendPhysicalClick = SendPhysicalClick.Get(context);
@@ -113,9 +116,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                 if (string.IsNullOrWhiteSpace(uiElement))
                     throw new ArgumentException("UI Element must be specified.");
-
-                if (string.IsNullOrWhiteSpace(findType))
-                    throw new ArgumentException("Find Type must be specified.");
 
                 // Locate the element
                 var by = BrowserAutomationHelper.GetWebElementLocator(findType, uiElement);
@@ -219,7 +219,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                 // Optional: Handle alert popup
                 if (dialogAction != DialogActionEnum.DoNothing)
-                {
                     try
                     {
                         var alert = driver.SwitchTo().Alert();
@@ -231,7 +230,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     {
                         // No dialog found — proceed normally
                     }
-                }
 
                 status = $"Successfully clicked '{uiElement}' using '{clickType}'.";
             }
@@ -269,18 +267,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
         [Display(Name = "Middle Click", Description = "Middle mouse button click.")]
         MiddleClick
-    }
-
-    public enum ClickLinkDialogActionEnum
-    {
-        [Display(Name = "Do Nothing", Description = "Ignore any pop-up dialog.")]
-        DoNothing,
-
-        [Display(Name = "Close It", Description = "Closes any pop-up dialog automatically.")]
-        CloseIt,
-
-        [Display(Name = "Press a Button", Description = "Presses a specified button on the dialog.")]
-        PressAButton
     }
 
     public enum ClickLinMousePositionEnum
