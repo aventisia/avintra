@@ -87,4 +87,24 @@ public class ExtractionSetupController : BaseApiController
     {
         return ResultHelper(await _extractionSetupService.GetFineTuningDataHistoriesAsync(mlModelId));
     }
+    // Reschedules fine-tuning for an ML model using provided configuration.
+    [HttpPost("reschedule-fine-tuning")]
+    public async Task<ActionResult<ServiceResponse<ExtractionFineTuningDataDto>>> RescheduleFineTuning(RescheduleFineTuningDto rescheduleFineTuningDto)
+    {
+        return ResultHelper(await _extractionSetupService.RescheduleFineTuningAsync(rescheduleFineTuningDto));
+    }
+
+    // Deletes a specific fine-tuning history record by ID.
+    [HttpDelete("fine-tuning/histories/{fineTuningHistoryId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FineTuningHistoryDto>>>> DeleteFineTuningDataHistory(Guid fineTuningHistoryId)
+    {
+        return ResultHelper(await _extractionSetupService.DeleteFineTuningDataHistoryAsync(fineTuningHistoryId));
+    }
+
+    // Deletes multiple fine-tuning history records given a list of their IDs.
+    [HttpPost("fine-tuning/histories/delete-multiple")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FineTuningHistoryDto>>>> DeleteMultipleFineTuningDataHistories(IEnumerable<Guid> fineTuningHistoryIds)
+    {
+        return ResultHelper(await _extractionSetupService.DeleteMultipleFineTuningDataHistoriesAsync(fineTuningHistoryIds));
+    }
 }

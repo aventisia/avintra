@@ -723,6 +723,173 @@ public class AIPersonaService : IAIPersonaService
 
     }
 
+    // Reschedules a fine-tuning job for the existing data.
+    public async Task<ServiceResponse<AIPersonaFineTuningDataDto>> RescheduleFineTuningAsync(RescheduleFineTuningDto rescheduleFineTuningDto)
+    {
+        // Initialize service response with default failure state
+        var serviceResponse = new ServiceResponse<AIPersonaFineTuningDataDto>
+        {
+            Data = null,
+            Message = "Unable to schedule fine-tuning. Please try again later."
+        };
+
+        try
+        {
+            _logger.LogInformation("Initiating fine-tuning reschedule for ML Model ID: {MLModelId}, Data ID: {DataId}",
+                rescheduleFineTuningDto.MLModelId, rescheduleFineTuningDto.Id);
+
+            // Retrieve the scheduled model based on MLModelId and ExtractedDataId
+            var scheduledModel = await _unitOfWork.ScheduledModelRepo
+                .GetByConditionAsync(w => w.MLModelId == rescheduleFineTuningDto.MLModelId && w.ExtractedDataId == rescheduleFineTuningDto.Id)
+                .Include(i => i.ExtractedData)
+                .FirstOrDefaultAsync();
+
+            // If no matching data is found, return failure response
+            if (scheduledModel == null)
+            {
+                _logger.LogWarning("No matching extracted data found for ML Model ID: {MLModelId}, Data ID: {DataId}",
+                    rescheduleFineTuningDto.MLModelId, rescheduleFineTuningDto.Id);
+
+                serviceResponse.Message = "No data found for the provided identifiers.";
+                return serviceResponse;
+            }
+
+            scheduledModel.TimeZone = rescheduleFineTuningDto.TimeZone;
+            scheduledModel.ScheduledAt = rescheduleFineTuningDto.ScheduledAt;
+
+            // Update the scheduled model (apply rescheduling logic if needed here)
+            _unitOfWork.ScheduledModelRepo.Update(scheduledModel);
+
+            // Attempt to persist the changes
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save rescheduled fine-tuning job for ML Model ID: {MLModelId}, Data ID: {DataId}",
+                    rescheduleFineTuningDto.MLModelId, rescheduleFineTuningDto.Id);
+                return serviceResponse;
+            }
+
+            // On success, map data and update service response
+            _logger.LogInformation("Successfully rescheduled fine-tuning job for ML Model ID: {MLModelId}, Data ID: {DataId}",
+                rescheduleFineTuningDto.MLModelId, rescheduleFineTuningDto.Id);
+
+            serviceResponse.Data = scheduledModel.ExtractedData.Adapt<AIPersonaFineTuningDataDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Fine-tuning job rescheduled successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception occurred while rescheduling fine-tuning for ML Model ID: {MLModelId}, Data ID: {DataId}",
+                rescheduleFineTuningDto.MLModelId, rescheduleFineTuningDto.Id);
+        }
+
+        return serviceResponse;
+    }
+
+    // Deletes a fine-tuning history record from the database based on the provided ID.
+    public async Task<ServiceResponse<bool>> DeleteFineTuningDataHistoryAsync(Guid fineTuningHistoryId)
+    {
+        // Initialize a failed service response by default
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to delete fine tuning history. Please try again."
+        };
+
+        try
+        {
+            // Attempt to retrieve the fine-tuning log by ID
+            var fineTuningLog = await _unitOfWork.FineTuningLogRepo
+                .GetByConditionAsync(w => w.Id == fineTuningHistoryId)
+                .SingleOrDefaultAsync();
+
+            // If the log does not exist, return a failure response
+            if (fineTuningLog == null)
+            {
+                _logger.LogInformation("Fine-tuning history record does not exist.");
+                serviceResponse.Message = "Data does not exist.";
+                return serviceResponse;
+            }
+
+            // Delete the retrieved fine-tuning log
+            _unitOfWork.FineTuningLogRepo.Delete(fineTuningLog);
+
+            // Attempt to persist the changes
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("SaveChanges failed during deletion of fine-tuning history.");
+                return serviceResponse;
+            }
+
+            // Deletion successful
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Data deleted successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log the exception and return the default failure response
+            _logger.LogError(ex, "Exception occurred while deleting fine-tuning history.");
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Deletes multiple fine-tuning history records from the database based on the provided list of IDs.
+    public async Task<ServiceResponse<bool>> DeleteMultipleFineTuningDataHistoriesAsync(IEnumerable<Guid> fineTuningHistoryIds)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to delete fine-tuning history records. Please try again."
+        };
+
+        try
+        {
+            if (fineTuningHistoryIds == null || !fineTuningHistoryIds.Any())
+            {
+                serviceResponse.Message = "No IDs provided for deletion.";
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("Attempting to delete {Count} fine-tuning history records.", fineTuningHistoryIds.Count());
+
+            // Fetch records matching the provided IDs
+            var fineTuningLogs = await _unitOfWork.FineTuningLogRepo
+                .GetByConditionAsync(w => fineTuningHistoryIds.Contains(w.Id))
+                .ToListAsync();
+
+            if (fineTuningLogs == null || !fineTuningLogs.Any())
+            {
+                _logger.LogWarning("No fine-tuning history records found for the provided IDs.");
+                serviceResponse.Message = "No matching records found for deletion.";
+                return serviceResponse;
+            }
+
+            // Delete all found records
+            _unitOfWork.FineTuningLogRepo.Delete(fineTuningLogs);
+
+            // Persist the changes
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save changes after attempting to delete fine-tuning history records.");
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("Successfully deleted {Count} fine-tuning history records.", fineTuningLogs.Count);
+
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Selected fine-tuning history records deleted successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception occurred while deleting multiple fine-tuning history records.");
+        }
+
+        return serviceResponse;
+    }
+
     // Builds the prompt string for the ai persona model using the setup settings
     private string? GenerateAIPersonaPrompt(AIPersonaDto aiPersonaDto)
     {

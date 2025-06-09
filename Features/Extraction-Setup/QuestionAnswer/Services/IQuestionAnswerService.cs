@@ -72,7 +72,7 @@ public interface IQuestionAnswerService
     /// A task that represents the asynchronous operation. The task result contains a ServiceResponse with a collection of QuestionAnswerReviewDataDto representing the added or affected review data.
     /// </returns>
     Task<ServiceResponse<IEnumerable<QuestionAnswerReviewDataDto>>> AddReviewDataAsync(CreateModelReviewRequestDto createModelReviewRequestDto);
-    
+
     /// <summary>
     /// Retrieves a collection of fine-tuning data records associated with the specified machine learning model ID.
     /// </summary>
@@ -96,4 +96,34 @@ public interface IQuestionAnswerService
     /// <param name="mlModelId">The unique identifier of the machine learning model whose fine-tuning history is to be fetched.</param>
     /// <returns>A task representing the asynchronous operation, with a response containing the list of fine-tuning history records.</returns>
     Task<ServiceResponse<IEnumerable<FineTuningHistoryDto>>> GetFineTuningDataHistoriesAsync(Guid mlModelId);
+    /// <summary>
+    /// Re-schedules a fine-tuning operation using the provided fine-tuning data.
+    /// </summary>
+    /// <param name="rescheduleFineTuningDto">An object containing the configuration data for the fine-tuning.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation.
+    /// The result contains a <see cref="ServiceResponse{SentimentAnalyticsFineTuningDataDto}"/> 
+    /// with the updated fine-tuning configuration and status.
+    /// </returns>
+    Task<ServiceResponse<QuestionAnswerFineTuningDataDto>> RescheduleFineTuningAsync(RescheduleFineTuningDto rescheduleFineTuningDto);
+
+    /// <summary>
+    /// Deletes a specific fine-tuning history record identified by its unique ID.
+    /// </summary>
+    /// <param name="fineTuningHistoryId">The unique identifier of the fine-tuning history entry to be deleted.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation.
+    /// The result contains a <see cref="ServiceResponse{bool}"/> indicating whether the deletion was successful.
+    /// </returns>
+    Task<ServiceResponse<bool>> DeleteFineTuningDataHistoryAsync(Guid fineTuningHistoryId);
+
+    /// <summary>
+    /// Deletes multiple fine-tuning history records based on the provided collection of IDs.
+    /// </summary>
+    /// <param name="fineTuningHistoryIds">A collection of unique identifiers for the fine-tuning history records to delete.</param>
+    /// <returns>
+    /// A <see cref="Task{TResult}"/> containing a <see cref="ServiceResponse{Boolean}"/> indicating 
+    /// whether the deletion operation was successful.
+    /// </returns>
+    Task<ServiceResponse<bool>> DeleteMultipleFineTuningDataHistoriesAsync(IEnumerable<Guid> fineTuningHistoryIds);
 }
