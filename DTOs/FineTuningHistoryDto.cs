@@ -21,10 +21,9 @@ public class FineTuningHistoryDto
     public Guid MLModelId { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the document linked to this fine-tuning record.
+    /// Gets or sets the version number of the fine-tuning record.
     /// </summary>
-    [StringLength(255)]
-    public string? DocName { get; set; }
+    public int? Version { get; set; }
 
     /// <summary>
     /// Gets or sets the current status of the fine-tuning process.
