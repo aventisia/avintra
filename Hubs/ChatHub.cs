@@ -41,4 +41,40 @@ public class ChatHub : Hub
 
         await base.OnDisconnectedAsync(exception);
     }
+
+    /// <summary>
+    /// Sends a message to the current (calling) client only.
+    /// </summary>
+    public async Task SendMessageToSelf(string message)
+    {
+        var userId = Context.User?.FindFirstValue("uid");
+        if (!string.IsNullOrWhiteSpace(userId))
+        {
+            await Clients.Caller.SendAsync("ReceiveMessage", userId, userId, message);
+        }
+    }
+
+    /// <summary>
+    /// Sends a message from the caller to a specific user (if connected).
+    /// </summary>
+    public async Task SendMessageToUser(string receiverUserId, string message)
+    {
+        var senderUserId = Context.User?.FindFirstValue("uid");
+
+        if (!string.IsNullOrWhiteSpace(senderUserId) && !string.IsNullOrWhiteSpace(receiverUserId))
+        {
+            // Get the first connection ID associated with the receiver user ID
+            var receiverConnection = ConnectionUserMap
+                .FirstOrDefault(kvp => kvp.Value == receiverUserId);
+
+            // Check if a valid connection exists
+            if (!string.IsNullOrWhiteSpace(receiverConnection.Key))
+            {
+                await Clients.Client(receiverConnection.Key).SendAsync("ReceiveMessage", senderUserId, receiverUserId, message);
+            }
+
+            // Optionally send confirmation back to sender
+            await Clients.Caller.SendAsync("MessageSent", receiverUserId, message);
+        }
+    }
 }
