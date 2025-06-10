@@ -51,7 +51,7 @@
       "conditions": [
         {
           "field": "LaunchWithUrl",
-          "equals": true
+          "equals": "True"
         }
       ]
     }
@@ -166,11 +166,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "BrowserInstance",
-    "label": "Browser Instance",
-    "description": "Returns the WebDriver object for further automation steps.",
+    "name": "WebBrowser",
+    "label": "Web Browser",
+    "description": "Returns the WebDriver (WebBrowser) object for further automation steps.",
     "defaultValue": {
-      "value": "BrowserInstance",
+      "value": "WebBrowser",
       "enabled": true
     },
     "required": false
