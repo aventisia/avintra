@@ -54,8 +54,6 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
-
             try
             {
                 var number = NumberToTruncate.Get(context);
@@ -101,14 +99,15 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                 }
 
                 TruncatedValue.Set(context, number);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Number truncated/rounded successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error truncating/rounding number: {ex.Message}";
                 TruncatedValue.Set(context, 0);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error truncating/rounding number: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 
