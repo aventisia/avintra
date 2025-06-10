@@ -6,7 +6,7 @@
     "img": null,
     "actionCategories": [
       {
-        "label": "Conditionals and Loops",
+        "label": "Conditionals",
         "description": "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.",
         "icon": null,
         "img": null,
