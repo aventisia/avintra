@@ -1,4 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
 using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
@@ -98,52 +99,52 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 switch (scrollMode)
                 {
                     case ScrollModeEnum.ByElement:
-                    {
-                        if (string.IsNullOrWhiteSpace(searchKeywords))
-                            throw new ArgumentException(
-                                "Search keywords must be specified when using 'ByElement' scroll mode.");
-
-                        // Locate the element
-                        var by = BrowserAutomationHelper.GetWebElementLocator(findType, searchKeywords);
-                        if (by == null)
-                            throw new ArgumentException($"Invalid find type provided: '{findType}'");
-
-                        IWebElement element = null;
-
-                        if (waitForElement && timeout.TotalSeconds > 0)
                         {
-                            var wait = new WebDriverWait(driver, timeout);
-                            element = wait.Until(drv => drv.FindElement(by));
+                            if (string.IsNullOrWhiteSpace(searchKeywords))
+                                throw new ArgumentException(
+                                    "Search keywords must be specified when using 'ByElement' scroll mode.");
+
+                            // Locate the element
+                            var by = BrowserAutomationHelper.GetWebElementLocator(findType, searchKeywords);
+                            if (by == null)
+                                throw new ArgumentException($"Invalid find type provided: '{findType}'");
+
+                            IWebElement element = null;
+
+                            if (waitForElement && timeout.TotalSeconds > 0)
+                            {
+                                var wait = new WebDriverWait(driver, timeout);
+                                element = wait.Until(drv => drv.FindElement(by));
+                            }
+                            else
+                            {
+                                element = driver.FindElement(by);
+                            }
+
+                            if (element == null)
+                                throw new InvalidOperationException(
+                                    $"No element found using '{findType}': '{searchKeywords}'");
+
+                            // Scroll to element
+                            var behavior = smoothScroll ? "smooth" : "auto";
+                            jsExecutor.ExecuteScript(
+                                $"arguments[0].scrollIntoView({{ behavior: '{behavior}', block: 'center' }});",
+                                element);
+
+                            status = $"Successfully scrolled to element '{searchKeywords}'.";
+                            break;
                         }
-                        else
-                        {
-                            element = driver.FindElement(by);
-                        }
-
-                        if (element == null)
-                            throw new InvalidOperationException(
-                                $"No element found using '{findType}': '{searchKeywords}'");
-
-                        // Scroll to element
-                        var behavior = smoothScroll ? "smooth" : "auto";
-                        jsExecutor.ExecuteScript(
-                            $"arguments[0].scrollIntoView({{ behavior: '{behavior}', block: 'center' }});",
-                            element);
-
-                        status = $"Successfully scrolled to element '{searchKeywords}'.";
-                        break;
-                    }
 
                     case ScrollModeEnum.ByCoordinates:
-                    {
-                        if (xCoord < 0 || yCoord < 0)
-                            throw new ArgumentException("Coordinates must be positive numbers.");
+                        {
+                            if (xCoord < 0 || yCoord < 0)
+                                throw new ArgumentException("Coordinates must be positive numbers.");
 
-                        // Scroll by X,Y
-                        jsExecutor.ExecuteScript($"window.scrollTo({xCoord}, {yCoord});");
-                        status = $"Scrolled to position ({xCoord}, {yCoord}).";
-                        break;
-                    }
+                            // Scroll by X,Y
+                            jsExecutor.ExecuteScript($"window.scrollTo({xCoord}, {yCoord});");
+                            status = $"Scrolled to position ({xCoord}, {yCoord}).";
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(scrollMode), "Unsupported scroll mode.");

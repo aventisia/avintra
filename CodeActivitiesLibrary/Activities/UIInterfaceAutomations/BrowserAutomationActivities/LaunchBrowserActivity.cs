@@ -1,14 +1,14 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Edge;
+using OpenQA.Selenium.Firefox;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
-using CodeActivitiesLibrary.Extensions;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Edge;
-using OpenQA.Selenium.Firefox;
 
 namespace CodeActivitiesLibrary.AppIntegrations.BrowserActivities
 {
@@ -110,29 +110,29 @@ namespace CodeActivitiesLibrary.AppIntegrations.BrowserActivities
                 switch (browserType)
                 {
                     case BrowserTypeEnum.MicrosoftEdge:
-                    {
-                        driver = OpenMicrosoftEdgeBrowser(browsingMode, launchWithUrl, launchUrl, userDataDir);
-                        break;
-                    }
+                        {
+                            driver = OpenMicrosoftEdgeBrowser(browsingMode, launchWithUrl, launchUrl, userDataDir);
+                            break;
+                        }
 
                     case BrowserTypeEnum.GoogleChrome:
-                    {
-                        driver = OpenChromeBrowser(browsingMode, launchWithUrl, launchUrl, userDataDir);
-                        break;
-                    }
+                        {
+                            driver = OpenChromeBrowser(browsingMode, launchWithUrl, launchUrl, userDataDir);
+                            break;
+                        }
 
                     case BrowserTypeEnum.MozillaFirefox:
-                    {
-                        driver = OpenFireFox(browsingMode, launchWithUrl, launchUrl, userDataDir);
-                        break;
-                    }
+                        {
+                            driver = OpenFireFox(browsingMode, launchWithUrl, launchUrl, userDataDir);
+                            break;
+                        }
 
                     case BrowserTypeEnum.Custom:
-                    {
-                        driver = OpenCustomBrowser(customBrowserName, browserExePath, driverExePath, browsingMode,
-                            launchWithUrl, launchUrl);
-                        break;
-                    }
+                        {
+                            driver = OpenCustomBrowser(customBrowserName, browserExePath, driverExePath, browsingMode,
+                                launchWithUrl, launchUrl);
+                            break;
+                        }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(browserType));

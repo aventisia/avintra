@@ -1,4 +1,5 @@
 using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;

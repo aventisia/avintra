@@ -374,6 +374,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\CreateNewTabActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\AttachModeEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\DialogActionEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\ElementSelectorTypeEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\ElementStateEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\LaunchModeEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\BrowserAutomationActivities\Enums\MousePositionEnum.cs" />

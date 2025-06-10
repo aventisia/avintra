@@ -1,4 +1,5 @@
 using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
 using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using System;
@@ -124,13 +125,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                             case CheckConditionEnum.ContainsText:
                             case CheckConditionEnum.DoesNotContainText:
                             default:
-                            {
-                                result = false;
-                                status = checkCondition == CheckConditionEnum.ContainsElement
-                                    ? $"No element found using '{findType}': '{searchKeywords}'."
-                                    : $"Element was found but should not exist.";
-                                break;
-                            }
+                                {
+                                    result = false;
+                                    status = checkCondition == CheckConditionEnum.ContainsElement
+                                        ? $"No element found using '{findType}': '{searchKeywords}'."
+                                        : $"Element was found but should not exist.";
+                                    break;
+                                }
                         }
 
                         // Optional: Check element state (enabled/disabled)

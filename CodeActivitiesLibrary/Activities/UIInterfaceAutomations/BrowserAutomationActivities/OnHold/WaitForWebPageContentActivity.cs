@@ -1,7 +1,8 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
+using System;
 using System.Activities;
 using System.ComponentModel;
-using CodeActivitiesLibrary.Extensions;
 
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities

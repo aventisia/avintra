@@ -1,9 +1,9 @@
-﻿using OpenQA.Selenium;
+﻿using CodeActivitiesLibrary.Extensions;
+using OpenQA.Selenium;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
