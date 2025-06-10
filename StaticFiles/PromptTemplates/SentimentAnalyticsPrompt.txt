@@ -13,7 +13,7 @@ Instructions:
 EachCategoryResultMustInclude:
     - index: index value of associated category (e.g., "1", "2")
     - name: the category name
-    - value\": "true" or "false"
+    - value": "true" or "false"
     - confidenceScore: a string representing the model's confidence scaled from 1 to 100 (e.g., "92")
 
  OutputFormat: 
