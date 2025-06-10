@@ -14,10 +14,10 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
+    mlModelId: "0196d86d-999d-7d09-8489-510642cb9fb7",
     fileIds: [bru.getGlobalEnvVar("DOC_ID")],
     timeZone: faker.location.timeZone() ,
-    scheduleAt: faker.date.future()
+    scheduledAt: faker.date.future()
   });
   
 }

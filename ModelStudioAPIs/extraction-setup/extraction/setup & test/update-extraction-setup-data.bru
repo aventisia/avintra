@@ -18,6 +18,7 @@ script:pre-request {
     setupObject: {
       context: faker.lorem.lines(),
       prompt: faker.lorem.lines(2),
+      temperature: 0.2,
       tableMetadata: [
         {
           context: faker.lorem.sentence(),
