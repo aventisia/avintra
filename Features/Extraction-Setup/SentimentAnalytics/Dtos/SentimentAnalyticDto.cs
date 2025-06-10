@@ -80,6 +80,11 @@ public class SentimentAnalyticSetupDto
 public class SentimentAnalyticsSetupCategoryDto
 {
     /// <summary>
+    /// Gets or sets the unique key associated with the sentiment category.
+    /// </summary>
+    public string Index { get; set; } = string.Empty;
+
+    /// <summary>
     /// Name of the sentiment category (e.g., "Positive", "Negative", "Neutral").
     /// </summary>
     [Required, StringLength(255)]

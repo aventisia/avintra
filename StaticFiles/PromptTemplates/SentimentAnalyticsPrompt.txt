@@ -1,25 +1,20 @@
-{{Prompt}}
-
+Prompt: {{Prompt}}
 Context: {{Context}}
-
-Please analyze the sentiment of the text above. Classify the tone as positive, negative, or neutral, and provide a confidence score for that classification. Then, evaluate the relevance of each category listed below based on the sentiment and overall meaning of the text.
-
-Categories to Evaluate: {{Categories}}
-
+AnalysisRequest: Please analyze the sentiment of the text above. Classify the tone as positive, negative, or neutral, and provide a confidence score for that classification.,
+CategoriesToEvaluate: {{Categories}},
 Instructions:
-- Do not modify, rephrase, or alter the categories in any way. Use them exactly as provided.
-- Do not include any numbers, explanations, or extra text outside the JSON.
-- Identify the overall sentiment expressed in the context.
-- For each category:
-    - Return "true" if the sentiment and content clearly support or reflect the category.
-    - Return "false" if the category is not supported, not relevant, or clearly does not apply.
-- Only include categories that can be confidently evaluated based on the context.
-- Do not include any explanation, summary, or analysis outside of the output.
-- Use "false" for any category that cannot be confidently validated.
-- Each category result must include:
-    - "name": the category name
-    - "value": "true" or "false"
-    - "confidenceScore": a string representing the model's confidence scaled from 1 to 100 (e.g., "92").
+    - Do not modify, rephrase, or alter the categories in any way. Use them exactly as provided.,
+    - Identify the overall sentiment expressed in the context.,
+    - For each category: Return "true" if the sentiment and content clearly support or reflect the category. Return "false" if the category is not supported, not relevant, or clearly does not apply.", 
+    - Only include categories that can be confidently evaluated based on the context.,
+    - Use "false" for any category that cannot be confidently validated.,
+    - The entire response MUST be a single, valid JSON array string, exactly as specified in the 'OutputFormat' field. Do NOT include any additional text, markdown, headers, bolding, newlines, or any other characters or formatting outside of this specified JSON array string. Provide ONLY the JSON array string.
+ 
+EachCategoryResultMustInclude:
+    - index: index value of associated category (e.g., "1", "2")
+    - name: the category name
+    - value\": "true" or "false"
+    - confidenceScore: a string representing the model's confidence scaled from 1 to 100 (e.g., "92")
 
-Output Format:
-"[{"name": "category_name", "value": "true", "confidenceScore": "confidence_score"}, {"name": "another_category_name", "value": "false", "confidenceScore": "another_confidence_score"}]"
+ OutputFormat: 
+ [{\"index\":\"1\", \"name\":\"category_name\", \"value\":\"true\", \"confidenceScore\": \"confidence_score\"}, {\"index\":\"2\", \"name\":\"another_category_name\", \"value\":\"false\", \"confidenceScore\": \"confidence_score\"}]"}}

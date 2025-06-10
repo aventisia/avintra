@@ -48,6 +48,12 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
             // Sanitize DTO string properties
             sentimentAnalyticDto = TrimDtoStringPropsUtil.TrimDtoStringProps(sentimentAnalyticDto);
 
+            int index = 1;
+            foreach (var category in sentimentAnalyticDto.SetupObject.Categories)
+            {
+                category.Index = $"{index}";
+                index = index + 1;
+            }
             // Map incoming DTO data to the existing model entity
             sentimentAnalyticDto.Adapt(mLModel);
             mLModel.GeneratedPrompt = GenerateSentimentAnalyticsModelPrompt(sentimentAnalyticDto);
@@ -143,6 +149,12 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
                 serviceResponse.Message = "Model not found";
                 return serviceResponse;
             }
+
+            // Convert model to SentimentAnalyticDto and get categories
+            var categoryDict = model.Adapt<SentimentAnalyticDto>()?
+                    .SetupObject?
+                    .Categories?
+                    .ToDictionary(c => c.Index, c => c.Name);
 
             // Check if the model has a generated prompt for sentiment analysis
             if (string.IsNullOrEmpty(model.GeneratedPrompt))
@@ -247,6 +259,15 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
                 {
                     extractedData.ExtractedData = JsonSerializer.Deserialize<List<SentimentAnalyticsSetupData>>(llmResponse.Data, options) ?? new List<SentimentAnalyticsSetupData>();
                     extractedData.Remarks = "";
+                    
+                    // Assign names using dictionary lookup
+                    foreach (var category in extractedData.ExtractedData)
+                    {
+                        if (categoryDict.TryGetValue(category.Index, out var name))
+                        {
+                            category.Name = name;
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {

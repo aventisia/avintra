@@ -38,6 +38,11 @@ public class SentimentAnalyticsSetupFileData
 public class SentimentAnalyticsSetupData
 {
     /// <summary>
+    /// Gets or sets the unique key associated with the sentiment category.
+    /// </summary>
+    public string? Index { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of the sentiment analytics data item.
     /// </summary>
     public required string Name { get; set; }
