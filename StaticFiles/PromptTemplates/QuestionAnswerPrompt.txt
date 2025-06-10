@@ -1,24 +1,24 @@
-{{Prompt}}
+Prompt: {{Prompt}}
 
 Context: {{Context}}
 
-Please extract answers to the following questions from the provided context. Include a confidence score for each extracted answer based on accuracy and relevance.
+Task: Please extract answers to the following questions from the provided context. Include a confidence score for each extracted answer based on accuracy and relevance.
+Questions: {{Questions}},
 
-Questions: {{Questions}}
+Instructions
+      - Do not modify, rephrase, or alter the questions in any way. Use them exactly as provided.
+      - Do not include any numbers, explanations, or extra text outside the JSON output.
+      - Answer only the questions listed in the 'Questions' field.
+      - Base all answers strictly on the given 'Context'. Do not use external knowledge.
+      - Classify and extract each answer based on the question's intent and content, directly from the context.
+      - If an answer cannot be found or confidently inferred from the context, the 'answer' field should be an empty string, and 'confidenceScore' should be '0'
+      - Do not include any text or commentary outside the specified JSON output.
+      - The entire response MUST be a single, valid JSON array string, exactly as specified in the 'OutputFormat' field. Do NOT include any additional text, markdown, headers, bolding, newlines, or any other characters or formatting outside of this specified JSON array string. Provide ONLY the JSON array string.
 
-Instructions:
-- Do not modify, rephrase, or alter the questions in any way. Use them exactly as provided.
-- Do not include any numbers, explanations, or extra text outside the JSON.
-- Answer only the questions listed.
-- Base all answers strictly on the given context.
-- Classify and extract each answer based on the question’s intent and content.
-- Do not include any text or commentary outside the specified JSON output.
-- Each result must include:
-    - "question": the original question text
-    - "answer": the corresponding answer based on the context
-    - "confidenceScore": a string value representing the model’s confidence in the accuracy of the answer scaled from 1 to 100 (e.g., "94")
+EachResultMustInclude
+      - index: a unique numerical index for each question-answer pair (e.g., "1", "2")
+      - question: the original question text
+      - answer: the corresponding answer based on the context (empty string if not found)
+      - confidenceScore: a string value representing the model's confidence in the accuracy of the answer scaled from 0 to 100 (e.g., "94", "0" if not found).
 
-Output Format:
-- Return the results as a JSON array. Each object must include a question and its corresponding answer, formatted as shown below:
-
-"[{"question": "question_1", "answer": "answer_1", "confidenceScore": "confidence_score1"}, {"question": "another_question", "answer": "another_answer", "confidenceScore": "another_confidence_score"}]"
+OutputFormat: [{\"index\":\"1\", \"question\": \"question 1\", \"answer\": \"answer 1\", \"confidenceScore\": \"confidence_score1\"}, {\"index\":\"2\", \"question\": \"another_question\", \"answer\": \"another_answer\", \"confidenceScore\": \"another_confidence_score\"}]

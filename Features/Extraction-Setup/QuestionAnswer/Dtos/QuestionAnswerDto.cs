@@ -83,6 +83,11 @@ public class QuestionAnswerSetupDto
 /// </summary>
 public class QuestionAnswerLabelDto
 {
+    // <summary>
+    /// Gets or sets the unique key associated with the sentiment category.
+    /// </summary>
+    public string Index { get; set; } = string.Empty;
+    
     /// <summary>
     /// Descriptive name of the label (e.g., "Relevant", "Not Relevant").
     /// </summary>

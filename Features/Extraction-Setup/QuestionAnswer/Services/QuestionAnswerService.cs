@@ -22,73 +22,80 @@ public class QuestionAnswerService : IQuestionAnswerService
     }
 
     // Updates the QuestionAnswer configuration for the specified ML model
-    public async Task<ServiceResponse<QuestionAnswerDto>> UpdateQuestionAnswerSetupAsync(QuestionAnswerDto QuestionAnswerDto)
+    public async Task<ServiceResponse<QuestionAnswerDto>> UpdateQuestionAnswerSetupAsync(QuestionAnswerDto questionAnswerDto)
     {
         var serviceResponse = new ServiceResponse<QuestionAnswerDto>
         {
             Data = null,
-            Message = "Unable to update the QuestionAnswer setup. Please try again."
+            Message = "Unable to update the questionAnswer setup. Please try again."
         };
 
         try
         {
-            _logger.LogInformation("Starting update of QuestionAnswer setup | ID: {Id} | User: {UserId}", QuestionAnswerDto.Id, _userId);
+            _logger.LogInformation("Starting update of questionAnswer setup | ID: {Id} | User: {UserId}", questionAnswerDto.Id, _userId);
 
             var mLModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == QuestionAnswerDto.Id)
+                .GetByConditionAsync(w => w.Id == questionAnswerDto.Id)
                 .SingleOrDefaultAsync();
 
             if (mLModel == null)
             {
-                _logger.LogWarning("QuestionAnswer setup not found | ID: {Id} | User: {UserId}", QuestionAnswerDto.Id, _userId);
+                _logger.LogWarning("QuestionAnswer setup not found | ID: {Id} | User: {UserId}", questionAnswerDto.Id, _userId);
                 serviceResponse.Message = "QuestionAnswer setup not found. Please check the ID.";
                 return serviceResponse;
             }
 
             // Sanitize string properties in the DTO
-            QuestionAnswerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(QuestionAnswerDto);
+            questionAnswerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(questionAnswerDto);
+
+            int index = 1;
+            foreach (var category in questionAnswerDto.SetupObject.QuestionAnswers)
+            {
+                category.Index = $"{index}";
+                index = index + 1;
+            }
 
             // Apply updated values to the model entity
-            QuestionAnswerDto.Adapt(mLModel);
-            mLModel.GeneratedPrompt = GenerateQuestionAnswerModelPrompt(QuestionAnswerDto);
+            questionAnswerDto.Adapt(mLModel);
+            mLModel.GeneratedPrompt = GenerateQuestionAnswerModelPrompt(questionAnswerDto);
             mLModel.SetupStatus = SetupStatusTypesEnum.Completed;
             mLModel.LastModifiedByUserId = _userId;
 
-            _logger.LogInformation("Saving changes to QuestionAnswer setup | ID: {Id}", QuestionAnswerDto.Id);
+            _logger.LogInformation("Saving changes to questionAnswer setup | ID: {Id}", questionAnswerDto.Id);
             _unitOfWork.MLModelRepo.Update(mLModel);
 
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Error saving changes to QuestionAnswer setup | ID: {Id} | User: {UserId}", QuestionAnswerDto.Id, _userId);
+                _logger.LogError("Error saving changes to questionAnswer setup | ID: {Id} | User: {UserId}", questionAnswerDto.Id, _userId);
                 return serviceResponse;
             }
 
-            _logger.LogInformation("QuestionAnswer setup updated successfully | ID: {Id} | User: {UserId}", QuestionAnswerDto.Id, _userId);
+            _logger.LogInformation("questionAnswer setup updated successfully | ID: {Id} | User: {UserId}", questionAnswerDto.Id, _userId);
 
             serviceResponse.Data = mLModel.Adapt<QuestionAnswerDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "QuestionAnswer setup updated successfully.";
+            serviceResponse.Message = "questionAnswer setup updated successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An exception occurred during update of QuestionAnswer setup | ID: {Id} | User: {UserId}", QuestionAnswerDto.Id, _userId);
+            _logger.LogError(ex, "An exception occurred during update of questionAnswer setup | ID: {Id} | User: {UserId}", questionAnswerDto.Id, _userId);
         }
 
         return serviceResponse;
     }
 
-    // Retrieves the QuestionAnswer setup associated with a specific ML model
+    // Retrieves the questionAnswer setup associated with a specific ML model
     public async Task<ServiceResponse<QuestionAnswerDto>> GetQuestionAnswerSetupByMLModelIdAsync(Guid mlModelId)
     {
         var serviceResponse = new ServiceResponse<QuestionAnswerDto>
         {
             Data = null,
-            Message = "Unable to fetch the QuestionAnswer setup. Please try again."
+            Message = "Unable to fetch the questionAnswer setup. Please try again."
         };
 
         try
         {
-            _logger.LogInformation("Retrieving QuestionAnswer setup for ML Model ID: {MLModelId}", mlModelId);
+            _logger.LogInformation("Retrieving questionAnswer setup for ML Model ID: {MLModelId}", mlModelId);
 
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w => w.Id == mlModelId)
@@ -97,20 +104,20 @@ public class QuestionAnswerService : IQuestionAnswerService
 
             if (mlModel == null)
             {
-                _logger.LogWarning("QuestionAnswer setup not found for ML Model ID: {MLModelId}", mlModelId);
+                _logger.LogWarning("questionAnswer setup not found for ML Model ID: {MLModelId}", mlModelId);
                 serviceResponse.Message = "No setup found for the specified ML model.";
                 return serviceResponse;
             }
 
-            _logger.LogInformation("QuestionAnswer setup retrieved successfully for ML Model ID: {MLModelId}", mlModelId);
+            _logger.LogInformation("questionAnswer setup retrieved successfully for ML Model ID: {MLModelId}", mlModelId);
 
             serviceResponse.Data = mlModel.Adapt<QuestionAnswerDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "QuestionAnswer setup retrieved successfully.";
+            serviceResponse.Message = "questionAnswer setup retrieved successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving the QuestionAnswer setup | ML Model ID: {MLModelId}", mlModelId);
+            _logger.LogError(ex, "An error occurred while retrieving the questionAnswer setup | ML Model ID: {MLModelId}", mlModelId);
         }
 
         return serviceResponse;
@@ -135,6 +142,12 @@ public class QuestionAnswerService : IQuestionAnswerService
                                           .GetByConditionAsync(w => w.Id == extractRequestDto.ModelId)
                                           .Include(i => i.ExtractedData)
                                           .SingleOrDefaultAsync();
+
+            // Convert model to SentimentAnalyticDto and get categories
+            var categoryDict = model.Adapt<QuestionAnswerDto>()?
+                    .SetupObject?
+                    .QuestionAnswers?
+                    .ToDictionary(c => c.Index, c => c.Name);
 
             // If model is not found, log and return a failure response
             if (model == null)
@@ -247,6 +260,15 @@ public class QuestionAnswerService : IQuestionAnswerService
                 {
                     extractedData.ExtractedData = JsonSerializer.Deserialize<List<QuestionAnswerSetupData>>(llmResponse.Data, options) ?? new List<QuestionAnswerSetupData>();
                     extractedData.Remarks = "";
+
+                    // Assign names using dictionary lookup
+                    foreach (var category in extractedData.ExtractedData)
+                    {
+                        if (categoryDict.TryGetValue(category.Index, out var name))
+                        {
+                            category.Question = name;
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -1024,7 +1046,7 @@ public class QuestionAnswerService : IQuestionAnswerService
             {
                 var category = QuestionAnswerDto.SetupObject.QuestionAnswers[i];
                 var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
-                questionAnswerBuilder.AppendLine($"{i + 1}. {category.Name}{instructions}");
+                questionAnswerBuilder.AppendLine($"{category.Index}. {category.Name}{instructions}");
             }
         }
 

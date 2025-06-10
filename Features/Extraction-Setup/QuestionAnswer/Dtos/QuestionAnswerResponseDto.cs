@@ -37,6 +37,11 @@ public class QuestionAnswerSetupFileData
 /// </summary>
 public class QuestionAnswerSetupData
 {
+    // <summary>
+    /// Gets or sets the unique key associated with the sentiment category.
+    /// </summary>
+    public string? Index { get; set; }
+    
     /// <summary>
     /// Gets or sets the text of the question.
     /// </summary>
