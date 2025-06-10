@@ -89,7 +89,7 @@ public class SummarizationController : BaseApiController
     }
 
     // Reschedules fine-tuning for an ML model using provided configuration.
-    [HttpPost("reschedule-fine-tuning")]
+    [HttpPut("reschedule-fine-tuning")]
     public async Task<ActionResult<ServiceResponse<SummarizationFineTuningDataDto>>> RescheduleFineTuning(RescheduleFineTuningDto rescheduleFineTuningDto)
     {
         return ResultHelper(await _summarizationService.RescheduleFineTuningAsync(rescheduleFineTuningDto));

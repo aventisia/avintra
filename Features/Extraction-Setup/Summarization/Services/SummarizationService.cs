@@ -686,6 +686,25 @@ public class SummarizationService : ISummarizationService
                 return serviceResponse;
             }
 
+            // Check if any of the extracted data are already scheduled
+            var alreadyScheduledData = await _unitOfWork.ScheduledModelRepo
+                        .GetByConditionAsync(w => 
+                            extractedDataList.Select(s => s.Id).Contains(w.ExtractedDataId) &&
+                            w.MLModelId == fineTuningRequest.MLModelId &&
+                            w.ScheduleType == ModelOperationTypesEnum.FineTuning &&
+                            w.Status == ScheduleTypesEnum.Scheduled)
+                            .ToListAsync();
+
+            if (alreadyScheduledData.Any())
+            {
+                // Log and return response if fine tuning is already scheduled for the provided file IDs
+                _logger.LogWarning("Fine tuning job already scheduled for file IDs: {FileIds} under ML model ID: {MLModelId}",
+                    string.Join(", ", fineTuningRequest.FileIds), fineTuningRequest.MLModelId);
+
+                serviceResponse.Message = "Fine tuning job has already been scheduled for the selected data.";
+                return serviceResponse;
+            }
+
             // Create and insert a new scheduled fine tuning job
             var scheduledModels = extractedDataList.Select(s => new ScheduledModel
             {
@@ -693,6 +712,7 @@ public class SummarizationService : ISummarizationService
                 TimeZone = fineTuningRequest.TimeZone,
                 ScheduledAt = fineTuningRequest.ScheduledAt,
                 ScheduleType = ModelOperationTypesEnum.FineTuning,
+                Status = ScheduleTypesEnum.Scheduled,
                 ExtractedDataId = s.Id,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId
@@ -710,9 +730,9 @@ public class SummarizationService : ISummarizationService
             // Create fine-tuning logs for each associated document
             var fineTuningLogs = scheduledModels.Select(s => new FineTuningLog()
             {
-                ScheduledModelId = s.ExtractedDataId,
+                ScheduledModelId = s.Id,
                 Status = ScheduleTypesEnum.Scheduled,
-            });
+            }).ToList();
 
             // Insert all fine-tuning logs into the repository
             await _unitOfWork.FineTuningLogRepo.InsertAsync(fineTuningLogs);
@@ -725,11 +745,11 @@ public class SummarizationService : ISummarizationService
             }
 
             // Log success and return the successful service response
-            _logger.LogInformation("fine tuning job successfully scheduled for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
+            _logger.LogInformation("Fine tuning job successfully scheduled for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
 
             serviceResponse.Data = extractedDataList.Adapt<IEnumerable<SummarizationFineTuningDataDto>>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "fine tuning job scheduled successfully.";
+            serviceResponse.Message = "Fine tuning job scheduled successfully.";
         }
         catch (Exception ex)
         {
@@ -768,7 +788,6 @@ public class SummarizationService : ISummarizationService
                         scheduledModels.Select(s => s.Id).Contains(w.ScheduledModelId)
                     )
                     .Include(i => i.ScheduledModel)
-                    .ThenInclude(i2 => i2.ExtractedData)
                     .ProjectToType<FineTuningHistoryDto>()
                     .ToListAsync();
             }

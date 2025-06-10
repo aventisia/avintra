@@ -11,14 +11,9 @@ public class FineTuningHistoryDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the file used in the fine-tuning process.
-    /// </summary>
-    public Guid DocId { get; set; }
-
-    /// <summary>
     /// Gets or sets the identifier of the machine learning model associated with this fine-tuning request.
     /// </summary>
-    public Guid MLModelId { get; set; }
+    public Guid? MLModelId { get; set; }
 
     /// <summary>
     /// Gets or sets the version number of the fine-tuning record.
@@ -28,7 +23,7 @@ public class FineTuningHistoryDto
     /// <summary>
     /// Gets or sets the current status of the fine-tuning process.
     /// </summary>
-    public ExtractedDataStatusesEnums Status { get; set; }
+    public ScheduleTypesEnum Status { get; set; }
 
     /// <summary>
     /// Gets or sets the timestamp when the fine-tuning process was completed.

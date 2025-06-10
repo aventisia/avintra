@@ -614,20 +614,20 @@ public class QuestionAnswerService : IQuestionAnswerService
         return serviceResponse;
     }
 
-    // Schedules a Fine tuning job for a specific machine learning model by sending the Fine tuning request details.
+    // Schedules a fine tuning job for a specific machine learning model by sending the fine tuning request details.
     public async Task<ServiceResponse<IEnumerable<QuestionAnswerFineTuningDataDto>>> ScheduleFineTuningAsync(AddFineTuningRequestDto fineTuningRequest)
     {
         // Initialize the service response with a default failure message
         var serviceResponse = new ServiceResponse<IEnumerable<QuestionAnswerFineTuningDataDto>>
         {
             Data = null,
-            Message = "Failed to schedule Fine tuning. Please try again later."
+            Message = "Failed to schedule fine tuning. Please try again later."
         };
 
         try
         {
-            // Log the start of the Fine tuning process
-            _logger.LogInformation("Starting Fine tuning scheduling for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
+            // Log the start of the fine tuning process
+            _logger.LogInformation("Starting fine tuning scheduling for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
 
             // Fetch extracted data associated with the specified file IDs and ML model
             var extractedDataList = await _unitOfWork.ExtractedDataRepo
@@ -646,13 +646,33 @@ public class QuestionAnswerService : IQuestionAnswerService
                 return serviceResponse;
             }
 
-            // Create and insert a new scheduled Fine tuning job
+            // Check if any of the extracted data are already scheduled
+            var alreadyScheduledData = await _unitOfWork.ScheduledModelRepo
+                        .GetByConditionAsync(w =>
+                            extractedDataList.Select(s => s.Id).Contains(w.ExtractedDataId) &&
+                            w.MLModelId == fineTuningRequest.MLModelId &&
+                            w.ScheduleType == ModelOperationTypesEnum.FineTuning &&
+                            w.Status == ScheduleTypesEnum.Scheduled)
+                            .ToListAsync();
+
+            if (alreadyScheduledData.Any())
+            {
+                // Log and return response if fine tuning is already scheduled for the provided file IDs
+                _logger.LogWarning("Fine tuning job already scheduled for file IDs: {FileIds} under ML model ID: {MLModelId}",
+                    string.Join(", ", fineTuningRequest.FileIds), fineTuningRequest.MLModelId);
+
+                serviceResponse.Message = "Fine tuning job has already been scheduled for the selected data.";
+                return serviceResponse;
+            }
+
+            // Create and insert a new scheduled fine tuning job
             var scheduledModels = extractedDataList.Select(s => new ScheduledModel
             {
                 MLModelId = s.MLModelId,
                 TimeZone = fineTuningRequest.TimeZone,
                 ScheduledAt = fineTuningRequest.ScheduledAt,
                 ScheduleType = ModelOperationTypesEnum.FineTuning,
+                Status = ScheduleTypesEnum.Scheduled,
                 ExtractedDataId = s.Id,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId
@@ -660,10 +680,10 @@ public class QuestionAnswerService : IQuestionAnswerService
 
             await _unitOfWork.ScheduledModelRepo.InsertAsync(scheduledModels);
 
-            // Attempt to save the scheduled Fine tuning job
+            // Attempt to save the scheduled fine tuning job
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to persist scheduled Fine tuning job for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
+                _logger.LogError("Failed to persist scheduled fine tuning job for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
                 return serviceResponse;
             }
 
@@ -672,7 +692,7 @@ public class QuestionAnswerService : IQuestionAnswerService
             {
                 ScheduledModelId = s.Id,
                 Status = ScheduleTypesEnum.Scheduled,
-            });
+            }).ToList();
 
             // Insert all fine-tuning logs into the repository
             await _unitOfWork.FineTuningLogRepo.InsertAsync(fineTuningLogs);
@@ -683,6 +703,7 @@ public class QuestionAnswerService : IQuestionAnswerService
                 _logger.LogError("Failed to persist scheduled AI persona fine-tuning job for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
                 return serviceResponse;
             }
+
             // Log success and return the successful service response
             _logger.LogInformation("Fine tuning job successfully scheduled for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
 
@@ -693,12 +714,11 @@ public class QuestionAnswerService : IQuestionAnswerService
         catch (Exception ex)
         {
             // Log any unexpected exceptions that occur during the process
-            _logger.LogError(ex, "An error occurred while scheduling Fine tuning for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
+            _logger.LogError(ex, "An error occurred while scheduling fine tuning for ML model ID: {MLModelId}", fineTuningRequest.MLModelId);
         }
 
         return serviceResponse;
     }
-
     // Retrieves the fine tuning history records for a specified machine learning model.
     public async Task<ServiceResponse<IEnumerable<FineTuningHistoryDto>>> GetFineTuningDataHistoriesAsync(Guid mlModelId)
     {
