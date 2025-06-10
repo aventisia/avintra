@@ -61,7 +61,7 @@ public class SentimentAnalyticsMappingProfile : IRegister
             .Ignore(dest => dest.MLModelId)
             .Ignore(dest => dest.DocId)
             .Ignore(dest => dest.ExecutionCount)
-            .Ignore(dest => dest.TokenCount)
+            .Ignore(dest => dest.ExecutionTime)            .Ignore(dest => dest.TokenCount)
             .Ignore(dest => dest.FailedCount)
             .IgnoreNullValues(true);
 

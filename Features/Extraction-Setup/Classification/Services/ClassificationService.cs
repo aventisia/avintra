@@ -188,9 +188,18 @@ public class ClassificationService : IClassificationService
                     extractedDataList.Add(extractedData);
                     continue;
                 }
+                
+                // Record the start time of the LLM extraction call (in UTC)
+                var startExecutionTime = DateTime.UtcNow;
 
                 // Call the LLM extraction service
                 var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM, file.Path);
+
+                // Record the end time after the extraction is complete (in UTC)
+                var endExecutionTime = DateTime.UtcNow;
+
+                // Calculate total execution time in seconds, rounding up to the nearest whole number
+                int executionTimeInSeconds = (int)Math.Ceiling((endExecutionTime - startExecutionTime).TotalSeconds);
 
                 // Handle response from LLM service
                 if (llmResponse.StatusCode != 200)
@@ -204,6 +213,7 @@ public class ClassificationService : IClassificationService
                     if (existing != null)
                     {
                         existing.FailedCount += 1;
+                        existing.ExecutionTime += executionTimeInSeconds;
                         existing.LastModifiedByUserId = _userId;
                         extractedDataToBeUpdated.Add(existing);
                     }
@@ -249,6 +259,7 @@ public class ClassificationService : IClassificationService
                     if (existing != null)
                     {
                         existing.FailedCount += 1;
+                        existing.ExecutionTime += executionTimeInSeconds;
                         existing.LastModifiedByUserId = _userId;
                         extractedDataToBeUpdated.Add(existing);
                     }
@@ -274,6 +285,7 @@ public class ClassificationService : IClassificationService
                         MLModelId = model.Id,
                         TokenCount = 0,
                         ExecutionCount = 1,
+                        ExecutionTime = executionTimeInSeconds,
                         FailedCount = 0,
                         DataObject = JsonSerializer.Serialize(extractedData.ExtractedData, new JsonSerializerOptions
                         {
@@ -293,6 +305,7 @@ public class ClassificationService : IClassificationService
                         PropertyNameCaseInsensitive = true
                     });
                     existingExtractedData.ExecutionCount += 1;
+                    existingExtractedData.ExecutionTime += executionTimeInSeconds;
                     existingExtractedData.LastModifiedByUserId = _userId;
 
                     // Add to update list

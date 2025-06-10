@@ -14,6 +14,8 @@ public class MLModelMappingProfile : IRegister
             src => src.ExtractedData != null ? src.ExtractedData.Sum(s => s.FailedCount) : 0)
         .Map(dest => dest.TokenCount,
             src => src.ExtractedData != null ? src.ExtractedData.Sum(s => s.TokenCount) : 0)
+        .Map(dest => dest.ExecutionTime,
+            src => src.ExtractedData != null ? src.ExtractedData.Sum(s => s.ExecutionTime) : 0)
         .Map(dest => dest.DocsProcessed,
             src => src.ExtractedData != null ? src.ExtractedData.Count : 0)
         .Map(dest => dest.CreatedBy,
