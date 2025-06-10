@@ -12,12 +12,10 @@ public class UnitOfWork : IUnitOfWork
         _mlModelBuilderDbContext = mlModelBuilderDbContext;
     }
 
-    public IDataFieldRepo DataFieldRepo => new DataFieldRepo(_mlModelBuilderDbContext);
     public IMLModelRepo MLModelRepo => new MLModelRepo(_mlModelBuilderDbContext);
     public IExtractedDataRepo ExtractedDataRepo => new ExtractedDataRepo(_mlModelBuilderDbContext);
     public IUploadedDocRepo UploadedDocRepo => new UploadedDocRepo(_mlModelBuilderDbContext);
     public IModelBuilderUserRepo ModelBuilderUserRepo => new ModelBuilderUserRepo(_mlModelBuilderDbContext);
-    public ILLMRepo LLMRepo => new LLMRepo(_mlModelBuilderDbContext);
     public IScheduledModelRepo ScheduledModelRepo => new ScheduledModelRepo(_mlModelBuilderDbContext);
     public IFineTuningLogRepo FineTuningLogRepo => new FineTuningLogRepo(_mlModelBuilderDbContext);
 

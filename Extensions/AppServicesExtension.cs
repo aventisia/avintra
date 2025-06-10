@@ -19,10 +19,8 @@ public static class AppServicesExtension
         var config = TypeAdapterConfig.GlobalSettings;
         config.Apply(new MLModelMappingProfile());
         config.Apply(new ExtractedDataMappingProfile());
-        config.Apply(new DataFieldMappingProfile());
         config.Apply(new UploadedDocMappingProfile());
         config.Apply(new ModelBuilderUserMappingProfile());
-        config.Apply(new LLMMappingProfile());
         config.Apply(new ExtractionSetupMappingProfile());
         config.Apply(new SentimentAnalyticsMappingProfile());
         config.Apply(new ClassificationMappingProfile());
@@ -42,11 +40,9 @@ public static class AppServicesExtension
         //Feature Services
         services.AddScoped<IMLModelService, MLModelService>();
         services.AddScoped<IExtractedDataService, ExtractedDataService>();
-        services.AddScoped<IDataFieldService, DataFieldService>();
         services.AddScoped<IUploadedDocService, UploadedDocService>();
         services.AddScoped<IModelBuilderUserService, ModelBuilderUserService>();
         services.AddScoped<IExtractViaLLMService, ExtractViaLLMService>();
-        services.AddScoped<ILLMService, LLMService>();
         services.AddScoped<IExtractionSetupService, ExtractionSetupService>();
         services.AddScoped<ISentimentAnalyticsService, SentimentAnalyticsService>();
         services.AddScoped<IClassificationService, ClassificationService>();

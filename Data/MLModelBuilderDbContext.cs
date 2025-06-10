@@ -25,19 +25,16 @@ public class MLModelBuilderDbContext : DbContext
         // Global TenantId filters
         modelBuilder.Entity<MLModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ExtractedData>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<DataField>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<UploadedDoc>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ScheduledModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FineTuningLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         modelBuilder.Entity<MLModel>().HasIndex(index => new { index.Name, index.CreatedByUserId }).IsUnique();
-        modelBuilder.Entity<DataField>().HasIndex(index => new { index.MLModelId, index.Name }).IsUnique();
 
         // Enum to string conversion
         modelBuilder.Entity<MLModel>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ModelTypesEnum>());
         modelBuilder.Entity<MLModel>().Property(e => e.SetupStatus).HasConversion(new EnumToStringConverter<SetupStatusTypesEnum>());
-        modelBuilder.Entity<DataField>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FieldTypesEnum>());
         modelBuilder.Entity<UploadedDoc>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ExtractedDataType>());
         modelBuilder.Entity<ExtractedData>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ExtractedDataType>());
         modelBuilder.Entity<ScheduledModel>().Property(e => e.ScheduleType).HasConversion(new EnumToStringConverter<ModelOperationTypesEnum>());
@@ -53,20 +50,11 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<ExtractedData>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
         // Configure One-to-One relationship between Data Model and ModelBuilder User
-        modelBuilder.Entity<DataField>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<DataField>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
-
-        // Configure One-to-One relationship between Data Model and ModelBuilder User
         modelBuilder.Entity<UploadedDoc>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<UploadedDoc>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
-        // Configure One-to-One relationship between Data Model and ModelBuilder User
-        modelBuilder.Entity<LLM>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<LLM>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
-
         // Configure One-to-Many relationship between data model and model library
         modelBuilder.Entity<MLModel>().HasMany(many => many.ExtractedData).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
-        modelBuilder.Entity<MLModel>().HasMany(many => many.DataFields).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
         modelBuilder.Entity<MLModel>().HasMany(many => many.UploadedDocs).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
         modelBuilder.Entity<MLModel>().HasMany(many => many.ScheduledModels).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
 
@@ -119,9 +107,7 @@ public class MLModelBuilderDbContext : DbContext
     //Db Sets
     public DbSet<MLModel> MLModels { get; set; }
     public DbSet<ExtractedData> ExtractedData { get; set; }
-    public DbSet<DataField> DataFields { get; set; }
     public DbSet<UploadedDoc> UploadedDocs { get; set; }
-    public DbSet<LLM> LLMs { get; set; }
     public DbSet<ScheduledModel> ScheduledModels { get; set; }
     public DbSet<FineTuningLog> FineTuningLogs { get; set; }
 }

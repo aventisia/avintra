@@ -60,11 +60,6 @@ public class MLModel : BaseEntity, IMustHaveTenant
     public virtual ICollection<ExtractedData>? ExtractedData { get; set; }
 
     /// <summary>
-    /// Gets or sets the ML model to which this data fields are associated.
-    /// </summary>
-    public virtual ICollection<DataField>? DataFields { get; set; }
-
-    /// <summary>
     /// Gets or sets the ML model to which this uploaded docs are associated.
     /// </summary>
     public virtual ICollection<UploadedDoc>? UploadedDocs { get; set; }
