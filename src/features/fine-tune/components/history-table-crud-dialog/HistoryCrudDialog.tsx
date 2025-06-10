@@ -4,7 +4,8 @@ import { DialogContent, DialogDefaultHeader } from "@aventisia/ui/dialog";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { useShallow } from "zustand/react/shallow";
 
-import { getDialogHeadingDescription } from "../../constants";
+import { getDialogHeadingDescription } from "../../constants/history.index";
+import HistoryCrudForm from "./HistoryTableCrudForm";
 
 export const HistoryCrudDialog = ({ children }: React.PropsWithChildren) => {
   // Get crud dialog store state
@@ -29,7 +30,7 @@ export const HistoryCrudDialog = ({ children }: React.PropsWithChildren) => {
           description={dialogHeaderOptions.description}
         />
         {/* Render Crud form here */}
-        <></>
+        <HistoryCrudForm />
       </DialogContent>
     </DTCrudDialogWrapper>
   );

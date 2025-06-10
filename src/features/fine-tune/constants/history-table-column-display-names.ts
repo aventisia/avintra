@@ -2,8 +2,10 @@ import { KeyValueLookupType } from "@aventisia/ui/types";
 
 /** Array of column names and their corresponding display names. */
 export const historyTablecolumnDisplayNames: KeyValueLookupType[] = [
-  { key: "docName", value: "File Name" },
-  { key: "status", value: "Status" },
+  { key: "version", value: "Version no." },
+  { key: "status", value: "Status" },  
+  { key: "scheduledOn", value: "Scheduled On" },
+  { key: "accuracy", value: "Accuracy" },
   {key: "fineTunedOn", value: "Fine-Tuned On"},  
   {key: "duration", value: "Fine-Tune Duration"} 
 ];

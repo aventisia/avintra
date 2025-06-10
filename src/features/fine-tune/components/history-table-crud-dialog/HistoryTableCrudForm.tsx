@@ -12,15 +12,17 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FormProvider } from "react-hook-form";
 import { z } from "zod";
 
-import { scheduleFineTune } from "../../apis/fine-tune-table-apis";
+import { rescheduleFineTune } from "../../apis/history-table-apis";
 import { HISTORY_TABLE_QUERY_KEY } from "../../constants";
+import { rescheduleFineTuneFormZodSchema } from "../../constants/reschedule-fine-tune-zod-schema";
 import { timeZoneProps } from "../../constants/schedule-fine-tune-field-props";
-import { scheduleFineTuneFormZodSchema } from "../../constants/schedule-fine-tune-zod-schema";
-import { ScheduleFineTuneDTO } from "../../dtos/schedule-fine-tune-dto";
-import { useScheduleFineTuneForm } from "../../hooks/useScheduleFineTuneForm";
+import { ReScheduleFineTuneDTO } from "../../dtos/reschedule-fine-tune-dto";
+import { useRescheduleFineTuneForm } from "../../hooks/useRescheduleFineTuneForm";
+import { useRescheduleFineTuneStore } from "../../stores/reschedule-fine-tune-store";
 
 const HistoryCrudForm = () => {
-  const { form, refineFormData, setShowDialog } = useScheduleFineTuneForm();
+  const { form, setShowDialog } = useRescheduleFineTuneForm();
+  const { id } = useRescheduleFineTuneStore();
 
   const {
     formState: { isSubmitting, isDirty },
@@ -33,22 +35,25 @@ const HistoryCrudForm = () => {
   const queryClient = useQueryClient();
 
   const { mutate: mutateRecords } = useMutation({
-    mutationFn: (formData: ScheduleFineTuneDTO) =>
-      scheduleFineTune(formData, modelName),
+    mutationFn: (formData: ReScheduleFineTuneDTO) =>
+      rescheduleFineTune(formData, modelName),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: HISTORY_TABLE_QUERY_KEY });
-      toast.success("Fine Tuning Scheduled");
+      toast.success("Fine Tuning Rescheduled");
       setShowDialog(false);
     },
-    onError: () => {
-      toast.error("Error scheduling records, please try again.");
+    onError: (error) => {
+      toast.error(`${error.message || error.toString()}`);
     },
   });
 
   async function submitHandler(
-    formData: z.infer<typeof scheduleFineTuneFormZodSchema>,
+    formData: z.infer<typeof rescheduleFineTuneFormZodSchema>,
   ) {
-    mutateRecords(refineFormData(formData));
+    if (!id) {
+      return toast.error("Error rescheduling fine-tune. Please try again");
+    }
+    mutateRecords({ ...formData, id });
   }
 
   return (

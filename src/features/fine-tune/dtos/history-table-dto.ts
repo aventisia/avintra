@@ -1,9 +1,10 @@
 export interface HistoryTableDTO  {
     id: string;
-    docId: string;
     mlModelId: string;
-    docName: string;
+    version : number;
     status: string;
+    scheduledOn: Date | null;
+    accuracy: number;
     fineTunedOn: Date | null;
     duration: number | null;
 }

@@ -6,18 +6,17 @@ import { HistoryTableRowDeleteAction } from "./HistoryTableRowDeleteAction";
 
 interface HistoryTableRowActionsProps {
   rowId: string;
-  fileId: string;
+  fileId?: string;
 }
 
 export const HistoryTableRowActions = ({
   rowId,
-  fileId,
 }: HistoryTableRowActionsProps) => {
   return (
     // Dropdown menu for model table row action */}
     <DataTableRowActions className="w-32">
       {/* To reschedule fine-tune record */}
-      <HistoryTableRescheduleAction fileId={fileId} />
+      <HistoryTableRescheduleAction rowId={rowId} />
 
       <Separator />
 

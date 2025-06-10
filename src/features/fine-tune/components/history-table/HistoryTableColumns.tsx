@@ -1,7 +1,7 @@
 import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { format, isValid } from "date-fns";
+import { format } from "date-fns";
 
 import { getColumnName } from "../../constants/history-table-column-display-names";
 import { HistoryTableDTO } from "../../dtos/history-table-dto";
@@ -13,31 +13,35 @@ import { HistoryTableRowActions } from "../history-table-row-actions/HistoryTabl
  */
 export const historyTableColumns: ColumnDef<HistoryTableDTO>[] = [
   {
-    accessorKey: "docName",
+    accessorKey: "version",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("docName")} />
+      <DTColumnHeader column={column} title={getColumnName("version")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto font-medium">{row.getValue("docName")}</div>
+      <div className="w-auto font-medium">v{row.getValue("version")}</div>
     ),
   },
   {
-    accessorKey: "status",
+    accessorKey: "scheduledOn",
     header: ({ column }) => (
       <DTColumnHeader
-        className="w-12"
+        className="capitalize"
         column={column}
-        title={getColumnName("status")}
+        title={getColumnName("scheduledOn")}
       />
     ),
-    cell: ({ row }) => (
-      <Badge
-        variant="outline"
-        className="w-auto truncate px-2.5 py-1.5 font-medium capitalize"
-      >
-        {row.getValue("status")}
-      </Badge>
-    ),
+    cell: ({ row }) => {
+      const rowValue = row.getValue("scheduledOn");
+
+      return (
+        <div className="w-auto font-medium">
+          {" "}
+          {rowValue
+            ? format(row.getValue("scheduledOn"), "dd MMM yyyy, HH:mm:ss")
+            : "N/A"}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "fineTunedOn",
@@ -50,11 +54,10 @@ export const historyTableColumns: ColumnDef<HistoryTableDTO>[] = [
     ),
     cell: ({ row }) => {
       const rowValue = row.getValue("fineTunedOn");
-      const isValidDateTime = isValid(rowValue);
       return (
         <div className="w-auto font-medium">
           {" "}
-          {isValidDateTime
+          {rowValue
             ? format(row.getValue("fineTunedOn"), "dd MMM yyyy, HH:mm:ss")
             : "N/A"}
         </div>
@@ -79,6 +82,33 @@ export const historyTableColumns: ColumnDef<HistoryTableDTO>[] = [
       );
     },
   },
+  {
+    accessorKey: "accuracy",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("accuracy")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto font-medium">{row.getValue("accuracy")}%</div>
+    ),
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => (
+      <DTColumnHeader
+        className="w-12"
+        column={column}
+        title={getColumnName("status")}
+      />
+    ),
+    cell: ({ row }) => (
+      <Badge
+        variant="outline"
+        className="w-auto truncate px-2.5 py-1.5 font-medium capitalize"
+      >
+        {row.getValue("status")}
+      </Badge>
+    ),
+  },
 
   // ✅ Actions column
   {
@@ -86,11 +116,6 @@ export const historyTableColumns: ColumnDef<HistoryTableDTO>[] = [
     header: ({ column }) => (
       <DTColumnHeader className="w-7" column={column} title={""} />
     ),
-    cell: ({ row }) => (
-      <HistoryTableRowActions
-        rowId={row.original.id}
-        fileId={row.original.docId}
-      />
-    ),
+    cell: ({ row }) => <HistoryTableRowActions rowId={row.original.id} />,
   },
 ];

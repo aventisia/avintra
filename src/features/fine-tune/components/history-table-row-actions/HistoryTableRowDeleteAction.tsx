@@ -1,3 +1,6 @@
+import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { ModelNamesEnum } from "@/features/pdf-previewer/enums/model-name-enum";
+
 import { DeleteDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import {
   useListOptimisticMutation,
@@ -15,24 +18,25 @@ interface HistoryTableRowDeleteActionProps {
 export const HistoryTableRowDeleteAction = ({
   rowId,
 }: HistoryTableRowDeleteActionProps) => {
-  // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { data: modelData } = useFetchModel();
 
-  // Get mutation function to delete the record
+  const modelName =
+    ModelNamesEnum[modelData!.data.type as keyof typeof ModelNamesEnum];
+
   const { mutate: deleteModel } = useListOptimisticMutation<
-    string,
+    { id: string; modelName: string },
     HistoryTableDTO | boolean,
     HistoryTableDTO
   >([rowId], historyOptimisticMutationFn, HISTORY_TABLE_QUERY_KEY);
 
-  // Return Delete alert dialog trigger
   return (
     <DeleteDDMenuItem
       onClick={() => {
         showDefaultAlertDialog({
           confirmActionFn: () =>
             deleteModel({
-              payload: rowId,
+              payload: { id: rowId, modelName },
               crudAction: "delete",
             }),
           alertType: "delete-record",

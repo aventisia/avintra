@@ -5,6 +5,7 @@ import {
   
   import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { HistoryTableDTO } from "../dtos/history-table-dto";
+import { ReScheduleFineTuneDTO } from "../dtos/reschedule-fine-tune-dto";
   
   
 
@@ -22,30 +23,37 @@ const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}`;
     /**
      * Deletes a record by its ID.
      */
-    const deleteHistoryRecord = (id: string) => {
+    const deleteHistoryRecord = ({ id, modelName }: { id: string; modelName: string }) => {
       return axiosInstance
-        .delete<IHttpResponse<boolean>>(`${baseAPIURL}/fine-tuning/histories/${id}`)
+        .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${modelName}/fine-tuning/histories/${id}`)
         .then((res) => res.data);
     };
 
-     /**
-       * Performs an optimistic mutation on a model based on the provided CRUD action.
-       *
-       * @param {IOptimisticMutation<ModelsTableDto | string | string[]>} options - The options for the optimistic mutation.
-       * @returns {Promise<any>} - A promise that resolves to the result of the mutation.
-       * @throws {Error} - If an invalid action type is provided.
-       */
-      const historyOptimisticMutationFn = ({
-        payload,
-        crudAction,
-      }: IOptimisticMutation<HistoryTableDTO | string | string[]>) => {
-        switch (crudAction) {
-          case "delete":
-            return deleteHistoryRecord(payload as string);
-          default:
-            throw new Error("Invalid record type");
-        }
+     const rescheduleFineTune = (fineTuneData: ReScheduleFineTuneDTO, modelName: string) => {
+        return axiosInstance
+          .post<IHttpResponse<ReScheduleFineTuneDTO>>(`${baseAPIURL}/${modelName}/reschedule-fine-tuning`, fineTuneData)
+          .then((res) => res.data);
       };
+    
+    /**
+     * Performs an optimistic mutation on a model based on the provided CRUD action.
+     *
+     * @param {IOptimisticMutation<HistoryTableDTO | { id: string; modelName: string } | string[]>} options
+     * @returns {Promise<any>}
+     */
+    const historyOptimisticMutationFn = ({
+      payload,
+      crudAction,
+    }: IOptimisticMutation<
+      HistoryTableDTO | { id: string; modelName: string } | string[]
+    >) => {
+      switch (crudAction) {
+        case "delete":
+          return deleteHistoryRecord(payload as { id: string; modelName: string });
+        default:
+          throw new Error("Invalid CRUD action");
+      }
+    };
 
 
-  export {getHistoryRecords, historyOptimisticMutationFn, deleteHistoryRecord}
+  export {getHistoryRecords, historyOptimisticMutationFn, deleteHistoryRecord, rescheduleFineTune}

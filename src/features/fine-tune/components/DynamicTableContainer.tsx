@@ -112,7 +112,7 @@ export const DynamicTableContainer = () => {
               <>
                 <DTSearchBox
                   table={historyTable}
-                  searchColumn={SEARCH_COLUMN}
+                  searchColumn={""}
                   placeholder="Search..."
                 />
                 <DTViewOptions

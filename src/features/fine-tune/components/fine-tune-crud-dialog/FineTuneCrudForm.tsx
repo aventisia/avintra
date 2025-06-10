@@ -13,7 +13,10 @@ import { FormProvider } from "react-hook-form";
 import { z } from "zod";
 
 import { scheduleFineTune } from "../../apis/fine-tune-table-apis";
-import { FINE_TUNE_TABLE_QUERY_KEY } from "../../constants";
+import {
+  FINE_TUNE_TABLE_QUERY_KEY,
+  HISTORY_TABLE_QUERY_KEY,
+} from "../../constants";
 import { timeZoneProps } from "../../constants/schedule-fine-tune-field-props";
 import { scheduleFineTuneFormZodSchema } from "../../constants/schedule-fine-tune-zod-schema";
 import { ScheduleFineTuneDTO } from "../../dtos/schedule-fine-tune-dto";
@@ -37,11 +40,12 @@ const FineTuneCrudForm = () => {
       scheduleFineTune(formData, modelName),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: FINE_TUNE_TABLE_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: HISTORY_TABLE_QUERY_KEY });
       toast.success("Fine Tuning Scheduled");
       setShowDialog(false);
     },
-    onError: () => {
-      toast.error("Error scheduling records, please try again.");
+    onError: (error) => {
+      toast.error(`${error.message || error.toString()}`);
     },
   });
 
