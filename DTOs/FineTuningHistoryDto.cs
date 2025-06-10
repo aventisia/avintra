@@ -45,4 +45,9 @@ public class FineTuningHistoryDto
     /// Gets or sets the duration of the fine-tuning process in seconds.
     /// </summary>
     public double? Duration { get; set; }
+
+    /// <summary>
+    /// Gets or sets the count of records used in the fine-tuning process.
+    /// </summary>
+    public int? Record { get; set; } = 1;
 }
