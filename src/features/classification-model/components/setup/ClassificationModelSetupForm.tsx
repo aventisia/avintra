@@ -17,6 +17,7 @@ import { classificationModelSetupFormZodSchema } from "../../constants/classific
 import { ClassficationModelSetupDTO } from "../../dtos/classfication-model-setup-dto";
 import { useClassificationModelSetupForm } from "../../hooks/useClassificationModelSetupForm";
 import CategoriesTable from "./CategoriesTable";
+import ModelConfiguration from "./ModelConfiguration";
 
 const ClassificationModelSetupForm = () => {
   const {
@@ -71,6 +72,12 @@ const ClassificationModelSetupForm = () => {
             <Separator />
 
             <SwitchField {...allowMultipleClassesProps} />
+
+            {/* Separator */}
+            <Separator />
+
+            {/* Model Configuration */}
+            <ModelConfiguration form={form} />
 
             {/* Prompt */}
             <AutosizeTextareaField {...systemPromptProps} />

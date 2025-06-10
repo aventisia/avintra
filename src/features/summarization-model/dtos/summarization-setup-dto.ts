@@ -11,6 +11,8 @@ interface ISetupObject {
     // refineInitialPrompt: string | null;
     // refineSubsequentPrompt: string | null;
     stuffPrompt: string;
+    llm: string;
+    temperature: number;
 }
 
 interface IModelInfo {

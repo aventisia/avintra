@@ -16,6 +16,7 @@ import { sentimentAnalyticsSetupFormZodSchema } from "../../constants/setiment-a
 import { SentimentAnalyticsSetupDTO } from "../../dtos/sentiment-analytics-setup-dto";
 import { useSentimentAnalyticsSetupForm } from "../../hooks/useSentimentAnalyticsSetupForm";
 import CategoriesTable from "./CategoriesTable";
+import ModelConfiguration from "./ModelConfiguration";
 
 const SentimentAnalyticsForm = () => {
   const {
@@ -69,6 +70,9 @@ const SentimentAnalyticsForm = () => {
 
             {/* Separator */}
             <Separator />
+
+            {/* Model Configuration */}
+            <ModelConfiguration form={form} />
 
             {/* Prompt */}
             <AutosizeTextareaField {...nodePropmptProps} />

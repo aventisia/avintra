@@ -25,4 +25,6 @@ export const addInfoExtractorFormZodSchema = z
     prompt: z.string().min(1, {message: reqError("Prompt")}),
     tableMetadata: z.array(tableSchema).optional().nullable(),
     fieldSetups: z.array(dataToBeExtractedSchema),
+    llm: z.string().min(1, {message: reqError("Model Type")}),
+    temperature: z.number().default(0),
 })

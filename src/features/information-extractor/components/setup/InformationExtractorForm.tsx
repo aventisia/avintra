@@ -17,6 +17,7 @@ import { InformationExtractorSetupDTO } from "../../dtos/info-extractor-setup-dt
 import { useAddInformationExtractorForm } from "../../hooks/useAddInfoExtractorForm";
 import ContextTables from "./ContextTable";
 import DataToBeExtracted from "./DataToBeExtracted";
+import ModelConfiguration from "./ModelConfiguration";
 
 const InformationExtractorForm = () => {
   const {
@@ -86,6 +87,9 @@ const InformationExtractorForm = () => {
             />
 
             {tableFields && tableFields.length > 0 && <Separator />}
+
+            {/* Model Configuration */}
+            <ModelConfiguration form={form} />
 
             {/* Prompt */}
             <AutosizeTextareaField {...nodePropmptProps} />

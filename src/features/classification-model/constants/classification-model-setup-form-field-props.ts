@@ -1,4 +1,7 @@
+import { ModelLLMEnum } from "@/features/model-library-table/enums/model-llm-enum";
+import { SelectFieldProps } from "@/shared/select-field/SelectField";
 import { AutosizeTextareaFieldProps, InputFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
 
 
 const contextProps: AutosizeTextareaFieldProps = {
@@ -38,10 +41,19 @@ const systemPromptProps: AutosizeTextareaFieldProps = {
     rows: 4
 }
 
+const modelTypeProps: SelectFieldProps = {
+    name: "llm",
+    label: "Model",
+    selectOptions: enumToArray(ModelLLMEnum),
+    placeholder: "Select",
+    isRequired: true,
+    className: "text-sm resize-none"
+} 
 export {
     contextProps,
     categoryNameProps,
     instructionsProps,
     allowMultipleClassesProps,
     systemPromptProps,
+    modelTypeProps,
 }

@@ -15,6 +15,7 @@ import {
 import { questionAnswerSetupFormZodSchema } from "../../constants/question-answer-setup-zod-schema";
 import { QuestionAnswersSetupDTO } from "../../dtos/question-answer-setup-dto";
 import { useQuestionAnswerSetupForm } from "../../hooks/useQuestionAnswerSetupForm";
+import ModelConfiguration from "./ModelConfiguration";
 import QuestionAnswerTable from "./QuestionAnswerTable";
 
 const QuestionAnswerSetupForm = () => {
@@ -68,6 +69,9 @@ const QuestionAnswerSetupForm = () => {
 
             {/* Separator */}
             <Separator />
+
+            {/* Model Configuration */}
+            <ModelConfiguration form={form} />
 
             {/* Prompt */}
             <AutosizeTextareaField {...nodePropmptProps} />

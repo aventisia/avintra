@@ -17,6 +17,7 @@ import {
 import { summarizationModelSetupFormZodSchema } from "../../constants/summarization-model-setup-zod-schema";
 import { SummarizationSetupDTO } from "../../dtos/summarization-setup-dto";
 import { useSummarizationModelSetupForm } from "../../hooks/useSummarizationModelSetupForm";
+import ModelConfiguration from "./ModelConfiguration";
 
 const SummarizationModelSetupForm = () => {
   const { form, isSubmitting, isDirty, isUpdatePending, updateFormData } =
@@ -56,6 +57,12 @@ const SummarizationModelSetupForm = () => {
               {/* Total Max Words */}
               <InputField {...totalMaxWordsProps} />
             </div>
+
+            {/* Separator */}
+            <Separator />
+
+            {/* Model Configuration */}
+            <ModelConfiguration form={form} />
 
             <AutosizeTextareaField {...promptProps} />
           </div>

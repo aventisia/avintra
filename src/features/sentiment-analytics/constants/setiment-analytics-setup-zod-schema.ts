@@ -11,4 +11,6 @@ export const sentimentAnalyticsSetupFormZodSchema = z
     context: z.string().min(1, {message: reqError("Context")}),
     categories: z.array(categoriesSchema),
     prompt: z.string().min(1, {message: reqError("Prompt")}),
+    llm: z.string().min(1, {message: reqError("Model Type")}),
+    temperature: z.number().default(0),
 })
