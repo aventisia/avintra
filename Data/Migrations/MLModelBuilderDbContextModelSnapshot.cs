@@ -110,6 +110,9 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<int>("ExecutionCount")
                         .HasColumnType("integer");
 
+                    b.Property<int>("ExecutionTime")
+                        .HasColumnType("integer");
+
                     b.Property<int>("FailedCount")
                         .HasColumnType("integer");
 
