@@ -10,7 +10,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 
-namespace CodeActivitiesLibrary.AppIntegrations.BrowserActivities
+namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
 {
     [DisplayName("Launch Browser")]
     [Description("Launches a web browser instance (Edge, Chrome, Firefox) with optional window state.")]
