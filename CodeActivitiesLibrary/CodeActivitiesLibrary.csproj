@@ -359,7 +359,6 @@
     <Compile Include="Activities\DataTransformations\VariablesActivities\RemoveItemFromListActivity.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\RetrieveDataTableColumnIntoListActivity.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\ReverseListActivity.cs" />
-    <Compile Include="Activities\DataTransformations\VariablesActivities\RunPowerFxExpressionActivity.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\SetVariableActivity.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\ShuffleListActivity.cs" />
     <Compile Include="Activities\DataTransformations\VariablesActivities\SortListActivity.cs" />

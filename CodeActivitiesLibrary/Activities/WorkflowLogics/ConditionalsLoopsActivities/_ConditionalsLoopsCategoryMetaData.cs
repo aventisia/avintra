@@ -4,7 +4,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
 {
     [ActivityCategoryMetadata(
         primaryCategory: "Workflow Logics",
-        label: "Conditionals and Loops",
+        label: "Conditionals",
         description: "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.")]
     internal sealed class _ConditionalsLoopsCategoryMetaData { }
 }
