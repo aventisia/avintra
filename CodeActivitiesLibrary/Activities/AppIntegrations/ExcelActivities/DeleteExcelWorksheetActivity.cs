@@ -28,13 +28,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Worksheet Name")]
         [Description("The name of the worksheet to delete (required if 'Deletion Mode' is 'Name').")]
-        [RenderIfCondition(nameof(DeletionMode), "Name")]
+        [RenderIfCondition(nameof(DeletionMode), WorksheetDeleteByModeEnum.Name)]
         public InArgument<string> WorksheetName { get; set; }
 
 
         [DisplayName("Worksheet Index")]
         [Description("The index of the worksheet to delete (required if 'Deletion Mode' is 'Index').")]
-        [RenderIfCondition(nameof(DeletionMode), "Index")]
+        [RenderIfCondition(nameof(DeletionMode), WorksheetDeleteByModeEnum.Index)]
         public InArgument<int> WorksheetIndex { get; set; }
 
         // ----------------------

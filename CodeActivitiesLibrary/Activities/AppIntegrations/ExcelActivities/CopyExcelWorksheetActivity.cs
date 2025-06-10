@@ -28,13 +28,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Worksheet Name")]
         [Description("The name of the worksheet to copy (required if 'Copy Mode' is 'Name').")]
-        [RenderIfCondition(nameof(CopyMode), "Name")]
+        [RenderIfCondition(nameof(CopyMode), WorksheetCopyModeEnum.Name)]
         public InArgument<string> WorksheetName { get; set; }
 
 
         [DisplayName("Worksheet Index")]
         [Description("The index of the worksheet to copy (required if 'Copy Mode' is 'Index').")]
-        [RenderIfCondition(nameof(CopyMode), "Index")]
+        [RenderIfCondition(nameof(CopyMode), WorksheetCopyModeEnum.Index)]
         public InArgument<int> WorksheetIndex { get; set; }
 
         [RequiredArgument]

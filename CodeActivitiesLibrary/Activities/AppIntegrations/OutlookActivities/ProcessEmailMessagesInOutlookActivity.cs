@@ -36,7 +36,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
 
         [DisplayName("Target Folder")]
         [Description("If action is 'Move', specify the target folder (Inbox, Sent, Junk, Outbox).")]
-        [RenderIfCondition(nameof(ActionType), "Move")]
+        [RenderIfCondition(nameof(ActionType), ActionTypeEnum.Move)]
         public InArgument<string> TargetFolder { get; set; }
 
         // ----------------------

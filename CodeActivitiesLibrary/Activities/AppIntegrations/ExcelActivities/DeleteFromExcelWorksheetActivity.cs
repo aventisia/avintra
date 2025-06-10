@@ -29,25 +29,25 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Start Column")]
         [Description("The starting column of the range to delete.")]
-        [RenderIfCondition(nameof(DeletionMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(DeletionMode), CellDeletionModeEnum.RangeOfCells)]
         public InArgument<string> StartColumn { get; set; }
 
 
         [DisplayName("End Column")]
         [Description("The ending column of the range to delete.")]
-        [RenderIfCondition(nameof(DeletionMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(DeletionMode), CellDeletionModeEnum.RangeOfCells)]
         public InArgument<string> EndColumn { get; set; }
 
 
         [DisplayName("Start Row")]
         [Description("The starting row of the range to delete.")]
-        [RenderIfCondition(nameof(DeletionMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(DeletionMode), CellDeletionModeEnum.RangeOfCells)]
         public InArgument<int> StartRow { get; set; }
 
 
         [DisplayName("End Row")]
         [Description("The ending row of the range to delete.")]
-        [RenderIfCondition(nameof(DeletionMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(DeletionMode), CellDeletionModeEnum.RangeOfCells)]
         public InArgument<int> EndRow { get; set; }
 
 

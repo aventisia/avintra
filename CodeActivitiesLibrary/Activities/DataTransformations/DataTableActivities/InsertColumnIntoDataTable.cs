@@ -39,7 +39,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [DisplayName("Column Index")]
         [Description(
             "The zero-based index at which to insert the column (required if 'Insert Location' is 'Before Column Index').")]
-        [RenderIfCondition(nameof(InsertLocation), "BeforeColumnIndex")]
+        [RenderIfCondition(nameof(InsertLocation), DataTableInsertLocationEnum.BeforeColumnIndex)]
         public InArgument<int> ColumnIndex { get; set; }
 
         // ----------------------

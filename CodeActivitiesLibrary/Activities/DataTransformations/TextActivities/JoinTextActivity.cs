@@ -27,13 +27,13 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         [DisplayName("Standard Delimiter")]
         [Description("The standard delimiter to use when 'Delimiter Type' is 'Standard'.")]
-        [RenderIfCondition(nameof(DelimiterType), "Standard")]
+        [RenderIfCondition(nameof(DelimiterType), StringJoinDelimiterTypeEnum.Standard)]
         public InArgument<StandardStringJoinDelimiterEnum> StandardDelimiter { get; set; }
 
 
         [DisplayName("Custom Delimiter")]
         [Description("The custom delimiter to use when 'Delimiter Type' is 'Custom'.")]
-        [RenderIfCondition(nameof(DelimiterType), "Custom")]
+        [RenderIfCondition(nameof(DelimiterType), StringJoinDelimiterTypeEnum.Custom)]
         public InArgument<string> CustomDelimiter { get; set; }
 
         // ----------------------

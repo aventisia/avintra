@@ -34,26 +34,26 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
         [DefaultValue(ElementSelectorTypeEnum.XPath)]
-        [RenderIfCondition(nameof(ScrollMode), "ByElement")]
+        [RenderIfCondition(nameof(ScrollMode), ScrollModeEnum.ByElement)]
         public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
             new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
 
         [RequiredArgument]
         [DisplayName("Value To Find")]
         [Description("The value used to locate the element (e.g., 'username', '//input[@id='email']').")]
-        [RenderIfCondition(nameof(ScrollMode), "ByElement")]
+        [RenderIfCondition(nameof(ScrollMode), ScrollModeEnum.ByElement)]
         public InArgument<string> ValueToFind { get; set; }
 
 
         [DisplayName("X Coordinate")]
         [Description("Horizontal scroll position. Only used in 'By Coordinates' mode.")]
-        [RenderIfCondition(nameof(ScrollMode), "ByCoordinates")]
+        [RenderIfCondition(nameof(ScrollMode), ScrollModeEnum.ByCoordinates)]
         public InArgument<int> XCoordinate { get; set; }
 
 
         [DisplayName("Y Coordinate")]
         [Description("Vertical scroll position. Only used in 'By Coordinates' mode.")]
-        [RenderIfCondition(nameof(ScrollMode), "ByCoordinates")]
+        [RenderIfCondition(nameof(ScrollMode), ScrollModeEnum.ByCoordinates)]
         public InArgument<int> YCoordinate { get; set; }
 
 

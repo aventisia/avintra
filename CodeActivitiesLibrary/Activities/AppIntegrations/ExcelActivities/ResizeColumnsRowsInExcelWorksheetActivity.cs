@@ -35,19 +35,19 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Start Column")]
         [Description("The starting column of the range to resize (required if 'Selection Range' is 'Range').")]
-        [RenderIfCondition(nameof(SelectionRange), "Range")]
+        [RenderIfCondition(nameof(SelectionRange), ExcelColumnSelectionRangeEnum.Range)]
         public InArgument<string> StartColumn { get; set; }
 
 
         [DisplayName("End Column")]
         [Description("The ending column of the range to resize (required if 'Selection Range' is 'Range').")]
-        [RenderIfCondition(nameof(SelectionRange), "Range")]
+        [RenderIfCondition(nameof(SelectionRange), ExcelColumnSelectionRangeEnum.Range)]
         public InArgument<string> EndColumn { get; set; }
 
 
         [DisplayName("Column")]
         [Description("The column letter (e.g., 'A', 'B') to resize (required if 'Selection Range' is 'Single').")]
-        [RenderIfCondition(nameof(SelectionRange), "Single")]
+        [RenderIfCondition(nameof(SelectionRange), ExcelColumnSelectionRangeEnum.Single)]
         public InArgument<string> Column { get; set; }
 
         [RequiredArgument]
@@ -59,7 +59,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Width")]
         [Description("The new width for columns or height for rows (required if 'Resize Type' is 'Custom Size').")]
-        [RenderIfCondition(nameof(ResizeType), "CustomSize")]
+        [RenderIfCondition(nameof(ResizeType), ExcelColumnResizeTypeEnum.CustomSize)]
         public InArgument<double> Width { get; set; }
 
         // ----------------------

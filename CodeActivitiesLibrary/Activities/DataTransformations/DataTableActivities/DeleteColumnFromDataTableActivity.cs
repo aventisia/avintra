@@ -28,13 +28,13 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
         [DisplayName("Column Name")]
         [Description("The name of the column to delete (required if 'Specify Column With' is 'Name').")]
-        [RenderIfCondition(nameof(SpecifyColumnWith), "Name")]
+        [RenderIfCondition(nameof(SpecifyColumnWith), DataTableDeleteColumnByEnum.Name)]
         public InArgument<string> ColumnName { get; set; }
 
 
         [DisplayName("Column Index")]
         [Description("The zero-based index of the column to delete (required if 'Specify Column With' is 'Index').")]
-        [RenderIfCondition(nameof(SpecifyColumnWith), "Index")]
+        [RenderIfCondition(nameof(SpecifyColumnWith), DataTableDeleteColumnByEnum.Index)]
         public InArgument<int> ColumnIndex { get; set; }
 
         // ----------------------

@@ -31,31 +31,31 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         [DisplayName("Standard Delimiter")]
         [Description("The standard delimiter to use when 'Delimiter Type' is 'Standard'.")]
-        [RenderIfCondition(nameof(DelimiterType), nameof(DelimiterTypeEnum.Standard))]
+        [RenderIfCondition(nameof(DelimiterType), DelimiterTypeEnum.Standard)]
         public InArgument<StandardDelimiterEnum> StandardDelimiter { get; set; }
 
 
         [DisplayName("Times")]
         [Description("The number of times to split the text using the standard delimiter.")]
-        [RenderIfCondition(nameof(DelimiterType), nameof(DelimiterTypeEnum.Standard))]
+        [RenderIfCondition(nameof(DelimiterType), DelimiterTypeEnum.Standard)]
         public InArgument<int> Times { get; set; }
 
 
         [DisplayName("Split Width")]
         [Description("The width of each substring when 'Delimiter Type' is 'Number of Characters'.")]
-        [RenderIfCondition(nameof(DelimiterType), nameof(DelimiterTypeEnum.NumberOfCharacters))]
+        [RenderIfCondition(nameof(DelimiterType), DelimiterTypeEnum.NumberOfCharacters)]
         public InArgument<int> SplitWidth { get; set; }
 
 
         [DisplayName("Custom Delimiter")]
         [Description("The custom delimiter to use when 'Delimiter Type' is 'Custom'.")]
-        [RenderIfCondition(nameof(DelimiterType), nameof(DelimiterTypeEnum.Custom))]
+        [RenderIfCondition(nameof(DelimiterType), DelimiterTypeEnum.Custom)]
         public InArgument<string> CustomDelimiter { get; set; }
 
 
         [DisplayName("Is Regular Expression")]
         [Description("Indicates whether the custom delimiter is a regular expression pattern.")]
-        [RenderIfCondition(nameof(DelimiterType), nameof(DelimiterTypeEnum.Custom))]
+        [RenderIfCondition(nameof(DelimiterType), DelimiterTypeEnum.Custom)]
         public InArgument<bool> IsRegularExpression { get; set; }
 
         // ----------------------

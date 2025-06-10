@@ -35,26 +35,26 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DisplayName("Column")]
         [Description(
             "The column letter (e.g., 'A', 'B') where the data should be written (required if 'Write Mode' is 'On Specified Cell').")]
-        [RenderIfCondition(nameof(WriteMode), "OnSpecifiedCell")]
+        [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnSpecifiedCell)]
         public InArgument<string> Column { get; set; }
 
 
         [DisplayName("Row")]
         [Description(
             "The row number where the data should be written (required if 'Write Mode' is 'On Specified Cell').")]
-        [RenderIfCondition(nameof(WriteMode), "OnSpecifiedCell")]
+        [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnSpecifiedCell)]
         public InArgument<int> Row { get; set; }
 
 
         [DisplayName("Name")]
         [Description("The name of the named range to write to (required if 'Write Mode' is 'On Named Cells').")]
-        [RenderIfCondition(nameof(WriteMode), "OnNamedCells")]
+        [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnNamedCells)]
         public InArgument<string> Name { get; set; }
 
 
         [DisplayName("Populate Entire Range")]
         [Description("If true, populates the entire named range with the same value.")]
-        [RenderIfCondition(nameof(WriteMode), "OnNamedCells")]
+        [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnNamedCells)]
         public InArgument<bool> PopulateEntireRange { get; set; }
 
         // ----------------------

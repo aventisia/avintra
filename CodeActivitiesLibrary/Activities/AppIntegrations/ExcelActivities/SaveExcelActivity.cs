@@ -29,13 +29,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Document Path")]
         [Description("The file path to save the workbook (required if 'Save Mode' is 'Save Document As').")]
-        [RenderIfCondition(nameof(SaveMode), "SaveDocumentAs")]
+        [RenderIfCondition(nameof(SaveMode), ExcelFileSaveModeEnum.SaveDocumentAs)]
         public InArgument<string> DocumentPath { get; set; }
 
 
         [DisplayName("Document Format")]
         [Description("The file format to save the workbook as (required if 'Save Mode' is 'Save Document As').")]
-        [RenderIfCondition(nameof(SaveMode), "SaveDocumentAs")]
+        [RenderIfCondition(nameof(SaveMode), ExcelFileSaveModeEnum.SaveDocumentAs)]
         public InArgument<ExcelFileSaveFormatEnum> DocumentFormat { get; set; }
 
         // ----------------------

@@ -35,7 +35,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Name")]
         [Description("The name of the named range to which data should be appended.")]
-        [RenderIfCondition(nameof(AppendMode), "ToNamedCells")]
+        [RenderIfCondition(nameof(AppendMode), CellAppendModeEnum.ToNamedCells)]
         public InArgument<string> Name { get; set; }
 
 
@@ -46,7 +46,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Starting Column")]
         [Description("The starting column letter where appending should begin (e.g., 'A', 'B', 'AA').")]
-        [RenderIfCondition(nameof(AppendMode), "ToActiveSheet")]
+        [RenderIfCondition(nameof(AppendMode), CellAppendModeEnum.ToActiveSheet)]
         public InArgument<string> StartingColumn { get; set; } // Changed from long to string
 
         // ----------------------

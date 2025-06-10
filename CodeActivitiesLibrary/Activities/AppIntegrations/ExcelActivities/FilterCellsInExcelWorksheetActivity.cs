@@ -29,37 +29,37 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Start Column")]
         [Description("The starting column of the range to filter (required if 'Filter Mode' is 'Specific Range').")]
-        [RenderIfCondition(nameof(FilterMode), "SpecificRange")]
+        [RenderIfCondition(nameof(FilterMode), ExcellFilterModeEnum.SpecificRange)]
         public InArgument<string> StartColumn { get; set; }
 
 
         [DisplayName("End Column")]
         [Description("The ending column of the range to filter (required if 'Filter Mode' is 'Specific Range').")]
-        [RenderIfCondition(nameof(FilterMode), "SpecificRange")]
+        [RenderIfCondition(nameof(FilterMode), ExcellFilterModeEnum.SpecificRange)]
         public InArgument<string> EndColumn { get; set; }
 
 
         [DisplayName("Start Row")]
         [Description("The starting row of the range to filter (required if 'Filter Mode' is 'Specific Range').")]
-        [RenderIfCondition(nameof(FilterMode), "SpecificRange")]
+        [RenderIfCondition(nameof(FilterMode), ExcellFilterModeEnum.SpecificRange)]
         public InArgument<int> StartRow { get; set; }
 
 
         [DisplayName("End Row")]
         [Description("The ending row of the range to filter (required if 'Filter Mode' is 'Specific Range').")]
-        [RenderIfCondition(nameof(FilterMode), "SpecificRange")]
+        [RenderIfCondition(nameof(FilterMode), ExcellFilterModeEnum.SpecificRange)]
         public InArgument<int> EndRow { get; set; }
 
 
         [DisplayName("Named Cells")]
         [Description("The name of the named range to filter (required if 'Filter Mode' is 'NamedCells').")]
-        [RenderIfCondition(nameof(FilterMode), "NamedCells")]
+        [RenderIfCondition(nameof(FilterMode), ExcellFilterModeEnum.NamedCells)]
         public InArgument<string> NamedCells { get; set; }
 
 
         [DisplayName("Table Name")]
         [Description("The name of the table to filter (required if 'Filter Mode' is 'Table').")]
-        [RenderIfCondition(nameof(FilterMode), "Table")]
+        [RenderIfCondition(nameof(FilterMode), ExcellFilterModeEnum.Table)]
         public InArgument<string> TableName { get; set; }
 
         [RequiredArgument]

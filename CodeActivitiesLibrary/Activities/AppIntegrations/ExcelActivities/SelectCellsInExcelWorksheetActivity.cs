@@ -29,31 +29,31 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Name")]
         [Description("The name of the named range to select (required if 'Selection Mode' is 'Named Cells').")]
-        [RenderIfCondition(nameof(SelectionMode), "NamedCells")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.NamedCells)]
         public InArgument<string> Name { get; set; }
 
 
         [DisplayName("Start Column")]
         [Description("The starting column of the range to select (required if 'Selection Mode' is 'Range of Cells').")]
-        [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RangeOfCells)]
         public InArgument<string> StartColumn { get; set; }
 
 
         [DisplayName("End Column")]
         [Description("The ending column of the range to select (required if 'Selection Mode' is 'Range of Cells').")]
-        [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RangeOfCells)]
         public InArgument<string> EndColumn { get; set; }
 
 
         [DisplayName("Start Row")]
         [Description("The starting row of the range to select (required if 'Selection Mode' is 'Range of Cells').")]
-        [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RangeOfCells)]
         public InArgument<int> StartRow { get; set; }
 
 
         [DisplayName("End Row")]
         [Description("The ending row of the range to select (required if 'Selection Mode' is 'Range of Cells').")]
-        [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RangeOfCells)]
         public InArgument<int> EndRow { get; set; }
 
 
@@ -61,7 +61,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description(
             "Specifies the direction along the X-axis for relative selection (required if 'Selection Mode' is 'Relative to Active Cell').")]
         [DefaultValue(ExcelXAxisDirectionEnum.Right)]
-        [RenderIfCondition(nameof(SelectionMode), "RelativeToActiveCell")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RelativeToActiveCell)]
         public InArgument<ExcelXAxisDirectionEnum> XAxisDirection { get; set; }
 
 
@@ -69,21 +69,21 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description(
             "Specifies the direction along the Y-axis for relative selection (required if 'Selection Mode' is 'Relative to Active Cell').")]
         [DefaultValue(ExcelYAxisDirectionEnum.Above)]
-        [RenderIfCondition(nameof(SelectionMode), "RelativeToActiveCell")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RelativeToActiveCell)]
         public InArgument<ExcelYAxisDirectionEnum> YAxisDirection { get; set; }
 
 
         [DisplayName("X Offset")]
         [Description(
             "The number of columns to offset from the active cell (required if 'Selection Mode' is 'Relative to Active Cell').")]
-        [RenderIfCondition(nameof(SelectionMode), "RelativeToActiveCell")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RelativeToActiveCell)]
         public InArgument<int> XOffset { get; set; }
 
 
         [DisplayName("Y Offset")]
         [Description(
             "The number of rows to offset from the active cell (required if 'Selection Mode' is 'Relative to Active Cell').")]
-        [RenderIfCondition(nameof(SelectionMode), "RelativeToActiveCell")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RelativeToActiveCell)]
         public InArgument<int> YOffset { get; set; }
 
         // ----------------------

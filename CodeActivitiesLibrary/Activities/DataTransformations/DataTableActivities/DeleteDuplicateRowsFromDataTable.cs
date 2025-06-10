@@ -30,7 +30,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
         [DisplayName("Column Names To Compare")]
         [Description("List of column names to compare when 'Compare Mode' is 'Selected Columns'.")]
-        [RenderIfCondition(nameof(CompareMode), "SelectedColumns")]
+        [RenderIfCondition(nameof(CompareMode), DataTableColumnCompareModeEnum.SelectedColumns)]
         public InArgument<List<string>> ColumnNamesToCompare { get; set; }
 
         // ----------------------

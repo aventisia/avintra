@@ -41,13 +41,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
         [DisplayName("Custom Column Separator")]
         [Description("The custom delimiter used in the CSV file.")]
-        [RenderIfCondition(nameof(UseCustomColumnSeparator), "True")]
+        [RenderIfCondition(nameof(UseCustomColumnSeparator), true)]
         public InArgument<string> CustomColumnSeparator { get; set; }
 
 
         [DisplayName("Predefined Separator")]
         [Description("The predefined separator used in the CSV file (e.g., Comma, Tab).")]
-        [RenderIfCondition(nameof(UseCustomColumnSeparator), "False")]
+        [RenderIfCondition(nameof(UseCustomColumnSeparator), false)]
         public InArgument<CsvPredefinedSeparatorEnum> PredefinedSeparator { get; set; } =
             new InArgument<CsvPredefinedSeparatorEnum>(CsvPredefinedSeparatorEnum.Comma);
 

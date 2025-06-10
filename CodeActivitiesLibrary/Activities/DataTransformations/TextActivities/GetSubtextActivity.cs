@@ -39,7 +39,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         [DisplayName("Number of Characters")]
         [Description("The number of characters to extract. Only used if 'Length Type' is 'Specific Length'.")]
-        [RenderIfCondition(nameof(LengthType), nameof(LengthTypeEnum.SpecificLength))]
+        [RenderIfCondition(nameof(LengthType), LengthTypeEnum.SpecificLength)]
         public InArgument<int> NumberOfCharacters { get; set; }
 
         // ----------------------

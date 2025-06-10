@@ -35,7 +35,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
         [DisplayName("Text to Replace With")]
         [Description("The value to replace with (required if 'Search Mode' is 'Find and Replace').")]
-        [RenderIfCondition(nameof(SearchMode), "FindAndReplace")]
+        [RenderIfCondition(nameof(SearchMode), DataTableFindOrReplaceModeEnum.FindAndReplace)]
         public InArgument<string> TextToReplaceWith { get; set; }
 
 
@@ -67,7 +67,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
         [DisplayName("Column Index or Name")]
         [Description("The column index or name to search within (required if 'Search By' is 'On Column').")]
-        [RenderIfCondition(nameof(SearchBy), "OnColumn")]
+        [RenderIfCondition(nameof(SearchBy), DataTableSearchByEnum.OnColumn)]
         public InArgument<string> ColumnIndexOrName { get; set; }
 
         // ----------------------

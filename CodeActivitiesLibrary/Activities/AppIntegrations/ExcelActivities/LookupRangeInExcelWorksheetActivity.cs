@@ -35,31 +35,31 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Cells Name")]
         [Description("The name of the named range to use for lookup (required if 'Ranges Format' is 'Named Cells').")]
-        [RenderIfCondition(nameof(RangesFormat), "NamedCells")]
+        [RenderIfCondition(nameof(RangesFormat), ExcelLookupRangesFormatEnum.NamedCells)]
         public InArgument<string> CellsName { get; set; }
 
 
         [DisplayName("Start Column")]
         [Description("The starting column of the lookup range (required if 'Ranges Format' is 'Specific Ranges').")]
-        [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
+        [RenderIfCondition(nameof(RangesFormat), ExcelLookupRangesFormatEnum.SpecificRanges)]
         public InArgument<string> StartColumn { get; set; }
 
 
         [DisplayName("Start Row")]
         [Description("The starting row of the lookup range (required if 'Ranges Format' is 'Specific Ranges').")]
-        [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
+        [RenderIfCondition(nameof(RangesFormat), ExcelLookupRangesFormatEnum.SpecificRanges)]
         public InArgument<int> StartRow { get; set; }
 
 
         [DisplayName("End Column")]
         [Description("The ending column of the lookup range (required if 'Ranges Format' is 'Specific Ranges').")]
-        [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
+        [RenderIfCondition(nameof(RangesFormat), ExcelLookupRangesFormatEnum.SpecificRanges)]
         public InArgument<string> EndColumn { get; set; }
 
 
         [DisplayName("End Row")]
         [Description("The ending row of the lookup range (required if 'Ranges Format' is 'Specific Ranges').")]
-        [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
+        [RenderIfCondition(nameof(RangesFormat), ExcelLookupRangesFormatEnum.SpecificRanges)]
         public InArgument<int> EndRow { get; set; }
 
 
@@ -70,25 +70,25 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Start Column of Results Source")]
         [Description("The starting column of the result range (required if 'Array Form' is false).")]
-        [RenderIfCondition(nameof(ArrayForm), "false")]
+        [RenderIfCondition(nameof(ArrayForm), false)]
         public InArgument<string> StartColumnOfResultsSource { get; set; }
 
 
         [DisplayName("Start Row of Results Source")]
         [Description("The starting row of the result range (required if 'Array Form' is false).")]
-        [RenderIfCondition(nameof(ArrayForm), "false")]
+        [RenderIfCondition(nameof(ArrayForm), false)]
         public InArgument<int> StartRowOfResultsSource { get; set; }
 
 
         [DisplayName("End Column of Results Source")]
         [Description("The ending column of the result range (required if 'Array Form' is false).")]
-        [RenderIfCondition(nameof(ArrayForm), "false")]
+        [RenderIfCondition(nameof(ArrayForm), false)]
         public InArgument<string> EndColumnOfResultsSource { get; set; }
 
 
         [DisplayName("End Row of Results Source")]
         [Description("The ending row of the result range (required if 'Array Form' is false).")]
-        [RenderIfCondition(nameof(ArrayForm), "false")]
+        [RenderIfCondition(nameof(ArrayForm), false)]
         public InArgument<int> EndRowOfResultsSource { get; set; }
 
         // ----------------------

@@ -30,31 +30,31 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Start Column")]
         [Description("The starting column of the range to read (required if 'Retrieve Mode' is 'Range of Cells').")]
-        [RenderIfCondition(nameof(RetrieveMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
         public InArgument<string> StartColumn { get; set; }
 
 
         [DisplayName("Start Row")]
         [Description("The starting row of the range to read (required if 'Retrieve Mode' is 'Range of Cells').")]
-        [RenderIfCondition(nameof(RetrieveMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
         public InArgument<int> StartRow { get; set; }
 
 
         [DisplayName("End Column")]
         [Description("The ending column of the range to read (required if 'Retrieve Mode' is 'Range of Cells').")]
-        [RenderIfCondition(nameof(RetrieveMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
         public InArgument<string> EndColumn { get; set; }
 
 
         [DisplayName("End Row")]
         [Description("The ending row of the range to read (required if 'Retrieve Mode' is 'Range of Cells').")]
-        [RenderIfCondition(nameof(RetrieveMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
         public InArgument<int> EndRow { get; set; }
 
 
         [DisplayName("Name")]
         [Description("The name of the named range to read (required if 'Retrieve Mode' is 'Values of Named Cells').")]
-        [RenderIfCondition(nameof(RetrieveMode), "ValuesOfNamedCells")]
+        [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.ValuesOfNamedCells)]
         public InArgument<string> Name { get; set; }
 
 
@@ -70,7 +70,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Omit Empty Columns and Rows")]
         [Description("If true, omits empty columns to the right and empty rows at the bottom.")]
-        [RenderIfCondition(nameof(RetrieveMode), "ValuesOfNamedCells")]
+        [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.ValuesOfNamedCells)]
         public InArgument<bool> OmitEmptyColumnsAndRows { get; set; }
 
         // ----------------------

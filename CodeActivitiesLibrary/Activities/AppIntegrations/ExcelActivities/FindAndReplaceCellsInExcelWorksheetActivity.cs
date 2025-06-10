@@ -36,7 +36,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DisplayName("Text To Replace With")]
         [Description(
             "The text or value to replace the found text with (required if 'Search Mode' is 'Find and Replace').")]
-        [RenderIfCondition(nameof(SearchMode), "FindAndReplace")]
+        [RenderIfCondition(nameof(SearchMode), ExcelSearchModeEnum.FindAndReplace)]
         public InArgument<string> TextToReplaceWith { get; set; }
 
 
@@ -67,19 +67,19 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Found Cells")]
         [Description("Returns a list of all matched cells when 'All Matches' is true.")]
-        [RenderIfCondition(nameof(AllMatches), "True")]
+        [RenderIfCondition(nameof(AllMatches), true)]
         public OutArgument<List<Excel.Range>> FoundCells { get; set; }
 
 
         [DisplayName("Found Column Index")]
         [Description("Returns the column index of the found cell (if any).")]
-        [RenderIfCondition(nameof(AllMatches), "False")]
+        [RenderIfCondition(nameof(AllMatches), false)]
         public OutArgument<int> FoundColumnIndex { get; set; }
 
 
         [DisplayName("Found Row Index")]
         [Description("Returns the row index of the found cell (if any).")]
-        [RenderIfCondition(nameof(AllMatches), "False")]
+        [RenderIfCondition(nameof(AllMatches), false)]
         public OutArgument<int> FoundRowIndex { get; set; }
 
         // ----------------------

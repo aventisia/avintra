@@ -35,7 +35,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
         [DisplayName("Duration (seconds)")]
         [Description("The maximum time to wait for the file before timing out.")]
-        [RenderIfCondition(nameof(FailWithTimeoutError), "True")]
+        [RenderIfCondition(nameof(FailWithTimeoutError), true)]
         public InArgument<int> Duration { get; set; } = new InArgument<int>(5);
 
         // ----------------------

@@ -35,37 +35,37 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Source Range Address")]
         [Description("The range address (e.g., 'A1:B10') in the source worksheet to copy.")]
-        [RenderIfCondition(nameof(CopyMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(CopyMode), CellCopyModeEnum.RangeOfCells)]
         public InArgument<string> SourceRangeAddress { get; set; }
 
 
         [DisplayName("Start Column")]
         [Description("The starting column of the range to copy.")]
-        [RenderIfCondition(nameof(CopyMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(CopyMode), CellCopyModeEnum.RangeOfCells)]
         public InArgument<string> StartColumn { get; set; }
 
 
         [DisplayName("Start Row")]
         [Description("The starting row of the range to copy.")]
-        [RenderIfCondition(nameof(CopyMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(CopyMode), CellCopyModeEnum.RangeOfCells)]
         public InArgument<int> StartRow { get; set; }
 
 
         [DisplayName("End Column")]
         [Description("The ending column of the range to copy.")]
-        [RenderIfCondition(nameof(CopyMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(CopyMode), CellCopyModeEnum.RangeOfCells)]
         public InArgument<string> EndColumn { get; set; }
 
 
         [DisplayName("End Row")]
         [Description("The ending row of the range to copy.")]
-        [RenderIfCondition(nameof(CopyMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(CopyMode), CellCopyModeEnum.RangeOfCells)]
         public InArgument<int> EndRow { get; set; }
 
 
         [DisplayName("Name")]
         [Description("The name of the named range to copy.")]
-        [RenderIfCondition(nameof(CopyMode), "NamedCells")]
+        [RenderIfCondition(nameof(CopyMode), CellCopyModeEnum.NamedCells)]
         public InArgument<string> Name { get; set; }
 
         // ----------------------

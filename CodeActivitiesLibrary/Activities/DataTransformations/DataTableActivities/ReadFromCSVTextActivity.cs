@@ -45,13 +45,13 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
         [DisplayName("Custom Separator")]
         [Description("The custom separator to use when 'Columns Separator' is 'Custom'.")]
-        [RenderIfCondition(nameof(ColumnsSeparator), "Custom")]
+        [RenderIfCondition(nameof(ColumnsSeparator), ReadCsvSeparatorEnum.Custom)]
         public InArgument<string> CustomSeparator { get; set; }
 
 
         [DisplayName("Fixed Column Widths")]
         [Description("The fixed widths of columns when 'Columns Separator' is 'Fixed Column Widths'.")]
-        [RenderIfCondition(nameof(ColumnsSeparator), "FixedColumnWidths")]
+        [RenderIfCondition(nameof(ColumnsSeparator), ReadCsvSeparatorEnum.FixedColumnWidths)]
         public InArgument<string> FixedColumnWidths { get; set; }
 
         // ----------------------

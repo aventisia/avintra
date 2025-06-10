@@ -29,7 +29,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Save Path")]
         [Description("The file path to save the document when 'Save Document As' is selected.")]
-        [RenderIfCondition(nameof(BeforeClosingExcel), "SaveDocumentAs")]
+        [RenderIfCondition(nameof(BeforeClosingExcel), ExcelCloseOptionEnum.SaveDocumentAs)]
         public InArgument<string> SavePath { get; set; }
 
         // ----------------------

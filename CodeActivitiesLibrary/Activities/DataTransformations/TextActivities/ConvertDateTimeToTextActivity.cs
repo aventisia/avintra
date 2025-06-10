@@ -25,13 +25,13 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         [DisplayName("Standard Format")]
         [Description("The standard datetime format to use when displaying the datetime value.")]
-        [RenderIfCondition(nameof(FormatToUse), "Standard")]
+        [RenderIfCondition(nameof(FormatToUse), FormatOptionEnum.Standard)]
         public StandardFormatOptionEnum StandardFormat { get; set; } = StandardFormatOptionEnum.ShortDate;
 
 
         [DisplayName("Custom Format")]
         [Description("A custom format string for formatting the datetime value (e.g., yyyyMMdd).")]
-        [RenderIfCondition(nameof(FormatToUse), "Custom")]
+        [RenderIfCondition(nameof(FormatToUse), FormatOptionEnum.Custom)]
         public InArgument<string> CustomFormat { get; set; }
 
         #endregion

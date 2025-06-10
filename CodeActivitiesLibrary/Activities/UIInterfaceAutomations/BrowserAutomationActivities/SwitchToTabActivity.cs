@@ -33,19 +33,19 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
         [DisplayName("Tab Index")]
         [Description("The index (1-based) of the tab to switch to.")]
-        [RenderIfCondition(nameof(SwitchMode), "ByIndex")]
+        [RenderIfCondition(nameof(SwitchMode), SwitchModeEnum.ByIndex)]
         public InArgument<int> TabIndex { get; set; }
 
 
         [DisplayName("Tab Title")]
         [Description("The title of the tab to switch to.")]
-        [RenderIfCondition(nameof(SwitchMode), "ByTitle")]
+        [RenderIfCondition(nameof(SwitchMode), SwitchModeEnum.ByTitle)]
         public InArgument<string> TabTitle { get; set; }
 
 
         [DisplayName("URL Fragment")]
         [Description("A partial URL (e.g., 'example.com') to match the tab.")]
-        [RenderIfCondition(nameof(SwitchMode), "ByUrlFragment")]
+        [RenderIfCondition(nameof(SwitchMode), SwitchModeEnum.ByUrlFragment)]
         public InArgument<string> UrlFragment { get; set; }
 
 

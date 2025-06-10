@@ -28,7 +28,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
         [DisplayName("Encoding")]
         [Description("The encoding to use if 'Change Code Page' is enabled.")]
         [DefaultValue(EncodingEnum.UTF8)]
-        [RenderIfCondition(nameof(ChangeCodePage), "True")]
+        [RenderIfCondition(nameof(ChangeCodePage), true)]
         public InArgument<EncodingEnum> Encoding { get; set; } =
             new InArgument<EncodingEnum>(EncodingEnum.UTF8);
 

@@ -45,20 +45,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Name")]
         [Description("The name of the named range to paste into (required if 'Paste Mode' is 'On Named Cells').")]
-        [RenderIfCondition(nameof(PasteMode), "OnNamedCells")]
+        [RenderIfCondition(nameof(PasteMode), CellPasteModeEnum.OnNamedCells)]
         public InArgument<string> Name { get; set; }
 
 
         [DisplayName("Column")]
         [Description(
             "The column letter (e.g., 'A', 'B') where the paste should begin (required if 'Paste Mode' is 'On Specified Cell').")]
-        [RenderIfCondition(nameof(PasteMode), "OnSpecifiedCell")]
+        [RenderIfCondition(nameof(PasteMode), CellPasteModeEnum.OnSpecifiedCell)]
         public InArgument<string> Column { get; set; }
 
 
         [DisplayName("Row")]
         [Description("The row number where the paste should begin (required if 'Paste Mode' is 'On Specified Cell').")]
-        [RenderIfCondition(nameof(PasteMode), "OnSpecifiedCell")]
+        [RenderIfCondition(nameof(PasteMode), CellPasteModeEnum.OnSpecifiedCell)]
         public InArgument<int> Row { get; set; }
 
         // ----------------------

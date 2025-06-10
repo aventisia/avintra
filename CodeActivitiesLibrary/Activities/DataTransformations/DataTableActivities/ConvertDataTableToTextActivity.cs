@@ -39,7 +39,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
         [DisplayName("Custom Columns Separator")]
         [Description("A custom string used to separate columns in the CSV output.")]
-        [RenderIfCondition(nameof(UseCustomColumnsSeparator), "true")]
+        [RenderIfCondition(nameof(UseCustomColumnsSeparator), true)]
         public InArgument<string> CustomColumnsSeparator { get; set; }
 
         // ----------------------

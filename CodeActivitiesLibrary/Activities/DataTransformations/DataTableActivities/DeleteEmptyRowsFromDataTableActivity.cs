@@ -30,7 +30,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
         [DisplayName("Column Names To Check")]
         [Description("List of column names to check for emptiness (required if 'Empty Row Mode' is 'Based on Specific Columns').")]
-        [RenderIfCondition(nameof(EmptyRowMode), "SpecificColumns")]
+        [RenderIfCondition(nameof(EmptyRowMode), DataTableEmptyRowModeEnum.SpecificColumns)]
         public InArgument<List<string>> ColumnNamesToCheck { get; set; }
 
         // ----------------------

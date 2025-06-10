@@ -29,45 +29,45 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Start Column")]
         [Description("The starting column of the cell to color (e.g., 'A').")]
-        [RenderIfCondition(nameof(SelectionMode), "SingleCell")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelSelectionModeForColorEnum.SingleCell)]
         public InArgument<string> StartColumn { get; set; }
 
 
         [DisplayName("Start Row")]
         [Description("The starting row of the cell to color (e.g., '1').")]
-        [RenderIfCondition(nameof(SelectionMode), "SingleCell")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelSelectionModeForColorEnum.SingleCell)]
         public InArgument<int> StartRow { get; set; }
 
         // Range of Cells Fields
 
         [DisplayName("Start Column")]
         [Description("The starting column of the range to color (e.g., 'A').")]
-        [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelSelectionModeForColorEnum.RangeOfCells)]
         public InArgument<string> StartColumnRange { get; set; }
 
 
         [DisplayName("Start Row")]
         [Description("The starting row of the range to color (e.g., '1').")]
-        [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelSelectionModeForColorEnum.RangeOfCells)]
         public InArgument<int> StartRowRange { get; set; }
 
 
         [DisplayName("End Column")]
         [Description("The ending column of the range to color (e.g., 'B').")]
-        [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelSelectionModeForColorEnum.RangeOfCells)]
         public InArgument<string> EndColumnRange { get; set; }
 
 
         [DisplayName("End Row")]
         [Description("The ending row of the range to color (e.g., '5').")]
-        [RenderIfCondition(nameof(SelectionMode), "RangeOfCells")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelSelectionModeForColorEnum.RangeOfCells)]
         public InArgument<int> EndRowRange { get; set; }
 
         // Named Cells Fields
 
         [DisplayName("Named Range")]
         [Description("The name of the named range to color.")]
-        [RenderIfCondition(nameof(SelectionMode), "NamedCells")]
+        [RenderIfCondition(nameof(SelectionMode), ExcelSelectionModeForColorEnum.NamedCells)]
         public InArgument<string> NamedRange { get; set; }
 
         [RequiredArgument]
@@ -80,14 +80,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Color Name")]
         [Description("The name of the color to apply (e.g., 'Red', 'Green').")]
-        [RenderIfCondition(nameof(ColorFormat), "Name")]
+        [RenderIfCondition(nameof(ColorFormat), ExcelColorFormatEnum.Name)]
         public InArgument<ExcelColorEnum> ColorName { get; set; }
 
         // Hexadecimal Value Field
 
         [DisplayName("Color Hexadecimal Value")]
         [Description("The hexadecimal value of the color to apply (e.g., '#FF0000' for Red).")]
-        [RenderIfCondition(nameof(ColorFormat), "HexadecimalValue")]
+        [RenderIfCondition(nameof(ColorFormat), ExcelColorFormatEnum.HexadecimalValue)]
         public InArgument<string> ColorHexValue { get; set; }
 
         // ----------------------

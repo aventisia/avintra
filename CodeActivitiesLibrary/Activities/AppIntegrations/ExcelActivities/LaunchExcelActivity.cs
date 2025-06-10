@@ -23,7 +23,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Document Path")]
         [Description("The path to the Excel document to open. Required if 'Launch Mode' is 'Open Existing'.")]
-        [RenderIfCondition(nameof(LaunchMode), "OpenExisting")]
+        [RenderIfCondition(nameof(LaunchMode), ExcelLaunchModeEnum.OpenExisting)]
         public InArgument<string> DocumentPath { get; set; }
 
 
@@ -35,7 +35,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Open as ReadOnly")]
         [Description("If true, opens the document in read-only mode.")]
-        [RenderIfCondition(nameof(LaunchMode), "OpenExisting")]
+        [RenderIfCondition(nameof(LaunchMode), ExcelLaunchModeEnum.OpenExisting)]
         public InArgument<bool> OpenAsReadOnly { get; set; }
 
 
@@ -51,13 +51,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Read Protection Password")]
         [Description("Optional password to protect the document from being modified.")]
-        [RenderIfCondition(nameof(LaunchMode), "OpenExisting")]
+        [RenderIfCondition(nameof(LaunchMode), ExcelLaunchModeEnum.OpenExisting)]
         public InArgument<string> ReadProtectionPassword { get; set; }
 
 
         [DisplayName("Write Protection Password")]
         [Description("Optional password to protect the document from being saved.")]
-        [RenderIfCondition(nameof(LaunchMode), "OpenExisting")]
+        [RenderIfCondition(nameof(LaunchMode), ExcelLaunchModeEnum.OpenExisting)]
         public InArgument<string> WriteProtectionPassword { get; set; }
 
         // ----------------------

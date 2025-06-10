@@ -34,7 +34,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [DisplayName("Row Index")]
         [Description(
             "The zero-based index before which to insert the row (required if 'Insert Location' is 'Before Row Index').")]
-        [RenderIfCondition(nameof(InsertLocation), "BeforeRowIndex")]
+        [RenderIfCondition(nameof(InsertLocation), DataTableInsertRowLocationEnum.BeforeRowIndex)]
         public InArgument<int> RowIndex { get; set; }
 
         // ----------------------

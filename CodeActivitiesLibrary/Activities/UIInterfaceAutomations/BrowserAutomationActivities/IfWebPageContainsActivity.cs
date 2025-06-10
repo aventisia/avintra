@@ -33,15 +33,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
         [DefaultValue(ElementSelectorTypeEnum.XPath)]
-        [RenderIfCondition(nameof(CheckCondition), "ContainsElement")]
-        [RenderIfCondition(nameof(CheckCondition), "DoesNotContainElement")]
+        [RenderIfCondition(nameof(CheckCondition), CheckConditionEnum.ContainsElement)]
+        [RenderIfCondition(nameof(CheckCondition), CheckConditionEnum.DoesNotContainElement)]
         public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
             new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
 
         [DisplayName("Value To Find")]
         [Description("The value used to locate the element (e.g., 'username', '//input[@id='email']').")]
-        [RenderIfCondition(nameof(CheckCondition), "ContainsElement")]
-        [RenderIfCondition(nameof(CheckCondition), "DoesNotContainElement")]
+        [RenderIfCondition(nameof(CheckCondition), CheckConditionEnum.ContainsElement)]
+        [RenderIfCondition(nameof(CheckCondition), CheckConditionEnum.DoesNotContainElement)]
         public InArgument<string> ValueToFind { get; set; }
 
 
@@ -59,7 +59,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
         [DisplayName("Text To Search")]
         [Description("The text to search for in the web page body or title.")]
-        [RenderIfCondition(nameof(CheckCondition), "ContainsText")]
+        [RenderIfCondition(nameof(CheckCondition), CheckConditionEnum.ContainsText)]
         public InArgument<string> TextToSearch { get; set; }
 
 

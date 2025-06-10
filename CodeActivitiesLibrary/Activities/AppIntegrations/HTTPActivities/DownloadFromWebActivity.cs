@@ -26,7 +26,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
 
         [DisplayName("File Path")]
         [Description("Full path where the downloaded file should be saved. Required if 'Save To File' is true.")]
-        [RenderIfCondition(nameof(SaveToFile), "true")]
+        [RenderIfCondition(nameof(SaveToFile), true)]
         public InArgument<string> FilePath { get; set; }
 
         [DisplayName("Timeout Seconds")]

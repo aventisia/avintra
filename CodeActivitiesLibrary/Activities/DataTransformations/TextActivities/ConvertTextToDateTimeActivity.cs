@@ -25,7 +25,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         [DisplayName("Format String")]
         [Description("The format string to use for parsing the date/time (e.g., 'yyyy-MM-dd').")]
-        [RenderIfCondition(nameof(UseCustomFormat), "True")]
+        [RenderIfCondition(nameof(UseCustomFormat), true)]
         public InArgument<string> Format { get; set; }
 
 

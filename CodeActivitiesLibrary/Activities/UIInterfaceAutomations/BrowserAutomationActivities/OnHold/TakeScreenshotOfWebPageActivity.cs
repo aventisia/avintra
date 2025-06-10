@@ -54,7 +54,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
         [DisplayName("Image File Path")]
         [Description("The path to save the image file when 'Save Mode' is 'File'.")]
-        [RenderIfCondition(nameof(SaveMode), "File")]
+        [RenderIfCondition(nameof(SaveMode), SaveModeEnum.File)]
         public InArgument<string> ImageFilePath { get; set; }
 
 

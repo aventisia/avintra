@@ -33,7 +33,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         [DisplayName("Second Flag")]
         [Description("The second flag used in 'Between Flags' mode to mark the end of the extracted text.")]
-        [RenderIfCondition(nameof(Mode), nameof(CropModeEnum.BetweenFlags))]
+        [RenderIfCondition(nameof(Mode), CropModeEnum.BetweenFlags)]
         public InArgument<string> SecondFlag { get; set; }
 
 

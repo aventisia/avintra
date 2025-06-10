@@ -36,7 +36,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [DisplayName("Launch Url")]
         [Description(
             "Launches the browser with a specific url. If not specified, the browser will open to its default homepage.")]
-        [RenderIfCondition(nameof(LaunchWithUrl), "True")]
+        [RenderIfCondition(nameof(LaunchWithUrl), true)]
         public InArgument<string> LaunchUrl { get; set; }
 
 
@@ -54,21 +54,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
         [DisplayName("Custom Browser Name")]
         [Description("Name of the custom browser (required if 'Browser Type' is 'Custom').")]
-        [RenderIfCondition(nameof(BrowserType), "Custom")]
+        [RenderIfCondition(nameof(BrowserType), BrowserTypeEnum.Custom)]
         public InArgument<string> CustomBrowserName { get; set; }
 
 
         [DisplayName("Browser Executable Path")]
         [Description(
             "The path to the browser executable (e.g., firefox.exe, chrome.exe). Required if 'Browser Type' is 'Custom'.")]
-        [RenderIfCondition(nameof(BrowserType), "Custom")]
+        [RenderIfCondition(nameof(BrowserType), BrowserTypeEnum.Custom)]
         public InArgument<string> BrowserExecutablePath { get; set; }
 
 
         [DisplayName("Driver Executable Path")]
         [Description(
             "The path to the driver executable (e.g., geckodriver.exe for Firefox). Required if 'Browser Type' is 'Custom'.")]
-        [RenderIfCondition(nameof(BrowserType), "Custom")]
+        [RenderIfCondition(nameof(BrowserType), BrowserTypeEnum.Custom)]
         public InArgument<string> DriverExecutablePath { get; set; }
 
 

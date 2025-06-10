@@ -29,50 +29,50 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Start Column")]
         [Description("The starting column of the source range (e.g., 'A').")]
-        [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
+        [RenderIfCondition(nameof(RangesFormat), ExcelRangesFormatEnum.SpecificRanges)]
         public InArgument<string> StartColumn { get; set; }
 
 
         [DisplayName("Start Row")]
         [Description("The starting row of the source range (e.g., '1').")]
-        [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
+        [RenderIfCondition(nameof(RangesFormat), ExcelRangesFormatEnum.SpecificRanges)]
         public InArgument<int> StartRow { get; set; }
 
 
         [DisplayName("Source End Column")]
         [Description("The ending column of the source range (e.g., 'B').")]
-        [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
+        [RenderIfCondition(nameof(RangesFormat), ExcelRangesFormatEnum.SpecificRanges)]
         public InArgument<string> SourceEndColumn { get; set; }
 
 
         [DisplayName("Source End Row")]
         [Description("The ending row of the source range (e.g., '5').")]
-        [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
+        [RenderIfCondition(nameof(RangesFormat), ExcelRangesFormatEnum.SpecificRanges)]
         public InArgument<int> SourceEndRow { get; set; }
 
 
         [DisplayName("Destination End Column")]
         [Description("The ending column of the target range (e.g., 'C').")]
-        [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
+        [RenderIfCondition(nameof(RangesFormat), ExcelRangesFormatEnum.SpecificRanges)]
         public InArgument<string> DestinationEndColumn { get; set; }
 
 
         [DisplayName("Destination End Row")]
         [Description("The ending row of the target range (e.g., '10').")]
-        [RenderIfCondition(nameof(RangesFormat), "SpecificRanges")]
+        [RenderIfCondition(nameof(RangesFormat), ExcelRangesFormatEnum.SpecificRanges)]
         public InArgument<int> DestinationEndRow { get; set; }
 
         // Named Cells Fields
 
         [DisplayName("Source Cells Name")]
         [Description("The name of the named range containing the source data.")]
-        [RenderIfCondition(nameof(RangesFormat), "NamedCells")]
+        [RenderIfCondition(nameof(RangesFormat), ExcelRangesFormatEnum.NamedCells)]
         public InArgument<string> SourceCellsName { get; set; }
 
 
         [DisplayName("Destination Cells Name")]
         [Description("The name of the named range where the data should be pasted.")]
-        [RenderIfCondition(nameof(RangesFormat), "NamedCells")]
+        [RenderIfCondition(nameof(RangesFormat), ExcelRangesFormatEnum.NamedCells)]
         public InArgument<string> DestinationCellsName { get; set; }
 
         // ----------------------

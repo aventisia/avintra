@@ -31,7 +31,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
         [DisplayName("URL")]
         [Description("The URL to navigate to when 'Navigate Action' is 'ToUrl'.")]
-        [RenderIfCondition(nameof(NavigateAction), "ToUrl")]
+        [RenderIfCondition(nameof(NavigateAction), NavigateActionEnum.ToUrl)]
         public InArgument<string> Url { get; set; }
 
 

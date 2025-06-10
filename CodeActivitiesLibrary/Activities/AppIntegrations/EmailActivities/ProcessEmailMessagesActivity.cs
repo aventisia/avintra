@@ -64,7 +64,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 
         [DisplayName("Mail Folder")]
         [Description("The destination mail folder for moving emails (required if 'Operation' is 'Move').")]
-        [RenderIfCondition(nameof(Operation), "MoveToFolder")]
+        [RenderIfCondition(nameof(Operation), EmailOperationEnum.MoveToFolder)]
         public InArgument<string> MailFolder { get; set; }
 
         // ----------------------

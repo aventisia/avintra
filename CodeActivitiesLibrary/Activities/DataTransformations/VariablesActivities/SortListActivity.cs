@@ -30,40 +30,40 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 
         [DisplayName("First Property to Sort By")]
         [Description("The first property name to sort the list by.")]
-        [RenderIfCondition(nameof(SortByProperties), "true")]
+        [RenderIfCondition(nameof(SortByProperties), true)]
         public InArgument<string> FirstProperty { get; set; }
 
 
         [DisplayName("First Sort Direction")]
         [Description("Specifies whether to sort the first property in ascending or descending order.")]
         [DefaultValue(SortOrderEnum.Ascending)]
-        [RenderIfCondition(nameof(SortByProperties), "true")]
+        [RenderIfCondition(nameof(SortByProperties), true)]
         public InArgument<SortOrderEnum> FirstSort { get; set; }
 
 
         [DisplayName("Second Property to Sort By")]
         [Description("The second property name to sort the list by.")]
-        [RenderIfCondition(nameof(SortByProperties), "true")]
+        [RenderIfCondition(nameof(SortByProperties), true)]
         public InArgument<string> SecondProperty { get; set; }
 
 
         [DisplayName("Second Sort Direction")]
         [Description("Specifies whether to sort the second property in ascending or descending order.")]
         [DefaultValue(SortOrderEnum.Ascending)]
-        [RenderIfCondition(nameof(SortByProperties), "true")]
+        [RenderIfCondition(nameof(SortByProperties), true)]
         public InArgument<SortOrderEnum> SecondSort { get; set; }
 
 
         [DisplayName("Third Property to Sort By")]
         [Description("The third property name to sort the list by.")]
-        [RenderIfCondition(nameof(SortByProperties), "true")]
+        [RenderIfCondition(nameof(SortByProperties), true)]
         public InArgument<string> ThirdProperty { get; set; }
 
 
         [DisplayName("Third Sort Direction")]
         [Description("Specifies whether to sort the third property in ascending or descending order.")]
         [DefaultValue(SortOrderEnum.Ascending)]
-        [RenderIfCondition(nameof(SortByProperties), "true")]
+        [RenderIfCondition(nameof(SortByProperties), true)]
         public InArgument<SortOrderEnum> ThirdSort { get; set; }
 
         // ----------------------
