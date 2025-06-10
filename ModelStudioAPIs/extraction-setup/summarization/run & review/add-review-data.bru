@@ -17,10 +17,7 @@ script:pre-request {
     mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
     type: "TestData",
     fileIds: [bru.getGlobalEnvVar("DOC_ID")],
-    scheduleInfo:{
-      timeZone: faker.location.timeZone() ,
-      scheduledAt: faker.date.future()
-    }
+    scheduleInfo:null
   });
   
 }

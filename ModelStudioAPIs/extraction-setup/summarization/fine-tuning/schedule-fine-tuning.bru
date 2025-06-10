@@ -1,7 +1,7 @@
 meta {
   name: Schedule fine tuning
   type: http
-  seq: 3
+  seq: 2
 }
 
 post {
@@ -17,7 +17,7 @@ script:pre-request {
     mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
     fileIds: [bru.getGlobalEnvVar("DOC_ID")],
     timeZone: faker.location.timeZone() ,
-    scheduleAt: faker.date.future()
+    scheduledAt: faker.date.future()
   });
   
 }

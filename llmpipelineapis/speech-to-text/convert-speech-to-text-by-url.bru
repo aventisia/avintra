@@ -5,11 +5,16 @@ meta {
 }
 
 post {
-  url: {{LLM_PIPELINE_APIS_BASE_URL}}/stt/transcribe_from_url/?url=file:/home/rahmat15/Gitea/Test/Sample Order Taking  Customer Support Philippines.mp3
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/transcriptions/from-url
   body: none
   auth: none
 }
 
-params:query {
-  url: file:/home/rahmat15/Gitea/Test/Sample Order Taking  Customer Support Philippines.mp3
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    file_url: "/files/4bb3f813-4444-429e-badd-890b7b2b6503.mp3",
+    download: false
+  })
 }

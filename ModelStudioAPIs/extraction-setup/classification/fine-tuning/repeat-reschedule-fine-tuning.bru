@@ -1,0 +1,23 @@
+meta {
+  name: Repeat - Reschedule fine tuning
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/classification/reschedule-fine-tuning
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: "01975837-f8b3-7463-82ad-2a13553093ee",
+    mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
+    timeZone: faker.location.timeZone() ,
+    scheduledAt: faker.date.future()
+  });
+  
+}

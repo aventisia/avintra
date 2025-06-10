@@ -5,11 +5,11 @@ meta {
 }
 
 post {
-  url: {{LLM_PIPELINE_APIS_BASE_URL}}/stt/transcribe_from_url/?url=file:/home/rahmat15/Gitea/Test/Sample Order Taking  Customer Support Philippines.mp3
-  body: none
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/transcriptions/upload
+  body: multipartForm
   auth: none
 }
 
-params:query {
-  url: file:/home/rahmat15/Gitea/Test/Sample Order Taking  Customer Support Philippines.mp3
+body:multipart-form {
+  file: @file(/home/rahmat15/Gitea/Test/Sample Order Taking  Customer Support Philippines.mp3)
 }

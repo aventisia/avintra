@@ -1,0 +1,23 @@
+meta {
+  name: Delete schedule fine tuning history
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/classification/fine-tuning/histories/{{FINE_TUNING_HISTORY_ID}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
+    fileIds: [bru.getGlobalEnvVar("DOC_ID")],
+    timeZone: faker.location.timeZone() ,
+    scheduleAt: faker.date.future()
+  });
+  
+}
