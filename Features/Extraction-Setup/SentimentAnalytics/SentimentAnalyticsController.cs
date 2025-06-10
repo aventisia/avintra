@@ -90,7 +90,7 @@ public class SentimentAnalyticsController : BaseApiController
 
     // Reschedules fine-tuning for an ML model using provided configuration.
     [HttpPost("reschedule-fine-tuning")]
-    public async Task<ActionResult<ServiceResponse<SentimentAnalyticsFineTuningDataDto>>> RescheduleFineTuning(RescheduleFineTuningDto rescheduleFineTuningDto)
+    public async Task<ActionResult<ServiceResponse<FineTuningHistoryDto>>> RescheduleFineTuning(RescheduleFineTuningDto rescheduleFineTuningDto)
     {
         return ResultHelper(await _sentimentAnalyticsService.RescheduleFineTuningAsync(rescheduleFineTuningDto));
     }

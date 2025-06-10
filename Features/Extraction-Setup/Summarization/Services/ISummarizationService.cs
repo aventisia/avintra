@@ -101,10 +101,10 @@ public interface ISummarizationService
     /// <param name="rescheduleFineTuningDto">An object containing the configuration data for the summarization fine-tuning.</param>
     /// <returns>
     /// A task representing the asynchronous operation.
-    /// The result contains a <see cref="ServiceResponse{SummarizationFineTuningDataDto}"/> 
+    /// The result contains a <see cref="ServiceResponse{FineTuningHistoryDto}"/> 
     /// with the updated fine-tuning configuration and status.
     /// </returns>
-    Task<ServiceResponse<SummarizationFineTuningDataDto>> RescheduleFineTuningAsync(RescheduleFineTuningDto rescheduleFineTuningDto);
+    Task<ServiceResponse<FineTuningHistoryDto>> RescheduleFineTuningAsync(RescheduleFineTuningDto rescheduleFineTuningDto);
 
     /// <summary>
     /// Deletes a specific fine-tuning history record identified by its unique ID.

@@ -90,7 +90,7 @@ public class AIPersonaController : BaseApiController
 
     // Reschedules fine-tuning for an ML model using provided configuration.
     [HttpPost("reschedule-fine-tuning")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AIPersonaFineTuningDataDto>>>> RescheduleFineTuning(RescheduleFineTuningDto rescheduleFineTuningDto)
+    public async Task<ActionResult<ServiceResponse<FineTuningHistoryDto>>> RescheduleFineTuning(RescheduleFineTuningDto rescheduleFineTuningDto)
     {
         return ResultHelper(await _aiPersonaService.RescheduleFineTuningAsync(rescheduleFineTuningDto));
     }

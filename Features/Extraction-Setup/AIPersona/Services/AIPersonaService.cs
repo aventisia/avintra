@@ -747,62 +747,81 @@ public class AIPersonaService : IAIPersonaService
     }
 
     // Reschedules a fine-tuning job for the existing data.
-    public async Task<ServiceResponse<AIPersonaFineTuningDataDto>> RescheduleFineTuningAsync(RescheduleFineTuningDto rescheduleFineTuningDto)
+    public async Task<ServiceResponse<FineTuningHistoryDto>> RescheduleFineTuningAsync(RescheduleFineTuningDto rescheduleFineTuningDto)
     {
-        // Initialize service response with default failure state
-        var serviceResponse = new ServiceResponse<AIPersonaFineTuningDataDto>
+        // Initialize the service response with a default failure state.
+        var serviceResponse = new ServiceResponse<FineTuningHistoryDto>
         {
             Data = null,
-            Message = "Unable to schedule fine-tuning. Please try again later."
+            Message = "Failed to reschedule fine-tuning. Please try again later."
         };
 
         try
         {
-            _logger.LogInformation("Initiating fine-tuning reschedule for ML Model ID: {MLModelId}, Data ID: {DataId}",
+            // Log the initiation of the fine-tuning reschedule request with relevant identifiers.
+            _logger.LogInformation("Request received to reschedule fine-tuning for ML Model ID: {MLModelId}, Data ID: {DataId}",
                 rescheduleFineTuningDto.MLModelId, rescheduleFineTuningDto.Id);
 
-            // Retrieve the scheduled model based on MLModelId and ExtractedDataId
-            var scheduledModel = await _unitOfWork.ScheduledModelRepo
-                .GetByConditionAsync(w => w.MLModelId == rescheduleFineTuningDto.MLModelId && w.ExtractedDataId == rescheduleFineTuningDto.Id)
-                .Include(i => i.ExtractedData)
+            // Retrieve the fine-tuning log entry using the provided extracted data ID.
+            var fineTuningLog = await _unitOfWork.FineTuningLogRepo
+                .GetByConditionAsync(w => w.Id == rescheduleFineTuningDto.Id)
                 .FirstOrDefaultAsync();
 
-            // If no matching data is found, return failure response
-            if (scheduledModel == null)
+            // If no matching fine-tuning log is found, return a failure response.
+            if (fineTuningLog == null)
             {
-                _logger.LogWarning("No matching extracted data found for ML Model ID: {MLModelId}, Data ID: {DataId}",
+                _logger.LogWarning("No fine-tuning log found for ML Model ID: {MLModelId}, Data ID: {DataId}. Rescheduling failed.",
                     rescheduleFineTuningDto.MLModelId, rescheduleFineTuningDto.Id);
 
-                serviceResponse.Message = "No data found for the provided identifiers.";
+                serviceResponse.Message = "Data not found.";
                 return serviceResponse;
             }
 
+            // Retrieve the associated scheduled model details using the ScheduledModelId from the fine-tuning log.
+            var scheduledModel = await _unitOfWork.ScheduledModelRepo
+                .GetByConditionAsync(w => w.Id == fineTuningLog.ScheduledModelId)
+                .FirstOrDefaultAsync();
+
+            // If no scheduled model is found, return a failure response.
+            if (scheduledModel == null)
+            {
+                _logger.LogWarning("No scheduled model found for ML Model ID: {MLModelId}, Data ID: {DataId}. Rescheduling failed.",
+                    rescheduleFineTuningDto.MLModelId, rescheduleFineTuningDto.Id);
+
+                serviceResponse.Message = "Data not found.";
+                return serviceResponse;
+            }
+
+            // Update the scheduled model with the new time zone and scheduled date from the input.
             scheduledModel.TimeZone = rescheduleFineTuningDto.TimeZone;
             scheduledModel.ScheduledAt = rescheduleFineTuningDto.ScheduledAt;
 
-            // Update the scheduled model (apply rescheduling logic if needed here)
+            // Apply the changes to the scheduled model repository.
             _unitOfWork.ScheduledModelRepo.Update(scheduledModel);
 
-            // Attempt to persist the changes
+            // Attempt to save the changes to the database.
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to save rescheduled fine-tuning job for ML Model ID: {MLModelId}, Data ID: {DataId}",
+                _logger.LogError("Failed to persist rescheduled fine-tuning job for ML Model ID: {MLModelId}, Data ID: {DataId}. Changes were not saved.",
                     rescheduleFineTuningDto.MLModelId, rescheduleFineTuningDto.Id);
                 return serviceResponse;
             }
 
-            // On success, map data and update service response
-            _logger.LogInformation("Successfully rescheduled fine-tuning job for ML Model ID: {MLModelId}, Data ID: {DataId}",
+            // Log the successful rescheduling and update the service response with the fine-tuning history.
+            _logger.LogInformation("Successfully rescheduled fine-tuning job for ML Model ID: {MLModelId}, Data ID: {DataId}. Changes saved successfully.",
                 rescheduleFineTuningDto.MLModelId, rescheduleFineTuningDto.Id);
 
-            serviceResponse.Data = scheduledModel.ExtractedData.Adapt<AIPersonaFineTuningDataDto>();
+            serviceResponse.Data = fineTuningLog.Adapt<FineTuningHistoryDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Fine-tuning job rescheduled successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception occurred while rescheduling fine-tuning for ML Model ID: {MLModelId}, Data ID: {DataId}",
+            // Log any exceptions that occur during the process and return the failure response.
+            _logger.LogError(ex, "Exception occurred while rescheduling fine-tuning for ML Model ID: {MLModelId}, Data ID: {DataId}.",
                 rescheduleFineTuningDto.MLModelId, rescheduleFineTuningDto.Id);
+
+            serviceResponse.Message = "An unexpected error occurred while rescheduling fine-tuning.";
         }
 
         return serviceResponse;
@@ -811,48 +830,66 @@ public class AIPersonaService : IAIPersonaService
     // Deletes a fine-tuning history record from the database based on the provided ID.
     public async Task<ServiceResponse<bool>> DeleteFineTuningDataHistoryAsync(Guid fineTuningHistoryId)
     {
-        // Initialize a failed service response by default
+        // Initialize the service response with a failure state by default
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
-            Message = "Failed to delete fine tuning history. Please try again."
+            Message = "Failed to delete fine-tuning history. Please try again."
         };
 
         try
         {
-            // Attempt to retrieve the fine-tuning log by ID
+            // Retrieve the fine-tuning log by its ID, including its associated ScheduledModel
             var fineTuningLog = await _unitOfWork.FineTuningLogRepo
                 .GetByConditionAsync(w => w.Id == fineTuningHistoryId)
+                .Include(i => i.ScheduledModel)
                 .SingleOrDefaultAsync();
 
-            // If the log does not exist, return a failure response
+            // If no matching fine-tuning log is found, exit early
             if (fineTuningLog == null)
             {
-                _logger.LogInformation("Fine-tuning history record does not exist.");
-                serviceResponse.Message = "Data does not exist.";
+                _logger.LogWarning("Deletion failed: Fine-tuning history with ID {FineTuningHistoryId} not found.", fineTuningHistoryId);
+                serviceResponse.Message = "Fine-tuning history not found.";
                 return serviceResponse;
             }
 
-            // Delete the retrieved fine-tuning log
-            _unitOfWork.FineTuningLogRepo.Delete(fineTuningLog);
+            // Retrieve the associated ScheduledModel and its related fine-tuning logs
+            var scheduledModel = await _unitOfWork.ScheduledModelRepo
+                .GetByConditionAsync(w => w.Id == fineTuningLog.ScheduledModelId)
+                .Include(m => m.FineTuningLogs)
+                .SingleOrDefaultAsync();
 
-            // Attempt to persist the changes
-            if (!await _unitOfWork.SaveAsync())
+            // If related scheduled model exists, remove its fine-tuning logs and the model itself
+            if (scheduledModel != null)
             {
-                _logger.LogInformation("SaveChanges failed during deletion of fine-tuning history.");
-                return serviceResponse;
+                if (scheduledModel.FineTuningLogs.Any())
+                {
+                    _unitOfWork.FineTuningLogRepo.Delete(scheduledModel.FineTuningLogs);
+                    _logger.LogInformation("Deleted {Count} fine-tuning logs linked to ScheduledModel ID {ScheduledModelId}.",
+                        scheduledModel.FineTuningLogs.Count, scheduledModel.Id);
+                }
+
+                _unitOfWork.ScheduledModelRepo.Delete(scheduledModel);
+                _logger.LogInformation("Deleted ScheduledModel with ID {ScheduledModelId}.", scheduledModel.Id);
+
+                // Persist changes after deleting related entities
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Save operation failed after deleting fine-tuning logs and ScheduledModel for History ID {FineTuningHistoryId}.",
+                        fineTuningHistoryId);
+                    return serviceResponse;
+                }
             }
 
-            // Deletion successful
+            // Return success response
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Data deleted successfully.";
+            serviceResponse.Message = "Fine-tuning history and associated data deleted successfully.";
         }
         catch (Exception ex)
         {
-            // Log the exception and return the default failure response
-            _logger.LogError(ex, "Exception occurred while deleting fine-tuning history.");
-            return serviceResponse;
+            // Log exception details for debugging
+            _logger.LogError(ex, "An exception occurred while deleting fine-tuning history with ID {FineTuningHistoryId}.", fineTuningHistoryId);
         }
 
         return serviceResponse;
@@ -875,39 +912,59 @@ public class AIPersonaService : IAIPersonaService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Attempting to delete {Count} fine-tuning history records.", fineTuningHistoryIds.Count());
+            _logger.LogInformation("Initiating batch deletion for {Count} fine-tuning history records.", fineTuningHistoryIds.Count());
 
-            // Fetch records matching the provided IDs
+            // Fetch all fine-tuning logs matching the provided IDs
             var fineTuningLogs = await _unitOfWork.FineTuningLogRepo
                 .GetByConditionAsync(w => fineTuningHistoryIds.Contains(w.Id))
                 .ToListAsync();
 
-            if (fineTuningLogs == null || !fineTuningLogs.Any())
+            if (!fineTuningLogs.Any())
             {
                 _logger.LogWarning("No fine-tuning history records found for the provided IDs.");
-                serviceResponse.Message = "No matching records found for deletion.";
+                serviceResponse.Message = "No matching fine-tuning history records found.";
                 return serviceResponse;
             }
 
-            // Delete all found records
-            _unitOfWork.FineTuningLogRepo.Delete(fineTuningLogs);
+            // Get all related scheduled models for the fetched logs
+            var scheduledModelIds = fineTuningLogs
+                .Select(s => s.ScheduledModelId)
+                .Distinct()
+                .ToList();
 
-            // Persist the changes
+            var scheduledModels = await _unitOfWork.ScheduledModelRepo
+                .GetByConditionAsync(w => scheduledModelIds.Contains(w.Id))
+                .Include(i => i.FineTuningLogs)
+                .ToListAsync();
+
+            foreach (var scheduledModel in scheduledModels)
+            {
+                // Remove all associated fine-tuning logs
+                if (scheduledModel.FineTuningLogs.Any())
+                {
+                    _unitOfWork.FineTuningLogRepo.Delete(scheduledModel.FineTuningLogs);
+                }
+
+                // Delete the scheduled model itself
+                _unitOfWork.ScheduledModelRepo.Delete(scheduledModel);
+            }
+
+            // Save all changes after deletions
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to save changes after attempting to delete fine-tuning history records.");
+                _logger.LogError("Save operation failed while deleting fine-tuning history and scheduled model records.");
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Successfully deleted {Count} fine-tuning history records.", fineTuningLogs.Count);
+            _logger.LogInformation("Successfully deleted {Count} fine-tuning history records and their associated scheduled models.", fineTuningLogs.Count);
 
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Selected fine-tuning history records deleted successfully.";
+            serviceResponse.Message = "Selected fine-tuning history records and related scheduled models deleted successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception occurred while deleting multiple fine-tuning history records.");
+            _logger.LogError(ex, "An exception occurred while deleting multiple fine-tuning history records.");
         }
 
         return serviceResponse;

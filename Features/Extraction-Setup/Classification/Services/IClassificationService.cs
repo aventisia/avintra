@@ -95,16 +95,16 @@ public interface IClassificationService
     /// <returns>A task representing the asynchronous operation, with a response containing the list of fine-tuning history records.</returns>
     Task<ServiceResponse<IEnumerable<FineTuningHistoryDto>>> GetFineTuningDataHistoriesAsync(Guid mlModelId);
 
-    /// <summary>
+    // <summary>
     /// Re-schedules a fine-tuning operation using the provided summarization fine-tuning data.
     /// </summary>
     /// <param name="rescheduleFineTuningDto">An object containing the configuration data for the summarization fine-tuning.</param>
     /// <returns>
     /// A task representing the asynchronous operation.
-    /// The result contains a <see cref="ServiceResponse{ClassificationFineTuningDataDto}"/> 
+    /// The result contains a <see cref="ServiceResponse{FineTuningHistoryDto}"/> 
     /// with the updated fine-tuning configuration and status.
     /// </returns>
-    Task<ServiceResponse<ClassificationFineTuningDataDto>> RescheduleFineTuningAsync(RescheduleFineTuningDto rescheduleFineTuningDto);
+    Task<ServiceResponse<FineTuningHistoryDto>> RescheduleFineTuningAsync(RescheduleFineTuningDto rescheduleFineTuningDto);
 
     /// <summary>
     /// Deletes a specific fine-tuning history record identified by its unique ID.

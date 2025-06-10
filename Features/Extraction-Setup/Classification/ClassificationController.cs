@@ -88,9 +88,9 @@ public class ClassificationController : BaseApiController
         return ResultHelper(await _classificationService.GetFineTuningDataHistoriesAsync(mlModelId));
     }
 
-        // Reschedules fine-tuning for an ML model using provided configuration.
+    // Reschedules fine-tuning for an ML model using provided configuration.
     [HttpPost("reschedule-fine-tuning")]
-    public async Task<ActionResult<ServiceResponse<ClassificationFineTuningDataDto>>> RescheduleFineTuning(RescheduleFineTuningDto rescheduleFineTuningDto)
+    public async Task<ActionResult<ServiceResponse<FineTuningHistoryDto>>> RescheduleFineTuning(RescheduleFineTuningDto rescheduleFineTuningDto)
     {
         return ResultHelper(await _classificationService.RescheduleFineTuningAsync(rescheduleFineTuningDto));
     }
