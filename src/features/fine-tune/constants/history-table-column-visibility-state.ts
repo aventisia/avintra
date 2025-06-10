@@ -5,6 +5,7 @@ export const historyTablecolumnVisibilityState = {
     fineTunedOn: true,
     duration: true,
     accuracy: true,
+    record: true,
     status: true,
   };
   

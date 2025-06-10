@@ -4,6 +4,7 @@ export interface HistoryTableDTO  {
     version : number;
     status: string;
     scheduledOn: Date | null;
+    record: number;
     accuracy: number;
     fineTunedOn: Date | null;
     duration: number | null;

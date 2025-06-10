@@ -22,6 +22,15 @@ export const historyTableColumns: ColumnDef<HistoryTableDTO>[] = [
     ),
   },
   {
+    accessorKey: "record",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("record")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto font-medium">{row.getValue("record")}</div>
+    ),
+  },
+  {
     accessorKey: "scheduledOn",
     header: ({ column }) => (
       <DTColumnHeader
