@@ -50,7 +50,7 @@
       "conditions": [
         {
           "field": "FailWithTimeoutError",
-          "equals": "True"
+          "equals": true
         }
       ]
     }

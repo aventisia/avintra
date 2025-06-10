@@ -144,7 +144,7 @@
       "conditions": [
         {
           "field": "ArrayForm",
-          "equals": "false"
+          "equals": false
         }
       ]
     }
@@ -161,7 +161,7 @@
       "conditions": [
         {
           "field": "ArrayForm",
-          "equals": "false"
+          "equals": false
         }
       ]
     }
@@ -178,7 +178,7 @@
       "conditions": [
         {
           "field": "ArrayForm",
-          "equals": "false"
+          "equals": false
         }
       ]
     }
@@ -195,7 +195,7 @@
       "conditions": [
         {
           "field": "ArrayForm",
-          "equals": "false"
+          "equals": false
         }
       ]
     }

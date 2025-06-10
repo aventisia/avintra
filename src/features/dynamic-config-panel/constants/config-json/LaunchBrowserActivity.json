@@ -51,7 +51,7 @@
       "conditions": [
         {
           "field": "LaunchWithUrl",
-          "equals": "True"
+          "equals": true
         }
       ]
     }

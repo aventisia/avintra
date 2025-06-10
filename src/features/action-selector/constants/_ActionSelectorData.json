@@ -175,15 +175,6 @@
           },
           {
             "type": "activityNode",
-            "name": "RunPowerFxExpressionActivity",
-            "label": "Run Power Fx Expression",
-            "description": "Runs a simulated Power Fx expression and returns the result as text.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "SetVariableActivity",
             "label": "Set Variable",
             "description": "Sets the value of a named variable within the workflow context.",
@@ -214,6 +205,15 @@
             "name": "SubtractListsActivity",
             "label": "Subtract Lists",
             "description": "Removes items from the first list that exist in the second list.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "TruncateNumberActivity",
+            "label": "Truncate Number",
+            "description": "Gets the integral or fractional digits of a numeric value, or rounds up/down the value to a specified number of decimal places.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -394,15 +394,6 @@
             "name": "TrimTextActivity",
             "label": "Trim Text",
             "description": "Removes specified characters from the start, end, or both ends of a text string.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "TruncateNumberActivity",
-            "label": "Truncate Number",
-            "description": "Gets the integral or fractional digits of a numeric value, or rounds up/down the value to a specified number of decimal places.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"

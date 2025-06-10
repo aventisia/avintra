@@ -69,7 +69,7 @@
       "conditions": [
         {
           "field": "UseCustomColumnsSeparator",
-          "equals": "true"
+          "equals": true
         }
       ]
     }

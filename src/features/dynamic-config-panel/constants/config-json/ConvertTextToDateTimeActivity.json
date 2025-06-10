@@ -29,7 +29,7 @@
       "conditions": [
         {
           "field": "UseCustomFormat",
-          "equals": "True"
+          "equals": true
         }
       ]
     }

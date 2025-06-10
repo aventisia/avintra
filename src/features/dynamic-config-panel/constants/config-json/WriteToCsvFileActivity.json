@@ -79,7 +79,7 @@
       "conditions": [
         {
           "field": "UseCustomColumnSeparator",
-          "equals": "True"
+          "equals": true
         }
       ]
     }
@@ -113,7 +113,7 @@
       "conditions": [
         {
           "field": "UseCustomColumnSeparator",
-          "equals": "False"
+          "equals": false
         }
       ]
     }

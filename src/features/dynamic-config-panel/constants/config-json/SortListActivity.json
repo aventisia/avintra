@@ -29,7 +29,7 @@
       "conditions": [
         {
           "field": "SortByProperties",
-          "equals": "true"
+          "equals": true
         }
       ]
     }
@@ -58,7 +58,7 @@
       "conditions": [
         {
           "field": "SortByProperties",
-          "equals": "true"
+          "equals": true
         }
       ]
     }
@@ -75,7 +75,7 @@
       "conditions": [
         {
           "field": "SortByProperties",
-          "equals": "true"
+          "equals": true
         }
       ]
     }
@@ -104,7 +104,7 @@
       "conditions": [
         {
           "field": "SortByProperties",
-          "equals": "true"
+          "equals": true
         }
       ]
     }
@@ -121,7 +121,7 @@
       "conditions": [
         {
           "field": "SortByProperties",
-          "equals": "true"
+          "equals": true
         }
       ]
     }
@@ -150,7 +150,7 @@
       "conditions": [
         {
           "field": "SortByProperties",
-          "equals": "true"
+          "equals": true
         }
       ]
     }

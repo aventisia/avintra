@@ -29,7 +29,7 @@
       "conditions": [
         {
           "field": "SaveToFile",
-          "equals": "true"
+          "equals": true
         }
       ]
     }
