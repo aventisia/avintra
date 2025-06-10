@@ -68,6 +68,11 @@ public class SentimentAnalyticSetupDto
     public List<SentimentAnalyticsSetupCategoryDto>? Categories { get; set; }
 
     /// <summary>
+    /// Gets or sets the temperature setting for creativity and randomness in the persona’s responses.
+    /// </summary>
+    public double Temperature { get; set; }
+
+    /// <summary>
     /// Specifies the type or identifier of the large language model (LLM) being used.
     /// </summary>
     public string? LLM { get; set; }
