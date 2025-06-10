@@ -22,70 +22,6 @@ namespace MLModelBuilderAPIs.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.DataField", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Color")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("MLModelId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastModifiedByUserId");
-
-                    b.HasIndex("MLModelId", "Name")
-                        .IsUnique();
-
-                    b.ToTable("DataFields");
-                });
-
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ExtractedData", b =>
                 {
                     b.Property<Guid>("Id")
@@ -187,47 +123,6 @@ namespace MLModelBuilderAPIs.Migrations
                     b.HasIndex("ScheduledModelId");
 
                     b.ToTable("FineTuningLogs");
-                });
-
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.LLM", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastModifiedByUserId");
-
-                    b.ToTable("LLMs");
                 });
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModel", b =>
@@ -470,33 +365,6 @@ namespace MLModelBuilderAPIs.Migrations
                     b.ToTable("UploadedDocs");
                 });
 
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.DataField", b =>
-                {
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
-                        .WithMany("DataFields")
-                        .HasForeignKey("MLModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastModifiedByUser");
-
-                    b.Navigation("MLModel");
-                });
-
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ExtractedData", b =>
                 {
                     b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
@@ -541,25 +409,6 @@ namespace MLModelBuilderAPIs.Migrations
                         .IsRequired();
 
                     b.Navigation("ScheduledModel");
-                });
-
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.LLM", b =>
-                {
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastModifiedByUser");
                 });
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModel", b =>
@@ -656,8 +505,6 @@ namespace MLModelBuilderAPIs.Migrations
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModel", b =>
                 {
-                    b.Navigation("DataFields");
-
                     b.Navigation("ExtractedData");
 
                     b.Navigation("ScheduledModels");
