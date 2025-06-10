@@ -82,6 +82,11 @@ public class SummarizationFineTuningDataDto
     public int FailedCount { get; set; }
 
     /// <summary>
+    /// Gets or sets the execution time in seconds.
+    /// </summary>
+    public int ExecutionTime { get; set; }
+
+    /// <summary>
     /// Gets or sets the timestamp when this record was created.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; }

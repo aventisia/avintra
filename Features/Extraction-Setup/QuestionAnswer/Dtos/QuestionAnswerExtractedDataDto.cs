@@ -60,6 +60,11 @@ public class QuestionAnswerExtractedDataDto
     public int FailedCount { get; set; }
 
     /// <summary>
+    /// Gets or sets the execution time in seconds.
+    /// </summary>
+    public int ExecutionTime { get; set; }
+
+    /// <summary>
     /// Gets or sets the date of creation of extracted data.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; }

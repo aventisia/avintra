@@ -65,6 +65,11 @@ public class MLModelDto
     public int FailedCount { get; set; }
 
     /// <summary>
+    /// Gets or sets the execution time in seconds.
+    /// </summary>
+    public int ExecutionTime { get; set; }
+
+    /// <summary>
     /// Gets or sets the date of creation of ML model.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; }

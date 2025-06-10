@@ -68,6 +68,11 @@ public class AIPersonaFineTuningDataDto
     public int FailedCount { get; set; }
 
     /// <summary>
+    /// Gets or sets the execution time in seconds.
+    /// </summary>
+    public int ExecutionTime { get; set; }
+
+    /// <summary>
     /// Gets or sets the timestamp when the fine-tuning task was scheduled to run.
     /// </summary>
     public DateTimeOffset? ScheduledOn { get; set; }

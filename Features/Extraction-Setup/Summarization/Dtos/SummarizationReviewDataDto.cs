@@ -63,7 +63,12 @@ public class SummarizationReviewDataDto
     /// Gets or sets the number of failed executions for this data record.
     /// </summary>
     public int FailedCount { get; set; }
-    
+
+    /// <summary>
+    /// Gets or sets the execution time in seconds.
+    /// </summary>
+    public int ExecutionTime { get; set; }
+
     /// <summary>
     /// Gets or sets the timestamp indicating when this extracted data record was created.
     /// </summary>

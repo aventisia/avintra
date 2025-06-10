@@ -60,6 +60,11 @@ public class AIPersonaExtractedDataDto
     public int FailedCount { get; set; }
 
     /// <summary>
+    /// Gets or sets the execution time in seconds.
+    /// </summary>
+    public int ExecutionTime { get; set; }
+
+    /// <summary>
     /// Gets or sets the timestamp when the AI persona data was created.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; }

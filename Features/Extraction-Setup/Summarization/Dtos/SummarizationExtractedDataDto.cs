@@ -57,7 +57,13 @@ public class SummarizationExtractedDataDto
     /// <summary>
     /// Gets or sets the number of failed executions for this data record.
     /// </summary>
+
     public int FailedCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the execution time in seconds.
+    /// </summary>
+    public int ExecutionTime { get; set; }
 
     /// <summary>
     /// Gets or sets the date of creation of extracted data.

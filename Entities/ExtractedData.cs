@@ -47,6 +47,11 @@ public class ExtractedData : BaseEntity, IMustHaveTenant
     public int FailedCount { get; set; }
 
     /// <summary>
+    /// Gets or sets the execution time in seconds.
+    /// </summary>
+    public int ExecutionTime { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the model or data has been submitted for fine-tuning.
     /// </summary>
     public bool SubmitForFineTuning { get; set; }
