@@ -48,11 +48,12 @@ public class QuestionAnswerService : IQuestionAnswerService
             // Sanitize string properties in the DTO
             questionAnswerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(questionAnswerDto);
 
-            int index = 1;
+            // Assign a unique index (as a string) to each question answer in the setup object
+            int index = 0;
             foreach (var category in questionAnswerDto.SetupObject.QuestionAnswers)
             {
-                category.Index = $"{index}";
-                index = index + 1;
+                category.Index = index.ToString();
+                index++;
             }
 
             // Apply updated values to the model entity
@@ -1044,9 +1045,9 @@ public class QuestionAnswerService : IQuestionAnswerService
         {
             for (int i = 0; i < QuestionAnswerDto.SetupObject.QuestionAnswers.Count; i++)
             {
-                var category = QuestionAnswerDto.SetupObject.QuestionAnswers[i];
-                var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
-                questionAnswerBuilder.AppendLine($"{category.Index}. {category.Name}{instructions}");
+                var questionAnswer = QuestionAnswerDto.SetupObject.QuestionAnswers[i];
+                var instructions = string.IsNullOrEmpty(questionAnswer.Instructions) ? "" : $", - {questionAnswer.Instructions}";
+                questionAnswerBuilder.AppendLine($"{questionAnswer.Index}. {questionAnswer.Name}{instructions}");
             }
         }
 

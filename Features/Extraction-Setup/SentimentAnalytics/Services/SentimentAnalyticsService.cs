@@ -48,12 +48,14 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
             // Sanitize DTO string properties
             sentimentAnalyticDto = TrimDtoStringPropsUtil.TrimDtoStringProps(sentimentAnalyticDto);
 
-            int index = 1;
+            // Assign a unique index (as a string) to each category in the setup object
+            int index = 0;
             foreach (var category in sentimentAnalyticDto.SetupObject.Categories)
             {
-                category.Index = $"{index}";
-                index = index + 1;
+                category.Index = index.ToString();
+                index++;
             }
+
             // Map incoming DTO data to the existing model entity
             sentimentAnalyticDto.Adapt(mLModel);
             mLModel.GeneratedPrompt = GenerateSentimentAnalyticsModelPrompt(sentimentAnalyticDto);
@@ -259,7 +261,7 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
                 {
                     extractedData.ExtractedData = JsonSerializer.Deserialize<List<SentimentAnalyticsSetupData>>(llmResponse.Data, options) ?? new List<SentimentAnalyticsSetupData>();
                     extractedData.Remarks = "";
-                    
+
                     // Assign names using dictionary lookup
                     foreach (var category in extractedData.ExtractedData)
                     {
@@ -1045,7 +1047,7 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
             {
                 var category = sentimentAnalyticDto.SetupObject.Categories[i];
                 var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
-                categoriesPrompt.AppendLine($"{i + 1}. {category.Name}{instructions}");
+                categoriesPrompt.AppendLine($"{category.Index}. {category.Name}{instructions}");
             }
         }
 
