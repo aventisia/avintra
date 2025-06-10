@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.DataTransformations.TextActivities
+namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Truncate Number")]
     [Description(
