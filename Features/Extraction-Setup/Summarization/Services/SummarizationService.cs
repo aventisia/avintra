@@ -688,7 +688,7 @@ public class SummarizationService : ISummarizationService
 
             // Check if any of the extracted data are already scheduled
             var alreadyScheduledData = await _unitOfWork.ScheduledModelRepo
-                        .GetByConditionAsync(w => 
+                        .GetByConditionAsync(w =>
                             extractedDataList.Select(s => s.Id).Contains(w.ExtractedDataId) &&
                             w.MLModelId == fineTuningRequest.MLModelId &&
                             w.ScheduleType == ModelOperationTypesEnum.FineTuning &&

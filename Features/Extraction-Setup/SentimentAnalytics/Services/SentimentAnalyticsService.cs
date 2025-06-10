@@ -748,7 +748,7 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
                         scheduledModels.Select(s => s.Id).Contains(w.ScheduledModelId)
                     )
                     .Include(i => i.ScheduledModel)
-                    .ThenInclude(i2 => i2.ExtractedData)
+                    .ThenInclude(i2 => i2.MLModel)
                     .ProjectToType<FineTuningHistoryDto>()
                     .ToListAsync();
             }

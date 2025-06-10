@@ -26,6 +26,17 @@ public class FineTuningHistoryDto
     public ScheduleTypesEnum Status { get; set; }
 
     /// <summary>
+    /// Gets or sets the timestamp when the fine-tuning task was scheduled to run.
+    /// </summary>
+    public DateTimeOffset? ScheduledOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the accuracy for the record
+    /// </summary>
+    [Range(1, 100)]
+    public decimal? Accuracy { get; set; }
+
+    /// <summary>
     /// Gets or sets the timestamp when the fine-tuning process was completed.
     /// </summary>
     public DateTimeOffset? FineTunedOn { get; set; }

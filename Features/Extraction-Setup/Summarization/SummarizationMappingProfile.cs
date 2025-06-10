@@ -106,6 +106,8 @@ public class SummarizationMappingProfile : IRegister
         // Mapping of DTO to get list of fine tuning data.
         config.NewConfig<FineTuningLog, FineTuningHistoryDto>()
             .Map(dest => dest.Version, src => src.ScheduledModel != null ? 1 : 0)
+            .Map(dest => dest.ScheduledOn, src => src.ScheduledModel != null ? src.ScheduledModel.ScheduledAt : (DateTime?)null)
+            .Map(dest => dest.Accuracy, src => src.ScheduledModel != null && src.ScheduledModel.MLModel != null ? src.ScheduledModel.MLModel.Accuracy : 0)
             .Map(dest => dest.Duration, src => src.EndedOn.HasValue ? (double?)(src.EndedOn.Value - src.StartedOn).TotalSeconds : null)
             .Map(dest => dest.FineTunedOn, src => src.EndedOn.HasValue ? src.StartedOn : (DateTime?)null)
             .Map(dest => dest.MLModelId, src => src.ScheduledModel != null ? src.ScheduledModel.MLModelId : Guid.Empty);
