@@ -42,15 +42,35 @@ public class ChatHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    /// <summary>
-    /// Sends a message to the current (calling) client only.
-    /// </summary>
-    public async Task SendMessageToSelf(string message)
+    // Sends a message to the current (calling) client and then triggers bot response.
+    public async Task SendMessageAsync(string message)
     {
+        // Retrieve user ID from claims
         var userId = Context.User?.FindFirstValue("uid");
+
+        // Send the message back to the caller if user ID is valid
         if (!string.IsNullOrWhiteSpace(userId))
         {
-            await Clients.Caller.SendAsync("ReceiveMessage", userId, userId, message);
+            await Clients.Caller.SendAsync("ReceiveMessage", "User", message);
+        }
+
+        // Call helper method to get the chatbot response
+        await GetResponseAsync(userId);
+    }
+
+    // Finds the connection associated with the user ID and sends a bot response.
+    private async Task GetResponseAsync(string? userId)
+    {
+        // Find the connection associated with the user ID
+        var receiverConnection = ConnectionUserMap
+            .FirstOrDefault(kvp => kvp.Value == userId);
+
+        // Check if the connection is valid
+        if (!string.IsNullOrWhiteSpace(receiverConnection.Key))
+        {
+            // Send a fixed response message to the user's client
+            await Clients.Client(receiverConnection.Key)
+                .SendAsync("ReceiveMessage", "ChatBot", "Thank you.");
         }
     }
 
