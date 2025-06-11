@@ -873,29 +873,44 @@ public class AIPersonaService : IAIPersonaService
                 return serviceResponse;
             }
 
+            // Check if the FineTuningLog's status is 'Scheduled'
+            if (fineTuningLog.Status != ScheduleTypesEnum.Scheduled)
+            {
+                _logger.LogWarning("Deletion failed: Fine-tuning history with ID {FineTuningHistoryId} cannot be deleted because its status is {Status}.",
+                    fineTuningHistoryId, fineTuningLog.Status);
+                serviceResponse.Message = "Cannot delete fine-tuning history because it is not in 'Scheduled' status.";
+                return serviceResponse;
+            }
+
             // Retrieve the associated ScheduledModel and its related fine-tuning logs
             var scheduledModel = await _unitOfWork.ScheduledModelRepo
                 .GetByConditionAsync(w => w.Id == fineTuningLog.ScheduledModelId)
                 .Include(m => m.FineTuningLogs)
                 .SingleOrDefaultAsync();
 
-            // If related scheduled model exists, remove its fine-tuning logs and the model itself
+            // If related scheduled model exists
             if (scheduledModel != null)
             {
-                if (scheduledModel.FineTuningLogs.Any())
+                // Check how many fine-tuning logs are associated with this ScheduledModel
+                if (scheduledModel.FineTuningLogs.Count > 1)
                 {
-                    _unitOfWork.FineTuningLogRepo.Delete(scheduledModel.FineTuningLogs);
-                    _logger.LogInformation("Deleted {Count} fine-tuning logs linked to ScheduledModel ID {ScheduledModelId}.",
-                        scheduledModel.FineTuningLogs.Count, scheduledModel.Id);
+                    // If more than one, delete only the FineTuningLog
+                    _unitOfWork.FineTuningLogRepo.Delete(fineTuningLog);
+                    _logger.LogInformation("Deleted FineTuningLog with ID {FineTuningHistoryId}.", fineTuningHistoryId);
                 }
-
-                _unitOfWork.ScheduledModelRepo.Delete(scheduledModel);
-                _logger.LogInformation("Deleted ScheduledModel with ID {ScheduledModelId}.", scheduledModel.Id);
+                else
+                {
+                    // If this is the last FineTuningLog, delete both the FineTuningLog and the ScheduledModel
+                    _unitOfWork.FineTuningLogRepo.Delete(fineTuningLog);
+                    _unitOfWork.ScheduledModelRepo.Delete(scheduledModel);
+                    _logger.LogInformation("Deleted FineTuningLog with ID {FineTuningHistoryId} and its associated ScheduledModel with ID {ScheduledModelId}.",
+                        fineTuningHistoryId, scheduledModel.Id);
+                }
 
                 // Persist changes after deleting related entities
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogError("Save operation failed after deleting fine-tuning logs and ScheduledModel for History ID {FineTuningHistoryId}.",
+                    _logger.LogError("Save operation failed after deleting fine-tuning log and possibly ScheduledModel for History ID {FineTuningHistoryId}.",
                         fineTuningHistoryId);
                     return serviceResponse;
                 }
@@ -918,6 +933,7 @@ public class AIPersonaService : IAIPersonaService
     // Deletes multiple fine-tuning history records from the database based on the provided list of IDs.
     public async Task<ServiceResponse<bool>> DeleteMultipleFineTuningDataHistoriesAsync(IEnumerable<Guid> fineTuningHistoryIds)
     {
+        // Initialize the service response with a failure state by default
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
@@ -926,6 +942,7 @@ public class AIPersonaService : IAIPersonaService
 
         try
         {
+            // Check if any IDs were provided for deletion
             if (fineTuningHistoryIds == null || !fineTuningHistoryIds.Any())
             {
                 serviceResponse.Message = "No IDs provided for deletion.";
@@ -939,6 +956,7 @@ public class AIPersonaService : IAIPersonaService
                 .GetByConditionAsync(w => fineTuningHistoryIds.Contains(w.Id))
                 .ToListAsync();
 
+            // If no logs were found, return a message
             if (!fineTuningLogs.Any())
             {
                 _logger.LogWarning("No fine-tuning history records found for the provided IDs.");
@@ -946,20 +964,35 @@ public class AIPersonaService : IAIPersonaService
                 return serviceResponse;
             }
 
-            // Get all related scheduled models for the fetched logs
+            // Check if all fine-tuning logs are in the 'Scheduled' status
+            var logsNotScheduled = fineTuningLogs.Where(log => log.Status != ScheduleTypesEnum.Scheduled).ToList();
+
+            // If any fine-tuning log is not in 'Scheduled' status, prevent deletion and notify the user
+            if (logsNotScheduled.Any())
+            {
+                var nonScheduledIds = logsNotScheduled.Select(log => log.Id).ToList();
+                _logger.LogWarning("Deletion failed for FineTuningLogs with IDs {NonScheduledIds} due to non-Scheduled status.",
+                    string.Join(", ", nonScheduledIds));
+                serviceResponse.Message = "Some fine-tuning history records are not in 'Scheduled' status and cannot be deleted.";
+                return serviceResponse;
+            }
+
+            // Get all related scheduled models for the fetched fine-tuning logs
             var scheduledModelIds = fineTuningLogs
                 .Select(s => s.ScheduledModelId)
                 .Distinct()
                 .ToList();
 
+            // Fetch all scheduled models associated with the fine-tuning logs
             var scheduledModels = await _unitOfWork.ScheduledModelRepo
                 .GetByConditionAsync(w => scheduledModelIds.Contains(w.Id))
-                .Include(i => i.FineTuningLogs)
+                .Include(i => i.FineTuningLogs) // Include fine-tuning logs related to scheduled models
                 .ToListAsync();
 
+            // Iterate through the scheduled models and delete associated fine-tuning logs and models
             foreach (var scheduledModel in scheduledModels)
             {
-                // Remove all associated fine-tuning logs
+                // Remove all associated fine-tuning logs from the scheduled model
                 if (scheduledModel.FineTuningLogs.Any())
                 {
                     _unitOfWork.FineTuningLogRepo.Delete(scheduledModel.FineTuningLogs);
@@ -969,13 +1002,14 @@ public class AIPersonaService : IAIPersonaService
                 _unitOfWork.ScheduledModelRepo.Delete(scheduledModel);
             }
 
-            // Save all changes after deletions
+            // Save all changes after deletions (both fine-tuning logs and scheduled models)
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Save operation failed while deleting fine-tuning history and scheduled model records.");
                 return serviceResponse;
             }
 
+            // Log success and update service response
             _logger.LogInformation("Successfully deleted {Count} fine-tuning history records and their associated scheduled models.", fineTuningLogs.Count);
 
             serviceResponse.Data = true;
@@ -984,6 +1018,7 @@ public class AIPersonaService : IAIPersonaService
         }
         catch (Exception ex)
         {
+            // Log any exception that occurs during the process
             _logger.LogError(ex, "An exception occurred while deleting multiple fine-tuning history records.");
         }
 
