@@ -20,7 +20,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
         [Description("The expected format pattern to validate against (e.g., yyyy-MM-dd HH:mm:ss).")]
         public InArgument<string> DateTimeFormat { get; set; }
 
-
         [DisplayName("Is Format Valid")]
         [Description("Returns true if the input matches the expected format; otherwise, false.")]
         public OutArgument<bool> IsValid { get; set; }
@@ -30,17 +29,14 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
             var input = InputDateTime.Get(context);
             var format = DateTimeFormat.Get(context);
             bool isValid = false;
-
             try
             {
                 if (string.IsNullOrWhiteSpace(input))
-                    throw new ArgumentException("InputDateTime cannot be null or empty.");
+                    throw new ArgumentException("InputDateTime cannot be null or empty.", nameof(InputDateTime));
                 if (string.IsNullOrWhiteSpace(format))
-                    throw new ArgumentException("DateTimeFormat cannot be null or empty.");
-
+                    throw new ArgumentException("DateTimeFormat cannot be null or empty.", nameof(DateTimeFormat));
                 var formats = new[] { format };
                 DateTime outputDate;
-
                 isValid = DateTime.TryParseExact(
                     input,
                     formats,
@@ -51,7 +47,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error during format validation: " + ex.Message);
+                Console.WriteLine($"Error during format validation: {ex.Message}");
             }
 
             IsValid.Set(context, isValid);

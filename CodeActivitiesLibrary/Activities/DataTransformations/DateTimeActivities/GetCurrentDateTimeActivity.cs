@@ -6,21 +6,25 @@ using System.ComponentModel;
 namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 {
     [DisplayName("Get Current Date and Time")]
-    [Description("This activity retrieves the current date and time based on the specified retrieval type and time zone.")]
+    [Description(
+        "This activity retrieves the current date and time based on the specified retrieval type and time zone.")]
     public class GetCurrentDateTimeActivity : BaseCodeActivity
     {
-
         [RequiredArgument]
         [DisplayName("Retrieve Type")]
-        [Description("Select the type of datetime information to retrieve (e.g., Current date and time, Current date only).")]
+        [Description(
+            "Select the type of datetime information to retrieve (e.g., Current date and time, Current date only).")]
 
-        public InArgument<RetrieveTypeEnum> RetrieveType { get; set; } = new InArgument<RetrieveTypeEnum>(RetrieveTypeEnum.CurrentDateTime);
+        public InArgument<RetrieveTypeEnum> RetrieveType { get; set; } =
+            new InArgument<RetrieveTypeEnum>(RetrieveTypeEnum.CurrentDateTime);
 
         [RequiredArgument]
         [DisplayName("Time Zone")]
-        [Description("Select the time zone to use for retrieving the datetime (e.g., System time zone, Windows time zone).")]
+        [Description(
+            "Select the time zone to use for retrieving the datetime (e.g., System time zone, Windows time zone).")]
 
-        public InArgument<TimezoneTypeEnum> TimezoneType { get; set; } = new InArgument<TimezoneTypeEnum>(TimezoneTypeEnum.SystemTimeZone);
+        public InArgument<TimezoneTypeEnum> TimezoneType { get; set; } =
+            new InArgument<TimezoneTypeEnum>(TimezoneTypeEnum.SystemTimeZone);
 
 
         [DisplayName("Result")]
@@ -32,8 +36,8 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
         protected override void Execute(CodeActivityContext context)
         {
             // Retrieve input values
-            RetrieveTypeEnum retrieveType = context.GetValue(RetrieveType);
-            TimezoneTypeEnum timezoneType = context.GetValue(TimezoneType);
+            var retrieveType = context.GetValue(RetrieveType);
+            var timezoneType = context.GetValue(TimezoneType);
 
             // Determine the datetime based on the retrieve type
             DateTime result;
@@ -104,14 +108,16 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
                     throw new ArgumentException($"Unsupported time zone type: {timezoneType}");
             }
         }
+
         public enum RetrieveTypeEnum
         {
             [Description("Retrieves the current date and time.")]
             CurrentDateTime,
+
             [Description("Retrieves the current date only.")]
             CurrentDateOnly
-
         }
+
         public enum TimezoneTypeEnum
         {
             [Description("Uses the system's local time zone.")]
@@ -127,5 +133,4 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
             CustomInput
         }
     }
-
 }
