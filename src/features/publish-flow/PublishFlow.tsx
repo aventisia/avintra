@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { getFlowToLoad } from "../react-flow/apis/react-flow-apis";
 import { Loader2 } from "lucide-react";
 import { deepParse } from "../react-flow/utils/deepParse";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 
 const PublishFlow = () => {
   const location = useLocation();
@@ -25,6 +26,9 @@ const PublishFlow = () => {
   // Define  mutation to publish the flow
   const { mutate: mutatePublish, isPending } = usePublishFlowMutation();
 
+  // Get showAlert handler
+  const { showCustomAlertDialog } = useShowAlertHandler();
+
   const handlePublish = () => {
     if (flowsData?.data) {
       mutatePublish({
@@ -41,7 +45,14 @@ const PublishFlow = () => {
     <Button
       size={"sm"}
       className="mr-2.5"
-      onClick={() => handlePublish()}
+      onClick={() =>
+        showCustomAlertDialog({
+          confirmActionFn: () => handlePublish(),
+          confirmBtnText: "Publish",
+          description: "Are you sure you to publish the agent?",
+          title: "Publish Agent",
+        })
+      }
       disabled={flowsData?.data.isPublished}
     >
       {isPending && <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />}
