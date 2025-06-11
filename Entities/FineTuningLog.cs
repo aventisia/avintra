@@ -12,6 +12,11 @@ public class FineTuningLog : IMustHaveTenant
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Tracks the version of the entity for manual concurrency or audit purposes.
+    /// </summary>
+    public int Version { get; set; }
+
+    /// <summary>
     /// Gets or sets the tenant ID for multi-tenant filtering.
     /// </summary>
     public Guid TenantId { get; set; }

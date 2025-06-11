@@ -29,6 +29,11 @@ public class FineTuningHistoryDto
     /// Gets or sets the timestamp when the fine-tuning task was scheduled to run.
     /// </summary>
     public DateTimeOffset? ScheduledOn { get; set; }
+    
+    /// <summary>
+    /// Time zone context for the scheduled fine-tuning.
+    /// </summary>
+    public required string TimeZone { get; set; }
 
     /// <summary>
     /// Gets or sets the accuracy for the record
