@@ -1,4 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -9,34 +10,120 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
     [Description("Sets an environment variable to a given value.")]
     public class SetWindowsEnvironmentVariableActivity : BaseCodeActivity
     {
-        [RequiredArgument]
-        [Description("The name of the environment variable.")]
-        public InArgument<string> VariableName { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
         [RequiredArgument]
-        [Description("The value to set for the environment variable.")]
-        public InArgument<string> Value { get; set; }
+
+        [DisplayName("Environment variable name")]
+        [Description("The name of the environment variable to set.")]
+        public InArgument<EnvVarNameEnum> EnvironmentVariableName { get; set; }
+
+        [RequiredArgument]
+
+        [DisplayName("New environment variable value")]
+        [Description("The new value to set for the environment variable.")]
+        public InArgument<string> NewEnvironmentVariableValue { get; set; }
 
 
+        [DisplayName("Type")]
+        [Description("Specifies whether to set the environment variable at the User or System level.")]
+        [DefaultValue(ScopeEnum.User)]
+        public InArgument<ScopeEnum> Type { get; set; }
 
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+
+        public OutArgument<string> StatusMessages { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
 
         protected override void Execute(CodeActivityContext context)
         {
-            var variableName = VariableName.Get(context);
-            var value = Value.Get(context);
-            var status = "";
-
+            var status = "Success";
             try
             {
-                Environment.SetEnvironmentVariable(variableName, value, EnvironmentVariableTarget.Machine);
-                StatusMessage.Set(context, "Environment variable set successfully.");
+                // Retrieve input arguments
+                var envVarName = EnvironmentVariableName.Get(context);
+                var newValue = NewEnvironmentVariableValue.Get(context);
+                var envVarType = Type.Get(context);
+
+                // Validate inputs
+                if (envVarName == EnvVarNameEnum.None)
+                    throw new ArgumentException("Environment variable name cannot be empty.");
+
+                if (string.IsNullOrWhiteSpace(newValue))
+                    throw new ArgumentException("New environment variable value cannot be empty.");
+
+                // Convert enum to actual environment variable name
+                var envVarNameString = GetEnvVarName(envVarName);
+
+                // Set the environment variable based on the type
+                switch (envVarType)
+                {
+                    case ScopeEnum.User:
+                        Environment.SetEnvironmentVariable(envVarNameString, newValue, EnvironmentVariableTarget.User);
+                        break;
+                    case ScopeEnum.System:
+                        Environment.SetEnvironmentVariable(envVarNameString, newValue,
+                            EnvironmentVariableTarget.Machine);
+                        break;
+                    default:
+                        throw new NotSupportedException($"Unsupported environment variable type: {envVarType}");
+                }
+
+                // Set output arguments
+                StatusMessage.Set(context, $"Environment variable '{envVarNameString}' set successfully.");
             }
             catch (Exception ex)
             {
                 status = $"Error setting environment variable: {ex.Message}";
             }
 
-            StatusMessage.Set(context, status);
+            // Set status message
+            StatusMessages.Set(context, status);
+        }
+
+        // Helper method to convert EnvVarNameEnum to string
+        private static string GetEnvVarName(EnvVarNameEnum envVarName)
+        {
+            switch (envVarName)
+            {
+                case EnvVarNameEnum.NUMBER_OF_PROCESSORS:
+                    return "NUMBER_OF_PROCESSORS";
+                case EnvVarNameEnum.OS:
+                    return "OS";
+                case EnvVarNameEnum.PATH:
+                    return "Path";
+                case EnvVarNameEnum.PATHEXT:
+                    return "PATHEXT";
+                case EnvVarNameEnum.PROCESSOR_ARCHITECTURE:
+                    return "PROCESSOR_ARCHITECTURE";
+                case EnvVarNameEnum.PROCESSOR_IDENTIFIER:
+                    return "PROCESSOR_IDENTIFIER";
+                case EnvVarNameEnum.PROCESSOR_LEVEL:
+                    return "PROCESSOR_LEVEL";
+                case EnvVarNameEnum.PROCESSOR_REVISION:
+                    return "PROCESSOR_REVISION";
+                case EnvVarNameEnum.PSMODULEPATH:
+                    return "PSModulePath";
+                case EnvVarNameEnum.TEMP:
+                    return "TEMP";
+                case EnvVarNameEnum.TMP:
+                    return "TMP";
+                case EnvVarNameEnum.USERNAME:
+                    return "USERNAME";
+                case EnvVarNameEnum.WINDIR:
+                    return "windir";
+                case EnvVarNameEnum.ZES_ENABLE_SYSMAN:
+                    return "ZES_ENABLE_SYSMAN";
+                default:
+                    throw new ArgumentException("Invalid environment variable name.");
+            }
         }
     }
 }
