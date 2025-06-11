@@ -8,13 +8,6 @@ import { ExtractRequestDto } from "../features/pdf-previewer/dtos/extract-reques
 import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 
 export const useExtractViaLLMMutation = () => {
-  // Get current annotation object and set annotation object
-  // const { currAnnotationObj, setAnnotationObject } = useAnnotationDataStore(
-  //   useShallow((state) => ({
-  //     currAnnotationObj: state.currAnnotationObj,
-  //     setAnnotationObject: state.setAnnotationObject,
-  //   })),
-  // );
   const { setExtractedData } = useExtractedDataStore(
     useShallow((state) => ({
       setExtractedData: state.setExtractedData,
@@ -39,17 +32,6 @@ export const useExtractViaLLMMutation = () => {
       setExtractedData(httpResponse.data.filesExtractedData[0])
       toast.success("Data extracted successfully");
       
-      
-      // Update annotation object with extracted data
-      // const updatedAnnotationObj = updateFieldValueByFieldName(
-      //   currAnnotationObj,
-      //   httpResponse.data.filesExtractedData[0].extractedData,
-      // );
-
-      // setAnnotationObject(updatedAnnotationObj);
-      
-
-      // Show toast
     },
 
     onError: (error) => {
