@@ -5,9 +5,9 @@ export const historyTablecolumnDisplayNames: KeyValueLookupType[] = [
   { key: "version", value: "Version no." },
   { key: "status", value: "Status" },  
   { key: "scheduledOn", value: "Scheduled On" },
+  { key: "timeZone", value: "Timezone" },
   { key: "accuracy", value: "Accuracy" },
   { key: "record", value: "Records" },
-  
   {key: "fineTunedOn", value: "Fine-Tuned On"},  
   {key: "duration", value: "Fine-Tune Duration"} 
 ];

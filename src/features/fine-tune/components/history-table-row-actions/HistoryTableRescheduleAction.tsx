@@ -7,10 +7,12 @@ import { useRescheduleFineTuneStore } from "../../stores/reschedule-fine-tune-st
 
 interface HistoryTableRescheduleActionProps {
   rowId: string;
+  disabled?: boolean;
 }
 
 export const HistoryTableRescheduleAction = ({
   rowId,
+  disabled,
 }: HistoryTableRescheduleActionProps) => {
   const { setShowDialog } = useDTCrudDialogStore(
     useShallow((state) => ({
@@ -26,6 +28,7 @@ export const HistoryTableRescheduleAction = ({
     <SimpleDDMenuItem
       content="Re-schedule"
       Icon={CalendarDaysIcon}
+      disabled={disabled}
       onClick={() => {
         setShowDialog(true);
         setRescheduleId(rowId);

@@ -30,7 +30,7 @@ const calculateAverageAccuracy = (records: HistoryTableDTO[]): string => {
   const total = validAccuracies.reduce((sum, val) => sum + val, 0);
   const average = total / validAccuracies.length;
 
-  return average.toFixed(2);
+  return `${average.toFixed(2)}%`;
 };
 
 const getLastFineTunedDate = (records: HistoryTableDTO[]): string => {
@@ -68,7 +68,7 @@ const FineTuneStats = () => {
   return (
     <div className="grid grid-cols-3 items-center justify-between gap-4">
       <StatCard label="Total Volumes" value={totalCount} />
-      <StatCard label="Current Model Accuracy" value={`${avgAccuracy}%`} />
+      <StatCard label="Current Model Accuracy" value={avgAccuracy} />
       <StatCard label="Last Fine-Tuned" value={lastFineTuned} />
     </div>
   );

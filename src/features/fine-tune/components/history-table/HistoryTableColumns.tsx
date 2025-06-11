@@ -53,6 +53,15 @@ export const historyTableColumns: ColumnDef<HistoryTableDTO>[] = [
     },
   },
   {
+    accessorKey: "timeZone",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("timeZone")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto font-medium">{row.getValue("timeZone")}</div>
+    ),
+  },
+  {
     accessorKey: "fineTunedOn",
     header: ({ column }) => (
       <DTColumnHeader
@@ -125,6 +134,11 @@ export const historyTableColumns: ColumnDef<HistoryTableDTO>[] = [
     header: ({ column }) => (
       <DTColumnHeader className="w-7" column={column} title={""} />
     ),
-    cell: ({ row }) => <HistoryTableRowActions rowId={row.original.id} />,
+    cell: ({ row }) => (
+      <HistoryTableRowActions
+        rowId={row.original.id}
+        disabled={row.original.status.toLowerCase() !== "scheduled"}
+      />
+    ),
   },
 ];

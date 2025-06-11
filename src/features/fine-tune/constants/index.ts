@@ -2,7 +2,7 @@ import { CrudActionType } from "@aventisia/ui/types";
 
 const FINE_TUNE_TABLE_QUERY_KEY =["fineTuneRecords"];
 
-const HISTORY_TABLE_QUERY_KEY = ["historyRecrords"];
+const HISTORY_TABLE_QUERY_KEY = ["historyRecords"];
 
 const TABLE_HEADING = "Fine Tune";
 

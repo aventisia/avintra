@@ -13,10 +13,12 @@ import { HistoryTableDTO } from "../../dtos/history-table-dto";
 
 interface HistoryTableRowDeleteActionProps {
   rowId: string;
+  disabled?: boolean;
 }
 
 export const HistoryTableRowDeleteAction = ({
   rowId,
+  disabled,
 }: HistoryTableRowDeleteActionProps) => {
   const { showDefaultAlertDialog } = useShowAlertHandler();
   const { data: modelData } = useFetchModel();
@@ -32,6 +34,7 @@ export const HistoryTableRowDeleteAction = ({
 
   return (
     <DeleteDDMenuItem
+      disabled={disabled}
       onClick={() => {
         showDefaultAlertDialog({
           confirmActionFn: () =>
