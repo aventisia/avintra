@@ -1,7 +1,7 @@
 use futures_util::{SinkExt, StreamExt};
+use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
 use tokio::net::TcpListener;
-use std::net::SocketAddr;
 use tokio_tungstenite::accept_async;
 
 pub async fn start_websocket_server() {
