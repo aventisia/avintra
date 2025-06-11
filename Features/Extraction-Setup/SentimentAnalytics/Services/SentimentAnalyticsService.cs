@@ -724,9 +724,16 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
                 return serviceResponse;
             }
 
+            // Load scheduled models with their associated fine-tuning logs
+            scheduledModels = await _unitOfWork.ScheduledModelRepo
+                .GetByConditionAsync(w => scheduledModels.Select(s => s.Id).Contains(w.Id))
+                .Include(i => i.FineTuningLogs)
+                .ToListAsync();
+
             // Create fine-tuning logs for each associated document
             var fineTuningLogs = scheduledModels.Select(s => new FineTuningLog()
             {
+                Version = (s.FineTuningLogs?.Count ?? 0) + 1,
                 ScheduledModelId = s.Id,
                 Status = ScheduleTypesEnum.Scheduled,
             }).ToList();
