@@ -22,7 +22,7 @@ export const useSummarizationModelSetupForm = () => {
       summarizationMethod: "stuff",
       stuffPrompt: `You are an expert summarisation assistant. Your task is to read the provided content and generate a clear, concise, and accurate summary that captures the key ideas, main points, and critical information, while removing redundant or unimportant details.\nFocus on preserving the original intent and tone of the content. The summary should be easily understandable and suitable for someone who has not read the full text.\nIf the content is structured (like emails, reports, meeting transcripts, articles), maintain the logical flow and structure in the summary.\nBe objective, factual, and avoid adding personal opinions or interpretations.`,
       llm: "",
-      temperature: 0,
+      temperature: 0.2,
     },
   });
 
@@ -48,7 +48,7 @@ export const useSummarizationModelSetupForm = () => {
       summarizationMethod: "stuff",
       stuffPrompt: setupFormData?.stuffPrompt || form.getValues("stuffPrompt"),
       llm: setupFormData?.llm ?? "",
-      temperature: setupFormData?.temperature ?? 0,
+      temperature: setupFormData?.temperature ?? 0.2,
     });
   }, [form, queryClient]);
 

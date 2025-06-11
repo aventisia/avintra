@@ -21,7 +21,7 @@ export const useClassificationModelSetupForm = () => {
       allowMultipleClasses: false,
       prompt: `You are a reliable text classification assistant. Your task is to analyse the given input text and accurately classify it into the predefined categories based on its content, tone, and intent.\nIf “multiple classification mode” is True, you may return more than one applicable category label. Otherwise, return only the single most appropriate category\nSelect the category (or categories) strictly based on the information present in the input. Do not infer or guess beyond the given content.`,
       llm: "",
-      temperature: 0,
+      temperature: 0.2,
     },
   });
 
@@ -67,7 +67,7 @@ export const useClassificationModelSetupForm = () => {
       allowMultipleClasses: setupFormData?.allowMultipleClasses ?? false,
       categories: setupFormData?.categories ?? [{ name: "", instructions: "" }],
       llm: setupFormData?.llm ?? "",
-      temperature: setupFormData?.temperature ?? 0,
+      temperature: setupFormData?.temperature ?? 0.2,
     });
   }, [form, queryClient]);
 

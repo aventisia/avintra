@@ -21,7 +21,7 @@ export const useSentimentAnalyticsSetupForm = () => {
       categories: [{ name: "", instructions: "" }],
       prompt: `You are a sentiment analysis assistant. Your task is to evaluate the emotional tone of the provided text and classify its overall sentiment into one of the predefined categories.\nAnalyse the text based on the language, tone, and implied emotion, not just the presence of specific keywords.\nReturn only the sentiment label as the output. If the sentiment is ambiguous or mixed, return "Neutral".`,
       llm: "",
-      temperature: 0,
+      temperature: 0.2,
     },
   });
 
@@ -66,7 +66,7 @@ export const useSentimentAnalyticsSetupForm = () => {
       prompt: setupFormData?.prompt || form.getValues("prompt"),
       categories: setupFormData?.categories ?? [{ name: "", instructions: "" }],
       llm: setupFormData?.llm ?? "",
-      temperature: setupFormData?.temperature ?? 0,
+      temperature: setupFormData?.temperature ?? 0.2,
     });
   }, [form, queryClient]);
 
