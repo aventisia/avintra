@@ -11,25 +11,25 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     [Description("Sets the value of an XML element.")]
     public class SetXmlElementValueActivity : BaseCodeActivity
     {
+
         [RequiredArgument]
+        [DisplayName("XML Content")]
         [Description("The XML content as a string.")]
         public InArgument<string> XmlContent { get; set; }
 
         [RequiredArgument]
+        [DisplayName("XPath Expression")]
         [Description("The XPath expression to locate the element.")]
         public InArgument<string> XPath { get; set; }
 
         [RequiredArgument]
+        [DisplayName("Element Value")]
         [Description("The value to set for the element.")]
         public InArgument<string> ElementValue { get; set; }
 
-
+        [DisplayName("Updated XML Content")]
         [Description("Returns the updated XML content.")]
         public OutArgument<string> UpdatedXmlContent { get; set; }
-
-
-
-
         protected override void Execute(CodeActivityContext context)
         {
             var xmlContent = XmlContent.Get(context);
@@ -40,7 +40,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
 
             try
             {
-                if (string.IsNullOrEmpty(xmlContent)) throw new ArgumentException("XML content cannot be null or empty.");
+                if (string.IsNullOrEmpty(xmlContent))
+                    throw new ArgumentException("XML content cannot be null or empty.");
 
                 if (string.IsNullOrEmpty(xpath)) throw new ArgumentException("XPath cannot be null or empty.");
 

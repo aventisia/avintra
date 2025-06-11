@@ -12,23 +12,23 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
     public class RemoveXmlElementAttributeActivity : BaseCodeActivity
     {
         [RequiredArgument]
+        [DisplayName("XML Content")]
         [Description("The XML content as a string.")]
         public InArgument<string> XmlContent { get; set; }
 
         [RequiredArgument]
+        [DisplayName("XPath Expression")]
         [Description("The XPath expression to locate the element.")]
         public InArgument<string> XPath { get; set; }
 
         [RequiredArgument]
+        [DisplayName("Attribute Name")]
         [Description("The name of the attribute to remove.")]
         public InArgument<string> AttributeName { get; set; }
 
-
+        [DisplayName("Updated XML Content")]
         [Description("Returns the updated XML content.")]
         public OutArgument<string> UpdatedXmlContent { get; set; }
-
-
-
 
         protected override void Execute(CodeActivityContext context)
         {
@@ -41,34 +41,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
             try
             {
                 if (string.IsNullOrEmpty(xmlContent))
-                {
                     throw new ArgumentException("XML content cannot be null or empty.");
-                }
 
-                if (string.IsNullOrEmpty(xpath))
-                {
-                    throw new ArgumentException("XPath cannot be null or empty.");
-                }
+                if (string.IsNullOrEmpty(xpath)) throw new ArgumentException("XPath cannot be null or empty.");
 
                 if (string.IsNullOrEmpty(attributeName))
-                {
                     throw new ArgumentException("Attribute name cannot be null or empty.");
-                }
 
                 var xmlDoc = new XmlDocument();
                 xmlDoc.LoadXml(xmlContent);
 
                 var node = xmlDoc.SelectSingleNode(xpath);
-                if (node == null)
-                {
-                    throw new ArgumentException($"No element found at XPath: {xpath}");
-                }
+                if (node == null) throw new ArgumentException($"No element found at XPath: {xpath}");
 
                 var attr = node.Attributes?[attributeName];
-                if (attr != null)
-                {
-                    node.Attributes?.Remove(attr);
-                }
+                if (attr != null) node.Attributes?.Remove(attr);
 
                 updatedXmlContent = xmlDoc.OuterXml;
                 StatusMessage.Set(context, "Attribute removed successfully.");
