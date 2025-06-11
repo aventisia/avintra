@@ -6,7 +6,6 @@ using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
-
     [DisplayName("Empty Folder")]
     [Description("Removes all files and subdirectories within the specified folder, preserving the folder itself.")]
     public class EmptyFolderActivity : BaseCodeActivity
@@ -24,8 +23,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            string folderPath = FolderPath.Get(context);
-            bool deleteSubfolders = DeleteSubfolders.Get(context);
+            var folderPath = FolderPath.Get(context);
+            var deleteSubfolders = DeleteSubfolders.Get(context);
 
             if (string.IsNullOrWhiteSpace(folderPath))
                 throw new ArgumentException("Folder path cannot be null or empty.", nameof(folderPath));
@@ -34,19 +33,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
                 throw new DirectoryNotFoundException($"The specified folder does not exist: {folderPath}");
 
             // Delete all files
-            foreach (var file in Directory.GetFiles(folderPath))
-            {
-                File.Delete(file);
-            }
+            foreach (var file in Directory.GetFiles(folderPath)) File.Delete(file);
 
             // Delete subfolders if specified
             if (deleteSubfolders)
-            {
                 foreach (var dir in Directory.GetDirectories(folderPath))
-                {
-                    Directory.Delete(dir, recursive: true);
-                }
-            }
+                    Directory.Delete(dir, true);
         }
     }
 }

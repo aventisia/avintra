@@ -10,12 +10,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
     [Description("Checks whether the specified folder exists or doesn't exist based on the selected condition.")]
     public class IfFolderExistsActivity : BaseCodeActivity
     {
-
         [RequiredArgument]
         [DisplayName("If Folder")]
         [Description("Select the condition to check for the folder (Exists or Doesn't exist).")]
 
-        public InArgument<FolderCondition> Condition { get; set; } = new InArgument<FolderCondition>(FolderCondition.Exists);
+        public InArgument<FolderCondition> Condition { get; set; } =
+            new InArgument<FolderCondition>(FolderCondition.Exists);
 
 
         [RequiredArgument]
@@ -33,21 +33,19 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
         protected override void Execute(CodeActivityContext context)
         {
             // Retrieve input values
-            FolderCondition condition = context.GetValue(Condition);
-            string folderPath = context.GetValue(FolderPath);
+            var condition = context.GetValue(Condition);
+            var folderPath = context.GetValue(FolderPath);
 
             // Validate inputs
             if (string.IsNullOrWhiteSpace(folderPath))
-            {
                 throw new ArgumentException("The 'Folder Path' cannot be null or empty.");
-            }
 
-            bool result = false;
-            string status = "";
+            var result = false;
+            var status = "";
 
             try
             {
-                bool folderExists = Directory.Exists(folderPath);
+                var folderExists = Directory.Exists(folderPath);
 
                 switch (condition)
                 {
@@ -81,6 +79,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
             }
         }
     }
+
     public enum FolderCondition
     {
         [Description("Check if the folder exists.")]

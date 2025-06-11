@@ -30,8 +30,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            string folderPath = FolderPath.Get(context);
-            bool includeSubfolders = IncludeSubfolders.Get(context);
+            var folderPath = FolderPath.Get(context);
+            var includeSubfolders = IncludeSubfolders.Get(context);
 
             if (string.IsNullOrWhiteSpace(folderPath))
                 throw new ArgumentException("Folder path must not be null or empty.", nameof(FolderPath));

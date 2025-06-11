@@ -10,7 +10,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
     [Description("This activity moves an existing folder to a specified destination folder.")]
     public class MoveFolderActivity : BaseCodeActivity
     {
-
         [DisplayName("Folder to Move")]
         [Description("Specifies the path of the folder that needs to be moved.")]
 
@@ -31,30 +30,24 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
         protected override void Execute(CodeActivityContext context)
         {
             // Retrieve input values
-            string sourceFolderPath = context.GetValue(SourceFolderPath);
-            string destinationFolderPath = context.GetValue(DestinationFolderPath);
+            var sourceFolderPath = context.GetValue(SourceFolderPath);
+            var destinationFolderPath = context.GetValue(DestinationFolderPath);
 
             // Validate inputs
             if (string.IsNullOrWhiteSpace(sourceFolderPath))
-            {
                 throw new ArgumentException("The 'Folder to Move' cannot be null or empty.");
-            }
 
             if (string.IsNullOrWhiteSpace(destinationFolderPath))
-            {
                 throw new ArgumentException("The 'Destination Folder' cannot be null or empty.");
-            }
 
             // Ensure the source folder exists
             if (!Directory.Exists(sourceFolderPath))
-            {
                 throw new DirectoryNotFoundException($"The specified folder does not exist: {sourceFolderPath}");
-            }
 
             try
             {
                 // Construct the full path of the moved folder
-                string destinationFullPath = Path.Combine(destinationFolderPath, Path.GetFileName(sourceFolderPath));
+                var destinationFullPath = Path.Combine(destinationFolderPath, Path.GetFileName(sourceFolderPath));
 
                 // Move the folder
                 Directory.Move(sourceFolderPath, destinationFullPath);
@@ -72,5 +65,4 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
             }
         }
     }
-
 }

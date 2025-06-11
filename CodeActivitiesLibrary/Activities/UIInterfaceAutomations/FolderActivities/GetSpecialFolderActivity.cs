@@ -5,16 +5,16 @@ using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
-
     [DisplayName("Get Special Folder Path")]
-    [Description("This activity retrieves the path of a Windows special folder, such as Desktop, My Pictures, Internet Cache, etc.")]
+    [Description(
+        "This activity retrieves the path of a Windows special folder, such as Desktop, My Pictures, Internet Cache, etc.")]
     public class GetSpecialFolderPathActivity : BaseCodeActivity
     {
-
         [DisplayName("Special Folder Name")]
         [Description("Select the name of the special folder whose path you want to retrieve.")]
 
-        public InArgument<SpecialFolder> SpecialFolderName { get; set; } = new InArgument<SpecialFolder>(SpecialFolder.Desktop);
+        public InArgument<SpecialFolder> SpecialFolderName { get; set; } =
+            new InArgument<SpecialFolder>(SpecialFolder.Desktop);
 
         [DisplayName("Special Folder Path")]
         [Description("The retrieved path of the special folder.")]
@@ -24,7 +24,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
         protected override void Execute(CodeActivityContext context)
         {
             // Retrieve input values
-            SpecialFolder specialFolderName = context.GetValue(SpecialFolderName);
+            var specialFolderName = context.GetValue(SpecialFolderName);
 
             try
             {
@@ -61,14 +61,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
                 }
 
                 // Retrieve the path using Environment.GetFolderPath
-                string path = Environment.GetFolderPath(environmentFolder);
+                var path = Environment.GetFolderPath(environmentFolder);
                 context.SetValue(SpecialFolderPath, path);
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to retrieve the path for the special folder: {specialFolderName}", ex);
+                throw new InvalidOperationException(
+                    $"Failed to retrieve the path for the special folder: {specialFolderName}", ex);
             }
         }
+
         public enum SpecialFolder
         {
             [Description("The desktop directory for the current user.")]
@@ -95,7 +97,5 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
             [Description("The directory containing browsing history.")]
             History
         }
-
     }
-
 }

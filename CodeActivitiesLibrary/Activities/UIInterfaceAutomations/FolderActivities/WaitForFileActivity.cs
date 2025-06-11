@@ -11,7 +11,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
     [Description("Suspends running the flow until a file is created or deleted.")]
     public class WaitForFileActivity : Extensions.BaseNativeActivity
     {
-
         [RequiredArgument]
         [DisplayName("Wait for file to be")]
         [Description("Specifies whether to wait for the file to be Created or Deleted.")]
@@ -25,9 +24,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
 
         [DisplayName("Fail with timeout error")]
-        [Description("Indicates whether to fail with a timeout error if the file is not created/deleted within the specified time.")]
+        [Description(
+            "Indicates whether to fail with a timeout error if the file is not created/deleted within the specified time.")]
         public bool FailWithTimeoutError { get; set; }
-
 
 
         protected override void Execute(NativeActivityContext context)
@@ -37,14 +36,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
             var filePath = FilePath.Get(context);
 
             // Validate inputs
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                throw new ArgumentException("File path cannot be empty.");
-            }
+            if (string.IsNullOrWhiteSpace(filePath)) throw new ArgumentException("File path cannot be empty.");
 
             try
             {
-                string status = string.Empty;
+                var status = string.Empty;
 
                 // Use pattern matching for cleaner switch-case logic
                 switch (action)
@@ -73,61 +69,50 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         private string WaitForFileCreation(NativeActivityContext context, string filePath)
         {
-            int retryCount = 0;
+            var retryCount = 0;
             const int maxRetries = 10; // Maximum number of retries
             const int delayMilliseconds = 500; // Delay between checks (500ms)
 
             while (retryCount < maxRetries)
             {
-                if (File.Exists(filePath))
-                {
-                    return $"File '{filePath}' was successfully created.";
-                }
+                if (File.Exists(filePath)) return $"File '{filePath}' was successfully created.";
 
                 Thread.Sleep(delayMilliseconds); // Wait before checking again
                 retryCount++;
             }
 
             if (FailWithTimeoutError)
-            {
                 throw new TimeoutException($"File '{filePath}' was not created within the specified time.");
-            }
 
             return $"File '{filePath}' was not created within the specified time.";
         }
 
         private string WaitForFileDeletion(NativeActivityContext context, string filePath)
         {
-            int retryCount = 0;
+            var retryCount = 0;
             const int maxRetries = 10; // Maximum number of retries
             const int delayMilliseconds = 500;
             while (retryCount < maxRetries)
             {
-                if (!File.Exists(filePath))
-                {
-                    return $"File '{filePath}' was successfully deleted.";
-                }
+                if (!File.Exists(filePath)) return $"File '{filePath}' was successfully deleted.";
 
                 Thread.Sleep(delayMilliseconds); // Wait before checking again
                 retryCount++;
             }
 
             if (FailWithTimeoutError)
-            {
                 throw new TimeoutException($"File '{filePath}' was not deleted within the specified time.");
-            }
 
             return $"File '{filePath}' was not deleted within the specified time.";
         }
     }
+
     public enum WaitForFileAction
     {
-        [Display(Name = "Created")]
-        [Description("Waits for the file to be created at the specified path.")]
+        [Display(Name = "Created")] [Description("Waits for the file to be created at the specified path.")]
         Created,
 
-        [Display(Name = "Deleted")]
-        [Description("Waits for the file to be deleted from the specified path.")]
+        [Display(Name = "Deleted")] [Description("Waits for the file to be deleted from the specified path.")]
         Deleted
     }
 }

@@ -1,5 +1,4 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -34,8 +33,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            string source = SourceFolder.Get(context);
-            string destination = DestinationFolder.Get(context);
+            var source = SourceFolder.Get(context);
+            var destination = DestinationFolder.Get(context);
             var action = IfExistsAction.Get(context);
 
             if (string.IsNullOrWhiteSpace(source))
@@ -47,11 +46,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
             if (!Directory.Exists(source))
                 throw new DirectoryNotFoundException($"Source folder does not exist: {source}");
 
-            string folderName = new DirectoryInfo(source).Name;
-            string destinationPath = Path.Combine(destination, folderName);
+            var folderName = new DirectoryInfo(source).Name;
+            var destinationPath = Path.Combine(destination, folderName);
 
             if (Directory.Exists(destinationPath))
-            {
                 switch (action)
                 {
                     case IfExistsActionEnum.DoNothing:
@@ -62,7 +60,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
                         Directory.Delete(destinationPath, true);
                         break;
                 }
-            }
 
             CopyAll(new DirectoryInfo(source), new DirectoryInfo(destinationPath));
             CopiedFolder.Set(context, destinationPath);
@@ -72,14 +69,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
         {
             Directory.CreateDirectory(target.FullName);
 
-            foreach (FileInfo fi in source.GetFiles())
-            {
-                fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
-            }
+            foreach (var fi in source.GetFiles()) fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
 
-            foreach (DirectoryInfo subDir in source.GetDirectories())
+            foreach (var subDir in source.GetDirectories())
             {
-                DirectoryInfo nextTargetSubDir = target.CreateSubdirectory(subDir.Name);
+                var nextTargetSubDir = target.CreateSubdirectory(subDir.Name);
                 CopyAll(subDir, nextTargetSubDir);
             }
         }

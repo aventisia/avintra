@@ -10,7 +10,8 @@ using System.Linq;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
     [DisplayName("Retrieve Files in Folder")]
-    [Description("This activity retrieves the list of files in a specified folder, with options to include subfolders and sort the results.")]
+    [Description(
+        "This activity retrieves the list of files in a specified folder, with options to include subfolders and sort the results.")]
     public class GetFilesInFolderActivity : BaseCodeActivity
     {
         [DisplayName("Folder Path")]
@@ -30,19 +31,25 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         [DisplayName("Fail on Denied Access")]
         [Description("If true, the activity will fail if access to any subfolder is denied.")]
+
         public InArgument<bool> FailUponDeniedAccess { get; set; } = new InArgument<bool>(true);
 
         [DisplayName("Sort By")]
         [Description("The primary criterion to sort the retrieved files (e.g., \"Name\", \"LastWriteTime\").")]
-        public InArgument<FileSortCriteria> SortBy { get; set; } = new InArgument<FileSortCriteria>(FileSortCriteria.NoSort);
+
+        public InArgument<FileSortCriteria> SortBy { get; set; } =
+            new InArgument<FileSortCriteria>(FileSortCriteria.NoSort);
 
         [DisplayName("Descending Order")]
         [Description("If true, sorts the files in descending order based on the primary sort criterion.")]
+
         public InArgument<bool> Descending { get; set; } = new InArgument<bool>(false);
 
         [DisplayName("Then By")]
         [Description("The secondary criterion to sort the retrieved files (e.g., \"Size\", \"CreationTime\").")]
-        public InArgument<FileSortCriteria> ThenBy { get; set; } = new InArgument<FileSortCriteria>(FileSortCriteria.NoSort);
+
+        public InArgument<FileSortCriteria> ThenBy { get; set; } =
+            new InArgument<FileSortCriteria>(FileSortCriteria.NoSort);
 
         [DisplayName("Retrieved Files")]
         [Description("The list of files that were retrieved based on the specified criteria.")]
@@ -52,32 +59,30 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
         protected override void Execute(CodeActivityContext context)
         {
             // Retrieve input values
-            string folderPath = context.GetValue(FolderPath);
-            string fileFilter = context.GetValue(FileFilter);
-            bool includeSubfolders = context.GetValue(IncludeSubfolders);
-            bool failUponDeniedAccess = context.GetValue(FailUponDeniedAccess);
-            FileSortCriteria sortBy = context.GetValue(SortBy);
-            bool descending = context.GetValue(Descending);
-            FileSortCriteria thenBy = context.GetValue(ThenBy);
+            var folderPath = context.GetValue(FolderPath);
+            var fileFilter = context.GetValue(FileFilter);
+            var includeSubfolders = context.GetValue(IncludeSubfolders);
+            var failUponDeniedAccess = context.GetValue(FailUponDeniedAccess);
+            var sortBy = context.GetValue(SortBy);
+            var descending = context.GetValue(Descending);
+            var thenBy = context.GetValue(ThenBy);
 
             // Validate folder path
             if (!Directory.Exists(folderPath))
                 throw new DirectoryNotFoundException($"The specified folder path does not exist: {folderPath}");
 
             // Retrieve files based on the filter and subfolder inclusion
-            IEnumerable<string> files = GetFiles(folderPath, fileFilter, includeSubfolders, failUponDeniedAccess);
+            var files = GetFiles(folderPath, fileFilter, includeSubfolders, failUponDeniedAccess);
 
             // Apply sorting if specified
-            if (sortBy != FileSortCriteria.NoSort)
-            {
-                files = SortFiles(files, sortBy, descending, thenBy);
-            }
+            if (sortBy != FileSortCriteria.NoSort) files = SortFiles(files, sortBy, descending, thenBy);
 
             // Set the output
             context.SetValue(RetrievedFiles, files);
         }
 
-        private IEnumerable<string> GetFiles(string folderPath, string fileFilter, bool includeSubfolders, bool failUponDeniedAccess)
+        private IEnumerable<string> GetFiles(string folderPath, string fileFilter, bool includeSubfolders,
+            bool failUponDeniedAccess)
         {
             try
             {
@@ -95,7 +100,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
             }
         }
 
-        private IEnumerable<string> SortFiles(IEnumerable<string> files, FileSortCriteria sortBy, bool descending, FileSortCriteria thenBy)
+        private IEnumerable<string> SortFiles(IEnumerable<string> files, FileSortCriteria sortBy, bool descending,
+            FileSortCriteria thenBy)
         {
             Func<string, object> getSortKey = null;
             switch (sortBy)
@@ -158,16 +164,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
                     break;
             }
 
-            IOrderedEnumerable<string> orderedFiles = descending
+            var orderedFiles = descending
                 ? files.OrderByDescending(getSortKey)
                 : files.OrderBy(getSortKey);
 
             if (thenBy != FileSortCriteria.NoSort && getThenKey != null)
-            {
                 orderedFiles = descending
                     ? orderedFiles.ThenByDescending(getThenKey)
                     : orderedFiles.ThenBy(getThenKey);
-            }
 
             return orderedFiles.ToList();
         }

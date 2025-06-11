@@ -6,7 +6,6 @@ using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 {
-
     [DisplayName("Create Folder")]
     [Description("Generates a new folder within the specified parent directory using a given folder name.")]
     public class CreateFolderActivity : BaseCodeActivity
@@ -28,8 +27,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            string parentPath = ParentDirectory.Get(context);
-            string newFolderName = FolderName.Get(context);
+            var parentPath = ParentDirectory.Get(context);
+            var newFolderName = FolderName.Get(context);
 
             if (string.IsNullOrWhiteSpace(parentPath))
                 throw new ArgumentException("Parent directory path cannot be null or empty.");
@@ -37,12 +36,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
             if (string.IsNullOrWhiteSpace(newFolderName))
                 throw new ArgumentException("New folder name cannot be null or empty.");
 
-            string fullPath = Path.Combine(parentPath, newFolderName);
+            var fullPath = Path.Combine(parentPath, newFolderName);
 
-            if (!Directory.Exists(fullPath))
-            {
-                Directory.CreateDirectory(fullPath);
-            }
+            if (!Directory.Exists(fullPath)) Directory.CreateDirectory(fullPath);
 
             NewFolder.Set(context, fullPath);
         }
