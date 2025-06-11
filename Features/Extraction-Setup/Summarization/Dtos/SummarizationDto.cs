@@ -112,7 +112,7 @@ public class SummarizationSetupDto
     /// <summary>
     /// Gets or sets the temperature setting for creativity and randomness in the persona’s responses.
     /// </summary>
-    public double Temperature { get; set; }
+    public required double Temperature { get; set; } = 0.2;
 
     /// <summary>
     /// Specifies the type or identifier of the large language model (LLM) being used.

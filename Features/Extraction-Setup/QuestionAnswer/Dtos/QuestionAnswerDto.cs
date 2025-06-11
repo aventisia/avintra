@@ -69,7 +69,7 @@ public class QuestionAnswerSetupDto
     /// <summary>
     /// Gets or sets the temperature setting for creativity and randomness in the persona’s responses.
     /// </summary>
-    public double Temperature { get; set; }
+    public required double Temperature { get; set; } = 0.2;
 
     /// <summary>
     /// Specifies the type or identifier of the large language model (LLM) being used.
@@ -87,7 +87,7 @@ public class QuestionAnswerLabelDto
     /// Gets or sets the unique key associated with the sentiment category.
     /// </summary>
     public string Index { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Descriptive name of the label (e.g., "Relevant", "Not Relevant").
     /// </summary>
