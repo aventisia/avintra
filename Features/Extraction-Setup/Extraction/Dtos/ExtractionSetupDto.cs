@@ -65,7 +65,7 @@ public class ExtractionSetupDto
     /// <summary>
     /// Gets or sets the temperature setting for creativity and randomness in the persona’s responses.
     /// </summary>
-    public required double Temperature { get; set; } = 0.2;
+    public required double Temperature { get; set; }
 
     /// <summary>
     /// Specifies the type or identifier of the large language model (LLM) being used.

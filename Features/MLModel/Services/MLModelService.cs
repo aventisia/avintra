@@ -348,6 +348,7 @@ public class MLModelService : IMLModelService
                 // Configuration for the extraction model type: defines how to extract relevant information.
                 var extractionSetup = new ExtractionSetupDto
                 {
+                    Temperature = 0.2,
                     Context = string.Empty,
                     Prompt = string.Empty,
                     TableMetadata = null,
@@ -369,6 +370,7 @@ public class MLModelService : IMLModelService
                 // Configuration for the classification model type: defines categories and instructions for content classification.
                 var classificationSetup = new ClassificationSetupDto
                 {
+                    Temperature = 0.2,
                     Context = string.Empty,
                     Prompt = string.Empty,
                     AllowMultipleClasses = false,
@@ -389,6 +391,7 @@ public class MLModelService : IMLModelService
                 // Configuration for the sentiment analysis model type: defines sentiment categories and their instructions.
                 var sentimentAnalyticsSetup = new SentimentAnalyticSetupDto
                 {
+                    Temperature = 0.2,
                     Context = string.Empty,
                     Prompt = string.Empty,
                     Categories = new List<SentimentAnalyticsSetupCategoryDto>
@@ -409,6 +412,7 @@ public class MLModelService : IMLModelService
                 // Configuration for summarization model type (if needed in the future).
                 var summarizationSetup = new SummarizationSetupDto
                 {
+                    Temperature = 0.2,
                     Context = string.Empty,
                     CharactersPerChunk = 0,
                     ChunkOverlap = 0,
@@ -425,6 +429,7 @@ public class MLModelService : IMLModelService
                 // Configuration for question answering model type (if needed in the future).
                 var questionAnswerSetup = new QuestionAnswerSetupDto
                 {
+                    Temperature = 0.2,
                     Context = string.Empty,
                     Prompt = string.Empty,
                     QuestionAnswers = new List<QuestionAnswerLabelDto>()
@@ -453,7 +458,7 @@ public class MLModelService : IMLModelService
                     ExclusionsOrBoundaries = string.Empty,
                     Documents = null,
                     ContextMemoryTimeframe = string.Empty,
-                    Temperature = 0,
+                    Temperature = 0.7,
                     EnableAudio = false,
                     EnableVideo = false,
                     EnableChat = false,
