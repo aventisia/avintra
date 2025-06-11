@@ -1,5 +1,5 @@
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { formatDuration } from "../lib/formatDuration";
+import { formatDuration } from "../lib";
 import { useFlowExecutionLogStore } from "../stores/flow-execution-lof-store";
 import { useShallow } from "zustand/react/shallow";
 import { useFetchExecutionLogs } from "../hooks/useFetchFlowExecutionLogs";

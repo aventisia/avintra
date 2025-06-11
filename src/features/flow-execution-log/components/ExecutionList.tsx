@@ -1,5 +1,5 @@
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { formatDuration } from "../lib/formatDuration";
+import { formatDuration, getFormattedDate } from "../lib";
 import { useFlowExecutionLogStore } from "../stores/flow-execution-lof-store";
 import { useShallow } from "zustand/react/shallow";
 import { useFetchExecutionLogs } from "../hooks/useFetchFlowExecutionLogs";
@@ -56,11 +56,17 @@ export const ExecutionList = () => {
                 ) : (
                   <XCircleIcon className="h-4 w-4 text-red-500" />
                 )}
-                <span>{exec.number}</span>
+                <div className="flex flex-1 items-center justify-between">
+                  <div>
+                    <span>{exec.number}</span>
+                    <span className="pl-2 text-2xs text-muted-foreground">
+                      {getFormattedDate(new Date(exec.executedOn))}
+                    </span>
+                  </div>
 
-                <div className="text-2xs text-muted-foreground">
-                  {new Date(exec.executedOn).toLocaleString()} |{" "}
-                  {formatDuration(exec.duration)}
+                  <span className="text-2xs text-muted-foreground">
+                    {formatDuration(exec.duration)}
+                  </span>
                 </div>
               </CommandItem>
             ))}
