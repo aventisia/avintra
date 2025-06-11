@@ -5,7 +5,12 @@ namespace MLModelBuilderAPIs.Hubs;
 /// </summary>
 public class ChatHub : Hub
 {
-    // Stores the mapping between SignalR connection IDs and user IDs (as strings)
+    private readonly ILLMDataExtractionService _llmDataExtractionService;
+    
+    public ChatHub(ILLMDataExtractionService llmDataExtractionService)
+    {
+        _llmDataExtractionService = llmDataExtractionService;
+    }    // Stores the mapping between SignalR connection IDs and user IDs (as strings)
     private static readonly Dictionary<string, string> ConnectionUserMap = new();
 
     // Called when a client successfully connects to the SignalR hub.
@@ -55,11 +60,11 @@ public class ChatHub : Hub
         }
 
         // Call helper method to get the chatbot response
-        await GetResponseAsync(userId);
+        await GetResponseAsync(userId, message);
     }
 
     // Finds the connection associated with the user ID and sends a bot response.
-    private async Task GetResponseAsync(string? userId)
+    private async Task GetResponseAsync(string? userId, string message)
     {
         // Find the connection associated with the user ID
         var receiverConnection = ConnectionUserMap
@@ -68,11 +73,19 @@ public class ChatHub : Hub
         // Check if the connection is valid
         if (!string.IsNullOrWhiteSpace(receiverConnection.Key))
         {
-            // Send a fixed response message to the user's client
+            // Custom Q&A prompt
+            // Clear, instruction-based prompt for Q&A
+            var prompt = $"You are a helpful assistant. Answer the question clearly and concisely. Do not include greetings or explanations. Just provide the answer: {message}";
+
+            // Send the full prompt to the LLM for response
+            var response = await _llmDataExtractionService.ExtractDataAsync(prompt, "gemma");
+
+            // Return the response to the client
             await Clients.Client(receiverConnection.Key)
-                .SendAsync("ReceiveMessage", "ChatBot", "Thank you.");
+                .SendAsync("ReceiveMessage", "ChatBot", response);
         }
     }
+
 
     /// <summary>
     /// Sends a message from the caller to a specific user (if connected).
