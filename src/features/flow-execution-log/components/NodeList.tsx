@@ -59,9 +59,11 @@ export const NodeList = () => {
                 ) : (
                   <XCircleIcon className="h-4 w-4 text-red-500" />
                 )}
-                <span className="text-xs">{node.nodeName}</span>
-                <div className="text-2xs text-muted-foreground">
-                  | {formatDuration(node.duration)}
+                <div className="flex flex-1 items-center justify-between">
+                  <span className="w-60 truncate text-xs">{node.nodeName}</span>
+                  <div className="text-2xs text-muted-foreground">
+                    {formatDuration(node.duration)}
+                  </div>
                 </div>
               </CommandItem>
             ))}
