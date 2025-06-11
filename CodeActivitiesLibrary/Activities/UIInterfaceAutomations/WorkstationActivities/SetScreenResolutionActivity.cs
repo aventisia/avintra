@@ -13,31 +13,47 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
         private const int CdsUpdateregistry = 0x01;
 
         [RequiredArgument]
+        [DisplayName("Display")]
+        [Description(
+            "The name or number of the display to set resolution for. Use 'Primary' for the primary monitor, or 'All' for all monitors.")]
+        public InArgument<string> Display { get; set; }
+
+        [RequiredArgument]
+        [DisplayName("Width")]
         [Description("The width of the screen.")]
         public InArgument<int> Width { get; set; }
 
         [RequiredArgument]
+        [DisplayName("Height")]
         [Description("The height of the screen.")]
         public InArgument<int> Height { get; set; }
 
         [RequiredArgument]
+        [DisplayName("Bit Count")]
         [Description("The bit count of the screen.")]
         public InArgument<int> BitCount { get; set; }
 
         [RequiredArgument]
+        [DisplayName("Frequency")]
         [Description("The frequency (refresh rate) of the screen.")]
         public InArgument<int> Frequency { get; set; }
 
 
-
-
         protected override void Execute(CodeActivityContext context)
         {
+            var display = Display.Get(context);
             var width = Width.Get(context);
             var height = Height.Get(context);
             var bitCount = BitCount.Get(context);
             var frequency = Frequency.Get(context);
             var status = "";
+
+            if (string.IsNullOrWhiteSpace(display))
+            {
+                status = "Display name or number cannot be empty.";
+                StatusMessage.Set(context, status);
+                return;
+            }
 
             try
             {
@@ -51,7 +67,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
                 };
 
                 // C# 7.3: ChangeDisplaySettingsEx returns int, not bool
-                var result = ChangeDisplaySettingsEx(null, ref devMode, IntPtr.Zero, CdsUpdateregistry, IntPtr.Zero);
+                var result = ChangeDisplaySettingsEx(display, ref devMode, IntPtr.Zero, CdsUpdateregistry, IntPtr.Zero);
                 if (result != 0) // DISP_CHANGE_SUCCESSFUL == 0
                 {
                     var errorCode = Marshal.GetLastWin32Error();
