@@ -77,6 +77,10 @@
     <Reference Include="System.IO.Pipelines, Version=9.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.Pipelines.9.0.5\lib\net462\System.IO.Pipelines.dll</HintPath>
     </Reference>
+    <Reference Include="System.Management" />
+    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\PowerShellStandard.Library.5.1.1\lib\net452\System.Management.Automation.dll</HintPath>
+    </Reference>
     <Reference Include="System.Memory, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.6.0\lib\net462\System.Memory.dll</HintPath>
     </Reference>
@@ -244,6 +248,7 @@
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\SetTextOnTerminalSessionActivity.cs" />
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\WaitForTextOnTerminalSessionActivity.cs" />
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\_TerminalEmulationCategoryMetaData.cs" />
+    <Compile Include="Activities\AppIntegrations\WindowsServiceActivities\Enums\ServiceNameEnum.cs" />
     <Compile Include="Activities\AppIntegrations\WindowsServiceActivities\IfServiceActivity.cs" />
     <Compile Include="Activities\AppIntegrations\WindowsServiceActivities\PauseServiceActivity.cs" />
     <Compile Include="Activities\AppIntegrations\WindowsServiceActivities\ResumeServiceActivity.cs" />
@@ -314,7 +319,6 @@
     <Compile Include="Activities\DataTransformations\TextActivities\ChangeTextCaseActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\ConvertDatetimeToTextActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\ConvertNumberToTextActivity.cs" />
-    <Compile Include="Activities\DataTransformations\TextActivities\ConvertTextRepresentationToNumberActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\ConvertTextToDateTimeActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\ConvertTextToNumberActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\CreateHTMLContentActivity.cs" />
@@ -474,6 +478,9 @@
     <Compile Include="Activities\UIInterfaceAutomations\ScriptingActivities\RunVbScriptActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\ScriptingActivities\_ScriptingCategoryMetaData.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\DeleteWindowsEnvironmentVariableActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\Enums\EnvVarNameEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\Enums\ProcessNameEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\Enums\ScopeEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\GetWindowsEnvironmentVariableActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\IfProcessActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\PingActivity.cs" />
@@ -543,6 +550,8 @@
     <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\ShutdownComputerActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\TakeScreenshotActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\WorkstationActivities\_WorkstationCategoryMetaData.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\Enums\GetValueAsEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\Enums\XmlFileEncodingEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\ExecuteXPathExpressionActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\GetXmlElementAttributeActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\GetXmlElementValueActivity.cs" />
