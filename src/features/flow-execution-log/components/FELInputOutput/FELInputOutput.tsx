@@ -1,6 +1,6 @@
 import { Button } from "@aventisia/ui/buttons";
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { Copy, Download } from "lucide-react";
+import { Copy } from "lucide-react";
 import ReactJson from "react-json-view";
 import { useFlowExecutionActions } from "../../hooks/useFlowExecutionActions";
 
@@ -9,7 +9,7 @@ interface FELInputOutputProps {
   title: string;
 }
 const FELInputOutput = ({ jsonData, title }: FELInputOutputProps) => {
-  const { handleCopy, handleDownload } = useFlowExecutionActions({
+  const { handleCopy } = useFlowExecutionActions({
     jsonData,
     title,
   });
@@ -31,14 +31,14 @@ const FELInputOutput = ({ jsonData, title }: FELInputOutputProps) => {
         <div className="ml-2 flex-grow items-center justify-center">
           <span className="text-sm">{title}</span>
         </div>
-        <div className="flex items-center gap-1">
-          <Button
+        <div className="flex items-center px-0.5">
+          {/* <Button
             variant={"ghost"}
             size={"icon6"}
             onClick={() => handleDownload()}
           >
             <Download className="h-3 w-3" />
-          </Button>
+          </Button> */}
           <Button variant={"ghost"} size={"icon6"} onClick={() => handleCopy()}>
             <Copy className="h-3 w-3" />
           </Button>
