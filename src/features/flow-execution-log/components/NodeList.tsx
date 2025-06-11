@@ -34,12 +34,12 @@ export const NodeList = () => {
       <Command>
         <div className="mx-3 mb-2 rounded-lg bg-slate-100">
           <CommandInput
-            className="h-6 text-xs"
+            className="h-10 text-xs"
             placeholder="Search nodes..."
             autoFocus
           />
         </div>
-        <ScrollArea className="h-[calc(100vh-7.5rem)] px-2">
+        <ScrollArea className="h-[calc(100vh-9.5rem)] px-2">
           <CommandList className="">
             <CommandEmpty className="h-full">
               <NoContentMessage
