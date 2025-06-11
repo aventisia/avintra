@@ -48,6 +48,14 @@ public class ClassificationService : IClassificationService
             // Clean up DTO string properties
             classificationDto = TrimDtoStringPropsUtil.TrimDtoStringProps(classificationDto);
 
+            // Assign a unique index (as a string) to each category in the setup object
+            int index = 0;
+            foreach (var category in classificationDto.SetupObject.Categories)
+            {
+                category.Index = index.ToString();
+                index++;
+            }
+
             // Map the updated DTO data to the model entity
             classificationDto.Adapt(mLModel);
             mLModel.GeneratedPrompt = GenerateClassificationModelPrompt(classificationDto);
@@ -136,6 +144,7 @@ public class ClassificationService : IClassificationService
                                           .Include(i => i.ExtractedData)
                                           .SingleOrDefaultAsync();
 
+
             // If model is not found, log and return failure
             if (model == null)
             {
@@ -143,6 +152,12 @@ public class ClassificationService : IClassificationService
                 serviceResponse.Message = "Model not found";
                 return serviceResponse;
             }
+
+            // Convert model to SentimentAnalyticDto and get categories
+            var categoryDict = model.Adapt<ClassificationDto>()?
+                    .SetupObject?
+                    .Categories?
+                    .ToDictionary(c => c.Index, c => c.Name);
 
             // Check for prompt availability
             if (string.IsNullOrEmpty(model.GeneratedPrompt))
@@ -188,7 +203,7 @@ public class ClassificationService : IClassificationService
                     extractedDataList.Add(extractedData);
                     continue;
                 }
-                
+
                 // Record the start time of the LLM extraction call (in UTC)
                 var startExecutionTime = DateTime.UtcNow;
 
@@ -248,6 +263,15 @@ public class ClassificationService : IClassificationService
                 {
                     extractedData.ExtractedData = JsonSerializer.Deserialize<List<ClassificationSetupData>>(llmResponse.Data, options) ?? new List<ClassificationSetupData>();
                     extractedData.Remarks = "";
+
+                    // Assign names using dictionary lookup
+                    foreach (var category in extractedData.ExtractedData)
+                    {
+                        if (categoryDict.TryGetValue(category.Index, out var name))
+                        {
+                            category.Name = name;
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -1025,7 +1049,7 @@ public class ClassificationService : IClassificationService
             {
                 var category = classificationDto.SetupObject.Categories[i];
                 var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
-                categoriesStringBuilder.AppendLine($"{i + 1}. {category.Name}{instructions}");
+                categoriesStringBuilder.AppendLine($"{category.Index}. {category.Name}{instructions}");
             }
         }
 

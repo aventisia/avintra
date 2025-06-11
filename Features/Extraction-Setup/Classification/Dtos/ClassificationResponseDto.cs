@@ -38,6 +38,11 @@ public class ClassificationSetupFileData
 public class ClassificationSetupData
 {
     /// <summary>
+    /// Gets or sets the unique key associated with the sentiment category.
+    /// </summary>
+    public string? Index { get; set; }
+
+    /// <summary>
     /// Gets or sets the name associated with the classification setup data.
     /// </summary>
     public required string Name { get; set; }

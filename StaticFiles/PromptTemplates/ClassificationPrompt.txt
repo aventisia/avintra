@@ -1,27 +1,29 @@
-{{Prompt}}
-
+Prompt: {{Prompt}}
 Context: {{Context}}
-
-Classification Settings:
-1. Multiple category assignment allowed: {{AllowMultipleClasses}}
-
-Please classify the input text into predefined categories with confidence score based on its content. The categories are listed below, and your objective is to identify which categories are relevant to the provided context. Extract values only for the following categories: {{Categories}}.
+Task: Please classify the input text based on its content into predefined categories and provide a confidence score for each classification.
+CategoriesToEvaluate: {{Categories}}
+AllowMultipleClasses: {{AllowMultipleClasses}}
 
 Instructions:
-- Do not include any numbers, explanations, or extra text outside the JSON.
-- Analyze the provided input and context.
-- For each category, return "true" if it matches or is relevant, otherwise return "false".
-- If AllowMultipleClasses is set to false, return "true" only for the single most accurate category, and "false" for all others.
-- Use "false" for any category that does not match or is irrelevant.
-- If AllowMultipleClasses is set to true, return "true" for all categories that are relevant or match the input.
-- Format the output as a JSON array. Each object must include:
-    - "name": the category name
-    - "value": a string value "true" or "false"
-    - "confidenceScore": a string representing the model's confidence in the classification
-- Use only the given input and context.
-- For each extracted category, include a confidence score representing the model's certainty about the accuracy of the extracted value.
-- Confidence scores must be returned as string values scaled from 1 to 100 (e.g., "85" for 0.85 confidence).
+    - Do not modify, rephrase, or alter the categories in any way. Use them exactly as provided.
+    - Do not include any numbers, explanations, or extra text outside the JSON output.
+    - Analyze the provided input and context.
+    - If 'AllowMultipleClasses' is set to 'true':
+        - Return 'true' for all categories that are relevant or match the input.
+        - Return 'false' for any category that is not supported, not relevant, or clearly does not apply.
+    - If 'AllowMultipleClasses' is set to 'false':
+        - Return 'true' for ONLY the single most accurate category.
+        - Return 'false' for all other categories.
+    - Use 'false' for any category that cannot be confidently validated or does not match.
+    - For each classified category, include a confidence score representing the model's certainty about the classification.
+    - Confidence scores must be returned as string values scaled from 1 to 100 (e.g., "92"). Use "0" for categories marked "false" if they are completely irrelevant or not found.
+    - Do not include any text or commentary outside the specified JSON output.
+    - The entire response MUST be a single, valid JSON array string, exactly as specified in the 'OutputFormat' field. Do NOT include any additional text, markdown, headers, bolding, newlines, or any other characters or formatting outside of this specified JSON array string. Provide ONLY the JSON array string
 
-Output Format:
+EachClassificationResultMustInclude:
+    - index: a unique, sequential number corresponding to the category's original order (e.g., "0", "1")
+    - name: the category name",
+    - value: "true" or "false",
+    - confidenceScore: a string representing the model's confidence in the classification, scaled from 1 to 100 (e.g., "92"). Use "0" for completely irrelevant/false categories.
 
-"[{"name": "category_name", "value": "true", "confidenceScore": "confidence_score"}, {"name": "another_category_name", "value": "false", "confidenceScore": "confidence_score"}]"
+OutputFormat: [{\"index\":\"1\", \"name\":\"category_name\", \"value\":\"true\", \"confidenceScore\": \"confidence_score\"}, {\"index\":\"2\", \"name\":\"another_category_name\", \"value\":\"false\", \"confidenceScore\": \"confidence_score\"}]

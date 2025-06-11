@@ -92,6 +92,11 @@ public class ClassificationSetupDto
 public class ClassificationCategoryDto
 {
     /// <summary>
+    /// Gets or sets the unique key associated with the sentiment category.
+    /// </summary>
+    public string Index { get; set; } = string.Empty;
+
+    /// <summary>
     /// The name of the classification category (e.g., "Spam", "Not Spam").
     /// </summary>
     [Required, StringLength(255)]
