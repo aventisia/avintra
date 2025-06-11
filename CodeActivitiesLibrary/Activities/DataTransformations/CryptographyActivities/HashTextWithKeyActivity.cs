@@ -2,28 +2,34 @@
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
-    [DisplayName("Hash Text with Key"),
-     Description("Hash a string with a key, using a specified algorithm and an encoding format")]
+    [DisplayName("Hash Text with Key")]
+    [Description("Hash a string with a key, using a specified algorithm")]
     public class HashTextWithKeyActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The text to hash.")]
+        [RequiredArgument]
+        [DisplayName("Text to Hash")]
+        [Description("The text you want to hash")]
         public InArgument<string> Text { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The key to use in hashing.")]
+        [RequiredArgument]
+        [DisplayName("Key to Use")]
+        [Description("The key to use in hashing")]
         public InArgument<string> Key { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The hashing algorithm to use.")]
-        public InArgument<HashAlgorithm> Algorithm { get; set; }
+        [RequiredArgument]
+        [DisplayName("Hashing Algorithm")]
+        [Description("The algorithm to use for hashing (SHA256, SHA512, or MD5)")]
+        public InArgument<HashAlgorithmEnum> Algorithm { get; set; }
 
-        [Category("Output"), Description("Returns the hashed text.")]
+        [DisplayName("Hashed Text")]
+        [Description("The hashed text")]
         public OutArgument<string> HashedText { get; set; }
-
-
-
 
         protected override void Execute(CodeActivityContext context)
         {
@@ -32,12 +38,15 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
             var algorithm = Algorithm.Get(context);
             var hashedText = "";
             var status = "";
-
             try
             {
-                // Placeholder for keyed hashing logic
-                // Use a hashing library like System.Security.Cryptography here
-                hashedText = "Placeholder hashed text";
+                // Combine the text and the key
+                var combinedContent = text + key;
+                // Hash the combined content
+                var contentBytes = Encoding.UTF8.GetBytes(combinedContent);
+                var hashedBytes = HashData(contentBytes, algorithm);
+                // Convert the hashed bytes to a hexadecimal string
+                hashedText = ByteArrayToHexString(hashedBytes);
                 status = "Text hashed successfully.";
             }
             catch (Exception ex)
@@ -47,6 +56,53 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 
             HashedText.Set(context, hashedText);
             StatusMessage.Set(context, status);
+        }
+
+        private byte[] HashData(byte[] data, HashAlgorithmEnum algorithm)
+        {
+            switch (algorithm)
+            {
+                case HashAlgorithmEnum.SHA256:
+                    using (var sha256 = SHA256.Create())
+                    {
+                        return sha256.ComputeHash(data);
+                    }
+                case HashAlgorithmEnum.SHA512:
+                    using (var sha512 = SHA512.Create())
+                    {
+                        return sha512.ComputeHash(data);
+                    }
+                case HashAlgorithmEnum.MD5:
+                    using (var md5 = MD5.Create())
+                    {
+                        return md5.ComputeHash(data);
+                    }
+                default:
+                    throw new ArgumentException("Invalid algorithm");
+            }
+        }
+
+        private string ByteArrayToHexString(byte[] bytes)
+        {
+            var sb = new StringBuilder();
+            foreach (var b in bytes)
+            {
+                sb.Append(b.ToString("x2"));
+            }
+
+            return sb.ToString();
+        }
+
+        public enum HashAlgorithmEnum
+        {
+            [Display(Name = "SHA256", Description = "SHA256 algorithm")]
+            SHA256,
+
+            [Display(Name = "SHA512", Description = "SHA512 algorithm")]
+            SHA512,
+
+            [Display(Name = "MD5", Description = "MD5 algorithm")]
+            MD5
         }
     }
 }
