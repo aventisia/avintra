@@ -193,7 +193,7 @@ public class AIPersonaService : IAIPersonaService
                 var startExecutionTime = DateTime.UtcNow;
 
                 // Call the LLM extraction service
-                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM, file.Path);
+                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM);
 
                 // Record the end time after the extraction is complete (in UTC)
                 var endExecutionTime = DateTime.UtcNow;

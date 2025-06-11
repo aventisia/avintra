@@ -202,12 +202,40 @@ public class QuestionAnswerService : IQuestionAnswerService
                     continue;
                 }
 
+                // Validate required inputs: Check if the file path is provided and not empty.
+                if (string.IsNullOrEmpty(file.Path))
+                {
+                    serviceResponse.Message = "File URL is missing.";
+
+                    // Log the validation failure reason.
+                    _logger.LogWarning("Validation failed: File URL is missing or null.");
+
+                    return serviceResponse;
+                }
+
+                // Extract the file text from the URL using the LLMDataExtractionService.
+                var fileText = await _llmDataExtractionService.GetFileTextAsync(file.Path);
+
+                // Check if the file text was successfully retrieved.
+                if (string.IsNullOrEmpty(fileText))
+                {
+                    serviceResponse.Message = "Failed to extract text from the file.";
+
+                    // Log the failure of file text extraction.
+                    _logger.LogWarning("Validation failed: Failed to retrieve text from the file at URL: {FilePath}", file.Path);
+
+                    return serviceResponse;
+                }
+
+                // Create the prompt for the LLM model, including the generated prompt and the extracted file text.
+                var prompt = $"{model.GeneratedPrompt}\n\nFile Text:\n{fileText}";
+
                 // Record the start time of the LLM extraction call (in UTC)
                 var startExecutionTime = DateTime.UtcNow;
 
                 // Call the LLM extraction service
-                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM, file.Path);
-
+                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM);
+                
                 // Record the end time after the extraction is complete (in UTC)
                 var endExecutionTime = DateTime.UtcNow;
 
