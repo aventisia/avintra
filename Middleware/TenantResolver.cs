@@ -57,9 +57,13 @@ public class TenantResolver
         {
             // get current endpoint
             var currentEndpoint = (context.Request.Method + ":" + context.Request.Path).ToLower();
-
+            
             // Check for tenantless endpoint
-            if (tenantResolverConfig.TenantlessEndpoints != null && tenantResolverConfig.TenantlessEndpoints.Contains(currentEndpoint))
+            if (tenantResolverConfig.TenantlessEndpoints != null && tenantResolverConfig.TenantlessEndpoints.Any(pattern =>
+                {
+                    var regexPattern = "^" + System.Text.RegularExpressions.Regex.Escape(pattern).Replace("\\*", ".*") + "$";
+                    return System.Text.RegularExpressions.Regex.IsMatch(currentEndpoint, regexPattern);
+                }))
             {
                 tenantId = "TenantlessEndpoint";
                 return;
