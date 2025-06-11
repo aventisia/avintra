@@ -1,4 +1,3 @@
-import FlowLogHeader from "@/features/flow-logs/components/FlowLogHeader";
 import { useTauriStore } from "@/stores/tauri-store";
 import {
   DropdownMenu,
@@ -14,16 +13,25 @@ import {
   DownloadIcon,
   KeyboardIcon,
   LockOpenIcon,
+  LogsIcon,
   UploadIcon,
 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { HeaderActionMenuTrigger } from "./HeaderActionMenuTrigger";
+import { useFlowExecutionLogStore } from "@/features/flow-execution-log/stores/flow-execution-lof-store";
 
 export const HeaderActionMenu: React.FC = () => {
   // Get the state if app is open in tauri window
   const { isTauri } = useTauriStore(
     useShallow((state) => ({
       isTauri: state.isTauri,
+    })),
+  );
+
+  // Get flow execution store state & actions
+  const { setShowDialog } = useFlowExecutionLogStore(
+    useShallow((state) => ({
+      setShowDialog: state.setShowDialog,
     })),
   );
 
@@ -52,7 +60,14 @@ export const HeaderActionMenu: React.FC = () => {
         align="end"
         className="mt-0 w-[13rem] min-w-[13rem] mlg:mt-4"
       >
-        <FlowLogHeader />
+        {/* <FlowLogHeader /> */}
+        <SimpleDDMenuItem
+          size="md"
+          Icon={LogsIcon}
+          content="Execution Logs"
+          onClick={() => setShowDialog(true)}
+        />
+
         {isTauri ? (
           <SimpleDDMenuItem
             size="md"
