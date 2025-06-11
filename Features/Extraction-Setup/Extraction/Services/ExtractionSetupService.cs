@@ -1164,7 +1164,7 @@ public class ExtractionSetupService : IExtractionSetupService
                 var instructions = string.IsNullOrEmpty(field.Instructions) ? "" : $", - {field.Instructions}";
 
                 // Append each field's details, including its name, type, and instructions if available
-                fieldInstruction.AppendLine($"{i + 1}. {field.Name} (type: {field.Type}){instructions}");
+                fieldInstruction.AppendLine($"{field.Index}. {field.Name} (type: {field.Type}){instructions}");
             }
         }
 
@@ -1181,7 +1181,7 @@ public class ExtractionSetupService : IExtractionSetupService
                 tableInstruction.AppendLine("### Data Extraction Instructions for the Table:");
 
                 // Display the table name with context if provided
-                tableInstruction.AppendLine($"Table name: {table.Name}{(string.IsNullOrEmpty(table.Context) ? "" : $", context - {table.Context}")}");
+                tableInstruction.AppendLine($"{table.Index}. Table name: {table.Name}{(string.IsNullOrEmpty(table.Context) ? "" : $", context - {table.Context}")}");
 
                 // Inform the user about the columns to extract
                 tableInstruction.AppendLine("Please extract the following columns:");
@@ -1197,7 +1197,7 @@ public class ExtractionSetupService : IExtractionSetupService
                         var instructions = string.IsNullOrEmpty(column.Instructions) ? "" : $", - {column.Instructions}";
 
                         // Append each column's details, including its name, type, and instructions if available
-                        tableInstruction.AppendLine($"{i + 1}. {column.Name} (type: {column.Type}){instructions}");
+                        tableInstruction.AppendLine($"{column.Index}. {column.Name} (type: {column.Type}){instructions}");
                     }
                 }
             }

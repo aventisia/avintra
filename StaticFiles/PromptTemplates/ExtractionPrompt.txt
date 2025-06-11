@@ -15,13 +15,12 @@ Instructions:
   - Assign a unique, sequential index to each table identified in 'TablesToExtract'.
   - For each identified table, extract ONLY its headers.
     - Assign a unique, sequential index to each header within that table, starting from '1'.
-    - Do NOT extract any table row data or values.
     - If a table or a specific header cannot be found, provide empty arrays or empty strings as appropriate, with a '0' confidence score for that item.
     - Include only the specified fields and table structures. Do not add extra headers, columns, or fields not listed above.
   - For each extracted field and table header, include a confidence score representing the model's certainty about the accuracy of the extracted value.
   - Confidence scores must be returned as string values scaled from 1 to 100 (e.g., "92"). Use "0" for values not found or confidently extracted.
-  - The entire response MUST be a single, valid JSON string, exactly as specified in the 'OutputFormat' field. Do NOT include any additional text, markdown, headers, bolding, newlines, or any other characters or formatting outside of this specified JSON string. Provide ONLY the JSON.**"
-
+  - The entire response MUST be a single, valid JSON string, exactly as specified in the 'OutputFormat' field. It MUST NOT contain any characters, newlines, spaces, markdown, or any other content before, after, or around the JSON string. Provide ONLY the JSON string.
+  
 EachFieldResultMustInclude:
   - index: a unique, sequential number for the field (e.g., "0", "1")
   - name: the field name
@@ -31,11 +30,44 @@ EachFieldResultMustInclude:
 EachTableResultMustInclude:
   - index: a unique, sequential number for the table (e.g., "0", "1"),
   - name: the table name",
-  - headers: an array of header objects, each including "index", "name", and "confidenceScore"
+  - headers: an array of table header objects
 
 EachTableHeaderMustInclude:
   - index: a unique, sequential number for the header within its table (e.g., "1", "2")
   - name: the header name
-  - confidenceScore: a string representing the model's confidence in the header, scaled from 0 to 100 (e.g., "95", "0" if not found).
+  - values: (array of strings): the column values for this header
 
-OutputFormat: { \"fields\": [{\"index\":\"1\", \"name\": \"field_name_1\", \"value\": \"field_value_1\", \"confidenceScore\": \"confidence_score_1\"}, {\"index\":\"2\", \"name\": \"field_name_2\", \"value\": \"field_value_2\", \"confidenceScore\": \"confidence_score_2\"}], \"tables\": [{\"index\":\"1\", \"name\": \"table_name_1\", \"headers\": [{\"index\":\"1\", \"name\":\"header_1\", \"confidenceScore\":\"conf_1\"}, {\"index\":\"2\", \"name\":\"header_2\", \"confidenceScore\":\"conf_2\"}]}, {\"index\":\"2\", \"name\": \"table_name_2\", \"headers\": [{\"index\":\"1\", \"name\":\"header_A\", \"confidenceScore\":\"conf_A\"}, {\"index\":\"2\", \"name\":\"header_B\", \"confidenceScore\":\"conf_B\"}]}]}
+OutputFormat: 
+
+"{\"fields\": [
+  {\"index\":\"0\", \"name\": \"field_name\", \"value\": \"field_value\", \"confidenceScore\": \"confidence_score_1\"},
+  {\"index\":\"1\", \"name\": \"another_field\", \"value\": \"another_value\", \"confidenceScore\": \"confidence_score_2\"}
+],
+\"tables\": [
+  {
+    \"index\":\"0\",
+    \"name\": \"table_name\",
+    \"headers\": [
+      {
+        \"index\":\"0\",
+        \"name\": \"column_name_1\",
+        \"values\": [\"column_value_1\", \"column_value_1\"]
+      },
+      {
+        \"index\":\"1\",
+        \"name\": \"column_name_2\",
+        \"values\": [\"column_value_2\", \"column_value_2\"]
+      },
+      {
+        \"index\":\"2\",
+        \"name\": \"column_name_3\",
+        \"values\": [\"column_value_3\", \"column_value_3\"]
+      },
+      {
+        \"index\":\"3\",
+        \"name\": \"column_name_4\",
+        \"values\": [\"column_value_4\", \"column_value_4\"]
+      }
+    ]
+  }
+]}"
