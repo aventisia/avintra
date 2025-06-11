@@ -117,241 +117,170 @@ public class AIPersonaService : IAIPersonaService
         return response;
     }
 
-    // Extracts AI Persona data using a Language Learning Model (LLM).
-    public async Task<ServiceResponse<AIPersonaResponseDto>> ExtractViaLLMAsync(ExtractRequestDto extractRequestDto)
+    // Initializes the connection and triggers AI persona data extraction process via LLM.
+    public async Task<ServiceResponse<AIPersonaResponseDto>> InitializeConnectionToLLMAsync(Guid modelId)
     {
         // Initialize ServiceResponse with a default failure message
         var serviceResponse = new ServiceResponse<AIPersonaResponseDto>
         {
             Data = null,
-            Message = "Failed to extract AI persona data via LLM. Please try again."
+            Message = "Failed to initialize connection to LLM. Please try again later."
         };
 
         try
         {
-            _logger.LogInformation("Starting AI persona data extraction for ModelId: {ModelId}", extractRequestDto.ModelId);
+            _logger.LogInformation("Starting AI persona data extraction for ModelId: {ModelId}", modelId);
 
-            // Retrieve the model from the repository
+            // Retrieve the model from the repository based on the provided modelId
             var model = await _unitOfWork.MLModelRepo
-                                          .GetByConditionAsync(w => w.Id == extractRequestDto.ModelId)
+                                          .GetByConditionAsync(w => w.Id == modelId)
                                           .Include(i => i.ExtractedData)
                                           .SingleOrDefaultAsync();
 
-            // If the model is not found, log and return a failure response
+            // If the model is not found, log and return failure response
             if (model == null)
             {
-                _logger.LogWarning("Model not found for ModelId: {ModelId}", extractRequestDto.ModelId);
-                serviceResponse.Message = "Model not found";
+                _logger.LogWarning("Model with ModelId: {ModelId} not found.", modelId);
+                serviceResponse.Message = "Model not found.";
                 return serviceResponse;
             }
 
-            // Check if the model has a generated prompt for AI persona extraction
+            // Check if the model has a prompt for AI persona extraction
             if (string.IsNullOrEmpty(model.GeneratedPrompt))
             {
-                _logger.LogWarning("No AI persona extraction prompt found for ModelId: {ModelId}", extractRequestDto.ModelId);
-                serviceResponse.Message = "Missing AI persona extraction prompt for the model";
+                _logger.LogWarning("AI persona extraction prompt is missing for ModelId: {ModelId}", modelId);
+                serviceResponse.Message = "Missing AI person prompt for the model.";
                 return serviceResponse;
             }
 
-            // List to store extracted AI persona data for each file
+            // List to hold the extracted AI persona data for each file
             var extractedDataList = new List<AIPersonaSetupFileData>();
 
-            // Initialize a list to store data that will be inserted into the database.
-            var extractedDataToBeInserted = new List<ExtractedData>();
-
-            // Initialize a list to store data that will be updated into the database.
-            var extractedDataToBeUpdated = new List<ExtractedData>();
-
-            _logger.LogInformation("Starting for {FileCount} files", extractRequestDto.FileIds.Count);
-
-            // Process each file ID to extract AI persona data
-            foreach (var fileId in extractRequestDto.FileIds)
+            // Initialize fallback extracted data object with error remarks
+            var extractedData = new AIPersonaSetupFileData
             {
-                _logger.LogInformation("Processing for FileId: {FileId}", fileId);
+                ExtractedData = new AIPersonaSetupData(),
+                Remarks = $"001: AI persona extraction failed for ModelId: {modelId}."
+            };
 
-                var extractedData = new AIPersonaSetupFileData
+            // Retrieve the files associated with the model from the repository
+            var files = await _unitOfWork.UploadedDocRepo
+                                          .GetByConditionAsync(w => w.MLModelId == modelId)
+                                          .ToListAsync();
+
+            // Check if any files exist; if not, log and return failure response
+            if (files == null || !files.Any())
+            {
+                _logger.LogWarning("No files found for ModelId: {ModelId}.", modelId);
+                serviceResponse.Message = "No files associated with the model.";
+                return serviceResponse;
+            }
+
+            // Variable to hold concatenated text of all files
+            var allFileText = string.Empty;
+
+            // Loop through each file and extract its text
+            foreach (var file in files)
+            {
+                // Validate file path before attempting to extract text
+                if (string.IsNullOrEmpty(file.Path))
                 {
-                    ExtractedData = new AIPersonaSetupData(),
-                    FileId = fileId,
-                    Remarks = $"001: AI Persona extraction failed for FileId: {fileId}."
-                };
+                    serviceResponse.Message = "File path is missing.";
+                    _logger.LogWarning("File URL is missing for FileId: {FileId}", file.Id);
+                    return serviceResponse;
+                }
 
-                // Retrieve file from repository
-                var file = await _unitOfWork.UploadedDocRepo
-                                             .GetByConditionAsync(w => w.Id == fileId)
-                                             .SingleOrDefaultAsync();
+                // Extract file text using LLMDataExtractionService
+                var fileText = await _llmDataExtractionService.GetFileTextAsync(file.Path);
 
-                if (file == null)
+                // If file text extraction fails, log the warning and continue with the next file
+                if (string.IsNullOrEmpty(fileText))
                 {
-                    _logger.LogWarning("File not found for FileId: {FileId}", fileId);
-                    extractedData.Remarks = $"002: File not found for FileId: {fileId}.";
-                    extractedDataList.Add(extractedData);
+                    _logger.LogWarning("Text extraction failed for FileId: {FileId} at URL: {FilePath}", file.Id, file.Path);
                     continue;
                 }
 
-                // Record the start time of the LLM extraction call (in UTC)
-                var startExecutionTime = DateTime.UtcNow;
+                // Append extracted file text to allFileText
+                allFileText += fileText;
+            }
 
-                // Call the LLM extraction service
-                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM);
+            // If no text could be extracted from any file, log and return failure response
+            if (string.IsNullOrEmpty(allFileText))
+            {
+                serviceResponse.Message = "Failed to extract text from files.";
+                _logger.LogWarning("Failed to extract text from files for ModelId: {ModelId}.", modelId);
+                return serviceResponse;
+            }
 
-                // Record the end time after the extraction is complete (in UTC)
-                var endExecutionTime = DateTime.UtcNow;
+            // Prepare the LLM prompt by combining model's generated prompt with the concatenated file text
+            var prompt = $"{model.GeneratedPrompt}\n\nFile Text:\n{allFileText}";
 
-                // Calculate total execution time in seconds, rounding up to the nearest whole number
-                int executionTimeInSeconds = (int)Math.Ceiling((endExecutionTime - startExecutionTime).TotalSeconds);
+            // Record the start time of the LLM extraction
+            var startExecutionTime = DateTime.UtcNow;
 
-                // Check if LLM extraction was successful
-                if (llmResponse.StatusCode != 200)
-                {
-                    _logger.LogWarning("LLM AI persona extraction failed for FileId: {FileId} with message: {Message}", fileId, llmResponse.Message);
-                    extractedData.Remarks = $"003: LLM AI persona extraction failed. {llmResponse.Message}";
-                    extractedDataList.Add(extractedData);
+            // Call LLM data extraction service
+            var llmResponse = await _llmDataExtractionService.ExtractDataAsync(prompt, model.LLM);
 
-                    // Increment FailedCount if existing extracted data is found
-                    var existing = model.ExtractedData?.FirstOrDefault(w => w.DocId == file.Id);
-                    if (existing != null)
-                    {
-                        existing.FailedCount += 1;
-                        existing.ExecutionTime += executionTimeInSeconds;
-                        existing.LastModifiedByUserId = _userId;
-                        extractedDataToBeUpdated.Add(existing);
-                    }
-                    continue;
-                }
+            // Record the end time after extraction
+            var endExecutionTime = DateTime.UtcNow;
 
-                // Check if LLM returned empty data
-                if (string.IsNullOrEmpty(llmResponse.Data))
-                {
-                    _logger.LogWarning("LLM returned empty data for FileId: {FileId}", fileId);
-                    extractedData.Remarks = $"004: LLM returned empty response for FileId: {fileId}";
-                    extractedDataList.Add(extractedData);
-                    continue;
-                }
+            // Calculate the execution time in seconds
+            int executionTimeInSeconds = (int)Math.Ceiling((endExecutionTime - startExecutionTime).TotalSeconds);
 
-                // Deserialize the extracted AI persona data
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
+            // If LLM response indicates failure, log and proceed with fallback data
+            if (llmResponse.StatusCode != 200)
+            {
+                _logger.LogWarning("LLM extraction failed for ModelId: {ModelId}. Error Message: {Message}", modelId, llmResponse.Message);
+                extractedData.Remarks = $"003: LLM extraction failed for ModelId: {modelId}. {llmResponse.Message}";
+                extractedDataList.Add(extractedData);
+            }
+
+            // If LLM returned empty data, log and mark as failed
+            if (string.IsNullOrEmpty(llmResponse.Data))
+            {
+                _logger.LogWarning("LLM returned empty data for ModelId: {ModelId}", modelId);
+                extractedData.Remarks = $"004: LLM returned empty data for ModelId: {modelId}.";
+                extractedDataList.Add(extractedData);
+            }
+            else
+            {
+                // Deserialize the LLM response into the extracted persona data object
                 try
                 {
+                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                     extractedData.ExtractedData = JsonSerializer.Deserialize<AIPersonaSetupData>(llmResponse.Data, options) ?? new AIPersonaSetupData();
-                    extractedData.Remarks = "";
+                    extractedData.Remarks = string.Empty;  // Clear remarks on successful extraction
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Deserialization failed for FileId: {FileId}", fileId);
-                    extractedData.Remarks = $"005: Deserialization failed for FileId: {fileId}";
-
-                    // Increment FailedCount if existing extracted data is found
-                    var existing = model.ExtractedData?.FirstOrDefault(w => w.DocId == file.Id);
-                    if (existing != null)
-                    {
-                        existing.FailedCount += 1;
-                        existing.ExecutionTime += executionTimeInSeconds;
-                        existing.LastModifiedByUserId = _userId;
-                        extractedDataToBeUpdated.Add(existing);
-                    }
-
+                    _logger.LogError(ex, "Deserialization failed for ModelId: {ModelId}", modelId);
+                    extractedData.Remarks = $"005: Deserialization failed for ModelId: {modelId}.";
                     extractedDataList.Add(extractedData);
-                    continue;
                 }
-                _logger.LogInformation("Successfully extracted and deserialized AI persona data for FileId: {FileId}", fileId);
 
+                _logger.LogInformation("Successfully extracted and deserialized AI persona data for ModelId: {ModelId}", modelId);
                 extractedDataList.Add(extractedData);
-
-                // Check if there is already existing extracted data for this document
-                var existingExtractedData = model.ExtractedData?.FirstOrDefault(w => w.DocId == file.Id);
-                if (existingExtractedData == null)
-                {
-                    _logger.LogInformation("No existing extracted data found for DocId: {DocId}. Preparing new record for insertion.", file.Id);
-
-                    // Prepare a new ExtractedData object for insertion
-                    extractedDataToBeInserted.Add(new ExtractedData()
-                    {
-                        DocId = file.Id,
-                        Type = file.Type,
-                        MLModelId = model.Id,
-                        TokenCount = 0,
-                        ExecutionCount = 1,
-                        ExecutionTime = executionTimeInSeconds,
-                        FailedCount = 0,
-                        DataObject = JsonSerializer.Serialize(extractedData.ExtractedData, new JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true
-                        }),
-                        CreatedByUserId = _userId,
-                        LastModifiedByUserId = _userId
-                    });
-                }
-                else
-                {
-                    _logger.LogInformation("Existing extracted data found for DocId: {DocId}. Preparing record for update.", file.Id);
-
-                    // Update the existing data object with new values
-                    existingExtractedData.DataObject = JsonSerializer.Serialize(extractedData.ExtractedData, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-                    existingExtractedData.ExecutionCount += 1;
-                    existingExtractedData.ExecutionTime += executionTimeInSeconds;
-                    existingExtractedData.LastModifiedByUserId = _userId;
-
-                    // Add to update list
-                    extractedDataToBeUpdated.Add(existingExtractedData);
-                }
             }
 
-            // Check if there is any extracted data to insert into the database
-            if (extractedDataToBeInserted.Any())
-            {
-                _logger.LogInformation("Inserting {Count} new extracted AI persona data records into the database.", extractedDataToBeInserted.Count);
-
-                // Insert new records
-                await _unitOfWork.ExtractedDataRepo.InsertAsync(extractedDataToBeInserted);
-
-                // Save database changes
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Failed to save extracted AI persona data to the database after insertion.");
-                }
-            }
-
-            // Check if there is any extracted data to update into the database
-            if (extractedDataToBeUpdated.Any())
-            {
-                _logger.LogInformation("Updating {Count} existing extracted AI persona data records in the database.", extractedDataToBeUpdated.Count);
-
-                // Update existing records
-                _unitOfWork.ExtractedDataRepo.Update(extractedDataToBeUpdated);
-
-                // Save database changes
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Failed to save extracted AI persona data to the database after update.");
-                }
-            }
-
-            // Prepare the response DTO with extracted AI persona data
+            // Prepare the response DTO with all extracted AI persona data
             var extractResponseDto = new AIPersonaResponseDto
             {
-                ModelId = extractRequestDto.ModelId,
+                ModelId = modelId,
                 FilesExtractedData = extractedDataList
             };
 
-            // Finalize the service response based on the extraction results
+            // Finalize the service response based on the success or failure of the extraction process
             serviceResponse.Data = extractResponseDto;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = extractedDataList.Any(w => w.Remarks.Contains("Failed")) ?
-                                      "AI persona extraction failed for one or more files" :
-                                      "AI persona extraction completed successfully";
+            serviceResponse.Message = extractedDataList.Any(w => w.Remarks.Contains("Failed"))
+                                      ? "AI persona connection encountered issues with one or more files."
+                                      : "AI persona connection completed successfully.";
 
-            _logger.LogInformation("AI persona data extraction process finished. Status: {Message}", serviceResponse.Message);
+            _logger.LogInformation("AI persona data connection initialized. Status: {Message}", serviceResponse.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred during AI persona data extraction via LLM.");
+            _logger.LogError(ex, "An unexpected error occurred during AI persona data extraction for ModelId: {ModelId}.", modelId);
         }
 
         return serviceResponse;

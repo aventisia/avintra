@@ -28,13 +28,11 @@ public interface IAIPersonaService
     Task<ServiceResponse<AIPersonaDto>> GetAIPersonaSetupByMLModelIdAsync(Guid mlModelId);
 
     /// <summary>
-    /// Extracts AI persona data asynchronously using a Language Learning Model (LLM).
+    /// Initializes the connection and starts the AI persona data extraction process using LLM. 
     /// </summary>
-    /// <param name="extractRequestDto">The data transfer object containing the extraction parameters.</param>
-    /// <returns>
-    /// An asynchronous task that returns a service response containing an enumeration of extraction response DTOs.
-    /// </returns>
-    Task<ServiceResponse<AIPersonaResponseDto>> ExtractViaLLMAsync(ExtractRequestDto extractRequestDto);
+    /// <param name="modelId">The unique identifier for the model to extract AI persona data for.</param>
+    /// <returns>A ServiceResponse containing the extraction result or failure message.</returns>
+    Task<ServiceResponse<AIPersonaResponseDto>> InitializeConnectionToLLMAsync(Guid modelId);
 
     /// <summary>
     /// Asynchronously retrieves a list of extracted AI persona data records linked to a specific machine learning model.

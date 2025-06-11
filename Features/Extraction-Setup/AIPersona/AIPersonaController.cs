@@ -28,11 +28,11 @@ public class AIPersonaController : BaseApiController
         return ResultHelper(await _aiPersonaService.GetAIPersonaSetupByMLModelIdAsync(mlModelId));
     }
 
-    // Extracts data via a Language Learning Model (LLM) for AI persona
-    [HttpPost("extract-via-llm")]
-    public async Task<ActionResult<ServiceResponse<AIPersonaResponseDto>>> ExtractViaLLM(ExtractRequestDto extractRequestDto)
+    //Initializes the connection and starts the AI persona extraction using the specified ML model.
+    [HttpPost("initialize-connection/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<AIPersonaResponseDto>>> ExtractViaLLM(Guid mlModelId)
     {
-        return ResultHelper(await _aiPersonaService.ExtractViaLLMAsync(extractRequestDto));
+        return ResultHelper(await _aiPersonaService.InitializeConnectionToLLMAsync(mlModelId));
     }
 
     // Retrieves a collection of extracted AI persona data records associated with a specific machine learning model
