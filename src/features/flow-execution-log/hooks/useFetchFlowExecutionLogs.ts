@@ -1,35 +1,36 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "@aventisia/ui/sonner";
-import { useLocation } from "react-router-dom";
-import { getFlowExecutionLog } from "../apis/flow-execution-logs-apis";
-import { DATA_QUERY_KEY } from "../constants";
+import { DATA_QUERY_KEY, executions } from "../constants";
+import { Execution } from "@/features/flow-execution-log/types/execution-types";
+import { useFlowExecutionLogStore } from "../stores/flow-execution-lof-store";
+import { useShallow } from "zustand/react/shallow";
 
-/**
- * Custom hook to fetch flow logs using react query.
- * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
- */
-export const useFetchFlowExecutionLogs = () => {
-  // Get the current location
-  const location = useLocation();
+export const useFetchExecutionLogs = () => {
+  // Get flow execution store state & actions
+  const { resetSelections } = useFlowExecutionLogStore(
+    useShallow((state) => ({
+      resetSelections: state.resetSelections,
+    })),
+  );
 
-  // Create an instance of URLSearchParams
-  const queryParams = new URLSearchParams(location.search);
-
-  // Access flowId query parameters
-  const flowId = queryParams.get("f");
-
-  // Get flow extions logs using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: DATA_QUERY_KEY,
-    queryFn: () => getFlowExecutionLog(flowId || ""),
+    queryFn: async (): Promise<Execution[]> => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return executions;
+    },
   });
 
-  // Show toast on fetch error
+  useEffect(() => {
+    if (data) {
+      resetSelections(data);
+    }
+  }, [data, resetSelections]);
+
   useEffect(() => {
     if (isError) toast.error(error.toString());
   }, [error, isError]);
 
-  // Return isFetching and isLoading flag
   return { data, isFetching, isLoading };
 };
