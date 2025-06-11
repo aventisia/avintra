@@ -16,11 +16,6 @@ public class AIPersonaResponseDto
 public class AIPersonaSetupFileData
 {
     /// <summary>
-    /// Gets or sets the unique identifier for the file from which data has been extracted.
-    /// </summary>
-    public Guid FileId { get; set; }
-
-    /// <summary>
     /// Gets or sets the remarks related to the extracted data. 
     /// Remarks can indicate if the data extraction was incomplete or encountered issues.
     /// </summary>

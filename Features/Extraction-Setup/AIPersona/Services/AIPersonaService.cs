@@ -176,8 +176,8 @@ public class AIPersonaService : IAIPersonaService
                 return serviceResponse;
             }
 
-            // Variable to hold concatenated text of all files
-            var allFileText = string.Empty;
+            // Use StringBuilder to efficiently build the concatenated text
+            var allFileText = new StringBuilder();
 
             // Loop through each file and extract its text
             foreach (var file in files)
@@ -200,20 +200,27 @@ public class AIPersonaService : IAIPersonaService
                     continue;
                 }
 
-                // Append extracted file text to allFileText
-                allFileText += fileText;
+                // Append extracted file text to the cumulative result
+                allFileText.Append(fileText);
             }
 
             // If no text could be extracted from any file, log and return failure response
-            if (string.IsNullOrEmpty(allFileText))
+            if (string.IsNullOrEmpty(allFileText.ToString()))
             {
                 serviceResponse.Message = "Failed to extract text from files.";
                 _logger.LogWarning("Failed to extract text from files for ModelId: {ModelId}.", modelId);
                 return serviceResponse;
             }
 
-            // Prepare the LLM prompt by combining model's generated prompt with the concatenated file text
-            var prompt = $"{model.GeneratedPrompt}\n\nFile Text:\n{allFileText}";
+            // Convert the StringBuilder containing all concatenated file texts to a string,
+            // replace newline characters with spaces to avoid words running together,
+            // and trim any leading or trailing whitespace.
+            var cleanedText = allFileText.ToString().Replace("\n", " ").Trim();
+
+            // Replace the placeholder "{{Documents}}" in the model's generated prompt
+            // with the cleaned concatenated text from all files.
+            // This creates the final prompt to be sent to the LLM.
+            var prompt = model.GeneratedPrompt.Replace("{{Documents}}", cleanedText);
 
             // Record the start time of the LLM extraction
             var startExecutionTime = DateTime.UtcNow;
@@ -970,7 +977,7 @@ public class AIPersonaService : IAIPersonaService
                 {
                     documentPrompt.AppendLine($"Instructions: {doc.Instructions}");
                 }
-                documentPrompt.AppendLine(); // Add a blank line for spacing between documents
+                documentPrompt.AppendLine();
             }
         }
 
