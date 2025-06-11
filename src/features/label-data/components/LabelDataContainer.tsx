@@ -1,6 +1,6 @@
 import AIPersonaModel from "@/features/ai-persona-model/components";
 import ClassificationModel from "@/features/classification-model/components";
-import FileUploader from "@/features/file-uploader/components/FileUploader";
+import FileUploader from "@/features/file-uploader-viewer/components/FileUploader";
 import InformationExtractor from "@/features/information-extractor/components";
 import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
 import MultiFormatViewer from "@/features/multi-format-viewer/MultiFormatViewer";

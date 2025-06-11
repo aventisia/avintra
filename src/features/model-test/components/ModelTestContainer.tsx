@@ -1,4 +1,4 @@
-import FileUploader from "@/features/file-uploader/components/FileUploader";
+import FileUploader from "@/features/file-uploader-viewer/components/FileUploader";
 
 import { useShallow } from "zustand/react/shallow";
 

@@ -5,7 +5,6 @@ export interface ExtractUpdateRequestDto {
     mlModelId: string;
     docId: string;
     accuracy: number | null;
-    type: string;
     submitForFineTuning: boolean;
     dataObject: string;
 }

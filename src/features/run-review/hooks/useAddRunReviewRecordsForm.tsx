@@ -18,7 +18,6 @@ export const useAddRunReviewRecordsTestForm = () => {
     defaultValues: {
       fileIds: [],
       scheduleInfo: null,
-      type: "LabelData",
       mlModelId: "",
     },
   });

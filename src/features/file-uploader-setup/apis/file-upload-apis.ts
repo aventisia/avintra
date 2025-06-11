@@ -13,7 +13,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/upload-doc
 
 const getUploadedFiles = (modelId: string) => {
   return axiosInstance
-    .get<IHttpResponse<FileViewerDto[]>>(`${baseAPIURL}/list/${modelId}/LabelData`)
+    .get<IHttpResponse<FileViewerDto[]>>(`${baseAPIURL}/list/${modelId}/viewer`)
     .then((res) => res.data);
 };
 

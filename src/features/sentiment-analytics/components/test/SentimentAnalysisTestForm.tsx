@@ -79,7 +79,6 @@ const SentimentAnalyticsFormTestForm = () => {
         id: modelId,
         mlModelId: modelId,
         accuracy: null,
-        type: "LabelData",
         dataObject: JSON.stringify(dataToSend.categories),
         submitForFineTuning,
         docId: selectedFile?.id ?? "",

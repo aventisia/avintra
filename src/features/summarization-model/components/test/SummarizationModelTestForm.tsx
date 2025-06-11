@@ -77,7 +77,6 @@ const SummarizationModelTestForm = () => {
         id: modelId,
         mlModelId: modelId,
         accuracy: null,
-        type: "LabelData",
         dataObject: JSON.stringify({ summary: dataToSend.summarizedText }),
         submitForFineTuning,
         docId: selectedFile?.id ?? "",

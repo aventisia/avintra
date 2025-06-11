@@ -6,7 +6,6 @@ interface IScheduledInfo {
 export interface RunReviewRecordsMutatedDTO  {
     id?: string;
     mlModelId: string;
-    type: string;
     fileIds: string[];
     scheduleInfo: IScheduledInfo | null;
 }

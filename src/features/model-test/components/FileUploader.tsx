@@ -1,7 +1,9 @@
-import FileDropzone from "@/features/file-uploader/components/FileDropzone";
-import FileUploadList from "@/features/file-uploader/components/FileUploadList";
-import { useTestModelFileStore } from "../stores/model-test-file-store";
+import FileDropzone from "@/features/file-uploader-viewer/components/FileDropzone";
+import FileUploadList from "@/features/file-uploader-viewer/components/FileUploadList";
+
 import { useShallow } from "zustand/react/shallow";
+
+import { useTestModelFileStore } from "../stores/model-test-file-store";
 import { useModelTestStore } from "../stores/model-test-store";
 
 const FileUploader = () => {

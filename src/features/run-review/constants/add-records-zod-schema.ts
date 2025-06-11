@@ -7,7 +7,6 @@ const scheduleInfoSchema = z.object({
 
 export const addRecordsFormZodSchema = z.object({
   mlModelId: z.string().readonly(),
-  type: z.string().readonly(),
   fileIds: z.array(z.string()).default([]),
   scheduleInfo: scheduleInfoSchema.nullable().default(null),
 });

@@ -77,7 +77,6 @@ const AIPersonaTestForm = () => {
         id: modelId,
         mlModelId: modelId,
         accuracy: null,
-        type: "LabelData",
         dataObject: JSON.stringify(dataToSend.questionAnswers),
         submitForFineTuning,
         docId: selectedFile?.id ?? "",

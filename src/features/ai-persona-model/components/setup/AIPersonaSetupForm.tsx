@@ -1,4 +1,4 @@
-import FileUploader from "@/features/file-uploader/components/FileUploader";
+import FileUploader from "@/features/file-uploader-setup/components/FileUploader";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 
 import { LoadingSpinner, Separator } from "@aventisia/ui";

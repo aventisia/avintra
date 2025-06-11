@@ -82,7 +82,6 @@ const InformationExtractorTestForm = () => {
         id: modelId,
         mlModelId: modelId,
         accuracy: null,
-        type: "LabelData",
         dataObject: JSON.stringify(dataToSend),
         submitForFineTuning,
         docId: selectedFile?.id ?? "",
