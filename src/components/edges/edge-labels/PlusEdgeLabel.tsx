@@ -5,7 +5,6 @@ import { buttonVariants } from "@aventisia/ui/buttons";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 import { DialogTrigger } from "@aventisia/ui/dialog";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 interface PlusEdgeLabelProps {
   edgeId?: string;
@@ -18,15 +17,6 @@ export const PlusEdgeLabel = ({ edgeId }: PlusEdgeLabelProps) => {
       setOrigin: state.setOrigin,
     })),
   );
-
-  // Get ReactFlowExt store state & actions
-  const { isPublished } = useReactFlowExtStore(
-    useShallow((state) => ({
-      isPublished: state.isPublished,
-    })),
-  );
-
-  if (isPublished) return <></>;
 
   return (
     <DialogTrigger

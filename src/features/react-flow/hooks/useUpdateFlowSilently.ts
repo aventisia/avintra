@@ -78,6 +78,8 @@ export const useUpdateFlowSilently = () => {
   //
   useEffect(() => {
     const handler = setTimeout(() => {
+      if (isPublished && isSavePending)
+        toast.info("Changes will not be saved for published agent");
       // Check if save is pending
       if (!isSavePending || isPublished) return;
 

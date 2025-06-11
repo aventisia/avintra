@@ -3,21 +3,10 @@ import { buttonVariants } from "@aventisia/ui/buttons";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import { NodeToolbar, Position } from "@xyflow/react";
 import { DialogTrigger } from "@aventisia/ui/dialog";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { useShallow } from "zustand/react/shallow";
 
 export const ReplaceFlowTrigger = (
   props: React.ComponentPropsWithoutRef<typeof DialogTrigger>,
 ) => {
-  // Get ReactFlowExt store state & actions
-  const { isPublished } = useReactFlowExtStore(
-    useShallow((state) => ({
-      isPublished: state.isPublished,
-    })),
-  );
-
-  if (isPublished) return <></>;
-
   return (
     <NodeToolbar offset={5} position={Position.Top}>
       <DialogTrigger
