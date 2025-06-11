@@ -6,33 +6,36 @@ using System.Data.SqlClient;
 
 namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
 {
-    [DisplayName("Open SQL Connection"), Description("Open a new connection to a database")]
+    [DisplayName("Open SQL Connection")]
+    [Description("Open a new connection to a database")]
     public class OpenSqlConnectionActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The connection string to the database.")]
+        [RequiredArgument]
+        [DisplayName("Connection String")]
+        [Description("The connection string to the database.")]
         public InArgument<string> ConnectionString { get; set; }
 
-
-
+        [DisplayName("SQL Connection")]
+        [Description("The opened SQL connection.")]
+        public OutArgument<SqlConnection> SqlConnection { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
             var connectionString = ConnectionString.Get(context);
-            var status = "";
-
+            string status = "";
+            SqlConnection connection = null;
             try
             {
-                using (var connection = new SqlConnection(connectionString))
-                {
-                    connection.Open();
-                    status = "Database connection opened successfully.";
-                }
+                connection = new SqlConnection(connectionString);
+                connection.Open();
+                status = "Database connection opened successfully.";
             }
             catch (Exception ex)
             {
                 status = $"Error opening database connection: {ex.Message}";
             }
 
+            SqlConnection.Set(context, connection);
             StatusMessage.Set(context, status);
         }
     }

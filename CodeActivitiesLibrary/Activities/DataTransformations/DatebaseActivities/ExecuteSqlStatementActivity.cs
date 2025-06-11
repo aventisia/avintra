@@ -2,38 +2,74 @@
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
 {
-    [DisplayName("Execute SQL Statement"), Description("Connect to a database and execute an SQL statement")]
+    [DisplayName("Execute SQL Statement")]
+    [Description("Connect to a database and execute an SQL statement")]
     public class ExecuteSqlStatementActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The connection string to the database.")]
+        [RequiredArgument]
+        [DisplayName("Connection String")]
+        [Description("The connection string to the database.")]
         public InArgument<string> ConnectionString { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The SQL statement to execute.")]
+        [RequiredArgument]
+        [DisplayName("SQL Statement")]
+        [Description("The SQL statement to execute.")]
         public InArgument<string> SqlStatement { get; set; }
 
+        [DisplayName("Operation Type")]
+        [Description("The type of SQL operation to perform.")]
+        public InArgument<SqlOperationType> OperationType { get; set; }
 
-
+        [DisplayName("Result Data Table")]
+        [Description("The result data table.")]
+        public OutArgument<DataTable> ResultDataTable { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
             var connectionString = ConnectionString.Get(context);
             var sqlStatement = SqlStatement.Get(context);
-            var status = "";
-
+            var operationType = OperationType.Get(context);
+            DataTable resultTable = null;
+            string status = "";
             try
             {
-                using (var connection = new SqlConnection(connectionString))
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
-                    using (var command = new SqlCommand(sqlStatement, connection))
+                    using (SqlCommand command = new SqlCommand(sqlStatement, connection))
                     {
-                        command.ExecuteNonQuery();
+                        switch (operationType)
+                        {
+                            case SqlOperationType.NonQuery:
+                                command.ExecuteNonQuery();
+                                status = "SQL statement executed successfully.";
+                                break;
+                            case SqlOperationType.Scalar:
+                                object scalarResult = command.ExecuteScalar();
+                                status = $"SQL statement executed successfully with scalar result: {scalarResult}";
+                                break;
+                            case SqlOperationType.DataSet:
+                                using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                                {
+                                    DataSet dataSet = new DataSet();
+                                    adapter.Fill(dataSet);
+                                    resultTable = dataSet.Tables.Count > 0 ? dataSet.Tables[0] : null;
+                                    status = resultTable != null
+                                        ? $"SQL statement executed successfully with {resultTable.Rows.Count} rows."
+                                        : "SQL statement executed successfully with no results.";
+                                }
+
+                                break;
+                            default:
+                                throw new ArgumentException("Invalid operation type");
+                        }
                     }
-                    status = "SQL statement executed successfully.";
                 }
             }
             catch (Exception ex)
@@ -41,7 +77,20 @@ namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
                 status = $"Error executing SQL statement: {ex.Message}";
             }
 
+            ResultDataTable.Set(context, resultTable);
             StatusMessage.Set(context, status);
+        }
+
+        public enum SqlOperationType
+        {
+            [Display(Name = "Non-Query", Description = "Execute a non-query SQL statement.")]
+            NonQuery,
+
+            [Display(Name = "Scalar", Description = "Execute a SQL statement and return a scalar value.")]
+            Scalar,
+
+            [Display(Name = "DataSet", Description = "Execute a SQL statement and return a data set.")]
+            DataSet
         }
     }
 }

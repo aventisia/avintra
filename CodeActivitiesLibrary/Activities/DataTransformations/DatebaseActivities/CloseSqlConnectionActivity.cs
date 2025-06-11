@@ -12,30 +12,24 @@ namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
     public class CloseSqlConnectionActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [Description("The connection string to the database.")]
-        public InArgument<string> ConnectionString { get; set; }
-
-
-
+        [DisplayName("SQL Connection")]
+        [Description("The SQL connection to close.")]
+        public InArgument<SqlConnection> SqlConnection { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var connectionString = ConnectionString.Get(context);
-            var status = "";
-
+            var connection = SqlConnection.Get(context);
+            string status = "";
             try
             {
-                using (var connection = new SqlConnection(connectionString))
+                if (connection != null && connection.State == ConnectionState.Open)
                 {
-                    if (connection.State == ConnectionState.Open)
-                    {
-                        connection.Close();
-                        status = "Database connection closed successfully.";
-                    }
-                    else
-                    {
-                        status = "Connection was already closed.";
-                    }
+                    connection.Close();
+                    status = "Database connection closed successfully.";
+                }
+                else
+                {
+                    status = "Connection was already closed or null.";
                 }
             }
             catch (Exception ex)
