@@ -8,18 +8,20 @@ Instructions:
     - Do not modify, rephrase, or alter the categories in any way. Use them exactly as provided.
     - Do not include any numbers, explanations, or extra text outside the JSON output.
     - Analyze the provided input and context.
+    - For each category provided in 'CategoriesToEvaluate', you MUST return a result in the output.
+    - Include all categories in the final output, regardless of whether AllowMultipleClasses is set to true or false.
     - If 'AllowMultipleClasses' is set to 'true':
         - Return 'true' for all categories that are relevant or match the input.
         - Return 'false' for any category that is not supported, not relevant, or clearly does not apply.
     - If 'AllowMultipleClasses' is set to 'false':
         - Return 'true' for ONLY the single most accurate category.
         - Return 'false' for all other categories.
-    - Use 'false' for any category that cannot be confidently validated or does not match.
+    - Specifically, for any category that cannot be confidently validated or does not match the input, its 'value' MUST be 'false' and its 'confidenceScore' MUST be '0'.
     - For each classified category, include a confidence score representing the model's certainty about the classification.
     - Confidence scores must be returned as string values scaled from 1 to 100 (e.g., "92"). Use "0" for categories marked "false" if they are completely irrelevant or not found.
     - Do not include any text or commentary outside the specified JSON output.
-    - The entire response MUST be a single, valid JSON array string, exactly as specified in the 'OutputFormat' field. Do NOT include any additional text, markdown, headers, bolding, newlines, or any other characters or formatting outside of this specified JSON array string. Provide ONLY the JSON array string
-
+    - The entire response MUST be a single, valid JSON array string, exactly as specified in the 'OutputFormat' field. Do NOT include any additional text, markdown, headers, bolding, newlines, or any other characters or formatting outside of this specified JSON array string. Provide ONLY the JSON array string.
+    
 EachClassificationResultMustInclude:
     - index: a unique, sequential number corresponding to the category's original order (e.g., "0", "1")
     - name: the category name",
@@ -27,3 +29,4 @@ EachClassificationResultMustInclude:
     - confidenceScore: a string representing the model's confidence in the classification, scaled from 1 to 100 (e.g., "92"). Use "0" for completely irrelevant/false categories.
 
 OutputFormat: [{\"index\":\"1\", \"name\":\"category_name\", \"value\":\"true\", \"confidenceScore\": \"confidence_score\"}, {\"index\":\"2\", \"name\":\"another_category_name\", \"value\":\"false\", \"confidenceScore\": \"confidence_score\"}]
+
