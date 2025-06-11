@@ -9,7 +9,6 @@ import {
 } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
 import { FlowPage } from "./pages/FlowPage";
-import { LogsPage } from "./pages/LogsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,7 +33,6 @@ const router = createBrowserRouter(
           path: "/agent",
           element: <FlowPage />,
         },
-        { path: "/agent-logs", element: <LogsPage /> },
         {
           path: "/page-not-found",
           element: <NotFoundPage />,

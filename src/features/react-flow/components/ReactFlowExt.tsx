@@ -25,6 +25,7 @@ import "../styles/remove-attribution.css";
 import { BackgroundExt } from "./BackgroundExt";
 import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls";
+import ExecutionLogDialog from "@/features/flow-execution-log/components";
 
 /**
  * A custom extension of the ReactFlow component.
@@ -119,6 +120,7 @@ export const ReactFlowExt = () => {
         <BackgroundExt />
         <MiniMapExt />
       </ReactFlow>
+      <ExecutionLogDialog />
     </DCPDialog>
   );
 };

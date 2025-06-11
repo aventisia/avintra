@@ -13,37 +13,38 @@ const FELInputOutput = ({ jsonData, title }: FELInputOutputProps) => {
     jsonData,
     title,
   });
-  const safeParse = (str:string, fallback = {}) => {
+
+  const safeParse = (str: string, fallback = {}) => {
     try {
       return JSON.parse(str);
     } catch {
       return fallback;
     }
   };
-  
+
   // Usage
   const parsed = safeParse(jsonData);
 
   return (
     <div className="border-dividers overflow-hidden rounded-lg border border-solid">
-      <div className="border-dividers flex items-center justify-center border-b border-solid px-3 py-2">
-        <div className="flex-grow items-center justify-center">
-          <span className="text-md">{title}</span>
+      <div className="border-dividers flex items-center justify-center border-b border-solid">
+        <div className="ml-2 flex-grow items-center justify-center">
+          <span className="text-sm">{title}</span>
         </div>
-        <div className="flex items-center gap-0">
+        <div className="flex items-center gap-1">
           <Button
             variant={"ghost"}
-            size={"sm"}
+            size={"icon6"}
             onClick={() => handleDownload()}
           >
-            <Download className="h-4 w-4" />
+            <Download className="h-3 w-3" />
           </Button>
-          <Button variant={"ghost"} size={"sm"} onClick={() => handleCopy()}>
-            <Copy className="h-4 w-4" />
+          <Button variant={"ghost"} size={"icon6"} onClick={() => handleCopy()}>
+            <Copy className="h-3 w-3" />
           </Button>
         </div>
       </div>
-      <ScrollArea className="h-[37vh] w-full p-3">
+      <ScrollArea className="h-[40.5vh] w-full p-1">
         <ReactJson
           style={{
             // overflowX: "auto",
