@@ -76,6 +76,12 @@ public class ExtractionSetupDto
 
 public class FieldSetupDto
 {
+
+    /// <summary>
+    /// Gets or sets the unique key associated with the field setup.
+    /// </summary>
+    public string Index { get; set; } = string.Empty;
+
     /// <summary>
     /// The name of the field to extract within the document.
     /// </summary>
@@ -97,6 +103,11 @@ public class FieldSetupDto
 public class TableMetadataDto
 {
     /// <summary>
+    /// Gets or sets the unique key associated with the table metadata
+    /// </summary>
+    public string Index { get; set; } = string.Empty;
+
+    /// <summary>
     /// Optional context or description of the table, such as its purpose or location within the document.
     /// </summary>
     public string? Context { get; set; }
@@ -115,6 +126,11 @@ public class TableMetadataDto
 
 public class TableHeaderDto
 {
+    /// <summary>
+    /// Gets or sets the unique key associated with the table header.
+    /// </summary>
+    public string Index { get; set; } = string.Empty;
+
     /// <summary>
     /// The name of the column in the table to be extracted.
     /// </summary>

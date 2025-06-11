@@ -1,47 +1,41 @@
-{{Prompt}}
-
-Please extract the following fields along with their confidence scores:
-{{Fields}}
-
-Please extract the following table column data as per the instructions if any:
-{{Tables}}
-
+Prompt: {{Prompt}}
+Context: {{Context}}
+Task: Please extract specific fields and table headers from the provided context. Assign a confidence score and a unique index to each extracted item.
+FieldsToExtract: {{Fields}}
+TablesToExtract: {{Tables}}
 Instructions:
-- Do not include any numbers, explanations, or extra text outside the JSON.
-- Provide the response as a valid JSON string only.
-- Do not include any additional text, explanation, or commentary outside the JSON.
-- Ensure complete structural accuracy and formatting consistency.
-- Include only the specified columns. Do not include extra headers or columns not listed above.
-- For each extracted field, include a confidence score representing the model's certainty about the accuracy of the extracted value.
-- Confidence scores must be returned as string values scaled from 1 to 100 (e.g., "85" for 0.85 confidence).
+  - Do not include any numbers, explanations, or extra text outside the JSON.
+  - Do not include any additional text, explanation, or commentary outside the JSON.
+  - Ensure complete structural accuracy and formatting consistency for the output JSON.
+  - For fields:
+  -   Assign a unique, sequential index to each extracted field, starting from '0'.
+  -   Extract the value for each field specified in 'FieldsToExtract'.
+  -   If a field's value cannot be found or confidently inferred from the context, the 'value' field should be an empty string, and 'confidenceScore' should be '0'.
+  - For tables:
+  - Assign a unique, sequential index to each table identified in 'TablesToExtract'.
+  - For each identified table, extract ONLY its headers.
+    - Assign a unique, sequential index to each header within that table, starting from '1'.
+    - Do NOT extract any table row data or values.
+    - If a table or a specific header cannot be found, provide empty arrays or empty strings as appropriate, with a '0' confidence score for that item.
+    - Include only the specified fields and table structures. Do not add extra headers, columns, or fields not listed above.
+  - For each extracted field and table header, include a confidence score representing the model's certainty about the accuracy of the extracted value.
+  - Confidence scores must be returned as string values scaled from 1 to 100 (e.g., "92"). Use "0" for values not found or confidently extracted.
+  - The entire response MUST be a single, valid JSON string, exactly as specified in the 'OutputFormat' field. Do NOT include any additional text, markdown, headers, bolding, newlines, or any other characters or formatting outside of this specified JSON string. Provide ONLY the JSON.**"
 
-Expected Output Format: 
-- Provide the response as a valid JSON string only. Ensure the response follows this exact structure
+EachFieldResultMustInclude:
+  - index: a unique, sequential number for the field (e.g., "0", "1")
+  - name: the field name
+  - value: the extracted field value (empty string if not found)
+  - confidenceScore: a string representing the model's confidence in the extracted value, scaled from 0 to 100 (e.g., "95", "0" if not found).
 
-"{\"fields\": [
-  {\"name\": \"field_name\", \"value\": \"field_value\", \"confidenceScore\": \"confidence_score_1\"},
-  {\"name\": \"another_field\", \"value\": \"another_value\", \"confidenceScore\": \"confidence_score_2\"}
-],
-\"tables\": [
-  {
-    \"name\": \"table_name\",
-    \"headers\": [
-      {
-        \"name\": \"column_name_1\",
-        \"values\": [\"column_value_1\", \"column_value_1\"]
-      },
-      {
-        \"name\": \"column_name_2\",
-        \"values\": [\"column_value_2\", \"column_value_2\"]
-      },
-      {
-        \"name\": \"column_name_3\",
-        \"values\": [\"column_value_3\", \"column_value_3\"]
-      },
-      {
-        \"name\": \"column_name_4\",
-        \"values\": [\"column_value_4\", \"column_value_4\"]
-      }
-    ]
-  }
-]}"
+EachTableResultMustInclude:
+  - index: a unique, sequential number for the table (e.g., "0", "1"),
+  - name: the table name",
+  - headers: an array of header objects, each including "index", "name", and "confidenceScore"
+
+EachTableHeaderMustInclude:
+  - index: a unique, sequential number for the header within its table (e.g., "1", "2")
+  - name: the header name
+  - confidenceScore: a string representing the model's confidence in the header, scaled from 0 to 100 (e.g., "95", "0" if not found).
+
+OutputFormat: { \"fields\": [{\"index\":\"1\", \"name\": \"field_name_1\", \"value\": \"field_value_1\", \"confidenceScore\": \"confidence_score_1\"}, {\"index\":\"2\", \"name\": \"field_name_2\", \"value\": \"field_value_2\", \"confidenceScore\": \"confidence_score_2\"}], \"tables\": [{\"index\":\"1\", \"name\": \"table_name_1\", \"headers\": [{\"index\":\"1\", \"name\":\"header_1\", \"confidenceScore\":\"conf_1\"}, {\"index\":\"2\", \"name\":\"header_2\", \"confidenceScore\":\"conf_2\"}]}, {\"index\":\"2\", \"name\": \"table_name_2\", \"headers\": [{\"index\":\"1\", \"name\":\"header_A\", \"confidenceScore\":\"conf_A\"}, {\"index\":\"2\", \"name\":\"header_B\", \"confidenceScore\":\"conf_B\"}]}]}

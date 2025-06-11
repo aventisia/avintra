@@ -53,6 +53,12 @@ public class ExtractionSetupData
 /// </summary>
 public class ExtractionSetupFieldValueSchema
 {
+
+    /// <summary>
+    /// Gets or sets the unique key associated with the filed value schema.
+    /// </summary>
+    public string? Index { get; set; }
+
     /// <summary>
     /// Gets or sets the name of the extracted field.
     /// </summary>
@@ -75,6 +81,11 @@ public class ExtractionSetupFieldValueSchema
 public class ExtractionSetupTableSchema
 {
     /// <summary>
+    /// Gets or sets the unique key associated with the table schema.
+    /// </summary>
+    public string? Index { get; set; }
+
+    /// <summary>
     /// Gets or sets the name identifying the extracted table.
     /// </summary>
     public required string Name { get; set; }
@@ -90,6 +101,11 @@ public class ExtractionSetupTableSchema
 /// </summary>
 public class ExtractionSetupTableHeaderSchema
 {
+    /// <summary>
+    /// Gets or sets the unique key associated with the table header schema.
+    /// </summary>
+    public string? Index { get; set; }
+
     /// <summary>
     /// Gets or sets the name of the table column header.
     /// </summary>

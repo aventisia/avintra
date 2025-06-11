@@ -53,6 +53,30 @@ public class ExtractionSetupService : IExtractionSetupService
             // Trim any unnecessary spaces or formatting from string fields in the DTO
             mLModelSetupDto = TrimDtoStringPropsUtil.TrimDtoStringProps(mLModelSetupDto);
 
+            // Assign unique string-based indices to each field setup
+            int fieldIndex = 0;
+            foreach (var fieldSetup in mLModelSetupDto.SetupObject.FieldSetups)
+            {
+                fieldSetup.Index = fieldIndex.ToString();
+                fieldIndex++;
+            }
+
+            // Assign unique string-based indices to each table metadata item and their headers
+            int tableIndex = 0;
+            foreach (var table in mLModelSetupDto.SetupObject.TableMetadata)
+            {
+                table.Index = tableIndex.ToString();
+                tableIndex++;
+
+                // Assign unique string-based indices to each table header within the current table
+                int headerIndex = 0;
+                foreach (var header in table.TableHeaders)
+                {
+                    header.Index = headerIndex.ToString();
+                    headerIndex++;
+                }
+            }
+
             // Log the mapping process from DTO to entity
             mLModelSetupDto.Adapt(mLModel);
             mLModel.GeneratedPrompt = GenerateExtractionModelPrompt(mLModelSetupDto);
@@ -151,6 +175,25 @@ public class ExtractionSetupService : IExtractionSetupService
                                           .GetByConditionAsync(w => w.Id == extractRequestDto.ModelId)
                                           .Include(i => i.ExtractedData)
                                           .SingleOrDefaultAsync();
+            // Convert the model to an MLModelSetupDto and extract field names by their index
+            var fieldDict = model.Adapt<MLModelSetupDto>()?
+                                .SetupObject?
+                                .FieldSetups?
+                                .ToDictionary(c => c.Index, c => c.Name);
+
+            // Convert the model to an MLModelSetupDto and extract table metadata names by their index
+            var tableMetadataDict = model.Adapt<MLModelSetupDto>()?
+                                           .SetupObject?
+                                           .TableMetadata?
+                                           .ToDictionary(c => c.Index, c => c.Name);
+
+            // Convert the model to an MLModelSetupDto and extract table headers by their index
+            var tableHeaderDict = model.Adapt<MLModelSetupDto>()?
+                                          .SetupObject?
+                                          .TableMetadata?
+                                          .ToDictionary(c => c.Index, c => c.TableHeaders
+                                          .ToDictionary(d => d.Index, d => d.Name));
+
 
             // If model is not found, log and return failure response
             if (model == null)
@@ -263,6 +306,37 @@ public class ExtractionSetupService : IExtractionSetupService
                 {
                     extractedData.ExtractedData = JsonSerializer.Deserialize<ExtractionSetupData>(llmResponse.Data, options) ?? new ExtractionSetupData();
                     extractedData.Remarks = "";
+
+                    // Assign field names based on field index using the fieldDict dictionary
+                    foreach (var field in extractedData.ExtractedData.Fields)
+                    {
+                        if (fieldDict.TryGetValue(field.Index, out var name))
+                        {
+                            field.Name = name;
+                        }
+                    }
+
+                    // Assign table names and header names using tableMetadataDict and tableHeaderDict
+                    foreach (var tableSchema in extractedData.ExtractedData.Tables)
+                    {
+                        // Set the table name if available
+                        if (tableMetadataDict.TryGetValue(tableSchema.Index, out var tableName))
+                        {
+                            tableSchema.Name = tableName;
+                        }
+
+                        // Set the header names for the table if available
+                        if (tableHeaderDict.TryGetValue(tableSchema.Index, out var headersDict))
+                        {
+                            foreach (var header in tableSchema.Headers)
+                            {
+                                if (headersDict.TryGetValue(header.Index, out var headerName))
+                                {
+                                    header.Name = headerName;
+                                }
+                            }
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
