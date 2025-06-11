@@ -12,13 +12,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
     {
         [RequiredArgument]
         [Description("The VBScript code to execute.")]
+        [DisplayName("VBScript Code")]
         public InArgument<string> ScriptCode { get; set; }
 
-
         [Description("Returns the output of the script.")]
+        [DisplayName("Script Output")]
         public OutArgument<string> ScriptOutput { get; set; }
-
-
 
 
         protected override void Execute(CodeActivityContext context)

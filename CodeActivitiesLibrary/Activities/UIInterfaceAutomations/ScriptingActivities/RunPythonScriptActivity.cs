@@ -6,17 +6,18 @@ using System.Diagnostics;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
 {
-    [DisplayName("Run Python Script"),
-     Description("Executes some custom Python script and retrieves its output into a variable.")]
+    [DisplayName("Run Python Script")]
+    [Description("Executes some custom Python script and retrieves its output into a variable.")]
     public class RunPythonScriptActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The Python script code to execute.")]
+        [RequiredArgument]
+        [Description("The Python script code to execute.")]
+        [DisplayName("Python Script Code")]
         public InArgument<string> ScriptCode { get; set; }
 
-        [Category("Output"), Description("Returns the output of the script.")]
+        [Description("Returns the output of the script.")]
+        [DisplayName("Script Output")]
         public OutArgument<string> ScriptOutput { get; set; }
-
-
 
 
         protected override void Execute(CodeActivityContext context)

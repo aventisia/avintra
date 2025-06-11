@@ -7,18 +7,18 @@ using System.Diagnostics;
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run DOS Command")]
-    [Description("Runs a DOS command or console application in invisible mode and retrieves its output upon completion.")]
+    [Description(
+        "Runs a DOS command or console application in invisible mode and retrieves its output upon completion.")]
     public class RunDosCommandActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [Description("The DOS command to execute.")]
+        [DisplayName("Command")]
         public InArgument<string> Command { get; set; }
 
-
         [Description("Returns the output of the command.")]
+        [DisplayName("Command Output")]
         public OutArgument<string> CommandOutput { get; set; }
-
-
 
 
         protected override void Execute(CodeActivityContext context)

@@ -5,18 +5,18 @@ using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
 {
-    [DisplayName("Run .NET Script"),
-     Description("Executes some custom .NET script and retrieves its output into a variable.")]
+    [DisplayName("Run .NET Script")]
+    [Description("Executes some custom .NET script and retrieves its output into a variable.")]
     public class RunDotNetScriptActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The .NET script code to execute.")]
+        [RequiredArgument]
+        [Description("The .NET script code to execute.")]
+        [DisplayName(".NET Script Code")]
         public InArgument<string> ScriptCode { get; set; }
 
-        [Category("Output"), Description("Returns the output of the script.")]
+        [Description("Returns the output of the script.")]
+        [DisplayName("Script Output")]
         public OutArgument<string> ScriptOutput { get; set; }
-
-
-
 
         protected override void Execute(CodeActivityContext context)
         {

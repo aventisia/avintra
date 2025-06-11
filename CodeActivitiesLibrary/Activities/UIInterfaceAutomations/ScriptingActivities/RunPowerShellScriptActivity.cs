@@ -6,18 +6,18 @@ using System.Diagnostics;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
 {
-    [DisplayName("Run PowerShell Script"),
-     Description("Executes some custom PowerShell script and retrieves its output into a variable.")]
+    [DisplayName("Run PowerShell Script")]
+    [Description("Executes some custom PowerShell script and retrieves its output into a variable.")]
     public class RunPowerShellScriptActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The PowerShell script code to execute.")]
+        [RequiredArgument]
+        [Description("The PowerShell script code to execute.")]
+        [DisplayName("PowerShell Script Code")]
         public InArgument<string> ScriptCode { get; set; }
 
-        [Category("Output"), Description("Returns the output of the script.")]
+        [Description("Returns the output of the script.")]
+        [DisplayName("Script Output")]
         public OutArgument<string> ScriptOutput { get; set; }
-
-
-
 
         protected override void Execute(CodeActivityContext context)
         {
