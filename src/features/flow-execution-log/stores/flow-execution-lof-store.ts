@@ -2,18 +2,26 @@ import { create } from "zustand";
 
 type State = {
   /** Unique identifier for the flow execution log */
-  flowExecutionLogId: string | null;
+  selectedExecutionId: string | null;
 
   /** Identifier for the selected action in the flow */
-  selectedActionId: string | null;
+  selectedNodeId: string | null;
+
+  showDialog: boolean;
 };
 
 type Actions = {
   /** Set the flow execution log id */
-  setFlowExecutionLogId: (flowExecutionLogId: string | null) => void;
+  setExecutionId: (id: string, nodes: { nodeId: string }[]) => void;
 
   /** Set the selected action id */
-  setSelectedActionId: (selectedActionId: string | null) => void;
+  setNodeId: (id: string) => void;
+
+  resetSelections: (
+    executions: { executionId: string; nodes: { nodeId: string }[] }[],
+  ) => void;
+
+  setShowDialog: (showDialog: boolean) => void;
 };
 
 /**
@@ -22,26 +30,27 @@ type Actions = {
  * @returns An object containing the state and actions of the flow execution log store.
  */
 export const useFlowExecutionLogStore = create<State & Actions>((set) => ({
-  flowExecutionLogId: null, // Initial state for flowExecutionLogId
-  selectedActionId: "", // Initial state for selectedActionId
+  showDialog: false,
+  selectedExecutionId: null,
+  selectedNodeId: null,
 
-  /**
-   * Action to update the flow execution log id.
-   *
-   * @param flowExecutionLogId The new flow execution log id
-   */
-  setFlowExecutionLogId: (flowExecutionLogId) =>
-    set(() => ({
-      flowExecutionLogId, // Update flowExecutionLogId in the state
-    })),
+  setShowDialog: (showDialog) => set({ showDialog }),
 
-  /**
-   * Action to update the selected action id.
-   *
-   * @param selectedActionId The new selected action id
-   */
-  setSelectedActionId: (selectedActionId) =>
-    set(() => ({
-      selectedActionId, // Update selectedActionId in the state
-    })),
+  setExecutionId: (id, nodes) => {
+    set({
+      selectedExecutionId: id,
+      selectedNodeId: nodes[0]?.nodeId ?? null,
+    });
+  },
+
+  setNodeId: (id) => set({ selectedNodeId: id }),
+
+  resetSelections: (executions) => {
+    if (executions.length > 0) {
+      set({
+        selectedExecutionId: executions[0].executionId,
+        selectedNodeId: executions[0].nodes[0]?.nodeId ?? null,
+      });
+    }
+  },
 }));
