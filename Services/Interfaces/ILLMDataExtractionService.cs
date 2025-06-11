@@ -11,7 +11,14 @@ public interface ILLMDataExtractionService
     /// </summary>
     /// <param name="prompt">The instruction or query to guide the LLM’s response.</param>
     /// <param name="llmModel">The identifier for the LLM model to use.</param>
-    /// <param name="fileUrl">The URL of the file (e.g., PDF) to process.</param>
     /// <returns>A service response containing the extracted or generated result from the LLM.</returns>
-    Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, string fileUrl);
+    Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel);
+
+    /// <summary>
+    /// Retrieves the textual content from a file at the specified URL.
+    /// This method can be used to extract raw text from documents like PDFs before sending them to the LLM for further processing.
+    /// </summary>
+    /// <param name="fileUrl">The URL of the file from which the text will be extracted.</param>
+    /// <returns>A string containing the extracted text from the file.</returns>
+    Task<string> GetFileTextAsync(string fileUrl);
 }

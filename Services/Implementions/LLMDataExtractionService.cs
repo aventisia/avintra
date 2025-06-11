@@ -11,103 +11,92 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         _extractViaLLMConfig = extractViaLLMConfig;
     }
 
-    // Extracts structured data from a file by first extracting its text and then passing it to an LLM.
-    public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, string fileUrl)
+    // Extracts structured data from a document by retrieving its text and passing it to an LLM for processing.
+    public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel)
     {
         var serviceResponse = new ServiceResponse<string>()
         {
-            Message = "Failed to extract data. Please try again"
+            Message = "Data extraction failed. Please try again."
         };
 
-        _logger.LogInformation("Starting ExtractViaLLMAsync method.");
+        _logger.LogInformation("Initiating data extraction process.");
 
-        // Step 1: Define supported LLM model mappings
+        // Step 1: Map LLM model identifiers to their corresponding API models
         var llmModelMapper = new Dictionary<string, string>
-        {
-            {"deepseek-r1" , "deepseek-r1:7b"},
-            {"phi4" , "phi4:14b"},
-            {"llama3.1" , "llama3.1:8b"},
-            {"llama3.2" , "llama3.2:3b"},
-            {"mistral" , "mistral:7b"},
-            {"gemma" , "gemma:7b"},
-        };
+            {
+                {"deepseek-r1", "deepseek-r1:7b"},
+                {"phi4", "phi4:14b"},
+                {"llama3.1", "llama3.1:8b"},
+                {"llama3.2", "llama3.2:3b"},
+                {"mistral", "mistral:7b"},
+                {"gemma", "gemma:7b"},
+            };
 
         try
         {
-            // Step 2: Validate required inputs
-            if (string.IsNullOrEmpty(fileUrl))
-            {
-                serviceResponse.Message = "File URL is missing.";
-                _logger.LogWarning("Validation failed: File URL is missing or null.");
-                return serviceResponse;
-            }
-
+            // Step 2: Validate the input parameters
             if (string.IsNullOrEmpty(prompt))
             {
-                serviceResponse.Message = "Prompt is missing.";
-                _logger.LogWarning("Validation failed: Prompt is missing or null.");
+                serviceResponse.Message = "Prompt is required.";
+                _logger.LogWarning("Prompt is missing or empty.");
                 return serviceResponse;
             }
 
             if (string.IsNullOrEmpty(llmModel))
             {
-                serviceResponse.Message = "LLM model is missing.";
-                _logger.LogWarning("Validation failed: LLM model is missing or null.");
+                serviceResponse.Message = "LLM model is required.";
+                _logger.LogWarning("LLM model identifier is missing or empty.");
                 return serviceResponse;
             }
 
-            // Step 3: Extract plain text from PDF file
-            string fileText = await GetFileTextAsync(fileUrl);
-            if (string.IsNullOrWhiteSpace(fileText))
-            {
-                serviceResponse.Message = $"Failed to extract text from file at {fileUrl}.";
-                return serviceResponse;
-            }
-
-            // Step 4: Send prompt + extracted text to the LLM API with retries
+            // Step 3: Attempt to send the prompt and extracted text to the LLM API, with retries
             string llmResponse = string.Empty;
-            for (int i = 1; i <= 3; i++)
+            for (int attempt = 1; attempt <= 3; attempt++)
             {
-                _logger.LogInformation("Attempt {attempt} to extract data via LLM model.", i);
+                _logger.LogInformation("Attempt {attempt} of 3 to process the LLM model.", attempt);
 
                 using (HttpClient client = new HttpClient())
                 {
+                    // Add API key to the HTTP request
                     client.DefaultRequestHeaders.Add("API_KEY", _extractViaLLMConfig.OllamaAPIKey);
 
                     var requestDto = new
                     {
                         stream = false,
-                        prompt = $"{prompt}\n\nFile Text:\n{fileText}",
+                        prompt = prompt,
                         model = llmModelMapper.GetValueOrDefault(llmModel)
                     };
 
                     var jsonRequest = System.Text.Json.JsonSerializer.Serialize(requestDto);
                     var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                    _logger.LogInformation("Sending prompt to LLM model: {model}", llmModelMapper.GetValueOrDefault(llmModel));
+                    _logger.LogInformation("Sending request to LLM model: {model}", llmModelMapper.GetValueOrDefault(llmModel));
                     HttpResponseMessage response = await client.PostAsync(_extractViaLLMConfig.OllamaAPI, content);
 
+                    // If the response is unsuccessful, log the error and retry
                     if (!response.IsSuccessStatusCode)
                     {
-                        _logger.LogError("004: Failed to get response from LLM model for file URL: {fileUrl}. Status Code: {statusCode}", fileUrl, response.StatusCode);
+                        _logger.LogError("Failed to get a valid response from LLM model. Status Code: {statusCode}", response.StatusCode);
                         continue;
                     }
 
+                    // Parse the LLM API response
                     var ollamaResponse = await response.Content.ReadAsStringAsync();
 
+                    // Check if the response contains the expected field
                     if (!ollamaResponse.Contains("response"))
                     {
-                        _logger.LogWarning("005: LLM response does not contain expected 'response' field.");
+                        _logger.LogWarning("LLM response is missing the 'response' field.");
                         continue;
                     }
 
-                    // Step 5: Parse and clean LLM-generated response
+                    // Step 4: Process and clean the LLM-generated response
                     using JsonDocument doc = JsonDocument.Parse(ollamaResponse);
                     llmResponse = doc.RootElement.GetProperty("response").GetString() ?? "";
 
-                    _logger.LogInformation("Raw LLM response: {llmResponse}", llmResponse);
+                    _logger.LogInformation("Raw LLM response received: {llmResponse}", llmResponse);
 
-                    // Remove known debug/formatting tags
+                    // Remove known debug or formatting tags from the response
                     if (llmResponse.Contains("</think>"))
                     {
                         llmResponse = llmResponse.Remove(llmResponse.IndexOf("<think>"), llmResponse.IndexOf("</think>") - llmResponse.IndexOf("<think>") + 8);
@@ -126,30 +115,30 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                         _logger.LogInformation("Removed ``` tag from response.");
                     }
 
-                    llmResponse = llmResponse.Trim();
+                    llmResponse = llmResponse.Trim();  // Clean up any excess whitespace
                     _logger.LogInformation("Final cleaned LLM response: {llmResponse}", llmResponse);
 
-                    break; // Exit retry loop on success
+                    break; // Exit the retry loop if the extraction was successful
                 }
             }
 
-            // Step 6: Populate and return successful service response
+            // Step 5: Return a successful response
             serviceResponse.Data = llmResponse;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Data extracted successfully";
-            _logger.LogInformation("LLM data extraction completed successfully.");
+            serviceResponse.Message = "Data successfully extracted.";
+            _logger.LogInformation("Data extraction completed successfully.");
         }
         catch (Exception ex)
         {
-            // Step 7: Handle any unexpected exceptions
-            _logger.LogError("An exception occurred during file extraction process: {ErrorMessage}.", ex.Message);
+            // Step 6: Handle unexpected errors
+            _logger.LogError("An unexpected error occurred during the extraction process: {ErrorMessage}.", ex.Message);
         }
 
         return serviceResponse;
     }
 
-    // Retrieves the textual content of a PDF file via the external LLM pipeline API.
-    private async Task<string> GetFileTextAsync(string fileUrl)
+    // Retrieves the text content from a file by sending a request to the external LLM pipeline API.
+    public async Task<string> GetFileTextAsync(string fileUrl)
     {
         try
         {
@@ -166,23 +155,24 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 var jsonRequest = System.Text.Json.JsonSerializer.Serialize(requestDto);
                 var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                _logger.LogInformation("Calling LLM pipeline to extract text from file URL: {fileUrl}", fileUrl);
+                _logger.LogInformation("Requesting file text extraction from pipeline for file URL: {fileUrl}", fileUrl);
                 HttpResponseMessage response = await client.PostAsync(_extractViaLLMConfig.LLMPipelineAPI, content);
 
+                // If the response is unsuccessful, log the error and return an empty string
                 if (!response.IsSuccessStatusCode)
                 {
-                    _logger.LogError("Failed to retrieve file text from pipeline. StatusCode: {statusCode}, FileURL: {fileUrl}", response.StatusCode, fileUrl);
+                    _logger.LogError("Failed to retrieve text from the file. StatusCode: {statusCode}, FileURL: {fileUrl}", response.StatusCode, fileUrl);
                     return string.Empty;
                 }
 
                 string fileText = await response.Content.ReadAsStringAsync();
-                _logger.LogInformation("File text extraction succeeded for file URL: {fileUrl}", fileUrl);
+                _logger.LogInformation("Successfully extracted text from file URL: {fileUrl}", fileUrl);
                 return fileText;
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError("Exception while retrieving file text: {error}", ex.Message);
+            _logger.LogError("An error occurred while retrieving file text: {error}", ex.Message);
             return string.Empty;
         }
     }
