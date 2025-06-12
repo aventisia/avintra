@@ -1,8 +1,10 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.DataTransformations.TextActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -16,7 +18,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
         // Input Arguments
         // ----------------------
-
         [RequiredArgument]
         [DisplayName("Text To Analyze")]
         [Description("The text from which entities will be recognized.")]
@@ -30,12 +31,11 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         [DisplayName("Language")]
         [Description("The language of the text. Optional, but can improve recognition accuracy.")]
-        public InArgument<string> Language { get; set; }
+        public InArgument<LanguageEnum> Language { get; set; }
 
         // ----------------------
         // Output Arguments
         // ----------------------
-
 
         [DisplayName("Recognized Entities")]
         [Description("Returns the list of recognized entities based on the specified entity type.")]
@@ -47,88 +47,74 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Success";
-
             try
             {
+                // Retrieve input arguments
                 var textToAnalyze = TextToAnalyze.Get(context);
                 var entityType = EntityType.Get(context);
                 var language = Language.Get(context);
 
+                // Validate input
                 if (string.IsNullOrWhiteSpace(textToAnalyze))
                     throw new ArgumentException("TextToAnalyze cannot be empty.");
 
+                // Perform entity recognition
                 var recognizedEntities = new List<string>();
-
                 switch (entityType)
                 {
                     case EntityTypeEnum.DateTime:
                         recognizedEntities.AddRange(ExtractDateTimeEntities(textToAnalyze));
                         break;
-
                     case EntityTypeEnum.Dimension:
                         recognizedEntities.AddRange(ExtractDimensionEntities(textToAnalyze));
                         break;
-
                     case EntityTypeEnum.Temperature:
                         recognizedEntities.AddRange(ExtractTemperatureEntities(textToAnalyze));
                         break;
-
                     case EntityTypeEnum.Currency:
                         recognizedEntities.AddRange(ExtractCurrencyEntities(textToAnalyze));
                         break;
-
                     case EntityTypeEnum.NumberRange:
                         recognizedEntities.AddRange(ExtractNumberRangeEntities(textToAnalyze));
                         break;
-
                     case EntityTypeEnum.Number:
                         recognizedEntities.AddRange(ExtractNumberEntities(textToAnalyze));
                         break;
-
                     case EntityTypeEnum.Ordinal:
                         recognizedEntities.AddRange(ExtractOrdinalEntities(textToAnalyze));
                         break;
-
                     case EntityTypeEnum.Percentage:
                         recognizedEntities.AddRange(ExtractPercentageEntities(textToAnalyze));
                         break;
-
                     case EntityTypeEnum.PhoneNumber:
                         recognizedEntities.AddRange(ExtractPhoneNumberEntities(textToAnalyze));
                         break;
-
                     case EntityTypeEnum.Email:
                         recognizedEntities.AddRange(ExtractEmailEntities(textToAnalyze));
                         break;
-
-                    case EntityTypeEnum.URL:
-                        recognizedEntities.AddRange(ExtractURLEntities(textToAnalyze));
-                        break;
-
                     case EntityTypeEnum.IPAddress:
                         recognizedEntities.AddRange(ExtractIPEntities(textToAnalyze));
                         break;
-
                     case EntityTypeEnum.Hashtag:
                         recognizedEntities.AddRange(ExtractHashtagEntities(textToAnalyze));
                         break;
-
-                    case EntityTypeEnum.QuotedText:
-                        recognizedEntities.AddRange(ExtractQuotedTextEntities(textToAnalyze));
+                    case EntityTypeEnum.URL:
+                        recognizedEntities.AddRange(ExtractURLEntities(textToAnalyze));
                         break;
-
-                    case EntityTypeEnum.Mention:
-                        recognizedEntities.AddRange(ExtractMentionEntities(textToAnalyze));
-                        break;
-
                     case EntityTypeEnum.GUID:
                         recognizedEntities.AddRange(ExtractGUIDEntities(textToAnalyze));
                         break;
-
+                    case EntityTypeEnum.QuotedText:
+                        recognizedEntities.AddRange(ExtractQuotedTextEntities(textToAnalyze));
+                        break;
+                    case EntityTypeEnum.Mention:
+                        recognizedEntities.AddRange(ExtractMentionEntities(textToAnalyze));
+                        break;
                     default:
                         throw new ArgumentException("Unsupported entity type.");
                 }
 
+                // Set output arguments
                 RecognizedEntities.Set(context, recognizedEntities);
             }
             catch (Exception ex)
@@ -137,9 +123,11 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 RecognizedEntities.Set(context, Array.Empty<string>());
             }
 
+            // Set status message
             StatusMessage.Set(context, status);
         }
 
+        // Helper methods for entity extraction
         private static IEnumerable<string> ExtractDateTimeEntities(string text)
         {
             // Regex patterns for various date formats
@@ -150,13 +138,9 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 @"\b\d{1,2}-\d{1,2}-\d{4}\b", // DD-MM-YYYY
                 @"\b\d{1,2} \w+ \d{4}\b" // 12 January 2023
             };
-
             var matches = new List<string>();
             foreach (var pattern in dateTimePatterns)
-            {
                 matches.AddRange(Regex.Matches(text, pattern).Cast<Match>().Select(m => m.Value));
-            }
-
             return matches;
         }
 
@@ -270,10 +254,55 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         {
             // Regex pattern for matching GUIDs
             var guidPattern = @"\{?[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}\}?";
-
             return Regex.Matches(text, guidPattern)
                 .Cast<Match>()
                 .Select(m => m.Value);
         }
+    }
+
+    // Enum for Languages
+    public enum LanguageEnum
+    {
+        [Display(Name = "English", Description = "English language.")]
+        English,
+
+        [Display(Name = "Chinese (Simplified)", Description = "Simplified Chinese language.")]
+        ChineseSimplified,
+
+        [Display(Name = "Spanish", Description = "Spanish language (Generic).")]
+        Spanish,
+
+        [Display(Name = "Spanish (Mexico)", Description = "Spanish language as spoken in Mexico.")]
+        SpanishMexico,
+
+        [Display(Name = "Portuguese", Description = "Portuguese language (Generic).")]
+        Portuguese,
+
+        [Display(Name = "French", Description = "French language.")]
+        French,
+
+        [Display(Name = "German", Description = "German language.")]
+        German,
+
+        [Display(Name = "Italian", Description = "Italian language.")]
+        Italian,
+
+        [Display(Name = "Japanese", Description = "Japanese language.")]
+        Japanese,
+
+        [Display(Name = "Dutch", Description = "Dutch language.")]
+        Dutch,
+
+        [Display(Name = "Korean", Description = "Korean language.")]
+        Korean,
+
+        [Display(Name = "Swedish", Description = "Swedish language.")]
+        Swedish,
+
+        [Display(Name = "Turkish", Description = "Turkish language.")]
+        Turkish,
+
+        [Display(Name = "Hindi", Description = "Hindi language.")]
+        Hindi
     }
 }

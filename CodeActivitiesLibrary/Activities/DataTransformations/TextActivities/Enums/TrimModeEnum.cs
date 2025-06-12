@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.DataTransformations.TextActivities
+namespace CodeActivitiesLibrary.DataTransformations.TextActivities.Enums
 {
     public enum TrimModeEnum
     {

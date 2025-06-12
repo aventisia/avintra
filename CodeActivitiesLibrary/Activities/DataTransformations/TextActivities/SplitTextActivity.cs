@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.DataTransformations.TextActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.Collections;
@@ -66,8 +67,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [DisplayName("Text List")]
         [Description("Returns the list of substrings after splitting the original text.")]
         public OutArgument<IList> TextList { get; set; }
-
-
 
 
         // ----------------------

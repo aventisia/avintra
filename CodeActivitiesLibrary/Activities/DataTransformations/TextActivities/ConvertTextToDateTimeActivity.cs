@@ -10,7 +10,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [Description("Converts a text representation of a date and/or time value to a DateTime value.")]
     public class ConvertTextToDateTimeActivity : BaseCodeActivity
     {
-
         [RequiredArgument]
         [DisplayName("Text to Convert")]
         [Description("The text value that will be converted to a DateTime.")]
@@ -29,12 +28,9 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         public InArgument<string> Format { get; set; }
 
 
-
-
         [DisplayName("Result DateTime")]
         [Description("Returns the resulting DateTime value after conversion.")]
         public OutArgument<DateTime> ResultDateTime { get; set; }
-
 
 
         protected override void Execute(CodeActivityContext context)
@@ -72,7 +68,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
             catch (Exception ex)
             {
                 status = $"Error converting text to DateTime: {ex.Message}";
-                ResultDateTime.Set(context, default(DateTime));
+                ResultDateTime.Set(context, default);
             }
 
             StatusMessage.Set(context, status);

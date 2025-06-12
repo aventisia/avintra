@@ -7,7 +7,8 @@ using System.Text.RegularExpressions;
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Escape Text for Regular Expression")]
-    [Description("Escapes a minimal set of characters for use in regular expressions by replacing them with their escape codes.")]
+    [Description(
+        "Escapes a minimal set of characters for use in regular expressions by replacing them with their escape codes.")]
     public class EscapeTextForRegularExpressionActivity : BaseCodeActivity
     {
         // ----------------------
@@ -27,8 +28,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [DisplayName("Escaped Text")]
         [Description("Returns the text after escaping special characters for regular expressions.")]
         public OutArgument<string> EscapedText { get; set; }
-
-
 
 
         // ----------------------

@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.DataTransformations.TextActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -11,22 +12,24 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     {
         #region Inputs
 
-
         [DisplayName("Datetime to Convert")]
         [Description("The datetime value to convert to text.")]
-        public InArgument<DateTime> DatetimeToConvert { get; set; }
+        public InArgument<object> DatetimeToConvert { get; set; }
 
 
         [DisplayName("Format to Use")]
         [Description("Specifies whether to use a standard datetime format or create a custom one.")]
         [DefaultValue(FormatOptionEnum.Standard)]
-        public FormatOptionEnum FormatToUse { get; set; } = FormatOptionEnum.Standard;
+        public InArgument<FormatOptionEnum> FormatToUse { get; set; } =
+            new InArgument<FormatOptionEnum>(FormatOptionEnum.Standard);
 
 
         [DisplayName("Standard Format")]
         [Description("The standard datetime format to use when displaying the datetime value.")]
         [RenderIfCondition(nameof(FormatToUse), FormatOptionEnum.Standard)]
-        public StandardFormatOptionEnum StandardFormat { get; set; } = StandardFormatOptionEnum.ShortDate;
+        public InArgument<StandardFormatOptionEnum> StandardFormat { get; set; } =
+            new InArgument<StandardFormatOptionEnum>(
+                StandardFormatOptionEnum.ShortDate);
 
 
         [DisplayName("Custom Format")]
@@ -37,7 +40,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         #endregion
 
         #region Outputs
-
 
         [DisplayName("Formatted DateTime")]
         [Description("The formatted datetime as a text value.")]
@@ -53,13 +55,29 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
             try
             {
                 // Get inputs
-                var datetimeToConvert = DatetimeToConvert.Get(context); // Already a DateTime
-                var formatToUse = FormatToUse;
-                var standardFormat = StandardFormat;
+                var datetimeGivenToConvert = DatetimeToConvert.Get(context); // Already a DateTime
+                var formatToUse = FormatToUse.Get(context);
+                var standardFormat = StandardFormat.Get(context);
                 var customFormat = CustomFormat.Get(context);
 
+                DateTime datetimeToConvert;
+
+                switch (datetimeGivenToConvert)
+                {
+                    case string s:
+                        datetimeToConvert = DateTime.TryParse(s, out var parsedDateTime)
+                            ? parsedDateTime
+                            : throw new ArgumentException("Invalid datetime string format.");
+                        break;
+                    case DateTime dateTime:
+                        datetimeToConvert = dateTime;
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid datetime string format or datetime object.");
+                }
+
                 // Validate inputs
-                if (datetimeToConvert == null)
+                if (datetimeGivenToConvert == null)
                     throw new ArgumentException("Datetime to Convert cannot be null.");
 
                 // Format based on selected option
@@ -72,7 +90,8 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                         result = FormatCustom(datetimeToConvert, customFormat);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(formatToUse), formatToUse, "Invalid format option.");
+                        throw new ArgumentOutOfRangeException(nameof(formatToUse), formatToUse,
+                            "Invalid format option.");
                 }
             }
             catch (Exception ex)
@@ -121,5 +140,4 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
             return dateTime.ToString(customFormat);
         }
     }
-
 }

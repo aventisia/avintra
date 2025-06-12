@@ -28,8 +28,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         public OutArgument<string> ReversedText { get; set; }
 
 
-
-
         // ----------------------
         // Execution Logic
         // ----------------------

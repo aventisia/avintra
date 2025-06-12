@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.DataTransformations.TextActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -84,6 +85,4 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
             StatusMessage.Set(context, status);
         }
     }
-
-
 }

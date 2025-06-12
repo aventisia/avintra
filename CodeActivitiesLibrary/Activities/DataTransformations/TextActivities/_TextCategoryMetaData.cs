@@ -6,5 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         primaryCategory: "Data Transformations",
         label: "Text",
         description: "Text manipulation and transformation.")]
-    internal sealed class _TextCategoryMetaData { }
+    internal sealed class _TextCategoryMetaData
+    {
+    }
 }

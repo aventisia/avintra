@@ -86,10 +86,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                     var options = ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None;
 
                     // Handle escape sequences if needed
-                    if (activateEscapeSequences)
-                    {
-                        replacementText = Regex.Unescape(replacementText);
-                    }
+                    if (activateEscapeSequences) replacementText = Regex.Unescape(replacementText);
 
                     result = Regex.Replace(originalText, searchPattern, replacementText, options);
                 }

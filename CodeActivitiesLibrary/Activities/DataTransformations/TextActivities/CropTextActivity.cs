@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
+using CodeActivitiesLibrary.DataTransformations.TextActivities.Enums;
 using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Crop Text")]
     [Description("Extracts text before, after, or between specified flags.")]
-    public class CropTextActivity : Extensions.BaseCodeActivity
+    public class CropTextActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -57,7 +57,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         public OutArgument<bool> IsFlagFound { get; set; }
 
 
-
         // ----------------------
         // Execution Logic
         // ----------------------
@@ -80,11 +79,11 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 {
                     case CropModeEnum.BeforeFlag:
                     case CropModeEnum.AfterFlag:
-                        {
-                            if (string.IsNullOrWhiteSpace(flag))
-                                throw new ArgumentException($"Flag is required in '{mode}' mode.");
-                            break;
-                        }
+                    {
+                        if (string.IsNullOrWhiteSpace(flag))
+                            throw new ArgumentException($"Flag is required in '{mode}' mode.");
+                        break;
+                    }
                     case CropModeEnum.BetweenFlags when string.IsNullOrWhiteSpace(flag):
                         throw new ArgumentException("First flag is required in 'Between Flags' mode.");
                     case CropModeEnum.BetweenFlags when string.IsNullOrWhiteSpace(secondFlag):

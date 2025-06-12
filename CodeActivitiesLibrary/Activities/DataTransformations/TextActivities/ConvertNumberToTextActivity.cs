@@ -9,7 +9,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [Description("Converts a numeric value into text with specified formatting options.")]
     public class ConvertNumberToTextActivity : BaseCodeActivity
     {
-
         [RequiredArgument]
         [DisplayName("Number to Convert")]
         [Description("The numeric value to convert to text.")]
@@ -31,8 +30,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [DisplayName("Formatted Number")]
         [Description("The resulting formatted number as text.")]
         public OutArgument<string> FormattedNumber { get; set; }
-
-
 
 
         protected override void Execute(CodeActivityContext context)

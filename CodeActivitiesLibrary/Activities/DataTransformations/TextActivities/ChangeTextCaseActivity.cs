@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.DataTransformations.TextActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using System.Activities;
 using System.ComponentModel;
 using System.Threading;
@@ -10,7 +11,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     public class ChangeTextCaseActivity : BaseCodeActivity
     {
         #region Inputs
-
 
         [DisplayName("Text to Convert")]
         [Description("The text to convert.")]
@@ -24,7 +24,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         #endregion
 
         #region Outputs
-
 
         [DisplayName("Result")]
         [Description("The converted text based on selected case style.")]

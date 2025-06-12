@@ -57,9 +57,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         public OutArgument<string> RandomText { get; set; }
 
 
-
-
-
         // ----------------------
         // Execution Logic
         // ----------------------
@@ -100,10 +97,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
                 var result = new char[length];
 
-                for (var i = 0; i < length; i++)
-                {
-                    result[i] = allowedCharacters[random.Next(allowedCharacters.Length)];
-                }
+                for (var i = 0; i < length; i++) result[i] = allowedCharacters[random.Next(allowedCharacters.Length)];
 
                 RandomText.Set(context, new string(result));
             }

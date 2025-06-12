@@ -9,19 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [Description("Appends a new line of text to the original text.")]
     public class AppendLineToTextActivity : BaseCodeActivity
     {
-        protected override void Execute(CodeActivityContext context)
-        {
-            var original = OriginalText.Get(context);
-            var newline = NewLine.Get(context);
-
-
-            OResultOutput.Set(context, string.IsNullOrEmpty(original)
-                ? newline
-                : $"{original}{Environment.NewLine}{newline}");
-        }
-
         #region Inputs
-
 
         [Description("The original text to which a new line will be appended.")]
         public InArgument<string> OriginalText { get; set; }
@@ -34,10 +22,20 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         #region Outputs
 
-
         [Description("The resulting text after appending the new line.")]
-        public OutArgument<string> OResultOutput { get; set; }
+        public OutArgument<string> ResultOutput { get; set; }
 
         #endregion
+        protected override void Execute(CodeActivityContext context)
+        {
+            var original = OriginalText.Get(context);
+            var newline = NewLine.Get(context);
+
+
+            ResultOutput.Set(context, string.IsNullOrEmpty(original)
+                ? newline
+                : $"{original}{Environment.NewLine}{newline}");
+        }
+
     }
 }

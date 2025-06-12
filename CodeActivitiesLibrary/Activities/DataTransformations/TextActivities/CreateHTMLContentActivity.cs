@@ -26,10 +26,8 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [Description("The generated HTML content.")]
         public OutArgument<string> ResultHtml { get; set; }
 
-
-
-
         #endregion
+
         protected override void Execute(CodeActivityContext context)
         {
             try
@@ -63,7 +61,5 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 StatusMessage.Set(context, $"Error: {ex.Message}");
             }
         }
-
-
     }
 }
