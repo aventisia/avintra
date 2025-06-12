@@ -50,9 +50,9 @@ public class DesktopAppController : BaseApiController
         return File(fileBytes, "application/octet-stream", fileName);
     }
 
-    // GET: /desktop-app/update/{platform}/{currentVersion}
-    [HttpGet("update/{platform}/{currentVersion}")]
-    public IActionResult CheckUpdate(string platform, string currentVersion)
+    // GET: /desktop-app/update/{target}/{arch}/{currentVersion}
+    [HttpGet("update/{target}/{arch}/{currentVersion}")]
+    public IActionResult CheckUpdate(string target, string arch, string currentVersion)
     {
         // Get the file path and file name for the latest version
         var (filePath, fileName, signatureFilePath, message) = GetLatestVersion();
@@ -61,7 +61,7 @@ public class DesktopAppController : BaseApiController
         if (string.IsNullOrEmpty(filePath))
             return NotFound(message);
 
-        // Get the latest verison out. Assuming version is in the format workspace_{version}_x64-setup.exe
+        // Get the latest verison out. Assuming version is in the format Worc-space_{version}_x64-setup.exe
         var latestVersion = Path.GetFileNameWithoutExtension(fileName).Split('_')[1];
         var updateNotes = "Bug fixes and improvements.";
         var pubDate = DateTime.UtcNow.ToString("o"); // ISO 8601 format
@@ -106,9 +106,9 @@ public class DesktopAppController : BaseApiController
 
         // Set search pattern based on version
         if (!string.IsNullOrEmpty(version))
-            searchPattern = $"workspace_{version}_x64-setup.exe";
+            searchPattern = $"Worc-space_{version}_x64-setup.exe";
         else
-            searchPattern = "workspace_*_x64-setup.exe";
+            searchPattern = "Worc-space_*_x64-setup.exe";
 
         // Get files matching the search pattern
         var files = Directory.GetFiles(basePath, searchPattern);
