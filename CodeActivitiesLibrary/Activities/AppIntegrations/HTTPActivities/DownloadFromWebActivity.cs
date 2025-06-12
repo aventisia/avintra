@@ -20,14 +20,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
         [Description("The URL of the resource to download (e.g., text, HTML, JSON, PDF).")]
         public InArgument<string> Url { get; set; }
 
+
         [DisplayName("Save To File")]
         [Description("If true, downloads and saves the content to a local file instead of returning as string.")]
         public InArgument<bool> SaveToFile { get; set; }
+
 
         [DisplayName("File Path")]
         [Description("Full path where the downloaded file should be saved. Required if 'Save To File' is true.")]
         [RenderIfCondition(nameof(SaveToFile), true)]
         public InArgument<string> FilePath { get; set; }
+
 
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait before failing due to timeout.")]
@@ -38,9 +41,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
         // Output Arguments
         // ----------------------
 
+
         [DisplayName("Result")]
         [Description("Returns the downloaded content as string or file path depending on mode.")]
         public OutArgument<string> Result { get; set; }
+
 
         // ----------------------
         // Execution Logic

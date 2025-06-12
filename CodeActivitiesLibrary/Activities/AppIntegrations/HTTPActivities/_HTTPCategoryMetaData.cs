@@ -6,5 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
         primaryCategory: "App Integrations",
         label: "HTTP",
         description: "Perform HTTP requests and integrations.")]
-    internal sealed class _HTTPCategoryMetaData { }
+    internal sealed class _HTTPCategoryMetaData
+    {
+    }
 }

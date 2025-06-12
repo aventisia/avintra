@@ -32,22 +32,32 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
         [Description("The parameters for the method as a Dictionary<string, object>.")]
         public InArgument<Dictionary<string, object>> Parameters { get; set; }
 
+
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for the web service to respond.")]
         [DefaultValue(60)]
         public InArgument<int> TimeoutSeconds { get; set; }
 
+
+        [DisplayName("Use Custom Action Namespace")]
+        [Description("Enable this if the service requires a specific namespace for the SOAP action.")]
+        public InArgument<bool> UseCustomActionNamespace { get; set; }
+
+
         [DisplayName("Action Namespace")]
         [Description("Optional namespace for the action (if required by the service).")]
+        [RenderIfCondition(nameof(UseCustomActionNamespace), true)]
         public InArgument<string> ActionNamespace { get; set; }
 
         // ----------------------
         // Output Arguments
         // ----------------------
 
+
         [DisplayName("Result")]
         [Description("Returns the raw XML response from the SOAP service.")]
         public OutArgument<string> Result { get; set; }
+
 
         // ----------------------
         // Execution Logic
@@ -63,6 +73,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
                 var method = MethodName.Get(context);
                 var parameters = Parameters.Get(context);
                 var timeout = TimeSpan.FromSeconds(TimeoutSeconds.Get(context));
+                var useCustomNs = UseCustomActionNamespace.Get(context);
                 var actionNamespace = ActionNamespace.Get(context);
 
                 if (string.IsNullOrWhiteSpace(url))
@@ -76,7 +87,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
 
                 // Build the SOAP envelope
                 XNamespace soapNs = "http://schemas.xmlsoap.org/soap/envelope/";
-                XNamespace actionNs = !string.IsNullOrEmpty(actionNamespace) ? actionNamespace : "http://tempuri.org/";
+                XNamespace actionNs = useCustomNs && !string.IsNullOrEmpty(actionNamespace)
+                    ? actionNamespace
+                    : "http://tempuri.org/";
 
                 var envelope = new XElement(soapNs + "Envelope",
                     new XElement(soapNs + "Body",
