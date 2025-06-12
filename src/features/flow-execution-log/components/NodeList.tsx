@@ -32,7 +32,7 @@ export const NodeList = () => {
   if (!exec) return null;
 
   return (
-    <div>
+    <>
       <h6 className="ml-3 py-2 text-sm">Nodes</h6>
       <Command key="node">
         <div className="mx-3 mb-2 rounded-lg bg-slate-100">
@@ -64,7 +64,7 @@ export const NodeList = () => {
                   <XCircleIcon className="h-4 w-4 text-red-500" />
                 )}
                 <div className="flex flex-1 items-center justify-between">
-                  <span className="w-60 truncate text-xs">{node.nodeName}</span>
+                  <span className="w-40 truncate text-xs">{node.nodeName}</span>
                   <div className="text-2xs text-muted-foreground">
                     {formatDuration(node.duration)}
                   </div>
@@ -74,6 +74,6 @@ export const NodeList = () => {
           </CommandList>
         </ScrollArea>
       </Command>
-    </div>
+    </>
   );
 };
