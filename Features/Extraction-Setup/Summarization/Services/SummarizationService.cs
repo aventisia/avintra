@@ -192,6 +192,17 @@ public class SummarizationService : ISummarizationService
                 return serviceResponse;
             }
 
+            // Adapt the model into a SummarizationDto and retrieve the setup object.
+            var modelSetup = model.Adapt<SummarizationDto>()?.SetupObject;
+
+            if (string.IsNullOrEmpty(modelSetup.LLM))
+            {
+                // Log a warning and set the service response message if LLM is missing or empty
+                _logger.LogWarning("LLM is not configured for ModelId: {ModelId}.", model.Id);
+                serviceResponse.Message = "Setup is incomplete.";
+                return serviceResponse;
+            }
+
             // Check if the model has a generated prompt for summarization
             if (string.IsNullOrEmpty(model.GeneratedPrompt))
             {
@@ -268,7 +279,7 @@ public class SummarizationService : ISummarizationService
                 var startExecutionTime = DateTime.UtcNow;
 
                 // Call the LLM extraction service
-                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM);
+                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, modelSetup.LLM, modelSetup.Temperature);
 
                 // Record the end time after the extraction is complete (in UTC)
                 var endExecutionTime = DateTime.UtcNow;

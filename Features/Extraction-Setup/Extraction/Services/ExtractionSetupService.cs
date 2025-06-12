@@ -170,30 +170,11 @@ public class ExtractionSetupService : IExtractionSetupService
         {
             _logger.LogInformation("Starting LLM extraction process for ModelId: {ModelId}", extractRequestDto.ModelId);
 
-            // Retrieve the model from the repository
+            // Retrieve model by ModelId
             var model = await _unitOfWork.MLModelRepo
                                           .GetByConditionAsync(w => w.Id == extractRequestDto.ModelId)
                                           .Include(i => i.ExtractedData)
                                           .SingleOrDefaultAsync();
-            // Convert the model to an MLModelSetupDto and extract field names by their index
-            var fieldDict = model.Adapt<MLModelSetupDto>()?
-                                .SetupObject?
-                                .FieldSetups?
-                                .ToDictionary(c => c.Index, c => c.Name);
-
-            // Convert the model to an MLModelSetupDto and extract table metadata names by their index
-            var tableMetadataDict = model.Adapt<MLModelSetupDto>()?
-                                           .SetupObject?
-                                           .TableMetadata?
-                                           .ToDictionary(c => c.Index, c => c.Name);
-
-            // Convert the model to an MLModelSetupDto and extract table headers by their index
-            var tableHeaderDict = model.Adapt<MLModelSetupDto>()?
-                                          .SetupObject?
-                                          .TableMetadata?
-                                          .ToDictionary(c => c.Index, c => c.TableHeaders
-                                          .ToDictionary(d => d.Index, d => d.Name));
-
 
             // If model is not found, log and return failure response
             if (model == null)
@@ -202,6 +183,33 @@ public class ExtractionSetupService : IExtractionSetupService
                 serviceResponse.Message = "Model not found";
                 return serviceResponse;
             }
+
+            // Adapt the model into an MLModelSetupDto and retrieve the setup object.
+            var modelSetup = model.Adapt<MLModelSetupDto>()?.SetupObject;
+
+            if (string.IsNullOrEmpty(modelSetup.LLM))
+            {
+                // Log a warning and set the service response message if LLM is missing or empty
+                _logger.LogWarning("LLM is not configured for ModelId: {ModelId}.", model.Id);
+                serviceResponse.Message = "Setup is incomplete.";
+                return serviceResponse;
+            }
+
+            // Build a dictionary that maps field indices to field names.
+            var fieldDict = modelSetup?
+                                .FieldSetups?
+                                .ToDictionary(c => c.Index, c => c.Name);
+
+            // Extract table metadata from the model setup, mapping table indices to names.
+            var tableMetadataDict = modelSetup?
+                                        .TableMetadata?
+                                        .ToDictionary(c => c.Index, c => c.Name);
+
+            // Extract table headers from the model setup, mapping table indices to header names.
+            var tableHeaderDict = modelSetup?
+                                      .TableMetadata?
+                                      .ToDictionary(c => c.Index, c => c.TableHeaders
+                                      .ToDictionary(d => d.Index, d => d.Name));
 
             // Check for prompt availability
             if (string.IsNullOrEmpty(model.GeneratedPrompt))
@@ -279,7 +287,7 @@ public class ExtractionSetupService : IExtractionSetupService
                 var startExecutionTime = DateTime.UtcNow;
 
                 // Call the LLM extraction service
-                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM);
+                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, modelSetup.LLM, modelSetup.Temperature);
 
                 // Record the end time after the extraction is complete (in UTC)
                 var endExecutionTime = DateTime.UtcNow;

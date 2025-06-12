@@ -144,7 +144,6 @@ public class ClassificationService : IClassificationService
                                           .Include(i => i.ExtractedData)
                                           .SingleOrDefaultAsync();
 
-
             // If model is not found, log and return failure
             if (model == null)
             {
@@ -153,11 +152,21 @@ public class ClassificationService : IClassificationService
                 return serviceResponse;
             }
 
-            // Convert model to SentimentAnalyticDto and get categories
-            var categoryDict = model.Adapt<ClassificationDto>()?
-                    .SetupObject?
-                    .Categories?
-                    .ToDictionary(c => c.Index, c => c.Name);
+            // Adapt the model into a ClassificationDto and retrieve the setup object.
+            var modelSetup = model.Adapt<ClassificationDto>()?.SetupObject;
+
+            if (string.IsNullOrEmpty(modelSetup.LLM))
+            {
+                // Log a warning and set the service response message if LLM is missing or empty
+                _logger.LogWarning("LLM is not configured for ModelId: {ModelId}.", model.Id);
+                serviceResponse.Message = "Setup is incomplete.";
+                return serviceResponse;
+            }
+
+            // Build a dictionary that maps category indices to category names.
+            var categoryDict = modelSetup?
+                                .Categories?
+                                .ToDictionary(c => c.Index, c => c.Name);
 
             // Check for prompt availability
             if (string.IsNullOrEmpty(model.GeneratedPrompt))
@@ -236,7 +245,7 @@ public class ClassificationService : IClassificationService
                 var startExecutionTime = DateTime.UtcNow;
 
                 // Call the LLM extraction service
-                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM);
+                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, modelSetup.LLM, modelSetup.Temperature);
 
                 // Record the end time after the extraction is complete (in UTC)
                 var endExecutionTime = DateTime.UtcNow;

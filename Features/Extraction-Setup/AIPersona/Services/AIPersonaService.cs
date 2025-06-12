@@ -145,6 +145,17 @@ public class AIPersonaService : IAIPersonaService
                 return serviceResponse;
             }
 
+            // Adapt the model into an AIPersonaDto and retrieve the setup object.
+            var modelSetup = model.Adapt<AIPersonaDto>()?.SetupObject;
+
+            if (string.IsNullOrEmpty(modelSetup.LLM))
+            {
+                // Log a warning and set the service response message if LLM is missing or empty
+                _logger.LogWarning("LLM is not configured for ModelId: {ModelId}.", model.Id);
+                serviceResponse.Message = "Setup is incomplete.";
+                return serviceResponse;
+            }
+
             // Check if the model has a prompt for AI persona extraction
             if (string.IsNullOrEmpty(model.GeneratedPrompt))
             {
@@ -226,7 +237,7 @@ public class AIPersonaService : IAIPersonaService
             var startExecutionTime = DateTime.UtcNow;
 
             // Call LLM data extraction service
-            var llmResponse = await _llmDataExtractionService.ExtractDataAsync(prompt, model.LLM);
+            var llmResponse = await _llmDataExtractionService.ExtractDataAsync(prompt, modelSetup.LLM, modelSetup.Temperature);
 
             // Record the end time after extraction
             var endExecutionTime = DateTime.UtcNow;

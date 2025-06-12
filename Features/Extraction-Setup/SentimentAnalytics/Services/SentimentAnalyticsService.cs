@@ -151,12 +151,21 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
                 serviceResponse.Message = "Model not found";
                 return serviceResponse;
             }
+            // Convert the model to a DTO of type SentimentAnalyticDto and extract the setup object.
+            var modelSetup = model.Adapt<SentimentAnalyticDto>()?.SetupObject;
 
-            // Convert model to SentimentAnalyticDto and get categories
-            var categoryDict = model.Adapt<SentimentAnalyticDto>()?
-                    .SetupObject?
-                    .Categories?
-                    .ToDictionary(c => c.Index, c => c.Name);
+            if (string.IsNullOrEmpty(modelSetup.LLM))
+            {
+                // Log a warning and set the service response message if LLM is missing or empty
+                _logger.LogWarning("LLM is not configured for ModelId: {ModelId}.", model.Id);
+                serviceResponse.Message = "Setup is incomplete.";
+                return serviceResponse;
+            }
+
+            // Convert the model setup's categories into a dictionary (Index -> Name).
+            var categoryDict = modelSetup?
+                                .Categories?
+                                .ToDictionary(c => c.Index, c => c.Name);
 
             // Check if the model has a generated prompt for sentiment analysis
             if (string.IsNullOrEmpty(model.GeneratedPrompt))
@@ -235,8 +244,8 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
                 var startExecutionTime = DateTime.UtcNow;
 
                 // Call the LLM extraction service
-                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM);
-                
+                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, modelSetup.LLM, modelSetup.Temperature);
+
                 // Record the end time after the extraction is complete (in UTC)
                 var endExecutionTime = DateTime.UtcNow;
 

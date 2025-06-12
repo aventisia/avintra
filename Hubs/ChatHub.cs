@@ -6,7 +6,7 @@ namespace MLModelBuilderAPIs.Hubs;
 public class ChatHub : Hub
 {
     private readonly ILLMDataExtractionService _llmDataExtractionService;
-    
+
     public ChatHub(ILLMDataExtractionService llmDataExtractionService)
     {
         _llmDataExtractionService = llmDataExtractionService;
@@ -77,8 +77,12 @@ public class ChatHub : Hub
             // Clear, instruction-based prompt for Q&A
             var prompt = $"You are a helpful assistant. Answer the question clearly and concisely. Do not include greetings or explanations. Just provide the answer: {message}";
 
+            // TODO: Update with the actual model name and temperature later
+            var llmModel = "gemma";
+            var modelTemperature = 0.7;
+
             // Send the full prompt to the LLM for response
-            var response = await _llmDataExtractionService.ExtractDataAsync(prompt, "gemma");
+            var response = await _llmDataExtractionService.ExtractDataAsync(prompt, llmModel, modelTemperature);
 
             // Return the response to the client
             await Clients.Client(receiverConnection.Key)

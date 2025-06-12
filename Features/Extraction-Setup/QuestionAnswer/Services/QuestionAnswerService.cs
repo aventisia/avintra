@@ -144,12 +144,6 @@ public class QuestionAnswerService : IQuestionAnswerService
                                           .Include(i => i.ExtractedData)
                                           .SingleOrDefaultAsync();
 
-            // Convert model to SentimentAnalyticDto and get categories
-            var categoryDict = model.Adapt<QuestionAnswerDto>()?
-                    .SetupObject?
-                    .QuestionAnswers?
-                    .ToDictionary(c => c.Index, c => c.Name);
-
             // If model is not found, log and return a failure response
             if (model == null)
             {
@@ -157,6 +151,23 @@ public class QuestionAnswerService : IQuestionAnswerService
                 serviceResponse.Message = "Model not found";
                 return serviceResponse;
             }
+
+            // Transform the model into a Data Transfer Object (DTO) of type QuestionAnswerDto and extract the setup object.
+            var modelSetup = model.Adapt<QuestionAnswerDto>()?.SetupObject;
+
+            if (string.IsNullOrEmpty(modelSetup.LLM))
+            {
+                // Log a warning and set the service response message if LLM is missing or empty
+                _logger.LogWarning("LLM is not configured for ModelId: {ModelId}.", model.Id);
+                serviceResponse.Message = "Setup is incomplete.";
+                return serviceResponse;
+            }
+
+            // Create a dictionary where the key is the index of each answer and the value is the answer's name.
+            var questionAnswerDic = modelSetup
+                    .QuestionAnswers?
+                    .ToDictionary(c => c.Index, c => c.Name);
+
 
             // Check if the model has a prompt available for Q&A extraction
             if (string.IsNullOrEmpty(model.GeneratedPrompt))
@@ -234,8 +245,8 @@ public class QuestionAnswerService : IQuestionAnswerService
                 var startExecutionTime = DateTime.UtcNow;
 
                 // Call the LLM extraction service
-                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, model.LLM);
-                
+                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, modelSetup.LLM, modelSetup.Temperature);
+
                 // Record the end time after the extraction is complete (in UTC)
                 var endExecutionTime = DateTime.UtcNow;
 
@@ -293,7 +304,7 @@ public class QuestionAnswerService : IQuestionAnswerService
                     // Assign names using dictionary lookup
                     foreach (var category in extractedData.ExtractedData)
                     {
-                        if (categoryDict.TryGetValue(category.Index, out var name))
+                        if (questionAnswerDic.TryGetValue(category.Index, out var name))
                         {
                             category.Question = name;
                         }
