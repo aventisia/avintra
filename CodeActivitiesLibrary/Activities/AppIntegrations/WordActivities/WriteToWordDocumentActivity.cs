@@ -1,40 +1,146 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using Microsoft.Office.Interop.Word;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using Word = Microsoft.Office.Interop.Word;
 
 namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
-    // Activity to write or append text to a Word document
-    [DisplayName("Write to Word Document"), Description("Write or append text to a Word file.")]
+    [DisplayName("Write to Word Document")]
+    [Description("Writes or appends text to a Word file.")]
     public class WriteToWordDocumentActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The path to the Word document.")]
-        public InArgument<string> DocumentPath { get; set; }
+        [DisplayName("Word Instance")]
+        [Description("The specific Word instance to use.")]
+        [RequiredArgument]
+        public InArgument<Word.Application> WordInstance { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The text to write or append.")]
+        [DisplayName("Text to Write")]
+        [Description("The text to be written or appended to the Word document.")]
+        [RequiredArgument]
         public InArgument<string> TextToWrite { get; set; }
 
+        [DisplayName("Append New Line")]
+        [Description("Specifies whether to append a new line after the text.")]
+        [DefaultValue(true)]
+        public InArgument<bool> AppendNewLine { get; set; }
 
-
+        [DisplayName("Write Text To")]
+        [Description("Specifies the location in the Word document where the text should be written.")]
+        [DefaultValue(WriteLocation.BeginningOfWordFile)]
+        public InArgument<WriteLocation> WriteTextTo { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var documentPath = DocumentPath.Get(context);
-            var textToWrite = TextToWrite.Get(context);
-            var status = "";
-
             try
             {
-                // Simulate writing to the Word document (actual implementation would use Microsoft.Office.Interop.Word)
-                status = $"Simulated writing text to Word document at path: {documentPath}";
+                // Retrieve input values
+                var wordApp = context.GetValue(WordInstance);
+                var textToWrite = context.GetValue(TextToWrite);
+                var appendNewLine = context.GetValue(AppendNewLine);
+                var writeLocation = context.GetValue(WriteTextTo);
+
+                // Ensure Word is open and has at least one document
+                if (wordApp == null || wordApp.Documents.Count == 0)
+                {
+                    throw new InvalidOperationException("No active Word document found.");
+                }
+
+                // Get the active document
+                _Document activeDocument = wordApp.ActiveDocument;
+
+                // Insert text based on the selected location
+                switch (writeLocation)
+                {
+                    case WriteLocation.BeginningOfWordFile:
+                        InsertAtBeginning(activeDocument, textToWrite, appendNewLine);
+                        break;
+
+                    case WriteLocation.EndOfWordFile:
+                        InsertAtEnd(activeDocument, textToWrite, appendNewLine);
+                        break;
+
+                    case WriteLocation.BeforeBookmark:
+                        InsertBeforeBookmark(activeDocument, textToWrite, appendNewLine);
+                        break;
+
+                    case WriteLocation.AfterBookmark:
+                        InsertAfterBookmark(activeDocument, textToWrite, appendNewLine);
+                        break;
+
+                    default:
+                        throw new ArgumentException("Invalid Write Location.");
+                }
+
+                Console.WriteLine("Text written to Word document successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error writing to Word document: {ex.Message}";
+                throw new Exception("Error writing to Word document: " + ex.Message, ex);
             }
-
-            StatusMessage.Set(context, status);
         }
+
+        #region Helper Methods
+
+        private void InsertAtBeginning(_Document document, string text, bool appendNewLine)
+        {
+            // Insert text at the beginning of the document
+            document.Content.InsertBefore(text);
+            if (appendNewLine)
+            {
+                document.Content.InsertBefore("\r\n");
+            }
+        }
+
+        private void InsertAtEnd(_Document document, string text, bool appendNewLine)
+        {
+            // Insert text at the end of the document
+            document.Content.InsertAfter(text);
+            if (appendNewLine)
+            {
+                document.Content.InsertAfter("\r\n");
+            }
+        }
+
+        private void InsertBeforeBookmark(_Document document, string text, bool appendNewLine)
+        {
+            // Find the first bookmark in the document
+            object bookmarkName = "_DefaultBookmark"; // Example bookmark name
+            Range bookmarkRange = document.Bookmarks[bookmarkName].Range;
+
+            // Insert text before the bookmark
+            bookmarkRange.Text = text + (appendNewLine ? "\r\n" : "");
+        }
+
+        private void InsertAfterBookmark(_Document document, string text, bool appendNewLine)
+        {
+            // Find the first bookmark in the document
+            object bookmarkName = "_DefaultBookmark"; // Example bookmark name
+            Range bookmarkRange = document.Bookmarks[bookmarkName].Range;
+
+            // Insert text after the bookmark
+            bookmarkRange.Collapse(WdCollapseDirection.wdCollapseEnd);
+            bookmarkRange.Text = text + (appendNewLine ? "\r\n" : "");
+        }
+
+        #endregion
     }
+
+    public enum WriteLocation
+    {
+        [Display(Name = "Beginning of Word file", Description = "Writes content at the beginning of the document.")]
+        BeginningOfWordFile,
+
+        [Display(Name = "End of Word file", Description = "Writes content at the end of the document.")]
+        EndOfWordFile,
+
+        [Display(Name = "Before Bookmark", Description = "Writes content before the specified bookmark.")]
+        BeforeBookmark,
+
+        [Display(Name = "After Bookmark", Description = "Writes content after the specified bookmark.")]
+        AfterBookmark
+    }
+
 }

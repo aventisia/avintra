@@ -6,5 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         primaryCategory: "App Integrations",
         label: "Word",
         description: "Automate Microsoft Word document operations.")]
-    internal sealed class _WordCategoryMetaData { }
+    internal sealed class _WordCategoryMetaData
+    {
+    }
 }

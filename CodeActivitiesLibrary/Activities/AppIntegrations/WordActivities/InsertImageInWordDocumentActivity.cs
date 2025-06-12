@@ -1,40 +1,143 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using Microsoft.Office.Interop.Word;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using Word = Microsoft.Office.Interop.Word;
 
 namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
-    // Activity to insert an image into a Word document
-    [DisplayName("Insert Image in Word Document"), Description("Insert an image to a Word file.")]
+
+    [DisplayName("Insert Image in Word Document")]
+    [Description("Inserts an image into a Word file.")]
     public class InsertImageInWordDocumentActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The path to the Word document.")]
-        public InArgument<string> DocumentPath { get; set; }
+        [DisplayName("Word Instance")]
+        [Description("The specific Word instance to use.")]
+        [RequiredArgument]
+        public InArgument<Word.Application> WordInstance { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The path to the image file to insert.")]
+        [DisplayName("Insert Image To")]
+        [Description("Specifies the location in the document where the image should be inserted.")]
+        [DefaultValue(InsertLocationEnum.BeginningOfWordFile)]
+        public InArgument<InsertLocationEnum> InsertImageTo { get; set; }
+
+        [DisplayName("Insert Image From")]
+        [Description("Specifies whether the image is from a file or clipboard.")]
+        [DefaultValue(ImageSourceEnum.File)]
+        public InArgument<ImageSourceEnum> InsertImageFrom { get; set; }
+
+        [DisplayName("Image Path")]
+        [Description("The file path of the image to insert.")]
+        [RequiredArgument]
         public InArgument<string> ImagePath { get; set; }
-
-
-
 
         protected override void Execute(CodeActivityContext context)
         {
-            var documentPath = DocumentPath.Get(context);
-            var imagePath = ImagePath.Get(context);
-            var status = "";
-
             try
             {
-                // Simulate inserting an image into the Word document (actual implementation would use Microsoft.Office.Interop.Word)
-                status = $"Simulated inserting image '{imagePath}' into Word document at path: {documentPath}";
+                // Retrieve input values
+                var wordApp = context.GetValue(WordInstance);
+                var insertLocation = context.GetValue(InsertImageTo);
+                var imageSource = context.GetValue(InsertImageFrom);
+                var imagePath = context.GetValue(ImagePath);
+
+                if (wordApp == null)
+                {
+                    throw new ArgumentNullException(nameof(WordInstance), "WordInstance cannot be null.");
+                }
+
+                _Document activeDocument = wordApp.ActiveDocument;
+
+                // Determine the insertion range based on InsertImageTo
+                var insertionRange = GetInsertionRange(activeDocument, insertLocation);
+
+                // Insert the image
+                switch (imageSource)
+                {
+                    case ImageSourceEnum.File:
+                        if (string.IsNullOrEmpty(imagePath))
+                        {
+                            throw new ArgumentException("ImagePath cannot be empty when inserting from File.");
+                        }
+                        insertionRange.InlineShapes.AddPicture(imagePath);
+                        break;
+
+                    case ImageSourceEnum.Clipboard:
+                        insertionRange.Paste();
+                        break;
+
+                    default:
+                        throw new ArgumentException("Invalid InsertImageFrom option.");
+                }
+
+                Console.WriteLine("Image inserted successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error inserting image into Word document: {ex.Message}";
+                throw new Exception("Error inserting image into Word document:", ex);
             }
+        }
 
-            StatusMessage.Set(context, status);
+        private static Range GetInsertionRange(_Document document, InsertLocationEnum location)
+        {
+            switch (location)
+            {
+                case InsertLocationEnum.BeginningOfWordFile:
+                    return document.Content.Paragraphs[1].Range;
+
+                case InsertLocationEnum.EndOfWordFile:
+                    return document.Content;
+
+                case InsertLocationEnum.BeforeBookmark:
+                    // Placeholder: Implement bookmark handling
+                    throw new NotImplementedException("BeforeBookmark is not implemented.");
+
+                case InsertLocationEnum.AfterBookmark:
+                    // Placeholder: Implement bookmark handling
+                    throw new NotImplementedException("AfterBookmark is not implemented.");
+
+                case InsertLocationEnum.BeforeSpecificText:
+                    // Placeholder: Implement specific text handling
+                    throw new NotImplementedException("BeforeSpecificText is not implemented.");
+
+                case InsertLocationEnum.AfterSpecificText:
+                    // Placeholder: Implement specific text handling
+                    throw new NotImplementedException("AfterSpecificText is not implemented.");
+
+                default:
+                    throw new ArgumentException("Invalid InsertLocation option.");
+            }
         }
     }
+    public enum InsertLocationEnum
+    {
+        [Display(Name = "Beginning of Word file", Description = "Inserts content at the beginning of the document.")]
+        BeginningOfWordFile,
+
+        [Display(Name = "End of Word file", Description = "Inserts content at the end of the document.")]
+        EndOfWordFile,
+
+        [Display(Name = "Before Bookmark", Description = "Inserts content before the specified bookmark.")]
+        BeforeBookmark,
+
+        [Display(Name = "After Bookmark", Description = "Inserts content after the specified bookmark.")]
+        AfterBookmark,
+
+        [Display(Name = "Before Specific Text", Description = "Inserts content before a specific text in the document.")]
+        BeforeSpecificText,
+
+        [Display(Name = "After Specific Text", Description = "Inserts content after a specific text in the document.")]
+        AfterSpecificText
+    }
+    public enum ImageSourceEnum
+    {
+        [Display(Name = "File", Description = "Inserts an image from a file path.")]
+        File,
+
+        [Display(Name = "Clipboard", Description = "Inserts an image from the system clipboard.")]
+        Clipboard
+    }
+
 }

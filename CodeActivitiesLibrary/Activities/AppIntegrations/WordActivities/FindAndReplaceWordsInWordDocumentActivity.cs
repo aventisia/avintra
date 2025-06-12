@@ -1,46 +1,112 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using Microsoft.Office.Interop.Word;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using Word = Microsoft.Office.Interop.Word;
 
 namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
-
-    // Activity to find and replace words in a Word document
-    [DisplayName("Find and Replace Words in Word Document"),
-     Description("Finds text and replaces it with another in the active document of a Word instance.")]
-    public class FindAndReplaceWordsInWordDocumentActivity : BaseCodeActivity
+    [DisplayName("Find and Replace Words in Word Document")]
+    [Description("Finds text and replaces it with another in the active document of a Word instance.")]
+    public class FindAndReplaceWordsActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The path to the Word document.")]
-        public InArgument<string> DocumentPath { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The text to find.")]
-        public InArgument<string> FindText { get; set; }
+        [DisplayName("Word Instance")]
+        [Description("The specific Word instance to use.")]
+        [RequiredArgument]
+        public InArgument<Word.Application> WordInstance { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The text to replace with.")]
-        public InArgument<string> ReplaceText { get; set; }
+        [DisplayName("All Matches")]
+        [Description("Specifies whether to replace all occurrences or just the first one.")]
+        [DefaultValue(false)]
+        public InArgument<bool> AllMatches { get; set; }
 
+        [DisplayName("Text to Find")]
+        [Description("The text to search for in the document.")]
+        [RequiredArgument]
+        public InArgument<string> TextToFind { get; set; }
 
+        [DisplayName("Text to Replace With")]
+        [Description("The text to replace the found text with.")]
+        [RequiredArgument]
+        public InArgument<string> TextToReplaceWith { get; set; }
 
+        [DisplayName("Use Wildcards")]
+        [Description("Specifies whether to use wildcard patterns for the search.")]
+        [DefaultValue(false)]
+        public InArgument<bool> UseWildcards { get; set; }
 
+        [DisplayName("Match Case")]
+        [Description("Specifies whether the search should be case-sensitive.")]
+        [DefaultValue(true)]
+        [RenderIfCondition(nameof(UseWildcards), true)]
+        public InArgument<bool> MatchCase { get; set; }
+
+        [DisplayName("Match Whole Words Only")]
+        [Description("Specifies whether to match whole words only.")]
+        [DefaultValue(true)]
+        [RenderIfCondition(nameof(UseWildcards), true)]
+        public InArgument<bool> MatchWholeWordsOnly { get; set; }
         protected override void Execute(CodeActivityContext context)
         {
-            var documentPath = DocumentPath.Get(context);
-            var findText = FindText.Get(context);
-            var replaceText = ReplaceText.Get(context);
-            var status = "";
-
             try
             {
-                // Simulate finding and replacing text in the Word document (actual implementation would use Microsoft.Office.Interop.Word)
-                status = $"Simulated finding and replacing text in Word document at path: {documentPath}";
+                // Retrieve input values
+                var wordApp = context.GetValue(WordInstance);
+                var allMatches = context.GetValue(AllMatches);
+                var textToFind = context.GetValue(TextToFind);
+                var textToReplaceWith = context.GetValue(TextToReplaceWith);
+                var useWildcards = context.GetValue(UseWildcards);
+                var matchCase = context.GetValue(MatchCase);
+                var matchWholeWordsOnly = context.GetValue(MatchWholeWordsOnly);
+
+                // Ensure Word is open and has at least one document
+                if (wordApp == null || wordApp.Documents.Count == 0)
+                {
+                    throw new InvalidOperationException("No active Word document found.");
+                }
+
+                // Get the active document
+                _Document activeDocument = wordApp.ActiveDocument;
+
+                // Prepare the Find object
+                var findObject = activeDocument.Content.Find;
+
+                // Configure find options
+                findObject.ClearFormatting();
+                findObject.Text = textToFind;
+                findObject.Replacement.Text = textToReplaceWith;
+                findObject.Forward = true;
+                findObject.Wrap = WdFindWrap.wdFindContinue;
+                findObject.MatchCase = matchCase;
+                findObject.MatchWholeWord = matchWholeWordsOnly;
+                findObject.MatchWildcards = useWildcards;
+
+                // Perform the find-and-replace operation
+                if (allMatches)
+                {
+                    // Replace all occurrences
+                    findObject.Execute(
+                        Replace: WdReplace.wdReplaceAll,
+                        Format: false,
+                        Wrap: WdFindWrap.wdFindContinue);
+                }
+                else
+                {
+                    // Replace the first occurrence
+                    findObject.Execute(
+                        Replace: WdReplace.wdReplaceOne,
+                        Format: false,
+                        Wrap: WdFindWrap.wdFindContinue);
+                }
+
+                Console.WriteLine("Text replaced successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error finding and replacing text in Word document: {ex.Message}";
+                throw new Exception("Error performing find and replace: " + ex.Message, ex);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }
