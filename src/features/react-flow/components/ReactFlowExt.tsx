@@ -26,6 +26,7 @@ import { BackgroundExt } from "./BackgroundExt";
 import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls";
 import ExecutionLogDialog from "@/features/flow-execution-log/components";
+import SearchCommandDialog from "@/features/search/componets";
 
 /**
  * A custom extension of the ReactFlow component.
@@ -108,9 +109,9 @@ export const ReactFlowExt = () => {
         onEdgesChange={onEdgesChange}
         onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
         onConnect={onConnect}
-        deleteKeyCode={ "Delete"}
-        onNodeContextMenu={ onNodeContextMenu}
-        onEdgeContextMenu={ onEdgeContextMenu}
+        deleteKeyCode={"Delete"}
+        onNodeContextMenu={onNodeContextMenu}
+        onEdgeContextMenu={onEdgeContextMenu}
         // TODO: Toggles Reactflows interactivity - we can use this to lock the flow
         // nodesDraggable={!isLocked}
         // nodesConnectable={!isLocked}
@@ -121,6 +122,7 @@ export const ReactFlowExt = () => {
         <MiniMapExt />
       </ReactFlow>
       <ExecutionLogDialog />
+      <SearchCommandDialog />
     </DCPDialog>
   );
 };
