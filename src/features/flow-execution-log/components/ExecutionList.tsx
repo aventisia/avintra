@@ -34,7 +34,7 @@ export const ExecutionList = () => {
         <div className="mx-3 mb-2 rounded-lg bg-slate-100">
           <CommandInput
             className="h-10 text-xs"
-            placeholder="Search execution..."
+            placeholder="Search..."
             autoFocus
           />
         </div>
