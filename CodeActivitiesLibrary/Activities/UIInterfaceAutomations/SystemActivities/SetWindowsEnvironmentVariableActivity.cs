@@ -15,13 +15,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
         // ----------------------
 
         [RequiredArgument]
-
         [DisplayName("Environment variable name")]
         [Description("The name of the environment variable to set.")]
         public InArgument<EnvVarNameEnum> EnvironmentVariableName { get; set; }
 
         [RequiredArgument]
-
         [DisplayName("New environment variable value")]
         [Description("The new value to set for the environment variable.")]
         public InArgument<string> NewEnvironmentVariableValue { get; set; }

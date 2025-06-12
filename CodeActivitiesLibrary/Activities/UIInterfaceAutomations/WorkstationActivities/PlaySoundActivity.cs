@@ -57,8 +57,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            string status = "Operation completed successfully.";
-            bool played = false;
+            var status = "Operation completed successfully.";
+            var played = false;
             int? duration = null;
 
             try
@@ -237,20 +237,22 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 
     public enum SystemSoundNameEnum
     {
-        [Description("Default system sound")] Default,
+        [Display(Name = "Default", Description = "Default system sound.")]
+        Default,
 
-        [Description("Standard beep sound")] Beep,
+        [Display(Name = "Beep", Description = "Standard beep sound.")]
+        Beep,
 
-        [Description("Asterisk sound (used for warnings)")]
+        [Display(Name = "Asterisk", Description = "Asterisk sound (used for warnings).")]
         Asterisk,
 
-        [Description("Exclamation sound (used for errors)")]
+        [Display(Name = "Exclamation", Description = "Exclamation sound (used for errors).")]
         Exclamation,
 
-        [Description("Question sound (used for prompts)")]
+        [Display(Name = "Question", Description = "Question sound (used for prompts).")]
         Question,
 
-        [Description("Hand sound (used for critical alerts)")]
-        Hand,
+        [Display(Name = "Critical Alert (Hand)", Description = "Hand sound (used for critical alerts).")]
+        Hand
     }
 }

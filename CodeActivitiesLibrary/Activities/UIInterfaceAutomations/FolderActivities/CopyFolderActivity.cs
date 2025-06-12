@@ -1,4 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;

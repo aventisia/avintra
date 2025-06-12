@@ -125,7 +125,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 
         private string GetDefaultPrinterWin32()
         {
-            int bufferSize = 0;
+            var bufferSize = 0;
             GetDefaultPrinter(null, ref bufferSize); // First call gets required buffer size
 
             if (bufferSize == 0)

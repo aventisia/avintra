@@ -19,7 +19,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
         protected override void Execute(CodeActivityContext context)
         {
             var connection = SqlConnection.Get(context);
-            string status = "";
+            var status = "";
             try
             {
                 if (connection != null && connection.State == ConnectionState.Open)

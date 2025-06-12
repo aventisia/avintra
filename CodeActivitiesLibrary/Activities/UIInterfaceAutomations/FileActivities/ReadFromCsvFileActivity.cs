@@ -3,6 +3,7 @@ using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.IO;
 using System.Text;
@@ -85,7 +86,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                 if (string.IsNullOrWhiteSpace(filePath))
                     throw new ArgumentException("File path cannot be empty.");
 
-                string separator = ",";
+                var separator = ",";
                 if (columnsSeparatorType == SeparatorTypeEnum.Predefined)
                 {
                     var predefSep = PredefinedSeparator.Get(context);
@@ -119,7 +120,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                     var dataTable = new DataTable();
 
                     string line;
-                    int lineNumber = 0;
+                    var lineNumber = 0;
 
                     while ((line = csvReader.ReadLine()) != null)
                     {
@@ -137,7 +138,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                             // Read data rows
                             var values = line.Split(new[] { separator }, StringSplitOptions.None);
                             var row = dataTable.NewRow();
-                            for (int i = 0; i < values.Length; i++)
+                            for (var i = 0; i < values.Length; i++)
                             {
                                 row[i] = trimFields ? values[i].Trim() : values[i];
                             }
@@ -190,19 +191,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
         public enum SeparatorTypeEnum
         {
-            [Description("Predefined")]
+            [Display(Name = "Predefined", Description = "Use one of the built-in predefined separators.")]
             Predefined,
-            [Description("Custom")]
+
+            [Display(Name = "Custom", Description = "Define a custom separator character or string.")]
             Custom
         }
-
         public enum PredefinedSeparatorEnum
         {
-            [Description("Comma")]
+            [Display(Name = "Comma", Description = "Uses a comma (,) as the separator.")]
             Comma,
-            [Description("Tab")]
+
+            [Display(Name = "Tab", Description = "Uses a tab character as the separator.")]
             Tab,
-            [Description("Semicolon")]
+
+            [Display(Name = "Semicolon", Description = "Uses a semicolon (;) as the separator.")]
             Semicolon
         }
 

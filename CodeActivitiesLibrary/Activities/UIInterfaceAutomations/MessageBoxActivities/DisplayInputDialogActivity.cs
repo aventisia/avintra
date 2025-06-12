@@ -1,6 +1,8 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities.Enums;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Windows.Forms;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
@@ -9,7 +11,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
     [Description("Displays a dialog box that prompts the user to enter text.")]
     public class DisplayInputDialogActivity : BaseCodeActivity
     {
-
         [DisplayName("Input Dialog Title")]
         [Description("The title text displayed at the top of the input dialog.")]
         public InArgument<string> InputDialogTitle { get; set; }
@@ -46,17 +47,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            string title = context.GetValue(InputDialogTitle);
-            string message = context.GetValue(InputDialogMessage);
-            string defaultValue = context.GetValue(DefaultValue);
-            InputTypeEnum inputType = context.GetValue(InputType);
-            bool keepOnTop = context.GetValue(KeepOnTop);
+            var title = context.GetValue(InputDialogTitle);
+            var message = context.GetValue(InputDialogMessage);
+            var defaultValue = context.GetValue(DefaultValue);
+            var inputType = context.GetValue(InputType);
+            var keepOnTop = context.GetValue(KeepOnTop);
 
-            DialogResultEnum resultEnum = DialogResultEnum.Cancel;
-            string inputResult = string.Empty;
+            var resultEnum = DialogResultEnum.Cancel;
+            var inputResult = string.Empty;
 
             // Create and configure form
-            Form form = new Form
+            var form = new Form
             {
                 Width = 400,
                 Height = 160,
@@ -68,8 +69,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
                 MaximizeBox = false
             };
 
-            Label label = new Label() { Left = 10, Top = 20, Text = message ?? "Enter value:", Width = 360 };
-            TextBox textBox = new TextBox() { Left = 10, Top = 45, Width = 360, Text = defaultValue ?? "" };
+            var label = new Label { Left = 10, Top = 20, Text = message ?? "Enter value:", Width = 360 };
+            var textBox = new TextBox { Left = 10, Top = 45, Width = 360, Text = defaultValue ?? "" };
 
             switch (inputType)
             {
@@ -82,8 +83,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
                     break;
             }
 
-            Button okButton = new Button() { Text = "OK", Left = 210, Width = 75, Top = 80, DialogResult = DialogResult.OK };
-            Button cancelButton = new Button() { Text = "Cancel", Left = 295, Width = 75, Top = 80, DialogResult = DialogResult.Cancel };
+            var okButton = new Button { Text = "OK", Left = 210, Width = 75, Top = 80, DialogResult = DialogResult.OK };
+            var cancelButton = new Button
+            { Text = "Cancel", Left = 295, Width = 75, Top = 80, DialogResult = DialogResult.Cancel };
 
             form.Controls.Add(label);
             form.Controls.Add(textBox);
@@ -93,7 +95,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
             form.AcceptButton = okButton;
             form.CancelButton = cancelButton;
 
-            DialogResult dialogResult = form.ShowDialog();
+            var dialogResult = form.ShowDialog();
 
             if (dialogResult == DialogResult.OK)
             {
@@ -114,10 +116,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 
     public enum InputTypeEnum
     {
-        [Description("Text")]
+        [Display(Name = "Text", Description = "Plain text input type.")]
         Text,
 
-        [Description("Password")]
+        [Display(Name = "Password", Description = "Password input type (masked input).")]
         Password
     }
 }

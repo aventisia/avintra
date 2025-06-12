@@ -11,12 +11,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
     public class RunPowerShellScriptActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [Description("The PowerShell script code to execute.")]
         [DisplayName("PowerShell Script Code")]
+        [Description("The PowerShell script code to execute.")]
+
         public InArgument<string> ScriptCode { get; set; }
 
-        [Description("Returns the output of the script.")]
         [DisplayName("Script Output")]
+        [Description("Returns the output of the script.")]
+
         public OutArgument<string> ScriptOutput { get; set; }
 
         protected override void Execute(CodeActivityContext context)

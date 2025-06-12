@@ -55,7 +55,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 
                 if (!success)
                 {
-                    int errorCode = Marshal.GetLastWin32Error();
+                    var errorCode = Marshal.GetLastWin32Error();
                     throw new System.ComponentModel.Win32Exception(errorCode, "Failed to lock workstation");
                 }
 
@@ -122,7 +122,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
         private bool HasLockWorkstationPermission()
         {
             // In a domain environment, check group policy restrictions
-            using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
+            using (var identity = WindowsIdentity.GetCurrent())
             {
                 return true; // Simplified - in real implementation would check actual permissions
             }

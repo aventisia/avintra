@@ -22,7 +22,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
         protected override void Execute(CodeActivityContext context)
         {
             var connectionString = ConnectionString.Get(context);
-            string status = "";
+            var status = "";
             SqlConnection connection = null;
             try
             {

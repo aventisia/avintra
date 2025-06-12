@@ -1,7 +1,9 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
@@ -35,8 +37,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
         {
             try
             {
-                int posX = context.GetValue(PositionX);
-                int posY = context.GetValue(PositionY);
+                var posX = context.GetValue(PositionX);
+                var posY = context.GetValue(PositionY);
                 var relativeTo = context.GetValue(RelativeTo);
                 var animationSpeed = context.GetValue(MoveMouseFromPreviousPosition);
 
@@ -55,7 +57,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
 
         private Point GetCurrentCursorPosition()
         {
-            if (!GetCursorPos(out POINT point))
+            if (!GetCursorPos(out var point))
                 throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to get cursor position.");
 
             return new Point(point.X, point.Y);
@@ -63,10 +65,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
 
         private void MoveCursor(int x, int y, RelativeToEnum relativeTo, AnimationSpeedEnum speed)
         {
-            Point target = ConvertToScreenCoordinates(x, y, relativeTo);
-            Point start = GetCurrentCursorPosition();
+            var target = ConvertToScreenCoordinates(x, y, relativeTo);
+            var start = GetCurrentCursorPosition();
 
-            int steps = 0;
+            var steps = 0;
 
             switch (speed)
             {
@@ -93,13 +95,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
                 return;
             }
 
-            int dx = target.X - start.X;
-            int dy = target.Y - start.Y;
+            var dx = target.X - start.X;
+            var dy = target.Y - start.Y;
 
-            for (int i = 1; i <= steps; i++)
+            for (var i = 1; i <= steps; i++)
             {
-                int stepX = start.X + dx * i / steps;
-                int stepY = start.Y + dy * i / steps;
+                var stepX = start.X + dx * i / steps;
+                var stepY = start.Y + dy * i / steps;
                 SetCursorPos(stepX, stepY);
                 System.Threading.Thread.Sleep(10);
             }
@@ -113,12 +115,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
             }
             else if (relativeTo == RelativeToEnum.ForegroundWindow)
             {
-                IntPtr hwnd = GetForegroundWindow();
-                POINT pt = new POINT(x, y);
+                var hwnd = GetForegroundWindow();
+                var pt = new POINT(x, y);
                 if (!ClientToScreen(hwnd, ref pt))
-                {
                     throw new Win32Exception(Marshal.GetLastWin32Error(), "ClientToScreen failed.");
-                }
+
                 return new Point(pt.X, pt.Y);
             }
             else
@@ -158,9 +159,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
     }
     public enum AnimationSpeedEnum
     {
+        [Display(Name = "Instant", Description = "Animation runs instantly without delay.")]
         Instant,
+
+        [Display(Name = "Low Speed", Description = "Animation runs at a slow speed.")]
         LowSpeed,
+
+        [Display(Name = "Normal Speed", Description = "Animation runs at normal speed.")]
         NormalSpeed,
+
+        [Display(Name = "High Speed", Description = "Animation runs at a fast speed.")]
         HighSpeed
     }
 }

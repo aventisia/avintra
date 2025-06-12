@@ -6,5 +6,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
         primaryCategory: "UI Interface Automations",
         label: "Mouse and Keyboard",
         description: "Automate mouse and keyboard actions.")]
-    internal sealed class _MouseAndKeyboardCategoryMetaData { }
+    internal sealed class _MouseAndKeyboardCategoryMetaData
+    {
+    }
 }

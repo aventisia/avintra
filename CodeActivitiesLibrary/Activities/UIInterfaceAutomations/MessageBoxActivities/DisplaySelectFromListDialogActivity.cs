@@ -1,96 +1,91 @@
 ﻿using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 {
-
     [DisplayName("Display Select From List Dialog")]
     [Description("Displays a dialog box with options that lets the user select from a list.")]
     public class DisplaySelectFromListDialogActivity : BaseCodeActivity
     {
 
+
         [DisplayName("Dialog Title")]
+        [Description("The title text displayed at the top of the dialog window.")]
         public InArgument<string> DialogTitle { get; set; }
 
-
         [DisplayName("Dialog Message")]
+        [Description("The message or prompt shown inside the dialog to guide the user.")]
         public InArgument<string> DialogMessage { get; set; }
 
-
         [DisplayName("List to Choose From")]
+        [Description("A list of items from which the user can select one or more options.")]
         public InArgument<string> ListToChooseFrom { get; set; }
 
-
         [DisplayName("Keep Select Dialog Always On Top")]
+        [Description("If true, keeps the dialog window always on top of other windows.")]
         public InArgument<bool> KeepOnTop { get; set; }
 
-
         [DisplayName("Limit to List")]
+        [Description("If true, limits user input to only the items in the provided list.")]
         public InArgument<bool> LimitToList { get; set; }
 
-
         [DisplayName("Allow Empty Selection")]
+        [Description("If true, allows the user to make no selection (optional choice).")]
         public InArgument<bool> AllowEmptySelection { get; set; }
 
-
         [DisplayName("Allow Multiple Selection")]
+        [Description("If true, allows the user to select multiple items from the list.")]
         public InArgument<bool> AllowMultipleSelection { get; set; }
 
-
         [DisplayName("Preselect Items Starting With '+'")]
+        [Description("If true, preselects all items in the list that start with a '+' character.")]
         public InArgument<bool> PreselectItemsStartingWithPlus { get; set; }
 
-
         [DisplayName("Selected Item(s)")]
+        [Description("Returns the selected item(s) from the dialog as a string. For multiple selections, items are separated by commas.")]
         public OutArgument<string> SelectedItem { get; set; }
 
-
         [DisplayName("Selected Index(es)")]
+        [Description("Returns the index or indices of the selected item(s) in the list.")]
         public OutArgument<int[]> SelectedIndex { get; set; }
 
-
         [DisplayName("Button Pressed")]
+        [Description("Returns true if the user pressed the OK button; false if Cancel or closed the dialog.")]
         public OutArgument<bool> ButtonPressed { get; set; }
-
-
 
         protected override void Execute(CodeActivityContext context)
         {
-            string title = context.GetValue(DialogTitle) ?? "Select Item";
-            string message = context.GetValue(DialogMessage) ?? "Please select from the list below:";
-            string listInput = context.GetValue(ListToChooseFrom) ?? "";
-            bool keepOnTop = context.GetValue(KeepOnTop);
-            bool allowEmpty = context.GetValue(AllowEmptySelection);
-            bool allowMultiple = context.GetValue(AllowMultipleSelection);
-            bool preselectPlus = context.GetValue(PreselectItemsStartingWithPlus);
+            var title = context.GetValue(DialogTitle) ?? "Select Item";
+            var message = context.GetValue(DialogMessage) ?? "Please select from the list below:";
+            var listInput = context.GetValue(ListToChooseFrom) ?? "";
+            var keepOnTop = context.GetValue(KeepOnTop);
+            var allowEmpty = context.GetValue(AllowEmptySelection);
+            var allowMultiple = context.GetValue(AllowMultipleSelection);
+            var preselectPlus = context.GetValue(PreselectItemsStartingWithPlus);
 
-            List<string> items = listInput
+            var items = listInput
                 .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => s.Trim())
                 .ToList();
 
-            ListBox listBox = new ListBox
+            var listBox = new ListBox
             {
                 SelectionMode = allowMultiple ? SelectionMode.MultiExtended : SelectionMode.One,
                 Dock = DockStyle.Fill
             };
 
-            for (int i = 0; i < items.Count; i++)
+            for (var i = 0; i < items.Count; i++)
             {
-                string item = items[i];
+                var item = items[i];
                 listBox.Items.Add(item);
-                if (preselectPlus && allowMultiple && item.StartsWith("+"))
-                {
-                    listBox.SetSelected(i, true);
-                }
+                if (preselectPlus && allowMultiple && item.StartsWith("+")) listBox.SetSelected(i, true);
             }
 
-            Form form = new Form
+            var form = new Form
             {
                 Text = title,
                 TopMost = keepOnTop,
@@ -99,7 +94,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
                 StartPosition = FormStartPosition.CenterScreen
             };
 
-            Label label = new Label
+            var label = new Label
             {
                 Text = message,
                 Dock = DockStyle.Top,
@@ -107,14 +102,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
                 TextAlign = System.Drawing.ContentAlignment.MiddleLeft
             };
 
-            Button okButton = new Button
+            var okButton = new Button
             {
                 Text = "OK",
                 DialogResult = DialogResult.OK,
                 Dock = DockStyle.Bottom
             };
 
-            Button cancelButton = new Button
+            var cancelButton = new Button
             {
                 Text = "Cancel",
                 DialogResult = DialogResult.Cancel,
@@ -128,7 +123,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
             form.AcceptButton = okButton;
             form.CancelButton = cancelButton;
 
-            DialogResult result = form.ShowDialog();
+            var result = form.ShowDialog();
 
             if (result == DialogResult.OK)
             {
@@ -141,8 +136,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
                     return;
                 }
 
-                string selectedItems = string.Join(", ", listBox.SelectedItems.Cast<string>());
-                int[] selectedIndexes = listBox.SelectedIndices.Cast<int>().ToArray();
+                var selectedItems = string.Join(", ", listBox.SelectedItems.Cast<string>());
+                var selectedIndexes = listBox.SelectedIndices.Cast<int>().ToArray();
 
                 context.SetValue(ButtonPressed, true);
                 context.SetValue(StatusMessage, "OK pressed.");

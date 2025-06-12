@@ -2,6 +2,7 @@
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
@@ -73,7 +74,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
         {
             // For all users, we need to empty each $Recycle.Bin folder
             var drives = Environment.GetLogicalDrives();
-            bool overallSuccess = true;
+            var overallSuccess = true;
 
             foreach (var drive in drives)
             {
@@ -99,7 +100,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
                             hwnd = IntPtr.Zero
                         };
 
-                        int result = SHFileOperation(ref fileOp);
+                        var result = SHFileOperation(ref fileOp);
                         if (result != 0)
                         {
                             overallSuccess = false;
@@ -178,10 +179,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 
     public enum RecycleBinScope
     {
-        [Description("Empty only the current user's recycle bin")]
+        [Display(Name = "Current User", Description = "Empty only the current user's recycle bin.")]
         CurrentUser,
 
-        [Description("Empty recycle bins for all users (requires admin privileges)")]
+        [Display(Name = "All Users", Description = "Empty recycle bins for all users (requires admin privileges).")]
         AllUsers
     }
 }

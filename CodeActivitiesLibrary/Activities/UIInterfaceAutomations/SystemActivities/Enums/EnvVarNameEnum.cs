@@ -47,6 +47,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities.Enums
         ZES_ENABLE_SYSMAN,
 
         [Display(Name = "Unknown", Description = "Unknown Environment Variable")]
-        None
+        None,
+
+        [Display(Name = "OneDrive", Description = "OneDrive environment variable.")]
+        OneDrive,
+
+        [Display(Name = "OneDrive Commercial", Description = "OneDrive Commercial environment variable.")]
+        OneDriveCommercial,
+
+        [Display(Name = "OneDrive Consumer", Description = "OneDrive Consumer environment variable.")]
+        OneDriveConsumer,
     }
 }

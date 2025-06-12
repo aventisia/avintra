@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.DataTransformations.VariablesActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.Collections.Generic;

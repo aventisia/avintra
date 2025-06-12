@@ -92,8 +92,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
             {
                 try
                 {
-                    IntPtr lHwnd = FindWindow("Shell_TrayWnd", null);
-                    IntPtr lHwndChild = FindWindowEx(lHwnd, IntPtr.Zero, "Button", null);
+                    var lHwnd = FindWindow("Shell_TrayWnd", null);
+                    var lHwndChild = FindWindowEx(lHwnd, IntPtr.Zero, "Button", null);
                     if (lHwndChild != IntPtr.Zero)
                     {
                         SendMessage(lHwnd, WM_COMMAND, (IntPtr)MIN_ALL, IntPtr.Zero);
@@ -112,8 +112,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
             {
                 try
                 {
-                    IntPtr lHwnd = FindWindow("Shell_TrayWnd", null);
-                    IntPtr lHwndChild = FindWindowEx(lHwnd, IntPtr.Zero, "Button", null);
+                    var lHwnd = FindWindow("Shell_TrayWnd", null);
+                    var lHwndChild = FindWindowEx(lHwnd, IntPtr.Zero, "Button", null);
                     if (lHwndChild != IntPtr.Zero)
                     {
                         SendMessage(lHwnd, WM_COMMAND, (IntPtr)MIN_ALL_UNDO, IntPtr.Zero);
@@ -133,11 +133,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
                 try
                 {
                     // This is a heuristic approach - may need refinement
-                    IntPtr progMan = FindWindow("Progman", "Program Manager");
+                    var progMan = FindWindow("Progman", "Program Manager");
                     if (progMan == IntPtr.Zero) return false;
 
-                    IntPtr workerW = IntPtr.Zero;
-                    IntPtr defView = FindWindowEx(progMan, IntPtr.Zero, "SHELLDLL_DefView", null);
+                    var workerW = IntPtr.Zero;
+                    var defView = FindWindowEx(progMan, IntPtr.Zero, "SHELLDLL_DefView", null);
                     if (defView == IntPtr.Zero)
                     {
                         // When desktop is visible, there's a WorkerW window between Progman and DefView

@@ -37,11 +37,20 @@
     <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
       <HintPath>..\packages\BouncyCastle.Cryptography.2.5.1\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
     </Reference>
+    <Reference Include="FluentFTP, Version=52.1.0.0, Culture=neutral, PublicKeyToken=f4af092b1d8df44f, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentFTP.52.1.0\lib\net472\FluentFTP.dll</HintPath>
+    </Reference>
     <Reference Include="MailKit, Version=4.12.0.0, Culture=neutral, PublicKeyToken=4e064fe7c44a8f1b, processorArchitecture=MSIL">
       <HintPath>..\packages\MailKit.4.12.1\lib\net48\MailKit.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=9.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.9.0.5\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Exchange.WebServices, Version=15.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Exchange.WebServices.2.2\lib\40\Microsoft.Exchange.WebServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Exchange.WebServices.Auth, Version=15.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Exchange.WebServices.2.2\lib\40\Microsoft.Exchange.WebServices.Auth.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Office.Interop.Outlook, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Office.Interop.Outlook.15.0.4797.1004\lib\net20\Microsoft.Office.Interop.Outlook.dll</HintPath>
@@ -55,6 +64,14 @@
     <Reference Include="mscorlib" />
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Renci.SshNet.Async, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Renci.SshNet.Async.1.4.0\lib\net40\Renci.SshNet.Async.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Activities" />
@@ -112,6 +129,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Tesseract, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tesseract.5.2.0\lib\net48\Tesseract.dll</HintPath>
+    </Reference>
     <Reference Include="UIAutomationClient" />
     <Reference Include="UIAutomationTypes" />
     <Reference Include="WebDriver, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -213,6 +233,7 @@
     <Compile Include="Activities\AppIntegrations\FTPActivities\DeleteFtpFileActivity.cs" />
     <Compile Include="Activities\AppIntegrations\FTPActivities\DownloadFilesFromFtpActivity.cs" />
     <Compile Include="Activities\AppIntegrations\FTPActivities\DownloadFoldersFromFtpActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\FTPActivities\Helpers\FtpClientExtensions.cs" />
     <Compile Include="Activities\AppIntegrations\FTPActivities\InvokeFtpCommandActivity.cs" />
     <Compile Include="Activities\AppIntegrations\FTPActivities\ListFtpDirectoryActivity.cs" />
     <Compile Include="Activities\AppIntegrations\FTPActivities\OpenFtpConnectionActivity.cs" />
@@ -240,6 +261,7 @@
     <Compile Include="Activities\AppIntegrations\PDFActivities\MergePdfFilesActivity.cs" />
     <Compile Include="Activities\AppIntegrations\PDFActivities\_PDFCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\CloseTerminalSessionActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\Enums\GetFieldByEnum.cs" />
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\GetTextFromTerminalSessionActivity.cs" />
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\MoveCursorOnTerminalSessionActivity.cs" />
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\OpenTerminalSessionActivity.cs" />
@@ -444,6 +466,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\CreateFolderActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\DeleteFolderActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\EmptyFolderActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\Enums\IfExistsActionEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\GetFilesInFolderActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\GetSpecialFolderActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\GetSubfoldersInFolderActivity.cs" />
@@ -464,11 +487,16 @@
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\Enums\RelativeToEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\GetKeyboardIdentifierActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\GetMousePositionActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\Helpers\MouseHelper.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\MoveMouseActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\MoveMouseToImageActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\MoveMouseToTextOnScreenActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\PressReleaseKeyActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\SendKeysActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\SendMouseClickActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\SetKeyStateActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\WaitForMouseActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\WaitForShortcutKeyActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\MouseAndKeyboardActivities\_MouseAndKeyboardCategoryMetaData.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\ScriptingActivities\RunDosCommandActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\ScriptingActivities\RunDotNetScriptActivity.cs" />
@@ -487,6 +515,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\RunApplicationActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\SetWindowsEnvironmentVariableActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\TerminateProcessActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\WaitForProcessActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\SystemActivities\_SystemCategoryMetaData.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\ClickUIElementActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\ClickUIElementFromCollectionActivity.cs" />
@@ -582,6 +611,7 @@
     <Compile Include="Activities\WorkflowLogics\FlowControlActivities\_FlowControlCategoryMetaData.cs" />
     <Compile Include="Extensions\ActivityCategoryMetadataAttribute.cs" />
     <Compile Include="Extensions\ActivityTypeAttribute.cs" />
+    <Compile Include="Extensions\BaseAsyncCodeActivity.cs" />
     <Compile Include="Extensions\BaseNativeActivity.cs" />
     <Compile Include="Extensions\BaseCodeActivity.cs" />
     <Compile Include="Extensions\RenderIfAttribute.cs" />
@@ -619,5 +649,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Selenium.WebDriver.4.33.0\build\Selenium.WebDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.WebDriver.4.33.0\build\Selenium.WebDriver.targets'))" />
+    <Error Condition="!Exists('..\packages\Tesseract.5.2.0\build\Tesseract.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Tesseract.5.2.0\build\Tesseract.targets'))" />
   </Target>
+  <Import Project="..\packages\Tesseract.5.2.0\build\Tesseract.targets" Condition="Exists('..\packages\Tesseract.5.2.0\build\Tesseract.targets')" />
 </Project>

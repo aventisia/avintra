@@ -1,12 +1,13 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities
+namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities.Enums
 {
     public enum RelativeToEnum
     {
-        [Description("Screen")]
+        [Display(Name = "Screen", Description = "Captures the entire screen.")]
         Screen,
-        [Description("Foreground Window")]
+
+        [Display(Name = "Foreground Window", Description = "Captures the currently active window.")]
         ForegroundWindow
     }
 }

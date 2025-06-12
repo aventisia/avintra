@@ -1,13 +1,13 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
+namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities.Enums
 {
     public enum RemoveModeEnum
     {
-        [Description("Removes an item based on its position in the list.")]
+        [Display(Name = "Index", Description = "Removes an item based on its position in the list.")]
         Index,
 
-        [Description("Removes an item based on its value.")]
+        [Display(Name = "Value", Description = "Removes an item based on its value.")]
         Value
     }
 }

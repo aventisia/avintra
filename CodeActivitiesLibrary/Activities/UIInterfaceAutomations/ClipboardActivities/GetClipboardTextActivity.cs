@@ -14,38 +14,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
     [Description("Retrieves the text currently stored in the system clipboard.")]
     public class GetClipboardTextActivity : BaseCodeActivity
     {
-        #region Enums
-
-        /// <summary>
-        ///     Mode for enabling or disabling clipboard text retrieval.
-        /// </summary>
-        public enum OutputModeEnum
-        {
-            [Display(Name = "Enabled", Description = "Enables clipboard text output.")]
-            Enabled = 0,
-
-            [Display(Name = "Disabled", Description = "Disables clipboard text output.")]
-            Disabled = 1
-        }
-
-        #endregion
-
-        #region Inputs
-
-        [Category("Configuration")]
-        [Description("Determines whether to retrieve and output the clipboard text.")]
-        [DefaultValue(typeof(OutputModeEnum), "Enabled")]
-        public OutputModeEnum OutputSwitch { get; set; }
-
-        #endregion
-
-        #region Outputs
-
-
+        [DisplayName("Clipboard Text Output")]
         [Description("The text retrieved from the clipboard.")]
         public OutArgument<string> ClipboardTextOutput { get; set; }
 
-        #endregion
 
         protected override void Execute(CodeActivityContext context)
         {
@@ -54,20 +26,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
 
             try
             {
-                if (OutputSwitch == OutputModeEnum.Enabled)
-                {
-                    // Simulate getting clipboard text
-                    clipboardText = GetClipboardText();
+                clipboardText = GetClipboardText();
 
-                    if (!string.IsNullOrEmpty(clipboardText))
-                        status = "Successfully retrieved clipboard text.";
-                    else
-                        status = "Clipboard is empty or contains non-text data.";
-                }
+                if (!string.IsNullOrEmpty(clipboardText))
+                    status = "Successfully retrieved clipboard text.";
                 else
-                {
-                    status = "Clipboard text retrieval is disabled.";
-                }
+                    status = "Clipboard is empty or contains non-text data.";
 
                 // Set outputs
                 ClipboardTextOutput.Set(context, clipboardText);
@@ -89,6 +53,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
                 : string.Empty;
         }
 
+        public enum OutputModeEnum
+        {
+            [Display(Name = "Enabled", Description = "Enables clipboard text output.")]
+            Enabled = 0,
 
+            [Display(Name = "Disabled", Description = "Disables clipboard text output.")]
+            Disabled = 1
+        }
     }
 }

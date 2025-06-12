@@ -27,7 +27,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [Description("The text content read from the file.")]
         public OutArgument<string> FileContent { get; set; }
 
-
         #endregion
 
         protected override void Execute(CodeActivityContext context)

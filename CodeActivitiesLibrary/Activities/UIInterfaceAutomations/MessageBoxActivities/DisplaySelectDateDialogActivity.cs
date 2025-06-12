@@ -2,6 +2,7 @@
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Windows.Forms;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
@@ -10,7 +11,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
     [Description("Displays a dialog box that prompts the user to enter a date or date range.")]
     public class DisplaySelectDateDialogActivity : BaseCodeActivity
     {
-
         [DisplayName("Dialog Title")]
         [Description("The title text displayed at the top of the date dialog.")]
         public InArgument<string> DialogTitle { get; set; }
@@ -51,18 +51,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
         public OutArgument<bool> ButtonPressed { get; set; }
 
 
-
         protected override void Execute(CodeActivityContext context)
         {
-            string title = context.GetValue(DialogTitle);
-            string message = context.GetValue(DialogMessage);
-            string defaultValue = context.GetValue(DefaultValue);
-            DialogTypeEnum dialogType = context.GetValue(DialogType);
-            PromptForEnum promptFor = context.GetValue(PromptFor);
-            bool keepOnTop = context.GetValue(KeepOnTop);
+            var title = context.GetValue(DialogTitle);
+            var message = context.GetValue(DialogMessage);
+            var defaultValue = context.GetValue(DefaultValue);
+            var dialogType = context.GetValue(DialogType);
+            var promptFor = context.GetValue(PromptFor);
+            var keepOnTop = context.GetValue(KeepOnTop);
 
-            string resultDate = "";
-            DialogResult result = MessageBox.Show(
+            var resultDate = "";
+            var result = MessageBox.Show(
                 $"{message}\n\n(Default: {defaultValue})",
                 title,
                 MessageBoxButtons.OKCancel,
@@ -91,19 +90,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 
     public enum DialogTypeEnum
     {
-        [Description("Single date")]
+        [Display(Name = "Single Date", Description = "Allows selection of a single date.")]
         SingleDate,
 
-        [Description("Date range (2 Dates)")]
+        [Display(Name = "Date Range", Description = "Allows selection of a start and end date.")]
         DateRange
     }
-
     public enum PromptForEnum
     {
-        [Description("Date only")]
+        [Display(Name = "Date Only", Description = "Prompts the user to select a date only.")]
         DateOnly,
 
-        [Description("Date and time")]
+        [Display(Name = "Date and Time", Description = "Prompts the user to select both date and time.")]
         DateAndTime
     }
 }

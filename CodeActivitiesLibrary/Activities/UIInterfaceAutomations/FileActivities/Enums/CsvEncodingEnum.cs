@@ -1,20 +1,25 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums
 {
     public enum CsvEncodingEnum
     {
-        [Description("System default")]
+        [Display(Name = "System Default", Description = "Uses the system's default encoding.")]
         SystemDefault,
-        [Description("UTF-8")]
+
+        [Display(Name = "UTF-8", Description = "UTF-8 encoding with byte order mark.")]
         UTF8,
-        [Description("Unicode")]
+
+        [Display(Name = "Unicode", Description = "UTF-16 encoding (little-endian).")]
         Unicode,
-        [Description("Unicode (big-endian)")]
+
+        [Display(Name = "Unicode (big-endian)", Description = "UTF-16 encoding (big-endian).")]
         BigEndianUnicode,
-        [Description("UTF-8 (no byte order mark)")]
+
+        [Display(Name = "UTF-8 (no byte order mark)", Description = "UTF-8 encoding without byte order mark.")]
         UTF8NoBOM,
-        [Description("ASCII")]
+
+        [Display(Name = "ASCII", Description = "7-bit ASCII encoding.")]
         ASCII
     }
 }

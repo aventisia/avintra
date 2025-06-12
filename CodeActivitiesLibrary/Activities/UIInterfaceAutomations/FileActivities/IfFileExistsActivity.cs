@@ -1,14 +1,14 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("If File Exists")]
     [Description("Checks if a file exists and marks the beginning of a conditional block of actions.")]
-    public class IfFileExistsActivity : BaseCodeActivity
+    public class IfFileExistsActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -26,10 +26,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         public InArgument<string> FilePath { get; set; }
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-        // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
@@ -44,7 +40,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                 if (string.IsNullOrWhiteSpace(filePath))
                     throw new ArgumentException("File path cannot be empty.");
 
-                bool result = File.Exists(filePath);
+                var result = File.Exists(filePath);
 
                 switch (condition)
                 {
@@ -77,10 +73,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
     // Enum for specifying the condition
     public enum FileExistenceEnum
     {
-        [Description("Exists")]
+        [Display(Name = "Exists", Description = "Indicates that the file should exist.")]
         Exists,
 
-        [Description("Doesn't exist")]
+        [Display(Name = "Doesn't Exist", Description = "Indicates that the file should not exist.")]
         DoesntExist
     }
 }

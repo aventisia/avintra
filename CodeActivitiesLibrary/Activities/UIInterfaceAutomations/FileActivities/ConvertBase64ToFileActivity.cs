@@ -2,13 +2,14 @@
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
-using System.Text;
+using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
     [DisplayName("Convert Base64 to File")]
     [Description("Converts a Base64 encoded string to a file and saves it at the specified path.")]
-    public class ConvertBase64ToFileActivity : Extensions.BaseCodeActivity
+    public class ConvertBase64ToFileActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Base64 Encoded Text")]
@@ -33,23 +34,19 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
             var base64 = Base64Text.Get(context);
             var filePath = FilePath.Get(context);
             var ifExists = IfExistsAction.Get(context);
-            string status = string.Empty;
+            var status = string.Empty;
 
             try
             {
                 if (string.IsNullOrWhiteSpace(base64))
                     throw new ArgumentException("Base64 encoded text cannot be null or empty.");
 
-                byte[] fileBytes = Convert.FromBase64String(base64);
+                var fileBytes = Convert.FromBase64String(base64);
                 var dir = Path.GetDirectoryName(filePath);
 
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
                 if (File.Exists(filePath))
-                {
                     switch (ifExists)
                     {
                         case IfExistsActionEnum.DoNothing:
@@ -60,7 +57,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                             // continue to overwrite below
                             break;
                     }
-                }
 
                 File.WriteAllBytes(filePath, fileBytes);
                 status = $"File successfully created at {filePath}.";

@@ -38,9 +38,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [RenderIfCondition(nameof(FailWithTimeoutError), true)]
         public InArgument<int> Duration { get; set; } = new InArgument<int>(5);
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
 
         // ----------------------
         // Execution Logic
@@ -55,11 +52,11 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
             try
             {
-                DateTime startTime = DateTime.Now;
+                var startTime = DateTime.Now;
 
                 while (true)
                 {
-                    bool fileExists = File.Exists(filePath);
+                    var fileExists = File.Exists(filePath);
 
                     if ((mode == WaitForFileModeEnum.Create && fileExists) ||
                         (mode == WaitForFileModeEnum.Delete && !fileExists))
@@ -70,7 +67,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
                     if (failWithTimeoutError && (DateTime.Now - startTime).TotalSeconds >= duration)
                     {
-                        status = $"Timeout: File '{filePath}' was not {(mode == WaitForFileModeEnum.Create ? "created" : "deleted")} within {duration} seconds.";
+                        status =
+                            $"Timeout: File '{filePath}' was not {(mode == WaitForFileModeEnum.Create ? "created" : "deleted")} within {duration} seconds.";
                         throw new TimeoutException(status);
                     }
 

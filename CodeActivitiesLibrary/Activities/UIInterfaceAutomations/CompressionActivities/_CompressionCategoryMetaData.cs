@@ -6,5 +6,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
         primaryCategory: "UI Interface Automations",
         label: "Compression",
         description: "Compress and decompress files and folders.")]
-    internal sealed class _CompressionCategoryMetaData { }
+    internal sealed class _CompressionCategoryMetaData
+    {
+    }
 }

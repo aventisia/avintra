@@ -1,22 +1,25 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities.Enums
 {
     public enum XmlFileEncodingEnum
     {
-        [Description("Uses the system's default encoding.")]
+        [Display(Name = "System Default", Description = "Uses the system's default encoding.")]
         SystemDefault,
 
-        [Description("Uses UTF-8 encoding.")] UTF8,
+        [Display(Name = "UTF-8", Description = "Uses UTF-8 encoding.")]
+        UTF8,
 
-        [Description("Uses UTF-16 encoding with a BOM (Byte Order Mark).")]
+        [Display(Name = "Unicode (UTF-16)", Description = "Uses UTF-16 encoding with a BOM (Byte Order Mark).")]
         Unicode,
 
-        [Description("Uses UTF-16 encoding without a BOM.")]
+        [Display(Name = "Big Endian Unicode", Description = "Uses UTF-16 encoding without a BOM.")]
         BigEndianUnicode,
 
-        [Description("Uses UTF-8 encoding without a BOM.")]
+        [Display(Name = "UTF-8 (No BOM)", Description = "Uses UTF-8 encoding without a BOM.")]
         UTF8NoBOM,
-        [Description("Uses ASCII encoding.")] ASCII
+
+        [Display(Name = "ASCII", Description = "Uses ASCII encoding.")]
+        ASCII
     }
 }

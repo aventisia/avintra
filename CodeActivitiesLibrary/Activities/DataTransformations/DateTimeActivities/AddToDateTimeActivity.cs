@@ -35,7 +35,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
             var baseDateTime = BaseDateTime.Get(context);
             var valueToAdd = ValueToAdd.Get(context);
             var timeUnit = TimeUnit.Get(context);
-            DateTime result = baseDateTime;
+            var result = baseDateTime;
             try
             {
                 switch (timeUnit)

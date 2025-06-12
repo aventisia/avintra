@@ -36,13 +36,13 @@ namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
             var sqlStatement = SqlStatement.Get(context);
             var operationType = OperationType.Get(context);
             DataTable resultTable = null;
-            string status = "";
+            var status = "";
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (var connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
-                    using (SqlCommand command = new SqlCommand(sqlStatement, connection))
+                    using (var command = new SqlCommand(sqlStatement, connection))
                     {
                         switch (operationType)
                         {
@@ -51,13 +51,13 @@ namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
                                 status = "SQL statement executed successfully.";
                                 break;
                             case SqlOperationType.Scalar:
-                                object scalarResult = command.ExecuteScalar();
+                                var scalarResult = command.ExecuteScalar();
                                 status = $"SQL statement executed successfully with scalar result: {scalarResult}";
                                 break;
                             case SqlOperationType.DataSet:
-                                using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                                using (var adapter = new SqlDataAdapter(command))
                                 {
-                                    DataSet dataSet = new DataSet();
+                                    var dataSet = new DataSet();
                                     adapter.Fill(dataSet);
                                     resultTable = dataSet.Tables.Count > 0 ? dataSet.Tables[0] : null;
                                     status = resultTable != null

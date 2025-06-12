@@ -11,12 +11,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
     public class RunVbScriptActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [Description("The VBScript code to execute.")]
         [DisplayName("VBScript Code")]
+        [Description("The VBScript code to execute.")]
         public InArgument<string> ScriptCode { get; set; }
 
-        [Description("Returns the output of the script.")]
         [DisplayName("Script Output")]
+        [Description("Returns the output of the script.")]
         public OutArgument<string> ScriptOutput { get; set; }
 
 

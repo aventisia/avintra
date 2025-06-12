@@ -9,13 +9,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
     [Description("Sets the specified text to the system clipboard.")]
     public class SetClipboardTextActivity : BaseCodeActivity
     {
-        #region Inputs
-
-
+        [DisplayName("Clipboard Text")]
         [Description("The text to set to the clipboard.")]
         public InArgument<string> ClipboardText { get; set; }
-
-        #endregion
 
         protected override void Execute(CodeActivityContext context)
         {

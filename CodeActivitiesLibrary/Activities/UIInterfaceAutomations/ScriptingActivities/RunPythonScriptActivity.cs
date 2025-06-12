@@ -11,12 +11,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
     public class RunPythonScriptActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [Description("The Python script code to execute.")]
         [DisplayName("Python Script Code")]
+        [Description("The Python script code to execute.")]
         public InArgument<string> ScriptCode { get; set; }
 
-        [Description("Returns the output of the script.")]
         [DisplayName("Script Output")]
+        [Description("Returns the output of the script.")]
         public OutArgument<string> ScriptOutput { get; set; }
 
 

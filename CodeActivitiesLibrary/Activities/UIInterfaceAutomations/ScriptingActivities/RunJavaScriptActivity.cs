@@ -11,12 +11,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
     public class RunJavaScriptActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [Description("The JavaScript code to execute.")]
         [DisplayName("JavaScript Code")]
+        [Description("The JavaScript code to execute.")]
         public InArgument<string> ScriptCode { get; set; }
 
-        [Description("Returns the output of the script.")]
         [DisplayName("Script Output")]
+        [Description("Returns the output of the script.")]
         public OutArgument<string> ScriptOutput { get; set; }
 
         protected override void Execute(CodeActivityContext context)

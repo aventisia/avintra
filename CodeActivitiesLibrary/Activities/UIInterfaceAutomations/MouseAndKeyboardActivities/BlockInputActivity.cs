@@ -17,33 +17,31 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
         [Description("Toggle to enable or disable blocking of user input.")]
         public InArgument<bool> BlockIt { get; set; }
 
-
-
         protected override void Execute(CodeActivityContext context)
         {
             try
             {
                 // Retrieve the input argument
-                bool blockIt = context.GetValue(BlockIt);
+                var blockIt = context.GetValue(BlockIt);
 
                 if (blockIt)
                 {
                     // Simulate blocking input (actual implementation would use Windows API)
 
-                    string status = "User input blocked successfully.";
+                    var status = "User input blocked successfully.";
                     context.SetValue(StatusMessage, status);
                 }
                 else
                 {
                     // If not blocking, return a neutral status message.
-                    string status = "User input is not blocked.";
+                    var status = "User input is not blocked.";
                     context.SetValue(StatusMessage, status);
                 }
             }
             catch (Exception ex)
             {
                 // Handle any errors during execution
-                string status = $"Error blocking input: {ex.Message}";
+                var status = $"Error blocking input: {ex.Message}";
                 context.SetValue(StatusMessage, status);
             }
         }

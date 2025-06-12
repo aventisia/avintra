@@ -1,4 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -7,7 +8,6 @@ using System.Runtime.InteropServices;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities
 {
-
     [DisplayName("Get Mouse Position")]
     [Description("Retrieves the current position of the mouse cursor on the screen in pixel coordinates.")]
     public class GetMousePositionActivity : BaseCodeActivity
@@ -34,10 +34,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
             try
             {
                 // Retrieve input argument
-                RelativeToEnum relativeTo = context.GetValue(RelativeTo);
+                var relativeTo = context.GetValue(RelativeTo);
 
                 // Get the current mouse position
-                Point mousePosition = GetCursorPosition(relativeTo);
+                var mousePosition = GetCursorPosition(relativeTo);
 
                 // Set output arguments
                 context.SetValue(MousePosX, mousePosition.X);
@@ -67,35 +67,30 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
             // Use Windows API to get the cursor position relative to the screen
             POINT point;
             if (!GetCursorPos(out point))
-            {
                 throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to get cursor position.");
-            }
+
             return new Point(point.X, point.Y);
         }
 
         private static Point GetForegroundWindowCursorPosition()
         {
             // Get the foreground window handle
-            IntPtr hwnd = GetForegroundWindow();
+            var hwnd = GetForegroundWindow();
 
             // Get the cursor position relative to the screen
-            POINT point;
-            if (!GetCursorPos(out point))
-            {
+            if (!GetCursorPos(out _))
                 throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to get cursor position.");
-            }
 
             // Convert screen coordinates to client coordinates
             POINT clientPoint;
             if (!ClientToScreen(hwnd, out clientPoint))
-            {
                 throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to convert coordinates.");
-            }
 
             return new Point(clientPoint.X, clientPoint.Y);
         }
 
         #region P/Invoke Declarations
+
         [DllImport("user32.dll")]
         private static extern bool GetCursorPos(out POINT lpPoint);
 
@@ -117,7 +112,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
                 Y = y;
             }
         }
+
         #endregion
     }
-
 }

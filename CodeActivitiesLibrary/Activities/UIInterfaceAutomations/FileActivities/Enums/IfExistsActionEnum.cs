@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
+namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums
 {
     public enum IfExistsActionEnum
     {
@@ -8,6 +8,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         DoNothing,
 
         [Display(Name = "Overwrite", Description = "Deletes the existing file and moves the new file.")]
-        Overwrite,
+        Overwrite
     }
 }

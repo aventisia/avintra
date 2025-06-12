@@ -3,6 +3,7 @@ using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.IO;
 using System.Text;
@@ -58,13 +59,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         public InArgument<FileExistOptionEnum> IfFileExists { get; set; }
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-        // ----------------------
         // Execution Logic
         // ----------------------
-
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Success";
@@ -83,7 +79,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                 if (variableToWrite == null)
                     throw new ArgumentException("Variable to write cannot be null.");
 
-                string separator = ",";
+                var separator = ",";
                 if (useCustomColumnSeparator)
                 {
                     var customSep = CustomColumnSeparator.Get(context);
@@ -109,28 +105,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                     }
                 }
 
-                FileMode mode = ifFileExists == FileExistOptionEnum.Append
+                var mode = ifFileExists == FileExistOptionEnum.Append
                     ? FileMode.Append
                     : FileMode.Create;
 
                 using (var writer = new StreamWriter(filePath, false, GetEncoding(encodingEnum)))
                 {
                     if (variableToWrite is DataTable dataTable)
-                    {
                         WriteDataTable(writer, dataTable, separator);
-                    }
                     else if (variableToWrite is DataRow dataRow)
-                    {
                         WriteDataRow(writer, dataRow, separator);
-                    }
                     else if (variableToWrite is System.Collections.IEnumerable enumerable)
-                    {
                         WriteEnumerable(writer, enumerable, separator);
-                    }
                     else
-                    {
-                        throw new ArgumentException("Unsupported type for 'Variable to Write'. Supported types: DataTable, DataRow, IEnumerable.");
-                    }
+                        throw new ArgumentException(
+                            "Unsupported type for 'Variable to Write'. Supported types: DataTable, DataRow, IEnumerable.");
                 }
 
                 status += $" Successfully wrote data to '{filePath}'.";
@@ -149,43 +138,44 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
         private static void WriteDataTable(StreamWriter writer, DataTable dataTable, string separator)
         {
-            for (int i = 0; i < dataTable.Columns.Count; i++)
+            for (var i = 0; i < dataTable.Columns.Count; i++)
             {
                 writer.Write(dataTable.Columns[i].ColumnName);
                 if (i < dataTable.Columns.Count - 1)
                     writer.Write(separator);
             }
+
             writer.WriteLine();
 
             foreach (DataRow row in dataTable.Rows)
             {
-                for (int i = 0; i < dataTable.Columns.Count; i++)
+                for (var i = 0; i < dataTable.Columns.Count; i++)
                 {
                     writer.Write((row[i] ?? "").ToString());
                     if (i < dataTable.Columns.Count - 1)
                         writer.Write(separator);
                 }
+
                 writer.WriteLine();
             }
         }
 
         private static void WriteDataRow(StreamWriter writer, DataRow dataRow, string separator)
         {
-            for (int i = 0; i < dataRow.ItemArray.Length; i++)
+            for (var i = 0; i < dataRow.ItemArray.Length; i++)
             {
                 writer.Write((dataRow[i] ?? "").ToString());
                 if (i < dataRow.ItemArray.Length - 1)
                     writer.Write(separator);
             }
+
             writer.WriteLine();
         }
 
-        private static void WriteEnumerable(StreamWriter writer, System.Collections.IEnumerable enumerable, string separator)
+        private static void WriteEnumerable(StreamWriter writer, System.Collections.IEnumerable enumerable,
+            string separator)
         {
-            foreach (var item in enumerable)
-            {
-                writer.WriteLine(item?.ToString() ?? "");
-            }
+            foreach (var item in enumerable) writer.WriteLine(item?.ToString() ?? "");
         }
 
         private static Encoding GetEncoding(CsvEncodingEnum encoding)
@@ -215,19 +205,21 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
         public enum CsvPredefinedSeparatorEnum
         {
-            [Description("Comma")]
+            [Display(Name = "Comma", Description = "Uses a comma (,) as the separator.")]
             Comma,
-            [Description("Tab")]
+
+            [Display(Name = "Tab", Description = "Uses a tab character as the separator.")]
             Tab,
-            [Description("Semicolon")]
+
+            [Display(Name = "Semicolon", Description = "Uses a semicolon (;) as the separator.")]
             Semicolon
         }
-
         public enum FileExistOptionEnum
         {
-            [Description("Overwrite existing content")]
+            [Display(Name = "Overwrite Existing Content", Description = "Overwrites the existing content of the file.")]
             Overwrite,
-            [Description("Append Content")]
+
+            [Display(Name = "Append Content", Description = "Appends content to the end of the existing file.")]
             Append
         }
     }

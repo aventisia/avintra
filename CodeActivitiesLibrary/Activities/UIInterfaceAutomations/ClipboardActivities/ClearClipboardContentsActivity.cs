@@ -6,7 +6,6 @@ using System.Windows.Forms;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
 {
-
     // Activity to clear clipboard contents
     [DisplayName("Clear Clipboard Contents")]
     [Description("Clears all contents from the system clipboard.")]

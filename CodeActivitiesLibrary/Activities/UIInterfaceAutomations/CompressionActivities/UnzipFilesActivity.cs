@@ -12,6 +12,34 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
     [Description("Extracts files from a ZIP archive to a specified destination folder.")]
     public class UnzipFilesActivity : BaseCodeActivity
     {
+
+        #region Inputs
+
+        [RequiredArgument]
+        [DisplayName("Archive Path")]
+        [Description("The full path of the ZIP file to extract.")]
+        public InArgument<string> ArchivePath { get; set; }
+
+        [RequiredArgument]
+        [DisplayName("Destination Folder")]
+        [Description("The full path of the folder to extract the archive to. Existing files may be overwritten.")]
+        public InArgument<string> DestinationFolder { get; set; }
+
+        [DisplayName("Password")]
+        [Description("The password used for this archive, if any.")]
+        public InArgument<string> Password { get; set; }
+
+        [DisplayName("Include Mask")]
+        [Description(
+            "Limits the extracted files to those matching the mask. Use wildcards like '*.txt'. Multiple filters separated by ';'.")]
+        public InArgument<string> IncludeMask { get; set; }
+
+        [DisplayName("Exclude Mask")]
+        [Description(
+            "Excludes files matching the mask. Use wildcards like '*.log'. Multiple filters separated by ';'.")]
+        public InArgument<string> ExcludeMask { get; set; }
+
+        #endregion
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
@@ -84,7 +112,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
                         var destDir = Path.GetDirectoryName(destinationPath);
 
                         Directory.CreateDirectory(destDir);
-                        entry.ExtractToFile(destinationPath, overwrite: true);
+                        entry.ExtractToFile(destinationPath, true);
                     }
                 }
 
@@ -110,29 +138,5 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
             return false;
         }
 
-        #region Inputs
-
-        [RequiredArgument]
-        [Description("The full path of the ZIP file to extract.")]
-        public InArgument<string> ArchivePath { get; set; }
-
-        [RequiredArgument]
-        [Description("The full path of the folder to extract the archive to. Existing files may be overwritten.")]
-        public InArgument<string> DestinationFolder { get; set; }
-
-
-        [Description("The password used for this archive, if any.")]
-        public InArgument<string> Password { get; set; }
-
-
-        [Description(
-            "Limits the extracted files to those matching the mask. Use wildcards like '*.txt'. Multiple filters separated by ';'.")]
-        public InArgument<string> IncludeMask { get; set; }
-
-
-        [Description("Excludes files matching the mask. Use wildcards like '*.log'. Multiple filters separated by ';'.")]
-        public InArgument<string> ExcludeMask { get; set; }
-
-        #endregion
     }
 }

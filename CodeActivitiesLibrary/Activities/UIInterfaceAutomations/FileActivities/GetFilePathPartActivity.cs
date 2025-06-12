@@ -6,7 +6,6 @@ using System.IO;
 
 namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 {
-
     [DisplayName("Get File Path Components")]
     [Description("Extracts various parts (directory, name, extension) from the given file path.")]
     public class GetFilePathPartsActivity : BaseCodeActivity
@@ -45,10 +44,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         {
             var filePath = FilePath.Get(context);
 
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                throw new ArgumentException("FilePath cannot be null or empty.");
-            }
+            if (string.IsNullOrWhiteSpace(filePath)) throw new ArgumentException("FilePath cannot be null or empty.");
 
             RootPath.Set(context, Path.GetPathRoot(filePath));
             Directory.Set(context, Path.GetDirectoryName(filePath));

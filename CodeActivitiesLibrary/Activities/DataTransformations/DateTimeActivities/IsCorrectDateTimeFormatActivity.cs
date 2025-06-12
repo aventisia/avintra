@@ -28,7 +28,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
         {
             var input = InputDateTime.Get(context);
             var format = DateTimeFormat.Get(context);
-            bool isValid = false;
+            var isValid = false;
             try
             {
                 if (string.IsNullOrWhiteSpace(input))

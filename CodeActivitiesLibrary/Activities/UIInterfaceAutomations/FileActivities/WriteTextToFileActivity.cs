@@ -28,9 +28,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [Description("Specifies the write mode: Append (default) or Overwrite.")]
         public InArgument<WriteModeEnum> WriteMode { get; set; } = new InArgument<WriteModeEnum>(WriteModeEnum.Append);
 
-
-
-
         #endregion
 
         protected override void Execute(CodeActivityContext context)
@@ -51,10 +48,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                     throw new ArgumentException("Text cannot be empty.");
 
                 var dir = Path.GetDirectoryName(filePath);
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir); // auto-create directories
-                }
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir); // auto-create directories
 
                 if (writeMode == WriteModeEnum.Append)
                 {

@@ -12,12 +12,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
     public class RunDosCommandActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [Description("The DOS command to execute.")]
         [DisplayName("Command")]
+        [Description("The DOS command to execute.")]
         public InArgument<string> Command { get; set; }
 
-        [Description("Returns the output of the command.")]
         [DisplayName("Command Output")]
+        [Description("Returns the output of the command.")]
         public OutArgument<string> CommandOutput { get; set; }
 
 

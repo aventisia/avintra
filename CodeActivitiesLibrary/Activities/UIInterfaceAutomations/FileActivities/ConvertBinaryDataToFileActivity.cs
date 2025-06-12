@@ -27,8 +27,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         public InArgument<IfExistsActionEnum> IfExistsAction { get; set; }
 
 
-
-
         protected override void Execute(CodeActivityContext context)
         {
             var binaryData = BinaryData.Get(context);
@@ -42,13 +40,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                     throw new ArgumentException("Binary data cannot be null or empty.");
 
                 var dir = Path.GetDirectoryName(filePath);
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
                 if (File.Exists(filePath))
-                {
                     switch (ifExistsAction)
                     {
                         case IfExistsActionEnum.DoNothing:
@@ -59,7 +53,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                             // continue to overwrite below
                             break;
                     }
-                }
 
                 File.WriteAllBytes(filePath, binaryData);
                 status = $"Binary data successfully saved to file at {filePath}.";
@@ -72,5 +65,4 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
             StatusMessage.Set(context, status);
         }
     }
-
 }
