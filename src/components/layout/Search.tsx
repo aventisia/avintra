@@ -1,18 +1,15 @@
-import { useState } from "react";
-import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@aventisia/ui/command";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { Button } from "@aventisia/ui/buttons";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { useShallow } from "zustand/react/shallow";
+import { useSearchStore } from "@/features/search/stores/serach-store";
 
-const SearchCommandDialog = () => {
-  const [open, setOpen] = useState(false);
+const SearchCommandTrigger = () => {
+  const { setOpen } = useSearchStore(
+    useShallow((state) => ({
+      setOpen: state.setShowDialog,
+    })),
+  );
 
   return (
     <div>
@@ -26,19 +23,8 @@ const SearchCommandDialog = () => {
           <MagnifyingGlassIcon className="h-[1.1rem] w-[1.1rem] text-white/80" />
         </Button>
       </Tooltip>
-
-      {/* Command Dialog */}
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type a command or search..." />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Suggestions">
-            <CommandItem></CommandItem>
-          </CommandGroup>
-        </CommandList>
-      </CommandDialog>
     </div>
   );
 };
 
-export default SearchCommandDialog;
+export default SearchCommandTrigger;

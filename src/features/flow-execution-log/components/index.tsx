@@ -39,11 +39,19 @@ const ExecutionLogDialog = () => {
         >
           <DialogDefaultHeader heading={"Agent execution logs"} />
           <div
-            className={`grid h-[calc(100vh-4rem)] divide-x ${isPublished ? "grid-cols-3" : "grid-cols-2"}`}
+            className={`grid h-[calc(100vh-4rem)] divide-x ${isPublished ? "grid-cols-10" : "grid-cols-7"}`}
           >
-            {isPublished && <ExecutionList />}
-            <NodeList />
-            <NodeDetail />
+            {isPublished && (
+              <div className="col-span-3">
+                <ExecutionList />
+              </div>
+            )}
+            <div className="col-span-3">
+              <NodeList />
+            </div>
+            <div className="col-span-4">
+              <NodeDetail />
+            </div>
           </div>
         </DialogContent>
       </Dialog>
