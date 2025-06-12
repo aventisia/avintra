@@ -61,7 +61,7 @@ public class DesktopAppController : BaseApiController
         if (string.IsNullOrEmpty(filePath))
             return NotFound(message);
 
-        // Get the latest verison out. Assuming version is in the format Worc-space_{version}_x64-setup.exe
+        // Get the latest verison out. Assuming version is in the format Worc_{version}_x64-setup.exe
         var latestVersion = Path.GetFileNameWithoutExtension(fileName).Split('_')[1];
         var updateNotes = "Bug fixes and improvements.";
         var pubDate = DateTime.UtcNow.ToString("o"); // ISO 8601 format
@@ -106,9 +106,9 @@ public class DesktopAppController : BaseApiController
 
         // Set search pattern based on version
         if (!string.IsNullOrEmpty(version))
-            searchPattern = $"Worc-space_{version}_x64-setup.exe";
+            searchPattern = $"Worc_{version}_x64-setup.exe";
         else
-            searchPattern = "Worc-space_*_x64-setup.exe";
+            searchPattern = "Worc_*_x64-setup.exe";
 
         // Get files matching the search pattern
         var files = Directory.GetFiles(basePath, searchPattern);
