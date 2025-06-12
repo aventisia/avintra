@@ -3,6 +3,7 @@ import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSes
 import { Header } from "@/react-toolkit/layout/Header";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 
+import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { Outlet } from "react-router-dom";
@@ -23,7 +24,12 @@ export const MLModelBuilderLayout = () => {
       ) : (
         <div className="relative min-h-screen overflow-hidden bg-slate-100">
           <Header
-            extraContentRight={<NavigationTabs />}
+            extraContentRight={
+              <>
+                <NavigationTabs />
+                <Button size={"xs"}>Publish</Button>
+              </>
+            }
             // extraContentCenter={<LLMSelector />}
             extraContentLeft={<ModelInfo />}
           />

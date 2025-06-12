@@ -14,8 +14,8 @@ import { z } from "zod";
 
 import { rescheduleFineTune } from "../../apis/history-table-apis";
 import { HISTORY_TABLE_QUERY_KEY } from "../../constants";
+import { timeZoneProps } from "../../constants/history-table-field-props";
 import { rescheduleFineTuneFormZodSchema } from "../../constants/reschedule-fine-tune-zod-schema";
-import { timeZoneProps } from "../../constants/schedule-fine-tune-field-props";
 import { ReScheduleFineTuneDTO } from "../../dtos/reschedule-fine-tune-dto";
 import { useRescheduleFineTuneForm } from "../../hooks/useRescheduleFineTuneForm";
 import { useRescheduleFineTuneStore } from "../../stores/reschedule-fine-tune-store";

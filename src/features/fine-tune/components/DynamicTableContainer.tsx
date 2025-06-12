@@ -7,6 +7,7 @@ import {
   DataTableSkeleton,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { useEffect, useState } from "react";
 
@@ -129,9 +130,15 @@ export const DynamicTableContainer = () => {
             <div className="mb-4">
               <FineTuneStats />
             </div>
-            <div className="bg-white rounded-lg mb-4">
-              <DataTable table={fineTuneTable} columnsLength={columns.length} />
-            </div>
+            <ScrollArea className="w-[calc(100vw-1.5rem)] mb-4">
+              <div className="bg-white rounded-lg">
+                <DataTable
+                  table={fineTuneTable}
+                  columnsLength={columns.length}
+                />
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
             <DTPagination table={fineTuneTable} />
             <FineTuneBulkActions table={fineTuneTable} />
           </FineTuneCrudDialog>
@@ -142,12 +149,15 @@ export const DynamicTableContainer = () => {
             <div className="mb-4">
               <FineTuneStats />
             </div>
-            <div className="bg-white rounded-lg mb-4">
-              <DataTable
-                table={historyTable}
-                columnsLength={historyTableColumns.length}
-              />
-            </div>
+            <ScrollArea className="w-[calc(100vw-1.5rem)] mb-4">
+              <div className="bg-white rounded-lg">
+                <DataTable
+                  table={historyTable}
+                  columnsLength={historyTableColumns.length}
+                />
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
             <DTPagination table={historyTable} />
           </HistoryCrudDialog>
         </TabsContent>
