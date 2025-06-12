@@ -2,6 +2,7 @@
 using System;
 using System.Activities;
 using System.ComponentModel;
+using Tesseract;
 
 namespace CodeActivitiesLibrary.DataTransformations.OCRActivities
 {
@@ -10,14 +11,14 @@ namespace CodeActivitiesLibrary.DataTransformations.OCRActivities
     public class ExtractTextWithOcrActivity : BaseCodeActivity
     {
         [RequiredArgument]
+        [DisplayName("Image Path")]
         [Description("The path to the image file.")]
         public InArgument<string> ImagePath { get; set; }
 
 
+        [DisplayName("Extracted Text")]
         [Description("Returns the extracted text.")]
         public OutArgument<string> ExtractedText { get; set; }
-
-
 
 
         protected override void Execute(CodeActivityContext context)
@@ -25,13 +26,26 @@ namespace CodeActivitiesLibrary.DataTransformations.OCRActivities
             var imagePath = ImagePath.Get(context);
             var extractedText = "";
             var status = "";
-
             try
             {
-                // Placeholder for OCR logic
-                // Use an OCR library like Tesseract or Azure Cognitive Services here
-                extractedText = "Placeholder extracted text";
-                status = "Text extracted successfully.";
+                if (string.IsNullOrEmpty(imagePath) || !System.IO.File.Exists(imagePath))
+                {
+                    throw new ArgumentException("Image path is invalid or file does not exist.");
+                }
+
+                using (var engine = new TesseractEngine(System.IO.Path.GetDirectoryName(imagePath), "eng",
+                           EngineMode.Default))
+                {
+                    using (var img = Pix.LoadFromFile(imagePath))
+                    {
+                        using (var page = engine.Process(img))
+                        {
+                            extractedText = page.GetText();
+                        }
+                    }
+
+                    status = "Text extracted successfully.";
+                }
             }
             catch (Exception ex)
             {

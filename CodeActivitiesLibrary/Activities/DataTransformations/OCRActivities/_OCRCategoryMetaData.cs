@@ -6,5 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.OCRActivities
         primaryCategory: "Data Transformations",
         label: "OCR",
         description: "Optical character recognition from images and documents.")]
-    internal sealed class _OCRCategoryMetaData { }
+    internal sealed class _OCRCategoryMetaData
+    {
+    }
 }
