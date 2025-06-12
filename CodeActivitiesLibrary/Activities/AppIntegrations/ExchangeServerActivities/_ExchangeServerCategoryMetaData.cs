@@ -6,5 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
         primaryCategory: "App Integrations",
         label: "Exchange Server",
         description: "Integrate with Microsoft Exchange Server.")]
-    internal sealed class _ExchangeServerCategoryMetaData { }
+    internal sealed class _ExchangeServerCategoryMetaData
+    {
+    }
 }
