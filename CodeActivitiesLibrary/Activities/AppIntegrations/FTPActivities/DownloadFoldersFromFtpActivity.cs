@@ -1,58 +1,59 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using FluentFTP;
 using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
-    // Activity to download one or more folders from an FTP server
-    [DisplayName("Download Folder(s) from FTP"), Description("Downloads one or more folders from an FTP server.")]
+    [DisplayName("Download Folder(s) from FTP")]
+    [Description("Downloads one or more folders from an FTP server.")]
     public class DownloadFoldersFromFtpActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The FTP server URL (e.g., ftp://example.com).")]
-        public InArgument<string> FtpServerUrl { get; set; }
+        [RequiredArgument]
+        [DisplayName("FTP Connection")]
+        [Description("The FTP connection object.")]
+        public InArgument<FtpClient> FtpConnection { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The username for authentication.")]
-        public InArgument<string> Username { get; set; }
+        [RequiredArgument]
+        [DisplayName("Folder Names")]
+        [Description("The list of folder names to download.")]
+        public InArgument<List<string>> FolderNames { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The password for authentication.")]
-        public InArgument<string> Password { get; set; }
-
-        [RequiredArgument, Category("Input"), Description("The list of folder names to download.")]
-        public InArgument<IEnumerable<string>> FoldersToDownload { get; set; }
-
-        [RequiredArgument, Category("Input"), Description("The local directory to save the downloaded folders.")]
+        [RequiredArgument]
+        [DisplayName("Local Directory")]
+        [Description("The local directory to save the downloaded folders.")]
         public InArgument<string> LocalDirectory { get; set; }
-
-
-
 
         protected override void Execute(CodeActivityContext context)
         {
-            var ftpServerUrl = FtpServerUrl.Get(context);
-            var username = Username.Get(context);
-            var password = Password.Get(context);
-            var foldersToDownload = FoldersToDownload.Get(context);
+            var connection = FtpConnection.Get(context);
+            var folderNames = FolderNames.Get(context);
             var localDirectory = LocalDirectory.Get(context);
             var status = "";
-
             try
             {
-                // Simulate downloading folders from FTP (actual implementation would use FtpWebRequest or similar)
-                foreach (var folder in foldersToDownload)
+                foreach (var folderName in folderNames)
                 {
-                    // Simulate downloading each folder
-                    status = $"Simulated download of folder '{folder}' from '{ftpServerUrl}' to '{localDirectory}'.";
+                    // Create the directory if it doesn't exist
+                    if (!Directory.Exists(Path.Combine(localDirectory, folderName)))
+                        Directory.CreateDirectory(Path.Combine(localDirectory, folderName));
+                    // Download files in the folder
+                    var files = connection.GetNameListing($"{folderName}");
+                    var downloadFileStream = connection.DownloadFiles(localDirectory, files);
+                    //TODO need to handle the downloadFileStream properly
                 }
+
+                status = $"Folders downloaded successfully.";
             }
             catch (Exception ex)
             {
-                status = $"Error downloading folders from FTP: {ex.Message}";
+                status = $"Error downloading folders: {ex.Message}";
             }
 
             StatusMessage.Set(context, status);
         }
     }
-
 }

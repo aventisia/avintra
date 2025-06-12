@@ -5,33 +5,35 @@ using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
-    // Activity to delete an FTP directory
-    [DisplayName("Delete FTP Directory"), Description("Deletes a directory from an FTP server.")]
+    using FluentFTP;
+
+    [DisplayName("Delete FTP Directory")]
+    [Description("Deletes a directory from an FTP server.")]
     public class DeleteFtpDirectoryActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
-        public InArgument<string> ConnectionId { get; set; }
+        [RequiredArgument]
+        [DisplayName("FTP Connection")]
+        [Description("The FTP connection object.")]
+        public InArgument<FtpClient> FtpConnection { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The name of the directory to delete.")]
+        [RequiredArgument]
+        [DisplayName("Directory Name")]
+        [Description("The name of the directory to delete.")]
         public InArgument<string> DirectoryName { get; set; }
-
-
-
 
         protected override void Execute(CodeActivityContext context)
         {
-            var connectionId = ConnectionId.Get(context);
+            var connection = FtpConnection.Get(context);
             var directoryName = DirectoryName.Get(context);
             var status = "";
-
             try
             {
-                // Simulate deleting FTP directory (actual implementation would use FtpWebRequest or similar)
-                status = $"Simulated deletion of directory '{directoryName}'.";
+                connection.DeleteDirectory(directoryName);
+                status = $"Directory '{directoryName}' deleted successfully.";
             }
             catch (Exception ex)
             {
-                status = $"Error deleting FTP directory: {ex.Message}";
+                status = $"Error deleting directory: {ex.Message}";
             }
 
             StatusMessage.Set(context, status);

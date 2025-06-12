@@ -1,53 +1,88 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using FluentFTP;
 using System;
 using System.Activities;
 using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
-    // Activity to open an FTP connection
-    [DisplayName("Open FTP Connection"),
-     Description(
-         "Establishes a specific connection to a remote FTP server and stores that connection as a variable for later use.")]
+    [DisplayName("Open FTP Connection")]
+    [Description(
+        "Establishes a specific connection to a remote FTP server and stores that connection as a variable for later use.")]
     public class OpenFtpConnectionActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The FTP server URL (e.g., ftp://example.com).")]
-        public InArgument<string> FtpServerUrl { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
+        [RequiredArgument]
+        [DisplayName("Host")]
+        [Description("The FTP server URL (e.g., ftp.example.com).")]
+        public InArgument<string> Host { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The username for authentication.")]
+        [DisplayName("Port")]
+        [Description("The port number for the FTP connection (default is21).")]
+        [DefaultValue(21)]
+        public InArgument<int> Port { get; set; }
+
+        [DisplayName("Active Mode")]
+        [Description("If true, uses active mode for FTP connection.")]
+        public InArgument<bool> ActiveMode { get; set; }
+
+        [RequiredArgument]
+        [DisplayName("Username")]
+        [Description("The username for authentication.")]
         public InArgument<string> Username { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The password for authentication.")]
+        [RequiredArgument]
+        [DisplayName("Password")]
+        [Description("The password for authentication.")]
         public InArgument<string> Password { get; set; }
 
-        [Category("Output"), Description("Returns the connection ID or token for the opened FTP connection.")]
-        public OutArgument<string> Result { get; set; }
+        // ----------------------
+        // Output Arguments
+        // ----------------------
+        [DisplayName("FTP Connection")]
+        [Description("The connection object for the opened FTP connection.")]
+        public OutArgument<FtpClient> FtpConnection { get; set; }
 
-
-
-
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var ftpServerUrl = FtpServerUrl.Get(context);
-            var username = Username.Get(context);
-            var password = Password.Get(context);
-            var result = "";
-            var status = "";
-
             try
             {
-                // Simulate opening FTP connection (actual implementation would use FtpWebRequest or similar)
-                result = "Simulated connection ID";
-                status = "FTP connection opened successfully.";
+                var host = Host.Get(context);
+                var port = Port.Get(context);
+                var activeMode = ActiveMode.Get(context);
+                var username = Username.Get(context);
+                var password = Password.Get(context);
+                var status = "FTP connection opened successfully.";
+                if (string.IsNullOrWhiteSpace(host))
+                    throw new ArgumentException("Host cannot be empty.");
+                if (port <= 0)
+                    throw new ArgumentException("Port must be greater than0.");
+                if (string.IsNullOrWhiteSpace(username))
+                    throw new ArgumentException("Username cannot be empty.");
+                if (string.IsNullOrWhiteSpace(password))
+                    throw new ArgumentException("Password cannot be empty.");
+                var client = new FtpClient(host, port);
+                client.Credentials = new System.Net.NetworkCredential(username, password);
+                client.Config = new FtpConfig()
+                {
+                    DataConnectionType = activeMode ? FtpDataConnectionType.PORT : FtpDataConnectionType.PASV
+                };
+                client.Connect();
+                FtpConnection.Set(context, client);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
-                result = "";
-                status = $"Error opening FTP connection: {ex.Message}";
+                // Status message is handled by BaseCodeActivity
+                FtpConnection.Set(context, null);
+                StatusMessage.Set(context, "Failed to connect to ftp server.");
+                throw;
             }
-
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 }

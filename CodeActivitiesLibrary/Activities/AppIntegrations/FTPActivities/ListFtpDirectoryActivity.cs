@@ -3,46 +3,81 @@ using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
+    using FluentFTP;
 
-    // Activity to list FTP directory contents
-    [DisplayName("List FTP Directory"),
-     Description("Retrieves the subdirectories and files contained in the current directory of an FTP connection.")]
+    [DisplayName("List FTP Directory")]
+    [Description("Retrieves subdirectories and files in the current directory of an FTP connection.")]
     public class ListFtpDirectoryActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
-        public InArgument<string> ConnectionId { get; set; }
+        [RequiredArgument]
+        [DisplayName("FTP Connection")]
+        [Description("The FTP connection object.")]
+        public InArgument<FtpClient> FtpConnection { get; set; }
 
-        [Category("Output"), Description("Returns the list of subdirectories and files in the current directory.")]
-        public OutArgument<IEnumerable<string>> Result { get; set; }
+        [RequiredArgument]
+        [DisplayName("Directory Name")]
+        [Description("The name of the directory to create.")]
+        public InArgument<string> DirectoryName { get; set; }
 
+        [DisplayName("List Type")]
+        [Description("Specifies the type of items to list in the FTP directory.")]
+        [DefaultValue(ListTypeEnum.FilesAndFolders)]
+        public InArgument<ListTypeEnum> ListType { get; set; }
 
-
+        [DisplayName("Files and Folders Result")]
+        [Description("Returns the list subdirectories and files.")]
+        public OutArgument<List<string>> Result { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var connectionId = ConnectionId.Get(context);
-            IEnumerable<string> result = null;
-            var status = "";
-
             try
             {
-                // Simulate listing FTP directory contents (actual implementation would use FtpWebRequest or similar)
-                result = new List<string> { "file1.txt", "file2.txt", "subdir/" };
-                status = "FTP directory listed successfully.";
-            }
-            catch (Exception ex)
-            {
-                result = null;
-                status = $"Error listing FTP directory: {ex.Message}";
-            }
+                var connection = FtpConnection.Get(context);
+                var listType = ListType.Get(context);
+                var path = DirectoryName.Get(context);
 
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
+                var result = ListItems(connection, listType, path);
+                // set result;
+                Result.Set(context, result.ToList());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        private static IEnumerable<string> ListItems(FtpClient client, ListTypeEnum listType, string path)
+        {
+            var ftpListItems = client.GetListing(path);
+            switch (listType)
+            {
+                case ListTypeEnum.Files:
+                    return ftpListItems.Where(item => item.Type == FtpObjectType.File).Select(item => item.Name);
+                case ListTypeEnum.Folders:
+                    return ftpListItems.Where(item => item.Type == FtpObjectType.Directory).Select(item => item.Name);
+                case ListTypeEnum.FilesAndFolders:
+                    return ftpListItems.Select(item => item.Name);
+                default:
+                    throw new ArgumentException("Invalid ListType.");
+            }
+        }
+
+        public enum ListTypeEnum
+        {
+            [Display(Name = "Files and Folders", Description = "List both files and folders.")]
+            FilesAndFolders,
+
+            [Display(Name = "Files", Description = "List only files.")]
+            Files,
+
+            [Display(Name = "Folders", Description = "List only folders.")]
+            Folders
         }
     }
-
-
 }

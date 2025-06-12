@@ -1,40 +1,55 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using FluentFTP;
 using System;
 using System.Activities;
 using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
-    // Activity to change the working directory on FTP
-    [DisplayName("Change Working Directory"), Description("Sets the current working directory for an FTP connection.")]
+    [DisplayName("Change Working Directory")]
+    [Description("Sets the current working directory for an FTP connection.")]
     public class ChangeFtpWorkingDirectoryActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
-        public InArgument<string> ConnectionId { get; set; }
+        [RequiredArgument]
+        [DisplayName("FTP Connection")]
+        [Description("The FTP connection object.")]
+        public InArgument<FtpClient> FtpConnection { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The new working directory path.")]
+        [RequiredArgument]
+        [DisplayName("New Directory Path")]
+        [Description("The new working directory path.")]
         public InArgument<string> NewDirectoryPath { get; set; }
 
+        // Output Arguments
+        [DisplayName("Actual Directory Path")]
+        [Description("Returns the actual directory path after change.")]
+        public OutArgument<string> ActualDirectoryPath { get; set; }
 
-
+        [DisplayName("Success")]
+        [Description("Indicates whether the operation was successful.")]
+        public OutArgument<bool> Success { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var connectionId = ConnectionId.Get(context);
+            var connection = FtpConnection.Get(context);
             var newDirectoryPath = NewDirectoryPath.Get(context);
+            var actualPath = newDirectoryPath;
+            var success = false;
             var status = "";
-
             try
             {
-                // Simulate changing working directory (actual implementation would use FtpWebRequest or similar)
-                status = $"FTP working directory changed to '{newDirectoryPath}'.";
+                connection.SetWorkingDirectory(newDirectoryPath);
+                actualPath = connection.GetWorkingDirectory();
+                success = true;
+                status = $"Successfully changed working directory to: {actualPath}";
             }
             catch (Exception ex)
             {
-                status = $"Error changing FTP working directory: {ex.Message}";
+                status = $"Error deleting directory: {ex.Message}";
             }
 
-            StatusMessage.Set(context, status);
+            ActualDirectoryPath.Set(context, actualPath);
+            Success.Set(context, success);
         }
     }
 }

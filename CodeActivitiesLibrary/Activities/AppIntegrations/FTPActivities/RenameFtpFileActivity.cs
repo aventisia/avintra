@@ -1,45 +1,102 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using FluentFTP;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.IO;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
-    // Activity to rename an FTP file
-    [DisplayName("Rename FTP File"), Description("Renames a file that resides on an FTP server.")]
+    [DisplayName("Rename FTP File")]
+    [Description("Renames a file that resides on an FTP server.")]
     public class RenameFtpFileActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
-        public InArgument<string> ConnectionId { get; set; }
+        // ----------------------
+        // Input Arguments
+        // ----------------------
 
-        [RequiredArgument, Category("Input"), Description("The old file name.")]
+        [RequiredArgument]
+        [DisplayName("FTP Connection")]
+        [Description("The FtpClient object representing an open connection to an FTP server.")]
+        public InArgument<FtpClient> FtpConnection { get; set; }
+
+        [RequiredArgument]
+        [DisplayName("Old File Name")]
+        [Description("The original name of the file to be renamed.")]
         public InArgument<string> OldFileName { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The new file name.")]
+        [RequiredArgument]
+        [DisplayName("New File Name")]
+        [Description("The new name for the file.")]
         public InArgument<string> NewFileName { get; set; }
 
 
+        [DisplayName("Timeout Seconds")]
+        [Description("Maximum time in seconds to wait before failing due to timeout.")]
+        [DefaultValue(30)]
+        public InArgument<int> TimeoutSeconds { get; set; }
+
+        // ----------------------
+        // Output Arguments
+        // ----------------------
 
 
+        [DisplayName("Success")]
+        [Description("Returns true if the file was successfully renamed.")]
+        public OutArgument<bool> Success { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var connectionId = ConnectionId.Get(context);
-            var oldFileName = OldFileName.Get(context);
-            var newFileName = NewFileName.Get(context);
-            var status = "";
+            var status = "Operation completed successfully.";
+            var success = false;
 
             try
             {
-                // Simulate renaming FTP file (actual implementation would use FtpWebRequest or similar)
-                status = $"Simulated renaming of file '{oldFileName}' to '{newFileName}'.";
+                var ftpClient = FtpConnection.Get(context);
+                var oldName = OldFileName.Get(context);
+                var newName = NewFileName.Get(context);
+                var timeout = TimeSpan.FromSeconds(TimeoutSeconds.Get(context));
+
+                if (ftpClient == null || !ftpClient.IsConnected)
+                    throw new ArgumentException("FTP connection must be valid and active.");
+
+                if (string.IsNullOrWhiteSpace(oldName))
+                    throw new ArgumentException("Old file name cannot be empty.");
+
+                if (string.IsNullOrWhiteSpace(newName))
+                    throw new ArgumentException("New file name cannot be empty.");
+
+                // Set timeouts
+                ftpClient.Config.ReadTimeout = timeout.Milliseconds;
+                ftpClient.Config.DataConnectionConnectTimeout = timeout.Milliseconds;
+                ftpClient.Config.DataConnectionReadTimeout = timeout.Milliseconds;
+
+                // Check if file exists
+                if (!ftpClient.FileExists(oldName))
+                    throw new FileNotFoundException($"File '{oldName}' not found on the server.");
+
+                // Rename the file
+                ftpClient.Rename(oldName, newName);
+
+                var result = ftpClient.FileExists(newName);
+
+                if (!result)
+                    throw new IOException($"Failed to rename '{oldName}' to '{newName}'.");
+
+                status = $"Successfully renamed '{oldName}' to '{newName}'.";
+                success = true;
             }
             catch (Exception ex)
             {
-                status = $"Error renaming FTP file: {ex.Message}";
+                status = $"Error renaming file: {ex.Message}";
+                success = false;
             }
 
             StatusMessage.Set(context, status);
+            Success.Set(context, success);
         }
     }
-
 }

@@ -3,37 +3,42 @@ using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
-    // Activity to delete an FTP file
-    [DisplayName("Delete FTP File"), Description("Deletes one or more files from an FTP server.")]
+    using FluentFTP;
+
+    [DisplayName("Delete FTP File")]
+    [Description("Deletes one or more files from an FTP server.")]
     public class DeleteFtpFileActivity : BaseCodeActivity
     {
-        [RequiredArgument, Category("Input"), Description("The connection ID or token for the FTP connection.")]
-        public InArgument<string> ConnectionId { get; set; }
+        [RequiredArgument]
+        [DisplayName("FTP Connection")]
+        [Description("The FTP connection object.")]
+        public InArgument<FtpClient> FtpConnection { get; set; }
 
-        [RequiredArgument, Category("Input"), Description("The list of file names to delete.")]
-        public InArgument<IEnumerable<string>> FilesToDelete { get; set; }
-
-
-
+        [RequiredArgument]
+        [DisplayName("File Names")]
+        [Description("The list of file names to delete.")]
+        public InArgument<IEnumerable<string>> FileNames { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var connectionId = ConnectionId.Get(context);
-            var filesToDelete = FilesToDelete.Get(context);
+            var connection = FtpConnection.Get(context);
+            var fileNames = FileNames.Get(context);
             var status = "";
-
             try
             {
-                // Simulate deleting files from FTP (actual implementation would use FtpWebRequest or similar)
-                status = $"Simulated deletion of {filesToDelete.Count()} files.";
+                foreach (var fileName in fileNames)
+                {
+                    connection.DeleteFile(fileName);
+                }
+
+                status = "Files deleted successfully.";
             }
             catch (Exception ex)
             {
-                status = $"Error deleting files from FTP: {ex.Message}";
+                status = $"Error deleting files: {ex.Message}";
             }
 
             StatusMessage.Set(context, status);
