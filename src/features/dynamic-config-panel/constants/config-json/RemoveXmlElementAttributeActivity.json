@@ -3,7 +3,7 @@
     "direction": "Input",
     "type": "text",
     "name": "XmlContent",
-    "label": "XmlContent",
+    "label": "XML Content",
     "description": "The XML content as a string.",
     "defaultValue": "",
     "required": true
@@ -12,7 +12,7 @@
     "direction": "Input",
     "type": "text",
     "name": "XPath",
-    "label": "XPath",
+    "label": "XPath Expression",
     "description": "The XPath expression to locate the element.",
     "defaultValue": "",
     "required": true
@@ -21,7 +21,7 @@
     "direction": "Input",
     "type": "text",
     "name": "AttributeName",
-    "label": "AttributeName",
+    "label": "Attribute Name",
     "description": "The name of the attribute to remove.",
     "defaultValue": "",
     "required": true
@@ -30,7 +30,7 @@
     "direction": "Output",
     "type": "config-panel-output",
     "name": "UpdatedXmlContent",
-    "label": "UpdatedXmlContent",
+    "label": "Updated XML Content",
     "description": "Returns the updated XML content.",
     "defaultValue": {
       "value": "UpdatedXmlContent",

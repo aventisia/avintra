@@ -1,13 +1,14 @@
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { Button } from "@aventisia/ui/buttons";
 import { toast } from "@aventisia/ui/sonner";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { invoke } from "@tauri-apps/api/core";
+import { check } from "@tauri-apps/plugin-updater";
 import { Loader2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import useWebSocket from "../hooks/useWebSocket";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 const ExecuteFlow = () => {
   // Get current flow and execution state from current flow store
@@ -32,15 +33,25 @@ const ExecuteFlow = () => {
   const { sendCommand } = useWebSocket();
 
   // Start execution
-  const startExecution = () => {
+  const startExecution = async () => {
     // Set the execution state to launching executor
     setExecutionState("launching-executor");
 
     // Open the desktop executor if the app is running in Tauri
     if ("isTauri" in window) {
-      localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
-      localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
-      openDesktopExecutor();
+      // Check for updates before launching the executor
+      const update = await check();
+
+      // If an update is available,
+      if (update) {
+        console.log("Update available:", update.version);
+        update.downloadAndInstall();
+        toast.info("Update installed successfully. Please restart the app.");
+      } else {
+        localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
+        localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
+        openDesktopExecutor();
+      }
     } else {
       toast.info(
         "Please use our desktop app. Execution in browser is not supported.",

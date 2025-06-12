@@ -3,7 +3,7 @@
     "direction": "Input",
     "type": "text",
     "name": "XmlContent",
-    "label": "XmlContent",
+    "label": "XML Content",
     "description": "The XML content as a string.",
     "defaultValue": "",
     "required": true
@@ -11,18 +11,18 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ParentXPath",
-    "label": "ParentXPath",
-    "description": "The XPath expression to locate the parent element.",
+    "name": "XPath",
+    "label": "XPath Expression",
+    "description": "The XPath expression to locate the insertion point.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "NewElementName",
-    "label": "NewElementName",
-    "description": "The name of the new element to insert.",
+    "name": "XmlElementToInsert",
+    "label": "XML Element To Insert",
+    "description": "The XML content of the element to insert.",
     "defaultValue": "",
     "required": true
   },
@@ -30,8 +30,8 @@
     "direction": "Output",
     "type": "config-panel-output",
     "name": "UpdatedXmlContent",
-    "label": "UpdatedXmlContent",
-    "description": "Returns the updated XML content.",
+    "label": "Updated XML Content",
+    "description": "Returns the updated XML content after inserting the new element.",
     "defaultValue": {
       "value": "UpdatedXmlContent",
       "enabled": true

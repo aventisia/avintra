@@ -3,8 +3,8 @@
     "direction": "Input",
     "type": "text",
     "name": "Ciphertext",
-    "label": "Ciphertext",
-    "description": "The ciphertext to decrypt.",
+    "label": "Ciphertext to Decrypt",
+    "description": "Enter the ciphertext that you want to decrypt.",
     "defaultValue": "",
     "required": true
   },
@@ -12,43 +12,26 @@
     "direction": "Input",
     "type": "text",
     "name": "Key",
-    "label": "Key",
-    "description": "The decryption key.",
+    "label": "Decryption Key",
+    "description": "Enter the key used for decrypting the ciphertext.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
-    "type": "select",
-    "name": "EncodingFormat",
-    "label": "EncodingFormat",
-    "description": "The encoding format of the ciphertext.",
+    "type": "text",
+    "name": "IV",
+    "label": "Initialization Vector",
+    "description": "Enter the initialization vector (IV) used in the decryption process.",
     "defaultValue": "",
-    "required": true,
-    "selectOptions": [
-      {
-        "label": "Base64",
-        "value": "Base64",
-        "description": "Base64 encoding"
-      },
-      {
-        "label": "Hex",
-        "value": "Hex",
-        "description": "Hexadecimal encoding"
-      },
-      {
-        "label": "UTF8",
-        "value": "Utf8",
-        "description": "UTF-8 encoding"
-      }
-    ]
+    "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "DecryptedText",
-    "label": "DecryptedText",
-    "description": "Returns the decrypted text.",
+    "label": "Decrypted Text Result",
+    "description": "Outputs the decrypted text after the decryption process.",
     "defaultValue": {
       "value": "DecryptedText",
       "enabled": true

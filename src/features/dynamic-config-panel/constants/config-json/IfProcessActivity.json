@@ -1,21 +1,117 @@
 [
   {
     "direction": "Input",
-    "type": "text",
+    "type": "select",
+    "name": "Condition",
+    "label": "If process",
+    "description": "Specifies the condition to check (e.g., IsRunning, Isn\u0027t Running).",
+    "defaultValue": "",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Is Running",
+        "value": "IsRunning",
+        "description": "Checks if the process is currently running."
+      },
+      {
+        "label": "Is Not Running",
+        "value": "IsntRunning",
+        "description": "Checks if the process is not currently running."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "select",
     "name": "ProcessName",
-    "label": "ProcessName",
+    "label": "Process name",
     "description": "The name of the process to check.",
     "defaultValue": "",
-    "required": true
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "AggregatorHost",
+        "value": "AggregatorHost",
+        "description": ""
+      },
+      {
+        "label": "ApMsgFwd",
+        "value": "ApMsgFwd",
+        "description": ""
+      },
+      {
+        "label": "ApntEx",
+        "value": "ApntEx",
+        "description": ""
+      },
+      {
+        "label": "Apoint",
+        "value": "Apoint",
+        "description": ""
+      },
+      {
+        "label": "App",
+        "value": "App",
+        "description": ""
+      },
+      {
+        "label": "ApRemote",
+        "value": "ApRemote",
+        "description": ""
+      },
+      {
+        "label": "Audiodg",
+        "value": "Audiodg",
+        "description": ""
+      },
+      {
+        "label": "Chrome",
+        "value": "Chrome",
+        "description": ""
+      },
+      {
+        "label": "CompPkgSrv",
+        "value": "CompPkgSrv",
+        "description": ""
+      },
+      {
+        "label": "Conhost",
+        "value": "Conhost",
+        "description": ""
+      },
+      {
+        "label": "CopilotLanguageServer",
+        "value": "CopilotLanguageServer",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "FromUser",
+    "label": "From User",
+    "description": "Indicates whether to check if the process is running under a specific user.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "UserName",
+    "label": "User name",
+    "description": "The name of the user to check (only applicable if \u0027From User\u0027 is enabled).",
+    "defaultValue": "",
+    "required": false
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "IsRunning",
-    "label": "IsRunning",
-    "description": "Returns true if the process is running, otherwise false.",
+    "name": "StatusMessages",
+    "label": "Status Message",
+    "description": "Provides status information about the operation.",
     "defaultValue": {
-      "value": "IsRunning",
+      "value": "StatusMessages",
       "enabled": true
     },
     "required": false

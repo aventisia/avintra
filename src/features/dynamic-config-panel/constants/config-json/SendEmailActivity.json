@@ -185,11 +185,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "IsSuccess",
-    "label": "Is Success",
-    "description": "Returns true if the email was sent successfully.",
+    "name": "IsEmailSent",
+    "label": "Is Email Sent",
+    "description": "Indicates whether the email was sent successfully.",
     "defaultValue": {
-      "value": "IsSuccess",
+      "value": "IsEmailSent",
       "enabled": true
     },
     "required": false

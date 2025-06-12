@@ -82,7 +82,10 @@ export const HeaderActionMenu: React.FC = () => {
             Icon={DownloadIcon}
             content="Download Desktop App"
             onClick={() => {
-              window.open(import.meta.env.VITE_DOWNLOAD_URL, "_blank");
+              window.open(
+                `${import.meta.env.VITE_ACCOUNTS_API_URL}/desktop-app/download/`,
+                "_blank",
+              );
             }}
           />
         ) : null}
