@@ -86,7 +86,7 @@ public class ChatHub : Hub
 
             // Return the response to the client
             await Clients.Client(receiverConnection.Key)
-                .SendAsync("ReceiveMessage", "ChatBot", response);
+                .SendAsync("ReceiveMessage", "ChatBot", response.Data);
         }
     }
 
