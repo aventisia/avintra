@@ -3,7 +3,7 @@
     "direction": "Input",
     "type": "text",
     "name": "ScriptCode",
-    "label": "ScriptCode",
+    "label": "JavaScript Code",
     "description": "The JavaScript code to execute.",
     "defaultValue": "",
     "required": true
@@ -12,7 +12,7 @@
     "direction": "Output",
     "type": "config-panel-output",
     "name": "ScriptOutput",
-    "label": "ScriptOutput",
+    "label": "Script Output",
     "description": "Returns the output of the script.",
     "defaultValue": {
       "value": "ScriptOutput",

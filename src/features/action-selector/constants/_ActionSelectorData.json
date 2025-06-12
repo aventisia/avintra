@@ -265,15 +265,6 @@
           },
           {
             "type": "activityNode",
-            "name": "ConvertWordToNumberActivity",
-            "label": "Convert Word to Number",
-            "description": "Converts specific words like 'hundred' into their numeric values.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "ConvertTextToDateTimeActivity",
             "label": "Convert Text to DateTime",
             "description": "Converts a text representation of a date and/or time value to a DateTime value.",
@@ -455,7 +446,7 @@
           {
             "type": "activityNode",
             "name": "SubtractDatesActivity",
-            "label": "Substract Dates",
+            "label": "Subtract Dates",
             "description": "Computes the time difference between two DateTime values in the selected unit (Seconds, Minutes, Hours, or Days).",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
@@ -663,7 +654,7 @@
             "type": "activityNode",
             "name": "DecryptTextWithAesActivity",
             "label": "Decrypt Text with AES",
-            "description": "Decrypt a string with AES based on a specified key and an encoding format",
+            "description": "Decrypt a string using AES encryption with a specified key and initialization vector.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -690,7 +681,7 @@
             "type": "activityNode",
             "name": "EncryptTextWithAesActivity",
             "label": "Encrypt Text with AES",
-            "description": "Encrypt a string with AES, using a key and a specified encoding format",
+            "description": "Encrypts a string using AES encryption",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -699,7 +690,7 @@
             "type": "activityNode",
             "name": "HashFromFileActivity",
             "label": "Hash from File",
-            "description": "Hash the contents of a file, using a specified algorithm and an encoding format",
+            "description": "Hash the contents of a file, using a specified algorithm",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -708,7 +699,7 @@
             "type": "activityNode",
             "name": "HashFromFileWithKeyActivity",
             "label": "Hash from File with Key",
-            "description": "Hash the contents of a file with a key, using a specified algorithm and an encoding format",
+            "description": "Hash the contents of a file with a key, using a specified algorithm",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -717,7 +708,7 @@
             "type": "activityNode",
             "name": "HashTextActivity",
             "label": "Hash Text",
-            "description": "Hash a string, using a specified algorithm and an encoding format",
+            "description": "Hash a string, using a specified algorithm",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -726,7 +717,7 @@
             "type": "activityNode",
             "name": "HashTextWithKeyActivity",
             "label": "Hash Text with Key",
-            "description": "Hash a string with a key, using a specified algorithm and an encoding format",
+            "description": "Hash a string with a key, using a specified algorithm",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -770,7 +761,7 @@
             "type": "activityNode",
             "name": "GetXmlElementValueActivity",
             "label": "Get XML Element Value",
-            "description": "Gets the value of an XML element.",
+            "description": "Gets the value of an XML element based on the provided XPath query.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -779,7 +770,7 @@
             "type": "activityNode",
             "name": "InsertXmlElementActivity",
             "label": "Insert XML Element",
-            "description": "Inserts a new XML element into an XML document.",
+            "description": "Inserts a new XML element into an existing XML document.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -833,7 +824,7 @@
             "type": "activityNode",
             "name": "WriteXmlToFileActivity",
             "label": "Write XML to File",
-            "description": "Writes the contents of an XML node variable into a file.",
+            "description": "Writes the contents of an XML node or string into a file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -858,9 +849,27 @@
           },
           {
             "type": "activityNode",
+            "name": "EmptyRecycleBinActivity",
+            "label": "Empty Recycle Bin",
+            "description": "Deletes all files from the Windows recycle bin for all users or current user.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
             "name": "GetDefaultPrinterActivity",
             "label": "Get Default Printer",
-            "description": "Gets the name of the default printer.",
+            "description": "Gets the name of the default printer using multiple methods.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetScreenResolutionActivity",
+            "label": "Get Screen Resolution",
+            "description": "Gets the width, height, bit depth, and refresh rate of one or all monitors.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -869,7 +878,7 @@
             "type": "activityNode",
             "name": "LockWorkstationActivity",
             "label": "Lock Workstation",
-            "description": "Locks the workstation's display to protect it from unauthorized use.",
+            "description": "Locks the workstation's display to protect it from unauthorized use. Optionally forces lock even if workstation doesn't support it.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -878,7 +887,7 @@
             "type": "activityNode",
             "name": "LogOffUserActivity",
             "label": "Log Off User",
-            "description": "Logs off the current user.",
+            "description": "Logs off the current user with various methods and options.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -887,7 +896,7 @@
             "type": "activityNode",
             "name": "PlaySoundActivity",
             "label": "Play Sound",
-            "description": "Plays a sound from a WAV file.",
+            "description": "Plays a sound from a WAV file or system sound with options for sync/async playback and volume control.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -896,7 +905,7 @@
             "type": "activityNode",
             "name": "PrintDocumentActivity",
             "label": "Print Document",
-            "description": "Prints a document on the default printer.",
+            "description": "Prints documents with advanced options including printer selection and print settings.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -921,9 +930,18 @@
           },
           {
             "type": "activityNode",
+            "name": "ShowDesktopActivity",
+            "label": "Show Desktop",
+            "description": "Minimizes or restores all windows to show/hide the desktop.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
             "name": "ShutdownComputerActivity",
             "label": "Shutdown Computer",
-            "description": "Shuts down the computer.",
+            "description": "Shuts down, restarts, sleeps, or hibernates the computer.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -932,7 +950,7 @@
             "type": "activityNode",
             "name": "TakeScreenshotActivity",
             "label": "Take Screenshot",
-            "description": "Takes a screenshot of all screens and saves it to the clipboard.",
+            "description": "Takes a screenshot of all screens, primary screen, or a specific screen and saves it to clipboard or file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1192,7 +1210,7 @@
           {
             "type": "activityNode",
             "name": "DeleteWindowsEnvironmentVariableActivity",
-            "label": "Delete windows environment variable",
+            "label": "Delete Windows Environment Variable",
             "description": "Deletes an environment variable from a given scope.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
@@ -1228,7 +1246,7 @@
           {
             "type": "activityNode",
             "name": "RunApplicationActivity",
-            "label": "Run application",
+            "label": "Run Application",
             "description": "Executes an application or opens a document by executing the associated application.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
@@ -2155,7 +2173,7 @@
             "type": "activityNode",
             "name": "IfServiceActivity",
             "label": "If Service",
-            "description": "Marks the beginning of a conditional block of actions depending on whether a service is running, paused, stopped, or installed on the computer.",
+            "description": "Marks the beginning of a If Service block of actions depending on whether a service is running, paused, stopped, or installed.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"

@@ -3,7 +3,7 @@
     "direction": "Input",
     "type": "text",
     "name": "EncryptedFilePath",
-    "label": "EncryptedFilePath",
+    "label": "Encrypted File Path",
     "description": "The path to the encrypted file.",
     "defaultValue": "",
     "required": true
@@ -21,7 +21,7 @@
     "direction": "Input",
     "type": "select",
     "name": "EncodingFormat",
-    "label": "EncodingFormat",
+    "label": "Encoding Format",
     "description": "The encoding format of the encrypted content.",
     "defaultValue": "",
     "required": true,
@@ -47,7 +47,7 @@
     "direction": "Input",
     "type": "text",
     "name": "OutputFilePath",
-    "label": "OutputFilePath",
+    "label": "Output File Path",
     "description": "The path to the output file.",
     "defaultValue": "",
     "required": true

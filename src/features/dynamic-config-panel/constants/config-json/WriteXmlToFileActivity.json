@@ -2,19 +2,78 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "XmlContent",
-    "label": "XmlContent",
-    "description": "The XML content to write.",
+    "name": "FilePath",
+    "label": "File Path",
+    "description": "The path to the file where the XML will be written.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "FilePath",
-    "label": "FilePath",
-    "description": "The path to the output XML file.",
+    "name": "XmlToWrite",
+    "label": "XML To Write",
+    "description": "The XML string to write into the file.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "EncodingType",
+    "label": "Encoding Type",
+    "description": "Encoding to use when writing the file.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "SystemDefault",
+        "value": "SystemDefault",
+        "description": ""
+      },
+      {
+        "label": "UTF8",
+        "value": "UTF8",
+        "description": ""
+      },
+      {
+        "label": "Unicode",
+        "value": "Unicode",
+        "description": ""
+      },
+      {
+        "label": "BigEndianUnicode",
+        "value": "BigEndianUnicode",
+        "description": ""
+      },
+      {
+        "label": "UTF8NoBOM",
+        "value": "UTF8NoBOM",
+        "description": ""
+      },
+      {
+        "label": "ASCII",
+        "value": "ASCII",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "FormatXml",
+    "label": "Format XML",
+    "description": "Whether to format (indent) the XML output.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "IndentationPerLevel",
+    "label": "Indentation Per Level",
+    "description": "Number of spaces to use for indentation if formatting is enabled.",
+    "defaultValue": "",
+    "required": false
   }
 ]

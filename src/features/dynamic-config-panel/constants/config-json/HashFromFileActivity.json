@@ -3,26 +3,43 @@
     "direction": "Input",
     "type": "text",
     "name": "FilePath",
-    "label": "FilePath",
-    "description": "The path to the file to hash.",
+    "label": "File Path to Hash",
+    "description": "The path to the file you want to hash",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "select",
     "name": "Algorithm",
-    "label": "Algorithm",
-    "description": "The hashing algorithm to use.",
+    "label": "Hashing Algorithm",
+    "description": "The algorithm to use for hashing (SHA256, SHA512, or MD5)",
     "defaultValue": "",
-    "required": true
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "SHA256",
+        "value": "SHA256",
+        "description": "SHA256 algorithm"
+      },
+      {
+        "label": "SHA512",
+        "value": "SHA512",
+        "description": "SHA512 algorithm"
+      },
+      {
+        "label": "MD5",
+        "value": "MD5",
+        "description": "MD5 algorithm"
+      }
+    ]
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "HashedContent",
-    "label": "HashedContent",
-    "description": "Returns the hashed content of the file.",
+    "label": "Hashed File Content",
+    "description": "The hashed content of the file",
     "defaultValue": {
       "value": "HashedContent",
       "enabled": true

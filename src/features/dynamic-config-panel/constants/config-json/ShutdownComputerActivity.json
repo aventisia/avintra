@@ -3,8 +3,8 @@
     "direction": "Input",
     "type": "select",
     "name": "Mode",
-    "label": "Mode",
-    "description": "The shutdown mode (e.g., power off, restart).",
+    "label": "Shutdown Mode",
+    "description": "The shutdown mode (e.g., power off, restart, sleep, hibernate).",
     "defaultValue": "",
     "required": true,
     "selectOptions": [
@@ -22,6 +22,16 @@
         "label": "Logoff",
         "value": "Logoff",
         "description": "Logs off the current user."
+      },
+      {
+        "label": "Sleep",
+        "value": "Sleep",
+        "description": "Puts the computer to sleep."
+      },
+      {
+        "label": "Hibernate",
+        "value": "Hibernate",
+        "description": "Hibernates the computer."
       }
     ]
   }

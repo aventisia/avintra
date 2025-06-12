@@ -3,19 +3,60 @@
     "direction": "Input",
     "type": "text",
     "name": "FilePath",
-    "label": "FilePath",
+    "label": "File Path",
     "description": "The path to the XML file.",
     "defaultValue": "",
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "select",
+    "name": "EncodingType",
+    "label": "Encoding Type",
+    "description": "Specifies the encoding to use for reading the XML file.",
+    "defaultValue": "SystemDefault",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "SystemDefault",
+        "value": "SystemDefault",
+        "description": ""
+      },
+      {
+        "label": "UTF8",
+        "value": "UTF8",
+        "description": ""
+      },
+      {
+        "label": "Unicode",
+        "value": "Unicode",
+        "description": ""
+      },
+      {
+        "label": "BigEndianUnicode",
+        "value": "BigEndianUnicode",
+        "description": ""
+      },
+      {
+        "label": "UTF8NoBOM",
+        "value": "UTF8NoBOM",
+        "description": ""
+      },
+      {
+        "label": "ASCII",
+        "value": "ASCII",
+        "description": ""
+      }
+    ]
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "XmlContent",
-    "label": "XmlContent",
-    "description": "Returns the XML content as a string.",
+    "name": "XmlDocument",
+    "label": "XML Document Loaded",
+    "description": "Returns true if the XML file was successfully read and parsed, false otherwise.",
     "defaultValue": {
-      "value": "XmlContent",
+      "value": "XmlDocument",
       "enabled": true
     },
     "required": false

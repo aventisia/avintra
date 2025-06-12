@@ -3,26 +3,43 @@
     "direction": "Input",
     "type": "text",
     "name": "Text",
-    "label": "Text",
-    "description": "The text to hash.",
+    "label": "Text to Hash",
+    "description": "The text you want to hash",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "select",
     "name": "Algorithm",
-    "label": "Algorithm",
-    "description": "The hashing algorithm to use.",
+    "label": "Hashing Algorithm",
+    "description": "The algorithm to use for hashing (SHA256, SHA512, or MD5)",
     "defaultValue": "",
-    "required": true
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "SHA256",
+        "value": "SHA256",
+        "description": "SHA256 algorithm"
+      },
+      {
+        "label": "SHA512",
+        "value": "SHA512",
+        "description": "SHA512 algorithm"
+      },
+      {
+        "label": "MD5",
+        "value": "MD5",
+        "description": "MD5 algorithm"
+      }
+    ]
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "HashedText",
-    "label": "HashedText",
-    "description": "Returns the hashed text.",
+    "label": "Hashed Text",
+    "description": "The hashed text",
     "defaultValue": {
       "value": "HashedText",
       "enabled": true

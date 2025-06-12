@@ -12,7 +12,7 @@
     "direction": "Output",
     "type": "config-panel-output",
     "name": "CommandOutput",
-    "label": "CommandOutput",
+    "label": "Command Output",
     "description": "Returns the output of the command.",
     "defaultValue": {
       "value": "CommandOutput",

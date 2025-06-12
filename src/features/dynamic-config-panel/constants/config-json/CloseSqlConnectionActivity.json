@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ConnectionString",
-    "label": "ConnectionString",
-    "description": "The connection string to the database.",
+    "name": "SqlConnection",
+    "label": "SQL Connection",
+    "description": "The SQL connection to close.",
     "defaultValue": "",
     "required": true
   }

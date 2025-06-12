@@ -3,8 +3,8 @@
     "direction": "Input",
     "type": "text",
     "name": "Plaintext",
-    "label": "Plaintext",
-    "description": "The plaintext to encrypt.",
+    "label": "Plaintext to Encrypt",
+    "description": "The text you want to encrypt",
     "defaultValue": "",
     "required": true
   },
@@ -12,8 +12,17 @@
     "direction": "Input",
     "type": "text",
     "name": "Key",
-    "label": "Key",
-    "description": "The encryption key.",
+    "label": "Encryption Key",
+    "description": "The key used for encryption (must be32 bytes long)",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "IV",
+    "label": "Initialization Vector (IV)",
+    "description": "The initialization vector used for encryption",
     "defaultValue": "",
     "required": true
   },
@@ -21,8 +30,8 @@
     "direction": "Input",
     "type": "select",
     "name": "EncodingFormat",
-    "label": "EncodingFormat",
-    "description": "The encoding format for the encrypted text.",
+    "label": "Encoding Format",
+    "description": "The format of the encrypted text (Base64, Hex, or UTF8)",
     "defaultValue": "",
     "required": true,
     "selectOptions": [
@@ -47,8 +56,8 @@
     "direction": "Output",
     "type": "config-panel-output",
     "name": "EncryptedText",
-    "label": "EncryptedText",
-    "description": "Returns the encrypted text.",
+    "label": "Encrypted Text",
+    "description": "The encrypted text",
     "defaultValue": {
       "value": "EncryptedText",
       "enabled": true

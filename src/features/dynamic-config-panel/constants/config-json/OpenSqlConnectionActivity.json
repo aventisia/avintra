@@ -3,9 +3,21 @@
     "direction": "Input",
     "type": "text",
     "name": "ConnectionString",
-    "label": "ConnectionString",
+    "label": "Connection String",
     "description": "The connection string to the database.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "SqlConnection",
+    "label": "SQL Connection",
+    "description": "The opened SQL connection.",
+    "defaultValue": {
+      "value": "SqlConnection",
+      "enabled": true
+    },
+    "required": false
   }
 ]

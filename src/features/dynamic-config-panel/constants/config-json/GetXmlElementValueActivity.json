@@ -3,7 +3,7 @@
     "direction": "Input",
     "type": "text",
     "name": "XmlContent",
-    "label": "XmlContent",
+    "label": "XML Content",
     "description": "The XML content as a string.",
     "defaultValue": "",
     "required": true
@@ -12,19 +12,50 @@
     "direction": "Input",
     "type": "text",
     "name": "XPath",
-    "label": "XPath",
-    "description": "The XPath expression to locate the element.",
+    "label": "XPath Expression",
+    "description": "The XPath expression to locate the XML element.",
     "defaultValue": "",
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "select",
+    "name": "GetValueAs",
+    "label": "Get Value As",
+    "description": "Specifies how the XML element value should be returned.",
+    "defaultValue": "TextValue",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "TextValue",
+        "value": "TextValue",
+        "description": ""
+      },
+      {
+        "label": "NumericValue",
+        "value": "NumericValue",
+        "description": ""
+      },
+      {
+        "label": "DateTimeValue",
+        "value": "DateTimeValue",
+        "description": ""
+      },
+      {
+        "label": "BooleanValue",
+        "value": "BooleanValue",
+        "description": ""
+      }
+    ]
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "ElementValue",
-    "label": "ElementValue",
-    "description": "Returns the element value.",
+    "name": "XmlElementValue",
+    "label": "XML Element Value",
+    "description": "Returns the value of the XML element.",
     "defaultValue": {
-      "value": "ElementValue",
+      "value": "XmlElementValue",
       "enabled": true
     },
     "required": false

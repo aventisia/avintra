@@ -29,5 +29,14 @@
         "description": "Stops the screensaver."
       }
     ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutSeconds",
+    "label": "Time Out Seconds",
+    "description": "Timeout in seconds (only used when enabling screensaver).",
+    "defaultValue": "",
+    "required": false
   }
 ]

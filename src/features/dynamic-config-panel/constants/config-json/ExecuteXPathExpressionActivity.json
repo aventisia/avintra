@@ -3,7 +3,7 @@
     "direction": "Input",
     "type": "text",
     "name": "XmlContent",
-    "label": "XmlContent",
+    "label": "XML Content",
     "description": "The XML content to query with XPath.",
     "defaultValue": "",
     "required": true
@@ -12,19 +12,40 @@
     "direction": "Input",
     "type": "text",
     "name": "XPathExpression",
-    "label": "XPathExpression",
+    "label": "XPath Expression",
     "description": "The XPath expression to execute.",
     "defaultValue": "",
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "switch",
+    "name": "GetFirstValueOnly",
+    "label": "Get First Value Only",
+    "description": "If true, only the first matching node will be returned. If false, all matching nodes will be returned as a list.",
+    "defaultValue": false,
+    "required": false
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "ResultValue",
-    "label": "ResultValue",
+    "name": "XPathResult",
+    "label": "XPath Result",
     "description": "Returns the value of the first matching node or null if not found.",
     "defaultValue": {
-      "value": "ResultValue",
+      "value": "XPathResult",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "XPathResults",
+    "label": "XPath Results",
+    "description": "Returns all matching nodes as a list of strings.",
+    "defaultValue": {
+      "value": "XPathResults",
       "enabled": true
     },
     "required": false

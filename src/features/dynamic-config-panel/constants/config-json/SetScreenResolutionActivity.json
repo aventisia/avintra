@@ -2,6 +2,15 @@
   {
     "direction": "Input",
     "type": "text",
+    "name": "Display",
+    "label": "Display",
+    "description": "The name or number of the display to set resolution for. Use \u0027Primary\u0027 for the primary monitor, or \u0027All\u0027 for all monitors.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
     "name": "Width",
     "label": "Width",
     "description": "The width of the screen.",
@@ -21,7 +30,7 @@
     "direction": "Input",
     "type": "text",
     "name": "BitCount",
-    "label": "BitCount",
+    "label": "Bit Count",
     "description": "The bit count of the screen.",
     "defaultValue": "",
     "required": true

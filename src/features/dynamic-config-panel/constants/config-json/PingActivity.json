@@ -2,20 +2,53 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "Host",
-    "label": "Host",
-    "description": "The IP address or hostname to ping.",
+    "name": "HostName",
+    "label": "Host name",
+    "description": "The host name or IP address to ping.",
     "defaultValue": "",
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "text",
+    "name": "Timeout",
+    "label": "Timeout",
+    "description": "The maximum time (in milliseconds) to wait for a response.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "IsReachable",
-    "label": "IsReachable",
-    "description": "Returns true if the host is reachable, otherwise false.",
+    "name": "PingResult",
+    "label": "Ping Result",
+    "description": "The status of the ping message (success or failure).",
     "defaultValue": {
-      "value": "IsReachable",
+      "value": "PingResult",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "RoundTripTime",
+    "label": "Round Trip Time",
+    "description": "The number of milliseconds taken for the Ping to complete.",
+    "defaultValue": {
+      "value": "RoundTripTime",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "StatusMessages",
+    "label": "Status Message",
+    "description": "Provides status information about the operation.",
+    "defaultValue": {
+      "value": "StatusMessages",
       "enabled": true
     },
     "required": false
