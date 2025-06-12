@@ -111,11 +111,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         public OutArgument<IEnumerable<MailMessage>> RetrievedEmails { get; set; }
 
 
-
         protected override void Execute(CodeActivityContext context)
         {
-            string status = "Operation completed successfully.";
-            List<MailMessage> retrievedEmails = new List<MailMessage>();
+            var status = "Operation completed successfully.";
+            var retrievedEmails = new List<MailMessage>();
 
             try
             {
@@ -151,10 +150,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
                 using (var client = new ImapClient())
                 {
                     // Configure SSL certificate validation
-                    if (acceptUntrustedCertificates)
-                    {
-                        client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-                    }
+                    if (acceptUntrustedCertificates) client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
                     // Connect to the IMAP server
                     client.Connect(imapServer, port,
@@ -183,15 +179,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 
                         // Save attachments if requested
                         if (saveAttachments == EmailSaveAttachmentsEnum.SaveAttachments)
-                        {
                             SaveAttachmentsInDirectory(message, saveDirectory);
-                        }
 
                         // Mark as read if requested
-                        if (markAsRead)
-                        {
-                            folder.AddFlags(uid, MessageFlags.Seen, true);
-                        }
+                        if (markAsRead) folder.AddFlags(uid, MessageFlags.Seen, true);
 
                         retrievedEmails.Add(mailMessage);
                     }
@@ -236,28 +227,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
             }
 
             // Apply from filter
-            if (!string.IsNullOrWhiteSpace(fromContains))
-            {
-                query = query.And(SearchQuery.FromContains(fromContains));
-            }
+            if (!string.IsNullOrWhiteSpace(fromContains)) query = query.And(SearchQuery.FromContains(fromContains));
 
             // Apply to filter
-            if (!string.IsNullOrWhiteSpace(toContains))
-            {
-                query = query.And(SearchQuery.ToContains(toContains));
-            }
+            if (!string.IsNullOrWhiteSpace(toContains)) query = query.And(SearchQuery.ToContains(toContains));
 
             // Apply subject filter
             if (!string.IsNullOrWhiteSpace(subjectContains))
-            {
                 query = query.And(SearchQuery.SubjectContains(subjectContains));
-            }
 
             // Apply body filter
-            if (!string.IsNullOrWhiteSpace(bodyContains))
-            {
-                query = query.And(SearchQuery.BodyContains(bodyContains));
-            }
+            if (!string.IsNullOrWhiteSpace(bodyContains)) query = query.And(SearchQuery.BodyContains(bodyContains));
 
             return query;
         }
@@ -273,42 +253,24 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
             };
 
             // Add recipients
-            foreach (var to in mimeMessage.To.Mailboxes)
-            {
-                mailMessage.To.Add(new MailAddress(to.Address, to.Name));
-            }
+            foreach (var to in mimeMessage.To.Mailboxes) mailMessage.To.Add(new MailAddress(to.Address, to.Name));
 
-            foreach (var cc in mimeMessage.Cc.Mailboxes)
-            {
-                mailMessage.CC.Add(new MailAddress(cc.Address, cc.Name));
-            }
+            foreach (var cc in mimeMessage.Cc.Mailboxes) mailMessage.CC.Add(new MailAddress(cc.Address, cc.Name));
 
-            foreach (var bcc in mimeMessage.Bcc.Mailboxes)
-            {
-                mailMessage.Bcc.Add(new MailAddress(bcc.Address, bcc.Name));
-            }
+            foreach (var bcc in mimeMessage.Bcc.Mailboxes) mailMessage.Bcc.Add(new MailAddress(bcc.Address, bcc.Name));
 
             // Handle HTML body if present
-            if (!string.IsNullOrEmpty(mimeMessage.HtmlBody))
-            {
-                mailMessage.Body = mimeMessage.HtmlBody;
-            }
+            if (!string.IsNullOrEmpty(mimeMessage.HtmlBody)) mailMessage.Body = mimeMessage.HtmlBody;
 
             // Add headers
-            foreach (var header in mimeMessage.Headers)
-            {
-                mailMessage.Headers.Add(header.Field, header.Value);
-            }
+            foreach (var header in mimeMessage.Headers) mailMessage.Headers.Add(header.Field, header.Value);
 
             return mailMessage;
         }
 
         private static void SaveAttachmentsInDirectory(MimeMessage message, string saveDirectory)
         {
-            if (!Directory.Exists(saveDirectory))
-            {
-                Directory.CreateDirectory(saveDirectory);
-            }
+            if (!Directory.Exists(saveDirectory)) Directory.CreateDirectory(saveDirectory);
 
             foreach (var attachment in message.Attachments)
             {
@@ -318,10 +280,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 
                 using (var stream = File.Create(filePath))
                 {
-                    if (part.Content is MimeContent content)
-                    {
-                        content.Stream.CopyTo(stream);
-                    }
+                    if (part.Content is MimeContent content) content.Stream.CopyTo(stream);
                 }
             }
         }

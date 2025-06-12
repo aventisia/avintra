@@ -67,7 +67,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 
         [DisplayName("Server Port")]
         [Description("The port number for the SMTP server (default is 587).")]
-        public InArgument<int> ServerPort { get; set; } = 587;
+        public InArgument<int> ServerPort { get; set; } = new InArgument<int>(587);
 
 
         [DisplayName("Security Protocol")]
@@ -98,16 +98,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 
         [DisplayName("Timeout (seconds)")]
         [Description("Connection timeout in seconds (default is 30).")]
-        public InArgument<int> Timeout { get; set; } = 30;
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
-        [DisplayName("Is Success")]
-        [Description("Returns true if the email was sent successfully.")]
-        public OutArgument<bool> IsSuccess { get; set; }
+        [DefaultValue(30)]
+        public InArgument<int> Timeout { get; set; } = new InArgument<int>(30);
 
         // ----------------------
         // Execution Logic
@@ -157,25 +149,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 
                 // Add recipients
                 foreach (var address in to.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
-                {
                     message.To.Add(MailboxAddress.Parse(address.Trim()));
-                }
 
                 if (!string.IsNullOrWhiteSpace(cc))
-                {
                     foreach (var address in cc.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
-                    {
                         message.Cc.Add(MailboxAddress.Parse(address.Trim()));
-                    }
-                }
 
                 if (!string.IsNullOrWhiteSpace(bcc))
-                {
                     foreach (var address in bcc.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
-                    {
                         message.Bcc.Add(MailboxAddress.Parse(address.Trim()));
-                    }
-                }
 
                 message.Subject = subject;
 
@@ -196,7 +178,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 
                 // Add attachments
                 if (!string.IsNullOrWhiteSpace(attachments))
-                {
                     foreach (var attachmentPath in attachments.Split(new[] { ',', ';' },
                                  StringSplitOptions.RemoveEmptyEntries))
                     {
@@ -206,7 +187,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 
                         builder.Attachments.Add(trimmedPath);
                     }
-                }
 
                 message.Body = builder.ToMessageBody();
 
@@ -214,10 +194,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
                 using (var client = new SmtpClient())
                 {
                     // Configure certificate validation
-                    if (acceptUntrustedCertificates)
-                    {
-                        client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-                    }
+                    if (acceptUntrustedCertificates) client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
                     // Set timeout
                     client.Timeout = timeout * 1000;
@@ -226,10 +203,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
                     client.Connect(smtpServer, serverPort, securityProtocol);
 
                     // Authenticate if needed
-                    if (smtpServerNeedsAuthentication)
-                    {
-                        client.Authenticate(userName, password);
-                    }
+                    if (smtpServerNeedsAuthentication) client.Authenticate(userName, password);
 
                     // Send the message
                     client.Send(message);
@@ -246,10 +220,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
                 status = $"Error sending email: {ex.Message}";
 
                 // Include inner exception details if available
-                if (ex.InnerException != null)
-                {
-                    status += $"\nInner Exception: {ex.InnerException.Message}";
-                }
+                if (ex.InnerException != null) status += $"\nInner Exception: {ex.InnerException.Message}";
             }
 
             StatusMessage.Set(context, status);

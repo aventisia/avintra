@@ -68,15 +68,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         public InArgument<string> MailFolder { get; set; }
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-        // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            string status = "Success";
+            var status = "Success";
 
             try
             {
@@ -129,10 +125,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         {
             var client = new ImapClient();
 
-            if (acceptUntrustedCertificates)
-            {
-                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-            }
+            if (acceptUntrustedCertificates) client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
             var options = enableSSL ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls;
 
@@ -146,7 +139,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         {
             // Open the inbox folder (you might want to make this configurable)
             var inbox = client.Inbox;
-            inbox.Open(MailKit.FolderAccess.ReadWrite);
+            inbox.Open(FolderAccess.ReadWrite);
 
             // Convert string message IDs to UIDs
             var uids = messageIds.Select(id => new UniqueId(uint.Parse(id))).ToList();
@@ -163,7 +156,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         {
             // Open the inbox folder
             var inbox = client.Inbox;
-            inbox.Open(MailKit.FolderAccess.ReadWrite);
+            inbox.Open(FolderAccess.ReadWrite);
 
             // Convert string message IDs to UIDs
             var uids = messageIds.Select(id => new UniqueId(uint.Parse(id))).ToList();
@@ -178,13 +171,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         {
             // Open the inbox folder (source)
             var inbox = client.Inbox;
-            inbox.Open(MailKit.FolderAccess.ReadWrite);
+            inbox.Open(FolderAccess.ReadWrite);
 
             // Get or create the destination folder
             var destinationFolder = client.GetFolder(mailFolder) ??
                                     client.GetFolder(client.PersonalNamespaces[0]).Create(mailFolder, true);
 
-            destinationFolder.Open(MailKit.FolderAccess.ReadWrite);
+            destinationFolder.Open(FolderAccess.ReadWrite);
 
             // Convert string message IDs to UIDs
             var uids = messageIds.Select(id => new UniqueId(uint.Parse(id))).ToList();

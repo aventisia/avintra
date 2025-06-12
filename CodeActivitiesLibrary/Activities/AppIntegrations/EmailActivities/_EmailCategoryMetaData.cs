@@ -6,5 +6,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         primaryCategory: "App Integrations",
         label: "Email",
         description: "Send, receive, and manage emails.")]
-    internal sealed class _EmailCategoryMetaData { }
+    internal sealed class _EmailCategoryMetaData
+    {
+    }
 }
