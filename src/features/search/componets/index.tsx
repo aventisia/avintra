@@ -53,7 +53,7 @@ const SearchCommandDialog = () => {
 
     setOpen(false);
   };
-  console.log(nodes);
+
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
       <CommandInput placeholder="Search..." />
