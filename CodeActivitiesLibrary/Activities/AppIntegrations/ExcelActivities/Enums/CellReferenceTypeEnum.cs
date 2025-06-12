@@ -1,13 +1,13 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
+namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities.Enums
 {
     public enum CellReferenceTypeEnum
     {
-        [Description("Reference by cell address (e.g., A1, B2)")]
+        [Display(Name = "Cell Address", Description = "Reference by cell address (e.g., A1, B2)")]
         CellAddress,
 
-        [Description("Reference by named range")]
+        [Display(Name = "Named Range", Description = "Reference by named range")]
         NamedRange
     }
 }

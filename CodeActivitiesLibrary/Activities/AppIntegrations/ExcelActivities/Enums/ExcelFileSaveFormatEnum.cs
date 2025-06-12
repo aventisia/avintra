@@ -4,13 +4,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities.Enums
 {
     public enum ExcelFileSaveFormatEnum
     {
-        [Display(Name = "Current Platform Text",
-            Description = "Saves as text format based on the current operating system.")]
-        xlCurrentPlatformText = -4158,
-
         [Display(Name = "Workbook Normal",
             Description = "Saves as a standard Excel workbook without formatting or macros.")]
         xlWorkbookNormal = -4143,
+
+        [Display(Name = "Current Platform Text",
+            Description = "Saves as text format based on the current operating system.")]
+        xlCurrentPlatformText = -4158,
 
         [Display(Name = "SYLK",
             Description = "Saves as SYLK (Symbolic Link) format, used for data exchange between spreadsheets.")]

@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.AppIntegrations.ExcelActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -76,10 +77,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<string> DestinationCellsName { get; set; }
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-        // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
@@ -116,7 +113,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                             // Construct source and target ranges
                             var sourceRangeStr = $"{startColumn}{startRow}:{sourceEndColumn}{sourceEndRow}";
-                            var targetRangeStr = $"{startColumn}{destinationEndRow - (sourceEndRow - startRow)}:{destinationEndColumn}{destinationEndRow}";
+                            var targetRangeStr =
+                                $"{startColumn}{destinationEndRow - (sourceEndRow - startRow)}:{destinationEndColumn}{destinationEndRow}";
 
                             var sourceRange = worksheet.Range[sourceRangeStr];
                             var targetRange = worksheet.Range[targetRangeStr];
@@ -142,7 +140,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             var sourceCellsName = SourceCellsName.Get(context);
                             var destinationCellsName = DestinationCellsName.Get(context);
 
-                            if (string.IsNullOrWhiteSpace(sourceCellsName) || string.IsNullOrWhiteSpace(destinationCellsName))
+                            if (string.IsNullOrWhiteSpace(sourceCellsName) ||
+                                string.IsNullOrWhiteSpace(destinationCellsName))
                                 throw new ArgumentException(
                                     "Both Source Cells Name and Destination Cells Name must be specified when using Named Cells.");
 

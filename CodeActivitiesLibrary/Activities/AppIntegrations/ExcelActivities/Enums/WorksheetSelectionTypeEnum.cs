@@ -1,13 +1,13 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
+namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities.Enums
 {
     public enum WorksheetSelectionTypeEnum
     {
-        [Description("Select worksheet by its name.")]
+        [Display(Name = "Name", Description = "Select worksheet by its name.")]
         Name,
 
-        [Description("Select worksheet by its 1-based index.")]
+        [Display(Name = "Index", Description = "Select worksheet by its 1-based index.")]
         Index
     }
 }

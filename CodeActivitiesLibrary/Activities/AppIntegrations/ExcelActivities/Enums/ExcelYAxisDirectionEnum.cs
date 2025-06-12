@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
+namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities.Enums
 {
     public enum ExcelYAxisDirectionEnum
     {

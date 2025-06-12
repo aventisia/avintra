@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.AppIntegrations.ExcelActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -50,10 +51,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<string> StartingColumn { get; set; } // Changed from long to string
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-        // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
@@ -89,17 +86,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             if (namedRange == null)
                                 throw new ArgumentException($"Named range '{name}' not found.");
 
-                            int rowCount = namedRange.Rows.Count;
-                            int colCount = namedRange.Columns.Count;
+                            var rowCount = namedRange.Rows.Count;
+                            var colCount = namedRange.Columns.Count;
 
-                            for (int i = 0; i < dataTable.Rows.Count; i++)
+                            for (var i = 0; i < dataTable.Rows.Count; i++)
                             {
                                 var row = dataTable.Rows[i];
 
                                 if (hasHeaders && i == 0)
                                     continue; // Skip header
 
-                                for (int j = 0; j < dataTable.Columns.Count; j++)
+                                for (var j = 0; j < dataTable.Columns.Count; j++)
                                     namedRange.Cells[rowCount + i + 1, j + 1] = row[j]?.ToString();
                             }
 
@@ -110,21 +107,22 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                     case CellAppendModeEnum.ToActiveSheet:
                         {
                             // Convert column letter to index
-                            int startColIndex = GetColumnIndex(startingColumnStr);
+                            var startColIndex = GetColumnIndex(startingColumnStr);
                             long startRow = worksheet.UsedRange.Rows.Count + 1; // Start after last used row
 
-                            for (int i = 0; i < dataTable.Rows.Count; i++)
+                            for (var i = 0; i < dataTable.Rows.Count; i++)
                             {
                                 var row = dataTable.Rows[i];
 
                                 if (hasHeaders && i == 0)
                                     continue; // Skip header
 
-                                for (int j = 0; j < dataTable.Columns.Count; j++)
+                                for (var j = 0; j < dataTable.Columns.Count; j++)
                                     worksheet.Cells[startRow + i, startColIndex + j] = row[j]?.ToString();
                             }
 
-                            status += $" Appended data to active sheet starting at row {startRow}, column {startingColumnStr}.";
+                            status +=
+                                $" Appended data to active sheet starting at row {startRow}, column {startingColumnStr}.";
                             break;
                         }
 

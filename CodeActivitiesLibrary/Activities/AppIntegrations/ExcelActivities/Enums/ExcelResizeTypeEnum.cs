@@ -1,13 +1,13 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
+namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities.Enums
 {
     public enum ExcelResizeTypeEnum
     {
-        [Description("Resizes the width of the selected columns.")]
+        [Display(Name = "Columns", Description = "Resizes the width of the selected columns.")]
         Columns,
 
-        [Description("Resizes the height of the selected rows.")]
+        [Display(Name = "Rows", Description = "Resizes the height of the selected rows.")]
         Rows
     }
 }

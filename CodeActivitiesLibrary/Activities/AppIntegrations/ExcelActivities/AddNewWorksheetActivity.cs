@@ -2,6 +2,7 @@
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -31,10 +32,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<ExcelWorksheetPositionEnum> AddWorksheetAs { get; set; }
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-        // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
@@ -50,20 +47,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 if (excelApp?.ActiveWorkbook == null)
                     throw new InvalidOperationException("Excel application or workbook is not available.");
 
-                Excel.Workbook workbook = excelApp.ActiveWorkbook;
+                var workbook = excelApp.ActiveWorkbook;
 
                 // Create a new worksheet
                 Excel.Worksheet newSheet = workbook.Sheets.Add();
 
                 // Set the name of the new worksheet
                 if (!string.IsNullOrWhiteSpace(newWorksheetName))
-                {
                     newSheet.Name = newWorksheetName;
-                }
                 else
-                {
                     newSheet.Name = $"Sheet{workbook.Sheets.Count + 1}";
-                }
 
                 // Position the new worksheet
                 switch (addWorksheetAs)
@@ -94,10 +87,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     // Enum for specifying the position of the new worksheet
     public enum ExcelWorksheetPositionEnum
     {
-        [Description("First worksheet")]
+        [Display(Name = "First worksheet", Description = "First worksheet")]
         First,
 
-        [Description("Last worksheet")]
+        [Display(Name = "Last worksheet", Description = "Last worksheet")]
         Last
     }
 }
