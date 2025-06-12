@@ -63,7 +63,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
                     throw new InvalidOperationException($"Service '{serviceName}' is not installed.");
 
                 // Wait for the desired state
-                bool success = WaitForServiceState(serviceController, waitForAction, duration);
+                var success = WaitForServiceState(serviceController, waitForAction, duration);
 
                 if (!success && failWithTimeoutError)
                     throw new System.TimeoutException(
