@@ -27,7 +27,7 @@ namespace CodeActivityToJSON.Utils
 
                 // Get label. If display name is not set, then don't add the argument to json
                 var displayName = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? prop.Name; // TODO: we need to add meaningfull display names
-                if (displayName == null || prop.Name.ToLower() == "statusmessage") continue;
+                if (displayName == null || prop.Name.ToLower() == "statusmessage" || prop.Name.ToLower() == "issuccess") continue;
 
                 // Get description
                 var description = prop.GetCustomAttribute<DescriptionAttribute>()?.Description ?? "";

@@ -52,6 +52,9 @@ namespace CodeActivityToJSON
             // Create the activities CSV file
             ExportActivitiesToCsvUtil.ExportActivitiesToCsv(activities);
 
+            // Create Validation Errors CSV file
+            ValidationErrosToCsvUtil.ValidationErrorsToCsv(activities);
+
             // Convert each activity to JSON and save to file
             foreach (var activity in activities)
             {
