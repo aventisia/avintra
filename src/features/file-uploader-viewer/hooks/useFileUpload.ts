@@ -45,7 +45,7 @@ export const useFileUpload = ({
       }
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["UploadedFiles", modelId] });
+      queryClient.invalidateQueries({ queryKey: ["UploadedFiles", "viewer", modelId] });
       addFileToUpload({
         ...(data.data[0] as FileUploadDto),
         mlModelId: modelId,

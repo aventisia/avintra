@@ -1,3 +1,10 @@
+interface IDocumentInstruction {
+    id: string;
+    filePath: string;
+    name: string;
+    instructions: string;
+}
+
 interface ISetupObject {
     name: string;
     roleOrObjective: string;
@@ -5,7 +12,7 @@ interface ISetupObject {
     toneOfVoice: string;
     instructions: string;
     exclusionsOrBoundaries: string;
-    documents: null;
+    documents: IDocumentInstruction[] | null;
     contextMemoryTimeframe: string;
     llm: string;
     temperature: number;

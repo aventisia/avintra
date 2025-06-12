@@ -1,7 +1,4 @@
-import {
-  fileNameProps,
-  fileinstructionsProps,
-} from "@/features/ai-persona-model/constants/ai-persona-setup-form-field-props";
+import { fileinstructionsProps } from "@/features/ai-persona-model/constants/ai-persona-setup-form-field-props";
 import { aiPersonaSetupFormZodSchema } from "@/features/ai-persona-model/constants/ai-persona-setup-zod-schema";
 import { useToggleFileUploadDialogStore } from "@/features/ai-persona-model/store/toggle-file-uploader-store";
 
@@ -41,50 +38,41 @@ const DocumentsTable = ({
           <PlusIcon className="h-5 w-5 stroke-2 text-primary" />
         </Button>
       </div>
-      <div className="!mt-0.5 inline-block rounded-lg border w-full">
-        <div className="grid grid-cols-2 bg-accent px-1 py-3 text-sm">
-          <div className="px-3">File</div>
-          <div className="px-3">Instructions</div>
-        </div>
+      {categoryFields.length > 1 && (
+        <div className="!mt-0.5 inline-block rounded-lg border w-full">
+          <div className="grid grid-cols-2 bg-accent px-1 py-3 text-sm">
+            <div className="px-3">File</div>
+            <div className="px-3">Instructions</div>
+          </div>
 
-        {categoryFields.map((field, index) => (
-          <div
-            key={field.id}
-            className={`justify-left grid grid-cols-2 gap-2 ${index !== categoryFields.length - 1 && "border-b"} p-2.5`}
-          >
-            {/* Category Name */}
-            <Controller
-              control={control}
-              name={`documents.${index}.name`}
-              render={({ field }) => (
-                <AutosizeTextareaField
-                  {...fileNameProps}
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  name={field.name}
+          {categoryFields.map((field, index) => (
+            <div
+              key={field.id}
+              className={`justify-left grid grid-cols-2 items-center gap-10 ${index !== categoryFields.length - 1 && "border-b"} p-2.5`}
+            >
+              <div>
+                <p className="text-sm whitespace-nowrap truncate">
+                  {form.watch(`documents.${index}.name`) || "Untitled Document"}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-[1fr_auto] gap-1">
+                {/* Instructions */}
+                <Controller
+                  control={control}
+                  name={`documents.${index}.instructions`}
+                  render={({ field }) => (
+                    <AutosizeTextareaField
+                      {...fileinstructionsProps}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                    />
+                  )}
                 />
-              )}
-            />
 
-            <div className="grid grid-cols-[1fr_auto] gap-1">
-              {/* Instructions */}
-              <Controller
-                control={control}
-                name={`documents.${index}.instructions`}
-                render={({ field }) => (
-                  <AutosizeTextareaField
-                    {...fileinstructionsProps}
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    name={field.name}
-                  />
-                )}
-              />
-
-              {/* Delete button */}
-              {categoryFields.length > 1 && (
+                {/* Delete button */}
                 <Button
                   type="button"
                   onClick={() => removeCategory(index)}
@@ -93,11 +81,11 @@ const DocumentsTable = ({
                 >
                   <TrashIcon className="h-4 w-4" />
                 </Button>
-              )}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

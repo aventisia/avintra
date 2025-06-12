@@ -11,9 +11,9 @@ interface DataResponseWithController {
 
 const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/upload-doc`;
 
-const getUploadedFiles = (modelId: string) => {
+const getUploadedFiles = (modelId: string) => {  
   return axiosInstance
-    .get<IHttpResponse<FileViewerDto[]>>(`${baseAPIURL}/list/${modelId}/viewer`)
+    .get<IHttpResponse<FileViewerDto[]>>(`${baseAPIURL}/list/${modelId}/setup`)
     .then((res) => res.data);
 };
 

@@ -1,148 +1,109 @@
-import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
-import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
-import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
-import { useExtractedDataStore } from "@/store/extract-via-llm-store";
-
-import { Separator } from "@aventisia/ui";
+import { Input } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { CheckboxField, Form } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { useEffect, useState } from "react";
-import { FormProvider } from "react-hook-form";
-import { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
+import { toast } from "@aventisia/ui/sonner";
+import * as signalR from "@microsoft/signalr";
+import React, { useEffect, useState } from "react";
 
-import { submitForFineTuningProps } from "../../constants/question-answer-test-form-field-props";
-import { questionAnswerTestFormZodSchema } from "../../constants/question-answer-test-form-zod-schema";
-import { useFetchSetupFormData } from "../../hooks/useFetchSetupFormData";
-import { useQuestionAnswersTestForm } from "../../hooks/useQuestionAnswerTestForm";
-import QuestionAnswerFields from "./question-answer";
-
-const AIPersonaTestForm = () => {
-  useFetchSetupFormData();
-
-  const {
-    form,
-    questionAnswerFields,
-    updateExtractedFormData,
-    isUpdatePending,
-    initializeFieldNames,
-  } = useQuestionAnswersTestForm();
-  const {
-    formState: { isSubmitting, isDirty },
-    setValue,
-    watch,
-  } = form;
-  const submitForFinetuningValue = watch("submitForFineTuning");
-  const { data: fileList } = useFetchUploadedFiles();
-
-  const { selectedFile, setSelectedFile } = useFileListStore(
-    useShallow((state) => ({
-      selectedFile: state.selectedFile,
-      setSelectedFile: state.setSelectedFile,
-    })),
+const AIPersonaTestForm: React.FC = () => {
+  const [connection, setConnection] = useState<signalR.HubConnection | null>(
+    null,
   );
+  const [messages, setMessages] = useState<
+    { sender: "user" | "bot"; text: string }[]
+  >([]);
+  const [inputText, setInputText] = useState("");
+  const [chatCreated, setChatCreated] = useState<boolean>(false);
 
-  const { setExtractedData } = useExtractedDataStore(
-    useShallow((state) => ({
-      setExtractedData: state.setExtractedData,
-    })),
-  );
-  const { modelId } = useLabelDataStore(
-    useShallow((state) => ({
-      modelId: state.modelId,
-    })),
-  );
+  useEffect(() => {
+    const newConnection = new signalR.HubConnectionBuilder()
+      .withUrl("https://dev-mlmodelbuilder.aventisia.com/api/chatHub")
+      .withAutomaticReconnect()
+      .build();
 
-  const isLastFile =
-    selectedFile?.id === fileList?.data[fileList.data.length - 1].id;
-  const handleNextFile = () => {
-    const files = Array.isArray(fileList?.data) ? fileList.data : [];
-    if (!files.length || !selectedFile) return;
-
-    const currentIndex = files.findIndex((pdf) => pdf.id === selectedFile.id);
-    if (currentIndex < files.length - 1) {
-      const nextFile = files[currentIndex + 1];
-      setSelectedFile(nextFile);
-    }
-  };
-
-  async function submitHandler(
-    formData: z.infer<typeof questionAnswerTestFormZodSchema>,
-  ) {
-    const { submitForFineTuning, ...dataToSend } = formData;
-
-    try {
-      await updateExtractedFormData({
-        id: modelId,
-        mlModelId: modelId,
-        accuracy: null,
-        dataObject: JSON.stringify(dataToSend.questionAnswers),
-        submitForFineTuning,
-        docId: selectedFile?.id ?? "",
+    newConnection
+      .start()
+      .then(() => {
+        setChatCreated(true);
+        toast.success("Socket connection established");
+      })
+      .catch(() => {
+        setChatCreated(false);
       });
 
-      setExtractedData({});
-      handleNextFile(); // ✅ Called only on success
-      if (!isLastFile) initializeFieldNames();
-    } catch {
-      // error handled in onError mutation fn
-    }
-  }
+    newConnection.on("ReceiveMessage", (userType, message) => {
+      console.log("message", message);
 
-  const [userToggled, setUserToggled] = useState<boolean>(false);
-
-  // Update checkbox automatically when form becomes dirty — only if user hasn’t manually toggled
-  useEffect(() => {
-    if (!userToggled) {
-      setValue("submitForFineTuning", isDirty);
-    }
-  }, [isDirty, userToggled, setValue]);
-
-  // Handler for manual toggle
-  const handleToggle = () => {
-    setUserToggled(true); // Mark that the user has toggled manually
-    setValue("submitForFineTuning", !submitForFinetuningValue, {
-      shouldDirty: true,
+      const sender = userType === "ChatBot" ? "bot" : "user";
+      setMessages((prev) => [...prev, { sender, text: message }]);
     });
+
+    setConnection(newConnection);
+
+    return () => {
+      newConnection.stop();
+    };
+  }, []);
+
+  const handleSend = async () => {
+    if (inputText.trim() && connection) {
+      await connection.invoke("SendMessageAsync", inputText);
+      // Simulate delay and bot reply - in real case, this will be handled by backend
+      setTimeout(() => {
+        connection.invoke("SendMessageToUser", "bot", `Reply to: ${inputText}`);
+      }, 1000);
+      setInputText("");
+    }
   };
 
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(submitHandler)}
-      disabled={isSubmitting}
-    >
-      <ScrollArea className="mt-4 flex-grow  h-[calc(100vh-14.2rem)]">
-        <FormProvider {...form}>
-          <div className="space-y-10 px-4 pb-1">
-            <QuestionAnswerFields
-              form={form}
-              questionAnswerFields={questionAnswerFields}
-            />
-          </div>
-        </FormProvider>
+    <div>
+      <ScrollArea className="flex-grow h-[calc(100vh-13.2rem)]">
+        {chatCreated ? (
+          <span className="text-green-500 text-xs flex items-center justify-center">
+            Chat Created
+          </span>
+        ) : (
+          <span className="text-destructive text-xs text-red-500 flex items-center justify-center">
+            Failed to create chat
+          </span>
+        )}
+        <div className="flex flex-col space-y-2 p-3">
+          {messages.map((msg, idx) => (
+            <div
+              key={idx}
+              className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+            >
+              <div
+                className={`max-w-[50%] px-4 py-2 rounded-2xl text-white text-sm shadow ${
+                  msg.sender === "user"
+                    ? "bg-primary rounded-br-none"
+                    : "bg-gray-500 rounded-bl-none"
+                }`}
+              >
+                {msg.text}
+              </div>
+            </div>
+          ))}
+        </div>
       </ScrollArea>
-
-      <Separator />
-      <div className="flex items-center justify-between gap-2 px-4 py-1 pb-4">
-        <div className="flex items-center gap-1">
-          <CheckboxField
-            {...submitForFineTuningProps}
-            checked={submitForFinetuningValue}
-            onCheckedChange={handleToggle}
-          />
-          <span className="text-sm">Submit for Fine-tuning</span>
-        </div>{" "}
+      <div className="p-4 border-t flex items-center gap-2">
+        <Input
+          type="text"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Type a message..."
+          disabled={!chatCreated}
+        />
         <Button
-          size="xs"
-          type="submit"
-          disabled={isSubmitting || isUpdatePending}
+          onClick={handleSend}
+          disabled={!chatCreated}
+          className="min-w-20"
         >
-          {isLastFile ? "Save" : "Save & Next"}
+          Send
         </Button>
       </div>
-    </Form>
+    </div>
   );
 };
 

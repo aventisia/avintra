@@ -1,5 +1,8 @@
+import { submitFiles } from "@/features/file-uploader-setup/apis/file-upload-apis";
 import FileUploader from "@/features/file-uploader-setup/components/FileUploader";
+import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
@@ -11,6 +14,8 @@ import {
 } from "@aventisia/ui/dialog";
 import { Form } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
+import { toast } from "@aventisia/ui/sonner";
+import { useEffect, useState } from "react";
 import { FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
@@ -28,6 +33,16 @@ import PersonaBehavior from "./PersonaBehavior";
 const AIPersonaSetupForm = () => {
   const { showFileUploadDialog, setShowFileUploadDialog } =
     useToggleFileUploadDialogStore();
+  const { data: fileList, refetch } = useFetchUploadedFiles("setup");
+  const { filesToUpload, clearFiles } = useFileStore(
+    useShallow((state) => ({
+      filesToUpload: state.filesToUpload,
+      clearFiles: state.clearFiles,
+    })),
+  );
+  const [fileInsertLoading, setFileInsertLoading] = useState(false);
+
+  console.log("fileList", fileList);
 
   const {
     form,
@@ -57,6 +72,33 @@ const AIPersonaSetupForm = () => {
       id: modelId,
     } as AiPersonaSetupDTO);
   }
+
+  useEffect(() => {
+    if (fileList && fileList.data.length > 0) {
+      const setupFormDocuments = fileList.data.map(({ id, name, path }) => {
+        return { id: id ?? "", name, instructions: "", filePath: path ?? "" };
+      });
+      form.setValue("documents", setupFormDocuments);
+    }
+  }, [fileList, form]);
+
+  const handleInsertFiles = async () => {
+    if (filesToUpload.length > 0) {
+      setFileInsertLoading(true);
+      try {
+        await submitFiles(filesToUpload);
+        setShowFileUploadDialog(false);
+        refetch();
+      } catch (error) {
+        console.error("Error fetching data or mutating:", error);
+      }
+      clearFiles();
+      // refetchList();
+      setFileInsertLoading(false);
+    } else {
+      toast.error("Please upload a file before submitting.");
+    }
+  };
 
   return (
     <>
@@ -125,8 +167,22 @@ const AIPersonaSetupForm = () => {
             <DialogTitle>Upload File</DialogTitle>
           </DialogHeader>
           <Separator />
-          <div className="p-4">
+          <div className="p-4 gap-4 flex flex-col">
             <FileUploader side="bottom" />
+            {filesToUpload.length > 0 && (
+              <Button
+                size="xs"
+                type="button"
+                className="self-end w-20"
+                onClick={handleInsertFiles}
+              >
+                {fileInsertLoading ? (
+                  <LoadingSpinner className="h-4 w-4" />
+                ) : (
+                  "Save"
+                )}
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>

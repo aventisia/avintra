@@ -25,7 +25,7 @@ export const useAIPersonaSetupForm = () => {
       documents: null,
       contextMemoryTimeframe: "",
       llm: "",
-      temperature: 0,
+      temperature: 0.7,
       enableAudio: false,
       enableVideo: false,
       enableChat: false,
@@ -49,7 +49,7 @@ export const useAIPersonaSetupForm = () => {
 
   // Function to add a new object to categories
   const addDocument = () => {
-    append({ name: "", instructions: "" });
+    append([]);
   };
 
   // Function to remove an object from categories
@@ -79,7 +79,7 @@ export const useAIPersonaSetupForm = () => {
       documents: setupFormData?.documents ?? null,
       contextMemoryTimeframe: setupFormData?.contextMemoryTimeframe ?? "",
       llm: setupFormData?.llm ?? "",
-      temperature: setupFormData?.temperature ?? 0,
+      temperature: setupFormData?.temperature ?? 0.7,
       enableAudio: setupFormData?.enableAudio ?? false,
       enableVideo: setupFormData?.enableVideo ?? false,
       enableChat: setupFormData?.enableChat ?? false,

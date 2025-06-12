@@ -5,6 +5,7 @@ import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { XCircleIcon } from "@heroicons/react/24/solid";
+import React from "react";
 
 import { FileUploadDto } from "../dtos/file-upload-dto";
 import { useFileDelete } from "../hooks/useFileDelete";
@@ -77,10 +78,10 @@ const FileUploadList = ({
               side === "right" ? "h-[calc(100vh-12rem)]" : "h-[calc(30vh)]",
             )}
           >
-            {files.map((file) => {
+            {files.map((file, idx) => {
               const progress = file.progress;
               return (
-                <>
+                <React.Fragment key={`${file.name}-${idx}`}>
                   <div key={file.name} className="border-b p-3 last:border-b-0">
                     <div className="flex items-center justify-between pb-3">
                       <div>
@@ -116,7 +117,7 @@ const FileUploadList = ({
                       }
                     />
                   </div>
-                </>
+                </React.Fragment>
               );
             })}
           </ScrollArea>
