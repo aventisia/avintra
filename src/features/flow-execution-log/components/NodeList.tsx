@@ -1,5 +1,6 @@
+import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { formatDuration } from "../lib/formatDuration";
+import { formatDuration } from "../lib";
 import { useFlowExecutionLogStore } from "../stores/flow-execution-lof-store";
 import { useShallow } from "zustand/react/shallow";
 import { useFetchExecutionLogs } from "../hooks/useFetchFlowExecutionLogs";
@@ -16,12 +17,14 @@ import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 
 export const NodeList = () => {
   // Get flow execution store state & actions
-  const { selectedExecutionId, setNodeId } = useFlowExecutionLogStore(
-    useShallow((state) => ({
-      selectedExecutionId: state.selectedExecutionId,
-      setNodeId: state.setNodeId,
-    })),
-  );
+  const { selectedNodeId, selectedExecutionId, setNodeId } =
+    useFlowExecutionLogStore(
+      useShallow((state) => ({
+        selectedExecutionId: state.selectedExecutionId,
+        selectedNodeId: state.selectedNodeId,
+        setNodeId: state.setNodeId,
+      })),
+    );
 
   const { data: executions } = useFetchExecutionLogs();
 
@@ -31,28 +34,29 @@ export const NodeList = () => {
   return (
     <div>
       <h6 className="ml-3 py-2 text-sm">Nodes</h6>
-      <Command>
+      <Command key="node">
         <div className="mx-3 mb-2 rounded-lg bg-slate-100">
           <CommandInput
-            className="h-6 text-xs"
+            className="h-10 text-xs"
             placeholder="Search nodes..."
             autoFocus
           />
         </div>
-        <ScrollArea className="h-[calc(100vh-7.5rem)] px-2">
-          <CommandList className="">
-            <CommandEmpty className="h-full">
-              <NoContentMessage
-                className="mt-5"
-                primaryMessage="No Executions found"
-              />
-            </CommandEmpty>
+        <CommandEmpty className="h-full">
+          <NoContentMessage className="mt-5" primaryMessage="No Nodes found" />
+        </CommandEmpty>
+
+        <ScrollArea className="h-[calc(100vh-9.5rem)] px-2">
+          <CommandList key="nodeList" className="">
             {exec.nodes.map((node) => (
               <CommandItem
                 key={node.nodeId}
-                value={node.nodeName}
+                value={`${node.nodeName} ${node.nodeId}`}
                 onSelect={() => setNodeId(node.nodeId)}
-                className="flex cursor-pointer items-center gap-2 rounded-lg p-2"
+                className={cn(
+                  "flex cursor-pointer items-center gap-2 rounded-lg p-2",
+                  node.nodeId == selectedNodeId && "bg-accent",
+                )}
               >
                 {node.isSuccess ? (
                   <CheckCircleIcon className="h-4 w-4 text-green-500" />

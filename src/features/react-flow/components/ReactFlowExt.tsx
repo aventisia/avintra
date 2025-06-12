@@ -36,7 +36,7 @@ export const ReactFlowExt = () => {
     nodes,
     edges,
     panOnDrag,
-    isPublished,
+    // isPublished,
     onNodesChange,
     onEdgesChange,
     onConnect,
@@ -108,9 +108,9 @@ export const ReactFlowExt = () => {
         onEdgesChange={onEdgesChange}
         onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
         onConnect={onConnect}
-        deleteKeyCode={isPublished ? undefined : "Delete"}
-        onNodeContextMenu={isPublished ? undefined : onNodeContextMenu}
-        onEdgeContextMenu={isPublished ? undefined : onEdgeContextMenu}
+        deleteKeyCode={ "Delete"}
+        onNodeContextMenu={ onNodeContextMenu}
+        onEdgeContextMenu={ onEdgeContextMenu}
         // TODO: Toggles Reactflows interactivity - we can use this to lock the flow
         // nodesDraggable={!isLocked}
         // nodesConnectable={!isLocked}
