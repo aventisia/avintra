@@ -14,7 +14,7 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 import { AppLogo } from "./AppLogo";
 import { HeaderActionMenu } from "./header-menu-actions";
-import SearchCommandDialog from "./Search";
+import SearchCommandTrigger from "./Search";
 
 const AppHeader: React.FC = () => {
   // Get global store state and actions
@@ -70,7 +70,7 @@ const AppHeader: React.FC = () => {
         <div className="mx-4 flex items-center gap-1 text-white">
           <ExecuteFlow />
 
-          <SearchCommandDialog />
+          <SearchCommandTrigger />
 
           <StudioPreferences className="mt-0 mlg:mt-4" />
           <FlowComments className="mt-0 mlg:mt-4" />
