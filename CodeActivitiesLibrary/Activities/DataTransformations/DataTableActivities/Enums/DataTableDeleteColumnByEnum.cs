@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
+namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities.Enums
 {
     public enum DataTableDeleteColumnByEnum
     {

@@ -2,6 +2,7 @@
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
@@ -42,15 +43,9 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             var mergeMode = context.GetValue(MergeMode);
 
             // Validate inputs
-            if (firstDataTable == null)
-            {
-                throw new ArgumentException("First Data Table cannot be null.");
-            }
+            if (firstDataTable == null) throw new ArgumentException("First Data Table cannot be null.");
 
-            if (secondDataTable == null)
-            {
-                throw new ArgumentException("Second Data Table cannot be null.");
-            }
+            if (secondDataTable == null) throw new ArgumentException("Second Data Table cannot be null.");
 
             try
             {
@@ -77,10 +72,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 }
 
                 // Copy rows from the second DataTable
-                foreach (DataRow row in secondDataTable.Rows)
-                {
-                    mergedDataTable.ImportRow(row);
-                }
+                foreach (DataRow row in secondDataTable.Rows) mergedDataTable.ImportRow(row);
 
                 // Set outputs
                 context.SetValue(MergedDataTable, mergedDataTable);
@@ -97,12 +89,8 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         {
             // Add columns from the second table that are not in the first table
             foreach (DataColumn column in secondDataTable.Columns)
-            {
                 if (!firstDataTable.Columns.Contains(column.ColumnName))
-                {
                     mergedDataTable.Columns.Add(column.ColumnName, column.DataType);
-                }
-            }
         }
 
         private static void IgnoreExtraColumns(DataTable firstDataTable, DataTable secondDataTable,
@@ -113,12 +101,8 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             {
                 var newRow = mergedDataTable.NewRow();
                 foreach (DataColumn column in firstDataTable.Columns)
-                {
                     if (secondDataTable.Columns.Contains(column.ColumnName))
-                    {
                         newRow[column.ColumnName] = row[column.ColumnName];
-                    }
-                }
 
                 mergedDataTable.Rows.Add(newRow);
             }
@@ -128,24 +112,20 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         {
             // Check for extra columns in the second table
             foreach (DataColumn column in secondDataTable.Columns)
-            {
                 if (!firstDataTable.Columns.Contains(column.ColumnName))
-                {
                     throw new InvalidOperationException(
                         $"Column '{column.ColumnName}' in the second table does not exist in the first table.");
-                }
-            }
         }
 
         public enum DataTableMergeModeEnum
         {
-            [Description("Adds columns from the second table that are not present in the first table.")]
+            [Display(Name = "Add Extra Columns", Description = "Adds columns from the second table that are not present in the first table.")]
             AddExtraColumns = 0,
 
-            [Description("Ignores columns from the second table that are not present in the first table.")]
+            [Display(Name = "Ignore Extra Columns", Description = "Ignores columns from the second table that are not present in the first table.")]
             IgnoreExtraColumns = 1,
 
-            [Description("Throws an error if the second table has columns not present in the first table.")]
+            [Display(Name = "Error On Extra Columns", Description = "Throws an error if the second table has columns not present in the first table.")]
             ErrorOnExtraColumns = 2
         }
     }

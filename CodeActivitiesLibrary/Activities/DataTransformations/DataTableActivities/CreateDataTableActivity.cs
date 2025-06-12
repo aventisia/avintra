@@ -27,6 +27,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
         [DisplayName("Data Table columns either number or comma seperated columns (Optional)")]
         [Description("An optional input data table columns to add in data table.")]
+        [RenderIfCondition(nameof(HasInitialColumns), true)]
         public InArgument<object> Columns { get; set; }
 
 
@@ -37,6 +38,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
         [DisplayName("Data Table rows (Optional)")]
         [Description("An optional input empty rows to add in data table.")]
+        [RenderIfCondition(nameof(HasEmptyRows), true)]
         public InArgument<int> EmptyRows { get; set; }
 
         // ----------------------
@@ -79,7 +81,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                     resultTable = new DataTable();
 
                     if (hasInitialColumns)
-                    {
                         switch (columns)
                         {
                             case string columnNames:
@@ -87,19 +88,14 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                                     // Split the column names by comma and add them
                                     foreach (var colName in columnNames.Split(new[] { ',' },
                                                  StringSplitOptions.RemoveEmptyEntries))
-                                    {
                                         resultTable.Columns.Add(colName.Trim());
-                                    }
 
                                     break;
                                 }
                             case int columnCount:
                                 {
                                     // Add specified number of columns with default names
-                                    for (var i = 1; i <= columnCount; i++)
-                                    {
-                                        resultTable.Columns.Add($"Column{i}");
-                                    }
+                                    for (var i = 1; i <= columnCount; i++) resultTable.Columns.Add($"Column{i}");
 
                                     break;
                                 }
@@ -107,16 +103,11 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                                 throw new ArgumentException(
                                     "Invalid format for Columns input. Use a comma-separated string or an integer.");
                         }
-                    }
 
                     if (hasEmptyRows && emptyRows > 0)
-                    {
                         // Add specified number of empty rows
                         for (var i = 0; i < emptyRows; i++)
-                        {
                             resultTable.Rows.Add(resultTable.NewRow());
-                        }
-                    }
 
                     status += " Created a new empty data table.";
                 }

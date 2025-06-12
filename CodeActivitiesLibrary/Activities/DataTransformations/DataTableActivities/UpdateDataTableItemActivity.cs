@@ -44,25 +44,16 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             var newValue = context.GetValue(NewValue);
 
             // Validate inputs
-            if (dataTable == null)
-            {
-                throw new ArgumentException("Data table cannot be null.");
-            }
+            if (dataTable == null) throw new ArgumentException("Data table cannot be null.");
 
             if (string.IsNullOrWhiteSpace(columnName))
-            {
                 throw new ArgumentException("Column name cannot be null or empty.");
-            }
 
             if (!dataTable.Columns.Contains(columnName))
-            {
                 throw new ArgumentException($"Column '{columnName}' does not exist in the data table.");
-            }
 
             if (rowIndex < 0 || rowIndex >= dataTable.Rows.Count)
-            {
                 throw new IndexOutOfRangeException($"Row index {rowIndex} is out of range.");
-            }
 
             try
             {

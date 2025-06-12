@@ -43,7 +43,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            string status = "Operation completed successfully.";
+            var status = "Operation completed successfully.";
 
             try
             {
@@ -64,10 +64,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 var filteredTable = dataTable.Clone();
 
                 // Copy filtered rows to the new DataTable
-                foreach (DataRow row in filteredRows)
-                {
-                    filteredTable.ImportRow(row);
-                }
+                foreach (var row in filteredRows) filteredTable.ImportRow(row);
 
                 // Set outputs
                 FilteredDataTable.Set(context, filteredTable);

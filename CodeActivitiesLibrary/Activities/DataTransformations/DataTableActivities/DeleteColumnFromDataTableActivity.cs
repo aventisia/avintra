@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.DataTransformations.DataTableActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -38,16 +39,11 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         public InArgument<int> ColumnIndex { get; set; }
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
-        // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            string status = "Operation completed successfully.";
+            var status = "Operation completed successfully.";
 
             try
             {

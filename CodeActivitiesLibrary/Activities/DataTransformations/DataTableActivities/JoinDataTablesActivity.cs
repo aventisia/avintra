@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.DataTransformations.DataTableActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.Collections.Generic;
@@ -34,7 +35,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         public InArgument<string> JoinRules { get; set; }
 
 
-
         [DisplayName("Joined Data Table")]
         [Description("The resulting DataTable after performing the join operation.")]
         public OutArgument<DataTable> JoinedDataTable { get; set; }
@@ -48,20 +48,12 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             var joinRules = context.GetValue(JoinRules);
 
             // Validate inputs
-            if (firstDataTable == null)
-            {
-                throw new ArgumentException("First Data Table cannot be null.");
-            }
+            if (firstDataTable == null) throw new ArgumentException("First Data Table cannot be null.");
 
-            if (secondDataTable == null)
-            {
-                throw new ArgumentException("Second Data Table cannot be null.");
-            }
+            if (secondDataTable == null) throw new ArgumentException("Second Data Table cannot be null.");
 
             if (string.IsNullOrWhiteSpace(joinRules))
-            {
                 throw new ArgumentException("Join Rules cannot be null or empty.");
-            }
 
             try
             {
@@ -109,10 +101,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             var joinedDataTable = CreateJoinedDataTable(firstDataTable, secondDataTable);
 
             // Add rows to the joined DataTable
-            foreach (var row in joinedRows)
-            {
-                joinedDataTable.Rows.Add(row.ItemArray);
-            }
+            foreach (var row in joinedRows) joinedDataTable.Rows.Add(row.ItemArray);
 
             return joinedDataTable;
         }
@@ -122,10 +111,8 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             // Example join rule: "FirstTable.ID = SecondTable.ID"
             var parts = joinRules.Split('=');
             if (parts.Length != 2)
-            {
                 throw new FormatException(
                     "Invalid join rule format. Expected format: 'FirstTable.ColumnName = SecondTable.ColumnName'");
-            }
 
             var firstColumn = parts[0].Trim();
             var secondColumn = parts[1].Trim();
@@ -175,15 +162,11 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
             // Add columns from the first table
             foreach (DataColumn col in firstDataTable.Columns)
-            {
                 joinedDataTable.Columns.Add(col.ColumnName, col.DataType);
-            }
 
             // Add columns from the second table with a prefix to avoid conflicts
             foreach (DataColumn col in secondDataTable.Columns)
-            {
                 joinedDataTable.Columns.Add($"Second_{col.ColumnName}", col.DataType);
-            }
 
             return joinedDataTable;
         }

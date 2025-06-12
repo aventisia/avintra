@@ -38,7 +38,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            string status = "Operation completed successfully.";
+            var status = "Operation completed successfully.";
 
             try
             {

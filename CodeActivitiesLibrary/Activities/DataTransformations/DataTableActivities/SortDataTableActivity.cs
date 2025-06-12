@@ -1,11 +1,11 @@
-﻿using CodeActivitiesLibrary.DataTransformations.VariablesActivities;
+﻿using CodeActivitiesLibrary.DataTransformations.DataTableActivities.Enums;
+using CodeActivitiesLibrary.DataTransformations.VariablesActivities;
 using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
-
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
@@ -28,11 +28,9 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             new InArgument<DataTableSortColumnByEnum>(DataTableSortColumnByEnum.Name);
 
 
-
         [DisplayName("Column Name")]
         [Description("The name of the column to sort by (used when 'Specify Column With' is set to 'Name').")]
         public InArgument<string> ColumnName { get; set; }
-
 
 
         [DisplayName("Column Index")]
@@ -46,7 +44,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [DefaultValue(SortOrderEnum.Ascending)]
         public InArgument<SortOrderEnum> Order { get; set; } =
             new InArgument<SortOrderEnum>(SortOrderEnum.Ascending);
-
 
 
         [DisplayName("Sorted Data Table")]
@@ -63,10 +60,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             var sortOrder = context.GetValue(Order);
 
             // Validate inputs
-            if (dataTable == null)
-            {
-                throw new ArgumentException("Data table cannot be null.");
-            }
+            if (dataTable == null) throw new ArgumentException("Data table cannot be null.");
 
             string sortColumnName = null;
 
@@ -74,23 +68,17 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             {
                 case DataTableSortColumnByEnum.Name:
                     if (string.IsNullOrWhiteSpace(columnName))
-                    {
                         throw new ArgumentException("Column name cannot be null or empty.");
-                    }
 
                     if (!dataTable.Columns.Contains(columnName))
-                    {
                         throw new ArgumentException($"Column '{columnName}' does not exist in the data table.");
-                    }
 
                     sortColumnName = columnName;
                     break;
 
                 case DataTableSortColumnByEnum.Index:
                     if (columnIndex < 0 || columnIndex >= dataTable.Columns.Count)
-                    {
                         throw new IndexOutOfRangeException($"Column index {columnIndex} is out of range.");
-                    }
 
                     sortColumnName = dataTable.Columns[columnIndex].ColumnName;
                     break;
@@ -110,16 +98,10 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                     .Select(row => row.ItemArray)
                     .ToArray();
 
-                if (sortOrder == SortOrderEnum.Descending)
-                {
-                    sortedRows = sortedRows.Reverse().ToArray();
-                }
+                if (sortOrder == SortOrderEnum.Descending) sortedRows = sortedRows.Reverse().ToArray();
 
                 // Add sorted rows to the cloned DataTable
-                foreach (var rowArray in sortedRows)
-                {
-                    sortedDataTable.LoadDataRow(rowArray, true);
-                }
+                foreach (var rowArray in sortedRows) sortedDataTable.LoadDataRow(rowArray, true);
 
                 // Set outputs
                 context.SetValue(SortedDataTable, sortedDataTable);

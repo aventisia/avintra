@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.DataTransformations.DataTableActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.Collections.Generic;
@@ -29,20 +30,17 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
 
         [DisplayName("Column Names To Check")]
-        [Description("List of column names to check for emptiness (required if 'Empty Row Mode' is 'Based on Specific Columns').")]
+        [Description(
+            "List of column names to check for emptiness (required if 'Empty Row Mode' is 'Based on Specific Columns').")]
         [RenderIfCondition(nameof(EmptyRowMode), DataTableEmptyRowModeEnum.SpecificColumns)]
         public InArgument<List<string>> ColumnNamesToCheck { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
 
         // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            string status = "Operation completed successfully.";
+            var status = "Operation completed successfully.";
 
             try
             {
@@ -72,13 +70,11 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
                 // Validate that all specified columns exist in the data table
                 foreach (var colName in columnsToCheck)
-                {
                     if (!dataTable.Columns.Contains(colName))
                         throw new ArgumentException($"Column '{colName}' not found in the data table.");
-                }
 
                 // Loop through rows in reverse to allow safe removal
-                for (int i = dataTable.Rows.Count - 1; i >= 0; i--)
+                for (var i = dataTable.Rows.Count - 1; i >= 0; i--)
                 {
                     var row = dataTable.Rows[i];
 
@@ -101,10 +97,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                             throw new ArgumentOutOfRangeException(nameof(emptyRowMode));
                     }
 
-                    if (isEmpty)
-                    {
-                        dataTable.Rows.RemoveAt(i);
-                    }
+                    if (isEmpty) dataTable.Rows.RemoveAt(i);
                 }
 
                 status = $"Successfully deleted {dataTable.Rows.Count} empty rows.";

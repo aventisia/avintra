@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.DataTransformations.DataTableActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.Collections.Generic;
@@ -133,26 +134,18 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                                     if (matchEntireCellContents)
                                     {
                                         if (matchCase)
-                                        {
                                             matchFound = cellText == textToFind;
-                                        }
                                         else
-                                        {
                                             matchFound = cellText.Equals(textToFind,
                                                 StringComparison.OrdinalIgnoreCase);
-                                        }
                                     }
                                     else
                                     {
                                         if (matchCase)
-                                        {
                                             matchFound = cellText.Contains(textToFind);
-                                        }
                                         else
-                                        {
                                             matchFound = cellText.IndexOf(textToFind,
                                                 StringComparison.OrdinalIgnoreCase) >= 0;
-                                        }
                                     }
                                 }
 
@@ -306,9 +299,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
                 // Perform replacement if required
                 if (searchMode == DataTableFindOrReplaceModeEnum.FindAndReplace && matchedRows.Any())
-                {
                     foreach (var row in matchedRows)
-                    {
                         foreach (DataColumn column in dataTable.Columns)
                         {
                             var cellValue = row[column];
@@ -365,8 +356,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                                 }
                             }
                         }
-                    }
-                }
 
                 status = $"Processed {matchedRows.Count} rows.";
             }

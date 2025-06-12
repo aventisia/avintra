@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
+namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities.Enums
 {
     public enum DataTableEmptyRowModeEnum
     {
@@ -10,7 +10,8 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [Display(Name = "Any Cell Empty", Description = "Deletes rows where any specified cell is empty.")]
         AnyEmpty = 1,
 
-        [Display(Name = "Based on Specific Columns", Description = "Deletes rows based on emptiness in specific columns.")]
+        [Display(Name = "Based on Specific Columns",
+            Description = "Deletes rows based on emptiness in specific columns.")]
         SpecificColumns = 2
     }
 }

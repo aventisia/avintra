@@ -6,5 +6,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         primaryCategory: "Data Transformations",
         label: "Data Table",
         description: "Manipulate and transform data tables.")]
-    internal sealed class _DataTableCategoryMetaData { }
+    internal sealed class _DataTableCategoryMetaData
+    {
+    }
 }

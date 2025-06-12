@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.DataTransformations.DataTableActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -38,11 +39,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         public InArgument<int> RowIndex { get; set; }
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
-        // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
@@ -76,10 +72,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                                     $"Row index must be between 0 and {dataTable.Rows.Count}.");
 
                             var newRow = dataTable.NewRow();
-                            for (var i = 0; i < rowValues.Length; i++)
-                            {
-                                newRow[i] = rowValues[i];
-                            }
+                            for (var i = 0; i < rowValues.Length; i++) newRow[i] = rowValues[i];
 
                             dataTable.Rows.InsertAt(newRow, rowIndex);
                             break;
@@ -88,10 +81,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                     case DataTableInsertRowLocationEnum.EndOfDataTable:
                         {
                             var newRow = dataTable.NewRow();
-                            for (var i = 0; i < rowValues.Length; i++)
-                            {
-                                newRow[i] = rowValues[i];
-                            }
+                            for (var i = 0; i < rowValues.Length; i++) newRow[i] = rowValues[i];
 
                             dataTable.Rows.Add(newRow);
                             break;

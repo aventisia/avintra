@@ -21,14 +21,12 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
         // ----------------------
         // Output Arguments
-        // ----------------------
-
-        // ----------------------
+        // ----------------------        // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            string status = "Operation completed successfully.";
+            var status = "Operation completed successfully.";
 
             try
             {

@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.DataTransformations.DataTableActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.Collections.Generic;
@@ -33,16 +34,13 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [RenderIfCondition(nameof(CompareMode), DataTableColumnCompareModeEnum.SelectedColumns)]
         public InArgument<List<string>> ColumnNamesToCompare { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
 
         // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            string status = "Operation completed successfully.";
+            var status = "Operation completed successfully.";
 
             try
             {
@@ -72,10 +70,8 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
                 // Validate all column names exist in the data table
                 foreach (var colName in columnsToCompare)
-                {
                     if (!dataTable.Columns.Contains(colName))
                         throw new ArgumentException($"Column '{colName}' not found in data table.");
-                }
 
                 // Remove duplicate rows
                 var seen = new HashSet<string>();
@@ -91,10 +87,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 // Clear original table and add back unique rows
                 dataTable.Rows.Clear();
 
-                foreach (var row in uniqueRows)
-                {
-                    dataTable.ImportRow(row);
-                }
+                foreach (var row in uniqueRows) dataTable.ImportRow(row);
             }
             catch (Exception ex)
             {
