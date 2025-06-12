@@ -1,24 +1,23 @@
 namespace AspNetToolkit.Services;
 
 /// <summary>
-/// Service interface for extracting structured data using Large Language Models (LLMs).
+/// Service for extracting text and data from documents using a language model (LLM).
 /// </summary>
 public interface ILLMDataExtractionService
 {
     /// <summary>
-    /// Extracts data from a document by first retrieving its textual content and then sending it to an LLM
-    /// along with a user-provided prompt for processing (e.g., summarization, Q&A, extraction).
+    /// Sends text to an LLM with a prompt and returns the result as plain text.
     /// </summary>
-    /// <param name="prompt">The instruction or query to guide the LLM’s response.</param>
-    /// <param name="llmModel">The identifier for the LLM model to use.</param>
-    /// <returns>A service response containing the extracted or generated result from the LLM.</returns>
-    Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel);
+    /// <param name="prompt">The prompt or question for the LLM.</param>
+    /// <param name="llmModel">The LLM model to use.</param>
+    /// <param name="modelTemperature">Controls how focused or creative the response is (0–1).</param>
+    /// <returns>The LLM’s response as text.</returns>
+    Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature);
 
     /// <summary>
-    /// Retrieves the textual content from a file at the specified URL.
-    /// This method can be used to extract raw text from documents like PDFs before sending them to the LLM for further processing.
+    /// Extracts plain text from a file at the given URL.
     /// </summary>
-    /// <param name="fileUrl">The URL of the file from which the text will be extracted.</param>
-    /// <returns>A string containing the extracted text from the file.</returns>
+    /// <param name="fileUrl">The URL of the file.</param>
+    /// <returns>The extracted text.</returns>
     Task<string> GetFileTextAsync(string fileUrl);
 }

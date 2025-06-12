@@ -12,7 +12,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
     }
 
     // Extracts structured data from a document by retrieving its text and passing it to an LLM for processing.
-    public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel)
+    public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature)
     {
         var serviceResponse = new ServiceResponse<string>()
         {
@@ -63,8 +63,9 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                     var requestDto = new
                     {
                         stream = false,
+                        temperature = modelTemperature,
                         prompt = prompt,
-                        model = llmModelMapper.GetValueOrDefault(llmModel)
+                        model = llmModelMapper.GetValueOrDefault(llmModel),
                     };
 
                     var jsonRequest = System.Text.Json.JsonSerializer.Serialize(requestDto);
