@@ -55,7 +55,7 @@ public class MLModelController : BaseApiController
   }
 
   //Get a ML model using identifier
-  [HttpPost("{mlModelId}")]
+  [HttpPost("publish/{mlModelId}")]
   public async Task<ActionResult<ServiceResponse<bool>>> PublishMLModel(Guid mlModelId)
   {
     return ResultHelper(await _mlModelService.PublishMLModelAsync(mlModelId));
