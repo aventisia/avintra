@@ -13,6 +13,11 @@ public class UploadDataDto
     public ExtractedDataType Type { get; set; }
 
     /// <summary>
+    /// Gets or sets the stage of the document's workflow.
+    /// </summary>
+    public DocumentStageTypesEnum Stage { get; set; }
+
+    /// <summary>
     /// Gets or sets the ML model record's primary key to which this record is associated.
     /// </summary>/
     public Guid MLModelId { get; set; }

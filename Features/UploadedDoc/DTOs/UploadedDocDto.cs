@@ -2,7 +2,7 @@ namespace MLModelBuilderAPIs.DTOs;
 
 public class UploadedDocDto
 {
-    
+
     /// <summary>
     /// Gets or sets the primary key for the Uploaded doc.
     /// </summary>
@@ -33,6 +33,11 @@ public class UploadedDocDto
     /// Gets or sets the type of data which will be extracted from uploaded file. 
     /// </summary>
     public ExtractedDataType Type { get; set; }
+
+    /// <summary>
+    /// Gets or sets the stage of the document's workflow.
+    /// </summary>
+    public DocumentStageTypesEnum Stage { get; set; }
 
     /// <summary>
     /// Gets or sets the ML model record's primary key to which this record is associated.
