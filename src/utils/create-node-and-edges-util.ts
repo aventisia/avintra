@@ -8,6 +8,7 @@ import { createFlowEndNode } from "./create-nodes/create-flow-end-node";
 import { createForLoopNode } from "./create-nodes/create-for-loop-node";
 import { createIfElseNode } from "./create-nodes/create-if-else-node";
 import { createConditionalNode } from "./create-nodes/create-conditional-node";
+import { createAINode } from "./create-nodes/create-ai-node";
 
 /**
  * Creates nodes and edges based on the provided node data and source node ID.
@@ -45,6 +46,9 @@ const createNodesAndEdgesUtil = (
       break;
     case "flowEndNode":
       nodesAndEdgesObj = createFlowEndNode(sourceNode.id);
+      break;
+    case "aiNode":
+      nodesAndEdgesObj = createAINode(newNodeData, sourceNode);
       break;
     default:
       return nodesAndEdgesObj;
