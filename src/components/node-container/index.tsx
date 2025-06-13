@@ -35,12 +35,7 @@ export const NodeContainer = ({
           nodeData.type == "conditionalNode" && "bg-indigo-100",
         )}
       >
-        <GripVertical
-          className={cn(
-            "h-5 w-5 text-slate-300",
-            nodeData.type == "aiNode" && "text-white",
-          )}
-        />
+        <GripVertical className={cn("h-5 w-5 text-slate-300")} />
       </div>
       <OpenNodeConfig {...{ nodeData, nodeId }}>
         <div
