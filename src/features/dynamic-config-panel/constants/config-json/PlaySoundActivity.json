@@ -32,32 +32,32 @@
       {
         "label": "Default",
         "value": "Default",
-        "description": ""
+        "description": "Default system sound."
       },
       {
         "label": "Beep",
         "value": "Beep",
-        "description": ""
+        "description": "Standard beep sound."
       },
       {
         "label": "Asterisk",
         "value": "Asterisk",
-        "description": ""
+        "description": "Asterisk sound (used for warnings)."
       },
       {
         "label": "Exclamation",
         "value": "Exclamation",
-        "description": ""
+        "description": "Exclamation sound (used for errors)."
       },
       {
         "label": "Question",
         "value": "Question",
-        "description": ""
+        "description": "Question sound (used for prompts)."
       },
       {
-        "label": "Hand",
+        "label": "Critical Alert (Hand)",
         "value": "Hand",
-        "description": ""
+        "description": "Hand sound (used for critical alerts)."
       }
     ],
     "renderIf": {

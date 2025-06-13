@@ -20,11 +20,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "OResultOutput",
-    "label": "OResultOutput",
+    "name": "ResultOutput",
+    "label": "ResultOutput",
     "description": "The resulting text after appending the new line.",
     "defaultValue": {
-      "value": "OResultOutput",
+      "value": "ResultOutput",
       "enabled": true
     },
     "required": false

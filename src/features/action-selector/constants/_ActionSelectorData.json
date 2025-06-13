@@ -1269,6 +1269,15 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WaitForProcessActivity",
+            "label": "Wait For Process",
+            "description": "Waits for a specific process to start or stop.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
           }
         ]
       },
@@ -1380,9 +1389,36 @@
           },
           {
             "type": "activityNode",
+            "name": "MoveMouseToImageActivity",
+            "label": "Move Mouse to Image",
+            "description": "Moves the mouse cursor to the center of a specified image on the screen using template matching.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
             "name": "PressReleaseKeyActivity",
             "label": "Press/Release Key",
-            "description": "Presses (and holds) or releases one or more modifier keys (Alt, Control, or Shift).",
+            "description": "Presses (and holds) or releases one or more modifier keys (Alt, Control, Shift, Win). Supports combinations like Ctrl+Alt.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SendKeysActivity",
+            "label": "Send Keys",
+            "description": "Sends keys to the specified target (foreground window, UI element, window handle, or title/class).",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SendMouseClickActivity",
+            "label": "Send Mouse Click",
+            "description": "Sends a mouse click event to the specified location.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1400,7 +1436,16 @@
             "type": "activityNode",
             "name": "WaitForMouseActivity",
             "label": "Wait for Mouse",
-            "description": "Suspends the execution of the flow until the mouse pointer changes, usually to or from the 'wait cursor' or hourglass.",
+            "description": "Suspends the execution of the flow until the mouse pointer changes to or from the specified cursor.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WaitForShortcutKeyActivity",
+            "label": "Wait for Shortcut Key",
+            "description": "Pauses the flow run until a specific shortcut key is pressed.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2101,7 +2146,7 @@
             "type": "activityNode",
             "name": "AttachToRunningWordActivity",
             "label": "Attach to Running Word",
-            "description": "Attach to a Word document that's already open.",
+            "description": "Attaches to a Word document that's already open.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2110,14 +2155,14 @@
             "type": "activityNode",
             "name": "CloseWordActivity",
             "label": "Close Word",
-            "description": "Close a Word instance.",
+            "description": "Closes a Word instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
           },
           {
             "type": "activityNode",
-            "name": "FindAndReplaceWordsInWordDocumentActivity",
+            "name": "FindAndReplaceWordsActivity",
             "label": "Find and Replace Words in Word Document",
             "description": "Finds text and replaces it with another in the active document of a Word instance.",
             "docsLink": "https://docs.aventisia.com",
@@ -2128,7 +2173,16 @@
             "type": "activityNode",
             "name": "InsertImageInWordDocumentActivity",
             "label": "Insert Image in Word Document",
-            "description": "Insert an image to a Word file.",
+            "description": "Inserts an image into a Word file.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "LaunchWordActivity",
+            "label": "Launch Word",
+            "description": "Launches a new Word instance or opens a Word document.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2155,7 +2209,7 @@
             "type": "activityNode",
             "name": "WriteToWordDocumentActivity",
             "label": "Write to Word Document",
-            "description": "Write or append text to a Word file.",
+            "description": "Writes or appends text to a Word file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2411,15 +2465,6 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "InvokeWebServiceActivity",
-            "label": "Invoke Web Service",
-            "description": "Invokes a web service (REST or SOAP) and returns the response text.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
           }
         ]
       },
@@ -2506,7 +2551,7 @@
             "type": "activityNode",
             "name": "ListFtpDirectoryActivity",
             "label": "List FTP Directory",
-            "description": "Retrieves the subdirectories and files contained in the current directory of an FTP connection.",
+            "description": "Retrieves subdirectories and files in the current directory of an FTP connection.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2524,7 +2569,7 @@
             "type": "activityNode",
             "name": "OpenSecureFtpConnectionActivity",
             "label": "Open Secure FTP Connection",
-            "description": "Establishes a secure connection to an FTP server using SSL/TLS.",
+            "description": "Establishes a secure connection to an FTP server using SSL/TLS or SSH.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2542,7 +2587,7 @@
             "type": "activityNode",
             "name": "SynchronizeDirectoriesActivity",
             "label": "Synchronize Directories",
-            "description": "Synchronizes the files and subdirectories of a given Folder with a given remote FTP directory.",
+            "description": "Synchronizes the local directory with a remote FTP directory.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2560,7 +2605,7 @@
             "type": "activityNode",
             "name": "UploadFoldersToFtpActivity",
             "label": "Upload Folder(s) to FTP",
-            "description": "Uploads one or more folders to an FTP server.",
+            "description": "Uploads one or more local folders to a remote FTP/FTPS server.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2594,9 +2639,18 @@
           },
           {
             "type": "activityNode",
+            "name": "RetrieveExchangeEmailMessagesActivity",
+            "label": "Retrieve Exchange Email Messages",
+            "description": "Retrieves email messages from the specified Exchange server.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
             "name": "SendExchangeEmailMessageActivity",
             "label": "Send Exchange Email Message",
-            "description": "Create and send a new email message.",
+            "description": "Creates and sends a new email message using an Exchange connection.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"

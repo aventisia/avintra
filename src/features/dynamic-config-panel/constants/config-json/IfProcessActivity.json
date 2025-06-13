@@ -30,59 +30,104 @@
     "required": true,
     "selectOptions": [
       {
-        "label": "AggregatorHost",
+        "label": "Aggregator Host",
         "value": "AggregatorHost",
-        "description": ""
+        "description": "Aggregator Host service."
       },
       {
-        "label": "ApMsgFwd",
+        "label": "Application Message Forwarder",
         "value": "ApMsgFwd",
-        "description": ""
+        "description": "Forwards application messages."
       },
       {
-        "label": "ApntEx",
+        "label": "AP Notification Executor",
         "value": "ApntEx",
-        "description": ""
+        "description": "Executes AP notifications."
       },
       {
-        "label": "Apoint",
+        "label": "Apoint Service",
         "value": "Apoint",
-        "description": ""
+        "description": "Apoint background service."
       },
       {
-        "label": "App",
+        "label": "Generic Application",
         "value": "App",
-        "description": ""
+        "description": "Standard application process."
       },
       {
-        "label": "ApRemote",
+        "label": "Remote AP Service",
         "value": "ApRemote",
-        "description": ""
+        "description": "Remote access AP service."
       },
       {
-        "label": "Audiodg",
+        "label": "Windows Audio Device Graph Isolation",
         "value": "Audiodg",
-        "description": ""
+        "description": "Manages audio isolation."
       },
       {
-        "label": "Chrome",
+        "label": "Google Chrome Browser",
         "value": "Chrome",
-        "description": ""
+        "description": "Google Chrome browser instance."
       },
       {
-        "label": "CompPkgSrv",
-        "value": "CompPkgSrv",
-        "description": ""
-      },
-      {
-        "label": "Conhost",
-        "value": "Conhost",
-        "description": ""
-      },
-      {
-        "label": "CopilotLanguageServer",
+        "label": "Copilot Language Server",
         "value": "CopilotLanguageServer",
-        "description": ""
+        "description": "Language server for Copilot integration."
+      },
+      {
+        "label": "Client/Server Runtime Subsystem",
+        "value": "Csrss",
+        "description": "Core Windows subsystem process."
+      },
+      {
+        "label": "Input Method Editor",
+        "value": "Ctfmon",
+        "description": "IME support for input methods."
+      },
+      {
+        "label": "Device Association Service Host",
+        "value": "DasHost",
+        "description": "Handles device associations."
+      },
+      {
+        "label": "Visual Studio Development Environment",
+        "value": "Devenv",
+        "description": "Visual Studio IDE process."
+      },
+      {
+        "label": "COM Surrogate",
+        "value": "Dllhost",
+        "description": "Runs COM objects outside of host process."
+      },
+      {
+        "label": "File Co-Authoring Service",
+        "value": "FileCoAuth",
+        "description": "Supports real-time document co-editing."
+      },
+      {
+        "label": "Font Driver Host",
+        "value": "Fontdrvhost",
+        "description": "Manages font drivers."
+      },
+      {
+        "label": "Human Interface Device Monitor",
+        "value": "HidMonitorSvc",
+        "description": "Monitors HID devices."
+      },
+      {
+        "label": "Intel Bluetooth Service",
+        "value": "IbtSiva",
+        "description": "Intel Bluetooth support service."
+      },
+      {
+        "label": "Idle Process",
+        "value": "Idle",
+        "description": "Represents idle CPU time."
+      },
+      {
+        "label": "Intel Content Protection Service",
+        "value": "IntelCpHDCPSvc",
+        "description": "Manages Intel HDCP content protection."
       }
     ]
   },

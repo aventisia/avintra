@@ -2,11 +2,29 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "FtpServerUrl",
-    "label": "FtpServerUrl",
-    "description": "The FTP server URL (e.g., ftp://example.com).",
+    "name": "Host",
+    "label": "Host",
+    "description": "The FTP server URL (e.g., ftp.example.com).",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Port",
+    "label": "Port",
+    "description": "The port number for the FTP connection (default is21).",
+    "defaultValue": 21,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "ActiveMode",
+    "label": "Active Mode",
+    "description": "If true, uses active mode for FTP connection.",
+    "defaultValue": "",
+    "required": false
   },
   {
     "direction": "Input",
@@ -29,11 +47,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
-    "description": "Returns the connection ID or token for the opened FTP connection.",
+    "name": "FtpConnection",
+    "label": "FTP Connection",
+    "description": "The connection object for the opened FTP connection.",
     "defaultValue": {
-      "value": "Result",
+      "value": "FtpConnection",
       "enabled": true
     },
     "required": false

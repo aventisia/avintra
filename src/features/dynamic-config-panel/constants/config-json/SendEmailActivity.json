@@ -181,17 +181,5 @@
     "description": "Connection timeout in seconds (default is 30).",
     "defaultValue": 30,
     "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "IsEmailSent",
-    "label": "Is Email Sent",
-    "description": "Indicates whether the email was sent successfully.",
-    "defaultValue": {
-      "value": "IsEmailSent",
-      "enabled": true
-    },
-    "required": false
   }
 ]

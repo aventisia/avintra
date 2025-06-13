@@ -20,22 +20,22 @@
       {
         "label": "Uppercase",
         "value": "Uppercase",
-        "description": ""
+        "description": "Converts text to all uppercase letters."
       },
       {
         "label": "Lowercase",
         "value": "Lowercase",
-        "description": ""
+        "description": "Converts text to all lowercase letters."
       },
       {
-        "label": "TitleCase",
+        "label": "Title Case",
         "value": "TitleCase",
-        "description": ""
+        "description": "Converts text to title case (first letter of each word capitalized)."
       },
       {
-        "label": "SentenceCase",
+        "label": "Sentence Case",
         "value": "SentenceCase",
-        "description": ""
+        "description": "Converts text to sentence case (first letter capitalized, rest lowercase)."
       }
     ]
   },

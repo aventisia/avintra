@@ -1,20 +1,68 @@
 [
   {
     "direction": "Input",
-    "type": "text",
-    "name": "Key",
-    "label": "Key",
-    "description": "The key to press or release (e.g., \u0027Alt\u0027, \u0027Control\u0027, \u0027Shift\u0027).",
+    "type": "select",
+    "name": "ActionToPerform",
+    "label": "Action To Perform",
+    "description": "Select whether to press or release the keys.",
     "defaultValue": "",
-    "required": true
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Press",
+        "value": "Press",
+        "description": "Presses and holds the selected key(s)."
+      },
+      {
+        "label": "Release",
+        "value": "Release",
+        "description": "Releases the selected key(s)."
+      }
+    ]
   },
   {
     "direction": "Input",
     "type": "switch",
-    "name": "Press",
-    "label": "Press",
-    "description": "Whether to press (true) or release (false) the key.",
+    "name": "UseControl",
+    "label": "Control",
+    "description": "Toggle to include the Control key in the action.",
     "defaultValue": "",
-    "required": true
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "UseAlt",
+    "label": "Alt",
+    "description": "Toggle to include the Alt key in the action.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "UseShift",
+    "label": "Shift",
+    "description": "Toggle to include the Shift key in the action.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "UseWin",
+    "label": "Win",
+    "description": "Toggle to include the Windows key in the action.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WaitBeforeReleasing",
+    "label": "Wait Before Releasing (ms)",
+    "description": "Optional delay in milliseconds before releasing the key (used when pressing only).",
+    "defaultValue": 0,
+    "required": false
   }
 ]

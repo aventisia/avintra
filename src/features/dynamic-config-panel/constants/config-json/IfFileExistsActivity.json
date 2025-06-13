@@ -11,12 +11,12 @@
       {
         "label": "Exists",
         "value": "Exists",
-        "description": ""
+        "description": "Indicates that the file should exist."
       },
       {
-        "label": "DoesntExist",
+        "label": "Doesn\u0027t Exist",
         "value": "DoesntExist",
-        "description": ""
+        "description": "Indicates that the file should not exist."
       }
     ]
   },

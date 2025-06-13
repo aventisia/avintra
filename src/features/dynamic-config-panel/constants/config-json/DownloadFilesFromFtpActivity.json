@@ -2,28 +2,109 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ConnectionId",
-    "label": "ConnectionId",
-    "description": "The connection ID or token for the FTP connection.",
+    "name": "FtpConnection",
+    "label": "FTP Connection",
+    "description": "The FTP connection object.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
+    "type": "switch",
+    "name": "DownloadMultipleFiles",
+    "label": "Download Multiple Files",
+    "description": "Whether to download a single file or multiple files.",
+    "defaultValue": false,
+    "required": false
+  },
+  {
+    "direction": "Input",
     "type": "text",
-    "name": "FilesToDownload",
-    "label": "FilesToDownload",
-    "description": "The list of file names to download.",
+    "name": "FileName",
+    "label": "File Name",
+    "description": "The name of the file to download.",
     "defaultValue": "",
-    "required": true
+    "required": true,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "DownloadMultipleFiles",
+          "equals": false
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FileNames",
+    "label": "File Name List",
+    "description": "The names of the file to download.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "DownloadMultipleFiles",
+          "equals": true
+        }
+      ]
+    }
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "LocalDirectory",
-    "label": "LocalDirectory",
+    "label": "Local Directory",
     "description": "The local directory to save the downloaded files.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "TransferType",
+    "label": "Transfer Type",
+    "description": "The transfer type to use (ASCII or Binary).",
+    "defaultValue": "Binary",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "ASCII",
+        "value": "ASCII",
+        "description": "ASCII transfer type."
+      },
+      {
+        "label": "Binary",
+        "value": "Binary",
+        "description": "Binary transfer type."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "IfFileExists",
+    "label": "If File Exists",
+    "description": "The operation to perform if the file already exists locally.",
+    "defaultValue": "Overwrite",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Overwrite",
+        "value": "Overwrite",
+        "description": "Overwrite the file if it exists."
+      },
+      {
+        "label": "Don\u0027t Download",
+        "value": "DontDownload",
+        "description": "Don\u0027t download the file if it exists."
+      },
+      {
+        "label": "Download with Unique Name",
+        "value": "DownloadWithUniqueName",
+        "description": "Download the file with a unique name if it exists."
+      }
+    ]
   }
 ]

@@ -101,12 +101,84 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "select",
     "name": "Language",
     "label": "Language",
     "description": "The language of the text. Optional, but can improve recognition accuracy.",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "English",
+        "value": "English",
+        "description": "English language."
+      },
+      {
+        "label": "Chinese (Simplified)",
+        "value": "ChineseSimplified",
+        "description": "Simplified Chinese language."
+      },
+      {
+        "label": "Spanish",
+        "value": "Spanish",
+        "description": "Spanish language (Generic)."
+      },
+      {
+        "label": "Spanish (Mexico)",
+        "value": "SpanishMexico",
+        "description": "Spanish language as spoken in Mexico."
+      },
+      {
+        "label": "Portuguese",
+        "value": "Portuguese",
+        "description": "Portuguese language (Generic)."
+      },
+      {
+        "label": "French",
+        "value": "French",
+        "description": "French language."
+      },
+      {
+        "label": "German",
+        "value": "German",
+        "description": "German language."
+      },
+      {
+        "label": "Italian",
+        "value": "Italian",
+        "description": "Italian language."
+      },
+      {
+        "label": "Japanese",
+        "value": "Japanese",
+        "description": "Japanese language."
+      },
+      {
+        "label": "Dutch",
+        "value": "Dutch",
+        "description": "Dutch language."
+      },
+      {
+        "label": "Korean",
+        "value": "Korean",
+        "description": "Korean language."
+      },
+      {
+        "label": "Swedish",
+        "value": "Swedish",
+        "description": "Swedish language."
+      },
+      {
+        "label": "Turkish",
+        "value": "Turkish",
+        "description": "Turkish language."
+      },
+      {
+        "label": "Hindi",
+        "value": "Hindi",
+        "description": "Hindi language."
+      }
+    ]
   },
   {
     "direction": "Output",

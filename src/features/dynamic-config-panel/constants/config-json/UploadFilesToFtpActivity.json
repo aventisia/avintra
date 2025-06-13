@@ -2,17 +2,17 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ConnectionId",
-    "label": "ConnectionId",
-    "description": "The connection ID or token for the FTP connection.",
+    "name": "FtpConnection",
+    "label": "FTP Connection",
+    "description": "The FtpClient object representing an open connection to an FTP server.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "FilesToUpload",
-    "label": "FilesToUpload",
+    "name": "LocalFiles",
+    "label": "Local Files",
     "description": "The list of local file paths to upload.",
     "defaultValue": "",
     "required": true
@@ -21,9 +21,87 @@
     "direction": "Input",
     "type": "text",
     "name": "RemoteDirectory",
-    "label": "RemoteDirectory",
-    "description": "The remote directory on the FTP server.",
+    "label": "Remote Directory",
+    "description": "The remote directory where files should be uploaded.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "OverwriteMode",
+    "label": "Overwrite Mode",
+    "description": "Specifies when to overwrite files on the server.",
+    "defaultValue": "IfNewerOrSizeDifferent",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Always",
+        "value": "Always",
+        "description": "Always overwrite files."
+      },
+      {
+        "label": "Never",
+        "value": "Never",
+        "description": "Never overwrite files."
+      },
+      {
+        "label": "If newer",
+        "value": "IfNewer",
+        "description": "Overwrite if remote file is newer."
+      },
+      {
+        "label": "If size different",
+        "value": "IfSizeDifferent",
+        "description": "Overwrite if file sizes differ."
+      },
+      {
+        "label": "If newer or size different",
+        "value": "IfNewerOrSizeDifferent",
+        "description": "Overwrite if remote is newer or size differs."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "IncludeSubDirectories",
+    "label": "Include Subdirectories",
+    "description": "If true, includes subdirectories when uploading multiple files.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutSeconds",
+    "label": "Timeout Seconds",
+    "description": "Maximum time in seconds to wait before failing due to timeout.",
+    "defaultValue": 30,
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "UploadedFilesCount",
+    "label": "Uploaded Files Count",
+    "description": "Returns the number of files successfully uploaded.",
+    "defaultValue": {
+      "value": "UploadedFilesCount",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "SkippedFiles",
+    "label": "Skipped Files",
+    "description": "Returns the list of files that were skipped during upload.",
+    "defaultValue": {
+      "value": "SkippedFiles",
+      "enabled": true
+    },
+    "required": false
   }
 ]

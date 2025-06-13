@@ -27,14 +27,14 @@
     "required": false,
     "selectOptions": [
       {
-        "label": "SingleDate",
+        "label": "Single Date",
         "value": "SingleDate",
-        "description": ""
+        "description": "Allows selection of a single date."
       },
       {
-        "label": "DateRange",
+        "label": "Date Range",
         "value": "DateRange",
-        "description": ""
+        "description": "Allows selection of a start and end date."
       }
     ]
   },
@@ -48,14 +48,14 @@
     "required": false,
     "selectOptions": [
       {
-        "label": "DateOnly",
+        "label": "Date Only",
         "value": "DateOnly",
-        "description": ""
+        "description": "Prompts the user to select a date only."
       },
       {
-        "label": "DateAndTime",
+        "label": "Date and Time",
         "value": "DateAndTime",
-        "description": ""
+        "description": "Prompts the user to select both date and time."
       }
     ]
   },

@@ -37,12 +37,29 @@
   },
   {
     "direction": "Input",
+    "type": "switch",
+    "name": "UseCustomActionNamespace",
+    "label": "Use Custom Action Namespace",
+    "description": "Enable this if the service requires a specific namespace for the SOAP action.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
     "type": "text",
     "name": "ActionNamespace",
     "label": "Action Namespace",
     "description": "Optional namespace for the action (if required by the service).",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "UseCustomActionNamespace",
+          "equals": true
+        }
+      ]
+    }
   },
   {
     "direction": "Output",

@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ConnectionId",
-    "label": "ConnectionId",
-    "description": "The connection ID or token for the FTP connection.",
+    "name": "FtpConnection",
+    "label": "FTP Connection",
+    "description": "The FtpClient object representing an open connection to an FTP server.",
     "defaultValue": "",
     "required": true
   },
@@ -12,8 +12,8 @@
     "direction": "Input",
     "type": "text",
     "name": "OldFileName",
-    "label": "OldFileName",
-    "description": "The old file name.",
+    "label": "Old File Name",
+    "description": "The original name of the file to be renamed.",
     "defaultValue": "",
     "required": true
   },
@@ -21,9 +21,30 @@
     "direction": "Input",
     "type": "text",
     "name": "NewFileName",
-    "label": "NewFileName",
-    "description": "The new file name.",
+    "label": "New File Name",
+    "description": "The new name for the file.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutSeconds",
+    "label": "Timeout Seconds",
+    "description": "Maximum time in seconds to wait before failing due to timeout.",
+    "defaultValue": 30,
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Success",
+    "label": "Success",
+    "description": "Returns true if the file was successfully renamed.",
+    "defaultValue": {
+      "value": "Success",
+      "enabled": true
+    },
+    "required": false
   }
 ]

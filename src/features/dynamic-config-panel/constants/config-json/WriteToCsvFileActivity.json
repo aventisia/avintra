@@ -27,34 +27,34 @@
     "required": false,
     "selectOptions": [
       {
-        "label": "SystemDefault",
+        "label": "System Default",
         "value": "SystemDefault",
-        "description": ""
+        "description": "Uses the system\u0027s default encoding."
       },
       {
-        "label": "UTF8",
+        "label": "UTF-8",
         "value": "UTF8",
-        "description": ""
+        "description": "UTF-8 encoding with byte order mark."
       },
       {
         "label": "Unicode",
         "value": "Unicode",
-        "description": ""
+        "description": "UTF-16 encoding (little-endian)."
       },
       {
-        "label": "BigEndianUnicode",
+        "label": "Unicode (big-endian)",
         "value": "BigEndianUnicode",
-        "description": ""
+        "description": "UTF-16 encoding (big-endian)."
       },
       {
-        "label": "UTF8NoBOM",
+        "label": "UTF-8 (no byte order mark)",
         "value": "UTF8NoBOM",
-        "description": ""
+        "description": "UTF-8 encoding without byte order mark."
       },
       {
         "label": "ASCII",
         "value": "ASCII",
-        "description": ""
+        "description": "7-bit ASCII encoding."
       }
     ]
   },
@@ -96,17 +96,17 @@
       {
         "label": "Comma",
         "value": "Comma",
-        "description": ""
+        "description": "Uses a comma (,) as the separator."
       },
       {
         "label": "Tab",
         "value": "Tab",
-        "description": ""
+        "description": "Uses a tab character as the separator."
       },
       {
         "label": "Semicolon",
         "value": "Semicolon",
-        "description": ""
+        "description": "Uses a semicolon (;) as the separator."
       }
     ],
     "renderIf": {
@@ -128,14 +128,14 @@
     "required": false,
     "selectOptions": [
       {
-        "label": "Overwrite",
+        "label": "Overwrite Existing Content",
         "value": "Overwrite",
-        "description": ""
+        "description": "Overwrites the existing content of the file."
       },
       {
-        "label": "Append",
+        "label": "Append Content",
         "value": "Append",
-        "description": ""
+        "description": "Appends content to the end of the existing file."
       }
     ]
   }

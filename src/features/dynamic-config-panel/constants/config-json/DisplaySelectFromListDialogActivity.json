@@ -4,7 +4,7 @@
     "type": "text",
     "name": "DialogTitle",
     "label": "Dialog Title",
-    "description": "",
+    "description": "The title text displayed at the top of the dialog window.",
     "defaultValue": "",
     "required": false
   },
@@ -13,7 +13,7 @@
     "type": "text",
     "name": "DialogMessage",
     "label": "Dialog Message",
-    "description": "",
+    "description": "The message or prompt shown inside the dialog to guide the user.",
     "defaultValue": "",
     "required": false
   },
@@ -22,7 +22,7 @@
     "type": "text",
     "name": "ListToChooseFrom",
     "label": "List to Choose From",
-    "description": "",
+    "description": "A list of items from which the user can select one or more options.",
     "defaultValue": "",
     "required": false
   },
@@ -31,7 +31,7 @@
     "type": "switch",
     "name": "KeepOnTop",
     "label": "Keep Select Dialog Always On Top",
-    "description": "",
+    "description": "If true, keeps the dialog window always on top of other windows.",
     "defaultValue": "",
     "required": false
   },
@@ -40,7 +40,7 @@
     "type": "switch",
     "name": "LimitToList",
     "label": "Limit to List",
-    "description": "",
+    "description": "If true, limits user input to only the items in the provided list.",
     "defaultValue": "",
     "required": false
   },
@@ -49,7 +49,7 @@
     "type": "switch",
     "name": "AllowEmptySelection",
     "label": "Allow Empty Selection",
-    "description": "",
+    "description": "If true, allows the user to make no selection (optional choice).",
     "defaultValue": "",
     "required": false
   },
@@ -58,7 +58,7 @@
     "type": "switch",
     "name": "AllowMultipleSelection",
     "label": "Allow Multiple Selection",
-    "description": "",
+    "description": "If true, allows the user to select multiple items from the list.",
     "defaultValue": "",
     "required": false
   },
@@ -67,7 +67,7 @@
     "type": "switch",
     "name": "PreselectItemsStartingWithPlus",
     "label": "Preselect Items Starting With \u0027\u002B\u0027",
-    "description": "",
+    "description": "If true, preselects all items in the list that start with a \u0027\u002B\u0027 character.",
     "defaultValue": "",
     "required": false
   },
@@ -76,7 +76,7 @@
     "type": "config-panel-output",
     "name": "SelectedItem",
     "label": "Selected Item(s)",
-    "description": "",
+    "description": "Returns the selected item(s) from the dialog as a string. For multiple selections, items are separated by commas.",
     "defaultValue": {
       "value": "SelectedItem",
       "enabled": true
@@ -88,7 +88,7 @@
     "type": "config-panel-output",
     "name": "SelectedIndex",
     "label": "Selected Index(es)",
-    "description": "",
+    "description": "Returns the index or indices of the selected item(s) in the list.",
     "defaultValue": {
       "value": "SelectedIndex",
       "enabled": true
@@ -100,7 +100,7 @@
     "type": "config-panel-output",
     "name": "ButtonPressed",
     "label": "Button Pressed",
-    "description": "",
+    "description": "Returns true if the user pressed the OK button; false if Cancel or closed the dialog.",
     "defaultValue": {
       "value": "ButtonPressed",
       "enabled": true

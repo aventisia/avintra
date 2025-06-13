@@ -27,19 +27,19 @@
     "required": true,
     "selectOptions": [
       {
-        "label": "AddExtraColumns",
+        "label": "Add Extra Columns",
         "value": "AddExtraColumns",
-        "description": ""
+        "description": "Adds columns from the second table that are not present in the first table."
       },
       {
-        "label": "IgnoreExtraColumns",
+        "label": "Ignore Extra Columns",
         "value": "IgnoreExtraColumns",
-        "description": ""
+        "description": "Ignores columns from the second table that are not present in the first table."
       },
       {
-        "label": "ErrorOnExtraColumns",
+        "label": "Error On Extra Columns",
         "value": "ErrorOnExtraColumns",
-        "description": ""
+        "description": "Throws an error if the second table has columns not present in the first table."
       }
     ]
   },

@@ -38,12 +38,12 @@
       {
         "label": "Text",
         "value": "Text",
-        "description": ""
+        "description": "Plain text input type."
       },
       {
         "label": "Password",
         "value": "Password",
-        "description": ""
+        "description": "Password input type (masked input)."
       }
     ]
   },

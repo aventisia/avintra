@@ -82,6 +82,21 @@
         "label": "Unknown",
         "value": "None",
         "description": "Unknown Environment Variable"
+      },
+      {
+        "label": "OneDrive",
+        "value": "OneDrive",
+        "description": "OneDrive environment variable."
+      },
+      {
+        "label": "OneDrive Commercial",
+        "value": "OneDriveCommercial",
+        "description": "OneDrive Commercial environment variable."
+      },
+      {
+        "label": "OneDrive Consumer",
+        "value": "OneDriveConsumer",
+        "description": "OneDrive Consumer environment variable."
       }
     ]
   },
@@ -106,12 +121,12 @@
       {
         "label": "User",
         "value": "User",
-        "description": ""
+        "description": "Environment variables specific to the current user."
       },
       {
         "label": "System",
         "value": "System",
-        "description": ""
+        "description": "Environment variables for the entire system (machine-level)."
       }
     ]
   },

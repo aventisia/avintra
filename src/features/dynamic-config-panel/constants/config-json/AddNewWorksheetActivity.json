@@ -27,14 +27,14 @@
     "required": true,
     "selectOptions": [
       {
-        "label": "First",
+        "label": "First worksheet",
         "value": "First",
-        "description": ""
+        "description": "First worksheet"
       },
       {
-        "label": "Last",
+        "label": "Last worksheet",
         "value": "Last",
-        "description": ""
+        "description": "Last worksheet"
       }
     ]
   }

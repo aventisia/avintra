@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "DocumentPath",
-    "label": "DocumentPath",
-    "description": "The path to the Word document.",
+    "name": "WordInstance",
+    "label": "Word Instance",
+    "description": "The specific Word instance to use.",
     "defaultValue": "",
     "required": true
   },
@@ -12,9 +12,49 @@
     "direction": "Input",
     "type": "text",
     "name": "TextToWrite",
-    "label": "TextToWrite",
-    "description": "The text to write or append.",
+    "label": "Text to Write",
+    "description": "The text to be written or appended to the Word document.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "AppendNewLine",
+    "label": "Append New Line",
+    "description": "Specifies whether to append a new line after the text.",
+    "defaultValue": true,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "WriteTextTo",
+    "label": "Write Text To",
+    "description": "Specifies the location in the Word document where the text should be written.",
+    "defaultValue": "BeginningOfWordFile",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Beginning of Word file",
+        "value": "BeginningOfWordFile",
+        "description": "Writes content at the beginning of the document."
+      },
+      {
+        "label": "End of Word file",
+        "value": "EndOfWordFile",
+        "description": "Writes content at the end of the document."
+      },
+      {
+        "label": "Before Bookmark",
+        "value": "BeforeBookmark",
+        "description": "Writes content before the specified bookmark."
+      },
+      {
+        "label": "After Bookmark",
+        "value": "AfterBookmark",
+        "description": "Writes content after the specified bookmark."
+      }
+    ]
   }
 ]

@@ -18,14 +18,14 @@
     "required": true,
     "selectOptions": [
       {
-        "label": "CellAddress",
+        "label": "Cell Address",
         "value": "CellAddress",
-        "description": ""
+        "description": "Reference by cell address (e.g., A1, B2)"
       },
       {
-        "label": "NamedRange",
+        "label": "Named Range",
         "value": "NamedRange",
-        "description": ""
+        "description": "Reference by named range"
       }
     ]
   },

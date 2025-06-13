@@ -24,7 +24,15 @@
     "label": "Data Table columns either number or comma seperated columns (Optional)",
     "description": "An optional input data table columns to add in data table.",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "HasInitialColumns",
+          "equals": true
+        }
+      ]
+    }
   },
   {
     "direction": "Input",
@@ -42,7 +50,15 @@
     "label": "Data Table rows (Optional)",
     "description": "An optional input empty rows to add in data table.",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "HasEmptyRows",
+          "equals": true
+        }
+      ]
+    }
   },
   {
     "direction": "Output",

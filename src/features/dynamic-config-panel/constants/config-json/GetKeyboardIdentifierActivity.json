@@ -2,11 +2,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
-    "description": "Returns the active keyboard identifier.",
+    "name": "KeyboardLayoutId",
+    "label": "Keyboard Layout ID",
+    "description": "The registry key of the active keyboard identifier.",
     "defaultValue": {
-      "value": "Result",
+      "value": "KeyboardLayoutId",
       "enabled": true
     },
     "required": false

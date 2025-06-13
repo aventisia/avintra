@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ConnectionId",
-    "label": "ConnectionId",
-    "description": "The connection ID or token for the FTP connection.",
+    "name": "FtpConnection",
+    "label": "Ftp Connection",
+    "description": "The FtpConnection object to close.",
     "defaultValue": "",
     "required": true
   }
