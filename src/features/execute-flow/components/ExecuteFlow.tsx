@@ -33,7 +33,27 @@ const ExecuteFlow = () => {
   const { sendCommand } = useWebSocket();
 
   // Start execution
-  const startExecution = async () => {
+  const startExecution = () => {
+    // Set the execution state to launching executor
+    setExecutionState("launching-executor");
+
+    // Open the desktop executor if the app is running in Tauri
+    if ("isTauri" in window) {
+      localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
+      localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
+      openDesktopExecutor();
+    } else {
+      toast.info(
+        "Please use our desktop app. Execution in browser is not supported.",
+      );
+      // Reset the execution state to stopped if not in Tauri
+      setExecutionState("stopped");
+    }
+  };
+
+  // Start execution
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const startExecution1 = async () => {
     // Set the execution state to launching executor
     setExecutionState("launching-executor");
 
