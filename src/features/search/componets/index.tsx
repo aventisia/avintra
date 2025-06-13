@@ -72,8 +72,7 @@ const SearchCommandDialog = () => {
                   onSelect={() => handleSelectNode(node.id)}
                   className="cursor-pointer rounded-lg px-2 text-2xs"
                 >
-                  {`${i + 1}.`}
-                  {(node.data?.label as string) || (node.data?.name as string)}
+                  {`${i + 1}. ${(node.data?.label as string) || (node.data?.name as string)}`}
                 </CommandItem>
               ))}
           </CommandGroup>
