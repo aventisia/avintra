@@ -152,6 +152,9 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("LLM")
                         .IsRequired()
                         .HasColumnType("text");
@@ -341,6 +344,10 @@ namespace MLModelBuilderAPIs.Migrations
 
                     b.Property<long>("Size")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Stage")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
