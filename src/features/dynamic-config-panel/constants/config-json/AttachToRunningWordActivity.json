@@ -2,10 +2,22 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ProcessId",
-    "label": "ProcessId",
-    "description": "The process ID of the running Word instance.",
+    "name": "DocumentName",
+    "label": "Document Name",
+    "description": "The name of the Word document to attach to.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "WordInstance",
+    "label": "Word Instance",
+    "description": "The specific Word instance for use with later Word actions.",
+    "defaultValue": {
+      "value": "WordInstance",
+      "enabled": true
+    },
+    "required": false
   }
 ]

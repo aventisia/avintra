@@ -18,34 +18,34 @@
     "required": false,
     "selectOptions": [
       {
-        "label": "SystemDefault",
+        "label": "System Default",
         "value": "SystemDefault",
-        "description": ""
+        "description": "Uses the system\u0027s default encoding."
       },
       {
-        "label": "UTF8",
+        "label": "UTF-8",
         "value": "UTF8",
-        "description": ""
+        "description": "Uses UTF-8 encoding."
       },
       {
-        "label": "Unicode",
+        "label": "Unicode (UTF-16)",
         "value": "Unicode",
-        "description": ""
+        "description": "Uses UTF-16 encoding with a BOM (Byte Order Mark)."
       },
       {
-        "label": "BigEndianUnicode",
+        "label": "Big Endian Unicode",
         "value": "BigEndianUnicode",
-        "description": ""
+        "description": "Uses UTF-16 encoding without a BOM."
       },
       {
-        "label": "UTF8NoBOM",
+        "label": "UTF-8 (No BOM)",
         "value": "UTF8NoBOM",
-        "description": ""
+        "description": "Uses UTF-8 encoding without a BOM."
       },
       {
         "label": "ASCII",
         "value": "ASCII",
-        "description": ""
+        "description": "Uses ASCII encoding."
       }
     ]
   },

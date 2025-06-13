@@ -29,12 +29,12 @@
       {
         "label": "Screen",
         "value": "Screen",
-        "description": ""
+        "description": "Captures the entire screen."
       },
       {
-        "label": "ForegroundWindow",
+        "label": "Foreground Window",
         "value": "ForegroundWindow",
-        "description": ""
+        "description": "Captures the currently active window."
       }
     ]
   },
@@ -50,22 +50,22 @@
       {
         "label": "Instant",
         "value": "Instant",
-        "description": ""
+        "description": "Animation runs instantly without delay."
       },
       {
-        "label": "LowSpeed",
+        "label": "Low Speed",
         "value": "LowSpeed",
-        "description": ""
+        "description": "Animation runs at a slow speed."
       },
       {
-        "label": "NormalSpeed",
+        "label": "Normal Speed",
         "value": "NormalSpeed",
-        "description": ""
+        "description": "Animation runs at normal speed."
       },
       {
-        "label": "HighSpeed",
+        "label": "High Speed",
         "value": "HighSpeed",
-        "description": ""
+        "description": "Animation runs at a fast speed."
       }
     ]
   },

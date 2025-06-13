@@ -3,7 +3,7 @@
     "direction": "Input",
     "type": "text",
     "name": "ImagePath",
-    "label": "ImagePath",
+    "label": "Image Path",
     "description": "The path to the image file.",
     "defaultValue": "",
     "required": true
@@ -12,7 +12,7 @@
     "direction": "Output",
     "type": "config-panel-output",
     "name": "ExtractedText",
-    "label": "ExtractedText",
+    "label": "Extracted Text",
     "description": "Returns the extracted text.",
     "defaultValue": {
       "value": "ExtractedText",

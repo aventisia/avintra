@@ -9,14 +9,14 @@
     "required": false,
     "selectOptions": [
       {
-        "label": "CurrentUser",
+        "label": "Current User",
         "value": "CurrentUser",
-        "description": ""
+        "description": "Empty only the current user\u0027s recycle bin."
       },
       {
-        "label": "AllUsers",
+        "label": "All Users",
         "value": "AllUsers",
-        "description": ""
+        "description": "Empty recycle bins for all users (requires admin privileges)."
       }
     ]
   },

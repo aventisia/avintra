@@ -2,10 +2,31 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "SavePath",
-    "label": "SavePath",
-    "description": "The path to save the Word document.",
+    "name": "WordInstance",
+    "label": "Word Instance",
+    "description": "The specific Word instance to save.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "SaveMode",
+    "label": "Save Mode",
+    "description": "Specifies how to save the document.",
+    "defaultValue": "SaveDocument",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Save Document",
+        "value": "SaveDocument",
+        "description": "Saves the current document with its existing name."
+      },
+      {
+        "label": "Save Document As",
+        "value": "SaveDocumentAs",
+        "description": "Saves the document with a new name or location."
+      }
+    ]
   }
 ]

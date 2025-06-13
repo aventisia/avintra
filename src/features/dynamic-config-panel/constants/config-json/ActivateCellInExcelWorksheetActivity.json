@@ -18,19 +18,19 @@
     "required": true,
     "selectOptions": [
       {
-        "label": "Absolute",
+        "label": "Activate by Name",
         "value": "Absolute",
-        "description": ""
+        "description": "Activate a cell using its exact row and column coordinates."
       },
       {
-        "label": "Relative",
+        "label": "Activate by Offset",
         "value": "Relative",
-        "description": ""
+        "description": "Activate a cell relative to the currently active cell by moving a certain number of rows/columns."
       },
       {
-        "label": "NamedRange",
+        "label": "Activate by Named Range",
         "value": "NamedRange",
-        "description": ""
+        "description": "Activate a cell or range by its defined name."
       }
     ]
   },

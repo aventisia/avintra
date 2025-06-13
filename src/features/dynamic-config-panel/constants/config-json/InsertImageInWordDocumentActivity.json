@@ -2,18 +2,80 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "DocumentPath",
-    "label": "DocumentPath",
-    "description": "The path to the Word document.",
+    "name": "WordInstance",
+    "label": "Word Instance",
+    "description": "The specific Word instance to use.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
+    "type": "select",
+    "name": "InsertImageTo",
+    "label": "Insert Image To",
+    "description": "Specifies the location in the document where the image should be inserted.",
+    "defaultValue": "BeginningOfWordFile",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Beginning of Word file",
+        "value": "BeginningOfWordFile",
+        "description": "Inserts content at the beginning of the document."
+      },
+      {
+        "label": "End of Word file",
+        "value": "EndOfWordFile",
+        "description": "Inserts content at the end of the document."
+      },
+      {
+        "label": "Before Bookmark",
+        "value": "BeforeBookmark",
+        "description": "Inserts content before the specified bookmark."
+      },
+      {
+        "label": "After Bookmark",
+        "value": "AfterBookmark",
+        "description": "Inserts content after the specified bookmark."
+      },
+      {
+        "label": "Before Specific Text",
+        "value": "BeforeSpecificText",
+        "description": "Inserts content before a specific text in the document."
+      },
+      {
+        "label": "After Specific Text",
+        "value": "AfterSpecificText",
+        "description": "Inserts content after a specific text in the document."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "InsertImageFrom",
+    "label": "Insert Image From",
+    "description": "Specifies whether the image is from a file or clipboard.",
+    "defaultValue": "File",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "File",
+        "value": "File",
+        "description": "Inserts an image from a file path."
+      },
+      {
+        "label": "Clipboard",
+        "value": "Clipboard",
+        "description": "Inserts an image from the system clipboard."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
     "type": "text",
     "name": "ImagePath",
-    "label": "ImagePath",
-    "description": "The path to the image file to insert.",
+    "label": "Image Path",
+    "description": "The file path of the image to insert.",
     "defaultValue": "",
     "required": true
   }

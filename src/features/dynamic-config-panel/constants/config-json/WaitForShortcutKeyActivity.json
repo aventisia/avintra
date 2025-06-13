@@ -1,0 +1,41 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ShortcutKeys",
+    "label": "Shortcut Keys",
+    "description": "The list of shortcut keys to wait for.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "ContinueOnTimeout",
+    "label": "Continue Flow Run on Timeout",
+    "description": "If true, continues the flow after the specified timeout if no shortcut key is pressed.",
+    "defaultValue": false,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutSeconds",
+    "label": "Timeout (seconds)",
+    "description": "Maximum time in seconds to wait for the shortcut key.",
+    "defaultValue": 0,
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "IndexOfShortcutKeyPressed",
+    "label": "Index of Shortcut Key Pressed",
+    "description": "Returns the index of the shortcut key that was pressed (0-based).",
+    "defaultValue": {
+      "value": "IndexOfShortcutKeyPressed",
+      "enabled": true
+    },
+    "required": false
+  }
+]

@@ -2,35 +2,17 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "FtpServerUrl",
-    "label": "FtpServerUrl",
-    "description": "The FTP server URL (e.g., ftp://example.com).",
+    "name": "FtpConnection",
+    "label": "FTP Connection",
+    "description": "The FTP connection object.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "Username",
-    "label": "Username",
-    "description": "The username for authentication.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "Password",
-    "label": "Password",
-    "description": "The password for authentication.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "FoldersToDownload",
-    "label": "FoldersToDownload",
+    "name": "FolderNames",
+    "label": "Folder Names",
     "description": "The list of folder names to download.",
     "defaultValue": "",
     "required": true
@@ -39,7 +21,7 @@
     "direction": "Input",
     "type": "text",
     "name": "LocalDirectory",
-    "label": "LocalDirectory",
+    "label": "Local Directory",
     "description": "The local directory to save the downloaded folders.",
     "defaultValue": "",
     "required": true

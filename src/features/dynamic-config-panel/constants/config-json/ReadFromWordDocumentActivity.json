@@ -2,20 +2,46 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "DocumentPath",
-    "label": "DocumentPath",
-    "description": "The path to the Word document.",
+    "name": "WordInstance",
+    "label": "Word Instance",
+    "description": "The specific Word instance to read from.",
     "defaultValue": "",
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "select",
+    "name": "Retrieve",
+    "label": "Retrieve",
+    "description": "Specifies the portion of the document to retrieve.",
+    "defaultValue": "WholeDocument",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Whole Document",
+        "value": "WholeDocument",
+        "description": "Retrieves the entire content of the document."
+      },
+      {
+        "label": "Pages",
+        "value": "Pages",
+        "description": "Retrieves content based on specified page numbers."
+      },
+      {
+        "label": "Bookmark",
+        "value": "Bookmark",
+        "description": "Retrieves content located within a specific bookmark."
+      }
+    ]
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
-    "description": "Returns the text content of the Word document.",
+    "name": "WordData",
+    "label": "Word Data",
+    "description": "The value of the retrieved content.",
     "defaultValue": {
-      "value": "Result",
+      "value": "WordData",
       "enabled": true
     },
     "required": false

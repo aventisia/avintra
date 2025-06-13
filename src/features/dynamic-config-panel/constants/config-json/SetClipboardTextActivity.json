@@ -3,7 +3,7 @@
     "direction": "Input",
     "type": "text",
     "name": "ClipboardText",
-    "label": "ClipboardText",
+    "label": "Clipboard Text",
     "description": "The text to set to the clipboard.",
     "defaultValue": "",
     "required": false

@@ -2,10 +2,36 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ProcessId",
-    "label": "ProcessId",
-    "description": "The process ID of the Word instance to close.",
+    "name": "WordInstance",
+    "label": "Word Instance",
+    "description": "The specific Word instance to close.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "BeforeClosingWord",
+    "label": "Before Closing Word",
+    "description": "Specifies whether to save the document before closing Word.",
+    "defaultValue": "DoNotSaveDocument",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Do not save document",
+        "value": "DoNotSaveDocument",
+        "description": "Closes the document without saving."
+      },
+      {
+        "label": "Save document",
+        "value": "SaveDocument",
+        "description": "Saves the document before closing."
+      },
+      {
+        "label": "Save document as",
+        "value": "SaveDocumentAs",
+        "description": "Saves the document with a new name before closing."
+      }
+    ]
   }
 ]

@@ -2,18 +2,53 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ConnectionId",
-    "label": "ConnectionId",
-    "description": "The connection ID or token for the FTP connection.",
+    "name": "FtpConnection",
+    "label": "FTP Connection",
+    "description": "The FTP connection object.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DirectoryName",
+    "label": "Directory Name",
+    "description": "The name of the directory to create.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "ListType",
+    "label": "List Type",
+    "description": "Specifies the type of items to list in the FTP directory.",
+    "defaultValue": "FilesAndFolders",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Files and Folders",
+        "value": "FilesAndFolders",
+        "description": "List both files and folders."
+      },
+      {
+        "label": "Files",
+        "value": "Files",
+        "description": "List only files."
+      },
+      {
+        "label": "Folders",
+        "value": "Folders",
+        "description": "List only folders."
+      }
+    ]
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "Result",
-    "label": "Result",
-    "description": "Returns the list of subdirectories and files in the current directory.",
+    "label": "Files and Folders Result",
+    "description": "Returns the list subdirectories and files.",
     "defaultValue": {
       "value": "Result",
       "enabled": true

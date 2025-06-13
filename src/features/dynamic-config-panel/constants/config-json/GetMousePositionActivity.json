@@ -11,12 +11,12 @@
       {
         "label": "Screen",
         "value": "Screen",
-        "description": ""
+        "description": "Captures the entire screen."
       },
       {
-        "label": "ForegroundWindow",
+        "label": "Foreground Window",
         "value": "ForegroundWindow",
-        "description": ""
+        "description": "Captures the currently active window."
       }
     ]
   },

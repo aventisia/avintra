@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ConnectionId",
-    "label": "ConnectionId",
-    "description": "The connection ID or token for the FTP connection.",
+    "name": "FtpConnection",
+    "label": "FTP Connection",
+    "description": "The FTP connection object.",
     "defaultValue": "",
     "required": true
   },
@@ -12,7 +12,7 @@
     "direction": "Input",
     "type": "text",
     "name": "DirectoryName",
-    "label": "DirectoryName",
+    "label": "Directory Name",
     "description": "The name of the directory to create.",
     "defaultValue": "",
     "required": true

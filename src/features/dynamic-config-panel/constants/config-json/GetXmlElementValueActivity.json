@@ -27,24 +27,24 @@
     "required": false,
     "selectOptions": [
       {
-        "label": "TextValue",
+        "label": "Text Value",
         "value": "TextValue",
-        "description": ""
+        "description": "Returns the attribute value as plain text."
       },
       {
-        "label": "NumericValue",
+        "label": "Numeric Value",
         "value": "NumericValue",
-        "description": ""
+        "description": "Parses the attribute value into a numeric (double) format."
       },
       {
-        "label": "DateTimeValue",
+        "label": "Date Time Value",
         "value": "DateTimeValue",
-        "description": ""
+        "description": "Parses the attribute value into a DateTime format."
       },
       {
-        "label": "BooleanValue",
+        "label": "Boolean Value",
         "value": "BooleanValue",
-        "description": ""
+        "description": "Parses the attribute value into a Boolean (true/false) format."
       }
     ]
   },

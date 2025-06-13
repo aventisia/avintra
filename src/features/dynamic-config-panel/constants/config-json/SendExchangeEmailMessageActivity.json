@@ -2,18 +2,54 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "Recipient",
-    "label": "Recipient",
-    "description": "The recipient\u0027s email address.",
+    "name": "ExchangeConnection",
+    "label": "Exchange Connection",
+    "description": "The Exchange service object representing the connection to the Exchange server.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "text",
+    "name": "From",
+    "label": "From",
+    "description": "The sender\u0027s email address or display name.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "To",
+    "label": "To",
+    "description": "The recipient\u0027s email addresses (comma-separated).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Cc",
+    "label": "CC",
+    "description": "The CC recipient\u0027s email addresses (comma-separated).",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Bcc",
+    "label": "BCC",
+    "description": "The BCC recipient\u0027s email addresses (comma-separated).",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
     "name": "Subject",
     "label": "Subject",
-    "description": "The subject of the email.",
+    "description": "The subject of the email message.",
     "defaultValue": "",
     "required": true
   },
@@ -22,8 +58,26 @@
     "type": "text",
     "name": "Body",
     "label": "Body",
-    "description": "The body of the email.",
+    "description": "The body content of the email message.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "IsBodyHtml",
+    "label": "Body is HTML",
+    "description": "If true, treats the body as HTML content.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Attachments",
+    "label": "Attachments",
+    "description": "Paths to files to attach to the email message (comma-separated).",
+    "defaultValue": "",
+    "required": false
   }
 ]

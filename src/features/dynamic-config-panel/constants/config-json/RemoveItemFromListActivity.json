@@ -11,12 +11,12 @@
       {
         "label": "Index",
         "value": "Index",
-        "description": ""
+        "description": "Removes an item based on its position in the list."
       },
       {
         "label": "Value",
         "value": "Value",
-        "description": ""
+        "description": "Removes an item based on its value."
       }
     ]
   },

@@ -20,12 +20,12 @@
       {
         "label": "Name",
         "value": "Name",
-        "description": ""
+        "description": "Select worksheet by its name."
       },
       {
         "label": "Index",
         "value": "Index",
-        "description": ""
+        "description": "Select worksheet by its 1-based index."
       }
     ]
   },

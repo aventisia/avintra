@@ -3,7 +3,7 @@
     "direction": "Input",
     "type": "text",
     "name": "Base64String",
-    "label": "Base64String",
+    "label": "Base64 String",
     "description": "The Base64-encoded string to convert.",
     "defaultValue": "",
     "required": true
@@ -12,7 +12,7 @@
     "direction": "Output",
     "type": "config-panel-output",
     "name": "PlainText",
-    "label": "PlainText",
+    "label": "Plain Text",
     "description": "Returns the converted plain text.",
     "defaultValue": {
       "value": "PlainText",

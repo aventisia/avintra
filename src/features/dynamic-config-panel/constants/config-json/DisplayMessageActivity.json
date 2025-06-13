@@ -29,27 +29,27 @@
       {
         "label": "None",
         "value": "None",
-        "description": ""
+        "description": "No icon is displayed."
       },
       {
         "label": "Information",
         "value": "Information",
-        "description": ""
+        "description": "An information icon (i)."
       },
       {
         "label": "Question",
         "value": "Question",
-        "description": ""
+        "description": "A question mark icon."
       },
       {
         "label": "Warning",
         "value": "Warning",
-        "description": ""
+        "description": "A warning icon (!)."
       },
       {
         "label": "Error",
         "value": "Error",
-        "description": ""
+        "description": "An error icon (X)."
       }
     ]
   },
@@ -65,32 +65,32 @@
       {
         "label": "OK",
         "value": "OK",
-        "description": ""
+        "description": "Displays an OK button."
       },
       {
-        "label": "OKCancel",
+        "label": "OK - Cancel",
         "value": "OKCancel",
-        "description": ""
+        "description": "Displays OK and Cancel buttons."
       },
       {
-        "label": "YesNo",
+        "label": "Yes - No",
         "value": "YesNo",
-        "description": ""
+        "description": "Displays Yes and No buttons."
       },
       {
-        "label": "YesNoCancel",
+        "label": "Yes - No - Cancel",
         "value": "YesNoCancel",
-        "description": ""
+        "description": "Displays Yes, No, and Cancel buttons."
       },
       {
-        "label": "AbortRetryIgnore",
+        "label": "Abort - Retry - Ignore",
         "value": "AbortRetryIgnore",
-        "description": ""
+        "description": "Displays Abort, Retry, and Ignore buttons."
       },
       {
-        "label": "RetryCancel",
+        "label": "Retry - Cancel",
         "value": "RetryCancel",
-        "description": ""
+        "description": "Displays Retry and Cancel buttons."
       }
     ]
   },
@@ -104,19 +104,19 @@
     "required": false,
     "selectOptions": [
       {
-        "label": "Button1",
+        "label": "First Button",
         "value": "Button1",
-        "description": ""
+        "description": "The first button is the default."
       },
       {
-        "label": "Button2",
+        "label": "Second Button",
         "value": "Button2",
-        "description": ""
+        "description": "The second button is the default."
       },
       {
-        "label": "Button3",
+        "label": "Third Button",
         "value": "Button3",
-        "description": ""
+        "description": "The third button is the default."
       }
     ]
   },
