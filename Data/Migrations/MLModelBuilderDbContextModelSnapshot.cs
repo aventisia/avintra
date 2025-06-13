@@ -170,6 +170,9 @@ namespace MLModelBuilderAPIs.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<DateTimeOffset?>("PublishedOn")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("SetupObject")
                         .HasColumnType("text");
 
