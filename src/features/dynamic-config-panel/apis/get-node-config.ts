@@ -1,4 +1,5 @@
 import { DCPFieldSchemaType } from "..";
+import { generateOutputConfigFromData } from "../utils/generate-ai-config";
 
 const modules = {
   ...import.meta.glob("../constants/config-json/*.json"),
@@ -11,6 +12,10 @@ const modules = {
  * @param nodeUniqueName The node Unique name/activity name (e.g., "WriteTextToFileActivity")
  */
 export const getNodeConfig = async (nodeUniqueName: string) => {
+  if (nodeUniqueName == "AIModel") {
+    return (await generateOutputConfigFromData()) as DCPFieldSchemaType[];
+  }
+
   // Get the path to the JSON file based on the nodeUniqueName
   let path = `../constants/config-json/${nodeUniqueName}.json`;
 
