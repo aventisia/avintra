@@ -44,4 +44,11 @@ public interface IUploadedDocService
     /// <param name="fileUrl"></param>
     /// <returns></returns>
     ServiceResponse<FileDetailDto> DownloadFileAsync(string fileUrl);
+
+    /// <summary>
+    /// Deletes an uploaded document by its unique identifier.
+    /// </summary>
+    /// <param name="documentId">The unique identifier of the uploaded document to delete.</param>
+    /// <returns>A <see cref="ServiceResponse{Boolean}"/> indicating the result of the deletion operation.</returns>
+    Task<ServiceResponse<bool>> DeleteUploadedDocAsync(Guid documentId);
 }

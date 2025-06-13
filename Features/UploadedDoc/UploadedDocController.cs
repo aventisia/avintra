@@ -111,4 +111,11 @@ public class UploadedDocController : BaseApiController
             _ => "application/octet-stream"
         };
     }
+
+    //Delete uploaded document
+    [HttpDelete("{documentId}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteUploadedDocAsync(Guid documentId)
+    {
+        return ResultHelper(await _uploadedDocService.DeleteUploadedDocAsync(documentId));
+    }
 }

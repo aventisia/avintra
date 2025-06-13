@@ -552,4 +552,51 @@ public class UploadedDocService : IUploadedDocService
 
         return serviceResponse;
     }
+
+    // Delete uploaded document
+    public async Task<ServiceResponse<bool>> DeleteUploadedDocAsync(Guid documentId)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to delete uploaded document. Please try again."
+        };
+
+        try
+        {
+            // Try to get uploaded document record
+            var uploadedDocument = await _unitOfWork.UploadedDocRepo
+                .GetByConditionAsync(w =>
+                    w.Id == documentId &&
+                    w.CreatedByUserId == _userId)
+                .SingleOrDefaultAsync();
+
+            if (uploadedDocument == null)
+            {
+                _logger.LogInformation("Uploaded document does not exist.");
+                serviceResponse.Message = "Uploaded document does not exist.";
+                return serviceResponse;
+            }
+
+            // Delete the document
+            _unitOfWork.UploadedDocRepo.Delete(uploadedDocument);
+
+            // Save changes
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while deleting an uploaded document.");
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Uploaded document deleted successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while deleting uploaded document.");
+        }
+
+        return serviceResponse;
+    }
 }
