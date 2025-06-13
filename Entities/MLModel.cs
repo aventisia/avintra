@@ -60,6 +60,11 @@ public class MLModel : BaseEntity, IMustHaveTenant
     public bool IsPublished { get; set; }
 
     /// <summary>
+    /// Gets or sets the date and time when the model was published.
+    /// </summary>
+    public DateTimeOffset? PublishedOn { get; set; }
+
+    /// <summary>
     /// Gets or sets the ML model to which this extracted data model is associated with.
     /// </summary>
     public virtual ICollection<ExtractedData>? ExtractedData { get; set; }

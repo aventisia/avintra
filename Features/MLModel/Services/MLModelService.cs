@@ -496,7 +496,6 @@ public class MLModelService : IMLModelService
             {
                 _logger.LogWarning("Publish failed: ML model with ID {ModelId} was not found or does not belong to user {UserId}.", mlModelId, _userId);
                 serviceResponse.Message = "The specified model does not exist.";
-                serviceResponse.StatusCode = 404; // Not Found
                 return serviceResponse;
             }
 
@@ -510,6 +509,7 @@ public class MLModelService : IMLModelService
 
             // Set IsPublished to true and update last modified user
             mlModel.IsPublished = true;
+            mlModel.PublishedOn = DateTime.UtcNow;
             mlModel.LastModifiedByUserId = _userId;
 
             // Update the model in the repository

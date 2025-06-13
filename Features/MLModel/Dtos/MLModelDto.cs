@@ -75,6 +75,11 @@ public class MLModelDto
     public bool IsPublished { get; set; }
 
     /// <summary>
+    /// Gets or sets the date and time when the model was published.
+    /// </summary>
+    public DateTimeOffset? PublishedOn { get; set; }
+
+    /// <summary>
     /// Gets or sets the date of creation of ML model.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; }
