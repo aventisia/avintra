@@ -42,5 +42,5 @@ export type DCPControlType =
   | "slider"
   | "textarea"
   | "condition-groups"
-  | "config-panel-output";
-  
+  | "config-panel-output"
+  | "model-select";
