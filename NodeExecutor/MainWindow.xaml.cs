@@ -176,12 +176,15 @@ namespace NodeExecutor
             }
 
             // Set the node name
-            lbl_NodeName.Text = conditionalBrnachNodeData.NodeName.Length > 0 ? conditionalBrnachNodeData.NodeName : "Node name not found";
+            lbl_NodeName.Text = conditionalBrnachNodeData.NodeName.Length > 0
+                ? conditionalBrnachNodeData.NodeName
+                : "Node name not found";
 
-            bool result = ActivityExecutorService.ExecuteCondition(conditionalBrnachNodeData.Conditions, _executionContext);
+            var result =
+                ActivityExecutorService.ExecuteCondition(conditionalBrnachNodeData.Conditions, _executionContext);
 
             await _webSocket.SendCommandAsync("next-node",
-                result
+                result.Item1
                     ? conditionalBrnachNodeData.NextNodeId
                     : conditionalBrnachNodeData.ConditionalNodeId);
         }
@@ -200,21 +203,22 @@ namespace NodeExecutor
             // Set the node name
             lbl_NodeName.Text = loopNodeData.NodeName.Length > 0 ? loopNodeData.NodeName : "Node name not found";
 
-            bool result = false;
+            (bool success, string result) result = (false, string.Empty);
             if (loopNodeData.LoopType == "ConditionalLoop")
             {
                 result = ActivityExecutorService.ExecuteCondition(loopNodeData.Conditions, _executionContext);
             }
             else if (loopNodeData.LoopType == "ForEachLoop")
             {
-                result = ActivityExecutorService.MoveNextListItem(loopNodeData.ListVariableName, loopNodeData.ItemVariableName, _executionContext);
+                result = ActivityExecutorService.MoveNextListItem(loopNodeData.ListVariableName,
+                    loopNodeData.ItemVariableName, _executionContext);
             }
 
             // Process next node
             await _webSocket.SendCommandAsync("next-node",
-                    result
-                        ? loopNodeData.NextNodeId
-                        : loopNodeData.MergeBranchesNodeId);
+                result.success
+                    ? loopNodeData.NextNodeId
+                    : loopNodeData.MergeBranchesNodeId);
         }
 
         private async void ExecuteNodeAsync(string data)

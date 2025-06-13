@@ -52,7 +52,7 @@ namespace NodeExecutor.Services
             }
         }
 
-        public static bool ExecuteNode(ActivityNodeData node, ExecutionContext executionContext)
+        public static (bool, string) ExecuteNode(ActivityNodeData node, ExecutionContext executionContext)
         {
             try
             {
@@ -122,6 +122,10 @@ namespace NodeExecutor.Services
                 // Execute the activity
                 var outputs = WorkflowInvoker.Invoke((Activity)activityInstance);
 
+                // Activity has failed
+                //if (outputs != null && !Convert.ToBoolean(outputs["IsSuccess"]))
+                //    return (false, "");
+
                 // Set OutArguments via reflection
                 foreach (var nodeOutput in node.NodeOutputs)
                 {
@@ -129,10 +133,10 @@ namespace NodeExecutor.Services
                     var prop = activityType.GetProperty(nodeOutput.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
                     if (prop == null) continue;
 
-                    // Replace {{ and }} if exits
+                    // Replace {{ and }} in node output key (if exits)
                     nodeOutput.Value.Value = nodeOutput.Value.Value.Replace("{{", "").Replace("}}", "");
 
-                    // Trim the output value
+                    // Trim the output key
                     nodeOutput.Value.Value = nodeOutput.Value.Value.Trim();
 
                     // Set the output value in the execution context
@@ -142,20 +146,20 @@ namespace NodeExecutor.Services
                     }
                 }
 
-                return true;
+                return (true, "");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in ExecuteNode: {ex.Message}");
-                return false;
+                return (false, $"Error in ExecuteNode: {ex.Message}");
             }
         }
 
-        public static bool ExecuteCondition(List<List<ConditionGroup>> conditions, ExecutionContext executionContext)
+        public static (bool, string) ExecuteCondition(List<List<ConditionGroup>> conditions, ExecutionContext executionContext)
         {
             // If conditions null or empty return false
             if (conditions != null || conditions.Count == 0)
-                return false;
+                return (false, "");
 
             // Check conditions
             try
@@ -206,30 +210,34 @@ namespace NodeExecutor.Services
                     prop.SetValue(activityInstance, inArgument);
                 }
 
-                // Execute the activity
+                // Execute the branch condition
                 var outputs = WorkflowInvoker.Invoke((Activity)activityInstance);
+
+                // Branch activity execution has failed
+                // if (outputs != null && outputs.ContainsKey("IsSuccess") && !Convert.ToBoolean(outputs["IsSuccess"]))
+                //     return (false, "");
 
                 // Directly return the ConditionResult output (do not set in execution context)
                 if (outputs != null && outputs.ContainsKey("ConditionResult"))
                 {
                     var result = outputs["ConditionResult"];
-                    return result is bool b ? b : false;
+                    return result is bool b ? (b, "") : (false, "");
                 }
 
-                return false;
+                // If no ConditionResult output, return false
+                return (false, "Unknown error ocurred while checing the conditon");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in ExecuteCondition: {ex.Message}");
-                return false;
+                return (false, $"Error in ExecuteCondition: {ex.Message}");
             }
         }
 
-        public static bool MoveNextListItem(string listVarName, string currentItemVarName, ExecutionContext executionContext)
+        public static (bool, string) MoveNextListItem(string listVarName, string currentItemVarName, ExecutionContext executionContext)
         {
             // If listVarName or currentItemVarName is null or empty, return false
             if (string.IsNullOrEmpty(listVarName) || string.IsNullOrEmpty(currentItemVarName) || executionContext == null)
-                return false;
+                return (false, "");
 
             try
             {
@@ -241,17 +249,17 @@ namespace NodeExecutor.Services
                 if (resolvedListVar is string key)
                 {
                     if (!executionContext.TryGet(key, out listObj) || listObj == null)
-                        return false;
+                        return (false, "");
                 }
 
                 // Try to cast to IEnumerable (but not string)
                 if (!(listObj is System.Collections.IEnumerable enumerable) || listObj is string)
-                    return false;
+                    return (false, "");
 
                 // Convert to a list for indexing
                 var items = enumerable.Cast<object>().ToList();
                 if (items.Count == 0)
-                    return false;
+                    return (false, "");
 
                 // Track current index in executionContext (use a hidden variable)
                 string indexKey = $"__{listVarName}_CurrentIndex";
@@ -260,18 +268,17 @@ namespace NodeExecutor.Services
                     currentIndex = idx + 1; // Move to next item
 
                 if (currentIndex >= items.Count)
-                    return false; // No more items
+                    return (false, ""); // No more items
 
                 // Set current item and index in executionContext
                 executionContext.Set(currentItemVarName, items[currentIndex]);
                 executionContext.Set(indexKey, currentIndex);
 
-                return true;
+                return (true, "");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in MoveNextListItem: {ex.Message}");
-                return false;
+                return (false, $"Error in MoveNextListItem: {ex.Message}");
             }
         }
         private static object ConvertArgument(object inputValue, Type targetType)
