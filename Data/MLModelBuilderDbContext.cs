@@ -36,6 +36,7 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<MLModel>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ModelTypesEnum>());
         modelBuilder.Entity<MLModel>().Property(e => e.SetupStatus).HasConversion(new EnumToStringConverter<SetupStatusTypesEnum>());
         modelBuilder.Entity<UploadedDoc>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ExtractedDataType>());
+        modelBuilder.Entity<UploadedDoc>().Property(e => e.Stage).HasConversion(new EnumToStringConverter<DocumentStageTypesEnum>());
         modelBuilder.Entity<ExtractedData>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ExtractedDataType>());
         modelBuilder.Entity<ScheduledModel>().Property(e => e.ScheduleType).HasConversion(new EnumToStringConverter<ModelOperationTypesEnum>());
         modelBuilder.Entity<ScheduledModel>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ScheduleTypesEnum>());
