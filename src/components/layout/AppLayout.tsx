@@ -1,3 +1,5 @@
+import { useUpdateDesktopApp } from "@/hooks/useUpdateDesktopApp";
+import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { Sidebar } from "@aventisia/ui/layout";
 import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
@@ -5,10 +7,6 @@ import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-
-import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
-import { useTauriStore } from "@/stores/tauri-store";
-
 import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppRedirectPage } from "./AppRedirectPage";
@@ -26,12 +24,8 @@ export const AppLayout = () => {
       })),
     );
 
-  // Get the state if app is open in tauri window
-  const { isTauri } = useTauriStore(
-    useShallow((state) => ({
-      isTauri: state.isTauri,
-    })),
-  );
+  // Check for slient updates inside the Tauri app
+  useUpdateDesktopApp();
 
   // Validate user session
   const { isPending } = useValidateUserSession();
@@ -57,7 +51,7 @@ export const AppLayout = () => {
         <div className="relative min-h-screen overflow-hidden">
           <AppBanner />
           <AppHeader />
-          {!isTauri && <Sidebar />}
+          {!("isTauri" in window) && <Sidebar />}
           <ScrollArea
             className={cn(
               appBanner
@@ -68,7 +62,7 @@ export const AppLayout = () => {
             <main
               className={cn(
                 "px-7 py-0 transition-[margin] duration-500",
-                !isTauri &&
+                !("isTauri" in window) &&
                   (sidebarExpand
                     ? "md:ml-[--sidebar-max-width]"
                     : "md:ml-[--sidebar-min-width]"),
