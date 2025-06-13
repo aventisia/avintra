@@ -1,4 +1,5 @@
 import { ActivityNode } from "@/components/nodes/ActivityNode";
+import { AIModelNode } from "@/components/nodes/AIModelNode";
 import { BranchEndNode } from "@/components/nodes/BranchEndNode";
 import { BranchNode } from "@/components/nodes/BranchNode";
 import { BranchNode1 } from "@/components/nodes/BranchNode1";
@@ -33,4 +34,7 @@ export const CustomNodeTypeObj = {
   // ------------------------------------Base node types
   triggerNode: TriggerNode,
   activityNode: ActivityNode,
+
+  //AI Node
+  aiNode: AIModelNode,
 };

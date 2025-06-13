@@ -20,7 +20,7 @@ export const NodeContainer = ({
   return (
     <div
       className={cn(
-        "flex h-[5.3rem] w-[19.5rem] rounded-lg border-2 border-slate-300 hover:ring hover:ring-ring",
+        "flex h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-slate-300 hover:ring hover:ring-ring",
         className,
         nodeData.type == "forLoopNode" && "border-blue-500",
         nodeData.type == "conditionalNode" && "border-indigo-500",
@@ -35,7 +35,7 @@ export const NodeContainer = ({
           nodeData.type == "conditionalNode" && "bg-indigo-100",
         )}
       >
-        <GripVertical className="h-5 w-5 text-slate-300" />
+        <GripVertical className={cn("h-5 w-5 text-slate-300")} />
       </div>
       <OpenNodeConfig {...{ nodeData, nodeId }}>
         <div

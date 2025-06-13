@@ -3078,9 +3078,9 @@
         "listType": "list",
         "actions": [
           {
-            "type": "activityNode",
-            "name": "informationExtractor",
-            "label": "Information Extractor",
+            "type": "aiNode",
+            "name": "AIModel",
+            "label": "AI Model",
             "description": "Extract information out of a pdf file",
             "docsLink": null,
             "icon": null,
