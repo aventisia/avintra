@@ -1,11 +1,11 @@
 meta {
-  name: Delete ml model
+  name: Delete uploaded doc by id
   type: http
-  seq: 6
+  seq: 8
 }
 
 delete {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/ml-model/{{MLMODEL_ID}}
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/upload-doc/{{UPLOADED_DOC_ID}}
   body: none
   auth: none
 }

@@ -31,5 +31,9 @@ script:post-response {
     "FILE_URL",
     res.getBody().data[0].path
     );
+    bru.setGlobalEnvVar(
+    "UPLOADED_DOC_ID",
+    res.getBody().data[0].id
+    );
   }
 }
