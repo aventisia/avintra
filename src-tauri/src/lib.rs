@@ -1,3 +1,4 @@
+use tauri::Manager;
 mod commands;
 mod websocket;
 
@@ -23,6 +24,13 @@ pub fn run() {
                         .build(),
                 )?;
             }
+            
+            // Set tauri window title with version
+            let window = app.get_webview_window("main").unwrap();
+            let version = env!("CARGO_PKG_VERSION"); // reads version from Cargo.toml
+            let new_title = format!("Worc v{}", version);
+            window.set_title(&new_title).unwrap();
+
             Ok(())
         })
         .run(tauri::generate_context!())
