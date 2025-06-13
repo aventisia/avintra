@@ -49,8 +49,9 @@ const PublishFlow = () => {
         showCustomAlertDialog({
           confirmActionFn: () => handlePublish(),
           confirmBtnText: "Publish",
-          description: "Are you sure you to publish the agent?",
+          description: "Are you sure you want to publish the agent?",
           title: "Publish Agent",
+          isDestructive: false,
         })
       }
       disabled={flowsData?.data.isPublished}
