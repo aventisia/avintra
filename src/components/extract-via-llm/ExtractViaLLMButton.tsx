@@ -3,6 +3,7 @@ import { useTabStore } from "@/store/tab-store";
 import { formatSeconds } from "@/utils/formatSeconds";
 
 import { Button } from "@aventisia/ui/buttons";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { Loader2, SparklesIcon, Timer } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -65,15 +66,19 @@ function ExtractViaLLMButton() {
           </>
         )}
       </Button>
-      <div className="flex items-center gap-0.5 mr-2">
-        <Timer className="h-4 w-4" />
-        <p className="text-sm">
-          {/* {executionTime ? formatSeconds(executionTime) : "0s"} */}
-          {!isModelLoading && modelData?.data.executionTime
-            ? formatSeconds(modelData?.data.executionTime)
-            : "0s"}
-        </p>
-      </div>
+      <Tooltip side="right" content="Total execution time">
+        <div className="flex items-center gap-0.5 mr-2">
+          <>
+            <Timer className="h-4 w-4" />
+            <p className="text-sm">
+              {/* {executionTime ? formatSeconds(executionTime) : "0s"} */}
+              {!isModelLoading && modelData?.data.executionTime
+                ? formatSeconds(modelData?.data.executionTime)
+                : "0s"}
+            </p>
+          </>
+        </div>
+      </Tooltip>
     </div>
   );
 }
