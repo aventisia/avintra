@@ -31,18 +31,10 @@ const BaseNode: React.FC<BaseNodeProps> = ({
           ) : (
             <NodeImage src={nodeData.img} />
           )}
-          <NodeHeading
-            className={nodeData.type == "aiNode" ? "text-white" : ""}
-          >
-            {nodeData.label}
-          </NodeHeading>
+          <NodeHeading>{nodeData.label}</NodeHeading>
         </NodeHeader>
         <Separator className="h-[0.5px] w-full bg-border" />
-        <NodeDescription
-          className={nodeData.type == "aiNode" ? "text-white" : ""}
-        >
-          {nodeData.description}
-        </NodeDescription>
+        <NodeDescription>{nodeData.description}</NodeDescription>
         {children}
       </NodeContainer>
     </ReactFlowContextMenu>
