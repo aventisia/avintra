@@ -71,7 +71,7 @@ public class DesktopAppController : BaseApiController
             return NoContent(); // HTTP 204 - no update needed
 
         // Read the signature file
-        var signature = Convert.ToBase64String(System.IO.File.ReadAllBytes(signatureFilePath));
+        var signature = System.IO.File.ReadAllText(signatureFilePath).Trim();
 
         var response = new
         {
