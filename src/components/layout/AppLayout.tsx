@@ -9,16 +9,18 @@ import { useShallow } from "zustand/react/shallow";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { useTauriStore } from "@/stores/tauri-store";
 
+import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppRedirectPage } from "./AppRedirectPage";
 import { sidebarMenuSections } from "./sidebar-menu-sections";
 
 export const AppLayout = () => {
   // Get the state and actions from the base layout store
-  const { sidebarExpand, setViteEnvVars, setSidebarMenuSections } =
+  const { sidebarExpand, appBanner, setViteEnvVars, setSidebarMenuSections } =
     useBaseLayoutStore(
       useShallow((state) => ({
         sidebarExpand: state.sidebarExpand,
+        appBanner: state.appBanner,
         setViteEnvVars: state.setViteEnvVars,
         setSidebarMenuSections: state.setSidebarMenuSections,
       })),
@@ -53,9 +55,16 @@ export const AppLayout = () => {
         <AppRedirectPage />
       ) : (
         <div className="relative min-h-screen overflow-hidden">
+          <AppBanner />
           <AppHeader />
           {!isTauri && <Sidebar />}
-          <ScrollArea className="h-[calc(100vh-var(--header-height)-var(--header-padding))]">
+          <ScrollArea
+            className={cn(
+              appBanner
+                ? "h-[calc(100vh-var(--header-height)-var(--header-padding)-var(--banner-height))]"
+                : "h-[calc(100vh-var(--header-height)-var(--header-padding))]",
+            )}
+          >
             <main
               className={cn(
                 "px-7 py-0 transition-[margin] duration-500",
