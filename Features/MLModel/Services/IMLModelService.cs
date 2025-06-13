@@ -14,7 +14,7 @@ public interface IMLModelService
     /// <param name="checkAvailabilityDto">The DTO containing the model name to check.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> object with a <see cref="TrueFalseResultDto"/> indicating whether the model name is available or not.</returns>
     Task<ServiceResponse<TrueFalseResultDto>> IsMLModelNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto);
-    
+
     /// <summary>
     /// Inserts a ML model
     /// </summary>
@@ -42,4 +42,12 @@ public interface IMLModelService
     /// <param name="id">Id</param>
     /// <returns>A ML model with specific identifier</returns>
     Task<ServiceResponse<MLModelDto>> GetMLModelByIdAsync(Guid modelId);
+
+    /// <summary>
+    /// Publish a machine learning model based on the provided model ID.
+    /// </summary>
+    /// <param name="mlModelId">The unique identifier of the machine learning model to be published.</param>
+    /// <returns>A <see cref="Task"/> that represents the asynchronous operation. 
+    /// The task result contains a <see cref="ServiceResponse{bool}"/> indicating whether the model was successfully published (true) or not (false).</returns>
+    Task<ServiceResponse<bool>> PublishMLModelAsync(Guid mlModelId);
 }

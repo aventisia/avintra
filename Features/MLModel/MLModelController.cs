@@ -4,7 +4,7 @@ namespace MLModelBuilderAPIs.Controllers;
 
 [Route("ml-model")]
 [ApiController]
-[Authorize]   
+[Authorize]
 public class MLModelController : BaseApiController
 {
   private readonly IMLModelService _mlModelService;
@@ -54,4 +54,10 @@ public class MLModelController : BaseApiController
     return ResultHelper(await _mlModelService.GetMLModelByIdAsync(id));
   }
 
+  //Get a ML model using identifier
+  [HttpPost("{mlModelId}")]
+  public async Task<ActionResult<ServiceResponse<bool>>> PublishMLModel(Guid mlModelId)
+  {
+    return ResultHelper(await _mlModelService.PublishMLModelAsync(mlModelId));
+  }
 }

@@ -473,4 +473,66 @@ public class MLModelService : IMLModelService
                 return string.Empty;
         }
     }
+
+    // Publishes an ML model by setting its IsPublished property to true.
+    public async Task<ServiceResponse<bool>> PublishMLModelAsync(Guid mlModelId)
+    {
+        // Initialize response with default failure state
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to publish the model. Please try again."
+        };
+
+        try
+        {
+            // Retrieve the ML model by ID and user ownership
+            var mlModel = await _unitOfWork.MLModelRepo
+                .GetByConditionAsync(w => w.Id == mlModelId && w.CreatedByUserId == _userId)
+                .SingleOrDefaultAsync();
+
+            // If model not found, return appropriate message
+            if (mlModel == null)
+            {
+                _logger.LogWarning("Publish failed: ML model with ID {ModelId} was not found or does not belong to user {UserId}.", mlModelId, _userId);
+                serviceResponse.Message = "The specified model does not exist.";
+                serviceResponse.StatusCode = 404; // Not Found
+                return serviceResponse;
+            }
+
+            // If model is already published, return conflict message
+            if (mlModel.IsPublished)
+            {
+                _logger.LogInformation("Publish skipped: ML model with ID {ModelId} is already published.", mlModelId);
+                serviceResponse.Message = "The model is already published.";
+                return serviceResponse;
+            }
+
+            // Set IsPublished to true and update last modified user
+            mlModel.IsPublished = true;
+            mlModel.LastModifiedByUserId = _userId;
+
+            // Update the model in the repository
+            _unitOfWork.MLModelRepo.Update(mlModel);
+
+            // Save changes to the database, if fail return failure response
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to persist publishing changes for model with ID {ModelId}.", mlModelId);
+                return serviceResponse;
+            }
+
+            // On success, set response data and status code
+            _logger.LogInformation("ML model with ID {ModelId} published successfully by user {UserId}.", mlModelId, _userId);
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "The model has been published successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred while publishing the ML model with ID {ModelId}.", mlModelId);
+        }
+
+        return serviceResponse;
+    }
 }
