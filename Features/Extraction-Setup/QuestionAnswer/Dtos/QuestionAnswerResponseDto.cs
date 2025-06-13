@@ -26,6 +26,28 @@ public class QuestionAnswerSetupFileData
     /// </summary>
     public required string Remarks { get; set; }
 
+
+    /// <summary>
+    /// Gets or sets the token count related to this data record.
+    /// </summary>
+    public int TokenCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of times this data record has been executed.
+    /// </summary>
+    public int ExecutionCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of failed executions for this data record.
+    /// </summary>
+
+    public int FailedCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the execution time in seconds.
+    /// </summary>
+    public int ExecutionTime { get; set; }
+
     /// <summary>
     /// Gets or sets the list of structured data segments that have been extracted from the document.
     /// </summary>
@@ -41,7 +63,7 @@ public class QuestionAnswerSetupData
     /// Gets or sets the unique key associated with the sentiment category.
     /// </summary>
     public string? Index { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the text of the question.
     /// </summary>

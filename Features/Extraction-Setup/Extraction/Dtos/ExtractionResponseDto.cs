@@ -27,6 +27,28 @@ public class ExtractionSetupFileData
     public required string Remarks { get; set; }
 
     /// <summary>
+    /// Gets or sets the token count related to this data record.
+    /// </summary>
+    public int TokenCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of times this data record has been executed.
+    /// </summary>
+    public int ExecutionCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of failed executions for this data record.
+    /// </summary>
+
+    public int FailedCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the execution time in seconds.
+    /// </summary>
+    public int ExecutionTime { get; set; }
+
+
+    /// <summary>
     /// Gets or sets the structured data segments extracted from the file.
     /// </summary>
     public required ExtractionSetupData ExtractedData { get; set; }

@@ -170,6 +170,10 @@ public class AIPersonaService : IAIPersonaService
             // Initialize fallback extracted data object with error remarks
             var extractedData = new AIPersonaSetupFileData
             {
+                ExecutionCount = 0,
+                FailedCount = 0,
+                TokenCount = 0,
+                ExecutionTime = 0,
                 ExtractedData = new AIPersonaSetupData(),
                 Remarks = $"001: AI persona extraction failed for ModelId: {modelId}."
             };
@@ -230,7 +234,6 @@ public class AIPersonaService : IAIPersonaService
 
             // Replace the placeholder "{{Documents}}" in the model's generated prompt
             // with the cleaned concatenated text from all files.
-            // This creates the final prompt to be sent to the LLM.
             var prompt = model.GeneratedPrompt.Replace("{{Documents}}", cleanedText);
 
             // Record the start time of the LLM extraction
@@ -245,11 +248,16 @@ public class AIPersonaService : IAIPersonaService
             // Calculate the execution time in seconds
             int executionTimeInSeconds = (int)Math.Ceiling((endExecutionTime - startExecutionTime).TotalSeconds);
 
+            // Update execution and failed count in the extractedData object
+            extractedData.ExecutionCount++;
+            extractedData.ExecutionTime += executionTimeInSeconds;
+
             // If LLM response indicates failure, log and proceed with fallback data
             if (llmResponse.StatusCode != 200)
             {
                 _logger.LogWarning("LLM extraction failed for ModelId: {ModelId}. Error Message: {Message}", modelId, llmResponse.Message);
                 extractedData.Remarks = $"003: LLM extraction failed for ModelId: {modelId}. {llmResponse.Message}";
+                extractedData.FailedCount++;
                 extractedDataList.Add(extractedData);
             }
 
@@ -258,6 +266,7 @@ public class AIPersonaService : IAIPersonaService
             {
                 _logger.LogWarning("LLM returned empty data for ModelId: {ModelId}", modelId);
                 extractedData.Remarks = $"004: LLM returned empty data for ModelId: {modelId}.";
+                extractedData.FailedCount++;
                 extractedDataList.Add(extractedData);
             }
             else
@@ -267,12 +276,16 @@ public class AIPersonaService : IAIPersonaService
                 {
                     var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                     extractedData.ExtractedData = JsonSerializer.Deserialize<AIPersonaSetupData>(llmResponse.Data, options) ?? new AIPersonaSetupData();
-                    extractedData.Remarks = string.Empty;  // Clear remarks on successful extraction
+
+                    // Calculate token count based on the response data
+                    extractedData.TokenCount = llmResponse.Data.Length;
+                    extractedData.Remarks = "";
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Deserialization failed for ModelId: {ModelId}", modelId);
                     extractedData.Remarks = $"005: Deserialization failed for ModelId: {modelId}.";
+                    extractedData.FailedCount++;
                     extractedDataList.Add(extractedData);
                 }
 

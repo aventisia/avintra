@@ -186,122 +186,125 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
 
             _logger.LogInformation("Starting extraction for {FileCount} files", extractRequestDto.FileIds.Count);
 
-            // Loop through each file ID to process sentiment analysis extraction
-            foreach (var fileId in extractRequestDto.FileIds)
+            // Process each file ID to extract sentiment analytics data
+            foreach (var documentId in extractRequestDto.FileIds)
             {
-                _logger.LogInformation("Processing sentiment analysis extraction for FileId: {FileId}", fileId);
+                // Check if there's any existing extracted data for the given document ID
+                var existingDocumentData = model.ExtractedData.FirstOrDefault(data => data.DocId == documentId);
+                _logger.LogInformation("Processing document with ID: {DocumentId}", documentId);
 
-                var extractedData = new SentimentAnalyticsSetupFileData
+                // Add the extractedData object for new extraction data
+                var documentExtractionData = new SentimentAnalyticsSetupFileData
                 {
+                    ExecutionCount = existingDocumentData != null ? existingDocumentData.ExecutionCount : 0,
+                    FailedCount = existingDocumentData != null ? existingDocumentData.FailedCount : 0,
+                    TokenCount = existingDocumentData != null ? existingDocumentData.TokenCount : 0,
+                    ExecutionTime = existingDocumentData != null ? existingDocumentData.ExecutionTime : 0,
                     ExtractedData = new List<SentimentAnalyticsSetupData>(),
-                    FileId = fileId,
-                    Remarks = $"001: Failed to extract sentiment analysis data for FileId: {fileId}."
+                    FileId = documentId,
+                    Remarks = $"001: Sentiment analytics failed for DocumentId: {documentId}."
                 };
 
-                // Retrieve file from repository
-                var file = await _unitOfWork.UploadedDocRepo
-                                             .GetByConditionAsync(w => w.Id == fileId)
-                                             .SingleOrDefaultAsync();
+                // Retrieve the document data from the repository
+                var document = await _unitOfWork.UploadedDocRepo
+                                                 .GetByConditionAsync(doc => doc.Id == documentId)
+                                                 .SingleOrDefaultAsync();
 
-                if (file == null)
+                // Check if the document was found in the repository
+                if (document == null)
                 {
-                    _logger.LogWarning("File not found for FileId: {FileId}", fileId);
-                    extractedData.Remarks = $"002: File not found for FileId: {fileId}.";
-                    extractedDataList.Add(extractedData);
+                    _logger.LogWarning("Document not found with ID: {DocumentId}", documentId);
+                    documentExtractionData.Remarks = $"002: Document not found with ID: {documentId}.";
+                    extractedDataList.Add(documentExtractionData);
                     continue;
                 }
 
-
-                // Validate required inputs: Check if the file path is provided and not empty.
-                if (string.IsNullOrEmpty(file.Path))
+                // Validate if the document has a valid file path
+                if (string.IsNullOrEmpty(document.Path))
                 {
-                    serviceResponse.Message = "File URL is missing.";
+                    serviceResponse.Message = "Document file path is missing.";
 
-                    // Log the validation failure reason.
-                    _logger.LogWarning("Validation failed: File URL is missing or null.");
+                    // Log the validation failure reason
+                    _logger.LogWarning("Validation failed: Document file path is missing or null.");
 
                     return serviceResponse;
                 }
 
-                // Extract the file text from the URL using the LLMDataExtractionService.
-                var fileText = await _llmDataExtractionService.GetFileTextAsync(file.Path);
+                // Extract the document text using an external service
+                var documentText = await _llmDataExtractionService.GetFileTextAsync(document.Path);
 
-                // Check if the file text was successfully retrieved.
-                if (string.IsNullOrEmpty(fileText))
+                // Ensure document text was successfully retrieved
+                if (string.IsNullOrEmpty(documentText))
                 {
-                    serviceResponse.Message = "Failed to extract text from the file.";
+                    serviceResponse.Message = "Failed to extract text from the document.";
 
-                    // Log the failure of file text extraction.
-                    _logger.LogWarning("Validation failed: Failed to retrieve text from the file at URL: {FilePath}", file.Path);
+                    // Log the failure of text extraction
+                    _logger.LogWarning("Validation failed: Failed to retrieve text from the document at URL: {DocumentPath}", document.Path);
 
                     return serviceResponse;
                 }
 
-                // Create the prompt for the LLM model, including the generated prompt and the extracted file text.
-                var prompt = $"{model.GeneratedPrompt}\n\nFile Text:\n{fileText}";
+                // Prepare the prompt for the LLM (Large Language Model) including the document content
+                var prompt = $"{model.GeneratedPrompt}\n\nDocument Text:\n{documentText}";
 
-                // Record the start time of the LLM extraction call (in UTC)
+                // Record the start time before calling the LLM extraction service
                 var startExecutionTime = DateTime.UtcNow;
 
-                // Call the LLM extraction service
+                // Call the LLM data extraction service to process the document text
                 var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, modelSetup.LLM, modelSetup.Temperature);
 
-                // Record the end time after the extraction is complete (in UTC)
+                // Record the end time after receiving the response from the LLM service
                 var endExecutionTime = DateTime.UtcNow;
 
-                // Calculate total execution time in seconds, rounding up to the nearest whole number
-                int executionTimeInSeconds = (int)Math.Ceiling((endExecutionTime - startExecutionTime).TotalSeconds);
+                // Calculate the total execution time in seconds (rounded up)
+                int executionDurationInSeconds = (int)Math.Ceiling((endExecutionTime - startExecutionTime).TotalSeconds);
 
-                // Check for valid response from the LLM service
+                // Check if LLM extraction was successful (StatusCode 200)
                 if (llmResponse.StatusCode != 200)
                 {
-                    _logger.LogWarning("LLM sentiment analysis extraction failed for FileId: {FileId} with message: {Message}", fileId, llmResponse.Message);
-                    extractedData.Remarks = $"003: LLM extraction failed. {llmResponse.Message}";
-                    extractedDataList.Add(extractedData);
+                    _logger.LogWarning("LLM sentiment analytics failed for DocumentId: {DocumentId} with message: {Message}", documentId, llmResponse.Message);
+                    documentExtractionData.Remarks = $"003: LLM sentiment analytics failed. {llmResponse.Message}";
 
-                    // Increment FailedCount if existing extracted data is found
-                    var existing = model.ExtractedData?.FirstOrDefault(w => w.DocId == file.Id);
-                    if (existing != null)
+                    // Increment the failure count if there was existing extracted data for this document
+                    if (existingDocumentData != null)
                     {
-                        existing.FailedCount += 1;
-                        existing.ExecutionTime += executionTimeInSeconds;
-                        existing.LastModifiedByUserId = _userId;
-                        extractedDataToBeUpdated.Add(existing);
+                        existingDocumentData.FailedCount += 1;
+                        existingDocumentData.ExecutionTime += executionDurationInSeconds;
+                        existingDocumentData.LastModifiedByUserId = _userId;
+                        extractedDataToBeUpdated.Add(existingDocumentData);
+
+                        // Update the reused documentExtractionData object with existing data details
+                        documentExtractionData.ExecutionCount = existingDocumentData.ExecutionCount;
+                        documentExtractionData.FailedCount = existingDocumentData.FailedCount;
+                        documentExtractionData.TokenCount = existingDocumentData.TokenCount;
+                        documentExtractionData.ExecutionTime = existingDocumentData.ExecutionTime;
                     }
+
+                    extractedDataList.Add(documentExtractionData);
                     continue;
                 }
 
                 // Check if LLM returned empty data
                 if (string.IsNullOrEmpty(llmResponse.Data))
                 {
-                    _logger.LogWarning("LLM returned empty sentiment data for FileId: {FileId}", fileId);
-                    extractedData.Remarks = $"004: LLM returned empty sentiment response for FileId: {fileId}";
-                    extractedDataList.Add(extractedData);
+                    _logger.LogWarning("LLM returned empty data for DocumentId: {DocumentId}", documentId);
+                    documentExtractionData.Remarks = $"004: LLM returned empty response for DocumentId: {documentId}";
+                    extractedDataList.Add(documentExtractionData);
                     continue;
                 }
 
-                // Check if the LLM response does not contain the expected structure (i.e., '[')
-                if (!llmResponse.Data.Contains("["))
-                {
-                    _logger.LogError("005: Data extraction failed for FileId: {fileId}.", fileId);
-                    extractedData.Remarks = $"005: Failed to extract valid data for FileId: {fileId}";
-                    extractedDataList.Add(extractedData);
-                    continue;
-                }
-
-                // Attempt to deserialize the extracted sentiment data
-                var options = new JsonSerializerOptions
+                // Attempt to deserialize the LLM response data into the appropriate object
+                var serializerOptions = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 };
-
                 try
                 {
-                    extractedData.ExtractedData = JsonSerializer.Deserialize<List<SentimentAnalyticsSetupData>>(llmResponse.Data, options) ?? new List<SentimentAnalyticsSetupData>();
-                    extractedData.Remarks = "";
+                    documentExtractionData.ExtractedData = JsonSerializer.Deserialize<List<SentimentAnalyticsSetupData>>(llmResponse.Data, serializerOptions) ?? new List<SentimentAnalyticsSetupData>();
+                    documentExtractionData.Remarks = "";
 
                     // Assign names using dictionary lookup
-                    foreach (var category in extractedData.ExtractedData)
+                    foreach (var category in documentExtractionData.ExtractedData)
                     {
                         if (categoryDict.TryGetValue(category.Index, out var name))
                         {
@@ -311,69 +314,88 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Deserialization failed for FileId: {FileId}", fileId);
-                    extractedData.Remarks = $"005: Deserialization failed for FileId: {fileId}";
+                    _logger.LogError(ex, "Deserialization failed for DocumentId: {DocumentId}", documentId);
+                    documentExtractionData.Remarks = $"005: Deserialization failed for DocumentId: {documentId}";
 
-                    // Increment FailedCount if existing extracted data is found
-                    var existing = model.ExtractedData?.FirstOrDefault(w => w.DocId == file.Id);
-                    if (existing != null)
+                    // Increment the failure count if there was existing extracted data for this document
+                    if (existingDocumentData != null)
                     {
-                        existing.FailedCount += 1;
-                        existing.ExecutionTime += executionTimeInSeconds;
-                        existing.LastModifiedByUserId = _userId;
-                        extractedDataToBeUpdated.Add(existing);
+                        existingDocumentData.FailedCount += 1;
+                        existingDocumentData.ExecutionTime += executionDurationInSeconds;
+                        existingDocumentData.LastModifiedByUserId = _userId;
+                        extractedDataToBeUpdated.Add(existingDocumentData);
+
+                        // Update the reused documentExtractionData object with existing data details
+                        documentExtractionData.ExecutionCount = existingDocumentData.ExecutionCount;
+                        documentExtractionData.FailedCount = existingDocumentData.FailedCount;
+                        documentExtractionData.TokenCount = existingDocumentData.TokenCount;
+                        documentExtractionData.ExecutionTime = existingDocumentData.ExecutionTime;
                     }
 
-                    extractedDataList.Add(extractedData);
+                    extractedDataList.Add(documentExtractionData);
                     continue;
                 }
-                _logger.LogInformation("Successfully extracted and deserialized sentiment data for FileId: {FileId}", fileId);
 
-                extractedDataList.Add(extractedData);
+                _logger.LogInformation("Successfully extracted and deserialized sentiment analytics data for DocumentId: {DocumentId}", documentId);
 
-                // Check if there is already existing extracted data for this document
-                var existingExtractedData = model.ExtractedData?.FirstOrDefault(w => w.DocId == file.Id);
-                if (existingExtractedData == null)
+                // Check if there's any existing extracted data for this document
+                if (existingDocumentData == null)
                 {
-                    _logger.LogInformation("No existing extracted data found for DocId: {DocId}. Preparing new record for insertion.", file.Id);
+                    _logger.LogInformation("No existing extracted data found for DocId: {DocId}. Preparing new record for insertion.", document.Id);
 
-                    // Prepare a new ExtractedData object for insertion
-                    extractedDataToBeInserted.Add(new ExtractedData()
+                    // Prepare a new record to insert into the ExtractedData table
+                    var newExtractedData = new ExtractedData()
                     {
-                        DocId = file.Id,
-                        Type = file.Type,
+                        DocId = document.Id,
+                        Type = document.Type,
                         MLModelId = model.Id,
                         TokenCount = 0,
                         ExecutionCount = 1,
-                        ExecutionTime = executionTimeInSeconds,
+                        ExecutionTime = executionDurationInSeconds,
                         FailedCount = 0,
-                        DataObject = JsonSerializer.Serialize(extractedData.ExtractedData, new JsonSerializerOptions
+                        DataObject = JsonSerializer.Serialize(documentExtractionData.ExtractedData, new JsonSerializerOptions
                         {
                             PropertyNameCaseInsensitive = true
                         }),
                         CreatedByUserId = _userId,
                         LastModifiedByUserId = _userId
-                    });
+                    };
+                    extractedDataToBeInserted.Add(newExtractedData);
+
+                    // Update the reused documentExtractionData object with the new record's details
+                    documentExtractionData.ExecutionCount = newExtractedData.ExecutionCount;
+                    documentExtractionData.FailedCount = newExtractedData.FailedCount;
+                    documentExtractionData.TokenCount = newExtractedData.TokenCount;
+                    documentExtractionData.ExecutionTime = newExtractedData.ExecutionTime;
+                    extractedDataList.Add(documentExtractionData);
                 }
                 else
                 {
-                    _logger.LogInformation("Existing extracted data found for DocId: {DocId}. Preparing record for update.", file.Id);
+                    _logger.LogInformation("Existing extracted data found for DocId: {DocId}. Preparing record for update.", document.Id);
 
-                    // Update the existing data object with new values
-                    existingExtractedData.DataObject = JsonSerializer.Serialize(extractedData.ExtractedData, new JsonSerializerOptions
+                    // Update the existing record in the ExtractedData table
+                    existingDocumentData.DataObject = JsonSerializer.Serialize(documentExtractionData.ExtractedData, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
-                    existingExtractedData.ExecutionCount += 1;
-                    existingExtractedData.ExecutionTime += executionTimeInSeconds;
-                    existingExtractedData.LastModifiedByUserId = _userId;
+                    existingDocumentData.LastModifiedByUserId = _userId;
+                    existingDocumentData.ExecutionCount += 1;
+                    existingDocumentData.ExecutionTime += executionDurationInSeconds;
 
-                    // Add to update list
-                    extractedDataToBeUpdated.Add(existingExtractedData);
+                    // Add updated data to the update list
+                    extractedDataToBeUpdated.Add(existingDocumentData);
+
+                    // Update the reused documentExtractionData object with the existing record's details
+                    documentExtractionData.ExecutionCount = existingDocumentData.ExecutionCount;
+                    documentExtractionData.FailedCount = existingDocumentData.FailedCount;
+                    documentExtractionData.TokenCount = existingDocumentData.TokenCount;
+                    documentExtractionData.ExecutionTime = existingDocumentData.ExecutionTime;
+
+                    extractedDataList.Add(documentExtractionData);
                 }
 
-                // Optionally push the extracted data to the client UI
-                // await _extractHub.Clients.User(_userId.ToString()).SendAsync("GetExtractedData", extractedData);
+                // Optionally send the extracted data to the client UI (not implemented here)
+                // await _extractHub.Clients.User(_userId.ToString()).SendAsync("GetExtractedData", documentExtractionData);
             }
             // Check if there is any extracted data to insert into the database
             if (extractedDataToBeInserted.Any())
