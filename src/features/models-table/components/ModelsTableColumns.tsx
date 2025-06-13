@@ -2,12 +2,12 @@ import { Checkbox } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
-
 import { ColumnDef } from "@tanstack/react-table";
-import { getColumnName } from "../constants/column-display-names";
 
+import { getColumnName } from "../constants/column-display-names";
 import { ModelsTableDto } from "../dtos/models-table-dto";
 import { ModelTypesEnum } from "../enums/model-type-enum";
+
 import { ModelRowActions } from "./model-row-actions/ModelRowActions";
 import { ModelsTableCellLink } from "./ModelsTableCellLink";
 

@@ -1,5 +1,3 @@
-import { useUpdateDesktopApp } from "@/hooks/useUpdateDesktopApp";
-import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { Sidebar } from "@aventisia/ui/layout";
 import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
@@ -7,6 +5,10 @@ import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
+import { useUpdateDesktopApp } from "@/hooks/useUpdateDesktopApp";
+import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
+
 import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppRedirectPage } from "./AppRedirectPage";

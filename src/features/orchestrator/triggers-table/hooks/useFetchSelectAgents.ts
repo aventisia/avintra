@@ -1,13 +1,13 @@
-import { toast } from "@aventisia/ui/sonner"
-import { useDTCrudDialogStore } from "@aventisia/ui/stores"
-import { useQuery } from "@tanstack/react-query"
-import { useEffect } from "react"
-import { useShallow } from "zustand/react/shallow"
+import { toast } from "@aventisia/ui/sonner";
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import {
   getNewTriggerAgents,
   geTriggerAgents,
-} from "../apis/triggers-table-apis"
+} from "../apis/triggers-table-apis";
 
 /**
  * Custom hook to fetch agents using react query.

@@ -10,5 +10,5 @@ export enum ModelTypesEnum {
   Classification = "Classification",
   SentimentAnalytics = "Sentiment Analytics",
   QuestionAnswer = "Questions & Answers",
-  AIPersona = "AI Persona"
+  AIPersona = "AI Persona",
 }

@@ -1,5 +1,6 @@
 import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { useShallow } from "zustand/react/shallow";
+
 import { UpdateBanner } from "./UpdateBanner";
 
 const banners: Record<string, React.ReactNode> = {
