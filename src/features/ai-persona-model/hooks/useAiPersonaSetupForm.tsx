@@ -1,3 +1,4 @@
+import { deleteInsertedFileById } from "@/features/file-uploader-setup/apis/file-upload-apis";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 
 import { toast } from "@aventisia/ui/sonner";
@@ -52,9 +53,25 @@ export const useAIPersonaSetupForm = () => {
     append([]);
   };
 
+  type MutationParams = {
+    id: string;
+    index: number;
+  };
+
+  const { mutate: removeInsertedDocument } = useMutation({
+    mutationFn: ({ id }: MutationParams) => deleteInsertedFileById(id),
+    onSuccess: async (_data, variables) => {
+      remove(variables.index); // ✅ Now TypeScript knows 'index' exists
+      toast.success("File deleted successfully");
+    },
+    onError: (error) => {
+      toast.error(error.toString());
+    },
+  });
+
   // Function to remove an object from categories
-  const removeDocument = (index: number) => {
-    remove(index);
+  const removeDocument = (id: string, index: number) => {
+    removeInsertedDocument({ id, index });
   };
 
   const queryClient = useQueryClient();

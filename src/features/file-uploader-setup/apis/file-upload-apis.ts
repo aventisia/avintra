@@ -59,6 +59,15 @@ const deleteFile = async (
   return data;
 };
 
+const deleteInsertedFileById = async(
+  id: string,
+): Promise<DeleteFileResponseDto> => {
+  const { data } = await axiosInstance.delete<DeleteFileResponseDto>(
+    `${baseAPIURL}/${id}`,
+  );
+  return data;
+}
+
 const submitFiles = async (
   payload: FileUploadDto[],
 ): Promise<FileUploadDto> => {
@@ -75,4 +84,5 @@ export {
   submitFiles,
   getUploadedFiles,
   getUploadedFile,
+  deleteInsertedFileById
 };

@@ -11,7 +11,7 @@ type KnowledgeContextProps = {
   form: UseFormReturn<z.infer<typeof aiPersonaSetupFormZodSchema>>;
   categoryFields: { id: string }[];
   addCategory: () => void;
-  removeCategory: (index: number) => void;
+  removeCategory: (id: string, index: number) => void;
 };
 
 const KnowledgeContext = ({
