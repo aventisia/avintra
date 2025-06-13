@@ -7,9 +7,13 @@ import { useNodeSelectorStore } from "@/features/action-selector/stores/action-s
 import { useShallow } from "zustand/react/shallow";
 import { useEffect, useState } from "react";
 import { getActionSelectorData } from "@/apis/get-action-selector-data";
+import { useUpdateDesktopApp } from "@/hooks/useUpdateDesktopApp";
 
 export const AppLayout = () => {
   const [loading, setLoading] = useState(true);
+
+  // Check for slient updates inside the Tauri app
+  useUpdateDesktopApp();
 
   // Validate user session
   const { isPending } = useValidateUserSession();
