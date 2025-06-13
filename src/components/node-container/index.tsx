@@ -24,7 +24,6 @@ export const NodeContainer = ({
         className,
         nodeData.type == "forLoopNode" && "border-blue-500",
         nodeData.type == "conditionalNode" && "border-indigo-500",
-        nodeData.type == "aiNode" && "border-violet-500",
         selected && "border-primary ring ring-ring",
       )}
       {...props}
@@ -34,7 +33,6 @@ export const NodeContainer = ({
           "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center rounded-l-lg bg-slate-100",
           nodeData.type == "forLoopNode" && "bg-blue-100",
           nodeData.type == "conditionalNode" && "bg-indigo-100",
-          nodeData.type == "aiNode" && "bg-violet-100",
         )}
       >
         <GripVertical
@@ -48,7 +46,6 @@ export const NodeContainer = ({
         <div
           className={cn(
             "flex w-[18rem] grow flex-col gap-2 rounded-r-lg bg-white px-4 pb-3.5 pt-[0.7rem]",
-            nodeData.type == "aiNode" && "bg-violet-500",
             nodeData.type == "forLoopNode" && "bg-blue-50",
             nodeData.type == "conditionalNode" && "bg-indigo-50",
           )}
