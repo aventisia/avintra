@@ -45,6 +45,11 @@ export interface ModelLibraryTableDto {
   docsProcessed?: number;
 
   /**
+   * Is the model has been published
+   */
+  isPublished: true;
+
+  /**
    * Gets or sets the date and time when the model record was created.
    */
   createdOn?: Date;

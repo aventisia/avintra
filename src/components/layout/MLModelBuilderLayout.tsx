@@ -1,9 +1,9 @@
+import PublishModel from "@/features/publish-model/PublishModel";
 import { useClearQueryParamsOutsideView } from "@/hooks/useClearQueryParamsOutsideView";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { Header } from "@/react-toolkit/layout/Header";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 
-import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { Outlet } from "react-router-dom";
@@ -27,7 +27,7 @@ export const MLModelBuilderLayout = () => {
             extraContentRight={
               <>
                 <NavigationTabs />
-                <Button size={"xs"}>Publish</Button>
+                <PublishModel />
               </>
             }
             // extraContentCenter={<LLMSelector />}
