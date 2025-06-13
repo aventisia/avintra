@@ -12,7 +12,9 @@ const PublishModel = () => {
   const { mutate: mutatePublish, isPending } = usePublishModelMutation();
   const location = useLocation();
   const { modelId: mlModelId } = useLabelDataStore();
-  const { data, isLoading } = useFetchModel();
+  const { data: modelData, isLoading } = useFetchModel();
+
+  const isPublishButtonDisabled = modelData?.data?.setupStatus === "Pending";
 
   // Get flow id and version id from url
   const queryParams = useMemo(
@@ -36,7 +38,12 @@ const PublishModel = () => {
           title: "Publish Model",
         })
       }
-      disabled={isPending || data?.data.isPublished || isLoading}
+      disabled={
+        isPending ||
+        modelData?.data.isPublished ||
+        isLoading ||
+        isPublishButtonDisabled
+      }
     >
       Publish
     </Button>
