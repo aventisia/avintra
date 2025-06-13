@@ -70,6 +70,11 @@ public class MLModelDto
     public int ExecutionTime { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the model has been published.
+    /// </summary>
+    public bool IsPublished { get; set; }
+
+    /// <summary>
     /// Gets or sets the date of creation of ML model.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; }

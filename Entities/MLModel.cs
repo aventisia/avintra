@@ -55,6 +55,11 @@ public class MLModel : BaseEntity, IMustHaveTenant
     public string? GeneratedPrompt { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the model has been published.
+    /// </summary>
+    public bool IsPublished { get; set; }
+
+    /// <summary>
     /// Gets or sets the ML model to which this extracted data model is associated with.
     /// </summary>
     public virtual ICollection<ExtractedData>? ExtractedData { get; set; }
