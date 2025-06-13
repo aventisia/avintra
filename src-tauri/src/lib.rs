@@ -12,6 +12,7 @@ pub fn run() {
     // Initialize the Tauri application
     tauri::Builder::default()
         .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             commands::launch_desktop_executor,
             commands::launch_ui_inspector
