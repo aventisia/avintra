@@ -47,7 +47,12 @@ export interface ModelLibraryTableDto {
   /**
    * Is the model has been published
    */
-  isPublished: true;
+  isPublished?: true;
+
+  /**
+   * Total execution count
+   */
+  executionTime?: number;
 
   /**
    * Gets or sets the date and time when the model record was created.
