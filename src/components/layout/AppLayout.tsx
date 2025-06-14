@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { useUpdateDesktopApp } from "@/hooks/useUpdateDesktopApp";
+import { useCheckForUpdate } from "@/hooks/useCheckForUpdate";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 
 import AppBanner from "./AppBanner";
@@ -26,8 +26,8 @@ export const AppLayout = () => {
       })),
     );
 
-  // Check for slient updates inside the Tauri app
-  useUpdateDesktopApp();
+  // Check for new version updates if app is inside the Tauri app
+  useCheckForUpdate();
 
   // Validate user session
   const { isPending } = useValidateUserSession();
