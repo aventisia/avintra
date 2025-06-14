@@ -11,6 +11,7 @@ pub fn run() {
 
     // Initialize the Tauri application
     tauri::Builder::default()
+        .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
@@ -25,7 +26,7 @@ pub fn run() {
                         .build(),
                 )?;
             }
-            
+
             // Set tauri window title with version
             let window = app.get_webview_window("main").unwrap();
             let version = env!("CARGO_PKG_VERSION"); // reads version from Cargo.toml
