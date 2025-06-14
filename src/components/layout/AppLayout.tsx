@@ -1,19 +1,28 @@
+import { getActionSelectorData } from "@/apis/get-action-selector-data";
+import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
+import { useCheckForUpdate } from "@/hooks/useCheckForUpdate";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { cn } from "@aventisia/ui/lib";
-import { AppRedirectPage } from "./AppRedirectPage";
-import { Outlet } from "react-router-dom";
-import AppHeader from "./AppHeader";
-import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
-import { useShallow } from "zustand/react/shallow";
+import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { useEffect, useState } from "react";
-import { getActionSelectorData } from "@/apis/get-action-selector-data";
-import { useUpdateDesktopApp } from "@/hooks/useUpdateDesktopApp";
+import { Outlet } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+import AppBanner from "./AppBanner";
+import AppHeader from "./AppHeader";
+import { AppRedirectPage } from "./AppRedirectPage";
 
 export const AppLayout = () => {
   const [loading, setLoading] = useState(true);
 
-  // Check for slient updates inside the Tauri app
-  useUpdateDesktopApp();
+  // Get the appBanner state from the base layout store
+  const { appBanner } = useBaseLayoutStore(
+    useShallow((state) => ({
+      appBanner: state.appBanner,
+    })),
+  );
+
+  // Check for new version updates if app is inside the Tauri app
+  useCheckForUpdate();
 
   // Validate user session
   const { isPending } = useValidateUserSession();
@@ -39,10 +48,14 @@ export const AppLayout = () => {
         <AppRedirectPage />
       ) : (
         <div className="relative flex min-h-screen flex-col items-center">
+          <AppBanner />
           <AppHeader />
           <main
             className={cn(
-              "h-[calc(100vh-var(--header-height)-var(--header-padding))] w-full overflow-hidden",
+              "w-full overflow-hidden",
+              appBanner
+                ? "h-[calc(100vh-var(--header-height)-var(--header-padding)-var(--banner-height))]"
+                : "h-[calc(100vh-var(--header-height)-var(--header-padding))]",
             )}
           >
             <Outlet />
