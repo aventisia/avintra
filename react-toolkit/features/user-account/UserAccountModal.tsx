@@ -16,7 +16,7 @@ import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis"
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import Lucide from "@/react-toolkit/ui/Lucide";
-import { useTauriStore } from "@/stores/tauri-store";
+import { IS_TAURI } from "@/constants/constants";
 
 interface UserAccountModalProps {
   /** Additional class name to override popover content container style */
@@ -32,13 +32,6 @@ const UserAccountModal = ({
 }: UserAccountModalProps) => {
   // Get user session state and actions
   const { userSession, setUserSession } = useUserSessionStore();
-
-  // Get the state if app is open in tauri window
-  const { isTauri } = useTauriStore(
-    useShallow((state) => ({
-      isTauri: state.isTauri,
-    })),
-  );
 
   //state to close the popover
   const { isPopOverOpen, setisPopOverOpen } = useBaseLayoutStore(
@@ -111,7 +104,7 @@ const UserAccountModal = ({
           )}
         </div>
         <Separator className="my-1 h-[0.5px]" />
-        {!isTauri && (
+        {!IS_TAURI && (
           <>
             <Button
               variant={"ghost"}

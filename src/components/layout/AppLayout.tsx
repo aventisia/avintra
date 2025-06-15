@@ -6,13 +6,17 @@ import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { useCheckForUpdate } from "@/hooks/useCheckForUpdate";
+import {
+  useCheckForUpdate,
+  useRedirectOnRelaunch,
+} from "@/features/tauri-updater";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 
 import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppRedirectPage } from "./AppRedirectPage";
 import { sidebarMenuSections } from "./sidebar-menu-sections";
+import { IS_TAURI } from "@/constants/constants";
 
 export const AppLayout = () => {
   // Get the state and actions from the base layout store
@@ -26,7 +30,10 @@ export const AppLayout = () => {
       })),
     );
 
-  // Check for new version updates if app is inside the Tauri app
+  // Redirect to relaunch URL if available (if app is inside Tauri)
+  useRedirectOnRelaunch();
+
+  // Check for new version updates if app is inside the Tauri
   useCheckForUpdate();
 
   // Validate user session
@@ -53,7 +60,7 @@ export const AppLayout = () => {
         <div className="relative min-h-screen overflow-hidden">
           <AppBanner />
           <AppHeader />
-          {!("isTauri" in window) && <Sidebar />}
+          {!IS_TAURI && <Sidebar />}
           <ScrollArea
             className={cn(
               appBanner
@@ -64,7 +71,7 @@ export const AppLayout = () => {
             <main
               className={cn(
                 "px-7 py-0 transition-[margin] duration-500",
-                !("isTauri" in window) &&
+                !IS_TAURI &&
                   (sidebarExpand
                     ? "md:ml-[--sidebar-max-width]"
                     : "md:ml-[--sidebar-min-width]"),
