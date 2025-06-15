@@ -13,7 +13,7 @@ public class LoadFlowDto
     // <summary>
     /// Gets or sets the version ID of the flow.
     /// </summary>
-    public Guid? VersionId { get; set; }
+    public Guid VersionId { get; set; }
 
     /// <summary>
     /// Gets or sets the version number of a flow version record
@@ -55,12 +55,6 @@ public class LoadFlowDto
     /// Gets or sets a value indicating whether the version has been archived.
     /// </summary>
     public bool IsArchived { get; set; }
-
-    /// <summary>
-    /// Gets or sets the ID of the flow this version is associated with.
-    /// </summary>
-    [RequiredGuid]
-    public Guid FlowId { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the flow.
