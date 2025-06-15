@@ -10,8 +10,29 @@
     "updater:default",
     "process:default",
     "store:default",
-    "process:default",
-    "process:default"
+    "os:default",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "taskkill",
+          "cmd": "taskkill",
+          "args": [
+            { "validator": "\\S+" },
+            { "validator": "\\S+" },
+            { "validator": "\\S+" }
+          ]
+        },
+        {
+          "name": "pkill",
+          "cmd": "pkill",
+          "args": [
+            { "validator": "\\S+" },
+            { "validator": "\\S+" }
+          ]
+        }
+      ]
+    }
   ],
   "local": true,
   "remote": {
