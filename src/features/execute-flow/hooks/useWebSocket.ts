@@ -1,3 +1,4 @@
+import { IS_TAURI } from "@/constants";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useCallback, useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -47,7 +48,7 @@ export default function useWebSocket() {
   // Connect to web socket and handle messages
   useEffect(() => {
     // App is outside of tauri, web socket not available
-    if (!("isTauri" in window)) return;
+    if (!IS_TAURI) return;
 
     // Create WebSocket connection
     const socket = new WebSocket("ws://127.0.0.1:9001");

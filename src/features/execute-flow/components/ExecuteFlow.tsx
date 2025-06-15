@@ -1,4 +1,6 @@
+import { IS_TAURI } from "@/constants";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { Button } from "@aventisia/ui/buttons";
 import { toast } from "@aventisia/ui/sonner";
 import { Tooltip } from "@aventisia/ui/tooltip";
@@ -7,7 +9,6 @@ import { invoke } from "@tauri-apps/api/core";
 import { Loader2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import useWebSocket from "../hooks/useWebSocket";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 const ExecuteFlow = () => {
   // Get current flow and execution state from current flow store
@@ -37,7 +38,7 @@ const ExecuteFlow = () => {
     setExecutionState("launching-executor");
 
     // Open the desktop executor if the app is running in Tauri
-    if ("isTauri" in window) {
+    if (IS_TAURI) {
       localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
       localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
       openDesktopExecutor();
