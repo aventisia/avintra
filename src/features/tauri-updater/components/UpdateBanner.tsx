@@ -1,12 +1,12 @@
 import { SubmitButton } from "@aventisia/ui/buttons";
 import { Banner } from "@aventisia/ui/layout";
+import { cn } from "@aventisia/ui/lib";
 import { toast } from "@aventisia/ui/sonner";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { LazyStore } from "@tauri-apps/plugin-store";
 import { check } from "@tauri-apps/plugin-updater";
 import { useState } from "react";
-import { TAURI_RELAUNCH_URL_KEY, TAURI_UPDATE_STORE } from "..";
-import { killBinaries } from "../utils/kill-binaries";
+import { TAURI_RELAUNCH_URL_KEY, TAURI_UPDATE_STORE, killBinaries } from "..";
 
 // Create a lazy store instance to manage the update state
 const tauriUpdateStore = new LazyStore(TAURI_UPDATE_STORE);
@@ -89,7 +89,8 @@ export function UpdateBanner() {
               size="xs"
               type="button"
               primaryText="Update Now"
-              secondaryText={`Updating... ${progress}%`}
+              secondaryText={`Updating...${"\u00A0".repeat(2)}${progress}%`}
+              className={cn("w-fit", progress > 0 && "min-w-36")}
               isPending={progress > 0}
               disabled={progress > 0}
               onClick={installUpdate}
