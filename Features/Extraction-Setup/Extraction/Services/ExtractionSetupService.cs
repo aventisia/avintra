@@ -210,6 +210,29 @@ public class ExtractionSetupService : IExtractionSetupService
                                       .TableMetadata?
                                       .ToDictionary(c => c.Index, c => c.TableHeaders
                                       .ToDictionary(d => d.Index, d => d.Name));
+            var outputFormat = new ExtractionSetupData()
+            {
+                Fields = fieldDict?.Select(s => new ExtractionSetupFieldValueSchema()
+                {
+                    Index = s.Key,
+                    Name = s.Value,
+                    ConfidenceScore = "0",
+                    Value = ""
+                }).ToList(),
+
+                Tables = tableMetadataDict?.Select(s => new ExtractionSetupTableSchema()
+                {
+                    Index = s.Key,
+                    Name = s.Value,
+                    Headers = tableHeaderDict != null && tableHeaderDict.TryGetValue(s.Key, out var headers)
+                        ? headers.Select(s1 => new ExtractionSetupTableHeaderSchema()
+                        {
+                            Index = s1.Key,
+                            Name = s1.Value,
+                        }).ToList()
+                        : new List<ExtractionSetupTableHeaderSchema>()
+                }).ToList()
+            };
 
             // Check for prompt availability
             if (string.IsNullOrEmpty(model.GeneratedPrompt))
@@ -288,8 +311,17 @@ public class ExtractionSetupService : IExtractionSetupService
                     return serviceResponse;
                 }
 
-                // Prepare the prompt for the LLM (Large Language Model) including the document content
-                var prompt = $"{model.GeneratedPrompt}\n\nDocument Text:\n{documentText}";
+                // Serialize the outputFormat to JSON
+                var outputFormatJson = JsonSerializer.Serialize(outputFormat, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                });
+
+                // Replace the placeholders in the generated prompt
+                var prompt = model.GeneratedPrompt
+                    .Replace("{{FileContent}}", documentText)
+                    .Replace("{{OutputFormat}}", outputFormatJson);
+
 
                 // Record the start time before calling the LLM extraction service
                 var startExecutionTime = DateTime.UtcNow;
@@ -345,42 +377,43 @@ public class ExtractionSetupService : IExtractionSetupService
                 try
                 {
                     documentExtractionData.ExtractedData = JsonSerializer.Deserialize<ExtractionSetupData>(llmResponse.Data, serializerOptions) ?? new ExtractionSetupData();
-                    documentExtractionData.Remarks = "";
-                    // Assign field names based on field index using the fieldDict dictionary
-                    foreach (var field in documentExtractionData.ExtractedData.Fields)
-                    {
-                        if (fieldDict.TryGetValue(field.Index, out var name))
-                        {
-                            field.Name = name;
-                        }
-                    }
+                    documentExtractionData.Remarks = outputFormatJson;
+                    
+                    // // Assign field names based on field index using the fieldDict dictionary
+                    // foreach (var field in documentExtractionData.ExtractedData.Fields)
+                    // {
+                    //     if (fieldDict.TryGetValue(field.Index, out var name))
+                    //     {
+                    //         field.Name = name;
+                    //     }
+                    // }
 
-                    // Assign table names and header names using tableMetadataDict and tableHeaderDict
-                    foreach (var tableSchema in documentExtractionData.ExtractedData.Tables)
-                    {
-                        // Set the table name if available
-                        if (tableMetadataDict.TryGetValue(tableSchema.Index, out var tableName))
-                        {
-                            tableSchema.Name = tableName;
-                        }
+                    // // Assign table names and header names using tableMetadataDict and tableHeaderDict
+                    // foreach (var tableSchema in documentExtractionData.ExtractedData.Tables)
+                    // {
+                    //     // Set the table name if available
+                    //     if (tableMetadataDict.TryGetValue(tableSchema.Index, out var tableName))
+                    //     {
+                    //         tableSchema.Name = tableName;
+                    //     }
 
-                        // Set the header names for the table if available
-                        if (tableHeaderDict.TryGetValue(tableSchema.Index, out var headersDict))
-                        {
-                            foreach (var header in tableSchema.Headers)
-                            {
-                                if (headersDict.TryGetValue(header.Index, out var headerName))
-                                {
-                                    header.Name = headerName;
-                                }
-                            }
-                        }
-                    }
+                    //     // Set the header names for the table if available
+                    //     if (tableHeaderDict.TryGetValue(tableSchema.Index, out var headersDict))
+                    //     {
+                    //         foreach (var header in tableSchema.Headers)
+                    //         {
+                    //             if (headersDict.TryGetValue(header.Index, out var headerName))
+                    //             {
+                    //                 header.Name = headerName;
+                    //             }
+                    //         }
+                    //     }
+                    // }
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Deserialization failed for DocumentId: {DocumentId}", documentId);
-                    documentExtractionData.Remarks = $"005: Deserialization failed for DocumentId: {documentId}";
+                    documentExtractionData.Remarks = $"005: Deserialization failed for DocumentId: {documentId}, Output:{outputFormatJson} , Response: {llmResponse.Data}";
 
                     // Increment the failure count if there was existing extracted data for this document
                     if (existingDocumentData != null)
@@ -1264,13 +1297,13 @@ public class ExtractionSetupService : IExtractionSetupService
         {
             tableInstruction.AppendLine("Since the table has no details, return the `tables` array as an empty list: `[]`.");
         }
+
         // Load a template file and replace placeholders with the generated prompt sections
         var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("ExtractionPrompt.txt", new Dictionary<string, string>()
                     {
-                        // Replace the placeholders {{Prompt}}, {{Fields}}, and {{Tables}} in the template with the respective sections
+                        // Replace the placeholders {{Prompt}}, {{Context}}, and {{OutputFormat}} in the template with the respective sections
                         {"{{Prompt}}", defaultPrompt.Replace("\n","").ToString()  },
-                        {"{{Fields}}", fieldInstruction.Replace("\n","").ToString() },
-                        {"{{Tables}}", tableInstruction.Replace("\n","").ToString() }
+                        {"{{Context}}", mlModelSetupDto.SetupObject.Context },
                     }
                 );
 
