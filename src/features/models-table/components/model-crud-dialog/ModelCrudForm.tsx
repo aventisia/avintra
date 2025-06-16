@@ -16,7 +16,6 @@ import {
   descriptionProps,
   idProps,
   isDisabledProps,
-  llmProps,
   nameProps,
   typeProps,
 } from "../../constants/model-form-field-props";
@@ -88,13 +87,6 @@ export const ModelCrudForm = () => {
         <SelectField {...typeProps} />
       ) : (
         form.getValues("type") !== "" && <SelectField {...typeProps} />
-      )}
-
-      {/* Type. TODO: Select field doesn't update. Applied workaround for now */}
-      {crudAction === "create" ? (
-        <SelectField {...llmProps} />
-      ) : (
-        form.getValues("llm") !== "" && <SelectField {...llmProps} />
       )}
 
       {/* Description */}

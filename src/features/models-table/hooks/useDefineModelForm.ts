@@ -52,7 +52,7 @@ export const useDefineModelForm = () => {
       id: "",
       type: "",
       name: "",
-      llm: "",
+      llm: "N/A",
       description: "",
       setupStatus: "Pending",
       createdBy: userSession?.firstName + " " + userSession?.lastName,
@@ -85,8 +85,8 @@ export const useDefineModelForm = () => {
       type: modelData?.type ?? "",
       name: modelData?.name ?? "",
       description: modelData?.description ?? "",
-      llm: modelData?.llm ?? "",
       // Read (view) only fields
+      llm: modelData?.llm ?? "N/A",
       setupStatus: modelData?.setupStatus ?? "Pending",
       createdBy:
         modelData?.createdBy ??
