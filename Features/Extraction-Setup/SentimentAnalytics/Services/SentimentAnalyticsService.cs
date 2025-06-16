@@ -262,7 +262,7 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
                 var startExecutionTime = DateTime.UtcNow;
 
                 // Call the LLM data extraction service to process the document text
-                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, modelSetup.LLM, modelSetup.Temperature);
+                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(prompt, modelSetup.LLM, modelSetup.Temperature);
 
                 // Record the end time after receiving the response from the LLM service
                 var endExecutionTime = DateTime.UtcNow;

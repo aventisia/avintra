@@ -298,7 +298,7 @@ public class SummarizationService : ISummarizationService
                 var startExecutionTime = DateTime.UtcNow;
 
                 // Call the LLM data extraction service to process the document text
-                var llmSummarizationResponse = await _llmDataExtractionService.ExtractDataAsync(model.GeneratedPrompt, modelSetup.LLM, modelSetup.Temperature);
+                var llmResponse = await _llmDataExtractionService.ExtractDataAsync(prompt, modelSetup.LLM, modelSetup.Temperature);
 
                 // Record the end time after receiving the response from the LLM service
                 var endExecutionTime = DateTime.UtcNow;
@@ -307,10 +307,10 @@ public class SummarizationService : ISummarizationService
                 int executionDurationInSeconds = (int)Math.Ceiling((endExecutionTime - startExecutionTime).TotalSeconds);
 
                 // Check if LLM extraction was successful (StatusCode 200)
-                if (llmSummarizationResponse.StatusCode != 200)
+                if (llmResponse.StatusCode != 200)
                 {
-                    _logger.LogWarning("LLM summarization failed for DocumentId: {DocumentId} with message: {Message}", documentId, llmSummarizationResponse.Message);
-                    documentExtractionData.Remarks = $"003: LLM summarization failed. {llmSummarizationResponse.Message}";
+                    _logger.LogWarning("LLM summarization failed for DocumentId: {DocumentId} with message: {Message}", documentId, llmResponse.Message);
+                    documentExtractionData.Remarks = $"003: LLM summarization failed. {llmResponse.Message}";
 
                     // Increment the failure count if there was existing extracted data for this document
                     if (existingDocumentData != null)
@@ -332,7 +332,7 @@ public class SummarizationService : ISummarizationService
                 }
 
                 // Check if LLM returned empty data
-                if (string.IsNullOrEmpty(llmSummarizationResponse.Data))
+                if (string.IsNullOrEmpty(llmResponse.Data))
                 {
                     _logger.LogWarning("LLM returned empty data for DocumentId: {DocumentId}", documentId);
                     documentExtractionData.Remarks = $"004: LLM returned empty response for DocumentId: {documentId}";
@@ -347,7 +347,7 @@ public class SummarizationService : ISummarizationService
                 };
                 try
                 {
-                    documentExtractionData.ExtractedData = JsonSerializer.Deserialize<SummarizationSetupData>(llmSummarizationResponse.Data, serializerOptions) ?? new SummarizationSetupData();
+                    documentExtractionData.ExtractedData = JsonSerializer.Deserialize<SummarizationSetupData>(llmResponse.Data, serializerOptions) ?? new SummarizationSetupData();
                     documentExtractionData.Remarks = "";
                 }
                 catch (Exception ex)
