@@ -1,6 +1,9 @@
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 import { useTabStore } from "@/store/tab-store";
 import { formatSeconds } from "@/utils/formatSeconds";
+
+// import { formatSeconds } from "@/utils/formatSeconds";
 
 import { Button } from "@aventisia/ui/buttons";
 import { Tooltip } from "@aventisia/ui/tooltip";
@@ -25,6 +28,11 @@ function ExtractViaLLMButton() {
   );
   const { activeTab } = useTabStore();
   const { data: modelData, isLoading: isModelLoading } = useFetchModel();
+  const { extractedData } = useExtractedDataStore(
+    useShallow((state) => ({
+      extractedData: state.extractedData,
+    })),
+  );
 
   // Get extract via LLM mutation and pending status
   const { extractViaLLMMutation, isExtractionPending } =
@@ -66,14 +74,13 @@ function ExtractViaLLMButton() {
           </>
         )}
       </Button>
-      <Tooltip side="right" content="Total execution time">
-        <div className="flex items-center gap-0.5 mr-2">
+      <Tooltip side="right" content="Last execution time">
+        <div className="flex items-center gap-1 mr-2">
           <>
             <Timer className="h-4 w-4" />
             <p className="text-sm">
-              {/* {executionTime ? formatSeconds(executionTime) : "0s"} */}
-              {!isModelLoading && modelData?.data.executionTime
-                ? formatSeconds(modelData?.data.executionTime)
+              {extractedData.executionTime
+                ? formatSeconds(extractedData.executionTime)
                 : "0s"}
             </p>
           </>
