@@ -1,11 +1,11 @@
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { useQuery } from "@tanstack/react-query";
 import { Edge, Node, useReactFlow, Viewport } from "@xyflow/react";
 import { useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { useQuery } from "@tanstack/react-query";
 import { getFlowToLoad } from "../apis/react-flow-apis";
 import { deepParse } from "../utils/deepParse";
 
@@ -20,14 +20,12 @@ export const useFetchFlowToLoad = () => {
   const flowId = queryParams.get("f");
   const versionId = queryParams.get("v") || undefined;
 
-  const { setCurrentFlow, setIsFlowLoading, setProjectInfo } =
-    useCurrentFlowStore(
-      useShallow((state) => ({
-        setCurrentFlow: state.setCurrentFlow,
-        setIsFlowLoading: state.setIsFlowLoading,
-        setProjectInfo: state.setProjectInfo,
-      })),
-    );
+  const { setCurrentFlow, setIsFlowLoading } = useCurrentFlowStore(
+    useShallow((state) => ({
+      setCurrentFlow: state.setCurrentFlow,
+      setIsFlowLoading: state.setIsFlowLoading,
+    })),
+  );
 
   // Get ReactFlowExt store state & actions
   const { setNodes, setEdges, setFlowVariablesObject, setIsPublished } =
@@ -58,7 +56,18 @@ export const useFetchFlowToLoad = () => {
   useEffect(() => {
     if (!data) return;
     // Set currently opened flow
-    setCurrentFlow({ id: data.data.id, name: data.data.name });
+    setCurrentFlow({
+      id: data.data.id,
+      name: data.data.name,
+      versionId: data.data.versionId,
+      versionNumber: data.data.versionNumber,
+      isPublished: data.data.isPublished || false,
+      isLocked: data.data.isLocked || false,
+      isDraft: data.data.isDraft || false,
+      isArchived: data.data.isArchived || false,
+      type: data.data.type,
+      description: data.data.description || "",
+    });
     setIsPublished(data?.data?.isPublished || false);
 
     // Parse react flow object
@@ -70,19 +79,12 @@ export const useFetchFlowToLoad = () => {
 
     // Parse Flow Variables Object
     const flowVarObjs = JSON.parse(data.data.flowVariablesObject);
-    const projectInfo = {
-      versionId: data.data.versionId,
-      versionNumber: data.data.versionNumber,
-      name: data.data.name,
-      type: data.data.type,
-    };
 
     if (flow) {
       // Set nodes and edges
       setNodes(flow.nodes);
       setEdges(flow.edges);
       setFlowVariablesObject(flowVarObjs || []);
-      setProjectInfo(projectInfo);
 
       // If flow has more than 2 nodes then set the saved viewport
       if (flow.nodes.length > 2) {
@@ -101,7 +103,6 @@ export const useFetchFlowToLoad = () => {
     setNodes,
     setEdges,
     setFlowVariablesObject,
-    setProjectInfo,
     setViewport,
     fitView,
     setIsPublished,

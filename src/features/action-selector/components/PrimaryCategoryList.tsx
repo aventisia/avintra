@@ -4,6 +4,7 @@ import { PrimaryCategory } from "./PrimaryCategory";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { useShallow } from "zustand/react/shallow";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
 export const PrimaryCategoryList = () => {
   // Get the setPrimaryCategory function from the store
@@ -14,9 +15,9 @@ export const PrimaryCategoryList = () => {
     })),
   );
 
-  const { projectInfo } = useCurrentFlowStore(
+  const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
-      projectInfo: state.projectInfo,
+      currentFlow: state.currentFlow,
     })),
   );
 
@@ -32,7 +33,7 @@ export const PrimaryCategoryList = () => {
               onSelect={() => setPrimaryCategoryLabel(item.label)}
               // disabled={!item.actionCategories.length}
               disabled={
-                projectInfo?.type === "AutomationAgent" &&
+                currentFlow?.type === FlowTypesEnum.AutomationAgent &&
                 item.label === "AI Integrations" &&
                 true
               }
