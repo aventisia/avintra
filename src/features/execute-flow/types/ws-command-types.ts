@@ -3,6 +3,7 @@ export type WebSocketCommandType =
   | "check-loop-condition"
   | "process-node"
   | "next-node"
+  | "save-execution-log"
   | "start"
   | "pause"
   | "resume"

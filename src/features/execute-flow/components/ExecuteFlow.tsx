@@ -8,6 +8,7 @@ import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { invoke } from "@tauri-apps/api/core";
 import { Loader2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
+import { CURRENT_VERSION_ID_KEY } from "..";
 import useWebSocket from "../hooks/useWebSocket";
 
 const ExecuteFlow = () => {
@@ -61,7 +62,11 @@ const ExecuteFlow = () => {
         .then((res) => {
           console.log("Executor launched successfully:", res);
 
-          // Set nodes and edges in local storage for executor
+          // Set versionId, nodes and edges in local storage for executor
+          localStorage.setItem(
+            CURRENT_VERSION_ID_KEY,
+            currentFlow.versionId || "",
+          );
           localStorage.setItem("nodes", JSON.stringify(nodes));
           localStorage.setItem("edges", JSON.stringify(edges));
         })
@@ -144,3 +149,4 @@ const ExecuteFlow = () => {
 };
 
 export { ExecuteFlow };
+
