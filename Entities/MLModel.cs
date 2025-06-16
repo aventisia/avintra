@@ -34,11 +34,6 @@ public class MLModel : BaseEntity, IMustHaveTenant
     public SetupStatusTypesEnum SetupStatus { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of LLM.
-    /// </summary>/
-    public required string LLM { get; set; }
-
-    /// <summary>
     /// Gets or sets the accuracy for the record
     /// </summary>
     [Range(1, 100)]

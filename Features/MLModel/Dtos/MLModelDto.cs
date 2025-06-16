@@ -19,11 +19,6 @@ public class MLModelDto
     public ModelTypesEnum Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of LLM.
-    /// </summary>/
-    public required string LLM { get; set; }
-
-    /// <summary>
     /// Gets or sets the documents processed for this record
     /// </summary>
     public int? DocsProcessed { get; set; }

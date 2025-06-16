@@ -146,7 +146,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
                         {
                             stream = false,
                             prompt = $"{model.GeneratedPrompt}\n\nFile Text:\n{fileText}",
-                            model = llmModelMapper.GetValueOrDefault(model.LLM) // TODO: Change this LLMName
+                            model = llmModelMapper.GetValueOrDefault("gemma") // TODO: Change this LLMName
                         };
 
                         var jsonRequest = JsonSerializer.Serialize(requestDto);
@@ -174,7 +174,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
                         var llmResponse = doc.RootElement.GetProperty("response").GetString() ?? "";
 
                         _logger.LogInformation($"Prompt was: {model.GeneratedPrompt}\n\nFile Text:\n{fileText}");
-                        _logger.LogInformation($"Model was: {llmModelMapper.GetValueOrDefault(model.LLM)}");
+                        _logger.LogInformation($"Model was: {llmModelMapper.GetValueOrDefault("gemma")}");
                         _logger.LogInformation($"LLM Response was: {llmResponse}");
 
                         // llmResponse contains <think> tag then remove the full tag content
