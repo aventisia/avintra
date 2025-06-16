@@ -1,4 +1,4 @@
-import { ConditionType } from "./condition-groups-type";
+import { ConditionType } from "..";
 
 interface ConditionalBranchNodeData {
   id: string;
