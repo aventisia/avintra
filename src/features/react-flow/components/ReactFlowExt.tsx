@@ -27,6 +27,7 @@ import { MiniMapExt } from "./MiniMapExt";
 import { ViewControls } from "./view-controls";
 import ExecutionLogDialog from "@/features/flow-execution-log/components";
 import SearchCommandDialog from "@/features/search/componets";
+import { FlowSettings } from "@/features/flow-settings/components";
 
 /**
  * A custom extension of the ReactFlow component.
@@ -123,6 +124,7 @@ export const ReactFlowExt = () => {
       </ReactFlow>
       <ExecutionLogDialog />
       <SearchCommandDialog />
+      <FlowSettings />
     </DCPDialog>
   );
 };
