@@ -34,10 +34,35 @@ export interface ModelsTableDto {
    */
   setupStatus?: string;
 
+   /**
+   * token count.
+   */
+   tokenCount?: number;
+
+    /**
+   * Execution count.
+   */
+    executionCount?: number;
+
+  /**
+   * Failed count.
+   */
+    failedCount?: number;
+
+  /**
+   * Total execution time.
+   */
+    executionTime?: number;
+
   /**
    * Gets or sets the accuracy of the model.
    */
   accuracy?: string;
+
+  /**
+   * Is the model published
+   */
+  isPublished?: boolean;
 
   /**
    * Gets or sets the description of the model. Max-500
@@ -48,6 +73,11 @@ export interface ModelsTableDto {
    * Gets or sets the date and time when the model record was created.
    */
   createdOn?: Date;
+
+  /**
+   * Gets the date on which model was published.
+   */
+  publishedOn?: Date;
 
   /**
    * Gets or sets the date and time when the model record was last modified.

@@ -9,4 +9,10 @@ export const columnVisibilityState = {
   setupStatus: false,
   trainedOn: false,
   createdOn: false,
+  tokenCount: false,
+  executionCount: false,
+  failedCount: false,
+  executionTime: false,
+  isPublished: false,
+  publishedOn: false
 };
