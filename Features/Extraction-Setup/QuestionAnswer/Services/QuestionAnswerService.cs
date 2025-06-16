@@ -279,7 +279,7 @@ public class QuestionAnswerService : IQuestionAnswerService
                         documentExtractionData.ExecutionCount = existingDocumentData.ExecutionCount;
                         documentExtractionData.FailedCount = existingDocumentData.FailedCount;
                         documentExtractionData.TokenCount = existingDocumentData.TokenCount;
-                        documentExtractionData.ExecutionTime = existingDocumentData.ExecutionTime;
+                        documentExtractionData.ExecutionTime = executionDurationInSeconds;
                     }
 
                     extractedDataList.Add(documentExtractionData);
@@ -331,7 +331,7 @@ public class QuestionAnswerService : IQuestionAnswerService
                         documentExtractionData.ExecutionCount = existingDocumentData.ExecutionCount;
                         documentExtractionData.FailedCount = existingDocumentData.FailedCount;
                         documentExtractionData.TokenCount = existingDocumentData.TokenCount;
-                        documentExtractionData.ExecutionTime = existingDocumentData.ExecutionTime;
+                        documentExtractionData.ExecutionTime = executionDurationInSeconds;
                     }
 
                     extractedDataList.Add(documentExtractionData);
@@ -368,7 +368,7 @@ public class QuestionAnswerService : IQuestionAnswerService
                     documentExtractionData.ExecutionCount = newExtractedData.ExecutionCount;
                     documentExtractionData.FailedCount = newExtractedData.FailedCount;
                     documentExtractionData.TokenCount = newExtractedData.TokenCount;
-                    documentExtractionData.ExecutionTime = newExtractedData.ExecutionTime;
+                    documentExtractionData.ExecutionTime = executionDurationInSeconds;
                     extractedDataList.Add(documentExtractionData);
                 }
                 else

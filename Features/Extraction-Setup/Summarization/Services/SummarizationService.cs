@@ -313,7 +313,7 @@ public class SummarizationService : ISummarizationService
                         documentExtractionData.ExecutionCount = existingDocumentData.ExecutionCount;
                         documentExtractionData.FailedCount = existingDocumentData.FailedCount;
                         documentExtractionData.TokenCount = existingDocumentData.TokenCount;
-                        documentExtractionData.ExecutionTime = existingDocumentData.ExecutionTime;
+                        documentExtractionData.ExecutionTime = executionDurationInSeconds;
                     }
 
                     extractedDataList.Add(documentExtractionData);
@@ -356,7 +356,7 @@ public class SummarizationService : ISummarizationService
                         documentExtractionData.ExecutionCount = existingDocumentData.ExecutionCount;
                         documentExtractionData.FailedCount = existingDocumentData.FailedCount;
                         documentExtractionData.TokenCount = existingDocumentData.TokenCount;
-                        documentExtractionData.ExecutionTime = existingDocumentData.ExecutionTime;
+                        documentExtractionData.ExecutionTime = executionDurationInSeconds;
                     }
 
                     extractedDataList.Add(documentExtractionData);
@@ -416,7 +416,7 @@ public class SummarizationService : ISummarizationService
                     documentExtractionData.ExecutionCount = existingDocumentData.ExecutionCount;
                     documentExtractionData.FailedCount = existingDocumentData.FailedCount;
                     documentExtractionData.TokenCount = existingDocumentData.TokenCount;
-                    documentExtractionData.ExecutionTime = existingDocumentData.ExecutionTime;
+                    documentExtractionData.ExecutionTime = executionDurationInSeconds;
 
                     extractedDataList.Add(documentExtractionData);
                 }
