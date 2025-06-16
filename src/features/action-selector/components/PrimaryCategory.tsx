@@ -1,19 +1,20 @@
 import { iconMapper } from "@/components/icon-mapper";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { Badge } from "@aventisia/ui/badge";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import { useShallow } from "zustand/react/shallow";
 import { PrimaryCategoryType } from "../types/primary-category-type";
 import { FallbackImageIcon } from "./FallbackImageIcon";
-import { Badge } from "@aventisia/ui/badge";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useShallow } from "zustand/react/shallow";
 
 interface PrimaryCategoryProps {
   data: PrimaryCategoryType;
 }
 
 export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
-  const { projectInfo } = useCurrentFlowStore(
+  const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
-      projectInfo: state.projectInfo,
+      currentFlow: state.currentFlow,
     })),
   );
 
@@ -31,7 +32,7 @@ export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
         <div className="flex gap-2">
           <h2 className="flex items-center text-xs font-medium text-foreground">
             {data.label}
-            {projectInfo.type === "AutomationAgent" &&
+            {currentFlow.type === FlowTypesEnum.AutomationAgent &&
               data.label === "AI Integrations" && (
                 <Badge variant="outline" className="ml-1">
                   Coming Soon

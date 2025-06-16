@@ -1,8 +1,7 @@
+import { LoopNodeDataType } from "@/types/loop-node-data-type";
 import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 import { Node } from "@xyflow/react";
-import { LoopNodeDataType } from "@/types/loop-node-data-type";
-import { WpfLoopNodeData } from "../types/wpf-loop-node-data";
-import { ConditionType } from "../types/condition-groups-type";
+import { ConditionType, WpfLoopNodeData } from "..";
 
 export function getWpfLoopNodeData(
   nodeObj: Node<LoopNodeDataType> | undefined,

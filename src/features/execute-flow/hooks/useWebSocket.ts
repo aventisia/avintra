@@ -1,8 +1,11 @@
+import { IS_TAURI } from "@/constants";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useCallback, useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import {
   getExecutionState,
+  NodeExecutionLogType,
+  saveNodeExecutionLog,
   sendNextNodeToProcess,
   sendNodeToProcess,
   WebSocketCommandType,
@@ -47,7 +50,7 @@ export default function useWebSocket() {
   // Connect to web socket and handle messages
   useEffect(() => {
     // App is outside of tauri, web socket not available
-    if (!("isTauri" in window)) return;
+    if (!IS_TAURI) return;
 
     // Create WebSocket connection
     const socket = new WebSocket("ws://127.0.0.1:9001");
@@ -64,23 +67,25 @@ export default function useWebSocket() {
         // Parse the incoming message
         const msg = JSON.parse(event.data) as WebSocketMessageType;
 
-        // Invalid message, ignore
-        if (msg.source !== "wpf" || !msg.command) return;
+        //  Check if the message is from the expected source and has a command
+        if (
+          msg.source !== "wpf" ||
+          !msg.command ||
+          msg.command === "pause" ||
+          msg.command === "abort"
+        )
+          return;
 
         // Update the execution state based on the command
         setExecutionState(getExecutionState(msg.command));
 
-        // If the command is to pause or abort, we don't need to send a node
-        if (msg.command === "pause" || msg.command === "abort") return;
-
-        // if command is start
         if (msg.command === "start") {
           sendNextNodeToProcess(sendCommand);
-          return;
+        } else if (msg.command === "save-execution-log") {
+          saveNodeExecutionLog(msg.data as unknown as NodeExecutionLogType);
+        } else {
+          sendNodeToProcess(msg.data || "nodeId", sendCommand);
         }
-
-        // Send the node to process
-        sendNodeToProcess(msg.data || "nodeId", sendCommand);
       } catch (err) {
         console.error("Failed to parse WebSocket message:", err);
       }

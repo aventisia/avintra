@@ -1,6 +1,9 @@
 import { getActionSelectorData } from "@/apis/get-action-selector-data";
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
-import { useCheckForUpdate } from "@/hooks/useCheckForUpdate";
+import {
+  useCheckForUpdate,
+  useRedirectOnRelaunch,
+} from "@/features/tauri-updater";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { cn } from "@aventisia/ui/lib";
 import { useBaseLayoutStore } from "@aventisia/ui/stores";
@@ -21,7 +24,10 @@ export const AppLayout = () => {
     })),
   );
 
-  // Check for new version updates if app is inside the Tauri app
+  // Redirect to relaunch URL if available (if app is inside Tauri)
+  useRedirectOnRelaunch();
+
+  // Check for new version updates if app is inside the Tauri
   useCheckForUpdate();
 
   // Validate user session

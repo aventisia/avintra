@@ -1,6 +1,11 @@
-import { CommandItem, CommandList } from "@aventisia/ui/command";
-import { useNodeSelectorStore } from "../stores/action-selector-store";
-import { useShallow } from "zustand/react/shallow";
+import { useAddFirstNodeToBranch } from "@/hooks/useAddFirstNodeToBranch";
+import { useAddFirstNodeToFlow } from "@/hooks/useAddFirstNodeToFlow";
+import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
+import { useReplaceNode } from "@/hooks/useReplaceNode";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { NodeDataType } from "@/types/node-data-type";
+import { Separator } from "@aventisia/ui";
 import {
   Accordion,
   AccordionContent,
@@ -8,17 +13,13 @@ import {
   AccordionTrigger,
 } from "@aventisia/ui/accordion";
 import { Button } from "@aventisia/ui/buttons";
+import { CommandItem, CommandList } from "@aventisia/ui/command";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { Separator } from "@aventisia/ui";
-import { useAddFirstNodeToFlow } from "@/hooks/useAddFirstNodeToFlow";
-import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
-import { useAddFirstNodeToBranch } from "@/hooks/useAddFirstNodeToBranch";
-import { useReplaceNode } from "@/hooks/useReplaceNode";
-import { NodeDataType } from "@/types/node-data-type";
-import ActionsList from "./ActionsList";
+import { useShallow } from "zustand/react/shallow";
 import { triggersList } from "../constants/trigger-data";
+import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { ActionCategoryType } from "../types/action-category-type";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import ActionsList from "./ActionsList";
 
 export const ActionCategoryList = () => {
   // Get the origin and originId from the store
@@ -43,9 +44,9 @@ export const ActionCategoryList = () => {
   // Is used to render the list of triggers
   const isOriginReplaceTrigger = origin === "ReplaceTrigger";
 
-  const { projectInfo } = useCurrentFlowStore(
+  const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
-      projectInfo: state.projectInfo,
+      currentFlow: state.currentFlow,
     })),
   );
 
@@ -54,7 +55,7 @@ export const ActionCategoryList = () => {
       const result: ActionCategoryType[] = [];
       actionSelectorData.forEach(({ label, actionCategories }) => {
         if (
-          projectInfo?.type === "AutomationAgent" &&
+          currentFlow?.type === FlowTypesEnum.AutomationAgent &&
           label === "AI Integrations"
         )
           return;

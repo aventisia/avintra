@@ -5,14 +5,14 @@ import { toast } from "@aventisia/ui/sonner";
 import { Edge, Node } from "@xyflow/react";
 import {
   ConditionalNodeData,
+  LoopNodeData,
   WebSocketCommandType,
   getActivityNodeData,
   getConditionNodeData,
+  getConditionalBranchNodeData,
+  getLoopNodeData,
+  getWpfLoopNodeData,
 } from "..";
-import { LoopNodeData } from "../types/loop-node-data";
-import { getConditionalBranchNodeData } from "./get-conditional-branch-node-data";
-import { getLoopNodeData } from "./get-loop-node-data";
-import { getWpfLoopNodeData } from "./get-wpf-loop-node-data";
 
 // Get nodes from local storage
 const getNodesFromLS = () => {
@@ -310,4 +310,5 @@ const sendNodeToProcess = (
   }
 };
 
-export { sendNodeToProcess, sendNextNodeToProcess };
+export { sendNextNodeToProcess, sendNodeToProcess };
+

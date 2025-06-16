@@ -1,11 +1,18 @@
 import { ExecutionStateType } from "@/features/execute-flow/types/execution-state-type";
-import { IProjectInfoDTO } from "@/features/react-flow/dtos/load-flow-dto";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 import { create } from "zustand";
 
 interface ICurrentFlowDetails {
   id: string;
   name: string;
-  // TODO: version
+  versionId: string;
+  versionNumber: number;
+  isPublished: boolean;
+  isLocked: boolean;
+  isDraft: boolean;
+  isArchived: boolean;
+  type: FlowTypesEnum;
+  description?: string;
 }
 
 interface ConditionalExecutionGroup {
@@ -37,8 +44,6 @@ type State = {
   conditionalExecutionGroup: ConditionalExecutionGroup[];
 
   loopExecutionGroup: LoopExecutionGroup[];
-
-  projectInfo: IProjectInfoDTO;
 };
 
 type Actions = {
@@ -61,24 +66,26 @@ type Actions = {
 
   /** Sets the loop execution group */
   setLoopExecutionGroup: (loopExecutionGroup: LoopExecutionGroup[]) => void;
-
-  /** Set Project info of the flow */
-  setProjectInfo: (projectInfo: IProjectInfoDTO) => void;
 };
 
 export const useCurrentFlowStore = create<State & Actions>((set) => ({
-  currentFlow: { id: "", name: "" },
+  currentFlow: {
+    id: "",
+    name: "",
+    versionId: "",
+    versionNumber: 0,
+    isPublished: false,
+    isLocked: false,
+    isDraft: false,
+    isArchived: false,
+    type: FlowTypesEnum.AIAgent,
+    description: "",
+  },
   isFlowLoading: false,
   isFlowSaving: false,
   executionState: "stopped",
   conditionalExecutionGroup: [],
   loopExecutionGroup: [],
-  projectInfo: {
-    versionId: "",
-    versionNumber: null,
-    name: "",
-    type: "",
-  },
 
   setCurrentFlow: (flowDetails) => set({ currentFlow: flowDetails }),
 
@@ -92,6 +99,4 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
     set({ conditionalExecutionGroup }),
 
   setLoopExecutionGroup: (loopExecutionGroup) => set({ loopExecutionGroup }),
-
-  setProjectInfo: (projectInfo) => set({ projectInfo: projectInfo }),
 }));

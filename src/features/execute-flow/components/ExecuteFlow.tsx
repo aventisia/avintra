@@ -1,4 +1,6 @@
+import { IS_TAURI } from "@/constants";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { Button } from "@aventisia/ui/buttons";
 import { toast } from "@aventisia/ui/sonner";
 import { Tooltip } from "@aventisia/ui/tooltip";
@@ -6,8 +8,8 @@ import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { invoke } from "@tauri-apps/api/core";
 import { Loader2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
+import { CURRENT_VERSION_ID_KEY } from "..";
 import useWebSocket from "../hooks/useWebSocket";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 const ExecuteFlow = () => {
   // Get current flow and execution state from current flow store
@@ -37,7 +39,7 @@ const ExecuteFlow = () => {
     setExecutionState("launching-executor");
 
     // Open the desktop executor if the app is running in Tauri
-    if ("isTauri" in window) {
+    if (IS_TAURI) {
       localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
       localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
       openDesktopExecutor();
@@ -60,7 +62,11 @@ const ExecuteFlow = () => {
         .then((res) => {
           console.log("Executor launched successfully:", res);
 
-          // Set nodes and edges in local storage for executor
+          // Set versionId, nodes and edges in local storage for executor
+          localStorage.setItem(
+            CURRENT_VERSION_ID_KEY,
+            currentFlow.versionId || "",
+          );
           localStorage.setItem("nodes", JSON.stringify(nodes));
           localStorage.setItem("edges", JSON.stringify(edges));
         })
@@ -143,3 +149,4 @@ const ExecuteFlow = () => {
 };
 
 export { ExecuteFlow };
+

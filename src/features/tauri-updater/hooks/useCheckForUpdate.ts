@@ -1,3 +1,4 @@
+import { IS_TAURI } from "@/constants";
 import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { check } from "@tauri-apps/plugin-updater";
 import { useEffect } from "react";
@@ -13,7 +14,7 @@ export const useCheckForUpdate = () => {
 
   useEffect(() => {
     // Not a tauri app, skip update logic
-    if ("isTauri" in window === false) return;
+    if (!IS_TAURI) return;
 
     // Function to check for updates and perform silent update
     const checkUpdate = async () => {

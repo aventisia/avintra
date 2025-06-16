@@ -1,10 +1,10 @@
 import { DEBOUNCE_SAVE_DELAY } from "@/constants";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { toast } from "@aventisia/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 import { useViewport } from "@xyflow/react";
 import { useCallback, useEffect } from "react";
-import { toast } from "@aventisia/ui/sonner";
 import { useShallow } from "zustand/react/shallow";
 import { updateFlowSilently } from "../apis/react-flow-apis";
 import { FlowSilentUpdateDto } from "../dtos/flow-silent-update-dto";
@@ -15,11 +15,10 @@ export const useUpdateFlowSilently = () => {
   // const queryClient = useQueryClient();
 
   // Get global store state & actions
-  const { currentFlow, setIsFlowSaving, projectInfo } = useCurrentFlowStore(
+  const { currentFlow, setIsFlowSaving } = useCurrentFlowStore(
     useShallow((state) => ({
       currentFlow: state.currentFlow,
       setIsFlowSaving: state.setIsFlowSaving,
-      projectInfo: state.projectInfo,
     })),
   );
 
@@ -47,7 +46,7 @@ export const useUpdateFlowSilently = () => {
     mutationFn: updateFlowSilently,
     onSuccess: () => {
       // queryClient.invalidateQueries({
-      //   queryKey: ["flow", currentFlow.id, projectInfo.versionId],
+      //   queryKey: ["flow", currentFlow.id, currentFlow.versionId],
       // });
 
       // Set isSavePending to false
@@ -95,7 +94,7 @@ export const useUpdateFlowSilently = () => {
         id: currentFlow.id,
         reactFlowObject: JSON.stringify(reactFlowObject),
         flowVariablesObject: JSON.stringify(flowVariablesObject),
-        versionId: projectInfo.versionId,
+        versionId: currentFlow.versionId,
       });
     }, DEBOUNCE_SAVE_DELAY); // Debounce save operation
 
@@ -109,7 +108,7 @@ export const useUpdateFlowSilently = () => {
     edges,
     flowVariablesObject,
     viewportState,
-    projectInfo.versionId,
     isPublished,
+    currentFlow.versionId,
   ]);
 };
