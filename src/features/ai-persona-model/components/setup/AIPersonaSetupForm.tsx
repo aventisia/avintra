@@ -1,6 +1,7 @@
 import { submitFiles } from "@/features/file-uploader-setup/apis/file-upload-apis";
 import FileUploader from "@/features/file-uploader-setup/components/FileUploader";
 import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
+import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 
@@ -41,8 +42,7 @@ const AIPersonaSetupForm = () => {
     })),
   );
   const [fileInsertLoading, setFileInsertLoading] = useState(false);
-
-  console.log("fileList", fileList);
+  const { data: modelData, isLoading } = useFetchModel();
 
   const {
     form,
@@ -58,8 +58,6 @@ const AIPersonaSetupForm = () => {
       modelId: state.modelId,
     })),
   );
-
-  console.log(form.getValues());
 
   // Submit handler
   function submitHandler(
@@ -105,7 +103,7 @@ const AIPersonaSetupForm = () => {
       <Form
         methods={form}
         onSubmit={form.handleSubmit(submitHandler)}
-        disabled={isSubmitting}
+        disabled={isSubmitting || isLoading || modelData?.data.isPublished}
       >
         <ScrollArea className="mt-4 flex-grow h-[calc(100vh-14.2rem)]">
           <FormProvider {...form}>

@@ -1,3 +1,4 @@
+import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 
 import { LoadingSpinner, Separator } from "@aventisia/ui";
@@ -39,6 +40,7 @@ const InformationExtractorForm = () => {
       modelId: state.modelId,
     })),
   );
+  const { data: modelData, isLoading } = useFetchModel();
 
   // Submit handler
   function submitHandler(
@@ -54,7 +56,7 @@ const InformationExtractorForm = () => {
     <Form
       methods={form}
       onSubmit={form.handleSubmit(submitHandler)}
-      disabled={isSubmitting}
+      disabled={isSubmitting || isLoading || modelData?.data.isPublished}
     >
       <ScrollArea className="mt-4 flex-grow h-[calc(100vh-14.2rem)]">
         <FormProvider {...form}>
