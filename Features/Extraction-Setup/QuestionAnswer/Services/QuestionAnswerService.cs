@@ -45,6 +45,17 @@ public class QuestionAnswerService : IQuestionAnswerService
                 return serviceResponse;
             }
 
+            // Check if the setup is already published and prevent modifications
+            if (mLModel.IsPublished)
+            {
+                // Do not allow updates to a published question-answer setup.
+                // Published setups are locked to ensure consistency and prevent unauthorized modifications.
+                _logger.LogWarning("Attempt to update a published question answer setup | Model ID: {ModelId} | User ID: {UserId}", questionAnswerDto.Id, _userId);
+
+                serviceResponse.Message = "This model has already been published and cannot be modified.";
+                return serviceResponse;
+            }
+
             // Sanitize string properties in the DTO
             questionAnswerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(questionAnswerDto);
 
@@ -304,7 +315,7 @@ public class QuestionAnswerService : IQuestionAnswerService
                 {
                     documentExtractionData.ExtractedData = JsonSerializer.Deserialize<List<QuestionAnswerSetupData>>(llmResponse.Data, serializerOptions) ?? new List<QuestionAnswerSetupData>();
                     documentExtractionData.Remarks = "";
-                    
+
                     // Assign names using dictionary lookup
                     foreach (var category in documentExtractionData.ExtractedData)
                     {

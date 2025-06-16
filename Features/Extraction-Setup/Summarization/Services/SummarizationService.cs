@@ -95,6 +95,17 @@ public class SummarizationService : ISummarizationService
                 return response;
             }
 
+            // Check if the setup is already published and prevent modifications
+            if (existingModel.IsPublished)
+            {
+                // Do not allow updates to a published summarization setup.
+                // Published setups are locked to ensure consistency and prevent unauthorized modifications.
+                _logger.LogWarning("Attempt to update a published summarization setup | Model ID: {ModelId} | User ID: {UserId}", summarizationDto.Id, _userId);
+
+                response.Message = "This model has already been published and cannot be modified.";
+                return response;
+            }
+
             summarizationDto = TrimDtoStringPropsUtil.TrimDtoStringProps(summarizationDto);
 
             summarizationDto.Adapt(existingModel);

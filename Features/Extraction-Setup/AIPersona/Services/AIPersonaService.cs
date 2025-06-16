@@ -44,6 +44,16 @@ public class AIPersonaService : IAIPersonaService
                 return response;
             }
 
+            // Check if the setup is already published and prevent modifications
+            if (existingModel.IsPublished)
+            {
+                // Do not allow updates to a published AI persona setup.
+                // Published setups are locked to ensure consistency and prevent unauthorized modifications.
+                _logger.LogWarning("Attempt to update a published AI persona setup | Model ID: {ModelId} | User ID: {UserId}", aiPersonaDto.Id, _userId);
+
+                response.Message = "This model has already been published and cannot be modified.";
+                return response;
+            }
             // Trim string properties in the DTO
             aiPersonaDto = TrimDtoStringPropsUtil.TrimDtoStringProps(aiPersonaDto);
 

@@ -45,6 +45,17 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
                 return serviceResponse;
             }
 
+            // Check if the setup is already published and prevent modifications
+            if (mLModel.IsPublished)
+            {
+                // Do not allow updates to a published sentiment analytics setup.
+                // Published setups are locked to ensure consistency and prevent unauthorized modifications.
+                _logger.LogWarning("Attempt to update a published sentiment analytics setup | Setup ID: {Id} | User ID: {UserId}", sentimentAnalyticDto.Id, _userId);
+
+                serviceResponse.Message = "This model has already been published and cannot be modified.";
+                return serviceResponse;
+            }
+
             // Sanitize DTO string properties
             sentimentAnalyticDto = TrimDtoStringPropsUtil.TrimDtoStringProps(sentimentAnalyticDto);
 

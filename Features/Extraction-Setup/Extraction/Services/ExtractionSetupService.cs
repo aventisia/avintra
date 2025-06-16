@@ -50,6 +50,17 @@ public class ExtractionSetupService : IExtractionSetupService
                 return serviceResponse;
             }
 
+            // Check if the setup is already published and prevent modifications
+            if (mLModel.IsPublished)
+            {
+                // Do not allow updates to a published extraction setup.
+                // Published setups are locked to ensure consistency and prevent unauthorized modifications.
+                _logger.LogWarning("Attempt to update a published extraction setup | Setup ID: {Id} | User ID: {UserId}", mLModelSetupDto.Id, _userId);
+
+                serviceResponse.Message = "This model has already been published and cannot be modified.";
+                return serviceResponse;
+            }
+
             // Trim any unnecessary spaces or formatting from string fields in the DTO
             mLModelSetupDto = TrimDtoStringPropsUtil.TrimDtoStringProps(mLModelSetupDto);
 
@@ -378,7 +389,7 @@ public class ExtractionSetupService : IExtractionSetupService
                 {
                     documentExtractionData.ExtractedData = JsonSerializer.Deserialize<ExtractionSetupData>(llmResponse.Data, serializerOptions) ?? new ExtractionSetupData();
                     documentExtractionData.Remarks = outputFormatJson;
-                    
+
                     // // Assign field names based on field index using the fieldDict dictionary
                     // foreach (var field in documentExtractionData.ExtractedData.Fields)
                     // {

@@ -188,6 +188,16 @@ public class MLModelService : IMLModelService
                 return serviceResponse;
             }
 
+            // Prevent updates to published models
+            if (mlModel.IsPublished)
+            {
+                // Published models are read-only to maintain data integrity and consistency
+                _logger.LogWarning("Attempt to update a published ML model | Model ID: {ModelId} | User ID: {UserId}", mlModelDto.Id, _userId);
+
+                serviceResponse.Message = "This model has already been published and cannot be modified.";
+                return serviceResponse;
+            }
+
             // Validate model uniqueness
             var modelAlreadyExists = await _unitOfWork.MLModelRepo
                                                         .GetByConditionAsync(w =>

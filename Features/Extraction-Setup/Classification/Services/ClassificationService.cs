@@ -45,6 +45,16 @@ public class ClassificationService : IClassificationService
                 return serviceResponse;
             }
 
+            // Check if the setup is already published and prevent modifications
+            if (mLModel.IsPublished)
+            {
+                // Do not allow updates to a published classification setup.
+                // Published setups are locked to ensure consistency and prevent unauthorized modifications.
+                _logger.LogWarning("Attempt to update a published classification setup | Setup ID: {Id} | User ID: {UserId}", classificationDto.Id, _userId);
+
+                serviceResponse.Message = "This model has already been published and cannot be modified.";
+                return serviceResponse;
+            }
             // Clean up DTO string properties
             classificationDto = TrimDtoStringPropsUtil.TrimDtoStringProps(classificationDto);
 
