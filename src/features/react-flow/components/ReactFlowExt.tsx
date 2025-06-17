@@ -92,6 +92,11 @@ export const ReactFlowExt = () => {
     [setSelectedEdge],
   );
 
+  const visibleNodes = useMemo(
+    () => nodes.filter((n) => !n.data?.hidden),
+    [nodes],
+  );
+
   // Render ReactFlow component
   return (
     <DCPDialog>
@@ -103,7 +108,7 @@ export const ReactFlowExt = () => {
         defaultEdgeOptions={defaultEdgeOptions}
         nodeTypes={customNodeTypeObjMemo}
         edgeTypes={customEdgesTypeObjMemo}
-        nodes={nodes}
+        nodes={visibleNodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onNodesDelete={onNodesDelete}
