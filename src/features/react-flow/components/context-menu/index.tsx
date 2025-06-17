@@ -45,40 +45,50 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
 
   const isGroupHead = selectedNode?.data.isGroupHead;
 
-  // Assuming getIntermediateNodeIds is imported or available in this scope
-
   const groupNodes = () => {
     if (selectedNodes.length < 1) return;
 
+    const expandedNodeIds = new Set<string>();
+
+    // --- If selected only a conditional/loop node, auto-expand to its full flow ---
+    if (
+      selectedNodes.length === 1 &&
+      selectedNodes[0]?.data?.mergeBranchesNodeId
+    ) {
+      const branchSubgraph = getIntermediateNodeIds(
+        nodes,
+        edges,
+        selectedNodes[0].id,
+      );
+      branchSubgraph.forEach((id) => expandedNodeIds.add(id));
+    } else {
+      // Expand any branching node in selection to include its full flow
+      selectedNodes.forEach((node) => {
+        if (node?.data?.mergeBranchesNodeId) {
+          const branchSubgraph = getIntermediateNodeIds(nodes, edges, node.id);
+          branchSubgraph.forEach((id) => expandedNodeIds.add(id));
+        } else {
+          expandedNodeIds.add(node.id);
+        }
+      });
+    }
+
+    // Get full list of nodes involved in this group
+    const fullSelectedNodes = nodes.filter((n) => expandedNodeIds.has(n.id));
+    
+    const groupHead = fullSelectedNodes[0];
+    const groupMembers = fullSelectedNodes.slice(1);
+
     const groupId = `group-${Date.now()}`;
-    const groupHead = selectedNodes[0];
 
-    // --- EXPAND SELECTION TO INCLUDE CONDITIONAL/LOOP BRANCHES ---
-    const additionalNodeIds = new Set<string>();
-
-    selectedNodes.forEach((node) => {
-      if (node?.data?.mergeBranchesNodeId) {
-        // Branching node - include entire branch subgraph (including merge node)
-        const branchSubgraph = getIntermediateNodeIds(nodes, edges, node.id);
-        branchSubgraph.forEach((id) => additionalNodeIds.add(id));
-      } else {
-        // Regular node - just add itself
-        additionalNodeIds.add(node.id);
-      }
-    });
-
-    // Compose full selected nodes list including expanded branches
-    const fullSelectedNodes = nodes.filter((n) => additionalNodeIds.has(n.id));
-    const groupMembers = fullSelectedNodes.filter((n) => n.id !== groupHead.id);
-
-    // --- STORE ORIGINAL EDGES CONNECTED TO ANY OF THE GROUPED NODES ---
+    // Store original edges (full edge objects)
     const originalEdges = edges.filter((edge) =>
       fullSelectedNodes.some(
         (node) => node.id === edge.source || node.id === edge.target,
       ),
     );
 
-    // --- UPDATE NODES ---
+    // Update nodes
     const updatedNodes = nodes.map((node) => {
       if (node.id === groupHead.id) {
         return {
@@ -87,7 +97,7 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
             ...node.data,
             groupId,
             isGroupHead: true,
-            originalEdges: originalEdges,
+            originalEdges, // full edge data
           },
         };
       }
@@ -104,14 +114,14 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
       return node;
     });
 
-    // --- REMOVE EDGES CONNECTED TO GROUPED NODES ---
+    // Remove edges connected to grouped nodes
     const edgesToRemove = edges.filter((edge) =>
       fullSelectedNodes.some(
         (node) => node.id === edge.source || node.id === edge.target,
       ),
     );
 
-    // --- CREATE TEMPORARY EDGES TO MAINTAIN FLOW CONTINUITY ---
+    // Create temporary "bypass" edges
     const temporaryEdges: Edge[] = [];
 
     edgesToRemove.forEach((edge) => {
@@ -123,7 +133,6 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
       );
 
       if (isSourceInGroup && !isTargetInGroup) {
-        // Edge from group to external node - connect group head to target
         temporaryEdges.push({
           id: `temp-${groupId}-${edge.target}`,
           source: groupHead.id,
@@ -137,7 +146,6 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
           },
         });
       } else if (!isSourceInGroup && isTargetInGroup) {
-        // Edge from external node to group - connect source to group head
         temporaryEdges.push({
           id: `temp-${edge.source}-${groupId}`,
           source: edge.source,
@@ -153,12 +161,13 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
       }
     });
 
-    // --- SET NEW EDGES: REMOVE ORIGINAL AND ADD TEMPORARY ---
-    const filteredEdges = edges.filter((edge) => !edgesToRemove.includes(edge));
-    const newEdges = [...filteredEdges, ...temporaryEdges];
+    const finalEdges = [
+      ...edges.filter((e) => !edgesToRemove.includes(e)),
+      ...temporaryEdges,
+    ];
 
     setNodes(updatedNodes);
-    setEdges(newEdges);
+    setEdges(finalEdges);
   };
 
   const ungroupNodes = () => {
@@ -166,10 +175,16 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
 
     const groupId = selectedNode.data.groupId as string;
 
-    // Find all nodes in the group
-    const groupNodes = nodes.filter((node) => node?.data?.groupId === groupId);
-    const groupHead = groupNodes.find((node) => node.data.isGroupHead);
+    // Get all nodes in this group
+    const groupedNodes = nodes.filter(
+      (node) => node?.data?.groupId === groupId,
+    );
+
+    const groupHead = groupedNodes.find((node) => node.data.isGroupHead);
     if (!groupHead) return;
+
+    const restoredOriginalEdges: Edge[] = (groupHead.data.originalEdges ||
+      []) as Edge[];
 
     const updatedNodes = nodes.map((node) => {
       if (node?.data?.groupId === groupId) {
@@ -187,17 +202,12 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
       return node;
     });
 
-    // Remove temporary edges belonging to the group
-    const nonTemporaryEdges = edges.filter(
+    // Remove temp edges for this group
+    const nonTempEdges = edges.filter(
       (edge) => !edge?.data?.isTemporary || !edge.id.includes(groupId),
     );
 
-    // Restore original edges from stored data
-    const restoredEdges: Edge[] = (groupHead.data.originalEdges ||
-      []) as Edge[];
-
-    // Set final edges as non-temp + restored originals
-    const finalEdges = [...nonTemporaryEdges, ...restoredEdges];
+    const finalEdges = [...nonTempEdges, ...restoredOriginalEdges];
 
     setNodes(updatedNodes);
     setEdges(finalEdges);
