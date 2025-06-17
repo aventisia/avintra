@@ -60,6 +60,11 @@ public class MLModel : BaseEntity, IMustHaveTenant
     public DateTimeOffset? PublishedOn { get; set; }
 
     /// <summary>
+    /// Gets or sets the type of LLM.
+    /// </summary>/
+    public string? LLM { get; set; }
+
+    /// <summary>
     /// Gets or sets the ML model to which this extracted data model is associated with.
     /// </summary>
     public virtual ICollection<ExtractedData>? ExtractedData { get; set; }

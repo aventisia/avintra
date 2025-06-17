@@ -30,6 +30,11 @@ public class MLModelDto
     public decimal? Accuracy { get; set; }
 
     /// <summary>
+    /// Gets or sets the type of LLM.
+    /// </summary>/
+    public string? LLM { get; set; }
+
+    /// <summary>
     /// Gets or sets the description of ML model
     /// </summary>
     public string? Description { get; set; }
