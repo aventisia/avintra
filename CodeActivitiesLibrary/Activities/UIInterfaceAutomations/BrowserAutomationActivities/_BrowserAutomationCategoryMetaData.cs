@@ -6,5 +6,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         primaryCategory: "UI Interface Automations",
         label: "Browser Automation",
         description: "Automate web browser interactions.")]
-    internal sealed class _BrowserAutomationCategoryMetaData { }
+    internal sealed class _BrowserAutomationCategoryMetaData
+    {
+    }
 }

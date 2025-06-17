@@ -170,6 +170,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
             StatusMessage.Set(context, status);
             return;
 
+            // * --no-sandbox: This argument allows you to run browser without sandboxing. Sandboxing
+            // is a security feature that prevents malicious code from accessing your system. However,
+            // in some cases, you might need to disable it.
+            //
+            // * --disable-dev-shm-usage: This argument prevents browser from
+            // using shared memory for rendering. This can help prevent performance issues.
             IWebDriver OpenMicrosoftEdgeBrowser(BrowsingModeEnum browsingMode, bool launchWithUrl, string launchUrl,
                 string userDataDir = null)
             {
@@ -198,15 +204,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     if (browsingMode == BrowsingModeEnum.Private)
                         arguments.Add("--inprivate");
 
-                    if (launchWithUrl && !string.IsNullOrEmpty(launchUrl))
-                        arguments.Add($"--app={launchUrl}");
-
 
                     edgeOptions.AddArguments(arguments);
                     var edgeService = EdgeDriverService.CreateDefaultService();
                     edgeService.HideCommandPromptWindow = true;
 
-                    return new EdgeDriver(edgeService, edgeOptions, TimeSpan.FromSeconds(30));
+                    var edriver = new EdgeDriver(edgeService, edgeOptions, TimeSpan.FromSeconds(30));
+                    if (launchWithUrl && !string.IsNullOrWhiteSpace(launchUrl))
+                        edriver.Navigate().GoToUrl(launchUrl);
+                    return edriver;
                 }
                 catch (Exception ex)
                 {
@@ -242,15 +248,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                     if (browsingMode == BrowsingModeEnum.Private) arguments.Add("--incognito");
 
-                    if (launchWithUrl)
-                        if (!string.IsNullOrEmpty(launchUrl))
-                            arguments.Add($"--app={launchUrl}");
-
                     chromeOptions.AddArguments(arguments);
                     var chromeService = ChromeDriverService.CreateDefaultService();
                     chromeService.HideCommandPromptWindow = true;
 
-                    return new ChromeDriver(chromeService, chromeOptions, TimeSpan.FromSeconds(30));
+                    var cdriver = new ChromeDriver(chromeService, chromeOptions, TimeSpan.FromSeconds(30));
+                    if (launchWithUrl && !string.IsNullOrWhiteSpace(launchUrl))
+                        cdriver.Navigate().GoToUrl(launchUrl);
+                    return cdriver;
                 }
                 catch (Exception ex)
                 {
@@ -281,13 +286,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     if (browsingMode == BrowsingModeEnum.Private)
                         firefoxOptions.SetPreference("browser.privatebrowsing.autostart", true);
 
-                    if (launchWithUrl && !string.IsNullOrEmpty(launchUrl))
-                        firefoxOptions.AddArgument($"--url={launchUrl}");
-
                     var service = FirefoxDriverService.CreateDefaultService();
                     service.HideCommandPromptWindow = true;
 
-                    return new FirefoxDriver(service, firefoxOptions, TimeSpan.FromSeconds(30));
+                    var fdriver = new FirefoxDriver(service, firefoxOptions, TimeSpan.FromSeconds(30));
+
+                    if (launchWithUrl && !string.IsNullOrWhiteSpace(launchUrl))
+                        fdriver.Navigate().GoToUrl(launchUrl);
+                    return fdriver;
                 }
                 catch (Exception ex)
                 {

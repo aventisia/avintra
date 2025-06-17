@@ -26,12 +26,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DefaultValue(WorksheetCopyModeEnum.Name)]
         public InArgument<WorksheetCopyModeEnum> CopyMode { get; set; }
 
-
         [DisplayName("Worksheet Name")]
         [Description("The name of the worksheet to copy (required if 'Copy Mode' is 'Name').")]
         [RenderIfCondition(nameof(CopyMode), WorksheetCopyModeEnum.Name)]
         public InArgument<string> WorksheetName { get; set; }
-
 
         [DisplayName("Worksheet Index")]
         [Description("The index of the worksheet to copy (required if 'Copy Mode' is 'Index').")]
@@ -43,16 +41,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("The Excel Application object where the worksheet will be copied.")]
         public InArgument<Excel.Application> TargetExcelApplication { get; set; }
 
-
         [DisplayName("Paste Position")]
         [Description("Specifies where to paste the copied worksheet in the target workbook.")]
         [DefaultValue(WorksheetPastePositionEnum.FirstWorksheet)]
         public InArgument<WorksheetPastePositionEnum> PastePosition { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
 
         // ----------------------
         // Execution Logic
@@ -68,36 +60,37 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 var targetApp = TargetExcelApplication.Get(context);
                 var pastePosition = PastePosition.Get(context);
 
-                if (sourceApp?.ActiveWorkbook == null || targetApp?.ActiveWorkbook == null)
-                    throw new InvalidOperationException(
-                        "Source or target Excel application or workbook is not available.");
+                if (sourceApp?.ActiveWorkbook == null)
+                    throw new InvalidOperationException("Source Excel application or workbook is not available.");
+
+                if (targetApp == null)
+                    throw new ArgumentNullException(nameof(TargetExcelApplication),
+                        "Target Excel application cannot be null.");
+
+                if (targetApp?.ActiveWorkbook == null)
+                {
+                    // If target has no active workbook, create a new one
+                    targetApp.Workbooks.Add(Type.Missing);
+                }
 
                 Excel.Worksheet sourceSheet = null;
 
                 switch (copyMode)
                 {
                     case WorksheetCopyModeEnum.Name:
-                        {
-                            var worksheetName = WorksheetName.Get(context);
-
-                            if (string.IsNullOrWhiteSpace(worksheetName))
-                                throw new ArgumentException("Worksheet Name cannot be empty when using 'Name' mode.");
-
-                            sourceSheet = sourceApp.ActiveWorkbook.Worksheets[worksheetName] as Excel.Worksheet;
-                            break;
-                        }
+                        var worksheetName = WorksheetName.Get(context);
+                        if (string.IsNullOrWhiteSpace(worksheetName))
+                            throw new ArgumentException("Worksheet Name cannot be empty when using 'Name' mode.");
+                        sourceSheet = sourceApp.ActiveWorkbook.Worksheets[worksheetName] as Excel.Worksheet;
+                        break;
 
                     case WorksheetCopyModeEnum.Index:
-                        {
-                            var worksheetIndex = WorksheetIndex.Get(context);
-
-                            if (worksheetIndex < 1 || worksheetIndex > sourceApp.ActiveWorkbook.Worksheets.Count)
-                                throw new ArgumentOutOfRangeException(nameof(WorksheetIndex),
-                                    $"Invalid worksheet index. Must be between 1 and {sourceApp.ActiveWorkbook.Worksheets.Count}.");
-
-                            sourceSheet = sourceApp.ActiveWorkbook.Worksheets[worksheetIndex] as Excel.Worksheet;
-                            break;
-                        }
+                        var worksheetIndex = WorksheetIndex.Get(context);
+                        if (worksheetIndex < 1 || worksheetIndex > sourceApp.ActiveWorkbook.Worksheets.Count)
+                            throw new ArgumentOutOfRangeException(nameof(WorksheetIndex),
+                                $"Invalid worksheet index. Must be between 1 and {sourceApp.ActiveWorkbook.Worksheets.Count}.");
+                        sourceSheet = sourceApp.ActiveWorkbook.Worksheets[worksheetIndex] as Excel.Worksheet;
+                        break;
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(copyMode));
@@ -106,26 +99,24 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 if (sourceSheet == null)
                     throw new InvalidOperationException("Source worksheet not found.");
 
-                var insertPosition = 0;
+                // Copy the worksheet to the target Excel instance
+                sourceSheet.Copy(Type.Missing, Type.Missing); // This creates a new workbook with just the copied sheet
 
-                switch (pastePosition)
-                {
-                    case WorksheetPastePositionEnum.FirstWorksheet:
-                        insertPosition = 1;
-                        break;
+                // Get the new workbook created after copy
+                var newWorkbook = sourceApp.Application.Workbooks[sourceApp.Application.Workbooks.Count];
 
-                    case WorksheetPastePositionEnum.LastWorksheet:
-                        insertPosition = targetApp.ActiveWorkbook.Worksheets.Count + 1;
-                        break;
+                // Move the sheet to the target Excel application without removing it from the source.
+                Excel.Worksheet copiedSheet = newWorkbook.Sheets[1];
+                copiedSheet.Move(
+                    Before: pastePosition == WorksheetPastePositionEnum.FirstWorksheet
+                        ? targetApp.ActiveWorkbook?.Worksheets[1]
+                        : Type.Missing,
+                    After: pastePosition == WorksheetPastePositionEnum.LastWorksheet
+                        ? targetApp.ActiveWorkbook?.Worksheets[targetApp.ActiveWorkbook.Worksheets.Count]
+                        : Type.Missing
+                );
 
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(pastePosition));
-                }
-
-                // Copy the worksheet
-                sourceSheet.Copy(Type.Missing, targetApp.ActiveWorkbook.Worksheets[insertPosition]);
-
-                status = $"Successfully copied worksheet '{sourceSheet.Name}'.";
+                status = $"Successfully copied worksheet '{sourceSheet.Name}' to target Excel instance.";
             }
             catch (Exception ex)
             {

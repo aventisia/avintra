@@ -4,113 +4,191 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Word = Microsoft.Office.Interop.Word;
+using System.IO;
+using System.Linq;
+using Bookmark = Microsoft.Office.Interop.Word.Bookmark;
 
 namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
-
     [DisplayName("Insert Image in Word Document")]
-    [Description("Inserts an image into a Word file.")]
+    [Description("Inserts an image into a Word file at a specified location.")]
     public class InsertImageInWordDocumentActivity : BaseCodeActivity
     {
+        [RequiredArgument]
         [DisplayName("Word Instance")]
         [Description("The specific Word instance to use.")]
-        [RequiredArgument]
-        public InArgument<Word.Application> WordInstance { get; set; }
+        public InArgument<Application> WordInstance { get; set; }
 
+        [RequiredArgument]
         [DisplayName("Insert Image To")]
-        [Description("Specifies the location in the document where the image should be inserted.")]
-        [DefaultValue(InsertLocationEnum.BeginningOfWordFile)]
+        [Description("Specifies where in the document to insert the image.")]
+        [DefaultValue(InsertLocationEnum.EndOfWordFile)]
         public InArgument<InsertLocationEnum> InsertImageTo { get; set; }
 
-        [DisplayName("Insert Image From")]
-        [Description("Specifies whether the image is from a file or clipboard.")]
+        [RequiredArgument]
+        [DisplayName("Image Source")]
+        [Description("Specifies whether the image is inserted from a file or clipboard.")]
         [DefaultValue(ImageSourceEnum.File)]
         public InArgument<ImageSourceEnum> InsertImageFrom { get; set; }
 
-        [DisplayName("Image Path")]
-        [Description("The file path of the image to insert.")]
         [RequiredArgument]
+        [DisplayName("Image Path")]
+        [Description("The file path of the image to insert (if source is File).")]
         public InArgument<string> ImagePath { get; set; }
+
+        [DisplayName("Bookmark Name")]
+        [Description("The name of the bookmark to use for inserting before/after it.")]
+        public InArgument<string> BookmarkName { get; set; }
+
+        [DisplayName("Text to Search")]
+        [Description("The text to search for when inserting before or after it.")]
+        public InArgument<string> TextToSearch { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
+            var status = "Operation completed successfully.";
+
             try
             {
-                // Retrieve input values
-                var wordApp = context.GetValue(WordInstance);
-                var insertLocation = context.GetValue(InsertImageTo);
-                var imageSource = context.GetValue(InsertImageFrom);
-                var imagePath = context.GetValue(ImagePath);
+                var wordApp = WordInstance.Get(context);
+                var insertLocation = InsertImageTo.Get(context);
+                var imageSource = InsertImageFrom.Get(context);
+                var imagePath = ImagePath.Get(context);
+                var bookmarkName = BookmarkName.Get(context);
+                var searchText = TextToSearch.Get(context);
 
                 if (wordApp == null)
-                {
-                    throw new ArgumentNullException(nameof(WordInstance), "WordInstance cannot be null.");
-                }
+                    throw new ArgumentException("Word application instance cannot be null.");
 
                 _Document activeDocument = wordApp.ActiveDocument;
+                if (activeDocument == null)
+                    throw new InvalidOperationException("No active Word document found.");
 
-                // Determine the insertion range based on InsertImageTo
-                var insertionRange = GetInsertionRange(activeDocument, insertLocation);
+                // Determine range based on insert location
+                Range insertionRange = GetInsertionRange(activeDocument, insertLocation, bookmarkName, searchText);
 
-                // Insert the image
+                // Insert image based on source
                 switch (imageSource)
                 {
                     case ImageSourceEnum.File:
-                        if (string.IsNullOrEmpty(imagePath))
-                        {
-                            throw new ArgumentException("ImagePath cannot be empty when inserting from File.");
-                        }
+                        if (string.IsNullOrWhiteSpace(imagePath))
+                            throw new ArgumentException("Image path must be provided when source is 'File'.");
+
+                        if (!File.Exists(imagePath))
+                            throw new FileNotFoundException("Image file not found.", imagePath);
+
                         insertionRange.InlineShapes.AddPicture(imagePath);
                         break;
 
                     case ImageSourceEnum.Clipboard:
-                        insertionRange.Paste();
+                        wordApp.Selection.Paste();
                         break;
 
                     default:
-                        throw new ArgumentException("Invalid InsertImageFrom option.");
+                        throw new ArgumentOutOfRangeException();
                 }
 
-                Console.WriteLine("Image inserted successfully.");
+                status = $"Successfully inserted image into Word document at '{insertLocation}'.";
             }
             catch (Exception ex)
             {
-                throw new Exception("Error inserting image into Word document:", ex);
+                status = $"Error inserting image into Word document: {ex.Message}";
             }
+
+            StatusMessage.Set(context, status);
         }
 
-        private static Range GetInsertionRange(_Document document, InsertLocationEnum location)
+        private static Range GetInsertionRange(
+            _Document document,
+            InsertLocationEnum location,
+            string bookmarkName,
+            string searchText)
         {
+            Range range = null;
+
             switch (location)
             {
                 case InsertLocationEnum.BeginningOfWordFile:
-                    return document.Content.Paragraphs[1].Range;
+                    range = document.Content.Paragraphs[1].Range;
+                    range.Collapse(WdCollapseDirection.wdCollapseStart);
+                    break;
 
                 case InsertLocationEnum.EndOfWordFile:
-                    return document.Content;
+                    range = document.Content;
+                    range.Collapse(WdCollapseDirection.wdCollapseEnd);
+                    break;
 
                 case InsertLocationEnum.BeforeBookmark:
-                    // Placeholder: Implement bookmark handling
-                    throw new NotImplementedException("BeforeBookmark is not implemented.");
+                    if (string.IsNullOrWhiteSpace(bookmarkName))
+                        throw new ArgumentException("Bookmark name must be provided for this insert mode.");
+
+                    if (document.Bookmarks.Cast<Bookmark>().Any(b => b.Name == bookmarkName))
+                    {
+                        range = document.Bookmarks[bookmarkName].Range;
+                        range.Collapse(WdCollapseDirection.wdCollapseStart);
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Bookmark '{bookmarkName}' not found.");
+                    }
+
+                    break;
 
                 case InsertLocationEnum.AfterBookmark:
-                    // Placeholder: Implement bookmark handling
-                    throw new NotImplementedException("AfterBookmark is not implemented.");
+                    if (string.IsNullOrWhiteSpace(bookmarkName))
+                        throw new ArgumentException("Bookmark name must be provided for this insert mode.");
+
+                    if (document.Bookmarks.Cast<Bookmark>().Any(b => b.Name == bookmarkName))
+                    {
+                        range = document.Bookmarks[bookmarkName].Range;
+                        range.Collapse(WdCollapseDirection.wdCollapseEnd);
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Bookmark '{bookmarkName}' not found.");
+                    }
+
+                    break;
 
                 case InsertLocationEnum.BeforeSpecificText:
-                    // Placeholder: Implement specific text handling
-                    throw new NotImplementedException("BeforeSpecificText is not implemented.");
+                    range = FindTextRange(document, searchText, insertBefore: true);
+                    if (range == null)
+                        throw new InvalidOperationException($"Text '{searchText}' not found for insertion.");
+                    break;
 
                 case InsertLocationEnum.AfterSpecificText:
-                    // Placeholder: Implement specific text handling
-                    throw new NotImplementedException("AfterSpecificText is not implemented.");
+                    range = FindTextRange(document, searchText, insertBefore: false);
+                    if (range == null)
+                        throw new InvalidOperationException($"Text '{searchText}' not found for insertion.");
+                    break;
 
                 default:
-                    throw new ArgumentException("Invalid InsertLocation option.");
+                    throw new ArgumentOutOfRangeException(nameof(location), location, null);
             }
+
+            return range;
+        }
+
+        private static Range FindTextRange(_Document document, string text, bool insertBefore)
+        {
+            foreach (var foundRange in from Range paragraphRange in document.Paragraphs
+                                       where paragraphRange.Text.Contains(text)
+                                       select paragraphRange.Duplicate)
+            {
+                foundRange.Find.ClearFormatting();
+
+                if (!foundRange.Find.Execute(FindText: text)) continue;
+                foundRange.Collapse(insertBefore
+                    ? WdCollapseDirection.wdCollapseStart
+                    : WdCollapseDirection.wdCollapseEnd);
+
+                return foundRange;
+            }
+
+            return null;
         }
     }
+
     public enum InsertLocationEnum
     {
         [Display(Name = "Beginning of Word file", Description = "Inserts content at the beginning of the document.")]
@@ -125,12 +203,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [Display(Name = "After Bookmark", Description = "Inserts content after the specified bookmark.")]
         AfterBookmark,
 
-        [Display(Name = "Before Specific Text", Description = "Inserts content before a specific text in the document.")]
+        [Display(Name = "Before Specific Text",
+            Description = "Inserts content before a specific text in the document.")]
         BeforeSpecificText,
 
         [Display(Name = "After Specific Text", Description = "Inserts content after a specific text in the document.")]
         AfterSpecificText
     }
+
     public enum ImageSourceEnum
     {
         [Display(Name = "File", Description = "Inserts an image from a file path.")]
@@ -139,5 +219,4 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [Display(Name = "Clipboard", Description = "Inserts an image from the system clipboard.")]
         Clipboard
     }
-
 }

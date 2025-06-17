@@ -35,11 +35,9 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         [Description("The value used to locate the element (e.g., 'username', '//input[@id='email']').")]
         public InArgument<string> ValueToFind { get; set; }
 
-
         [DisplayName("Wait for Element")]
         [Description("If true, waits for the element to appear before hovering.")]
         public InArgument<bool> WaitForElement { get; set; }
-
 
         [DisplayName("Timeout Seconds")]
         [Description("Maximum time in seconds to wait for the element before failing.")]
@@ -59,7 +57,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 var findType = FindType.Get(context);
                 var searchKeywords = ValueToFind.Get(context);
                 var waitForElement = WaitForElement.Get(context);
-                var timeout = TimeSpan.FromSeconds(TimeoutSeconds.Get(context));
+                var timeoutInSeconds = TimeoutSeconds.Get(context);
 
                 if (driver == null)
                     throw new ArgumentException("Web browser instance cannot be null.");
@@ -67,12 +65,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 if (string.IsNullOrWhiteSpace(searchKeywords))
                     throw new ArgumentException("Search keywords must be specified.");
 
-                // Locate the element
+                if (timeoutInSeconds < 0)
+                    throw new ArgumentException("Timeout seconds must be a non-negative number.");
+
                 var by = BrowserAutomationHelper.GetWebElementLocator(findType, searchKeywords);
+                if (by == null)
+                    throw new ArgumentException($"Invalid find type provided: '{findType}'");
+
                 IWebElement element = null;
 
-                if (waitForElement && timeout.TotalSeconds > 0)
+                if (waitForElement && timeoutInSeconds > 0)
                 {
+                    var timeout = TimeSpan.FromSeconds(timeoutInSeconds);
                     var wait = new WebDriverWait(driver, timeout);
                     element = wait.Until(drv => drv.FindElement(by));
                 }
@@ -82,16 +86,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 }
 
                 if (element == null)
-                    throw new InvalidOperationException($"No element found using '{findType}': '{searchKeywords}'");
+                    throw new InvalidOperationException(
+                        $"No element found using '{findType}': '{searchKeywords}'. Current URL: {driver.Url}");
 
                 // Perform hover action
                 new Actions(driver).MoveToElement(element).Build().Perform();
-
                 status = $"Successfully hovered over element '{searchKeywords}' using '{findType}'.";
             }
             catch (Exception ex)
             {
-                status = $"Error during hover: {ex.Message}";
+                status = $"Error during hover operation: {ex.Message}. StackTrace: {ex.StackTrace}";
             }
 
             StatusMessage.Set(context, status);

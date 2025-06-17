@@ -1,48 +1,60 @@
-﻿namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
+using System.Activities;
+using System.ComponentModel;
+using System.IO;
+using UglyToad.PdfPig;
+
+namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
 {
+    [DisplayName("Extract Text from PDF (PDFPig)")]
+    [Description("Extracts text from a PDF file using PdfPig library.")]
+    public class ExtractTextFromPdfActivity : BaseCodeActivity
+    {
+        [RequiredArgument]
+        [Category("Input")]
+        [Description("The path to the source PDF file.")]
+        public InArgument<string> SourcePdfPath { get; set; }
 
-    // Activity to extract text from a PDF file
-    //[DisplayName("Extract Text from PDF"),
-    // Description("Extracts text from a PDF file by specifying the source PDF file and the pages to extract from.")]
-    //public class ExtractTextFromPdfActivity : BaseCodeActivity
-    //{
-    //    [RequiredArgument, Category("Input"), Description("The path to the source PDF file.")]
-    //    public InArgument<string> SourcePdfPath { get; set; }
+        [Category("Output")]
+        [DisplayName("Extracted Text")]
+        [Description("Returns the extracted text from the PDF.")]
+        public OutArgument<string> ExtractedText { get; set; }
 
-    //    [Category("Output"), Description("Returns the extracted text from the PDF.")]
-    //    public OutArgument<string> Result { get; set; }
+        protected override void Execute(CodeActivityContext context)
+        {
+            var status = "Operation completed successfully.";
+            var resultText = "";
 
-    //    
-    //    
+            try
+            {
+                var sourcePdfPath = SourcePdfPath.Get(context);
 
-    //    protected override void Execute(CodeActivityContext context)
-    //    {
-    //        var sourcePdfPath = SourcePdfPath.Get(context);
-    //        var result = "";
-    //        var status = "";
+                if (!File.Exists(sourcePdfPath))
+                    throw new FileNotFoundException("Source PDF file not found.", sourcePdfPath);
 
-    //        try
-    //        {
-    //            // Simulate extracting text from PDF (actual implementation would use a library like iTextSharp or PDFBox)
-    //            using (var pdfReader = new PdfReader(sourcePdfPath))
-    //            {
-    //                var textBuilder = new StringBuilder();
-    //                for (var page = 1; page <= pdfReader.NumberOfPages; page++)
-    //                {
-    //                    textBuilder.Append(PdfTextExtractor.GetTextFromPage(pdfReader, page));
-    //                }
-    //                result = textBuilder.ToString();
-    //                status = "Text extracted successfully.";
-    //            }
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            result = "";
-    //            status = $"Error extracting text from PDF: {ex.Message}";
-    //        }
+                // Open PDF document using PdfPig
+                using (var document = PdfDocument.Open(sourcePdfPath))
+                {
+                    var textBuilder = new System.Text.StringBuilder();
 
-    //        Result.Set(context, result);
-    //        StatusMessage.Set(context, status);
-    //    }
-    //}
+                    foreach (var page in document.GetPages())
+                    {
+                        textBuilder.AppendLine(page.Text);
+                    }
+
+                    resultText = textBuilder.ToString();
+                    status = $"Successfully extracted text from '{sourcePdfPath}'.";
+                }
+            }
+            catch (Exception ex)
+            {
+                resultText = "";
+                status = $"Error extracting text from PDF: {ex.Message}";
+            }
+
+            ExtractedText.Set(context, resultText);
+            StatusMessage.Set(context, status);
+        }
+    }
 }

@@ -38,7 +38,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
         public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
             new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
 
-        [RequiredArgument]
         [DisplayName("Value To Find")]
         [Description("The value used to locate the element (e.g., 'username', '//input[@id='email']').")]
         [RenderIfCondition(nameof(ScrollMode), ScrollModeEnum.ByElement)]
@@ -155,6 +154,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 status = $"Error during scroll operation: {ex.Message}";
             }
 
+            IsSuccess.Set(context, status.Contains("scrolled"));
             StatusMessage.Set(context, status);
         }
     }

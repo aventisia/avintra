@@ -78,16 +78,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 
         [DisplayName("SMTP Server Needs Authentication")]
         [Description("If true, authenticates with the SMTP server using credentials.")]
-        public InArgument<bool> SmtpServerNeedsAuthentication { get; set; } = true;
+        public InArgument<bool> SmtpServerNeedsAuthentication { get; set; }
 
 
         [DisplayName("User Name")]
         [Description("The username for authentication.")]
+        [RenderIfCondition(nameof(SmtpServerNeedsAuthentication), true)]
         public InArgument<string> UserName { get; set; }
 
 
         [DisplayName("Password")]
         [Description("The password for authentication.")]
+        [RenderIfCondition(nameof(SmtpServerNeedsAuthentication), true)]
         public InArgument<string> Password { get; set; }
 
 
