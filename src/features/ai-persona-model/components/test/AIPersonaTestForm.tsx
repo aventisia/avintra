@@ -134,7 +134,7 @@ function AIPersonaTestForm() {
             <ChatMessages.Empty
               children={
                 isLoading ? (
-                  <p className="animate-[slide-up_0.5s_ease-out] text-base [animation-delay:300ms] [animation-fill-mode:forwards]">
+                  <p className="animate-[slide-up_0.5s_ease-out] text-base [animation-delay:300ms] [animation-fill-mode:forwards] text-center">
                     Initializing chat, please wait...
                   </p>
                 ) : !isLoading && conn ? (
@@ -147,7 +147,7 @@ function AIPersonaTestForm() {
                     </p>
                   </>
                 ) : (
-                  <p className="animate-[slide-up_0.5s_ease-out] text-base [animation-delay:300ms] [animation-fill-mode:forwards]">
+                  <p className="animate-[slide-up_0.5s_ease-out] text-base [animation-delay:300ms] [animation-fill-mode:forwards] text-center">
                     Failed to create chat, please try again...
                   </p>
                 )
