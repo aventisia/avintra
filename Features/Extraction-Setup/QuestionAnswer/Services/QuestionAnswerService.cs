@@ -71,6 +71,7 @@ public class QuestionAnswerService : IQuestionAnswerService
             questionAnswerDto.Adapt(mLModel);
             mLModel.GeneratedPrompt = GenerateQuestionAnswerModelPrompt(questionAnswerDto);
             mLModel.SetupStatus = SetupStatusTypesEnum.Completed;
+            mLModel.LLM = questionAnswerDto.SetupObject.LLM;
             mLModel.LastModifiedByUserId = _userId;
 
             _logger.LogInformation("Saving changes to questionAnswer setup | ID: {Id}", questionAnswerDto.Id);

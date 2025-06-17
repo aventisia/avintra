@@ -111,6 +111,7 @@ public class SummarizationService : ISummarizationService
             summarizationDto.Adapt(existingModel);
             existingModel.GeneratedPrompt = GenerateSummarizationPrompt(summarizationDto);
             existingModel.SetupStatus = SetupStatusTypesEnum.Completed;
+            existingModel.LLM = summarizationDto.SetupObject.LLM;
             existingModel.LastModifiedByUserId = _userId;
 
             _logger.LogInformation("Saving changes to summarization setup | Model ID: {ModelId}", summarizationDto.Id);

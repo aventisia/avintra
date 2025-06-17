@@ -92,6 +92,7 @@ public class ExtractionSetupService : IExtractionSetupService
             mLModelSetupDto.Adapt(mLModel);
             mLModel.GeneratedPrompt = GenerateExtractionModelPrompt(mLModelSetupDto);
             mLModel.SetupStatus = SetupStatusTypesEnum.Completed;
+            mLModel.LLM = mLModelSetupDto.SetupObject.LLM;
             mLModel.LastModifiedByUserId = _userId;
 
             // Log the action of saving changes to the database

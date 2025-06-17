@@ -70,6 +70,7 @@ public class ClassificationService : IClassificationService
             classificationDto.Adapt(mLModel);
             mLModel.GeneratedPrompt = GenerateClassificationModelPrompt(classificationDto);
             mLModel.SetupStatus = SetupStatusTypesEnum.Completed;
+            mLModel.LLM = classificationDto.SetupObject.LLM;
             mLModel.LastModifiedByUserId = _userId;
 
             _logger.LogInformation("Saving updated classification setup | Setup ID: {Id}", classificationDto.Id);

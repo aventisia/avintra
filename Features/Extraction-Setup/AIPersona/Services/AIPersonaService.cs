@@ -61,6 +61,7 @@ public class AIPersonaService : IAIPersonaService
             aiPersonaDto.Adapt(existingModel);
             existingModel.GeneratedPrompt = GenerateAIPersonaPrompt(aiPersonaDto);
             existingModel.SetupStatus = SetupStatusTypesEnum.Completed;
+            existingModel.LLM = aiPersonaDto.SetupObject.LLM;
             existingModel.LastModifiedByUserId = _userId;
 
             _logger.LogInformation("Saving changes to AI persona setup | Model ID: {ModelId}", aiPersonaDto.Id);

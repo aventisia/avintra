@@ -71,6 +71,7 @@ public class SentimentAnalyticsService : ISentimentAnalyticsService
             sentimentAnalyticDto.Adapt(mLModel);
             mLModel.GeneratedPrompt = GenerateSentimentAnalyticsModelPrompt(sentimentAnalyticDto);
             mLModel.SetupStatus = SetupStatusTypesEnum.Completed;
+            mLModel.LLM = sentimentAnalyticDto.SetupObject.LLM;
             mLModel.LastModifiedByUserId = _userId;
 
             _logger.LogInformation("Saving changes to sentiment analytics setup | Setup ID: {Id}", sentimentAnalyticDto.Id);
