@@ -34,6 +34,7 @@ pub fn run() {
             let version = env!("CARGO_PKG_VERSION"); // reads version from Cargo.toml
             let new_title = format!("Worc v{}", version);
             window.set_title(&new_title).unwrap();
+            window.maximize().unwrap();
 
             Ok(())
         })

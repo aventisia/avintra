@@ -13,8 +13,6 @@
     "windows": [
       {
         "title": "Worc",
-        "width": 1200,
-        "height": 700,
         "resizable": true,
         "fullscreen": false
       }
