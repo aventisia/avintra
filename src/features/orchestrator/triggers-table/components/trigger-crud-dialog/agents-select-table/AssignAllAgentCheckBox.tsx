@@ -1,9 +1,9 @@
-import { Checkbox } from "@aventisia/ui"
-import { DTColumnHeader } from "@aventisia/ui/data-table"
-import type { Column, Table } from "@tanstack/react-table"
-import { useShallow } from "zustand/react/shallow"
+import { Checkbox } from "@aventisia/ui";
+import { DTColumnHeader } from "@aventisia/ui/data-table";
+import type { Column, Table } from "@tanstack/react-table";
+import { useShallow } from "zustand/react/shallow";
 
-import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store"
+import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
 
 interface AssignAllAgentCheckBoxProps<TData, TValue> {
   table: Table<TData>;

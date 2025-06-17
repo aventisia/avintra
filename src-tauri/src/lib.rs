@@ -1,3 +1,4 @@
+use tauri::Manager;
 mod commands;
 mod websocket;
 
@@ -10,6 +11,11 @@ pub fn run() {
 
     // Initialize the Tauri application
     tauri::Builder::default()
+        .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             commands::launch_desktop_executor,
             commands::launch_ui_inspector
@@ -22,6 +28,13 @@ pub fn run() {
                         .build(),
                 )?;
             }
+
+            // Set tauri window title with version
+            let window = app.get_webview_window("main").unwrap();
+            let version = env!("CARGO_PKG_VERSION"); // reads version from Cargo.toml
+            let new_title = format!("Worc v{}", version);
+            window.set_title(&new_title).unwrap();
+
             Ok(())
         })
         .run(tauri::generate_context!())

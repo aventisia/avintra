@@ -6,30 +6,35 @@ import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
+import {
+  useCheckForUpdate,
+  useRedirectOnRelaunch,
+} from "@/features/tauri-updater";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
-import { useTauriStore } from "@/stores/tauri-store";
 
+import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppRedirectPage } from "./AppRedirectPage";
 import { sidebarMenuSections } from "./sidebar-menu-sections";
+import { IS_TAURI } from "@/constants/constants";
 
 export const AppLayout = () => {
   // Get the state and actions from the base layout store
-  const { sidebarExpand, setViteEnvVars, setSidebarMenuSections } =
+  const { sidebarExpand, appBanner, setViteEnvVars, setSidebarMenuSections } =
     useBaseLayoutStore(
       useShallow((state) => ({
         sidebarExpand: state.sidebarExpand,
+        appBanner: state.appBanner,
         setViteEnvVars: state.setViteEnvVars,
         setSidebarMenuSections: state.setSidebarMenuSections,
       })),
     );
 
-  // Get the state if app is open in tauri window
-  const { isTauri } = useTauriStore(
-    useShallow((state) => ({
-      isTauri: state.isTauri,
-    })),
-  );
+  // Redirect to relaunch URL if available (if app is inside Tauri)
+  useRedirectOnRelaunch();
+
+  // Check for new version updates if app is inside the Tauri
+  useCheckForUpdate();
 
   // Validate user session
   const { isPending } = useValidateUserSession();
@@ -53,13 +58,20 @@ export const AppLayout = () => {
         <AppRedirectPage />
       ) : (
         <div className="relative min-h-screen overflow-hidden">
+          <AppBanner />
           <AppHeader />
-          {!isTauri && <Sidebar />}
-          <ScrollArea className="h-[calc(100vh-var(--header-height)-var(--header-padding))]">
+          {!IS_TAURI && <Sidebar />}
+          <ScrollArea
+            className={cn(
+              appBanner
+                ? "h-[calc(100vh-var(--header-height)-var(--header-padding)-var(--banner-height))]"
+                : "h-[calc(100vh-var(--header-height)-var(--header-padding))]",
+            )}
+          >
             <main
               className={cn(
                 "px-7 py-0 transition-[margin] duration-500",
-                !isTauri &&
+                !IS_TAURI &&
                   (sidebarExpand
                     ? "md:ml-[--sidebar-max-width]"
                     : "md:ml-[--sidebar-min-width]"),

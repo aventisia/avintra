@@ -1,13 +1,13 @@
-import { useDTCrudDialogStore } from "@aventisia/ui/stores"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect } from "react"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { useShallow } from "zustand/react/shallow"
+import { useDTCrudDialogStore } from "@aventisia/ui/stores";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store"
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
-import { queueAssignAgentsZodSchema } from "../constants/queue-zod-schema"
+import { queueAssignAgentsZodSchema } from "../constants/queue-zod-schema";
 
 /**
  * Custom hook for defining a queue upload file form.

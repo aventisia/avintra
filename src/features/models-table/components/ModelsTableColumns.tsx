@@ -2,12 +2,13 @@ import { Checkbox } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
-
 import { ColumnDef } from "@tanstack/react-table";
-import { getColumnName } from "../constants/column-display-names";
 
+import { getColumnName } from "../constants/column-display-names";
 import { ModelsTableDto } from "../dtos/models-table-dto";
 import { ModelTypesEnum } from "../enums/model-type-enum";
+import { formatSeconds } from "../utils/formatSeconds";
+
 import { ModelRowActions } from "./model-row-actions/ModelRowActions";
 import { ModelsTableCellLink } from "./ModelsTableCellLink";
 
@@ -71,44 +72,96 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
       <DTColumnHeader column={column} title={getColumnName("llm")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto font-medium">{row.getValue("llm")}</div>
+      <div className="w-auto font-medium">{row.getValue("llm") || "N/A"}</div>
     ),
   },
   {
     accessorKey: "docsProcessed",
     header: ({ column }) => (
-      <DTColumnHeader
-        className="w-16"
-        column={column}
-        title={getColumnName("docsProcessed")}
-      />
+      <DTColumnHeader column={column} title={getColumnName("docsProcessed")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto font-medium">{row.getValue("docsProcessed")}</div>
     ),
   },
-
   {
     accessorKey: "accuracy",
     header: ({ column }) => (
-      <DTColumnHeader
-        className="w-12"
-        column={column}
-        title={getColumnName("accuracy")}
-      />
+      <DTColumnHeader column={column} title={getColumnName("accuracy")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto font-medium">{row.getValue("accuracy")}</div>
     ),
   },
   {
+    accessorKey: "tokenCount",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("tokenCount")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto font-medium">{row.getValue("tokenCount")}</div>
+    ),
+  },
+  {
+    accessorKey: "executionCount",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("executionCount")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto font-medium">{row.getValue("executionCount")}</div>
+    ),
+  },
+  {
+    accessorKey: "failedCount",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("failedCount")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto font-medium">{row.getValue("failedCount")}</div>
+    ),
+  },
+  {
+    accessorKey: "executionTime",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("executionTime")} />
+    ),
+    cell: ({ row }) => {
+      const executionTimeFormattedValue =
+        formatSeconds(row.getValue("executionTime")) || "0s";
+      return (
+        <div className="w-auto font-medium">{executionTimeFormattedValue}</div>
+      );
+    },
+  },
+  {
+    accessorKey: "isPublished",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("isPublished")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto font-medium">
+        {row.getValue("isPublished") ? "Yes" : "No"}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "publishedOn",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("publishedOn")} />
+    ),
+    cell: ({ row }) => {
+      const publishedOnValue = row.getValue("publishedOn") as Date;
+      return (
+        <div className="w-auto font-medium">
+          {publishedOnValue ? dateFormatter(publishedOnValue) : "N/A"}
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "createdOn",
     header: ({ column }) => (
-      <DTColumnHeader
-        className="w-[5rem] capitalize"
-        column={column}
-        title={getColumnName("createdOn")}
-      />
+      <DTColumnHeader column={column} title={getColumnName("createdOn")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -119,11 +172,7 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   {
     accessorKey: "trainedOn",
     header: ({ column }) => (
-      <DTColumnHeader
-        className="w-[5rem]"
-        column={column}
-        title={getColumnName("trainedOn")}
-      />
+      <DTColumnHeader column={column} title={getColumnName("trainedOn")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -134,11 +183,7 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   {
     accessorKey: "setupStatus",
     header: ({ column }) => (
-      <DTColumnHeader
-        className="w-12"
-        column={column}
-        title={getColumnName("setupStatus")}
-      />
+      <DTColumnHeader column={column} title={getColumnName("setupStatus")} />
     ),
     cell: ({ row }) => {
       return (
@@ -153,9 +198,7 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   },
   {
     id: "actions",
-    header: ({ column }) => (
-      <DTColumnHeader className="w-7" column={column} title={""} />
-    ),
+    header: ({ column }) => <DTColumnHeader column={column} title={""} />,
     cell: ({ row }) => (
       // Render the model row actions component
       <ModelRowActions rowId={row.original.id || "rowId"} />
