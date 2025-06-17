@@ -22,7 +22,20 @@ export const getLocalExecutionLog = async (versionId: string) => {
         isSuccess: false,
         executedOn: new Date().toISOString(),
         duration: 0,
-        nodes: versionLog.versionLog as ExecutionNode[],
+        nodes: versionLog.versionLog.map(
+          (nodeLog): ExecutionNode => ({
+            nodeId: nodeLog.nodeId,
+            nodeName: nodeLog.nodeName,
+            isSuccess: nodeLog.isSuccess,
+            duration: nodeLog.duration,
+            inputs: Object.fromEntries(
+              nodeLog.inputs.map((input) => [input.key, input.value]),
+            ),
+            outputs: Object.fromEntries(
+              nodeLog.outputs.map((output) => [output.key, output.value]),
+            ),
+          }),
+        ),
       },
     ] as Execution[];
   } catch {

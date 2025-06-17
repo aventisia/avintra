@@ -3,8 +3,8 @@ export interface ExecutionNode {
   nodeName: string;
   isSuccess: boolean;
   duration: number;
-  inputs: Array<{ key: string; value: unknown }>;
-  outputs: Array<{ key: string; value: unknown }>;
+  inputs: { [key: string]: string };
+  outputs: { [key: string]: string };
 }
 
 export interface Execution {
