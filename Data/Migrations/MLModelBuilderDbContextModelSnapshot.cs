@@ -155,6 +155,9 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<bool>("IsPublished")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("LLM")
+                        .HasColumnType("text");
+
                     b.Property<Guid>("LastModifiedByUserId")
                         .HasColumnType("uuid");
 
