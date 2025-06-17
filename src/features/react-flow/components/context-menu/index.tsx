@@ -15,6 +15,8 @@ import { useShallow } from "zustand/react/shallow";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { Edge } from "@xyflow/react";
 import { getIntermediateNodeIds } from "../../utils/getIntermediateNodes";
+import { areNodesConnected } from "../../utils/getNodesConnectivity";
+import { toast } from "@aventisia/ui/sonner";
 
 export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
   // Auto layout the flow
@@ -75,7 +77,13 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
 
     // Get full list of nodes involved in this group
     const fullSelectedNodes = nodes.filter((n) => expandedNodeIds.has(n.id));
-    
+
+    // ✅ PRE-CHECK: Ensure selected nodes are connected
+    const isValidGroup = areNodesConnected(fullSelectedNodes, edges);
+    if (!isValidGroup) {
+      toast.warning("Selected nodes are not continuos in order.");
+      return;
+    }
     const groupHead = fullSelectedNodes[0];
     const groupMembers = fullSelectedNodes.slice(1);
 
