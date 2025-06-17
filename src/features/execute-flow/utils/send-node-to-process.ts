@@ -63,25 +63,35 @@ const sendNextNodeToProcess = (
 
 // Send execution complete command
 const sendExecutionComplete = (
-  isSuccess: boolean,
+  command: WebSocketCommandType,
   sendCommand: (command: WebSocketCommandType, data?: string) => void,
 ) => {
-  // Send abort command to stop the execution
-  sendCommand("abort");
-
   // Remove the items from local storage
-  localStorage.removeItem("nodes");
-  localStorage.removeItem("edges");
-  localStorage.removeItem("conditionalExecutionGroup");
-  localStorage.removeItem("loopExecutionGroup");
+  if (command === "complete" || command === "error" || command === "abort") {
+    localStorage.removeItem("nodes");
+    localStorage.removeItem("edges");
+    localStorage.removeItem("conditionalExecutionGroup");
+    localStorage.removeItem("loopExecutionGroup");
+    sendCommand(command);
+  }
 
   // Show a message to the user
-  if (isSuccess) {
-    toast.success("Execution completed successfully.");
-  } else {
-    toast.error(
-      "Execution failed. Please check the execution logs for details.",
-    );
+  switch (command) {
+    case "complete":
+      toast.success("Execution completed successfully.");
+      break;
+    case "pause":
+      // TODO: need to handle pause and resume logic
+      toast.info("Execution paused");
+      break;
+    case "error":
+      toast.error(
+        "Execution failed. Please check the execution logs for details.",
+      );
+      break;
+    case "abort":
+      toast.warning("Execution has been aborted");
+      break;
   }
 };
 
@@ -243,7 +253,7 @@ const sendNodeToProcess = (
 
   // If target node is not found, show an error message
   if (!nodeToProcess || !nodeToProcess.type) {
-    sendExecutionComplete(false, sendCommand);
+    sendExecutionComplete("error", sendCommand);
     return;
   }
 
@@ -299,16 +309,15 @@ const sendNodeToProcess = (
       processLoopNode(nodeToProcess as Node<LoopNodeDataType>, sendCommand);
       return;
     case "flowEndNode": // Execution is complete
-      sendExecutionComplete(true, sendCommand);
+      sendExecutionComplete("complete", sendCommand);
       return;
     default: // If unknown node type, show an error message
       toast.error(
         `Unknown node type: ${nodeToProcess.type}. Please check the flow.`,
       );
-      sendExecutionComplete(false, sendCommand);
+      sendExecutionComplete("error", sendCommand);
       return;
   }
 };
 
-export { sendNextNodeToProcess, sendNodeToProcess };
-
+export { sendExecutionComplete, sendNextNodeToProcess, sendNodeToProcess };
