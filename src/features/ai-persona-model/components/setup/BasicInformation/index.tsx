@@ -10,9 +10,11 @@ const BasicInformation = () => {
   return (
     <div className="space-y-4">
       <p className="text-base">Basic Information</p>
-      <AutosizeTextareaField {...personaNameProps} />
-      <AutosizeTextareaField {...roleObjectiveProps} />
-      <AutosizeTextareaField {...categoryDomainProps} />
+      <div className="grid md:grid-cols-3 gap-4 items-center">
+        <AutosizeTextareaField {...personaNameProps} />
+        <AutosizeTextareaField {...roleObjectiveProps} />
+        <AutosizeTextareaField {...categoryDomainProps} />
+      </div>
     </div>
   );
 };

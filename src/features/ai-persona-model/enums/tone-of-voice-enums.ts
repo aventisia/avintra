@@ -6,6 +6,6 @@ export enum ToneOfVoiceEnum {
     formal = "Formal",
     friendly = "Friendly",
     concise = "Concise",
-    Empathetic = "Sentiment Analytics",
+    Empathetic = "Empathetic",
   }
   

@@ -4,7 +4,6 @@ import { useShallow } from "zustand/react/shallow";
 import AudioTranscriptionPlayer from "../audio-transcription-player/components/AudioTranscriptionPlayer";
 import ImageViewer from "../image-viewer/components/ImageViewer";
 import { useFetchModel } from "../label-data/hooks/useFetchModel";
-import { MediaRecorder } from "../media-recorder/components/MediaRecorder";
 import { PdfPreviewer } from "../pdf-previewer/components/PdfPreviewer";
 import { useFileListStore } from "./store/file-list-store";
 
@@ -27,7 +26,7 @@ const MultiFormatViewer = () => {
   }
 
   if (modelType === "aipersona") {
-    return <MediaRecorder />;
+    return null;
   }
 
   switch (selectedFile && selectedFile.extension?.toUpperCase()) {

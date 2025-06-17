@@ -11,9 +11,11 @@ const PersonaBehavior = () => {
   return (
     <div className="space-y-4">
       <p className="text-base">Persona Behaviour</p>
-      <SelectField {...toneOfVoiceProps} />
-      <AutosizeTextareaField {...instructionsProps} />
-      <AutosizeTextareaField {...exclusionsBoundariesProps} />
+      <div className="grid md:grid-cols-3 gap-4 items-center">
+        <SelectField {...toneOfVoiceProps} />
+        <AutosizeTextareaField {...instructionsProps} />
+        <AutosizeTextareaField {...exclusionsBoundariesProps} />
+      </div>
     </div>
   );
 };

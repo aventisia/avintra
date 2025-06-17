@@ -36,9 +36,9 @@ export const LabelDataContainer = () => {
 
   const { data: pdfList, refetch, isLoading } = useFetchUploadedFiles();
   const { data: modelData } = useFetchModel();
+  const modelType = modelData?.data.type?.toLowerCase(); // Convert to lowercase for case insensitivity
 
   useEffect(() => {
-    const modelType = modelData?.data.type?.toLowerCase(); // Convert to lowercase for case insensitivity
     if (pdfList?.data.length) {
       setStepState(1);
     } else {
@@ -46,7 +46,7 @@ export const LabelDataContainer = () => {
     }
 
     if (modelType === "aipersona") setStepState(1);
-  }, [pdfList, setStepState, modelData]);
+  }, [pdfList, setStepState, modelData, modelType]);
 
   if (isLoading) {
     return (
@@ -54,6 +54,15 @@ export const LabelDataContainer = () => {
         <Loader2 className="h-7 w-7 animate-spin text-[--icon-color]" />
         <span> Loading...</span>
       </div>
+    );
+  }
+
+  if (modelType === "aipersona") {
+    return (
+      <>
+        <Nav isPdfAvailable={!!pdfList?.data.length} refetchList={refetch} />
+        <AIPersonaModel />
+      </>
     );
   }
 
