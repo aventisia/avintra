@@ -1,0 +1,16 @@
+meta {
+  name: Kokoro - Text to Speech
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/tts/kokoro/generate
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  text: Artificial intelligence is transforming industries. Machine learning algorithms analyze vast datasets, powering innovations from self-driving cars to personalized recommendations
+  voice_name: af_alloy
+}
