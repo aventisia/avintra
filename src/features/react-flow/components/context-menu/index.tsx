@@ -105,6 +105,7 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
             ...node.data,
             groupId,
             isGroupHead: true,
+            isExpanded: false,
             originalEdges, // full edge data
           },
         };
