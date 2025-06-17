@@ -14,5 +14,6 @@ export const summarizationModelSetupFormZodSchema = z
     ),
     summarizationMethod: z.string().readonly(),
     stuffPrompt: z.string().min(1, {message: reqError("Prompt")}),
-    
+    llm: z.string().min(1, {message: reqError("Model Type")}),
+    temperature: z.number().default(0),
   })

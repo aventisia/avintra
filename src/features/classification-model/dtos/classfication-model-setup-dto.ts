@@ -7,8 +7,10 @@ interface ICategoriesDescriptor {
 interface ISetupObject {
     context: string;
     prompt: string;
-    allowMultipleClasses: boolean,
-    categories: ICategoriesDescriptor[]
+    allowMultipleClasses: boolean;
+    categories: ICategoriesDescriptor[];
+    llm: string;
+    temperature: number;
 }
 
 interface IModelInfo {

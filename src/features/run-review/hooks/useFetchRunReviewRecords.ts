@@ -6,6 +6,7 @@ import { useShallow } from "zustand/react/shallow";
 import { getRunReviewRecords } from "@/features/run-review/apis/run-review-table-apis";
 import { ModelNamesEnum } from "@/features/pdf-previewer/enums/model-name-enum";
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { RUN_REIVEW_TABLE_QUERY_KEY } from "../constants";
 
 /**
  * Custom hook to fetch records using react query.
@@ -28,7 +29,7 @@ export const useFetchRunReviewRecords = () => {
     ModelNamesEnum[modelData.data.type as keyof typeof ModelNamesEnum] !== undefined;
 
   const { data, isError, error, isLoading, refetch } = useQuery({
-    queryKey: ["runReview"],
+    queryKey: RUN_REIVEW_TABLE_QUERY_KEY,
     queryFn: () =>
       getRunReviewRecords(
         modelId,

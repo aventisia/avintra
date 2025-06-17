@@ -9,8 +9,10 @@ const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/extracted-
  * Retrieves list of annotations.
  */
 const getAnnotationList = (modelId: string) => {
+  console.log("inside annotation list");
+  
   return axiosInstance
-    .get<IHttpResponse<AnnotationDataDto[]>>(`${baseAPIURL}/list/${modelId}/LabelData`)
+    .get<IHttpResponse<AnnotationDataDto[]>>(`${baseAPIURL}/list/${modelId}/viewer`)
     .then((res) => res.data);
 };
 

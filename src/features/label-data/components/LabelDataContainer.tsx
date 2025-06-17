@@ -1,5 +1,6 @@
+import AIPersonaModel from "@/features/ai-persona-model/components";
 import ClassificationModel from "@/features/classification-model/components";
-import FileUploader from "@/features/file-uploader/components/FileUploader";
+import FileUploader from "@/features/file-uploader-viewer/components/FileUploader";
 import InformationExtractor from "@/features/information-extractor/components";
 import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
 import MultiFormatViewer from "@/features/multi-format-viewer/MultiFormatViewer";
@@ -13,6 +14,7 @@ import {
   ResizablePanelGroup,
 } from "@/react-toolkit/ui/resizable";
 
+import { toast } from "@aventisia/ui/sonner";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -34,6 +36,7 @@ export const LabelDataContainer = () => {
 
   const { data: pdfList, refetch, isLoading } = useFetchUploadedFiles();
   const { data: modelData } = useFetchModel();
+  const modelType = modelData?.data.type?.toLowerCase(); // Convert to lowercase for case insensitivity
 
   useEffect(() => {
     if (pdfList?.data.length) {
@@ -41,7 +44,9 @@ export const LabelDataContainer = () => {
     } else {
       setStepState(0);
     }
-  }, [pdfList, setStepState]);
+
+    if (modelType === "aipersona") setStepState(1);
+  }, [pdfList, setStepState, modelData, modelType]);
 
   if (isLoading) {
     return (
@@ -49,6 +54,15 @@ export const LabelDataContainer = () => {
         <Loader2 className="h-7 w-7 animate-spin text-[--icon-color]" />
         <span> Loading...</span>
       </div>
+    );
+  }
+
+  if (modelType === "aipersona") {
+    return (
+      <>
+        <Nav isPdfAvailable={!!pdfList?.data.length} refetchList={refetch} />
+        <AIPersonaModel />
+      </>
     );
   }
 
@@ -66,12 +80,14 @@ export const LabelDataContainer = () => {
         return <ClassificationModel />;
       case "questionanswer":
         return <QuestionAnswerModel />;
+      case "aipersona":
+        return <AIPersonaModel />;
       default:
         // Optionally log an error or return a fallback component
-        console.warn(
+        toast.error(
           `Unknown model type: ${modelType}. Falling back to default.`,
         );
-        return <InformationExtractor />; // Default component
+        return <>Failed to open the Model. Please Try again</>; // Default component
     }
   };
 

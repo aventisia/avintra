@@ -1,3 +1,4 @@
+import { useSourceParam } from "@/features/label-data/hooks/useSourceParam";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
@@ -17,9 +18,12 @@ import {
   summarizedTextProps,
 } from "../../constants/summarization-model-test-form-field-props";
 import { summarizationModelTestFormZodSchema } from "../../constants/summarization-model-test-form-zod-schema";
+import { useFetchSetupFormData } from "../../hooks/useFetchSetupFormData";
 import { useSummarizationModelTestForm } from "../../hooks/useSummarizationModelTestForm";
 
 const SummarizationModelTestForm = () => {
+  useFetchSetupFormData();
+
   const {
     form,
     isDirty,
@@ -31,6 +35,7 @@ const SummarizationModelTestForm = () => {
   const { setValue, watch } = form;
   const submitForFinetuningValue = watch("submitForFineTuning");
   const { data: fileList } = useFetchUploadedFiles();
+  const { isFineTuneFlow } = useSourceParam();
 
   const { selectedFile, setSelectedFile } = useFileListStore(
     useShallow((state) => ({
@@ -72,7 +77,6 @@ const SummarizationModelTestForm = () => {
         id: modelId,
         mlModelId: modelId,
         accuracy: null,
-        type: "LabelData",
         dataObject: JSON.stringify({ summary: dataToSend.summarizedText }),
         submitForFineTuning,
         docId: selectedFile?.id ?? "",
@@ -113,30 +117,38 @@ const SummarizationModelTestForm = () => {
           <div className="space-y-4 px-4 pb-1 ">
             <AutosizeTextareaField
               {...summarizedTextProps}
-              label={`Summarized Text (${form.getValues("summarizedText").trim().split(/\s+/).length ?? 0})`}
+              label={`Summarized Text (${
+                form.getValues("summarizedText").trim() === ""
+                  ? 0
+                  : form.getValues("summarizedText").trim().split(/\s+/).length
+              })`}
             />
           </div>
         </FormProvider>
       </ScrollArea>
 
-      <Separator />
-      <div className="flex items-center justify-between gap-2 px-4 py-1 pb-4">
-        <div className="flex items-center gap-1">
-          <CheckboxField
-            {...submitForFineTuningProps}
-            checked={submitForFinetuningValue}
-            onCheckedChange={handleToggle}
-          />
-          <span className="text-sm">Submit for Fine-tuning</span>
-        </div>{" "}
-        <Button
-          size="xs"
-          type="submit"
-          disabled={isSubmitting || isUpdatePending}
-        >
-          {isLastFile ? "Save" : "Save & Next"}
-        </Button>
-      </div>
+      {!isFineTuneFlow && (
+        <>
+          <Separator />
+          <div className="flex items-center justify-between gap-2 px-4 py-1 pb-4">
+            <div className="flex items-center gap-1">
+              <CheckboxField
+                {...submitForFineTuningProps}
+                checked={submitForFinetuningValue}
+                onCheckedChange={handleToggle}
+              />
+              <span className="text-sm">Submit for Fine-tuning</span>
+            </div>{" "}
+            <Button
+              size="xs"
+              type="submit"
+              disabled={isSubmitting || isUpdatePending}
+            >
+              {isLastFile ? "Save" : "Save & Next"}
+            </Button>
+          </div>
+        </>
+      )}
     </Form>
   );
 };

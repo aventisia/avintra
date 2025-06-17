@@ -24,15 +24,13 @@ export const RunReviewCrudDialog = ({ children }: React.PropsWithChildren) => {
   return (
     <DTCrudDialogWrapper>
       {children}
-      <DialogContent side={"center"} className="!max-w-[45rem]">
+      <DialogContent side={"right"} className="!max-w-[45rem]">
         <DialogDefaultHeader
           heading={dialogHeaderOptions.heading}
           description={dialogHeaderOptions.description}
         />
-        {/* <ScrollArea className="h-[calc(100vh-10rem)] px-2.5 pb-0 pt-4"> */}
-        <div className="h-[calc(100vh-10rem)]">
-          <RunReviewCrudForm />
-        </div>
+        {/* <ScrollArea className="h-[calc(100vh-4rem)] px-2.5 pb-0 pt-4"> */}
+        <RunReviewCrudForm />
         {/* </ScrollArea> */}
       </DialogContent>
     </DTCrudDialogWrapper>

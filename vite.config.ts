@@ -19,4 +19,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"), // SHOULD BE SECOND
     },
   },
+  optimizeDeps: {
+    include: ["@swc/helpers"],
+  },
 });
+
+

@@ -74,16 +74,14 @@ const SelectField = ({
 
               <SelectContent>
                 {selectOptions.map((item) => (
-                  <>
-                    <SelectItem
-                      size={size}
-                      key={item.value}
-                      value={item.value}
-                      description={item.description}
-                    >
-                      {item.label}
-                    </SelectItem>
-                  </>
+                  <SelectItem
+                    size={size}
+                    key={item.value}
+                    value={item.value}
+                    description={item.description}
+                  >
+                    {item.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>

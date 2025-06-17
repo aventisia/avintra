@@ -4,7 +4,6 @@ const fieldValueProps : InputFieldProps = {
     name: "",
     type: "text",
     className: "text-sm",
-    placeholder: "Field Value"
 }
 
 const submitForFineTuningProps: CheckboxFieldProps = {

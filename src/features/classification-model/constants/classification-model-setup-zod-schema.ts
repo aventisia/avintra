@@ -11,5 +11,7 @@ export const classificationModelSetupFormZodSchema = z
     context: z.string().min(1, {message: reqError("Context")}),
     categories: z.array(categoriesSchema),
     allowMultipleClasses: z.boolean(),
+    llm: z.string().min(1, {message: reqError("Model Type")}),
+    temperature: z.number().default(0),
     prompt: z.string().min(1, {message: reqError("Prompt")}),
 })

@@ -7,6 +7,10 @@ export interface IFileExtractedData {
   fileId: string;
   extractedData: IFieldValueSchema[];
   Remarks: string;
+  tokenCount: number;
+  executionCount: number;
+  failedCount: number;
+  executionTime: number;
 }
 
 export interface IFieldValueSchema {

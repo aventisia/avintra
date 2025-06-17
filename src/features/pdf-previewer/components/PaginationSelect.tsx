@@ -70,7 +70,7 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
             {pdfList.map((pdf) => (
               <SelectItem key={pdf.id} value={pdf.id || ""}>
                 <div className="flex gap-2">
-                  {selectedPdf.extension === "PDF" ? (
+                  {pdf.extension === "PDF" ? (
                     <img src={pdfIcon} alt="pdf icon" className="h-4 w-4" />
                   ) : (
                     <Image className="h-4 w-4 text-info-foreground" />

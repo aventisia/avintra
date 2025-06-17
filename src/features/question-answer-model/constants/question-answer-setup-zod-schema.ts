@@ -11,4 +11,6 @@ export const questionAnswerSetupFormZodSchema = z
     context: z.string().min(1, {message: reqError("Context")}),
     questionAnswers: z.array(questionAnswerSchema),
     prompt: z.string().min(1, {message: reqError("Prompt")}),
+    llm: z.string().min(1, {message: reqError("Model Type")}),
+    temperature: z.number().default(0),
 })

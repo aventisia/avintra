@@ -20,8 +20,8 @@ interface ISetupObject {
     prompt: string;
     tableMetadata: ITableMetaData[] | null,
     fieldSetups: IFieldSetups[];
-
-
+    llm: string;
+    temperature: number;
 }
 interface IModelInfo {
     createdOn?: string;

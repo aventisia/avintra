@@ -1,8 +1,13 @@
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 import { useTabStore } from "@/store/tab-store";
+import { formatSeconds } from "@/utils/formatSeconds";
+
+// import { formatSeconds } from "@/utils/formatSeconds";
 
 import { Button } from "@aventisia/ui/buttons";
-import { Loader2, SparklesIcon } from "lucide-react";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { Loader2, SparklesIcon, Timer } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
@@ -23,6 +28,11 @@ function ExtractViaLLMButton() {
   );
   const { activeTab } = useTabStore();
   const { data: modelData, isLoading: isModelLoading } = useFetchModel();
+  const { extractedData } = useExtractedDataStore(
+    useShallow((state) => ({
+      extractedData: state.extractedData,
+    })),
+  );
 
   // Get extract via LLM mutation and pending status
   const { extractViaLLMMutation, isExtractionPending } =
@@ -45,24 +55,38 @@ function ExtractViaLLMButton() {
   };
 
   return (
-    <Button
-      size="xs"
-      className="gap-2 pl-2 pr-3.5 text-sm"
-      onClick={handleExtract}
-      disabled={isExtractionPending || activeTab == "setup" || isModelLoading}
-    >
-      {isExtractionPending ? (
-        <>
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Executing...
-        </>
-      ) : (
-        <>
-          <SparklesIcon className="ml-1 h-4 w-4" />
-          Execute
-        </>
-      )}
-    </Button>
+    <div className="flex gap-2 items-center">
+      <Button
+        size="xs"
+        className="gap-2 text-sm"
+        onClick={handleExtract}
+        disabled={isExtractionPending || activeTab == "setup" || isModelLoading}
+      >
+        {isExtractionPending ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Executing...
+          </>
+        ) : (
+          <>
+            <SparklesIcon className="ml-1 h-4 w-4" />
+            Execute
+          </>
+        )}
+      </Button>
+      <Tooltip side="right" content="Last execution time">
+        <div className="flex items-center gap-1 mr-2">
+          <>
+            <Timer className="h-4 w-4" />
+            <p className="text-sm">
+              {extractedData.executionTime
+                ? formatSeconds(extractedData.executionTime)
+                : "0s"}
+            </p>
+          </>
+        </div>
+      </Tooltip>
+    </div>
   );
 }
 

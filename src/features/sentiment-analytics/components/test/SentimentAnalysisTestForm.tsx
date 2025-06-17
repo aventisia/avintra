@@ -1,3 +1,4 @@
+import { useSourceParam } from "@/features/label-data/hooks/useSourceParam";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
@@ -14,10 +15,13 @@ import { useShallow } from "zustand/react/shallow";
 
 import { submitForFineTuningProps } from "../../constants/sentiment-analytics-test-form-field-props";
 import { sentimentalAnalyticsTestFormZodSchema } from "../../constants/sentiment-analytics-test-form-zod-schema";
+import { useFetchSetupFormData } from "../../hooks/useFetchSetupFormData";
 import { useSentimentalAnalyticsTestForm } from "../../hooks/useSentimentAnalyticsTestForm";
 import CategoryFields from "./categories";
 
 const SentimentAnalyticsFormTestForm = () => {
+  useFetchSetupFormData();
+
   const {
     form,
     categoryFields,
@@ -32,6 +36,7 @@ const SentimentAnalyticsFormTestForm = () => {
   } = form;
   const submitForFinetuningValue = watch("submitForFineTuning");
   const { data: fileList } = useFetchUploadedFiles();
+  const { isFineTuneFlow } = useSourceParam();
 
   const { setExtractedData } = useExtractedDataStore(
     useShallow((state) => ({
@@ -74,7 +79,6 @@ const SentimentAnalyticsFormTestForm = () => {
         id: modelId,
         mlModelId: modelId,
         accuracy: null,
-        type: "LabelData",
         dataObject: JSON.stringify(dataToSend.categories),
         submitForFineTuning,
         docId: selectedFile?.id ?? "",
@@ -119,24 +123,28 @@ const SentimentAnalyticsFormTestForm = () => {
         </FormProvider>
       </ScrollArea>
 
-      <Separator />
-      <div className="flex items-center justify-between gap-2 px-4 py-1 pb-4">
-        <div className="flex items-center gap-1">
-          <CheckboxField
-            {...submitForFineTuningProps}
-            checked={submitForFinetuningValue}
-            onCheckedChange={handleToggle}
-          />
-          <span className="text-sm">Submit for Fine-tuning</span>
-        </div>
-        <Button
-          size="xs"
-          type="submit"
-          disabled={isSubmitting || isUpdatePending}
-        >
-          {isLastFile ? "Save" : "Save & Next"}
-        </Button>
-      </div>
+      {!isFineTuneFlow && (
+        <>
+          <Separator />
+          <div className="flex items-center justify-between gap-2 px-4 py-1 pb-4">
+            <div className="flex items-center gap-1">
+              <CheckboxField
+                {...submitForFineTuningProps}
+                checked={submitForFinetuningValue}
+                onCheckedChange={handleToggle}
+              />
+              <span className="text-sm">Submit for Fine-tuning</span>
+            </div>
+            <Button
+              size="xs"
+              type="submit"
+              disabled={isSubmitting || isUpdatePending}
+            >
+              {isLastFile ? "Save" : "Save & Next"}
+            </Button>
+          </div>
+        </>
+      )}
     </Form>
   );
 };

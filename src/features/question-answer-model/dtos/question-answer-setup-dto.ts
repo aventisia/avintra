@@ -8,6 +8,8 @@ interface ISetupObject {
     context: string;
     prompt: string;
     questionAnswers: ICategoriesDescriptor[]
+    llm: string;
+    temperature: number;
 }
 
 interface IModelInfo {

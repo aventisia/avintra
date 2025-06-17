@@ -7,26 +7,44 @@ import { CellContext, ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { getColumnName } from "../../constants/column-display-names";
 import { RunReviewTableDTO } from "../../dtos/run-review-table-dto";
 import { RunReviewRowActions } from "../run-review-row-actions/RunReviewRowActions";
+import { RunReviewTableCellLink } from "./RunReviewTableCellLink";
 
 /**
  * Returns the complete column configuration in this order:
  * 1. Row selection
  * 2. File name column (`docName`)
- * 3. All dynamic columns (even duplicates)
+ * 3. All dynamic columns (deduplicated by name)
  * 4. Remaining static columns
  * 5. Actions column
  */
 export const getRunReviewTableColumns = (
   data: RunReviewTableDTO[],
 ): ColumnDef<RunReviewTableDTO>[] => {
-  const dynamicCols: { name: string; index: number }[] = [];
+  // ✅ Step 1: Collect unique dynamic column names across all rows
+  const uniqueDynamicColNames = Array.from(
+    new Set(
+      data.flatMap(
+        (row) => row.columns?.map((col) => col.name?.trim() || "") || [],
+      ),
+    ),
+  ).filter((name) => name !== ""); // Remove empty strings if any
 
-  // Collect all dynamic columns (allowing duplicates)
-  data.forEach((row) => {
-    row.columns?.forEach((col, idx) => {
-      dynamicCols.push({ name: col.name ?? `Unnamed ${idx}`, index: idx });
-    });
-  });
+  // ✅ Step 2: Build column definitions based on unique names
+  const dynamicColumns: ColumnDef<RunReviewTableDTO>[] =
+    uniqueDynamicColNames.map((name) => ({
+      id: `${name}`,
+      accessorFn: (row) => {
+        return row.columns?.find((col) => col.name === name)?.value ?? "";
+      },
+      header: ({ column }: HeaderContext<RunReviewTableDTO, unknown>) => (
+        <DTColumnHeader column={column} title={name} className="capitalize" />
+      ),
+      cell: ({ row }: CellContext<RunReviewTableDTO, unknown>) => (
+        <div className="truncate w-36 font-medium">
+          {row.getValue(`${name}`)}
+        </div>
+      ),
+    }));
 
   return [
     // ✅ Row selection
@@ -64,31 +82,20 @@ export const getRunReviewTableColumns = (
           title={getColumnName("docName")}
         />
       ),
-      cell: ({ row }) => (
-        <div className="w-auto font-medium">{row.getValue("docName")}</div>
-      ),
+      cell: ({ row }) => {
+        const { id, docName, docId } = row.original;
+        return (
+          <RunReviewTableCellLink
+            rowId={id || "rowId"}
+            cellValue={docName}
+            fileId={docId}
+          />
+        );
+      },
     },
 
     // ✅ Dynamic columns
-    ...dynamicCols.map((col, i) => {
-      const colId = `${col.name}-${i}`;
-
-      return {
-        id: colId,
-        accessorFn: (row: RunReviewTableDTO) =>
-          row.columns?.[col.index]?.value ?? "",
-        header: ({ column }: HeaderContext<RunReviewTableDTO, unknown>) => (
-          <DTColumnHeader
-            column={column}
-            title={col.name}
-            className="capitalize"
-          />
-        ),
-        cell: ({ row }: CellContext<RunReviewTableDTO, unknown>) => (
-          <div className="truncate font-medium">{row.getValue(colId)}</div>
-        ),
-      };
-    }),
+    ...dynamicColumns,
 
     // ✅ Remaining static columns
     {
@@ -175,7 +182,12 @@ export const getRunReviewTableColumns = (
       header: ({ column }) => (
         <DTColumnHeader className="w-7" column={column} title={""} />
       ),
-      cell: ({ row }) => <RunReviewRowActions rowId={row.original.id} />,
+      cell: ({ row }) => (
+        <RunReviewRowActions
+          rowId={row.original.id}
+          fileId={row.original.docId}
+        />
+      ),
     },
   ];
 };

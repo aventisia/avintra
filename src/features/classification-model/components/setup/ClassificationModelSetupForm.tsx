@@ -1,3 +1,4 @@
+import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 
 import { LoadingSpinner, Separator } from "@aventisia/ui";
@@ -17,6 +18,7 @@ import { classificationModelSetupFormZodSchema } from "../../constants/classific
 import { ClassficationModelSetupDTO } from "../../dtos/classfication-model-setup-dto";
 import { useClassificationModelSetupForm } from "../../hooks/useClassificationModelSetupForm";
 import CategoriesTable from "./CategoriesTable";
+import ModelConfiguration from "./ModelConfiguration";
 
 const ClassificationModelSetupForm = () => {
   const {
@@ -33,6 +35,7 @@ const ClassificationModelSetupForm = () => {
       modelId: state.modelId,
     })),
   );
+  const { data: modelData, isLoading } = useFetchModel();
 
   // Submit handler
   function submitHandler(
@@ -48,7 +51,7 @@ const ClassificationModelSetupForm = () => {
     <Form
       methods={form}
       onSubmit={form.handleSubmit(submitHandler)}
-      disabled={isSubmitting}
+      disabled={isSubmitting || isLoading || modelData?.data.isPublished}
     >
       <ScrollArea className="mt-4 flex-grow h-[calc(100vh-14.2rem)]">
         <FormProvider {...form}>
@@ -71,6 +74,12 @@ const ClassificationModelSetupForm = () => {
             <Separator />
 
             <SwitchField {...allowMultipleClassesProps} />
+
+            {/* Separator */}
+            <Separator />
+
+            {/* Model Configuration */}
+            <ModelConfiguration form={form} />
 
             {/* Prompt */}
             <AutosizeTextareaField {...systemPromptProps} />

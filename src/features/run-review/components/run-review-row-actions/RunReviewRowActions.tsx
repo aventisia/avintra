@@ -3,6 +3,7 @@ import { DataTableRowActions } from "@aventisia/ui/data-table";
 // import { DropdownMenuSeparator } from "@aventisia/ui/dropdown-menu";
 
 import { RunReviewRowDeleteAction } from "./RunReviewRowDeleteAction";
+import { RunReviewRowOpenAction } from "./RunReviewRowOpenAction";
 
 // import { ModelRowOpenAction } from "./ModelOpenAction";
 // import { ModelLabelDataAction } from "./ModelLabelDataAction";
@@ -12,9 +13,13 @@ import { RunReviewRowDeleteAction } from "./RunReviewRowDeleteAction";
 
 interface RunReviewRowActionsProps {
   rowId: string;
+  fileId: string;
 }
 
-export const RunReviewRowActions = ({ rowId }: RunReviewRowActionsProps) => {
+export const RunReviewRowActions = ({
+  rowId,
+  fileId,
+}: RunReviewRowActionsProps) => {
   return (
     // Dropdown menu for model table row action */}
     <DataTableRowActions className="w-32">
@@ -25,7 +30,7 @@ export const RunReviewRowActions = ({ rowId }: RunReviewRowActionsProps) => {
       {/* <ModelTestAction rowId={rowId} /> */}
 
       {/* To open a row */}
-      {/* <ModelRowOpenAction rowId={rowId} /> */}
+      <RunReviewRowOpenAction fileId={fileId} />
 
       {/* DropdownMenuSeparator component */}
       {/* <DropdownMenuSeparator /> */}

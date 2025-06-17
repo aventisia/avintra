@@ -1,4 +1,7 @@
+import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 interface AppLogoProps {
   /** Set to true, if want to show aventisia logo */
@@ -22,6 +25,7 @@ const AppLogo = ({
 }: AppLogoProps) => {
   // Logo file
   const logoFile = lightLogo ? "app_logo_light.svg" : "app_logo_dark.svg";
+  const workspaceModelURL = `${import.meta.env.VITE_WORKSPACE_URL}/ai-models`;
 
   // Logo path
   const logoSrc = showFullLogo
@@ -30,15 +34,19 @@ const AppLogo = ({
 
   // Return logo with app name
   return (
-    <a
-      href={import.meta.env.BASE_URL}
-      className={cn(
-        "flex items-center justify-center gap-2 font-medium",
-        className,
-      )}
-    >
+    <div className="flex items-center gap-1.5">
+      <Tooltip content="Back">
+        <Button
+          size="icon8"
+          variant="ghost"
+          className="hover:bg-white/10"
+          onClick={() => (window.location.href = workspaceModelURL)}
+        >
+          <ArrowLeftIcon className="h-4 w-4 text-white/80" />
+        </Button>
+      </Tooltip>
       <img className={cn(className)} src={logoSrc} alt="Logo" />
-    </a>
+    </div>
   );
 };
 

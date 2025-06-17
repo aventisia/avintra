@@ -1,3 +1,4 @@
+import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 
 import { LoadingSpinner, Separator } from "@aventisia/ui";
@@ -17,6 +18,7 @@ import {
 import { summarizationModelSetupFormZodSchema } from "../../constants/summarization-model-setup-zod-schema";
 import { SummarizationSetupDTO } from "../../dtos/summarization-setup-dto";
 import { useSummarizationModelSetupForm } from "../../hooks/useSummarizationModelSetupForm";
+import ModelConfiguration from "./ModelConfiguration";
 
 const SummarizationModelSetupForm = () => {
   const { form, isSubmitting, isDirty, isUpdatePending, updateFormData } =
@@ -26,6 +28,7 @@ const SummarizationModelSetupForm = () => {
       modelId: state.modelId,
     })),
   );
+  const { data: modelData, isLoading } = useFetchModel();
 
   // Submit handler
   function submitHandler(
@@ -41,7 +44,7 @@ const SummarizationModelSetupForm = () => {
     <Form
       methods={form}
       onSubmit={form.handleSubmit(submitHandler)}
-      disabled={isSubmitting}
+      disabled={isSubmitting || isLoading || modelData?.data.isPublished}
     >
       <ScrollArea className="mt-4 flex-grow h-[calc(100vh-14.2rem)]">
         <FormProvider {...form}>
@@ -56,6 +59,12 @@ const SummarizationModelSetupForm = () => {
               {/* Total Max Words */}
               <InputField {...totalMaxWordsProps} />
             </div>
+
+            {/* Separator */}
+            <Separator />
+
+            {/* Model Configuration */}
+            <ModelConfiguration form={form} />
 
             <AutosizeTextareaField {...promptProps} />
           </div>

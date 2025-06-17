@@ -1,12 +1,14 @@
-import { submitFiles } from "@/features/file-uploader/apis/file-upload-apis";
-import { FileUploadDto } from "@/features/file-uploader/dtos/file-upload-dto";
-import { useFileStore } from "@/features/file-uploader/stores/file-uploader-store";
+import { submitFiles } from "@/features/file-uploader-viewer/apis/file-upload-apis";
+import { FileUploadDto } from "@/features/file-uploader-viewer/dtos/file-upload-dto";
+import { useFileStore } from "@/features/file-uploader-viewer/stores/file-uploader-store";
+
 import { Button } from "@aventisia/ui/buttons";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+
 import { useInsertAnnotation } from "../../hooks/useInsertAnnotation";
 import { useLabelDataStore } from "../../stores/label-data-store";
 import TrainingDialog from "../TrainingDialog";
