@@ -8,7 +8,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-    [DisplayName("Resize Columns/Rows in Excel Worksheet")]
+    [DisplayName("Resize Columns or Rows in Excel Worksheet")]
     [Description("Resizes the width of columns or the height of rows in the active Excel worksheet.")]
     public class ResizeColumnsRowsInExcelWorksheetActivity : BaseCodeActivity
     {
