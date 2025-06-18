@@ -18,24 +18,24 @@
     "required": false,
     "selectOptions": [
       {
-        "label": "Uppercase",
+        "label": "UPPERCASE",
         "value": "Uppercase",
         "description": "Converts text to all uppercase letters."
       },
       {
-        "label": "Lowercase",
+        "label": "lowercase",
         "value": "Lowercase",
         "description": "Converts text to all lowercase letters."
       },
       {
-        "label": "Title Case",
-        "value": "TitleCase",
-        "description": "Converts text to title case (first letter of each word capitalized)."
+        "label": "Sentence case",
+        "value": "SentenceCase",
+        "description": "Convert text to sentence case (capitalize the first letter)."
       },
       {
-        "label": "Sentence Case",
-        "value": "SentenceCase",
-        "description": "Converts text to sentence case (first letter capitalized, rest lowercase)."
+        "label": "Title Case",
+        "value": "TitleCase",
+        "description": "Converts text to title case (capitalize each word)."
       }
     ]
   },

@@ -1,0 +1,82 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SourcePdfPath",
+    "label": "Source PDF File Path",
+    "description": "The path to the source PDF file from which pages will be extracted.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "OutputPdfPath",
+    "label": "Output PDF File Path",
+    "description": "The path where the new PDF file with extracted pages will be saved.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "PageSelection",
+    "label": "Page Selection Mode",
+    "description": "The mode for selecting pages to extract: All, Single, or Range.",
+    "defaultValue": "",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "All",
+        "value": "All",
+        "description": ""
+      },
+      {
+        "label": "Single",
+        "value": "Single",
+        "description": ""
+      },
+      {
+        "label": "Range",
+        "value": "Range",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Password",
+    "label": "Password",
+    "description": "The password for the source PDF file, if it is encrypted. Leave empty if not applicable.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "PageNumber",
+    "label": "Page Number (for Single)",
+    "description": "The specific page number to extract when using Single page selection mode.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FromPageNumber",
+    "label": "From Page Number (for Range)",
+    "description": "The starting page number for the range of pages to extract.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ToPageNumber",
+    "label": "To Page Number (for Range)",
+    "description": "The ending page number for the range of pages to extract.",
+    "defaultValue": "",
+    "required": false
+  }
+]

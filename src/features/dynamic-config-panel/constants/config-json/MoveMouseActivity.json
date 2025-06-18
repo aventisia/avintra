@@ -4,7 +4,7 @@
     "type": "text",
     "name": "PositionX",
     "label": "Position X",
-    "description": "",
+    "description": "Specifies the X coordinate on the screen where the mouse should be moved.",
     "defaultValue": "",
     "required": false
   },
@@ -13,7 +13,7 @@
     "type": "text",
     "name": "PositionY",
     "label": "Position Y",
-    "description": "",
+    "description": "Specifies the Y coordinate on the screen where the mouse should be moved.",
     "defaultValue": "",
     "required": false
   },
@@ -22,7 +22,7 @@
     "type": "select",
     "name": "RelativeTo",
     "label": "Relative To",
-    "description": "",
+    "description": "Determines the reference point for the mouse movement. Can be relative to the screen or a specific window.",
     "defaultValue": "",
     "required": false,
     "selectOptions": [
@@ -43,7 +43,7 @@
     "type": "select",
     "name": "MoveMouseFromPreviousPosition",
     "label": "Move Mouse From Previous Position",
-    "description": "",
+    "description": "Specifies whether to move the mouse from its current location using an animated effect, and sets the speed of the animation.",
     "defaultValue": "",
     "required": false,
     "selectOptions": [
@@ -74,7 +74,7 @@
     "type": "config-panel-output",
     "name": "CurrentCursorPosition",
     "label": "Current Cursor Position",
-    "description": "",
+    "description": "Returns the cursor\u0027s final position on the screen after the mouse operation completes.",
     "defaultValue": {
       "value": "CurrentCursorPosition",
       "enabled": true

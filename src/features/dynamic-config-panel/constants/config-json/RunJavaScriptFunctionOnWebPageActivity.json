@@ -13,7 +13,7 @@
     "type": "text",
     "name": "JavaScriptFunction",
     "label": "JavaScript Function",
-    "description": "The JavaScript function to execute (e.g., \u0027document.getElementById(\u0022myId\u0022).value = \u0022test\u0022;\u0027)",
+    "description": "The JavaScript function to execute (e.g., \u0027document.getElementById(\u0022myId\u0022).value = \u0022test\u0022;\u0027 or \u0027return document.title\u0027)",
     "defaultValue": "",
     "required": true
   },
@@ -28,19 +28,10 @@
   },
   {
     "direction": "Input",
-    "type": "switch",
-    "name": "WaitForCompletion",
-    "label": "Wait for Completion",
-    "description": "If true, waits for the script to complete before continuing.",
-    "defaultValue": true,
-    "required": false
-  },
-  {
-    "direction": "Input",
     "type": "text",
     "name": "TimeoutSeconds",
     "label": "Timeout Seconds",
-    "description": "Maximum time in seconds to wait for script completion before failing.",
+    "description": "Maximum time in seconds to wait for script execution before failing.",
     "defaultValue": 60,
     "required": false
   },

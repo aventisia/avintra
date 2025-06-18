@@ -4,7 +4,7 @@
     "type": "text",
     "name": "PdfFile",
     "label": "PDF File Path",
-    "description": "",
+    "description": "The path to the PDF file from which to extract tables.",
     "defaultValue": "",
     "required": true
   },
@@ -13,7 +13,7 @@
     "type": "select",
     "name": "PageSelection",
     "label": "Page Selection Mode",
-    "description": "",
+    "description": "Select how to choose pages for table extraction: All, Single, or Range.",
     "defaultValue": "",
     "required": true,
     "selectOptions": [
@@ -39,7 +39,7 @@
     "type": "text",
     "name": "Password",
     "label": "Password",
-    "description": "",
+    "description": "Optional password for encrypted PDF files. Leave empty if not required.",
     "defaultValue": "",
     "required": false
   },
@@ -48,7 +48,7 @@
     "type": "switch",
     "name": "MergeTablesAcrossPages",
     "label": "Merge Tables Across Pages",
-    "description": "",
+    "description": "If true, merges tables across pages into a single table. If false, creates separate tables for each page.",
     "defaultValue": true,
     "required": false
   },
@@ -57,7 +57,7 @@
     "type": "switch",
     "name": "FirstLineAsHeaders",
     "label": "First Line Contains Column Names",
-    "description": "",
+    "description": "If true, uses the first line of each page as column headers. If false, uses default column names.",
     "defaultValue": true,
     "required": false
   },
@@ -66,7 +66,7 @@
     "type": "text",
     "name": "PageNumber",
     "label": "Page Number (for Single)",
-    "description": "",
+    "description": "The specific page number to extract tables from. Only used if Page Selection is set to Single.",
     "defaultValue": "",
     "required": false
   },
@@ -75,7 +75,7 @@
     "type": "text",
     "name": "FromPageNumber",
     "label": "From Page Number (for Range)",
-    "description": "",
+    "description": "The starting page number for extracting tables in a range. Only used if Page Selection is set to Range.",
     "defaultValue": "",
     "required": false
   },
@@ -84,7 +84,7 @@
     "type": "text",
     "name": "ToPageNumber",
     "label": "To Page Number (for Range)",
-    "description": "",
+    "description": "The ending page number for extracting tables in a range. Only used if Page Selection is set to Range.",
     "defaultValue": "",
     "required": false
   },
@@ -93,7 +93,7 @@
     "type": "config-panel-output",
     "name": "ExtractedTables",
     "label": "Extracted Tables",
-    "description": "",
+    "description": "The output list of DataTables extracted from the PDF.",
     "defaultValue": {
       "value": "ExtractedTables",
       "enabled": true

@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "PdfFilePaths",
+    "label": "PDF File Paths",
+    "description": "The paths of the PDF files to merge.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "OutputPdfPath",
+    "label": "Output PDF Path",
+    "description": "The path to save the merged PDF file.",
+    "defaultValue": "",
+    "required": true
+  }
+]

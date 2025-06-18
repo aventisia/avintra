@@ -2173,7 +2173,7 @@
             "type": "activityNode",
             "name": "InsertImageInWordDocumentActivity",
             "label": "Insert Image in Word Document",
-            "description": "Inserts an image into a Word file.",
+            "description": "Inserts an image into a Word file at a specified location.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2371,7 +2371,16 @@
             "type": "activityNode",
             "name": "ExtractImagesFromPdfActivity",
             "label": "Extract Images from PDF",
-            "description": "Extracts images from a PDF file by specifying the source PDF file and the pages to extract from.",
+            "description": "Extracts images from a PDF file by specifying the source PDF file and the target folder.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExtractPdfPagesToNewPdfFileActivity",
+            "label": "Extract PDF Pages to New File",
+            "description": "Extracts specific pages from a PDF file and saves them as a new PDF.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2379,8 +2388,26 @@
           {
             "type": "activityNode",
             "name": "ExtractTablesFromPdfActivity",
-            "label": "Extract Tables From PDF",
-            "description": "Extracts tables from a PDF file.",
+            "label": "Extract Tables From PDF (PDFPig)",
+            "description": "Extracts tables from a PDF file using PdfPig library.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExtractTextFromPdfActivity",
+            "label": "Extract Text from PDF (PDFPig)",
+            "description": "Extracts text from a PDF file using PdfPig library.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "MergePdfFilesActivity",
+            "label": "Merge PDF Files",
+            "description": "Merges multiple PDF files into a new one.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
