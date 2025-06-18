@@ -1399,7 +1399,7 @@
           {
             "type": "activityNode",
             "name": "PressReleaseKeyActivity",
-            "label": "Press/Release Key",
+            "label": "Press or Release Key",
             "description": "Presses (and holds) or releases one or more modifier keys (Alt, Control, Shift, Win). Supports combinations like Ctrl+Alt.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
@@ -2874,7 +2874,7 @@
           {
             "type": "activityNode",
             "name": "GetFirstFreeColumnRowFromExcelWorksheetActivity",
-            "label": "Get First Free Column/Row from Excel Worksheet",
+            "label": "Get First Free Column or Row from Excel Worksheet",
             "description": "Retrieves the first free column and/or row of the active worksheet. This is useful for adding new data into a worksheet that already has data in it.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
@@ -2991,7 +2991,7 @@
           {
             "type": "activityNode",
             "name": "ResizeColumnsRowsInExcelWorksheetActivity",
-            "label": "Resize Columns/Rows in Excel Worksheet",
+            "label": "Resize Columns or Rows in Excel Worksheet",
             "description": "Resizes the width of columns or the height of rows in the active Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,

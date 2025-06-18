@@ -20,12 +20,12 @@
       {
         "label": "UPPERCASE",
         "value": "Uppercase",
-        "description": "Converts text to all uppercase letters."
+        "description": "Convert text to all uppercase letters."
       },
       {
         "label": "lowercase",
         "value": "Lowercase",
-        "description": "Converts text to all lowercase letters."
+        "description": "Convert text to all lowercase letters."
       },
       {
         "label": "Sentence case",
@@ -35,7 +35,7 @@
       {
         "label": "Title Case",
         "value": "TitleCase",
-        "description": "Converts text to title case (capitalize each word)."
+        "description": "Convert text to title case (capitalize each word)."
       }
     ]
   },
