@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using UglyToad.PdfPig;
 
-namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
+namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
     [DisplayName("Extract Tables From PDF (PDFPig)")]
     [Description("Extracts tables from a PDF file using PdfPig library.")]

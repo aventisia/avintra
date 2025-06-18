@@ -3,7 +3,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     // [DisplayName("Take Screenshot of UI Element")]
     // [Description("Takes a screenshot of a UI element in a window.")]

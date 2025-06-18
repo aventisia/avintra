@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities.Enums
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivities.Enums
 {
     public enum RelativeToEnum
     {

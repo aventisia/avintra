@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.IO;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Convert File to Binary Data")]
     [Description("Converts a file to binary data.")]

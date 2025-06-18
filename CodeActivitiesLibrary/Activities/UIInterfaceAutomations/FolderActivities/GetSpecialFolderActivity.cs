@@ -3,7 +3,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 {
     [DisplayName("Get Special Folder Path")]
     [Description(

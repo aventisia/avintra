@@ -1,6 +1,6 @@
 using CodeActivitiesLibrary.Extensions;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 {
     [ActivityCategoryMetadata(
         primaryCategory: "UI Interface Automations",

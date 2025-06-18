@@ -1,6 +1,6 @@
 using CodeActivitiesLibrary.Extensions;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [ActivityCategoryMetadata(
         primaryCategory: "UI Interface Automations",

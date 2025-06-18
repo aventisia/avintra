@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 {
     [DisplayName("Display Select From List Dialog")]
     [Description("Displays a dialog box with options that lets the user select from a list.")]

@@ -1,12 +1,12 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
+using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Get Selected Radio Button")]
     [Description("Retrieves the name of the selected radio button in a radio button group or the state of a specific radio button.")]

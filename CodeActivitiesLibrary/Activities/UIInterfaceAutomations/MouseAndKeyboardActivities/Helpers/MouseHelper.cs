@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities.Helpers
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivities.Helpers
 {
     public static class MouseHelper
     {

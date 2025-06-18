@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows.Automation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Select UI Element")]
     [Description("Selects the provided UI element, such as a list item or combo box option, using UI Automation.")]

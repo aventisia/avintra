@@ -1,6 +1,6 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+using CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities
 {
     [DisplayName("Get Element Siblings")]
     [Description("Finds and returns all sibling elements of the specified web element.")]

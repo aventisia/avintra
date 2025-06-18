@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities
 {
     [DisplayName("Close Web Browser Tab")]
     [Description(

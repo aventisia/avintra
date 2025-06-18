@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     // [DisplayName("If Image")]
     // [Description("Checks if a specific image exists on the screen.")]

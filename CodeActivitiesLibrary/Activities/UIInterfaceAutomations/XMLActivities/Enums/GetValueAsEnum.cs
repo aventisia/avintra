@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities.Enums
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities.Enums
 {
     // Enum for specifying how the attribute value should be returned
     public enum GetValueAsEnum

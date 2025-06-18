@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Show Desktop")]
     [Description("Minimizes or restores all windows to show/hide the desktop.")]

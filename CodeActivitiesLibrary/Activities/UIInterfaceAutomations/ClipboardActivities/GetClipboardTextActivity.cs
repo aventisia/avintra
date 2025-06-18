@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Windows.Forms;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.ClipboardActivities
 {
     /// <summary>
     ///     Retrieves the text currently stored in the system clipboard.

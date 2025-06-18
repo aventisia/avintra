@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
+namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     using FluentFTP;
 

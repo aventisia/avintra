@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Enums
 {
     /// <summary>
     /// Enumeration of supported browser element selection strategies

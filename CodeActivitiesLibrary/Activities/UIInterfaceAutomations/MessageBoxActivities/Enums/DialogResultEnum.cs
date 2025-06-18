@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities.Enums
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities.Enums
 {
     public enum DialogResultEnum
     {

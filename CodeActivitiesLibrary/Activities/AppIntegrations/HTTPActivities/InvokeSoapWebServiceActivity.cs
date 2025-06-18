@@ -7,7 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Xml.Linq;
 
-namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
+namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
 {
     [DisplayName("Invoke SOAP Web Service")]
     [Description("Invokes a specified method from a SOAP web service and returns the response.")]

@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Write Text to File")]
     [Description("Writes the given text to the specified file using either Replace or Append mode.")]

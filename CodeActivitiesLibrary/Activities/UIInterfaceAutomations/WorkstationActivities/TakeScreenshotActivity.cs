@@ -8,7 +8,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Take Screenshot")]
     [Description(

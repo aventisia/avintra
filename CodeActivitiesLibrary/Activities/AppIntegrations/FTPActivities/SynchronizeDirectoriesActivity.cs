@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Security.Authentication;
 
-namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
+namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Synchronize Directories")]
     [Description("Synchronizes the local directory with a remote FTP directory.")]

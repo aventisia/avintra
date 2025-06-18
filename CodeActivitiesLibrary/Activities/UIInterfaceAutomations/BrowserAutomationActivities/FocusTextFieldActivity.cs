@@ -1,6 +1,6 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+using CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
@@ -8,7 +8,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities
 {
     [DisplayName("Focus Text Field on Web Page")]
     [Description("Focuses a specific text field in a web browser. Optionally waits for page load and handles dialogs.")]

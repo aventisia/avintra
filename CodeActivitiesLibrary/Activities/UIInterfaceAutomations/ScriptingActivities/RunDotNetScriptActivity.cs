@@ -3,7 +3,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run .NET Script")]
     [Description("Executes some custom .NET script and retrieves its output into a variable.")]

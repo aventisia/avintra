@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run DOS Command")]
     [Description(

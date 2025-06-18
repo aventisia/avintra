@@ -1,6 +1,6 @@
 using CodeActivitiesLibrary.Extensions;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 {
     [ActivityCategoryMetadata(
         primaryCategory: "UI Interface Automations",

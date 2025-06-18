@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Windows.Forms;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 {
     [DisplayName("Display Select Date Dialog")]
     [Description("Displays a dialog box that prompts the user to enter a date or date range.")]

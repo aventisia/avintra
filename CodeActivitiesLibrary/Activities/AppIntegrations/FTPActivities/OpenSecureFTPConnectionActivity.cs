@@ -7,7 +7,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Authentication;
 
-namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
+namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Open Secure FTP Connection")]
     [Description("Establishes a secure connection to an FTP server using SSL/TLS or SSH.")]

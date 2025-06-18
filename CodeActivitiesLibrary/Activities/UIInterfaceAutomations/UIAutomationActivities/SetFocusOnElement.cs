@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Set Focus on UI Element")]
     [Description("Brings the specified UI element into focus, allowing further interaction.")]

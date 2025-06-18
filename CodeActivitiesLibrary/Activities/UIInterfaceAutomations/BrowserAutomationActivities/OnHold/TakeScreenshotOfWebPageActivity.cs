@@ -1,6 +1,6 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+using CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using System;
 using System.Activities;
@@ -11,7 +11,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities
 {
     //[DisplayName("Take Screenshot of Web Page")]
     //[Description("Captures a screenshot of the entire web page or a specific UI element. Can save to clipboard or file.")]

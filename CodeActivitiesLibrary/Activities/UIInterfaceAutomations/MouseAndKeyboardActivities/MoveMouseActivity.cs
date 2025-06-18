@@ -1,5 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivities
 {
     [DisplayName("Move Mouse")]
     [Description("Moves the mouse cursor to a specific position on the screen.")]

@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.IO;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 {
     [DisplayName("Move Folder")]
     [Description("This activity moves an existing folder to a specified destination folder.")]

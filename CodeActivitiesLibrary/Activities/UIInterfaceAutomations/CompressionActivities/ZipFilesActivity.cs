@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 {
     // Activity to compress one or more files or folders into a zip archive
     [DisplayName("Zip Files")]

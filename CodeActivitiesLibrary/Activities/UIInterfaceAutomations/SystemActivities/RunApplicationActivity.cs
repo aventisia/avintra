@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Threading;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
     [DisplayName("Run Application")]
     [Description("Executes an application or opens a document by executing the associated application.")]

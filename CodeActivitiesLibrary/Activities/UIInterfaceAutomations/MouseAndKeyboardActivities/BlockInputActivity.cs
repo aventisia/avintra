@@ -3,7 +3,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivities
 {
     // Activity to block user input
     [DisplayName("Block Input")]

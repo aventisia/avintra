@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.IO;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Read Text from File")]
     [Description("Reads all text content from the specified file.")]

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities.Enums
 {
     public enum IfExistsActionEnum
     {

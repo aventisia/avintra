@@ -3,7 +3,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     //[DisplayName("Drag and Drop UI Element in Window")]
     //[Description("Drags a UI element from one location to another within a specified window.")]

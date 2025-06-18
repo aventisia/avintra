@@ -3,7 +3,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     // [DisplayName("If Window Contains")]
     // [Description("Marks the beginning of a conditional block of actions depending on whether a specific piece of text or UI element exists in a window.")]

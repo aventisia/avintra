@@ -1,13 +1,13 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
+using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Automation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Set Drop-Down List Value in Window")]
     [Description("Selects an option in a drop-down list in a window form using the property you choose.")]

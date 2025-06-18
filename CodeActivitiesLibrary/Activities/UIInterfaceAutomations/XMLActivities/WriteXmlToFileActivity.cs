@@ -1,5 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
 {
     [DisplayName("Write XML to File")]
     [Description("Writes the contents of an XML node or string into a file.")]

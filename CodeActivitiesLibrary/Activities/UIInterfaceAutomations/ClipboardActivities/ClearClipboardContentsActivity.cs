@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.ClipboardActivities
 {
     // Activity to clear clipboard contents
     [DisplayName("Clear Clipboard Contents")]

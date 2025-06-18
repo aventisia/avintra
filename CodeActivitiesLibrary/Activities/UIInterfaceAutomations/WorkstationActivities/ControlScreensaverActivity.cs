@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Control Screensaver")]
     [Description("Enables, disables, starts, or stops the screensaver.")]

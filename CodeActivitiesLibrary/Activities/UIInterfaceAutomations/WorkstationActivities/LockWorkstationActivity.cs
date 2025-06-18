@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Lock Workstation")]
     [Description("Locks the workstation's display to protect it from unauthorized use. Optionally forces lock even if workstation doesn't support it.")]

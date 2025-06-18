@@ -6,7 +6,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities
 {
     [DisplayName("Create New Tab")]
     [Description("Creates a new tab in the web browser and optionally navigates to a specified URL.")]

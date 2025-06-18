@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Enums
 {
     public enum WaitConditionEnum
     {

@@ -1,10 +1,10 @@
-﻿using CodeActivitiesLibrary.AppIntegrations.FTPActivities.Helpers;
+﻿using CodeActivitiesLibrary.AppIntegrations.FtpActivities.Helpers;
 using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
+namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     using FluentFTP;
 

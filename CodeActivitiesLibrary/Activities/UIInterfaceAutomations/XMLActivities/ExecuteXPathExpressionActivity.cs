@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Xml;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
 {
     [DisplayName("Execute XPath Expression")]
     [Description("Executes an XPath expression on the provided XML content and returns the result.")]

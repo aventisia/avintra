@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivities
 {
     [DisplayName("Wait for Mouse")]
     [Description("Suspends the execution of the flow until the mouse pointer changes to or from the specified cursor.")]

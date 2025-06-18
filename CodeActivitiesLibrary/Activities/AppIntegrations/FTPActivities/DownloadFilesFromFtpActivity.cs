@@ -7,7 +7,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 
-namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
+namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Download File(s) from FTP")]
     [Description("Downloads one or more files from an FTP server.")]

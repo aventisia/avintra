@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Text;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Convert Base64 to Text")]
     [Description("Converts a Base64-encoded string to plain text.")]

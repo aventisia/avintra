@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using Tesseract;
 
-namespace CodeActivitiesLibrary.DataTransformations.OCRActivities
+namespace CodeActivitiesLibrary.DataTransformations.OcrActivities
 {
     [DisplayName("Extract Text with OCR")]
     [Description("Extract text from a given source using the given OCR engine")]

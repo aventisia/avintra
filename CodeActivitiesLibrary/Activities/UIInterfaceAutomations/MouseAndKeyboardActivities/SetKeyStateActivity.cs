@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 // For [Display]
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivities
 {
 
     [DisplayName("Set Key State")]

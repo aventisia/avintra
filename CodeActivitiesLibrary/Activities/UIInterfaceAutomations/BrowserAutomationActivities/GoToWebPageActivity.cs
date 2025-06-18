@@ -1,5 +1,5 @@
 using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Enums;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -7,7 +7,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities
 {
     [DisplayName("Go To Web Page")]
     [Description("Navigates a web browser instance to a specified URL, back, forward, or reload.")]

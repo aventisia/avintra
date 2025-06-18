@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities.Helpers
+namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities.Helpers
 {
     public static class FtpClientExtensions
     {

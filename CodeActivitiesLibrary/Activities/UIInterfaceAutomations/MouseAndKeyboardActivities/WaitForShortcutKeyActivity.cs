@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivities
 {
     [DisplayName("Wait for Shortcut Key")]
     [Description("Pauses the flow run until a specific shortcut key is pressed.")]

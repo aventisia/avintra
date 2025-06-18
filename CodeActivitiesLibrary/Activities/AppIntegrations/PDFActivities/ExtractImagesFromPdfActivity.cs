@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using UglyToad.PdfPig;
 
-namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
+namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
     [DisplayName("Extract Images from PDF")]
     [Description("Extracts images from a PDF file by specifying the source PDF file and the target folder.")]

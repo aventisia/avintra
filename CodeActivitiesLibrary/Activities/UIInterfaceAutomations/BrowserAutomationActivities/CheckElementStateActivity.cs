@@ -1,6 +1,6 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers;
+using CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -8,7 +8,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities
 {
     [DisplayName("Check Element State")]
     [Description("Verifies if an element is visible, enabled, or selected.")]

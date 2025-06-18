@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using UglyToad.PdfPig;
 
-namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
+namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
     [DisplayName("Extract Text from PDF (PDFPig)")]
     [Description("Extracts text from a PDF file using PdfPig library.")]

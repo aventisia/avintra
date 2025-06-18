@@ -1,6 +1,6 @@
 using CodeActivitiesLibrary.Extensions;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.ClipboardActivities
 {
     [ActivityCategoryMetadata(
         primaryCategory: "UI Interface Automations",

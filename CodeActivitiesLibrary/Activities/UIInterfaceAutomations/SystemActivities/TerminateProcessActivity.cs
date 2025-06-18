@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Management;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
     [DisplayName("Terminate process")]
     [Description("Immediately stops a running process.")]

@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows.Automation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Get Window")]
     [Description("Finds a desktop window by name using UI Automation.")]

@@ -1,12 +1,12 @@
 using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
+using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Get Element Collection")]
     [Description("Finds and returns a collection of UI elements under a parent element using the specified property type and value.")]

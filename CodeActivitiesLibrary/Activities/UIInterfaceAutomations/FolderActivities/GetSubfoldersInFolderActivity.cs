@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 {
     [DisplayName("Retrieve Subfolders from Directory")]
     [Description("Returns a list of subfolder paths within the specified directory.")]

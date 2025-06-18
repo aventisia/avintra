@@ -4,7 +4,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
+namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Change Working Directory")]
     [Description("Sets the current working directory for an FTP connection.")]

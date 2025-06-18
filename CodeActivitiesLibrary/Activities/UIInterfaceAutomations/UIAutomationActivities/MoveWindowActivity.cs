@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Move Window")]
     [Description("Moves a window to the position you choose on the screen.")]

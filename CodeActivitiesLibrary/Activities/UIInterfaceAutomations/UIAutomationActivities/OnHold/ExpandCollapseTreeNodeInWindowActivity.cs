@@ -3,7 +3,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     //[DisplayName("Expand/Collapse Tree Node in Window")]
     //[Description("Expands or collapses a node of a tree view residing in a window.")]

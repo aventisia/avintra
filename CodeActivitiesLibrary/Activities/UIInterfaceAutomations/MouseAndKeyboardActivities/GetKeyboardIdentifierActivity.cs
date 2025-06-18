@@ -4,7 +4,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivities
 {
     [DisplayName("Get Keyboard Identifier")]
     [Description("Retrieves the active keyboard identifier from the machine's registry.")]

@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run JavaScript")]
     [Description("Executes some custom JavaScript code and retrieves its output into a variable.")]

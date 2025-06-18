@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 using System.Windows;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers
 {
     /// <summary>
     /// Provides helper methods for mouse actions, such as moving the cursor and simulating mouse clicks.

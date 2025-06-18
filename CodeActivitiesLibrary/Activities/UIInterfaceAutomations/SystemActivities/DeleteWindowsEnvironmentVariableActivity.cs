@@ -1,11 +1,11 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Management.Automation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
     [DisplayName("Delete Windows Environment Variable")]
     [Description("Deletes an environment variable from a given scope.")]

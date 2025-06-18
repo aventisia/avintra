@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.IO;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 {
     [DisplayName("Create Folder")]
     [Description("Generates a new folder within the specified parent directory using a given folder name.")]

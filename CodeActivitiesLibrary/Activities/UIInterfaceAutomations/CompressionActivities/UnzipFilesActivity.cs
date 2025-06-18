@@ -6,7 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 {
     [DisplayName("Unzip Files")]
     [Description("Extracts files from a ZIP archive to a specified destination folder.")]

@@ -1,11 +1,11 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 {
     [DisplayName("Folder to Copy")]
     [Description("The path of the source folder that you want to copy the folder")]

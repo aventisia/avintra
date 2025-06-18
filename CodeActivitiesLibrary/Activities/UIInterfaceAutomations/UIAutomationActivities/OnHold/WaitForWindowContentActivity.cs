@@ -3,7 +3,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     // [DisplayName("Wait for Window Content")]
     // [Description("Suspends the execution of the automation until a specific piece of text or UI element appears or disappears from a window.")]

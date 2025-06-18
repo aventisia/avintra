@@ -3,7 +3,7 @@ using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
+namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
     // Activity to extract tables from a PDF file
     [DisplayName("Extract Tables from PDF"),

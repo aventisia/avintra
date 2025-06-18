@@ -1,8 +1,8 @@
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Enums;
 using System.Threading;
 using System.Windows.Automation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers
 {
     /// <summary>
     /// Helper methods for finding UI Automation elements.

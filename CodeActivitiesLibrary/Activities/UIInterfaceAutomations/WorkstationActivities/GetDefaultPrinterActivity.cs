@@ -8,7 +8,7 @@ using System.Management;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Get Default Printer")]
     [Description("Gets the name of the default printer using multiple methods.")]

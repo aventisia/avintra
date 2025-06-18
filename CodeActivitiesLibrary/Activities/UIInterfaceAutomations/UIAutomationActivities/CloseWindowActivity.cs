@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Close Window")]
     [Description("Closes the selected application window.")]

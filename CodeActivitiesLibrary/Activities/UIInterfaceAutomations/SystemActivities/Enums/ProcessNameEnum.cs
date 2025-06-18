@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities.Enums
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities.Enums
 {
     // Enum for Process names (example list)
     public enum ProcessNameEnum

@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
 {
     [DisplayName("Wait for Text on CMD Session")]
     [Description("Waits for a specific text on a previously opened CMD session.")]

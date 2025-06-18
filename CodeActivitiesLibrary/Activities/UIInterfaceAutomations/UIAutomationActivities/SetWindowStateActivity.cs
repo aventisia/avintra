@@ -1,11 +1,11 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Set Window State")]
     [Description("Change the window to normal, maximized, or minimized state.")]

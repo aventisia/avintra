@@ -1,6 +1,6 @@
 using CodeActivitiesLibrary.Extensions;
 
-namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
+namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
 {
     [ActivityCategoryMetadata(
         primaryCategory: "App Integrations",

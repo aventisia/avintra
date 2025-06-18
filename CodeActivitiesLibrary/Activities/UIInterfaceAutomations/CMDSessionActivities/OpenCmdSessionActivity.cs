@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
 {
     [DisplayName("Open CMD Session")]
     [Description("Opens a new CMD session with optional encoding settings.")]

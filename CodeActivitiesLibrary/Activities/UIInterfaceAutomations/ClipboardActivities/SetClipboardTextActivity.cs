@@ -3,7 +3,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.ClipboardActivities
 {
     [DisplayName("Set Clipboard Text")]
     [Description("Sets the specified text to the system clipboard.")]

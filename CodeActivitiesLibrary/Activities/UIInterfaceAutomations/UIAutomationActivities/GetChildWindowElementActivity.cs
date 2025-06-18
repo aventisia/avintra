@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows.Automation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Find Child Window")]
     [Description("Finds a child window inside a parent window by its name.")]

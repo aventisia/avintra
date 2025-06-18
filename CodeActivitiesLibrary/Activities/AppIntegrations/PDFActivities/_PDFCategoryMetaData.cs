@@ -1,6 +1,6 @@
 using CodeActivitiesLibrary.Extensions;
 
-namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
+namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
     [ActivityCategoryMetadata(
         primaryCategory: "App Integrations",

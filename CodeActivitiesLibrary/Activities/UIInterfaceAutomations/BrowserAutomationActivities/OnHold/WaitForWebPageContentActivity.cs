@@ -1,11 +1,11 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
 
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities
 {
     //[DisplayName("Wait For Web Page Content")]
     //[Description("Waits for a specific condition to be met on the current web page, such as containing an element or text.")]

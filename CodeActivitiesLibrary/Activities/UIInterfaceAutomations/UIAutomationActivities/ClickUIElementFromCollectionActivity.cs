@@ -1,6 +1,6 @@
 using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
+using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -9,7 +9,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Automation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Click Element from Collection")]
     [Description("Finds an element in a collection by property and name, then clicks or invokes it using UI Automation or mouse click.")]

@@ -1,4 +1,4 @@
-﻿namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities
+﻿namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivities
 {
     // [DisplayName("Move Mouse to Text on Screen (OCR)")]
     // [Description("Moves the mouse over a text found on the screen or on the foreground window using OCR.")]

@@ -1,10 +1,10 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
     [DisplayName("Get windows environment variable")]
     [Description("Retrieves the value of an environment variable.")]

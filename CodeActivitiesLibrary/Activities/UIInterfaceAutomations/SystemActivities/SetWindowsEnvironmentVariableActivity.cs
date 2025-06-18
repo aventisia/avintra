@@ -1,10 +1,10 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
     [DisplayName("Set windows environment variable")]
     [Description("Sets an environment variable to a given value.")]

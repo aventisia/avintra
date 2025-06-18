@@ -1,6 +1,6 @@
 using CodeActivitiesLibrary.Extensions;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
 {
     [ActivityCategoryMetadata(
         primaryCategory: "UI Interface Automations",

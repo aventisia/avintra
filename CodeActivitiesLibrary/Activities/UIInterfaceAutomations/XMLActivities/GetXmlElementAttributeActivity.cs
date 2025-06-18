@@ -1,11 +1,11 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Xml;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
 {
     // Activity: Get XML Element Attribute
     [DisplayName("Get XML Element Attribute")]

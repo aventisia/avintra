@@ -3,9 +3,9 @@ using System.Activities;
 using System.ComponentModel;
 using System.IO;
 using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities.Enums;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Convert Base64 to File")]
     [Description("Converts a Base64 encoded string to a file and saves it at the specified path.")]

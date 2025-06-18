@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Media;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Play Sound")]
     [Description(

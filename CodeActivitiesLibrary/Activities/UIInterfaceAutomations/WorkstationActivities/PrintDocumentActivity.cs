@@ -9,7 +9,7 @@ using System.Drawing.Printing;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Print Document")]
     [Description("Prints documents with advanced options including printer selection and print settings.")]

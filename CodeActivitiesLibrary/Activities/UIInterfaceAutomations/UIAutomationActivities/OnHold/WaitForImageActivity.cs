@@ -7,7 +7,7 @@ using System.Drawing.Imaging;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     // [DisplayName("Wait for Image")]
     // [Description("Suspends execution until a specific image appears on the screen.")]

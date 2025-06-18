@@ -1,12 +1,12 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums;
-using CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers;
+using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Windows.Automation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Set Checkbox State")]
     [Description("Checks or unchecks a checkbox UI element by searching for it using property and name.")]

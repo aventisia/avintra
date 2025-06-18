@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Authentication;
 
-namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
+namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Upload Folder(s) to FTP")]
     [Description("Uploads one or more local folders to a remote FTP/FTPS server.")]

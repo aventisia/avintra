@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
 {
     [DisplayName("Read from CMD Session")]
     [Description("Reads the output of a CMD session.")]

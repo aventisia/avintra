@@ -1,4 +1,4 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities.Enums;
+﻿using CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Management;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
     [DisplayName("If process")]
     [Description(

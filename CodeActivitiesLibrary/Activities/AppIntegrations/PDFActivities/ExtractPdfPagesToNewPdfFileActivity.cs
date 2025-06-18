@@ -8,7 +8,7 @@ using System.Linq;
 using UglyToad.PdfPig;
 using UglyToad.PdfPig.Writer;
 
-namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
+namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
     [DisplayName("Extract PDF Pages to New File")]
     [Description("Extracts specific pages from a PDF file and saves them as a new PDF.")]

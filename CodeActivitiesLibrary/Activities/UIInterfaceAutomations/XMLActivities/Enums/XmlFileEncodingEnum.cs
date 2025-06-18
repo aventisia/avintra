@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities.Enums
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities.Enums
 {
     public enum XmlFileEncodingEnum
     {

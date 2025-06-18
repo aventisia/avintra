@@ -1,12 +1,12 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Windows.Forms;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 {
     [DisplayName("Display Input Dialog")]
     [Description("Displays a dialog box that prompts the user to enter text.")]

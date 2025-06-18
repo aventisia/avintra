@@ -2,7 +2,7 @@
 using System;
 using System.Activities;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     // [DisplayName("Use Desktop")]
     // [Description("Performs desktop and taskbar-related operations.")]

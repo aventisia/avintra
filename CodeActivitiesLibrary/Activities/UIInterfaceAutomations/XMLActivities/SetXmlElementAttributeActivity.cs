@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Xml;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
 {
     // Activity: Set XML Element Attribute
     [DisplayName("Set XML Element Attribute")]

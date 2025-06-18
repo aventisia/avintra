@@ -10,7 +10,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
+namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
 {
     [DisplayName("Invoke Web Service")]
     [Description("Invokes a web service (REST or SOAP) and returns the response text.")]

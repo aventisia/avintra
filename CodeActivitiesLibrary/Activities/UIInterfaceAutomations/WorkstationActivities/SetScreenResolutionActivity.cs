@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Set Screen Resolution")]
     [Description("Sets the width, height, bit count, and frequency of a selected monitor.")]

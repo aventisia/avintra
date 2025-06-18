@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Enums
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Enums
 {
     public enum WindowStateEnum
     {

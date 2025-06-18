@@ -1,5 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities.Helpers;
+using CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivities.Helpers;
 using System;
 using System.Activities;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivities
 {
     [DisplayName("Move Mouse to Image")]
     [Description("Moves the mouse cursor to the center of a specified image on the screen using template matching.")]

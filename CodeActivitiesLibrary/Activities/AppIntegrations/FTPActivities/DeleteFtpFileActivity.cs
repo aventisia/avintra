@@ -4,7 +4,7 @@ using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
+namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     using FluentFTP;
 

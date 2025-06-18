@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Xml;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
 {
     [DisplayName("Insert XML Element")]
     [Description("Inserts a new XML element into an existing XML document.")]

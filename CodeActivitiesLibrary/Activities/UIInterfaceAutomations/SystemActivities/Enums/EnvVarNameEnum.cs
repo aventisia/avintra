@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities.Enums
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities.Enums
 {
     public enum EnvVarNameEnum
     {

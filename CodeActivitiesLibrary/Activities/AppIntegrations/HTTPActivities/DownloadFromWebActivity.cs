@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Net.Http;
 
-namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
+namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
 {
     [DisplayName("Download from Web")]
     [Description("Downloads text or a file from the web and stores it in memory or saves it to a file.")]

@@ -8,7 +8,7 @@ using System.Linq;
 using UglyToad.PdfPig;
 using UglyToad.PdfPig.Writer;
 
-namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
+namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
     [DisplayName("Merge PDF Files")]
     [Description("Merges multiple PDF files into a new one.")]

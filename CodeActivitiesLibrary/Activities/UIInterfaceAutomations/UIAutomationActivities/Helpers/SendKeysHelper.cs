@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities.Helpers
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers
 {
     public static class SendKeysHelper
     {

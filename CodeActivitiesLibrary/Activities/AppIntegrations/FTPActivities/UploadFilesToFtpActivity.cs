@@ -7,7 +7,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 
-namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
+namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Upload File(s) to FTP")]
     [Description("Uploads one or more files to an FTP server.")]

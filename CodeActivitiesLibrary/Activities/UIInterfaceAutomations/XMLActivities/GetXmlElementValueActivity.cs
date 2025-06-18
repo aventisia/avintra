@@ -1,11 +1,11 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Xml;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
 {
     [DisplayName("Get XML Element Value")]
     [Description("Gets the value of an XML element based on the provided XPath query.")]

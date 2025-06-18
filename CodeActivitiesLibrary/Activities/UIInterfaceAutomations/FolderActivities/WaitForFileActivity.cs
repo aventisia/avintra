@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 {
     [DisplayName("Wait for File")]
     [Description("Suspends running the flow until a file is created or deleted.")]

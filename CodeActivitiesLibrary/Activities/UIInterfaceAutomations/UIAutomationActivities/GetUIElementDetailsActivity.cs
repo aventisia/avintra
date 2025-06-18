@@ -7,7 +7,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Automation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Get UI Element Details")]
     [Description("Get information like position or text from a UI element in a window.")]

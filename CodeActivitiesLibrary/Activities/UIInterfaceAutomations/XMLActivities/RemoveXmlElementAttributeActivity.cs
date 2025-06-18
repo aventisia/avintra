@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Xml;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
 {
     // Activity: Remove XML Element Attribute
     [DisplayName("Remove XML Element Attribute")]

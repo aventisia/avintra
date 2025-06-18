@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Net.NetworkInformation;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
     [DisplayName("Ping")]
     [Description("Sends a message to determine whether a remote computer is accessible over the network.")]

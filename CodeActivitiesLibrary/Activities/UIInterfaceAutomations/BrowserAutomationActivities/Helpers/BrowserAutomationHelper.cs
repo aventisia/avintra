@@ -1,9 +1,9 @@
-﻿using CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Enums;
+﻿using CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Enums;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActivities.Helpers
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Helpers
 {
     public class BrowserAutomationHelper
     {

@@ -1,5 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities.Enums;
+using CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -8,7 +8,7 @@ using System.Data;
 using System.IO;
 using System.Text;
 
-namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
+namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Write to CSV File")]
     [Description("Writes a data table, data row, or list to a CSV file.")]
