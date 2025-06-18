@@ -36,6 +36,9 @@ type NodeDataType = {
   disabled?: boolean;
   hidden?: boolean;
   formType?: "custom" | "dynamic";
+  isGroupHead?: boolean;
+  groupId?: string;
+  isExpanded?: boolean;
 };
 
 export type {
