@@ -7,4 +7,6 @@ export type WebSocketCommandType =
   | "start"
   | "pause"
   | "resume"
-  | "abort";
+  | "error"
+  | "abort"
+  | "complete";

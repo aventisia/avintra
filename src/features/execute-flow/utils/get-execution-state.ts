@@ -7,6 +7,8 @@ export const getExecutionState = (
     case "pause":
       return "paused";
     case "abort":
+    case "error":
+    case "complete":
       return "stopped";
     default:
       return "executing";
