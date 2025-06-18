@@ -9,7 +9,8 @@ import {
 import { DeleteCMItem } from "@aventisia/ui/context-menu";
 import { SimpleCMItem } from "@aventisia/ui/context-menu";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
-import { Library } from "lucide-react";
+import { Library, GroupIcon, UngroupIcon } from "lucide-react";
+import { useNodeGrouping } from "../../hooks/useNodeGrouping";
 
 export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
   // Auto layout the flow
@@ -19,7 +20,11 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
   const { setSelectedNode, setSelectedEdge, selectedNode, selectedEdge } =
     useContextMenuActionsStore();
 
+  const { groupNodes, ungroupNodes } = useNodeGrouping();
+
   const { deleteNode } = useFlowOperations();
+
+  const isGroupHead = selectedNode?.data.isGroupHead;
 
   return (
     <ContextMenu
@@ -67,6 +72,24 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
         /> */}
 
         {/* <ContextMenuSeparator className="h-[0.5px]" /> */}
+
+        {/* Group items. */}
+        {isGroupHead ? (
+          <SimpleCMItem
+            size="sm"
+            content="Ungroup"
+            Icon={UngroupIcon}
+            onClick={() => ungroupNodes()}
+          />
+        ) : (
+          <SimpleCMItem
+            size="sm"
+            content="Group up"
+            Icon={GroupIcon}
+            onClick={() => groupNodes()}
+          />
+        )}
+        <ContextMenuSeparator className="h-[0.5px]" />
 
         {/* Organize items. Apply auto layout */}
         <SimpleCMItem

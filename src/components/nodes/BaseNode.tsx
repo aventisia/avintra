@@ -5,8 +5,11 @@ import { NodeHeading } from "@/components/node-container/node-header/NodeHeading
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
 import { NodeDescription } from "@/components/node-container/NodeDescription";
 import { ReactFlowContextMenu } from "@/features/react-flow/components/context-menu";
+import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
 import { NodeDataType } from "@/types/node-data-type";
 import { Separator } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import React from "react";
 
 interface BaseNodeProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -22,21 +25,56 @@ const BaseNode: React.FC<BaseNodeProps> = ({
   nodeId,
   ...props
 }) => {
+  const { toggleGroupExpand } = useGroupToggle();
+
   return (
     <ReactFlowContextMenu>
-      <NodeContainer {...{ nodeId, nodeData, selected }} {...props}>
-        <NodeHeader>
-          {nodeData.icon ? (
-            iconMapper[nodeData.icon]
-          ) : (
-            <NodeImage src={nodeData.img} />
-          )}
-          <NodeHeading>{nodeData.label}</NodeHeading>
-        </NodeHeader>
-        <Separator className="h-[0.5px] w-full bg-border" />
-        <NodeDescription>{nodeData.description}</NodeDescription>
-        {children}
-      </NodeContainer>
+      <div className={nodeData?.isGroupHead ? "relative" : ""}>
+        {nodeData?.isGroupHead && !nodeData?.isExpanded && (
+          <>
+            <div
+              className={
+                "absolute inset-0 left-[0.175rem] top-[0.175rem] -z-10 h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-slate-300 bg-white hover:hidden hover:ring hover:ring-ring"
+              }
+            />
+            <div
+              className={
+                "absolute inset-0 left-[0.35rem] top-[0.35rem] -z-20 h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-slate-300 bg-white hover:hidden hover:ring hover:ring-ring"
+              }
+            />
+          </>
+        )}
+        <NodeContainer {...{ nodeId, nodeData, selected }} {...props}>
+          <NodeHeader>
+            {nodeData.icon ? (
+              iconMapper[nodeData.icon]
+            ) : (
+              <NodeImage src={nodeData.img} />
+            )}
+            <NodeHeading>{nodeData.label}</NodeHeading>
+            {nodeData?.isGroupHead && (
+              <Button
+                variant={"ghost"}
+                size={"icon6"}
+                onClick={() => toggleGroupExpand(nodeData?.groupId || "")}
+              >
+                {nodeData?.isExpanded ? (
+                  <>
+                    <ChevronUpIcon />
+                  </>
+                ) : (
+                  <>
+                    <ChevronDownIcon />
+                  </>
+                )}
+              </Button>
+            )}{" "}
+          </NodeHeader>
+          <Separator className="h-[0.5px] w-full bg-border" />
+          <NodeDescription>{nodeData.description}</NodeDescription>
+          {children}
+        </NodeContainer>
+      </div>
     </ReactFlowContextMenu>
   );
 };
