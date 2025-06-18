@@ -62,7 +62,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
             DataTable resultTable = null;
             try
             {
@@ -77,14 +76,20 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                     throw new ArgumentException("CSV text cannot be empty.");
                 resultTable = ReadCsvToDataTable(csvText, trimFields, firstLineContainsColumnNames, getFieldsAsText,
                     columnsSeparator, CustomSeparator.Get(context), fixedColumnWidths);
-            }
-            catch (Exception ex)
-            {
-                status = $"Error generating data table: {ex.Message}";
+
+
+                ResultDataTable.Set(context, resultTable);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Successfully generated the data table from CSV.");
+
             }
 
-            ResultDataTable.Set(context, resultTable);
-            StatusMessage.Set(context, status);
+            catch (Exception ex)
+            {
+                ResultDataTable.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error generating data table: {ex.Message}");
+            }
         }
 
         private static DataTable ReadCsvToDataTable(string csvText, bool trimFields, bool firstLineContainsColumnNames,

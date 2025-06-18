@@ -42,9 +42,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
             var encodingType = EncodingType.Get(context);
             var formatXml = FormatXml.Get(context);
             var indentation = IndentationPerLevel.Get(context);
-
-            var status = "";
-
             try
             {
                 if (string.IsNullOrWhiteSpace(filePath))
@@ -81,15 +78,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
                         stream.Write(xmlContent);
                     }
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "XML written successfully to file.");
 
-                status = "XML written successfully.";
             }
             catch (Exception ex)
             {
-                status = $"Error writing XML to file: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error writing XML to file: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private Encoding GetEncoding(XmlFileEncodingEnum type)

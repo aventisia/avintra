@@ -36,7 +36,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
             var xpath = XPath.Get(context);
             var attributeName = AttributeName.Get(context);
             string updatedXmlContent = null;
-            var status = "";
 
             try
             {
@@ -58,15 +57,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
                 if (attr != null) node.Attributes?.Remove(attr);
 
                 updatedXmlContent = xmlDoc.OuterXml;
+                UpdatedXmlContent.Set(context, updatedXmlContent);
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Attribute removed successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error removing XML element attribute: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error removing XML element attribute: {ex.Message}");
             }
-
-            UpdatedXmlContent.Set(context, updatedXmlContent);
-            StatusMessage.Set(context, status);
         }
     }
 }

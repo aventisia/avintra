@@ -76,15 +76,15 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                               select value?.ToString() ?? string.Empty).ToList();
 
                 ColumnAsList.Set(context, result);
-                status = $"Successfully extracted {result.Count} items from column '{column.ColumnName}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully extracted {result.Count} items from column '{column.ColumnName}'.");
             }
             catch (Exception ex)
             {
-                status = $"Error retrieving column into list: {ex.Message}";
-                ColumnAsList.Set(context, new List<string>());
+                ColumnAsList.Set(context, 0);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error retrieving column into list: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

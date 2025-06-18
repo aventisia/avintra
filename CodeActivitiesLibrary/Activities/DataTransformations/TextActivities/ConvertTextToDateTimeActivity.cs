@@ -64,11 +64,15 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 }
 
                 ResultDateTime.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Text successfully converted to DateTime.");
             }
             catch (Exception ex)
             {
                 status = $"Error converting text to DateTime: {ex.Message}";
                 ResultDateTime.Set(context, default);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error converting text to DateTime: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

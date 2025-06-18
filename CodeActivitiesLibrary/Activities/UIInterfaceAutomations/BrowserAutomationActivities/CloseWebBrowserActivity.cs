@@ -51,13 +51,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     driver.Close();
                     status = "Successfully closed the current browser window.";
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error closing web browser: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

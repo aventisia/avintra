@@ -46,11 +46,14 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
                 var escapedText = Regex.Escape(textToEscape);
                 EscapedText.Set(context, escapedText);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Text escaped successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error escaping text: {ex.Message}";
                 EscapedText.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error escaping text: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

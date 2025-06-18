@@ -104,12 +104,15 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 foreach (var rowArray in sortedRows) sortedDataTable.LoadDataRow(rowArray, true);
 
                 // Set outputs
-                context.SetValue(SortedDataTable, sortedDataTable);
-                context.SetValue(StatusMessage, $"Successfully sorted the data table by column '{sortColumnName}'.");
+                SortedDataTable.Set(context, sortedDataTable);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully sorted the data table by column '{sortColumnName}'.");
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to sort the data table: {ex.Message}", ex);
+                SortedDataTable.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Failed to sort the data table: {ex.Message}");
             }
         }
     }

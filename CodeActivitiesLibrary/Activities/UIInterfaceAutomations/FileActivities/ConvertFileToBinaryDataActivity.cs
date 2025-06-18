@@ -33,14 +33,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
                 binaryData = File.ReadAllBytes(filePath);
                 status = "File converted to binary data successfully.";
+                BinaryData.Set(context, binaryData);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error converting file to binary data: {ex.Message}";
+                BinaryData.Set(context, binaryData);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            BinaryData.Set(context, binaryData);
-            StatusMessage.Set(context, status);
         }
     }
 }

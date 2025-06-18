@@ -41,7 +41,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
 
             try
             {
@@ -70,14 +69,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
                     count++;
                 }
 
-                status = $"Successfully saved {count} email(s) to '{savePath}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully saved {count} email(s) to '{savePath}'.");
             }
             catch (Exception ex)
             {
-                status = $"Error saving emails: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error saving emails: {ex.Message}");
             }
 
-            StatusMessage.Set(context, status);
+
         }
     }
 }

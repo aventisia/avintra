@@ -112,13 +112,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                 status =
                     $"Successfully set attribute '{attributeName}' to '{attributeValue}' on element '{searchKeywords}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
+
             }
             catch (Exception ex)
             {
                 status = $"Error setting attribute: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

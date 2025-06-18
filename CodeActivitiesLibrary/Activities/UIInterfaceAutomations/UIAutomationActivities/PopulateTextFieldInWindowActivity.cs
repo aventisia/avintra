@@ -148,13 +148,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                 {
                     status = "Could not fill the text box within the specified time.";
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error populating text field: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

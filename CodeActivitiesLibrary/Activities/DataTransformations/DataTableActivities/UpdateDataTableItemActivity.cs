@@ -61,12 +61,15 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 dataTable.Rows[rowIndex][columnName] = newValue;
 
                 // Set outputs
-                context.SetValue(ModifiedDataTable, dataTable);
-                context.SetValue(StatusMessage, $"Successfully updated cell at Row {rowIndex}, Column '{columnName}'.");
+                ModifiedDataTable.Set(context, dataTable);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully updated cell at Row {rowIndex}, Column '{columnName}'.");
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to update cell: {ex.Message}", ex);
+                ModifiedDataTable.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Failed to update cell: {ex.Message}");
             }
         }
     }

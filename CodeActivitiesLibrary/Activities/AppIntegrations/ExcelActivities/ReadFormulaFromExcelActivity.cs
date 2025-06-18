@@ -91,18 +91,22 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                     throw new InvalidOperationException("Target range not found.");
 
                 formula = targetRange.Formula?.ToString() ?? string.Empty;
+
+                CellFormula.Set(context, formula);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error reading formula: {ex.Message}";
+                CellFormula.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
             finally
             {
                 if (targetRange != null) Marshal.ReleaseComObject(targetRange);
             }
-
-            CellFormula.Set(context, formula);
-            StatusMessage.Set(context, status);
         }
     }
 }

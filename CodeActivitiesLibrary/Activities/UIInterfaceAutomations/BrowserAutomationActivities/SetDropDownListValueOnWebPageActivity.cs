@@ -201,13 +201,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     {
                         // No alert found — continue normally
                     }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error setting dropdown value: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 

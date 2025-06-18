@@ -117,10 +117,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 );
 
                 status = $"Successfully copied worksheet '{sourceSheet.Name}' to target Excel instance.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error copying worksheet: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
             StatusMessage.Set(context, status);

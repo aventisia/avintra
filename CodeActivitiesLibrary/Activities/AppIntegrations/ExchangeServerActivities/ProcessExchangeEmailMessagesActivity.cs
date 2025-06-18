@@ -134,15 +134,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
                             throw new ArgumentOutOfRangeException(nameof(operation));
                     }
                 }
-
                 status = $"Processed {messageIds.Count} email messages with action '{operation}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
+
             }
             catch (Exception ex)
             {
                 status = $"Error processing email messages: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 

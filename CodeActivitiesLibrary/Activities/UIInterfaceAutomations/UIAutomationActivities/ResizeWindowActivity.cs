@@ -53,13 +53,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                         status = "Sorry, this window cannot be resized automatically.";
                     }
                 }
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"There was a problem resizing the window: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

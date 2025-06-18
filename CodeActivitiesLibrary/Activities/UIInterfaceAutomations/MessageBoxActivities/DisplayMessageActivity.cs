@@ -1,4 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -57,65 +58,76 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var title = context.GetValue(Title) ?? "Message";
-            var message = context.GetValue(Message);
-            var iconEnum = context.GetValue(Icon);
-            var buttonEnum = context.GetValue(Buttons);
-            var defaultEnum = context.GetValue(DefaultButton);
-            var keepOnTop = context.GetValue(KeepOnTop);
-            var autoClose = context.GetValue(AutoClose);
-            var timeout = context.GetValue(Timeout);
-
-            var icon = GetMessageBoxIcon(iconEnum);
-            var buttons = GetMessageBoxButtons(buttonEnum);
-            var defaultButton = GetDefaultButton(defaultEnum);
-
-            DialogResult result;
-
-            if (autoClose && timeout > 0)
+            try
             {
-                using (var form = new Form())
+                var title = context.GetValue(Title) ?? "Message";
+                var message = context.GetValue(Message);
+                var iconEnum = context.GetValue(Icon);
+                var buttonEnum = context.GetValue(Buttons);
+                var defaultEnum = context.GetValue(DefaultButton);
+                var keepOnTop = context.GetValue(KeepOnTop);
+                var autoClose = context.GetValue(AutoClose);
+                var timeout = context.GetValue(Timeout);
+
+                var icon = GetMessageBoxIcon(iconEnum);
+                var buttons = GetMessageBoxButtons(buttonEnum);
+                var defaultButton = GetDefaultButton(defaultEnum);
+
+                DialogResult result;
+
+                if (autoClose && timeout > 0)
                 {
-                    form.Text = title;
-                    form.StartPosition = FormStartPosition.CenterScreen;
-                    form.FormBorderStyle = FormBorderStyle.FixedDialog;
-                    form.MaximizeBox = false;
-                    form.MinimizeBox = false;
-                    form.ControlBox = false;
-                    form.TopMost = keepOnTop;
-
-                    var label = new Label
+                    using (var form = new Form())
                     {
-                        Text = message,
-                        Dock = DockStyle.Fill,
-                        TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-                    };
-                    form.Controls.Add(label);
+                        form.Text = title;
+                        form.StartPosition = FormStartPosition.CenterScreen;
+                        form.FormBorderStyle = FormBorderStyle.FixedDialog;
+                        form.MaximizeBox = false;
+                        form.MinimizeBox = false;
+                        form.ControlBox = false;
+                        form.TopMost = keepOnTop;
 
-                    form.Show();
-                    System.Threading.Thread.Sleep(timeout * 1000);
-                    form.Close();
+                        var label = new Label
+                        {
+                            Text = message,
+                            Dock = DockStyle.Fill,
+                            TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+                        };
+                        form.Controls.Add(label);
 
-                    result = DialogResult.None;
+                        form.Show();
+                        System.Threading.Thread.Sleep(timeout * 1000);
+                        form.Close();
+
+                        result = DialogResult.None;
+                    }
                 }
+                else
+                {
+                    var options = MessageBoxOptions.DefaultDesktopOnly;
+                    if (keepOnTop) options |= MessageBoxOptions.ServiceNotification;
+
+                    result = MessageBox.Show(
+                        message,
+                        title,
+                        buttons,
+                        icon,
+                        defaultButton,
+                        options
+                    );
+                }
+
+                context.SetValue(ButtonPressed, result != DialogResult.None);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Message box closed with result: {result}");
             }
-            else
+            catch (Exception ex)
             {
-                var options = MessageBoxOptions.DefaultDesktopOnly;
-                if (keepOnTop) options |= MessageBoxOptions.ServiceNotification;
-
-                result = MessageBox.Show(
-                    message,
-                    title,
-                    buttons,
-                    icon,
-                    defaultButton,
-                    options
-                );
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error showing message box: {ex.Message}");
             }
-
-            context.SetValue(ButtonPressed, result != DialogResult.None);
         }
+
 
         private MessageBoxIcon GetMessageBoxIcon(MessageBoxIconEnum iconEnum)
         {

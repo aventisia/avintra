@@ -26,8 +26,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
-
             try
             {
                 var dataTable = DataTable.Get(context);
@@ -37,15 +35,15 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
                 // Clear all rows in the data table
                 dataTable.Clear();
-
-                status = "Successfully cleared all rows from the data table.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Successfully cleared all rows from the data table.");
             }
             catch (Exception ex)
             {
-                status = $"Error clearing data table: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error clearing data table: {ex.Message}");
             }
 
-            StatusMessage.Set(context, status);
         }
     }
 }

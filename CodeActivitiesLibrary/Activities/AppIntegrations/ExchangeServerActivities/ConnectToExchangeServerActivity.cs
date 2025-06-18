@@ -164,13 +164,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
                 }
 
                 ExchangeConnection.Set(context, exchangeService);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Exchange Connection Successfully");
             }
             catch (Exception ex)
             {
-                status = $"Error connecting to Exchange server: {ex.Message}";
-            }
+                ExchangeConnection.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error connecting to Exchange server: {ex.Message}");
 
-            StatusMessage.Set(context, status);
+            }
         }
 
         private static ExchangeVersion GetExchangeVersion(ExchangeVersionEnum version)

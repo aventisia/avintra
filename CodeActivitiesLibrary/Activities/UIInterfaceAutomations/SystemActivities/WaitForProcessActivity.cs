@@ -56,7 +56,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
             try
             {
                 var processName = ProcessName.Get(context);
@@ -78,13 +77,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 
                 // Placeholder for actual process check logic
                 // You can use System.Diagnostics.Process to monitor processes
-
-                StatusMessage.Set(context, status);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Wait For Process success");
             }
             catch (Exception ex)
             {
-                status = $"Error: {ex.Message}";
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error Wait For Process To: {ex.Message}");
+                IsSuccess.Set(context, false);
             }
         }
     }

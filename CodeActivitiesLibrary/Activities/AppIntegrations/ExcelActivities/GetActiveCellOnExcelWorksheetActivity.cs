@@ -43,7 +43,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
 
             try
             {
@@ -70,13 +69,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 ActiveCellAddress.Set(context, activeCellAddress);
                 ActiveCellColumnIndex.Set(context, activeCellColumnIndex);
                 ActiveCellRowIndex.Set(context, activeCellRowIndex);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Active Cell on Excel Worksheet succesfully retrieved");
             }
             catch (Exception ex)
             {
-                status = $"Error getting active cell: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error getting active cell: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

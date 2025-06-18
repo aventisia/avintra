@@ -75,14 +75,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 }
 
                 status = $"Successfully copied range '{rangeToCopy}'.";
+                CopiedData.Set(context, dataTable);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error copying cells: {ex.Message}";
+                CopiedData.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            CopiedData.Set(context, dataTable);
-            StatusMessage.Set(context, status);
         }
     }
 }

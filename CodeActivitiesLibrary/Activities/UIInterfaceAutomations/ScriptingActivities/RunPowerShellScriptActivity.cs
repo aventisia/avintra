@@ -25,7 +25,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
         {
             var scriptCode = ScriptCode.Get(context);
             var output = "";
-            var status = "";
 
             try
             {
@@ -44,13 +43,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
 
                 ScriptOutput.Set(context, output);
                 StatusMessage.Set(context, "PowerShell script executed successfully.");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
-                status = $"Error executing PowerShell script: {ex.Message}";
-            }
+                StatusMessage.Set(context, $"Error executing PowerShell script: {ex.Message}");
+                IsSuccess.Set(context, false);
 
-            StatusMessage.Set(context, status);
+            }
         }
     }
 }

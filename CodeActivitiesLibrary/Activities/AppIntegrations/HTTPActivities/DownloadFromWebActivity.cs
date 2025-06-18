@@ -104,15 +104,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
                         result = "";
                     }
                 }
+                Result.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error downloading from web: {ex.Message}";
-                result = "";
+                Result.Set(context, result);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 }

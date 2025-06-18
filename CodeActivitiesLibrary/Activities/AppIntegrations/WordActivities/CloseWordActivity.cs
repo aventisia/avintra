@@ -61,12 +61,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                     default:
                         throw new ArgumentException("Invalid BeforeClosingWord option.");
                 }
-
-                Console.WriteLine("Word closed successfully.");
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Word closed successfully.");
             }
             catch (Exception ex)
             {
-                throw new Exception("Error closing Word:", ex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error to close Word: {ex.Message}");
             }
         }
     }

@@ -63,11 +63,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
                 // Retrieve the path using Environment.GetFolderPath
                 var path = Environment.GetFolderPath(environmentFolder);
                 context.SetValue(SpecialFolderPath, path);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully retrieved the path for {specialFolderName}: {path}");
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException(
-                    $"Failed to retrieve the path for the special folder: {specialFolderName}", ex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Failed to retrieve the path for the special folder: {ex}");
             }
         }
 

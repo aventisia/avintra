@@ -58,28 +58,38 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            // Retrieve input values
-            var folderPath = context.GetValue(FolderPath);
-            var fileFilter = context.GetValue(FileFilter);
-            var includeSubfolders = context.GetValue(IncludeSubfolders);
-            var failUponDeniedAccess = context.GetValue(FailUponDeniedAccess);
-            var sortBy = context.GetValue(SortBy);
-            var descending = context.GetValue(Descending);
-            var thenBy = context.GetValue(ThenBy);
+            try
+            {
+                // Retrieve input values
+                var folderPath = context.GetValue(FolderPath);
+                var fileFilter = context.GetValue(FileFilter);
+                var includeSubfolders = context.GetValue(IncludeSubfolders);
+                var failUponDeniedAccess = context.GetValue(FailUponDeniedAccess);
+                var sortBy = context.GetValue(SortBy);
+                var descending = context.GetValue(Descending);
+                var thenBy = context.GetValue(ThenBy);
 
-            // Validate folder path
-            if (!Directory.Exists(folderPath))
-                throw new DirectoryNotFoundException($"The specified folder path does not exist: {folderPath}");
+                // Validate folder path
+                if (!Directory.Exists(folderPath))
+                    throw new DirectoryNotFoundException($"The specified folder path does not exist: {folderPath}");
 
-            // Retrieve files based on the filter and subfolder inclusion
-            var files = GetFiles(folderPath, fileFilter, includeSubfolders, failUponDeniedAccess);
+                // Retrieve files based on the filter and subfolder inclusion
+                var files = GetFiles(folderPath, fileFilter, includeSubfolders, failUponDeniedAccess);
 
-            // Apply sorting if specified
-            if (sortBy != FileSortCriteria.NoSort) files = SortFiles(files, sortBy, descending, thenBy);
+                if (sortBy != FileSortCriteria.NoSort)
+                    files = SortFiles(files, sortBy, descending, thenBy);
 
-            // Set the output
-            context.SetValue(RetrievedFiles, files);
+                context.SetValue(RetrievedFiles, files);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Files retrieved successfully.");
+            }
+            catch (Exception ex)
+            {
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error retrieving files: {ex.Message}");
+            }
         }
+
 
         private IEnumerable<string> GetFiles(string folderPath, string fileFilter, bool includeSubfolders,
             bool failUponDeniedAccess)

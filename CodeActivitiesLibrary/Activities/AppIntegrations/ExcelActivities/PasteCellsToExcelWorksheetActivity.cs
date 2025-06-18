@@ -150,10 +150,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 targetApp.ActiveSheet.Paste(); // Use simpler Paste()
 
                 status = $"Successfully pasted range '{sourceRangeAddress}' from '{sourceWorksheetName}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error pasting cells: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
             StatusMessage.Set(context, status);

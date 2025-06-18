@@ -35,13 +35,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
                 }
 
                 status = "Files deleted successfully.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error deleting files: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

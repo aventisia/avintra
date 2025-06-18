@@ -58,14 +58,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
                         stream.Write(pdf, 0, pdf.Length);
 
                     status = $"Successfully merged {pdfFilePaths.Count()} PDF file(s) into '{outputPdfPath}'.";
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, status);
                 }
             }
             catch (Exception ex)
             {
                 status = $"Error merging PDF files: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

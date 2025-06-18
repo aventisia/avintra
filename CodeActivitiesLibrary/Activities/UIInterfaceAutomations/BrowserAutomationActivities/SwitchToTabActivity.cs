@@ -133,15 +133,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 currentTitle = driver.Title;
                 status = $"Switched to tab '{currentTitle}' ({currentUrl})";
                 success = true;
+
+                CurrentTabUrl.Set(context, currentUrl);
+                CurrentTabTitle.Set(context, currentTitle);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error switching tab: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
-            CurrentTabUrl.Set(context, currentUrl);
-            CurrentTabTitle.Set(context, currentTitle);
         }
     }
 

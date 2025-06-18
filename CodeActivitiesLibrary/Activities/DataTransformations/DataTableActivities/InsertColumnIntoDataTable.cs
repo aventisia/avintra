@@ -48,8 +48,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
-
             try
             {
                 var dataTable = DataTable.Get(context);
@@ -90,15 +88,14 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                     default:
                         throw new ArgumentOutOfRangeException(nameof(insertLocation));
                 }
-
-                status = $"Successfully inserted column '{columnName}' into the data table.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully inserted column '{columnName}' into the data table.");
             }
             catch (Exception ex)
             {
-                status = $"Error inserting column: {ex.Message}";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Error inserting column: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

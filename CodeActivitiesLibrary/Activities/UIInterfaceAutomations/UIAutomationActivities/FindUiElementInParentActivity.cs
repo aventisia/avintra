@@ -90,14 +90,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                         status = "Could not find the UI element within the specified time.";
                     }
                 }
+                FoundElement.Set(context, foundElement);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error while searching for the UI element: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            FoundElement.Set(context, foundElement);
-            StatusMessage.Set(context, status);
         }
     }
 }

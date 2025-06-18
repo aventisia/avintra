@@ -104,14 +104,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                 {
                     status = "Failed to click the UI element within the specified time.";
                 }
+
+                WasClicked.Set(context, elementClicked);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            WasClicked.Set(context, elementClicked);
-            StatusMessage.Set(context, status);
         }
     }
 }

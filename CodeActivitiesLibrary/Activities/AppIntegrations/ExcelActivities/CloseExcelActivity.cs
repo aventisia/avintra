@@ -85,13 +85,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 // Release COM objects
                 Marshal.ReleaseComObject(excelApp.ActiveWorkbook);
                 Marshal.ReleaseComObject(excelApp);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error closing Excel: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

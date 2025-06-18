@@ -11,10 +11,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
     {
         [Category("Output"), Description("Returns the session ID of the opened terminal session.")]
         public OutArgument<int> Result { get; set; }
-
-
-
-
         protected override void Execute(CodeActivityContext context)
         {
             var result = 0;
@@ -25,15 +21,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
                 // Simulate opening a terminal session (actual implementation would use a terminal library like PoshConsole or similar)
                 result = 12345; // Simulated session ID
                 status = "Terminal session opened successfully.";
+                Result.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 result = 0;
                 status = $"Error opening terminal session: {ex.Message}";
+                Result.Set(context, result);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 }

@@ -92,10 +92,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
                 {
                     throw new TimeoutException("No shortcut key was pressed within the timeout period.");
                 }
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error waiting for shortcut key: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
             finally
             {
@@ -107,9 +112,8 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
                 }
 
                 _keyPressedEvent?.Dispose();
-            }
 
-            StatusMessage.Set(context, status);
+            }
         }
 
         private static IntPtr SetKeyboardHook(LowLevelKeyboardProc proc)

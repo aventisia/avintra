@@ -29,13 +29,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
             {
                 connection.CreateDirectory(directoryName);
                 status = $"Directory '{directoryName}' created successfully.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error creating directory: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

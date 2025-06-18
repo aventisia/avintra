@@ -120,14 +120,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
                     }
 
                     status = $"Successfully extracted {pagesToExtract.Count} page(s) to '{outputPath}'.";
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, status);
                 }
             }
             catch (Exception ex)
             {
                 status = $"Error extracting PDF pages: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 

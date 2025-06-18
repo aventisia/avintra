@@ -68,10 +68,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 context.SetValue(WordData, content);
 
                 Console.WriteLine("Content retrieved successfully.");
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Content retrieved successfully");
             }
             catch (Exception ex)
             {
-                throw new Exception("Error reading from Word document:", ex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error reading from Word document:: {ex.Message}");
             }
         }
     }

@@ -63,7 +63,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
             try
             {
                 var specifyProcessBy = SpecifyProcessBy.Get(context);
@@ -103,15 +102,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
                     }
                     catch (Exception ex)
                     {
-                        status = $"Error terminating process: {ex.Message}";
+                        IsSuccess.Set(context, false);
+                        StatusMessage.Set(context, $"Error terminating process: {ex.Message}");
                     }
-
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, $"Terminated {terminatedCount} processes.");
             }
             catch (Exception ex)
             {
-                status = $"Error terminating process: {ex.Message}";
-                StatusMessages.Set(context, status);
+                IsSuccess.Set(context, false);
+                StatusMessages.Set(context, $"Error terminating process: {ex.Message}");
             }
         }
 

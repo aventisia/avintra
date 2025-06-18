@@ -31,13 +31,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
             {
                 var response = connection.ExecuteCommand(command);
                 status = response;
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error invoking FTP command: {ex.Message}";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

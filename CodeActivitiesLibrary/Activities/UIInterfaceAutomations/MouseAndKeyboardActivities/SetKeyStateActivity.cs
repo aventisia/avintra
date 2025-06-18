@@ -55,13 +55,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
                 }
 
                 status = $"Successfully set {key.GetDisplayName()} to {(state == StateEnum.On ? "enabled" : "disabled")}.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
+
             }
             catch (Exception ex)
             {
                 status = $"Error setting key state: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private static void ToggleCapsLock(bool enable)

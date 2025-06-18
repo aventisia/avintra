@@ -59,98 +59,118 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var title = context.GetValue(DialogTitle) ?? "Select Item";
-            var message = context.GetValue(DialogMessage) ?? "Please select from the list below:";
-            var listInput = context.GetValue(ListToChooseFrom) ?? "";
-            var keepOnTop = context.GetValue(KeepOnTop);
-            var allowEmpty = context.GetValue(AllowEmptySelection);
-            var allowMultiple = context.GetValue(AllowMultipleSelection);
-            var preselectPlus = context.GetValue(PreselectItemsStartingWithPlus);
-
-            var items = listInput
-                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(s => s.Trim())
-                .ToList();
-
-            var listBox = new ListBox
+            try
             {
-                SelectionMode = allowMultiple ? SelectionMode.MultiExtended : SelectionMode.One,
-                Dock = DockStyle.Fill
-            };
+                var title = context.GetValue(DialogTitle) ?? "Select Item";
+                var message = context.GetValue(DialogMessage) ?? "Please select from the list below:";
+                var listInput = context.GetValue(ListToChooseFrom) ?? "";
+                var keepOnTop = context.GetValue(KeepOnTop);
+                var allowEmpty = context.GetValue(AllowEmptySelection);
+                var allowMultiple = context.GetValue(AllowMultipleSelection);
+                var preselectPlus = context.GetValue(PreselectItemsStartingWithPlus);
 
-            for (var i = 0; i < items.Count; i++)
-            {
-                var item = items[i];
-                listBox.Items.Add(item);
-                if (preselectPlus && allowMultiple && item.StartsWith("+")) listBox.SetSelected(i, true);
-            }
+                var items = listInput
+                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s => s.Trim())
+                    .ToList();
 
-            var form = new Form
-            {
-                Text = title,
-                TopMost = keepOnTop,
-                Width = 400,
-                Height = 300,
-                StartPosition = FormStartPosition.CenterScreen
-            };
-
-            var label = new Label
-            {
-                Text = message,
-                Dock = DockStyle.Top,
-                Height = 40,
-                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-            };
-
-            var okButton = new Button
-            {
-                Text = "OK",
-                DialogResult = DialogResult.OK,
-                Dock = DockStyle.Bottom
-            };
-
-            var cancelButton = new Button
-            {
-                Text = "Cancel",
-                DialogResult = DialogResult.Cancel,
-                Dock = DockStyle.Bottom
-            };
-
-            form.Controls.Add(listBox);
-            form.Controls.Add(label);
-            form.Controls.Add(okButton);
-            form.Controls.Add(cancelButton);
-            form.AcceptButton = okButton;
-            form.CancelButton = cancelButton;
-
-            var result = form.ShowDialog();
-
-            if (result == DialogResult.OK)
-            {
-                if (listBox.SelectedIndices.Count == 0 && !allowEmpty)
+                var listBox = new ListBox
                 {
-                    context.SetValue(StatusMessage, "Selection required but not provided.");
-                    context.SetValue(ButtonPressed, false);
-                    context.SetValue(SelectedItem, null);
-                    context.SetValue(SelectedIndex, null);
-                    return;
+                    SelectionMode = allowMultiple ? SelectionMode.MultiExtended : SelectionMode.One,
+                    Dock = DockStyle.Fill
+                };
+
+                for (var i = 0; i < items.Count; i++)
+                {
+                    var item = items[i];
+                    listBox.Items.Add(item);
+                    if (preselectPlus && allowMultiple && item.StartsWith("+"))
+                    {
+                        listBox.SetSelected(i, true);
+                    }
                 }
 
-                var selectedItems = string.Join(", ", listBox.SelectedItems.Cast<string>());
-                var selectedIndexes = listBox.SelectedIndices.Cast<int>().ToArray();
+                var form = new Form
+                {
+                    Text = title,
+                    TopMost = keepOnTop,
+                    Width = 400,
+                    Height = 300,
+                    StartPosition = FormStartPosition.CenterScreen
+                };
 
-                context.SetValue(ButtonPressed, true);
-                context.SetValue(StatusMessage, "OK pressed.");
-                context.SetValue(SelectedItem, selectedItems);
-                context.SetValue(SelectedIndex, selectedIndexes);
+                var label = new Label
+                {
+                    Text = message,
+                    Dock = DockStyle.Top,
+                    Height = 40,
+                    TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+                };
+
+                var okButton = new Button
+                {
+                    Text = "OK",
+                    DialogResult = DialogResult.OK,
+                    Dock = DockStyle.Bottom
+                };
+
+                var cancelButton = new Button
+                {
+                    Text = "Cancel",
+                    DialogResult = DialogResult.Cancel,
+                    Dock = DockStyle.Bottom
+                };
+
+                form.Controls.Add(listBox);
+                form.Controls.Add(label);
+                form.Controls.Add(okButton);
+                form.Controls.Add(cancelButton);
+                form.AcceptButton = okButton;
+                form.CancelButton = cancelButton;
+
+                var result = form.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    if (listBox.SelectedIndices.Count == 0 && !allowEmpty)
+                    {
+                        StatusMessage.Set(context, "Selection required but not provided.");
+                        ButtonPressed.Set(context, false);
+                        SelectedItem.Set(context, null);
+                        SelectedIndex.Set(context, null);
+                        IsSuccess.Set(context, false);
+                        return;
+                    }
+
+                    var selectedItems = string.Join(", ", listBox.SelectedItems.Cast<string>());
+                    var selectedIndexes = listBox.SelectedIndices.Cast<int>().ToArray();
+
+                    ButtonPressed.Set(context, true);
+                    StatusMessage.Set(context, "OK pressed.");
+                    SelectedItem.Set(context, selectedItems);
+                    SelectedIndex.Set(context, selectedIndexes);
+                    IsSuccess.Set(context, true);
+                }
+                else
+                {
+                    ButtonPressed.Set(context, false);
+                    StatusMessage.Set(context, "Cancel pressed.");
+                    SelectedItem.Set(context, null);
+                    SelectedIndex.Set(context, null);
+                    IsSuccess.Set(context, true);
+                }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Selection dialog completed successfully.");
             }
-            else
+            catch (Exception ex)
             {
-                context.SetValue(ButtonPressed, false);
-                context.SetValue(StatusMessage, "Cancel pressed.");
-                context.SetValue(SelectedItem, null);
-                context.SetValue(SelectedIndex, null);
+                ButtonPressed.Set(context, false);
+                SelectedItem.Set(context, null);
+                SelectedIndex.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error in selection dialog: {ex.Message}");
             }
         }
+
     }
 }

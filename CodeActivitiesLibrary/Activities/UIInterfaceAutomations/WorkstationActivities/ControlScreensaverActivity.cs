@@ -54,10 +54,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
                 }
 
                 StatusMessage.Set(context, status);
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
                 StatusMessage.Set(context, $"Error controlling screensaver: {ex.Message}");
+                IsSuccess.Set(context, false);
             }
         }
 

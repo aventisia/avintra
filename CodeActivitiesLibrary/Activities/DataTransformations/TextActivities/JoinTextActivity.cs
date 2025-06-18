@@ -107,11 +107,14 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
                 var result = string.Join(delimiter, textList);
                 JoinedText.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Text joined successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error joining text: {ex.Message}";
                 JoinedText.Set(context, string.Empty);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error joining text: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

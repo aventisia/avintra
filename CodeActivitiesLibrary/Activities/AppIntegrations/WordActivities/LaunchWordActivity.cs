@@ -73,10 +73,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 
                 // Set the output WordInstance
                 context.SetValue(WordInstance, wordApp);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Word launch Successfully");
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to launch Word.", ex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Failed to launch Word.: {ex.Message}");
+
             }
         }
     }

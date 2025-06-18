@@ -126,14 +126,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
                 // Send email
                 emailMessage.SendAndSaveCopy();
 
+
                 status = $"Successfully sent email to '{to}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error sending email: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

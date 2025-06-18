@@ -69,14 +69,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                         status = "No radio button is selected in the group.";
                     }
                 }
+                SelectedRadioButton.Set(context, selectedRadioButton);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error retrieving selected radio button: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            SelectedRadioButton.Set(context, selectedRadioButton);
-            StatusMessage.Set(context, status);
         }
     }
 }

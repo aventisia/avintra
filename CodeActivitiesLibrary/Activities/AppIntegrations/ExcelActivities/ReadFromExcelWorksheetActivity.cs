@@ -163,14 +163,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                     default:
                         throw new ArgumentOutOfRangeException(nameof(retrieveMode));
                 }
+
+                ExcelData.Set(context, dataTable);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error reading from Excel: {ex.Message}";
+                ExcelData.Set(context, dataTable);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            ExcelData.Set(context, dataTable);
-            StatusMessage.Set(context, status);
         }
 
         private static DataTable ReadRange(Excel.Range range, bool getContentsAsText, bool firstLineContainsColumnNames)

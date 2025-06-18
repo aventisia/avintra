@@ -50,11 +50,15 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
                 var result = number.ToString(format);
                 FormattedNumber.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Number converted to text successfully.");
             }
             catch (Exception ex)
             {
                 status = $"Error converting number to text: {ex.Message}";
                 FormattedNumber.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error converting number to text: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

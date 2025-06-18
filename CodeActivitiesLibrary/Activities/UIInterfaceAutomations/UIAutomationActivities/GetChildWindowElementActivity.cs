@@ -81,14 +81,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                         status = "Could not find the child window within the specified time.";
                     }
                 }
+                ChildWindowElement.Set(context, childWindowElement);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error while searching for the child window: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            ChildWindowElement.Set(context, childWindowElement);
-            StatusMessage.Set(context, status);
         }
     }
 }

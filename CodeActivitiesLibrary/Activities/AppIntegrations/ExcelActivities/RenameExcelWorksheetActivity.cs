@@ -90,13 +90,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 ws.Name = newWorksheetName;
 
                 status = $"Successfully renamed worksheet from '{searchValue}' to '{newWorksheetName}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error renaming worksheet: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

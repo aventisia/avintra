@@ -55,14 +55,15 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 
                 MergedList.Set(context, result);
                 status = $"Successfully merged {firstList.Count()} + {secondList.Count()} items.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully merged lists. Total items: {result.Count}.");
             }
             catch (Exception ex)
             {
-                status = $"Error merging lists: {ex.Message}";
-                MergedList.Set(context, new List<object>());
+                MergedList.Set(context, 0);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error merging lists: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

@@ -79,13 +79,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
                         $"Timeout exceeded while waiting for cursor to {waitAction} '{cursorType}'.");
 
                 status = $"Successfully waited for cursor to {waitAction} '{cursorType}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error waiting for cursor: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private static uint GetCursorId(CursorTypeEnum cursorType)

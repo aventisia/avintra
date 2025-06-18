@@ -55,7 +55,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
             var mailItems = new List<MailItem>();
 
             try
@@ -99,14 +98,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
 
                     mailItems.Add(mailItem);
                 }
+                EmailMessages.Set(context, mailItems);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, " Email retrieved succesfully");
             }
             catch (Exception ex)
             {
-                status = $"Error retrieving emails: {ex.Message}";
+                EmailMessages.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error retrieving emails: {ex.Message}");
             }
 
-            EmailMessages.Set(context, mailItems);
-            StatusMessage.Set(context, status);
         }
 
         // Helper: Gets MAPIFolder by name

@@ -53,12 +53,14 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 </html>";
 
                 ResultHtml.Set(context, htmlContent);
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "HTML content generated successfully.");
             }
             catch (Exception ex)
             {
-                ResultHtml.Set(context, $"Error: {ex.Message}");
-                StatusMessage.Set(context, $"Error: {ex.Message}");
+                ResultHtml.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error generating HTML content: {ex.Message}");
             }
         }
     }

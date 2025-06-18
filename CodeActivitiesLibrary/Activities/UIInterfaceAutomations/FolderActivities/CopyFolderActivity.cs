@@ -34,37 +34,52 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var source = SourceFolder.Get(context);
-            var destination = DestinationFolder.Get(context);
-            var action = IfExistsAction.Get(context);
+            try
+            {
+                var source = SourceFolder.Get(context);
+                var destination = DestinationFolder.Get(context);
+                var action = IfExistsAction.Get(context);
 
-            if (string.IsNullOrWhiteSpace(source))
-                throw new ArgumentException("Source folder path cannot be null or empty.");
+                if (string.IsNullOrWhiteSpace(source))
+                    throw new ArgumentException("Source folder path cannot be null or empty.");
 
-            if (string.IsNullOrWhiteSpace(destination))
-                throw new ArgumentException("Destination folder path cannot be null or empty.");
+                if (string.IsNullOrWhiteSpace(destination))
+                    throw new ArgumentException("Destination folder path cannot be null or empty.");
 
-            if (!Directory.Exists(source))
-                throw new DirectoryNotFoundException($"Source folder does not exist: {source}");
+                if (!Directory.Exists(source))
+                    throw new DirectoryNotFoundException($"Source folder does not exist: {source}");
 
-            var folderName = new DirectoryInfo(source).Name;
-            var destinationPath = Path.Combine(destination, folderName);
+                var folderName = new DirectoryInfo(source).Name;
+                var destinationPath = Path.Combine(destination, folderName);
 
-            if (Directory.Exists(destinationPath))
-                switch (action)
+                if (Directory.Exists(destinationPath))
                 {
-                    case IfExistsActionEnum.DoNothing:
-                        CopiedFolder.Set(context, destinationPath);
-                        return;
+                    switch (action)
+                    {
+                        case IfExistsActionEnum.DoNothing:
+                            CopiedFolder.Set(context, destinationPath);
+                            IsSuccess.Set(context, true);
+                            StatusMessage.Set(context, "Destination folder already exists. No action taken.");
+                            return;
 
-                    case IfExistsActionEnum.Overwrite:
-                        Directory.Delete(destinationPath, true);
-                        break;
+                        case IfExistsActionEnum.Overwrite:
+                            Directory.Delete(destinationPath, true);
+                            break;
+                    }
                 }
 
-            CopyAll(new DirectoryInfo(source), new DirectoryInfo(destinationPath));
-            CopiedFolder.Set(context, destinationPath);
+                CopyAll(new DirectoryInfo(source), new DirectoryInfo(destinationPath));
+                CopiedFolder.Set(context, destinationPath);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Folder copied successfully.");
+            }
+            catch (Exception ex)
+            {
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error copying folder: {ex.Message}");
+            }
         }
+
 
         private void CopyAll(DirectoryInfo source, DirectoryInfo target)
         {

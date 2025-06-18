@@ -53,26 +53,24 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                 IEnumerable<object> result;
 
                 if (ignoreCase)
-                {
                     result = inputList
                         .OfType<string>()
                         .Select(s => s?.ToLower())
                         .Distinct()
                         .Cast<object>();
-                }
                 else
-                {
                     result = inputList.Distinct();
-                }
 
                 DeduplicatedList.Set(context, result.ToList());
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully removed duplicates.");
             }
             catch (Exception ex)
             {
-                status = $"Error removing duplicates: {ex.Message}";
-                DeduplicatedList.Set(context, new List<object>());
+                DeduplicatedList.Set(context, 0);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error removing duplicates from list: {ex.Message}");
             }
-
             StatusMessage.Set(context, status);
         }
     }

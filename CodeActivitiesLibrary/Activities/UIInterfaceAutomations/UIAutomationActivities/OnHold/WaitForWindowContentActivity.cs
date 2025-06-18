@@ -21,9 +21,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("The maximum time to wait (in seconds).")]
         public InArgument<int> TimeoutSeconds { get; set; }
 
-
-
-
         protected override void Execute(CodeActivityContext context)
         {
             var windowHandle = WindowHandle.Get(context);
@@ -45,13 +42,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
                 // Simulate waiting for window content using a hypothetical API
                 StatusMessage.Set(context, "Wait for window content completed successfully.");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
                 status = $"Error waiting for window content: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

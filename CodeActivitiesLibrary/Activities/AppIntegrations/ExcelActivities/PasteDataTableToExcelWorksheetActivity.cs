@@ -79,13 +79,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 }
 
                 status = $"Successfully pasted data starting at Row {startRow}, Column {startCol}.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error pasting data to Excel: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

@@ -74,16 +74,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
                 }
 
                 status += $" Successfully wrote command to CMD session.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error writing to CMD session: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            // Set the StatusMessage output
-            StatusMessage.Set(context, status);
-
-            Console.WriteLine(status);
         }
     }
 

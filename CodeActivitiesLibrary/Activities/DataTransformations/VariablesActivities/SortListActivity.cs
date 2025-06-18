@@ -130,13 +130,17 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                 }
 
                 SortedList.Set(context, outputList);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Number truncated/rounded successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error sorting list: {ex.Message}";
+                SortedList.Set(context, 0);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error sorting list: {ex.Message}");
             }
 
-            StatusMessage.Set(context, status);
+
         }
     }
 

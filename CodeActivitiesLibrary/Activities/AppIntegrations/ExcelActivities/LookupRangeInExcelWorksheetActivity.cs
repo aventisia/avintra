@@ -186,15 +186,19 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 var lookupResult = excelApp.WorksheetFunction.Lookup(lookupValue, lookupRange, resultRange);
 
                 result = lookupResult?.ToString() ?? "";
+
+                LookupResult.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error performing lookup: {ex.Message}";
                 result = "";
+                LookupResult.Set(context, result);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            LookupResult.Set(context, result);
-            StatusMessage.Set(context, status);
         }
 
         // Helper method to convert column letter to index

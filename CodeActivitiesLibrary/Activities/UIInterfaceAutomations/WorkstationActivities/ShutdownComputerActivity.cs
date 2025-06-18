@@ -43,15 +43,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
                         status = "Invalid shutdown mode specified.";
                         break;
                 }
-
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Shutdown initiated successfully.");
             }
             catch (Exception ex)
             {
                 status = $"Error initiating shutdown: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         public enum ShutdownModeEnum

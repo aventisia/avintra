@@ -30,13 +30,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
             {
                 connection.DeleteDirectory(directoryName);
                 status = $"Directory '{directoryName}' deleted successfully.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error deleting directory: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            StatusMessage.Set(context, status);
         }
     }
 }

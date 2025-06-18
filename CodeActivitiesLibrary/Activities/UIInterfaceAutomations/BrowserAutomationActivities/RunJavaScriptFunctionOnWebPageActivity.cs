@@ -71,15 +71,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
 
                 var scriptPreview = script.Length > 30 ? script.Substring(0, 30) + "..." : script;
                 status = $"Successfully executed JavaScript: '{scriptPreview}'";
+
+                Result.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error running JavaScript: {ex.Message}";
                 result = null;
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 }

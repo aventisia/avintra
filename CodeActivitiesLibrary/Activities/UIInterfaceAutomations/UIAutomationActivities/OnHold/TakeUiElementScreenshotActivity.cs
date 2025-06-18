@@ -21,9 +21,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("Returns the path to the saved screenshot file.")]
         public OutArgument<string> ScreenshotPath { get; set; }
 
-
-
-
         protected override void Execute(CodeActivityContext context)
         {
             var windowHandle = WindowHandle.Get(context);
@@ -45,15 +42,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
                 // Simulate taking a screenshot using a hypothetical API
                 screenshotPath = System.IO.Path.GetTempFileName() + ".png";
+
+                ScreenshotPath.Set(context, screenshotPath);
                 StatusMessage.Set(context, "UI element screenshot taken successfully.");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
                 status = $"Error taking UI element screenshot: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            ScreenshotPath.Set(context, screenshotPath);
-            StatusMessage.Set(context, status);
         }
     }
 }

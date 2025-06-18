@@ -36,7 +36,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
             var xpath = XPath.Get(context);
             var elementValue = ElementValue.Get(context);
             string updatedXmlContent = null;
-            var status = "";
 
             try
             {
@@ -56,15 +55,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
 
                 node.InnerText = elementValue;
                 updatedXmlContent = xmlDoc.OuterXml;
+                UpdatedXmlContent.Set(context, updatedXmlContent);
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Element value set successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error setting XML element value: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error setting XML element value: {ex.Message}");
             }
-
-            UpdatedXmlContent.Set(context, updatedXmlContent);
-            StatusMessage.Set(context, status);
         }
     }
 }

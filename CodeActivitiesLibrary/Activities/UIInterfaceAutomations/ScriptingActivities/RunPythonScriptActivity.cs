@@ -24,7 +24,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
         {
             var scriptCode = ScriptCode.Get(context);
             var output = "";
-            var status = "";
 
             try
             {
@@ -43,13 +42,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
 
                 ScriptOutput.Set(context, output);
                 StatusMessage.Set(context, "Python script executed successfully.");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
-                status = $"Error executing Python script: {ex.Message}";
+                StatusMessage.Set(context, $"Error executing Python script: {ex.Message}");
+                IsSuccess.Set(context, false);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

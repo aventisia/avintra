@@ -27,20 +27,33 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var parentPath = ParentDirectory.Get(context);
-            var newFolderName = FolderName.Get(context);
+            try
+            {
+                var parentPath = ParentDirectory.Get(context);
+                var newFolderName = FolderName.Get(context);
 
-            if (string.IsNullOrWhiteSpace(parentPath))
-                throw new ArgumentException("Parent directory path cannot be null or empty.");
+                if (string.IsNullOrWhiteSpace(parentPath))
+                    throw new ArgumentException("Parent directory path cannot be null or empty.");
 
-            if (string.IsNullOrWhiteSpace(newFolderName))
-                throw new ArgumentException("New folder name cannot be null or empty.");
+                if (string.IsNullOrWhiteSpace(newFolderName))
+                    throw new ArgumentException("New folder name cannot be null or empty.");
 
-            var fullPath = Path.Combine(parentPath, newFolderName);
+                var fullPath = Path.Combine(parentPath, newFolderName);
 
-            if (!Directory.Exists(fullPath)) Directory.CreateDirectory(fullPath);
+                if (!Directory.Exists(fullPath))
+                {
+                    Directory.CreateDirectory(fullPath);
+                }
 
-            NewFolder.Set(context, fullPath);
+                NewFolder.Set(context, fullPath);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Folder created successfully.");
+            }
+            catch (Exception ex)
+            {
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error creating folder: {ex.Message}");
+            }
         }
     }
 }

@@ -53,7 +53,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
             try
             {
                 // Retrieve input arguments
@@ -111,16 +110,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
                 }
 
                 // Set output arguments
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context,
                     $"Process '{processName}' {(result ? "matches" : "does not match")} the condition.");
             }
             catch (Exception ex)
             {
-                status = $"Error checking process status: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error checking process status: {ex.Message}");
             }
 
-            // Set status message
-            StatusMessages.Set(context, status);
         }
 
         // Helper method to get the owner of a process

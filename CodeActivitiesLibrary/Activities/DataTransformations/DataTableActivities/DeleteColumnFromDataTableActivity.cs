@@ -43,7 +43,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
 
             try
             {
@@ -83,13 +82,14 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                     default:
                         throw new ArgumentOutOfRangeException(nameof(specifyColumnWith));
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Column deleted successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error deleting column: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error deleting column: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

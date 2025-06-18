@@ -103,16 +103,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     throw new InvalidOperationException("Could not retrieve parent element.");
 
                 parentElement = parent;
+                ParentElement.Set(context, parentElement);
                 status = $"Successfully retrieved parent element of '{searchKeywords}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error retrieving parent element: {ex.Message}";
                 parentElement = null;
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            ParentElement.Set(context, parentElement);
-            StatusMessage.Set(context, status);
         }
     }
 }

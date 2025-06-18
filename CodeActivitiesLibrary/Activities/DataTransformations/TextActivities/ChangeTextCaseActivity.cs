@@ -1,5 +1,6 @@
 ﻿using CodeActivitiesLibrary.DataTransformations.TextActivities.Enums;
 using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Threading;
@@ -33,31 +34,45 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var input = TextToConvert.Get(context);
-            var convertTo = ConvertTo.Get(context);
-            string result;
+            string result = null;
+            string status = "Success";
 
-            switch (convertTo)
+            try
             {
-                case TextCaseEnum.Uppercase:
-                    result = input != null ? input.ToUpper() : null;
-                    break;
-                case TextCaseEnum.Lowercase:
-                    result = input != null ? input.ToLower() : null;
-                    break;
-                case TextCaseEnum.TitleCase:
-                    result = ToTitleCase(input);
-                    break;
-                case TextCaseEnum.SentenceCase:
-                    result = ToSentenceCase(input);
-                    break;
-                default:
-                    result = input;
-                    break;
-            }
+                var input = TextToConvert.Get(context);
+                var convertTo = ConvertTo.Get(context);
 
-            Result.Set(context, result);
+                switch (convertTo)
+                {
+                    case TextCaseEnum.Uppercase:
+                        result = input != null ? input.ToUpper() : null;
+                        break;
+                    case TextCaseEnum.Lowercase:
+                        result = input != null ? input.ToLower() : null;
+                        break;
+                    case TextCaseEnum.TitleCase:
+                        result = ToTitleCase(input);
+                        break;
+                    case TextCaseEnum.SentenceCase:
+                        result = ToSentenceCase(input);
+                        break;
+                    default:
+                        result = input;
+                        break;
+                }
+
+                Result.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Text converted successfully.");
+            }
+            catch (Exception ex)
+            {
+                Result.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error converting text: {ex.Message}");
+            }
         }
+
 
         private static string ToTitleCase(string input)
         {

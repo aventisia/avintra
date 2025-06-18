@@ -1,5 +1,6 @@
 ﻿using CodeActivitiesLibrary.Extensions;
 using CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities.Enums;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -47,71 +48,80 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var title = context.GetValue(InputDialogTitle);
-            var message = context.GetValue(InputDialogMessage);
-            var defaultValue = context.GetValue(DefaultValue);
-            var inputType = context.GetValue(InputType);
-            var keepOnTop = context.GetValue(KeepOnTop);
-
-            var resultEnum = DialogResultEnum.Cancel;
-            var inputResult = string.Empty;
-
-            // Create and configure form
-            var form = new Form
+            try
             {
-                Width = 400,
-                Height = 160,
-                FormBorderStyle = FormBorderStyle.FixedDialog,
-                Text = title ?? "Input Dialog",
-                StartPosition = FormStartPosition.CenterScreen,
-                TopMost = keepOnTop,
-                MinimizeBox = false,
-                MaximizeBox = false
-            };
+                var title = context.GetValue(InputDialogTitle);
+                var message = context.GetValue(InputDialogMessage);
+                var defaultValue = context.GetValue(DefaultValue);
+                var inputType = context.GetValue(InputType);
+                var keepOnTop = context.GetValue(KeepOnTop);
 
-            var label = new Label { Left = 10, Top = 20, Text = message ?? "Enter value:", Width = 360 };
-            var textBox = new TextBox { Left = 10, Top = 45, Width = 360, Text = defaultValue ?? "" };
+                var resultEnum = DialogResultEnum.Cancel;
+                var inputResult = string.Empty;
 
-            switch (inputType)
-            {
-                case InputTypeEnum.Password:
-                    textBox.UseSystemPasswordChar = true;
-                    break;
-                case InputTypeEnum.Text:
-                default:
-                    textBox.UseSystemPasswordChar = false;
-                    break;
+                // Create and configure form
+                var form = new Form
+                {
+                    Width = 400,
+                    Height = 160,
+                    FormBorderStyle = FormBorderStyle.FixedDialog,
+                    Text = title ?? "Input Dialog",
+                    StartPosition = FormStartPosition.CenterScreen,
+                    TopMost = keepOnTop,
+                    MinimizeBox = false,
+                    MaximizeBox = false
+                };
+
+                var label = new Label { Left = 10, Top = 20, Text = message ?? "Enter value:", Width = 360 };
+                var textBox = new TextBox { Left = 10, Top = 45, Width = 360, Text = defaultValue ?? "" };
+
+                switch (inputType)
+                {
+                    case InputTypeEnum.Password:
+                        textBox.UseSystemPasswordChar = true;
+                        break;
+                    case InputTypeEnum.Text:
+                    default:
+                        textBox.UseSystemPasswordChar = false;
+                        break;
+                }
+
+                var okButton = new Button { Text = "OK", Left = 210, Width = 75, Top = 80, DialogResult = DialogResult.OK };
+                var cancelButton = new Button { Text = "Cancel", Left = 295, Width = 75, Top = 80, DialogResult = DialogResult.Cancel };
+
+                form.Controls.Add(label);
+                form.Controls.Add(textBox);
+                form.Controls.Add(okButton);
+                form.Controls.Add(cancelButton);
+
+                form.AcceptButton = okButton;
+                form.CancelButton = cancelButton;
+
+                var dialogResult = form.ShowDialog();
+
+                if (dialogResult == DialogResult.OK)
+                {
+                    inputResult = textBox.Text;
+                    resultEnum = DialogResultEnum.OK;
+                }
+                else
+                {
+                    resultEnum = DialogResultEnum.Cancel;
+                }
+
+                // Set output arguments
+                UserInput.Set(context, inputResult);
+                ButtonPressed.Set(context, resultEnum);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Dialog closed with: {resultEnum}");
             }
-
-            var okButton = new Button { Text = "OK", Left = 210, Width = 75, Top = 80, DialogResult = DialogResult.OK };
-            var cancelButton = new Button
-            { Text = "Cancel", Left = 295, Width = 75, Top = 80, DialogResult = DialogResult.Cancel };
-
-            form.Controls.Add(label);
-            form.Controls.Add(textBox);
-            form.Controls.Add(okButton);
-            form.Controls.Add(cancelButton);
-
-            form.AcceptButton = okButton;
-            form.CancelButton = cancelButton;
-
-            var dialogResult = form.ShowDialog();
-
-            if (dialogResult == DialogResult.OK)
+            catch (Exception ex)
             {
-                inputResult = textBox.Text;
-                resultEnum = DialogResultEnum.OK;
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error displaying input dialog: {ex.Message}");
             }
-            else
-            {
-                resultEnum = DialogResultEnum.Cancel;
-            }
-
-            // Set output arguments
-            context.SetValue(UserInput, inputResult);
-            context.SetValue(ButtonPressed, resultEnum);
-            context.SetValue(StatusMessage, $"Dialog closed with: {resultEnum}");
         }
+
     }
 
     public enum InputTypeEnum

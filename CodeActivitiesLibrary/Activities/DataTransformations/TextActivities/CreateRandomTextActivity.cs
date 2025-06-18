@@ -100,11 +100,14 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 for (var i = 0; i < length; i++) result[i] = allowedCharacters[random.Next(allowedCharacters.Length)];
 
                 RandomText.Set(context, new string(result));
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Random text generated successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error generating random text: {ex.Message}";
                 RandomText.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error generating random text: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

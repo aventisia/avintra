@@ -88,7 +88,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
             try
             {
                 var host = Host.Get(context);
@@ -216,12 +215,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 
                 // Save connection reference
                 SftpConnection.Set(context, ftpClient);
-                context.SetValue(StatusMessage, $"Successfully connected to '{host}:{port}' via {secureFtpProtocol}");
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully connected to '{host}:{port}' via {secureFtpProtocol}");
             }
             catch (Exception ex)
             {
-                context.SetValue(StatusMessage, $"Error connecting to secure FTP: {ex.Message}");
-                context.SetValue(SftpConnection, null);
+                StatusMessage.Set(context, $"Error connecting to secure FTP: {ex.Message}");
+                IsSuccess.Set(context, false);
+                SftpConnection.Set(context, null);
             }
         }
 

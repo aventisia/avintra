@@ -53,14 +53,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                 {
                     StatusMessage.Set(context, "Image not found.");
                 }
+                Result.Set(context, result);
+                StatusMessage.Set(context, status);
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
                 status = $"Error checking for image: {ex.Message}";
+                StatusMessage.Set(context, status);
+                IsSuccess.Set(context, false);
             }
-
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
         }
 
         private static Bitmap CaptureScreen()

@@ -77,13 +77,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                 {
                     status = "Failed to click the UI element within the specified time.";
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

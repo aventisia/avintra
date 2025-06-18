@@ -124,14 +124,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 {
                     status += " File download initiated but not waited for.";
                 }
+                DownloadedFile.Set(context, downloadedFilePath);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error during download: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
-            DownloadedFile.Set(context, downloadedFilePath);
         }
     }
 }

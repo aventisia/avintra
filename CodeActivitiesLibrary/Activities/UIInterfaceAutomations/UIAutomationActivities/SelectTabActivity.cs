@@ -124,14 +124,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                         status = "Could not find the specified tab item.";
                     }
                 }
+                WasTabSelected.Set(context, tabSelected);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error selecting tab: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            WasTabSelected.Set(context, tabSelected);
-            StatusMessage.Set(context, status);
         }
     }
 }

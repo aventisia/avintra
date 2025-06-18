@@ -74,7 +74,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
                     Thread.Sleep(100); // Wait for 100 milliseconds before checking again
                 }
-
                 StatusMessage.Set(context, status);
             }
             catch (Exception ex)

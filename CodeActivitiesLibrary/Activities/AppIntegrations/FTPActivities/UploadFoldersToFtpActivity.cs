@@ -125,16 +125,21 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 
                 status =
                     $"Successfully uploaded {foldersUploaded} folders containing {filesUploaded} files to '{remoteDir}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
+                FoldersUploadedCount.Set(context, foldersUploaded);
+                FilesUploadedCount.Set(context, filesUploaded);
+                SkippedFiles.Set(context, skippedFiles);
             }
             catch (Exception ex)
             {
                 status = $"Error uploading folders to FTP: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
+                FoldersUploadedCount.Set(context, null);
+                FilesUploadedCount.Set(context, null);
+                SkippedFiles.Set(context, null);
             }
-
-            StatusMessage.Set(context, status);
-            FoldersUploadedCount.Set(context, foldersUploaded);
-            FilesUploadedCount.Set(context, filesUploaded);
-            SkippedFiles.Set(context, skippedFiles);
         }
 
         private void UploadFolder(

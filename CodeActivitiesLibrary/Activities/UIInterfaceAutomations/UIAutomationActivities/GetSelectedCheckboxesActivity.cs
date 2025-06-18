@@ -67,14 +67,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                     }
                     status = "Selected checkboxes retrieved successfully.";
                 }
+                SelectedCheckboxes.Set(context, selectedCheckboxes);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error retrieving selected checkboxes: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            SelectedCheckboxes.Set(context, selectedCheckboxes);
-            StatusMessage.Set(context, status);
         }
     }
 }

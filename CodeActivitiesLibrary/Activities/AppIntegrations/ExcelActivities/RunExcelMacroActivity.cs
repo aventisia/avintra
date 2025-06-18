@@ -57,15 +57,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                 // Capture return value (if any)
                 returnValue = result?.ToString() ?? "None";
+                MacroReturnValue.Set(context, returnValue);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error running macro: {ex.Message}";
                 returnValue = "None";
+                MacroReturnValue.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            MacroReturnValue.Set(context, returnValue);
-            StatusMessage.Set(context, status);
         }
     }
 }

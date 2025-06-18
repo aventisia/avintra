@@ -39,7 +39,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
 
             try
             {
@@ -61,13 +60,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                 FirstFreeColumn.Set(context, firstFreeColumn);
                 FirstFreeRow.Set(context, firstFreeRow);
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "retrieving first free column/row succesfully");
             }
             catch (Exception ex)
             {
-                status = $"Error retrieving first free column/row: {ex.Message}";
+                FirstFreeColumn.Set(context, null);
+                FirstFreeRow.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error retrieving first free column/row: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
 
         // Helper method to convert column index to Excel column name

@@ -12,9 +12,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [RequiredArgument, Category("Input"), Description("The session ID of the terminal session to close.")]
         public InArgument<int> SessionId { get; set; }
 
-
-
-
         protected override void Execute(CodeActivityContext context)
         {
             var sessionId = SessionId.Get(context);
@@ -24,13 +21,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
             {
                 // Simulate closing a terminal session (actual implementation would use a terminal library like PoshConsole or similar)
                 status = $"Simulated closure of terminal session with ID: {sessionId}";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error closing terminal session: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 

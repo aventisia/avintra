@@ -107,13 +107,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                 // Set output arguments
                 CopiedFiles.Set(context, copiedFiles);
                 status = $"{copiedFiles.Count} file(s) copied successfully.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error copying files: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
             finally
             {
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }
         }

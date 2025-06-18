@@ -73,7 +73,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
 
             try
             {
@@ -149,15 +148,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                     }
 
                     CsvTable.Set(context, dataTable);
-                    status += $" Successfully read data from '{filePath}'.";
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, $" Successfully read data from '{filePath}'.");
                 }
             }
             catch (Exception ex)
             {
-                status = $"Error reading CSV file: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error reading CSV file: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
 
         // ----------------------

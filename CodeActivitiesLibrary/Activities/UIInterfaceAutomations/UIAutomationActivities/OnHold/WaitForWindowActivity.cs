@@ -35,13 +35,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
                 // Simulate waiting for window using a hypothetical API
                 StatusMessage.Set(context, "Wait for window completed successfully.");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
                 status = $"Error waiting for window: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

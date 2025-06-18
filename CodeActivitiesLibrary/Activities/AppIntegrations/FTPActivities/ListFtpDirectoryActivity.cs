@@ -44,11 +44,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
                 var result = ListItems(connection, listType, path);
                 // set result;
                 Result.Set(context, result.ToList());
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Retrieved List FTP Directory succesfully");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e);
-                throw;
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error to retrived list FTP Directory: {ex.Message}");
             }
         }
 

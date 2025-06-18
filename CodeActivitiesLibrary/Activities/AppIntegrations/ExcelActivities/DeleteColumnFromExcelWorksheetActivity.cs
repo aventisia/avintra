@@ -61,13 +61,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 ((Excel.Range)worksheet.Columns[columnNumber]).Delete();
 
                 status = $"Successfully deleted column {columnIndexInput} (Index: {columnNumber}).";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
+
             }
             catch (Exception ex)
             {
                 status = $"Error deleting column: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private int GetColumnIndex(string columnName)

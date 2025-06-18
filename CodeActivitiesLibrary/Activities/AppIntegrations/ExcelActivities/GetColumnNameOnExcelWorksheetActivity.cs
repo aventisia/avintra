@@ -39,7 +39,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         protected override void Execute(CodeActivityContext context)
         {
             var columnName = "";
-            var status = "Success";
 
             try
             {
@@ -54,14 +53,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                 // Convert column index to Excel column name
                 columnName = GetExcelColumnName(columnIndex);
+
+                ColumnName.Set(context, columnName);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Retrieved Column Name on Excel Worksheet");
             }
             catch (Exception ex)
             {
-                status = $"Error getting column name: {ex.Message}";
+                ColumnName.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error getting column name: {ex.Message}");
             }
 
-            ColumnName.Set(context, columnName);
-            StatusMessage.Set(context, status);
         }
 
         // Helper method to convert column index to Excel column name

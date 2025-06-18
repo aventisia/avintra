@@ -136,15 +136,21 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 
                 status = $"Successfully synchronized '{localDir}' with '{remoteDir}'. " +
                          $"{filesTransferred} files transferred, {dirsCreated} directories created.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
+                FilesTransferred.Set(context, filesTransferred);
+                DirectoriesCreated.Set(context, dirsCreated);
             }
             catch (Exception ex)
             {
                 status = $"Error synchronizing directories: {ex.Message}";
+                FilesTransferred.Set(context, null);
+                DirectoriesCreated.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            StatusMessage.Set(context, status);
-            FilesTransferred.Set(context, filesTransferred);
-            DirectoriesCreated.Set(context, dirsCreated);
+
         }
 
         private void UploadDirectory(FtpClient client, string localDir, string remoteDir,

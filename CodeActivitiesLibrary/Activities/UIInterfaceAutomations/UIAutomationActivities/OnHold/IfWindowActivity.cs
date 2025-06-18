@@ -17,9 +17,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("Returns true if the condition is met, false otherwise.")]
         public OutArgument<bool> Result { get; set; }
 
-
-
-
         protected override void Execute(CodeActivityContext context)
         {
             var windowHandle = WindowHandle.Get(context);
@@ -35,15 +32,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
                 // Simulate checking window condition using a hypothetical API
                 result = true; // Replace with actual logic
+                Result.Set(context, result);
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Window condition checked successfully.");
             }
             catch (Exception ex)
             {
                 status = $"Error checking window condition: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 }

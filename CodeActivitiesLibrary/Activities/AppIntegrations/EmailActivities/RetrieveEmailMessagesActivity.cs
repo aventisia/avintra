@@ -190,14 +190,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
                     // Disconnect
                     client.Disconnect(true);
                 }
-
-                status = $"Successfully retrieved {retrievedEmails.Count} email(s).";
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
+                IsSuccess.Set(context, false);
                 status = $"Error retrieving emails: {ex.Message}";
             }
-
             RetrievedEmails.Set(context, retrievedEmails);
             StatusMessage.Set(context, status);
         }

@@ -47,13 +47,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
                 }
 
                 status = $"Folders downloaded successfully.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error downloading folders: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            StatusMessage.Set(context, status);
         }
     }
 }

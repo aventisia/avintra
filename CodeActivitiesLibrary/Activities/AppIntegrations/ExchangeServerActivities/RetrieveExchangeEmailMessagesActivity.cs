@@ -221,15 +221,19 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
                 }
 
                 emails = results.Items.Cast<EmailMessage>();
+                RetrievedEmails.Set(context, emails);
                 status = $"Successfully retrieved {emails.Count()} emails.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
-                status = $"Error retrieving emails: {ex.Message}";
-            }
 
-            RetrievedEmails.Set(context, emails);
-            StatusMessage.Set(context, status);
+                RetrievedEmails.Set(context, emails);
+                IsSuccess.Set(context, false);
+                status = $"Error retrieving emails: {ex.Message}";
+                StatusMessage.Set(context, status);
+            }
         }
     }
 

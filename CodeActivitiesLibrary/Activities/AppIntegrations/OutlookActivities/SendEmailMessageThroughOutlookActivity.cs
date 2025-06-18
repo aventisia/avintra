@@ -142,13 +142,15 @@ namespace CodeActivitiesLibrary.Activities.AppIntegrations.OutlookActivities
                     mailItem.Send();
                     status = $"Email '{subject}' sent successfully.";
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error sending email: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

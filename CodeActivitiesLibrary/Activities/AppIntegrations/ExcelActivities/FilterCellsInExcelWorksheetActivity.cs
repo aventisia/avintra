@@ -155,13 +155,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 }
 
                 status = $"Successfully applied filter on column '{columnToFilter}' with criteria '{filterCriteria}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error applying filter: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private void ApplyFilter(Excel.Worksheet ws, Excel.Range range, string columnToFilter, string filterCriteria)

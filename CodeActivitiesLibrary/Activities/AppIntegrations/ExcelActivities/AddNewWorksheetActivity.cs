@@ -74,13 +74,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 }
 
                 status += $" Added new worksheet named '{newSheet.Name}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error adding new worksheet: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,23 +10,31 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     [Description("Creates a new empty list to be used in other activities.")]
     public class CreateNewList : BaseCodeActivity
     {
-
         [DisplayName("New List")]
         [Description("The newly created empty list.")]
         public OutArgument<List<object>> NewList { get; set; }
 
-        // Output argument to return the newly created list
-
-
-
         protected override void Execute(CodeActivityContext context)
         {
-            // Create a new empty list
-            var newList = new List<object>();
+            try
+            {
+                // Create a new empty list
+                var newList = new List<object>();
 
-            context.SetValue(NewList, newList);
-            // Optionally, set the status message
-            context.SetValue(StatusMessage, "List created successfully.");
+                // Set the output
+                NewList.Set(context, newList);
+
+                // Set success flags
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "List created successfully.");
+            }
+            catch (Exception ex)
+            {
+                // In case of error, return empty list
+                NewList.Set(context, 0);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error creating list: {ex.Message}");
+            }
         }
     }
 }

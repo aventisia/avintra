@@ -52,15 +52,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                     content = content.Trim();
 
                 status = $"Successfully read from file: {filePath}";
+                FileContent.Set(context, content);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error reading file: {ex.Message}";
+                FileContent.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            // Set outputs
-            FileContent.Set(context, content);
-            StatusMessage.Set(context, status);
         }
     }
 }

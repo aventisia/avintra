@@ -21,20 +21,19 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
         protected override void Execute(CodeActivityContext context)
         {
             var scriptCode = ScriptCode.Get(context);
-            var status = "";
 
             try
             {
                 // Use Roslyn or other .NET scripting engine to execute the code
                 // For simplicity, this example assumes the script is valid C# code
                 StatusMessage.Set(context, "Script executed successfully.");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
-                status = $"Error executing .NET script: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error executing .NET script: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

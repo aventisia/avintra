@@ -74,16 +74,18 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
                         var decryptedContent = reader.ReadToEnd();
                         // Write the decrypted content to the output file
                         File.WriteAllText(outputFilePath, decryptedContent);
-                        status = "File decrypted successfully.";
+
+                        // Set output success
+                        StatusMessage.Set(context, "File decrypted successfully.");
+                        IsSuccess.Set(context, true);
                     }
                 }
             }
             catch (Exception ex)
             {
-                status = $"Error decrypting file with AES: {ex.Message}";
+                StatusMessage.Set(context, $"Error decrypting file with AES: {ex.Message}");
+                IsSuccess.Set(context, false);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private byte[] HexStringToByteArray(string hexString)

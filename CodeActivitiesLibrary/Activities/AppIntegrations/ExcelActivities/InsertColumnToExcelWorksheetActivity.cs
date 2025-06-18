@@ -36,7 +36,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
 
             try
             {
@@ -63,14 +62,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 // Insert new column at specified index
                 (ws.Columns[columnIndex] as Excel.Range)?.Insert();
 
-                status = $"Successfully inserted new column to the left of column {colRef}.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully inserted new column to the left of column {colRef}.");
             }
             catch (Exception ex)
             {
-                status = $"Error inserting column: {ex.Message}";
-            }
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error inserting column: {ex.Message}");
 
-            StatusMessage.Set(context, status);
+            }
         }
 
         // Helper method to convert column letter to index

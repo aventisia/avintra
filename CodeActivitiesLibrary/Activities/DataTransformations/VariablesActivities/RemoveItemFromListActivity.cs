@@ -88,14 +88,15 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                 }
 
                 ModifiedList.Set(context, sourceList.ToList());
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
-                status = $"Error removing item from list: {ex.Message}";
-                ModifiedList.Set(context, new List<object>());
+                ModifiedList.Set(context, 0);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error removing item from list: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

@@ -75,10 +75,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 }
 
                 Console.WriteLine("Text written to Word document successfully.");
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Text written to Word document successfully");
             }
             catch (Exception ex)
             {
-                throw new Exception("Error writing to Word document: " + ex.Message, ex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error writing to Word document: {ex.Message}");
             }
         }
 

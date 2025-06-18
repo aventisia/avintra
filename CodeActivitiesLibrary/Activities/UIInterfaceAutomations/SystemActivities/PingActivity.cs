@@ -50,7 +50,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
             try
             {
                 // Retrieve input arguments
@@ -74,17 +73,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
                     PingResult.Set(context, reply.Status == IPStatus.Success);
                     RoundTripTime.Set(context, reply.Status == IPStatus.Success);
                 }
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Ping completed successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error pinging host: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error pinging host: {ex.Message}");
                 PingResult.Set(context, false);
                 RoundTripTime.Set(context, false); // Indicate failure with negative value
             }
-
-            // Set status message
-            StatusMessages.Set(context, status);
         }
     }
 }

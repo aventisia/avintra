@@ -47,13 +47,15 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 
                 var decreasedVariable = variable - subtract;
                 DecreasedVariable.Set(context, decreasedVariable);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully decreased the variable from {variable} by {subtract}. Result: {decreasedVariable}");
             }
             catch (Exception ex)
             {
-                status = $"Error decreasing variable: {ex.Message}";
                 DecreasedVariable.Set(context, 0);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error decreasing variable: {ex.Message}");
             }
-
             StatusMessage.Set(context, status);
         }
     }

@@ -56,13 +56,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
                 File.WriteAllBytes(filePath, binaryData);
                 status = $"Binary data successfully saved to file at {filePath}.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error converting binary data to file: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

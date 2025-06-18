@@ -68,14 +68,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
                 }
 
                 // Set output values
-                context.SetValue(Result, result);
-                context.SetValue(StatusMessage, status);
+                Result.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error checking folder existence: {ex.Message}";
                 context.SetValue(Result, false);
-                context.SetValue(StatusMessage, status);
+                StatusMessage.Set(context, status);
             }
         }
     }

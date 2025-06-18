@@ -179,13 +179,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                     default:
                         throw new ArgumentOutOfRangeException(nameof(selectionRange));
                 }
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error resizing columns/rows: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         // Helper method to convert column letter to index

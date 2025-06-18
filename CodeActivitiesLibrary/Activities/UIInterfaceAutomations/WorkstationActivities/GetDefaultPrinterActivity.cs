@@ -76,16 +76,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
                     throw new InvalidOperationException(
                         "Could not determine default printer using any available method");
                 }
+                DefaultPrinterName.Set(context, printerName);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully retrieved default printer '{printerName}'.");
             }
             catch (Exception ex)
             {
+                IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error retrieving default printer: {ex.Message}");
                 return;
             }
 
-            DefaultPrinterName.Set(context, printerName);
-            StatusMessage.Set(context,
-                $"Successfully retrieved default printer '{printerName}'.");
         }
 
         private string GetDefaultPrinterFromRegistry()

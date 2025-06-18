@@ -10,7 +10,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
     [Description("Displays a folder selection dialog to let users choose a folder.")]
     public sealed class DisplaySelectFolderDialog : BaseCodeActivity
     {
-
         [RequiredArgument]
         [DisplayName("Dialog Description")]
         [Description("The description or title of the folder selection dialog window.")]
@@ -37,41 +36,53 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
         public OutArgument<bool> ButtonPressed { get; set; }
 
 
-
         protected override void Execute(CodeActivityContext context)
         {
-            // Retrieve input arguments
-            string dialogDescription = context.GetValue(DialogDescription);
-            string initialFolder = context.GetValue(InitialFolder) ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            bool keepDialogOnTop = context.GetValue(KeepDialogOnTop);
-
-            // Configure FolderBrowserDialog
-            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+            try
             {
-                folderBrowserDialog.Description = dialogDescription;
-                folderBrowserDialog.RootFolder = Environment.SpecialFolder.Desktop;
-                folderBrowserDialog.SelectedPath = initialFolder;
-                folderBrowserDialog.ShowNewFolderButton = true;
+                // Retrieve input arguments
+                var dialogDescription = context.GetValue(DialogDescription);
+                var initialFolder = context.GetValue(InitialFolder) ??
+                                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                var keepDialogOnTop = context.GetValue(KeepDialogOnTop);
 
-                // Show the dialog
-                DialogResult result = folderBrowserDialog.ShowDialog();
+                // Configure FolderBrowserDialog
+                using (var folderBrowserDialog = new FolderBrowserDialog())
+                {
+                    folderBrowserDialog.Description = dialogDescription;
+                    folderBrowserDialog.RootFolder = Environment.SpecialFolder.Desktop;
+                    folderBrowserDialog.SelectedPath = initialFolder;
+                    folderBrowserDialog.ShowNewFolderButton = true;
 
-                // Set output arguments
-                if (result == DialogResult.OK)
-                {
-                    string selectedFolder = folderBrowserDialog.SelectedPath;
-                    context.SetValue(SelectedFolder, "");
-                    context.SetValue(ButtonPressed, true);
-                    context.SetValue(StatusMessage, "Folder selected successfully.");
-                }
-                else
-                {
-                    context.SetValue(SelectedFolder, "");
-                    context.SetValue(ButtonPressed, false);
-                    context.SetValue(StatusMessage, "Operation canceled by user.");
+                    // Show the dialog
+                    var result = folderBrowserDialog.ShowDialog();
+
+                    // Set output arguments
+                    if (result == DialogResult.OK)
+                    {
+                        var selectedFolder = folderBrowserDialog.SelectedPath;
+                        context.SetValue(SelectedFolder, selectedFolder);
+                        context.SetValue(ButtonPressed, true);
+                        context.SetValue(StatusMessage, "Folder selected successfully.");
+                    }
+                    else
+                    {
+                        context.SetValue(SelectedFolder, string.Empty);
+                        context.SetValue(ButtonPressed, false);
+                        context.SetValue(StatusMessage, "Operation canceled by user.");
+                    }
+
+                    IsSuccess.Set(context, true);
                 }
             }
+            catch (Exception ex)
+            {
+                context.SetValue(SelectedFolder, string.Empty);
+                context.SetValue(ButtonPressed, false);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error selecting folder: {ex.Message}");
+            }
         }
-    }
 
+    }
 }

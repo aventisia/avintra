@@ -62,14 +62,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
 
                         break;
                 }
+                IsDesktopVisible.Set(context, isVisible);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error managing desktop windows: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            IsDesktopVisible.Set(context, isVisible);
-            StatusMessage.Set(context, status);
         }
 
         private static class NativeMethods

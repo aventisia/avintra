@@ -54,15 +54,19 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
                 Directory.Move(originalFolderPath, newFolderPath);
 
                 // Set the output
-                context.SetValue(RenamedFolderPath, newFolderPath);
+                RenamedFolderPath.Set(context, newFolderPath);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Folder renamed successfully to: {newFolderPath}");
             }
             catch (IOException ex)
             {
-                throw new IOException($"Failed to rename the folder: {ex.Message}", ex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Failed to rename the folder: {ex.Message}");
             }
             catch (UnauthorizedAccessException ex)
             {
-                throw new UnauthorizedAccessException($"Access denied to rename the folder: {ex.Message}", ex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Access denied to rename the folder: {ex.Message}");
             }
         }
     }

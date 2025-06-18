@@ -96,12 +96,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                 }
 
                 MovedFile.Set(context, movedFile);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Moved files successfully");
             }
+
             catch (Exception ex)
             {
-                throw new Exception($"Error moving files: {ex.Message}");
+                MovedFile.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error moving files: {ex.Message}");
             }
         }
+
 
         private IEnumerable<string> GetExpandedPaths(string pattern)
         {

@@ -59,13 +59,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
                 serviceController.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
 
                 status = $"Service '{serviceName}' has been stopped successfully.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error stopping service: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private static bool IsServiceInstalled(string serviceName)

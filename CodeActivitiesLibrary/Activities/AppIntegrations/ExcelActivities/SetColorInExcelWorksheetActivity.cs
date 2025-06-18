@@ -194,13 +194,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                 // Apply the color to the selected range
                 range.Interior.Color = colorValue;
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error setting cell color: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            StatusMessage.Set(context, status);
         }
 
         private static int GetColorValueFromEnum(ExcelColorEnum color)

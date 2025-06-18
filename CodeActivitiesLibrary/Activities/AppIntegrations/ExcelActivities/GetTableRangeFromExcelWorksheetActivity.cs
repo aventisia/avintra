@@ -58,7 +58,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
 
             try
             {
@@ -107,13 +106,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 FirstRowIndex.Set(context, firstRow);
                 LastColumnIndex.Set(context, lastCol);
                 LastRowIndex.Set(context, lastRow);
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Retrieving table range successfully");
             }
             catch (Exception ex)
             {
-                status = $"Error retrieving table range: {ex.Message}";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Error retrieving table range: {ex.Message}");
+                FirstColumnIndex.Set(context, null);
+                FirstRowIndex.Set(context, null);
+                LastColumnIndex.Set(context, null);
+                LastRowIndex.Set(context, null);
             }
 
-            StatusMessage.Set(context, status);
         }
     }
 }

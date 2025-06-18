@@ -13,19 +13,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
     {
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "";
-
             try
             {
                 Clipboard.Clear();
-                status = "Clipboard cleared successfully.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Clipboard cleared successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error clearing clipboard: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error clearing clipboard: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

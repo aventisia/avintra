@@ -43,8 +43,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
-
             try
             {
                 var dataTable = DataTable.Get(context);
@@ -68,14 +66,15 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
                 // Set outputs
                 FilteredDataTable.Set(context, filteredTable);
-                status = $"Filtered data table successfully. Rows matched: {filteredTable.Rows.Count}.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Filtered data table successfully. Rows matched: {filteredTable.Rows.Count}.");
             }
             catch (Exception ex)
             {
-                status = $"Error filtering data table: {ex.Message}";
+                FilteredDataTable.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error filtering data table: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using FluentFTP;
+﻿using CodeActivitiesLibrary.Extensions;
+using FluentFTP;
 using System;
 using System.Activities;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 {
     [DisplayName("Upload File(s) to FTP")]
     [Description("Uploads one or more files to an FTP server.")]
-    public class UploadFilesToFtpActivity : CodeActivity
+    public class UploadFilesToFtpActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -173,15 +174,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
                 {
                     status += $" Skipped {skippedFiles.Count} files.";
                 }
+                status += $" Total files processed: {localFiles.Count}.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
+                UploadedFilesCount.Set(context, uploadedCount);
+                SkippedFiles.Set(context, skippedFiles);
             }
             catch (Exception ex)
             {
                 status = $"Error uploading files to FTP: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
+                UploadedFilesCount.Set(context, null);
+                SkippedFiles.Set(context, null);
             }
-
-            StatusMessage.Set(context, status);
-            UploadedFilesCount.Set(context, uploadedCount);
-            SkippedFiles.Set(context, skippedFiles);
         }
     }
 }

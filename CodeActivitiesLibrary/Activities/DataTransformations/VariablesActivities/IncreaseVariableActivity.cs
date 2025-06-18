@@ -46,13 +46,16 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 
                 var result = variable + addValue;
                 Result.Set(context, result);
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully increased variable. Original value: {variable}, Added: {addValue}, Result: {result}.");
             }
             catch (Exception ex)
             {
-                status = $"Error increasing variable: {ex.Message}";
                 Result.Set(context, 0);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error increasing variable: {ex.Message}");
             }
-
             StatusMessage.Set(context, status);
         }
     }

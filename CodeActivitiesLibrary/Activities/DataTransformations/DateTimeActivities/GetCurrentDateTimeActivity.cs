@@ -35,28 +35,38 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            // Retrieve input values
-            var retrieveType = context.GetValue(RetrieveType);
-            var timezoneType = context.GetValue(TimezoneType);
-
-            // Determine the datetime based on the retrieve type
-            DateTime result;
-            switch (retrieveType)
+            try
             {
-                case RetrieveTypeEnum.CurrentDateTime:
-                    result = GetDateTime(timezoneType);
-                    break;
+                // Retrieve input values
+                var retrieveType = context.GetValue(RetrieveType);
+                var timezoneType = context.GetValue(TimezoneType);
 
-                case RetrieveTypeEnum.CurrentDateOnly:
-                    result = GetDate(timezoneType);
-                    break;
+                // Determine the datetime based on the retrieve type
+                DateTime result;
+                switch (retrieveType)
+                {
+                    case RetrieveTypeEnum.CurrentDateTime:
+                        result = GetDateTime(timezoneType);
+                        break;
 
-                default:
-                    throw new ArgumentException($"Unsupported retrieve type: {retrieveType}");
+                    case RetrieveTypeEnum.CurrentDateOnly:
+                        result = GetDate(timezoneType);
+                        break;
+
+                    default:
+                        throw new ArgumentException($"Unsupported retrieve type: {retrieveType}");
+                }
+
+                context.SetValue(Result, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Date/time retrieved successfully.");
             }
-
-            // Set the output
-            context.SetValue(Result, result);
+            catch (Exception ex)
+            {
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error retrieving date/time: {ex.Message}");
+                context.SetValue(Result, default(DateTime));
+            }
         }
 
         private DateTime GetDateTime(TimezoneTypeEnum timezoneType)

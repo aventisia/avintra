@@ -92,13 +92,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 // Perform hover action
                 new Actions(driver).MoveToElement(element).Build().Perform();
                 status = $"Successfully hovered over element '{searchKeywords}' using '{findType}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error during hover operation: {ex.Message}. StackTrace: {ex.StackTrace}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            StatusMessage.Set(context, status);
         }
     }
 }

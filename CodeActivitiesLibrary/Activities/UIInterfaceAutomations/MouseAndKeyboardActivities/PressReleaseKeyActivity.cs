@@ -89,13 +89,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
                     default:
                         throw new ArgumentException("Invalid action specified.");
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error during key simulation: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private static Keys[] GetSelectedKeys(bool useControl, bool useAlt, bool useShift, bool useWin)

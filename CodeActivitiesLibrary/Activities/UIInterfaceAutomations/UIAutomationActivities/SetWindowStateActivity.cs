@@ -63,13 +63,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                         }
                     }
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"There was a problem changing the window state: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

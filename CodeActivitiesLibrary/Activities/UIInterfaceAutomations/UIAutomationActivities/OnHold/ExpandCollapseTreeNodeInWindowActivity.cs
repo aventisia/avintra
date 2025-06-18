@@ -45,13 +45,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
                 // Simulate expanding/collapsing tree node using a hypothetical API
                 StatusMessage.Set(context, "Tree node expanded/collapsed successfully.");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
                 status = $"Error expanding/collapsing tree node: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

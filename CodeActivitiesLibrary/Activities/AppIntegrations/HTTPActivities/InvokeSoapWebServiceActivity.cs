@@ -119,15 +119,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
                         status = $"Failed to invoke '{method}': {response.ReasonPhrase}";
                     }
                 }
+                Result.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
-                result = "";
                 status = $"Error invoking SOAP web service: {ex.Message}";
+                Result.Set(context, result);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 }

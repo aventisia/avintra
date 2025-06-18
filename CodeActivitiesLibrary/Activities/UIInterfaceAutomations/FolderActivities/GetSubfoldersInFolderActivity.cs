@@ -30,19 +30,31 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var folderPath = FolderPath.Get(context);
-            var includeSubfolders = IncludeSubfolders.Get(context);
+            try
+            {
+                var folderPath = FolderPath.Get(context);
+                var includeSubfolders = IncludeSubfolders.Get(context);
 
-            if (string.IsNullOrWhiteSpace(folderPath))
-                throw new ArgumentException("Folder path must not be null or empty.", nameof(FolderPath));
+                if (string.IsNullOrWhiteSpace(folderPath))
+                    throw new ArgumentException("Folder path must not be null or empty.", nameof(FolderPath));
 
-            if (!Directory.Exists(folderPath))
-                throw new DirectoryNotFoundException($"The specified folder does not exist: {folderPath}");
+                if (!Directory.Exists(folderPath))
+                    throw new DirectoryNotFoundException($"The specified folder does not exist: {folderPath}");
 
-            var searchOption = includeSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-            var subfolders = Directory.GetDirectories(folderPath, "*", searchOption).ToList();
+                var searchOption = includeSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                var subfolders = Directory.GetDirectories(folderPath, "*", searchOption).ToList();
 
-            Subfolders.Set(context, subfolders);
+                Subfolders.Set(context, subfolders);
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Subfolders retrieved successfully.");
+            }
+            catch (Exception ex)
+            {
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error retrieving subfolders: {ex.Message}");
+            }
         }
+
     }
 }

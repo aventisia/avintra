@@ -33,9 +33,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
             var xmlContent = XmlContent.Get(context);
             var xpath = XPath.Get(context);
             var xmlElementToInsert = XmlElementToInsert.Get(context);
-
             string updatedXmlContent = null;
-            var status = "";
 
             try
             {
@@ -66,15 +64,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
                 targetNode.AppendChild(importedNode);
 
                 updatedXmlContent = xmlDoc.OuterXml;
+                UpdatedXmlContent.Set(context, updatedXmlContent);
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "XML element inserted successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error inserting XML element: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error inserting XML element: {ex.Message}");
             }
-
-            UpdatedXmlContent.Set(context, updatedXmlContent);
-            StatusMessage.Set(context, status);
         }
     }
 }

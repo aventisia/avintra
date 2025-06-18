@@ -74,13 +74,21 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 FirstRowIndex.Set(context, firstRow);
                 LastColumnIndex.Set(context, lastCol);
                 LastRowIndex.Set(context, lastRow);
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error retrieving selected cell range: {ex.Message}";
+                FirstColumnIndex.Set(context, null);
+                FirstRowIndex.Set(context, null);
+                LastColumnIndex.Set(context, null);
+                LastRowIndex.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            StatusMessage.Set(context, status);
         }
     }
 }

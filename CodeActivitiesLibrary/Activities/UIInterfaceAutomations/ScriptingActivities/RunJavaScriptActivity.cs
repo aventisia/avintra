@@ -23,7 +23,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
         {
             var scriptCode = ScriptCode.Get(context);
             var output = "";
-            var status = "";
 
             try
             {
@@ -41,14 +40,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
                 }
 
                 ScriptOutput.Set(context, output);
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "JavaScript executed successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error executing JavaScript: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error executing JavaScript: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

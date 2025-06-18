@@ -134,10 +134,13 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 }
 
                 TextList.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Split text successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error splitting text: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error splitting text: {ex.Message}");
                 TextList.Set(context, null);
             }
 

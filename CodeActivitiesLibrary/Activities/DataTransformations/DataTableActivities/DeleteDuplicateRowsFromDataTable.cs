@@ -40,8 +40,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
-
             try
             {
                 var dataTable = DataTable.Get(context);
@@ -88,13 +86,16 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 dataTable.Rows.Clear();
 
                 foreach (var row in uniqueRows) dataTable.ImportRow(row);
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Duplicate rows deleted successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error deleting duplicate rows: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error deleting duplicate rows: {ex.Message}");
             }
 
-            StatusMessage.Set(context, status);
         }
     }
 }

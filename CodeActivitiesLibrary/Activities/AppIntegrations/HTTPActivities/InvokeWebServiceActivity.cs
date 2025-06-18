@@ -165,6 +165,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
                 status = response.IsSuccessStatusCode
                     ? $"Successfully invoked {response.RequestMessage.Method} on {response.RequestMessage.RequestUri}"
                     : $"Web service returned error: {response.ReasonPhrase} ({responseCode})";
+
+
+                Result.Set(context, responseContent);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
+                ResponseCode.Set(context, responseCode);
+                ResponseHeaders.Set(context, responseHeaders);
             }
             catch (AggregateException ae)
             {
@@ -178,12 +185,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.HTTPActivities
                         responseCode = (int)errorResponse.StatusCode;
                         status = $"HTTP Error: {errorResponse.StatusDescription} ({responseCode})";
                     }
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            Result.Set(context, responseContent);
-            StatusMessage.Set(context, status);
-            ResponseCode.Set(context, responseCode);
-            ResponseHeaders.Set(context, responseHeaders);
         }
 
         private static async Task<HttpResponseMessage> InvokeWebServiceAsync(

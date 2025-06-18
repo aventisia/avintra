@@ -61,12 +61,15 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 var joinedDataTable = PerformJoin(firstDataTable, secondDataTable, joinOperation, joinRules);
 
                 // Set outputs
-                context.SetValue(JoinedDataTable, joinedDataTable);
-                context.SetValue(StatusMessage, "Successfully joined the data tables.");
+                JoinedDataTable.Set(context, joinedDataTable);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Successfully joined the data tables.");
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to join data tables: {ex.Message}", ex);
+                JoinedDataTable.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Failed to join data tables: {ex.Message}");
             }
         }
 

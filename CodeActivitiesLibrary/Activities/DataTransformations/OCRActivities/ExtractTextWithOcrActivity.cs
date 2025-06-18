@@ -46,14 +46,18 @@ namespace CodeActivitiesLibrary.DataTransformations.OCRActivities
 
                     status = "Text extracted successfully.";
                 }
+
+                ExtractedText.Set(context, extractedText);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Text extracted successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error extracting text with OCR: {ex.Message}";
+                ExtractedText.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error extracting text with OCR: {ex.Message}");
             }
 
-            ExtractedText.Set(context, extractedText);
-            StatusMessage.Set(context, status);
         }
     }
 }

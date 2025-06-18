@@ -21,10 +21,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
             {
                 // Set the clipboard text
                 System.Windows.Forms.Clipboard.SetText(text);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Clipboard text set successfully");
             }
             catch (Exception ex)
             {
-                throw new Exception($"Failed to set clipboard text: {ex.Message}", ex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Failed to set clipboard text: {ex.Message}");
             }
         }
     }

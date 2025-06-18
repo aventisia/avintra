@@ -76,16 +76,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     default:
                         throw new ArgumentOutOfRangeException(nameof(detailType), "Unsupported detail type.");
                 }
-
+                OWebPagePropertyOutput.Set(context, result);
                 status = $"Successfully retrieved '{detailType}' from the current web page.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error retrieving web page details: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            OWebPagePropertyOutput.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 

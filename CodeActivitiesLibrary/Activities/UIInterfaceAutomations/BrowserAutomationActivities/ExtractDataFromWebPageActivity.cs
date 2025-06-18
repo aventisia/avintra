@@ -156,16 +156,19 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     default:
                         throw new ArgumentOutOfRangeException(nameof(extractionMode), "Unsupported extraction mode.");
                 }
+
+                DataFromWebPageOutput.Set(context, outputData);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error extracting data: {ex.Message}";
                 outputData = null;
                 ExcelInstanceOutput.Set(context, false);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
-            DataFromWebPageOutput.Set(context, outputData);
         }
 
         private static DataTable ExtractTable(IWebElement tableElement)

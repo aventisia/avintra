@@ -68,14 +68,17 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
                         status = "Unable to calculate the difference.";
                         throw new InvalidOperationException("Invalid time unit specified.");
                 }
+                DifferenceValue.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
-                status = $"Error subtracting date: {ex.Message}";
+                DifferenceValue.Set(context, 0);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error calculating date time difference: {ex.Message}");
             }
 
-            DifferenceValue.Set(context, result);
-            StatusMessage.Set(context, status);
         }
 
         public enum DateDifferenceUnit

@@ -70,13 +70,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
                         $"Service '{serviceName}' did not reach the desired state within {duration} seconds.");
 
                 status = $"Service '{serviceName}' reached the desired state";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error waiting for service: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private static bool WaitForServiceState(ServiceController serviceController,

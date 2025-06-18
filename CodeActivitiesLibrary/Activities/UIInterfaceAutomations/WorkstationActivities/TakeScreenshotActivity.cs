@@ -76,13 +76,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
                     default:
                         throw new ArgumentOutOfRangeException(nameof(captureMode));
                 }
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error taking screenshot: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private static void CaptureAllScreens(SaveModeEnum saveMode, string imageFilePath, ImageFormatEnum imageFormat)

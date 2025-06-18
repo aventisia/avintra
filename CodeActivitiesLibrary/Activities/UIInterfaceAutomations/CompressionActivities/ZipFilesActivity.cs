@@ -28,7 +28,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
         {
             var sourcePaths = SourcePaths.Get(context);
             var outputZipPath = OutputZipPath.Get(context);
-            var status = "";
 
             try
             {
@@ -43,14 +42,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
                             throw new FileNotFoundException($"Source path not found: {sourcePath}");
                 }
 
-                status = $"Files zipped successfully to '{outputZipPath}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Files zipped successfully to '{outputZipPath}'.");
             }
             catch (Exception ex)
             {
-                status = $"Error zipping files: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error zipping files: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private static void AddDirectoryToZip(ZipArchive zipArchive, string sourceDir, string destinationDir)

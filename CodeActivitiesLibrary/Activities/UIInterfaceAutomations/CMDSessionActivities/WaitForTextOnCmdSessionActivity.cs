@@ -143,16 +143,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
                         }
                     }
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error waiting for text: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            // Set the output argument
-            StatusMessage.Set(context, status);
-
-            Console.WriteLine(status);
         }
     }
 }

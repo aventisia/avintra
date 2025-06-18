@@ -72,13 +72,19 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CompressionActivities
                     status = $"Successfully extracted files from '{archivePath}' to '{destinationFolder}'.";
                 else
                     status = "Failed to extract files from ZIP archive.";
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error extracting ZIP file: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
             finally
             {
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }
         }

@@ -60,13 +60,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
                 serviceController.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
 
                 status = $"Service '{serviceName}' has been resumed successfully.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error resuming service: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            StatusMessage.Set(context, status);
         }
 
         private static bool IsServiceInstalled(string serviceName)

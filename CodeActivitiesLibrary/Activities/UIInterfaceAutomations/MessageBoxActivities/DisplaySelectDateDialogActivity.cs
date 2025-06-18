@@ -53,39 +53,51 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MessageBoxActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var title = context.GetValue(DialogTitle);
-            var message = context.GetValue(DialogMessage);
-            var defaultValue = context.GetValue(DefaultValue);
-            var dialogType = context.GetValue(DialogType);
-            var promptFor = context.GetValue(PromptFor);
-            var keepOnTop = context.GetValue(KeepOnTop);
-
-            var resultDate = "";
-            var result = MessageBox.Show(
-                $"{message}\n\n(Default: {defaultValue})",
-                title,
-                MessageBoxButtons.OKCancel,
-                MessageBoxIcon.Information,
-                MessageBoxDefaultButton.Button1,
-                keepOnTop ? MessageBoxOptions.DefaultDesktopOnly : 0);
-
-            if (result == DialogResult.OK)
+            try
             {
-                resultDate = defaultValue ?? DateTime.Now.ToString(
-                    promptFor == PromptForEnum.DateOnly ? "yyyy-MM-dd" : "yyyy-MM-dd HH:mm");
+                var title = context.GetValue(DialogTitle);
+                var message = context.GetValue(DialogMessage);
+                var defaultValue = context.GetValue(DefaultValue);
+                var dialogType = context.GetValue(DialogType);
+                var promptFor = context.GetValue(PromptFor);
+                var keepOnTop = context.GetValue(KeepOnTop);
 
-                context.SetValue(ButtonPressed, true);
-                context.SetValue(StatusMessage, "Date selected successfully.");
+                var resultDate = "";
+
+                var result = MessageBox.Show(
+                    $"{message}\n\n(Default: {defaultValue})",
+                    title,
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Information,
+                    MessageBoxDefaultButton.Button1,
+                    keepOnTop ? MessageBoxOptions.DefaultDesktopOnly : 0);
+
+                if (result == DialogResult.OK)
+                {
+                    resultDate = defaultValue ?? DateTime.Now.ToString(
+                        promptFor == PromptForEnum.DateOnly ? "yyyy-MM-dd" : "yyyy-MM-dd HH:mm");
+
+                    context.SetValue(ButtonPressed, true);
+                    context.SetValue(SelectedDate, resultDate);
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, "Date selected successfully.");
+                }
+                else
+                {
+                    resultDate = "";
+                    ButtonPressed.Set(context, false);
+                    SelectedDate.Set(context, resultDate);
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, "Dialog was cancelled.");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                resultDate = "";
-                context.SetValue(ButtonPressed, false);
-                context.SetValue(StatusMessage, "Dialog was cancelled.");
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error displaying date dialog: {ex.Message}");
             }
-
-            context.SetValue(SelectedDate, resultDate);
         }
+
     }
 
     public enum DialogTypeEnum

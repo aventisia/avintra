@@ -88,15 +88,19 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
 
                 status = $"Successfully renamed '{oldName}' to '{newName}'.";
                 success = true;
+                Success.Set(context, success);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error renaming file: {ex.Message}";
                 success = false;
+                Success.Set(context, success);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
 
-            StatusMessage.Set(context, status);
-            Success.Set(context, success);
         }
     }
 }

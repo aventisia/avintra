@@ -114,14 +114,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                         }
                     }
                 }
+                WasSelected.Set(context, radioSelected);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error selecting radio button: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            WasSelected.Set(context, radioSelected);
-            StatusMessage.Set(context, status);
         }
     }
 }

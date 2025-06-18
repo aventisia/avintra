@@ -51,16 +51,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
                 }
 
                 status += $" Successfully closed CMD session.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error closing CMD session: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            // Set the StatusMessage output
-            StatusMessage.Set(context, status);
-
-            Console.WriteLine(status);
         }
     }
 

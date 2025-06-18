@@ -83,10 +83,13 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 }
 
                 TrimmedText.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Trimmed text successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error trimming text: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error trimming text: {ex.Message}");
                 TrimmedText.Set(context, null);
             }
 

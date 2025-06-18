@@ -31,7 +31,6 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
             var text = Text.Get(context);
             var algorithm = Algorithm.Get(context);
             var hashedText = "";
-            var status = "";
             try
             {
                 // Hash the text
@@ -39,15 +38,19 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
                 var hashedBytes = HashData(textBytes, algorithm);
                 // Convert the hashed bytes to a hexadecimal string
                 hashedText = ByteArrayToHexString(hashedBytes);
-                status = "Text hashed successfully.";
+
+                HashedText.Set(context, hashedText);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Text hashed successfully.");
+
             }
             catch (Exception ex)
             {
-                status = $"Error hashing text: {ex.Message}";
-            }
+                HashedText.Set(context, hashedText);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error hashing text: {ex.Message}");
 
-            HashedText.Set(context, hashedText);
-            StatusMessage.Set(context, status);
+            }
         }
 
         private byte[] HashData(byte[] data, HashAlgorithmEnum algorithm)

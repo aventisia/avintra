@@ -102,10 +102,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 }
 
                 Console.WriteLine("Text replaced successfully.");
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Text replaced successfully.");
             }
             catch (Exception ex)
             {
-                throw new Exception("Error performing find and replace: " + ex.Message, ex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error performing find and replace: {ex.Message}");
             }
         }
     }

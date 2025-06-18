@@ -72,7 +72,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
 
             try
             {
@@ -111,13 +110,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
                             throw new ArgumentOutOfRangeException(nameof(operation));
                     }
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Email messages processed successfully");
             }
             catch (Exception ex)
             {
-                status = $"Error processing email messages: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error processing email messages: {ex.Message}");
             }
 
-            StatusMessage.Set(context, status);
+
         }
 
         private static ImapClient CreateImapClient(string imapServer, int port, bool enableSSL,

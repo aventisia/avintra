@@ -51,19 +51,19 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 
                 var options = new JsonSerializerOptions();
 
-                if (prettyPrint)
-                {
-                    options.WriteIndented = true;
-                }
+                if (prettyPrint) options.WriteIndented = true;
 
                 var jsonResult = JsonSerializer.Serialize(inputObject, options);
 
                 JsonOutput.Set(context, jsonResult);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Custom object successfully converted to JSON.");
             }
             catch (Exception ex)
             {
-                status = $"Error converting object to JSON: {ex.Message}";
                 JsonOutput.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error converting custom object to JSON: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

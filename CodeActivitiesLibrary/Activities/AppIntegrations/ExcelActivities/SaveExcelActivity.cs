@@ -88,13 +88,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                     default:
                         throw new ArgumentOutOfRangeException(nameof(saveMode));
                 }
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error saving Excel: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

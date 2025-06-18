@@ -69,16 +69,21 @@ namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
                             default:
                                 throw new ArgumentException("Invalid operation type");
                         }
+                        ResultDataTable.Set(context, resultTable);
+                        IsSuccess.Set(context, true);
+                        StatusMessage.Set(context, "SQL statement executed successfully");
                     }
                 }
             }
             catch (Exception ex)
             {
-                status = $"Error executing SQL statement: {ex.Message}";
+                ResultDataTable.Set(context, resultTable);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error executing SQL statement: {ex.Message}");
             }
 
             ResultDataTable.Set(context, resultTable);
-            StatusMessage.Set(context, status);
+            StatusMessage.Set(context, "Execute SQL Statement successfully");
         }
 
         public enum SqlOperationType

@@ -53,14 +53,15 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                 var commonItems = firstList.Intersect(secondList).ToList();
 
                 IntersectionList.Set(context, commonItems);
-                status = $"Found {commonItems.Count} common item(s) between the two lists.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully found {commonItems.Count} common item(s) between the two lists.");
             }
             catch (Exception ex)
             {
-                status = $"Error finding common items: {ex.Message}";
                 IntersectionList.Set(context, new List<object>());
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error finding common list items: {ex.Message}");
             }
-
             StatusMessage.Set(context, status);
         }
     }

@@ -28,13 +28,26 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         #endregion
         protected override void Execute(CodeActivityContext context)
         {
-            var original = OriginalText.Get(context);
-            var newline = NewLine.Get(context);
+            try
+            {
+                var original = OriginalText.Get(context);
+                var newline = NewLine.Get(context);
 
+                var result = string.IsNullOrEmpty(original)
+                    ? newline
+                    : $"{original}{Environment.NewLine}{newline}";
 
-            ResultOutput.Set(context, string.IsNullOrEmpty(original)
-                ? newline
-                : $"{original}{Environment.NewLine}{newline}");
+                ResultOutput.Set(context, result);
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Line appended successfully.");
+            }
+            catch (Exception ex)
+            {
+                ResultOutput.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error appending line to text: {ex.Message}");
+            }
         }
 
     }

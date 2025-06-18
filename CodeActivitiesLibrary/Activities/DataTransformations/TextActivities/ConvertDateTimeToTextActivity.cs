@@ -49,16 +49,17 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
-            var result = "";
-
+            string result = "";
             try
             {
                 // Get inputs
-                var datetimeGivenToConvert = DatetimeToConvert.Get(context); // Already a DateTime
+                var datetimeGivenToConvert = DatetimeToConvert.Get(context);
                 var formatToUse = FormatToUse.Get(context);
                 var standardFormat = StandardFormat.Get(context);
                 var customFormat = CustomFormat.Get(context);
+
+                if (datetimeGivenToConvert == null)
+                    throw new ArgumentException("Datetime to Convert cannot be null.");
 
                 DateTime datetimeToConvert;
 
@@ -69,18 +70,14 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                             ? parsedDateTime
                             : throw new ArgumentException("Invalid datetime string format.");
                         break;
-                    case DateTime dateTime:
-                        datetimeToConvert = dateTime;
+                    case DateTime dt:
+                        datetimeToConvert = dt;
                         break;
                     default:
                         throw new ArgumentException("Invalid datetime string format or datetime object.");
                 }
 
-                // Validate inputs
-                if (datetimeGivenToConvert == null)
-                    throw new ArgumentException("Datetime to Convert cannot be null.");
-
-                // Format based on selected option
+                // Format
                 switch (formatToUse)
                 {
                     case FormatOptionEnum.Standard:
@@ -93,18 +90,18 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                         throw new ArgumentOutOfRangeException(nameof(formatToUse), formatToUse,
                             "Invalid format option.");
                 }
+
+                // Set success outputs
+                FormattedDateTime.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Datetime converted successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error converting datetime: {ex.Message}";
+                FormattedDateTime.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error converting datetime: {ex.Message}");
             }
-
-            // Set outputs
-            FormattedDateTime.Set(context, result);
-            StatusMessage.Set(context, status);
-
-            Console.WriteLine($"Status: {status}");
-            Console.WriteLine($"Formatted DateTime: {result}");
         }
 
         private static string FormatStandard(DateTime dateTime, StandardFormatOptionEnum format)

@@ -104,10 +104,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
                 // Set the output argument
                 RenamedFiles.Set(context, renamedFiles);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully renamed {renamedFiles.Count} file(s).");
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error renaming files: {ex.Message}");
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error renaming files: {ex.Message}");
             }
         }
 

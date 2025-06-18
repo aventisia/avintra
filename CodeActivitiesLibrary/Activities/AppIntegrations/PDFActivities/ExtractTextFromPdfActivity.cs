@@ -45,16 +45,21 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
 
                     resultText = textBuilder.ToString();
                     status = $"Successfully extracted text from '{sourcePdfPath}'.";
+
+
+                    ExtractedText.Set(context, resultText);
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, status);
                 }
             }
             catch (Exception ex)
             {
                 resultText = "";
                 status = $"Error extracting text from PDF: {ex.Message}";
+                ExtractedText.Set(context, resultText);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            ExtractedText.Set(context, resultText);
-            StatusMessage.Set(context, status);
         }
     }
 }

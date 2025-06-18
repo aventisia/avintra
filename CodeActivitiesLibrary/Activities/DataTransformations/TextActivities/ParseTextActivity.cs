@@ -130,11 +130,14 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 }
 
                 ParsedMatches.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Parsing text succesfully");
             }
             catch (Exception ex)
             {
-                status = $"Error parsing text: {ex.Message}";
                 ParsedMatches.Set(context, Array.Empty<string>());
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error parsing text: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

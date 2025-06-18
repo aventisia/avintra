@@ -53,15 +53,19 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
                 Directory.Move(sourceFolderPath, destinationFullPath);
 
                 // Set the output
-                context.SetValue(MovedFolderPath, destinationFullPath);
+                MovedFolderPath.Set(context, destinationFullPath);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Folder moved successfully to: {destinationFullPath}");
             }
             catch (IOException ex)
             {
-                throw new IOException($"Failed to move the folder: {ex.Message}", ex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, ($"Failed to move the folder: {ex.Message}"));
             }
             catch (UnauthorizedAccessException ex)
             {
-                throw new UnauthorizedAccessException($"Access denied to move the folder: {ex.Message}", ex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Access denied to move the folder: {ex.Message}");
             }
         }
     }

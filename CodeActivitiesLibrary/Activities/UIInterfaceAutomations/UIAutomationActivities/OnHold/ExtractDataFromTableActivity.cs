@@ -35,15 +35,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
                 // Simulate extracting table data using a hypothetical API
                 extractedTableData = "Table Data: Row1, Row2, Row3";
+
+                ExtractedTableData.Set(context, extractedTableData);
                 StatusMessage.Set(context, "Table data extracted successfully.");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
                 status = $"Error extracting table data: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            ExtractedTableData.Set(context, extractedTableData);
-            StatusMessage.Set(context, status);
         }
     }
 }

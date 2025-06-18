@@ -88,14 +88,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                         status = "Could not find the drop-down list.";
                     }
                 }
+                SelectedItem.Set(context, dropdownContent);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error while reading selected item from drop-down list: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            SelectedItem.Set(context, dropdownContent);
-            StatusMessage.Set(context, status);
         }
     }
 }

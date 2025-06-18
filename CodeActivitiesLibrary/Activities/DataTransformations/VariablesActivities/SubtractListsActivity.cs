@@ -54,15 +54,18 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 
                 // Set outputs conditionally
                 ListDifferenceOutput.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Subtract Lists successfully.");
 
                 status += $" Subtracted {secondList.Count() - result.Count()} item(s) from the list.";
             }
             catch (Exception ex)
             {
-                status = $"Error subtracting lists: {ex.Message}";
+                status = $"Error For the subtracting lists: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error subtracting lists: {ex.Message}");
             }
 
-            StatusMessage.Set(context, status);
         }
     }
 }

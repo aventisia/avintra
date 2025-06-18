@@ -42,14 +42,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
                 actualPath = connection.GetWorkingDirectory();
                 success = true;
                 status = $"Successfully changed working directory to: {actualPath}";
+
+                ActualDirectoryPath.Set(context, actualPath);
+                Success.Set(context, success);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error deleting directory: {ex.Message}";
+                ActualDirectoryPath.Set(context, actualPath);
+                Success.Set(context, success);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
-
-            ActualDirectoryPath.Set(context, actualPath);
-            Success.Set(context, success);
         }
     }
 }

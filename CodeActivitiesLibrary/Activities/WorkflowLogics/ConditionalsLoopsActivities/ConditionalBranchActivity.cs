@@ -59,6 +59,8 @@ namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
             }
 
             ConditionResult.Set(context, result);
+            IsSuccess.Set(context, result);
+            StatusMessage.Set(context, result ? "Condition evaluated to true." : "Condition evaluated to false.");
         }
 
         private bool EvaluateCondition(ConditionObjectGroup condition)

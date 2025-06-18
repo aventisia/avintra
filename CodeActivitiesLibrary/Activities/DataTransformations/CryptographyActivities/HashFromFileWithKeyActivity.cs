@@ -38,7 +38,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
             var key = Key.Get(context);
             var algorithm = Algorithm.Get(context);
             var hashedContent = "";
-            var status = "";
+
             try
             {
                 // Read the file
@@ -50,15 +50,18 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
                 var hashedBytes = HashData(contentBytes, algorithm);
                 // Convert the hashed bytes to a hexadecimal string
                 hashedContent = ByteArrayToHexString(hashedBytes);
-                status = "File hashed successfully.";
+
+                HashedContent.Set(context, hashedContent);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "File hashed successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error hashing file with key: {ex.Message}";
-            }
+                HashedContent.Set(context, hashedContent);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error hashing file with key: {ex.Message}");
 
-            HashedContent.Set(context, hashedContent);
-            StatusMessage.Set(context, status);
+            }
         }
 
         private byte[] HashData(byte[] data, HashAlgorithmEnum algorithm)

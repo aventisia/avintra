@@ -44,13 +44,25 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
                     DateTimeStyles.None,
                     out outputDate
                 );
+                IsValid.Set(context, isValid);
+
+                if (isValid)
+                {
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, "Date/time format is valid.");
+                }
+                else
+                {
+                    IsSuccess.Set(context, false);
+                    StatusMessage.Set(context, "Date/time format is invalid.");
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error during format validation: {ex.Message}");
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error during format validation: {ex.Message}");
+                IsValid.Set(context, false);
             }
-
-            IsValid.Set(context, isValid);
         }
     }
 }

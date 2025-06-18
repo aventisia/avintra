@@ -15,22 +15,23 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
     {
 
         [DisplayName("Position X")]
+        [Description("Specifies the X coordinate on the screen where the mouse should be moved.")]
         public InArgument<int> PositionX { get; set; }
 
-
         [DisplayName("Position Y")]
+        [Description("Specifies the Y coordinate on the screen where the mouse should be moved.")]
         public InArgument<int> PositionY { get; set; }
 
-
         [DisplayName("Relative To")]
+        [Description("Determines the reference point for the mouse movement. Can be relative to the screen or a specific window.")]
         public InArgument<RelativeToEnum> RelativeTo { get; set; }
 
-
         [DisplayName("Move Mouse From Previous Position")]
+        [Description("Specifies whether to move the mouse from its current location using an animated effect, and sets the speed of the animation.")]
         public InArgument<AnimationSpeedEnum> MoveMouseFromPreviousPosition { get; set; }
 
-
         [DisplayName("Current Cursor Position")]
+        [Description("Returns the cursor's final position on the screen after the mouse operation completes.")]
         public OutArgument<Point> CurrentCursorPosition { get; set; }
 
         protected override void Execute(CodeActivityContext context)
@@ -48,10 +49,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
 
                 var newPos = GetCurrentCursorPosition();
                 context.SetValue(CurrentCursorPosition, new Point(newPos.X, newPos.Y));
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Mouse moved successfully to position X: {newPos.X}, Y: {newPos.Y}.");
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Failed to move the mouse.", ex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Failed to move the mouse: {ex.Message}");
             }
         }
 

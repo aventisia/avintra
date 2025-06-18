@@ -59,7 +59,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
             var tables = new List<DataTable>();
 
             try
@@ -233,14 +232,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
                 }
 
                 ExtractedTables.Set(context, tables);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Extract Tables From PDF (PDFPig) succesfully");
             }
             catch (Exception ex)
             {
-                status = "Failed to extract tables: " + ex.Message;
                 ExtractedTables.Set(context, new List<DataTable>());
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Failed to extract tables: " + ex.Message);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 

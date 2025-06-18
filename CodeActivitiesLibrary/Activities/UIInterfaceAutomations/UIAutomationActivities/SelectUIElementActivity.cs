@@ -60,14 +60,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                 {
                     status = "Failed to select the element within the specified time.";
                 }
+                WasSelected.Set(context, elementSelected);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            WasSelected.Set(context, elementSelected);
-            StatusMessage.Set(context, status);
         }
     }
 }

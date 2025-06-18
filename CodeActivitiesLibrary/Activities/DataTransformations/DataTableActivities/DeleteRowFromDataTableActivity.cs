@@ -38,8 +38,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
-
             try
             {
                 var dataTable = DataTable.Get(context);
@@ -57,14 +55,15 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
                 // Set outputs
                 ModifiedDataTable.Set(context, dataTable);
-                status = $"Successfully deleted row at index {rowIndex}.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully deleted row at index {rowIndex}.");
             }
             catch (Exception ex)
             {
-                status = $"Error deleting row: {ex.Message}";
+                ModifiedDataTable.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error deleting row: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

@@ -23,22 +23,41 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FolderActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var folderPath = FolderPath.Get(context);
-            var deleteSubfolders = DeleteSubfolders.Get(context);
+            try
+            {
+                var folderPath = FolderPath.Get(context);
+                var deleteSubfolders = DeleteSubfolders.Get(context);
 
-            if (string.IsNullOrWhiteSpace(folderPath))
-                throw new ArgumentException("Folder path cannot be null or empty.", nameof(folderPath));
+                if (string.IsNullOrWhiteSpace(folderPath))
+                    throw new ArgumentException("Folder path cannot be null or empty.", nameof(folderPath));
 
-            if (!Directory.Exists(folderPath))
-                throw new DirectoryNotFoundException($"The specified folder does not exist: {folderPath}");
+                if (!Directory.Exists(folderPath))
+                    throw new DirectoryNotFoundException($"The specified folder does not exist: {folderPath}");
 
-            // Delete all files
-            foreach (var file in Directory.GetFiles(folderPath)) File.Delete(file);
+                // Delete all files
+                foreach (var file in Directory.GetFiles(folderPath))
+                {
+                    File.Delete(file);
+                }
 
-            // Delete subfolders if specified
-            if (deleteSubfolders)
-                foreach (var dir in Directory.GetDirectories(folderPath))
-                    Directory.Delete(dir, true);
+                // Delete subfolders if specified
+                if (deleteSubfolders)
+                {
+                    foreach (var dir in Directory.GetDirectories(folderPath))
+                    {
+                        Directory.Delete(dir, true); // true enables recursive delete
+                    }
+                }
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Folder contents deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error deleting folder contents: {ex.Message}");
+            }
         }
+
     }
 }

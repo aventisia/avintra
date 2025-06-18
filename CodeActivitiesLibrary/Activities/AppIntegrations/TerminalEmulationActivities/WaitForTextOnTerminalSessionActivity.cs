@@ -19,9 +19,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [Category("Output"), Description("Returns true if the specified text was found, otherwise false.")]
         public OutArgument<bool> Result { get; set; }
 
-
-
-
         protected override void Execute(CodeActivityContext context)
         {
             var sessionId = SessionId.Get(context);
@@ -34,15 +31,19 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
                 // Simulate waiting for text (actual implementation would use a terminal library like PoshConsole or similar)
                 result = true; // Simulated success
                 status = $"Simulated finding text '{textToWaitFor}' in terminal session with ID: {sessionId}";
+                Result.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 result = false;
                 status = $"Error waiting for text in terminal session: {ex.Message}";
-            }
 
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
+                Result.Set(context, result);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
+            }
         }
     }
 }

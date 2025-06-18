@@ -59,20 +59,19 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
                     throw new System.ComponentModel.Win32Exception(errorCode, "Failed to lock workstation");
                 }
 
-                status = $"Workstation locked successfully using {methodUsed}";
+                Success.Set(context, success);
+                MethodUsed.Set(context, methodUsed);
+                StatusMessage.Set(context, $"Workstation locked successfully using {methodUsed}");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
-                status = $"Error locking workstation: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error locking workstation: {ex.Message}");
                 Success.Set(context, false);
                 MethodUsed.Set(context, "Failed");
-                StatusMessage.Set(context, status);
                 return;
             }
-
-            Success.Set(context, success);
-            MethodUsed.Set(context, methodUsed);
-            StatusMessage.Set(context, status);
         }
 
         private bool TryAlternativeLockMethods(out string methodUsed)

@@ -47,7 +47,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
             try
             {
                 // Retrieve input arguments
@@ -83,15 +82,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
                 EnvironmentVariableValue.Set(context, value);
 
                 // Set status message
-                StatusMessages.Set(context, status);
+                StatusMessages.Set(context, "Retrieving environment variable successfully");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
-                status = $"Error retrieving environment variable: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error retrieving environment variable: {ex.Message}");
             }
-
-            // Set status message (if needed)
-            // Note: StatusMessage is not explicitly requested in the UI, but can be added if required
         }
 
         // Helper method to convert EnvVarNameEnum to string

@@ -40,20 +40,16 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         public InArgument<bool> AllowDuplicates { get; set; }
 
 
-
         [DisplayName("Random Number Output")]
         [Description("The newly generated random number (for single mode).")]
         [RenderIfCondition(nameof(GenerateMultipleNumbers), false)]
         public OutArgument<int> RandomNumber { get; set; }
 
 
-
         [DisplayName("Random Numbers List Output")]
         [Description("The newly generated list of random numbers (for multi-mode).")]
         [RenderIfCondition(nameof(GenerateMultipleNumbers), true)]
         public OutArgument<List<int>> RandomNumbers { get; set; }
-
-
 
 
         protected override void Execute(CodeActivityContext context)
@@ -100,15 +96,16 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                         throw new InvalidOperationException("No valid random numbers could be generated.");
 
                     RandomNumbers.Set(context, new List<int>(results));
-                    status += $" Generated {results.Count} unique random number(s): {string.Join(", ", results)}.";
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, $"Successfully generated {results.Count} random number(s): {string.Join(", ", results)}.");
                 }
             }
             catch (Exception ex)
             {
-                status = $"Error generating random number: {ex.Message}";
+                RandomNumbers.Set(context, 0);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error generating random number(s): {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

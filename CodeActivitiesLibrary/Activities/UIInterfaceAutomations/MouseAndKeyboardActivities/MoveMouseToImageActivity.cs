@@ -44,58 +44,48 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
         [DefaultValue(MouseMovementStyleEnum.Instant)]
         public InArgument<MouseMovementStyleEnum> MouseMovementStyle { get; set; }
 
-
         [DisplayName("Occurrence")]
         [Description("Which occurrence of the image to find (1-based index).")]
         [DefaultValue(1)]
         public InArgument<int> Occurrence { get; set; }
 
-
         [DisplayName("Send a Click After Moving Mouse")]
         [Description("If true, sends a click after moving the mouse.")]
         public InArgument<bool> SendClickAfterMoving { get; set; }
-
 
         [DisplayName("Click Type")]
         [Description("The type of click to perform after moving the mouse.")]
         [DefaultValue(ClickTypeEnum.LeftClick)]
         public InArgument<ClickTypeEnum> ClickType { get; set; }
 
-
         [DisplayName("Wait for Image to Appear")]
         [Description("If true, waits for the image to appear before moving the mouse.")]
         public InArgument<bool> WaitForImage { get; set; }
-
 
         [DisplayName("Fail Timeout")]
         [Description("Maximum time in seconds to wait for the image to appear.")]
         [DefaultValue(5)]
         public InArgument<int> FailTimeout { get; set; }
 
-
         [DisplayName("Offset X")]
         [Description("Horizontal offset from the center of the image.")]
         [DefaultValue(0)]
         public InArgument<int> OffsetX { get; set; }
-
 
         [DisplayName("Offset Y")]
         [Description("Vertical offset from the center of the image.")]
         [DefaultValue(0)]
         public InArgument<int> OffsetY { get; set; }
 
-
         [DisplayName("Tolerance")]
         [Description("Percentage tolerance for image matching (0-100).")]
         [DefaultValue(10)]
         public InArgument<int> Tolerance { get; set; }
 
-
         [DisplayName("Search Mode")]
         [Description("Specifies whether to search the entire screen or a specified region.")]
         [DefaultValue(SearchModeEnum.EntireScreen)]
         public InArgument<SearchModeEnum> SearchMode { get; set; }
-
 
         [DisplayName("Search Subregion")]
         [Description("Coordinates of the subregion to search (X1, Y1, X2, Y2).")]
@@ -110,7 +100,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
         [DisplayName("Is Found")]
         [Description("Returns true if the image was found and mouse was moved.")]
         public OutArgument<bool> IsFound { get; set; }
-
 
         [DisplayName("Found Position")]
         [Description("The position where the image was found (X,Y).")]
@@ -205,15 +194,19 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
                         status = $"Image not found (best similarity: {similarity:P0})";
                     }
                 }
+                IsFound.Set(context, isFound);
+                FoundPosition.Set(context, foundPosition);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
+                IsFound.Set(context, null);
+                FoundPosition.Set(context, null);
             }
-
-            IsFound.Set(context, isFound);
-            FoundPosition.Set(context, foundPosition);
-            StatusMessage.Set(context, status);
         }
 
         private static Bitmap CaptureFullScreen()

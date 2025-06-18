@@ -16,8 +16,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
         [Description("The path(s) of the file(s) to delete. Supports wildcards like *.txt.")]
         public InArgument<string> FilesToDelete { get; set; }
 
-
-
         protected override void Execute(CodeActivityContext context)
         {
             var filesToDelete = FilesToDelete.Get(context);
@@ -56,9 +54,12 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                 {
                     StatusMessage.Set(context, "No files were deleted.");
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Deleting files");
             }
             catch (Exception ex)
             {
+                IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error deleting files: {ex.Message}");
             }
         }

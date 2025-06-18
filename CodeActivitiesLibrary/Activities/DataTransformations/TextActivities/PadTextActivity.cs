@@ -84,11 +84,14 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 }
 
                 PaddedText.Set(context, paddedText);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Text padded successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error padding text: {ex.Message}";
                 PaddedText.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error padding text: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

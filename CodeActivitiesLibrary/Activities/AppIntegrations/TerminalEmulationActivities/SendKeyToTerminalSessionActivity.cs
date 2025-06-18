@@ -15,9 +15,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [RequiredArgument, Category("Input"), Description("The key to send (e.g., 'Enter', 'Tab').")]
         public InArgument<string> Key { get; set; }
 
-
-
-
         protected override void Execute(CodeActivityContext context)
         {
             var sessionId = SessionId.Get(context);
@@ -28,13 +25,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
             {
                 // Simulate sending a key to the terminal session (actual implementation would use a terminal library like PoshConsole or similar)
                 status = $"Simulated sending key '{key}' to terminal session with ID: {sessionId}";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error sending key to terminal session: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 

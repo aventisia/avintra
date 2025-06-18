@@ -43,14 +43,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
                 }
 
                 CommandOutput.Set(context, output);
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Command executed successfully.");
             }
             catch (Exception ex)
             {
                 status = $"Error executing command: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

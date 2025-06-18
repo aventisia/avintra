@@ -66,15 +66,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 var nextEmptyCell = (Excel.Range)lastCell.End[Excel.XlDirection.xlUp].Offset[1, 0];
 
                 result = nextEmptyCell.Row;
+                FirstFreeRow.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error retrieving first free row: {ex.Message}";
                 result = 0;
+                FirstFreeRow.Set(context, result);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            FirstFreeRow.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 }

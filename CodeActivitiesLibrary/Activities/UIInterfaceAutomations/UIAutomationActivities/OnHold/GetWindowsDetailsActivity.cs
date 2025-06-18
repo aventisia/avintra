@@ -35,15 +35,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
                 // Simulate getting window details using a hypothetical API
                 windowDetails = $"Window Title: {windowHandle}";
+                WindowDetails.Set(context, windowDetails);
                 StatusMessage.Set(context, "Window details retrieved successfully.");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
                 status = $"Error retrieving window details: {ex.Message}";
+                StatusMessage.Set(context, status);
+                IsSuccess.Set(context, false);
             }
-
-            WindowDetails.Set(context, windowDetails);
-            StatusMessage.Set(context, status);
         }
     }
 }

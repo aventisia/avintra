@@ -85,15 +85,20 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
                         success = PrintDefault(documentPath, printerName, copies, ref status);
                         break;
                 }
+                Success.Set(context, success);
+                JobId.Set(context, jobId);
+                IsSuccess.Set(context, success);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error printing document: {ex.Message}";
+                Success.Set(context, null);
+                JobId.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            Success.Set(context, success);
-            JobId.Set(context, jobId);
-            StatusMessage.Set(context, status);
         }
 
         private bool PrintViaProcess(string documentPath, string printerName, int copies, ref string status)

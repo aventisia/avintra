@@ -20,9 +20,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [Category("Output"), Description("Returns the list of occurrences of the searched text.")]
         public OutArgument<IEnumerable<string>> Result { get; set; }
 
-
-
-
         protected override void Execute(CodeActivityContext context)
         {
             var sessionId = SessionId.Get(context);
@@ -35,15 +32,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
                 // Simulate searching for text (actual implementation would use a terminal library like PoshConsole or similar)
                 result = new List<string> { "Simulated occurrence 1", "Simulated occurrence 2" }; // Simulated results
                 status = $"Simulated search for text '{textToSearchFor}' in terminal session with ID: {sessionId}";
+                Result.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 result = null;
                 status = $"Error searching for text in terminal session: {ex.Message}";
+                Result.Set(context, result);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 }

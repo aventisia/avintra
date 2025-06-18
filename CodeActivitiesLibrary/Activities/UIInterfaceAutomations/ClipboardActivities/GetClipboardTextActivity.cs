@@ -35,12 +35,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ClipboardActivities
 
                 // Set outputs
                 ClipboardTextOutput.Set(context, clipboardText);
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error retrieving clipboard text: {ex.Message}";
+                IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
+
             }
         }
 

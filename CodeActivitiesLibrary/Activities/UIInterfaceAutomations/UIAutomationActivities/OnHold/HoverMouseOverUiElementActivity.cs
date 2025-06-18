@@ -40,13 +40,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
                 // Simulate hovering over UI element using a hypothetical API
                 StatusMessage.Set(context, "Mouse hovered over UI element successfully.");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
                 status = $"Error hovering over UI element: {ex.Message}";
+                StatusMessage.Set(context, status);
+                IsSuccess.Set(context, false);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

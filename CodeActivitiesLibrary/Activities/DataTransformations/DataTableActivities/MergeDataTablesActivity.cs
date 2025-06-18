@@ -75,12 +75,15 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 foreach (DataRow row in secondDataTable.Rows) mergedDataTable.ImportRow(row);
 
                 // Set outputs
-                context.SetValue(MergedDataTable, mergedDataTable);
-                context.SetValue(StatusMessage, "Successfully merged the data tables.");
+                MergedDataTable.Set(context, mergedDataTable);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Successfully merged the data tables.");
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to merge data tables: {ex.Message}", ex);
+                MergedDataTable.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Failed to merge data tables: {ex.Message}");
             }
         }
 

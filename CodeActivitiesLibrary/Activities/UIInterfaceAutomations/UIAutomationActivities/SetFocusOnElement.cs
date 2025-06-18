@@ -33,15 +33,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
             try
             {
                 element.SetFocus();
+
+                Result.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, statusMsg);
             }
             catch (Exception ex)
             {
                 result = false;
                 statusMsg = $"Could not set focus: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, statusMsg);
             }
-
-            Result.Set(context, result);
-            StatusMessage.Set(context, statusMsg);
         }
     }
 }

@@ -40,8 +40,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
-
             try
             {
                 var dataTable = DataTable.Get(context);
@@ -100,14 +98,15 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                     if (isEmpty) dataTable.Rows.RemoveAt(i);
                 }
 
-                status = $"Successfully deleted {dataTable.Rows.Count} empty rows.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully deleted empty rows.");
             }
             catch (Exception ex)
             {
-                status = $"Error deleting empty rows: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error deleting empty rows: {ex.Message}");
             }
 
-            StatusMessage.Set(context, status);
         }
 
         private static bool IsCellEmpty(object cellValue)

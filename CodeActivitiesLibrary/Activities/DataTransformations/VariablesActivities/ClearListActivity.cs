@@ -20,19 +20,11 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         public InArgument<IList<object>> ListToClear { get; set; }
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
-
-
-
-        // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            string status = "Success";
+            var status = "Success";
 
             try
             {
@@ -43,11 +35,13 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 
                 // Clear the list
                 list.Clear();
-                status = $"Successfully cleared the list. Count is now {list.Count}.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"List cleared successfully. Count is now {list.Count}.");
             }
             catch (Exception ex)
             {
-                status = $"Error clearing list: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error clearing the list: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

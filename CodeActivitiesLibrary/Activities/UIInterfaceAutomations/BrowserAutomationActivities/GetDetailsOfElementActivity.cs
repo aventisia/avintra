@@ -127,17 +127,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                         attributeValue = element.GetAttribute(attributeName);
                         break;
                 }
-
+                AttributeValueOutput.Set(context, attributeValue);
                 status = $"Successfully retrieved attribute '{attributeName}' from element '{uiElement}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error retrieving element details: {ex.Message}";
                 attributeValue = null;
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            AttributeValueOutput.Set(context, attributeValue);
-            StatusMessage.Set(context, status);
         }
     }
 }

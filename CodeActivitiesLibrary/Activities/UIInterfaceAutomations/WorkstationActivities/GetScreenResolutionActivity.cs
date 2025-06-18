@@ -40,7 +40,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
         {
             var selection = Selection.Get(context);
             var monitorIndex = MonitorIndex.Get(context);
-            var status = string.Empty;
 
             try
             {
@@ -88,15 +87,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
                 }
 
                 ScreenDetails.Set(context, results);
-                status = $"Successfully retrieved {results.Length} screen configuration(s)";
+                StatusMessage.Set(context, $"Successfully retrieved {results.Length} screen configuration(s)");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
-                status = $"Error getting screen resolution: {ex.Message}";
+                StatusMessage.Set(context, $"Error getting screen resolution: {ex.Message}");
                 ScreenDetails.Set(context, null);
+                IsSuccess.Set(context, false);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private ScreenResolution GetScreenInfo(Screen screen)

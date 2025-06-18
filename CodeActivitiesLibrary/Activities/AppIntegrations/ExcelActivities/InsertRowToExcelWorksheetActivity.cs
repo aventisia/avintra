@@ -34,7 +34,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
 
             try
             {
@@ -55,14 +54,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 // Insert new row at specified index (inserts above the given row)
                 (ws.Rows[rowIndex] as Excel.Range)?.Insert();
 
-                status = $"Successfully inserted new row above row {rowIndex}.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully inserted new row above row {rowIndex}.");
             }
             catch (Exception ex)
             {
-                status = $"Error inserting row: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error inserting row: {ex.Message}");
             }
 
-            StatusMessage.Set(context, status);
         }
     }
 }

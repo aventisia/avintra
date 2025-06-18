@@ -40,7 +40,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         {
             var sheetName = "";
             var sheetIndex = 0;
-            var status = "Success";
 
             try
             {
@@ -56,17 +55,22 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                 sheetName = ws.Name;
                 sheetIndex = ws.Index;
+
+
+                SheetName.Set(context, sheetName);
+                SheetIndex.Set(context, sheetIndex);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Retrieved active excel sheet successfully");
             }
             catch (Exception ex)
             {
-                status = $"Error retrieving active worksheet: {ex.Message}";
                 sheetName = "";
                 sheetIndex = 0;
+                SheetName.Set(context, sheetName);
+                SheetIndex.Set(context, sheetIndex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error retrieving active worksheet: {ex.Message}");
             }
-
-            SheetName.Set(context, sheetName);
-            SheetIndex.Set(context, sheetIndex);
-            StatusMessage.Set(context, status);
         }
     }
 }

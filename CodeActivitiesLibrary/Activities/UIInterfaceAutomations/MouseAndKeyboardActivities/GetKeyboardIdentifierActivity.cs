@@ -46,15 +46,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
                         break;
                     }
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error retrieving keyboard layout ID: {ex.Message}";
+                IsSuccess.Set(context, false);
+                KeyboardLayoutId.Set(context, null);
+                StatusMessage.Set(context, status);
             }
-
-            // Log or handle the status as needed
-            Console.WriteLine(status);
-            StatusMessage.Set(context, status);
         }
     }
 }

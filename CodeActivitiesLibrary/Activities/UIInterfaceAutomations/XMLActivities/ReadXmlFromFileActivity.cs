@@ -35,7 +35,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
             var encodingType = EncodingType.Get(context);
 
             var success = false;
-            var status = "";
 
             try
             {
@@ -54,15 +53,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
                 xmlDoc.LoadXml(xmlContent);
 
                 success = true;
+                XmlDocument.Set(context, success);
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "XML file read and parsed successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error reading XML file: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error reading XML file: {ex.Message}");
             }
-
-            XmlDocument.Set(context, success);
-            StatusMessage.Set(context, status);
         }
 
         private static Encoding GetEncoding(XmlFileEncodingEnum encodingType)

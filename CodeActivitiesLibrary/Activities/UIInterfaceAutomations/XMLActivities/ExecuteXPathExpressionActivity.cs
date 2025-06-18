@@ -88,12 +88,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
                         results = nodeList;
                     }
                 }
-
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "XPath executed successfully.");
             }
             catch (Exception ex)
             {
                 status = $"Error executing XPath: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
             // Set outputs based on GetFirstValueOnly

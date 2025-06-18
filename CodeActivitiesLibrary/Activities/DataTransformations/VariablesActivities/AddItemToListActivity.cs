@@ -26,7 +26,6 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         public InArgument<string> ItemToAdd { get; set; }
 
 
-
         [DisplayName("Custom Separator")]
         [Description(
             "Optional. If provided, splits the input using this separator instead of default ones (',', ';', '|').")]
@@ -76,10 +75,14 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                 targetList.AddRange(items.Select(item => trimValues ? item.Trim() : item).Cast<object>());
 
                 ModifiedList.Set(context, targetList);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Item(s) added to the list successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error adding item(s) to list: {ex.Message}";
+                ModifiedList.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error adding item(s) to list: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

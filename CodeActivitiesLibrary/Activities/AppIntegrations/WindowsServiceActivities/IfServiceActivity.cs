@@ -84,13 +84,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
                     default:
                         throw new ArgumentException($"Unsupported ifService: {ifService}");
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error checking service status: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private static bool IsServiceInstalled(string serviceName)

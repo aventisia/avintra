@@ -19,25 +19,27 @@ namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
         protected override void Execute(CodeActivityContext context)
         {
             var connection = SqlConnection.Get(context);
-            var status = "";
+
             try
             {
                 if (connection != null && connection.State == ConnectionState.Open)
                 {
                     connection.Close();
-                    status = "Database connection closed successfully.";
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, "Database connection closed successfully.");
                 }
                 else
                 {
-                    status = "Connection was already closed or null.";
+                    IsSuccess.Set(context, false);
+                    StatusMessage.Set(context, "Connection was already closed or is null.");
                 }
             }
             catch (Exception ex)
             {
-                status = $"Error closing database connection: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error closing database connection: {ex.Message}");
             }
 
-            StatusMessage.Set(context, status);
         }
     }
 }

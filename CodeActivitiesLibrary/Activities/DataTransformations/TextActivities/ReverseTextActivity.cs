@@ -47,11 +47,15 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 var reversed = new string(charArray);
 
                 ReversedText.Set(context, reversed);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Reversed text successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error reversing text: {ex.Message}";
                 ReversedText.Set(context, string.Empty);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error reversing text: {ex.Message}");
+
             }
 
             StatusMessage.Set(context, status);

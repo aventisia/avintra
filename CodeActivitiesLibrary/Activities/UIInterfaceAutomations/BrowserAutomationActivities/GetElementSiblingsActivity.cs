@@ -113,16 +113,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 siblings = new ReadOnlyCollection<IWebElement>(
                     childNodes.Where(e => e != baseElement).ToList());
 
+                SiblingElements.Set(context, siblings);
                 status = $"Found {siblings.Count} sibling(s) of '{searchKeywords}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error retrieving sibling elements: {ex.Message}";
                 siblings = null;
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            SiblingElements.Set(context, siblings);
-            StatusMessage.Set(context, status);
         }
     }
 }

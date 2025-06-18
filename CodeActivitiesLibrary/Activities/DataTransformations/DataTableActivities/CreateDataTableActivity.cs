@@ -109,16 +109,19 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                         for (var i = 0; i < emptyRows; i++)
                             resultTable.Rows.Add(resultTable.NewRow());
 
-                    status += " Created a new empty data table.";
+                    status += " Create a new empty data table.";
                 }
+
+                NewDataTable.Set(context, resultTable);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Created a new empty data table");
             }
             catch (Exception ex)
             {
-                status = $"Error creating data table: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error creating data table: {ex.Message}");
             }
 
-            NewDataTable.Set(context, resultTable);
-            StatusMessage.Set(context, status);
         }
     }
 }

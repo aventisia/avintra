@@ -23,13 +23,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
             {
                 connection?.Dispose();
                 status = "FTP connection closed successfully.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error closing FTP connection: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

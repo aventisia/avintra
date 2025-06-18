@@ -112,11 +112,14 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 }
 
                 ReplacedText.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Replaced text successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error replacing text: {ex.Message}";
                 ReplacedText.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error replacing text: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

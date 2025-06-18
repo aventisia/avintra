@@ -49,7 +49,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
 
             try
             {
@@ -82,13 +81,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
                             throw new InvalidOperationException("Unsupported action type.");
                     }
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Processed Email Messages in Outlook succesfully");
+
             }
             catch (Exception ex)
             {
-                status = $"Error processing emails: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error processing emails: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
 
         // Helper method to move an email to a specified folder

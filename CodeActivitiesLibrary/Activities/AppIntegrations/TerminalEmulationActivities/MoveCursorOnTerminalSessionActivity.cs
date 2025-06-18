@@ -19,9 +19,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [RequiredArgument, Category("Input"), Description("The Y-coordinate of the target position.")]
         public InArgument<int> Y { get; set; }
 
-
-
-
         protected override void Execute(CodeActivityContext context)
         {
             var sessionId = SessionId.Get(context);
@@ -33,13 +30,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
             {
                 // Simulate moving the cursor (actual implementation would use a terminal library like PoshConsole or similar)
                 status = $"Simulated cursor movement to position ({x}, {y}) in terminal session with ID: {sessionId}";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error moving cursor in terminal session: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

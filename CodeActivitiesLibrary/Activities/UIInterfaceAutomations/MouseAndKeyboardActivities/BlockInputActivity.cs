@@ -29,20 +29,23 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
                     // Simulate blocking input (actual implementation would use Windows API)
 
                     var status = "User input blocked successfully.";
-                    context.SetValue(StatusMessage, status);
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, status);
                 }
                 else
                 {
                     // If not blocking, return a neutral status message.
                     var status = "User input is not blocked.";
-                    context.SetValue(StatusMessage, status);
+                    IsSuccess.Set(context, false);
+                    StatusMessage.Set(context, status);
                 }
             }
             catch (Exception ex)
             {
                 // Handle any errors during execution
                 var status = $"Error blocking input: {ex.Message}";
-                context.SetValue(StatusMessage, status);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
         }
     }

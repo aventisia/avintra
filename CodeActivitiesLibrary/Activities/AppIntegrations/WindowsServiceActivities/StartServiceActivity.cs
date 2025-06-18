@@ -60,10 +60,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
                 serviceController.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
 
                 status = $"Service '{serviceName}' has been started successfully.";
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
+
             catch (Exception ex)
             {
                 status = $"Error starting service: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
             StatusMessage.Set(context, status);

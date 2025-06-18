@@ -35,7 +35,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
             var result = new List<string>();
 
             try
@@ -48,15 +47,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 var wb = excelApp.ActiveWorkbook;
 
                 result.AddRange(from Excel.Worksheet sheet in wb.Worksheets select sheet.Name);
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Retrieved all excel sheet successfully");
             }
             catch (Exception ex)
             {
-                status = $"Error retrieving worksheets: {ex.Message}";
                 result.Clear();
+                WorksheetNames.Set(context, result);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error retrieving worksheets: {ex.Message}");
             }
 
-            WorksheetNames.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 }

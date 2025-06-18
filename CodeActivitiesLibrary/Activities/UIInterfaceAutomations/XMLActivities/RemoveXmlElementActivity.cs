@@ -30,7 +30,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
             var xmlContent = XmlContent.Get(context);
             var xpath = XPath.Get(context);
             string updatedXmlContent = null;
-            var status = "";
 
             try
             {
@@ -53,15 +52,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
                 }
 
                 updatedXmlContent = xmlDoc.OuterXml;
+                UpdatedXmlContent.Set(context, updatedXmlContent);
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Element(s) removed successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error removing XML element(s): {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error removing XML element(s): {ex.Message}");
             }
-
-            UpdatedXmlContent.Set(context, updatedXmlContent);
-            StatusMessage.Set(context, status);
         }
     }
 }

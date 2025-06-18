@@ -59,13 +59,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
                 serviceController.WaitForStatus(ServiceControllerStatus.Paused, TimeSpan.FromSeconds(30));
 
                 status = $"Service '{serviceName}' has been paused successfully.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error pausing service: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private static bool IsServiceInstalled(string serviceName)

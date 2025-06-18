@@ -104,13 +104,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
                     default:
                         throw new ArgumentOutOfRangeException(nameof(target));
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error sending keys: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            StatusMessage.Set(context, status);
         }
 
         private static void SendKeysToForegroundWindow(string textToSend, int delay, bool useHardwareKeys)

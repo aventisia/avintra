@@ -189,15 +189,19 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     default:
                         throw new InvalidOperationException("Invalid check condition specified.");
                 }
+
+                Result.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error during condition check: {ex.Message}";
                 result = false;
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 

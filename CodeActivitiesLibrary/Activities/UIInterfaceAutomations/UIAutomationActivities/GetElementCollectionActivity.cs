@@ -50,14 +50,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                 status = elements != null && elements.Count > 0
                     ? $"Found {elements.Count} element(s)."
                     : "No matching elements found.";
+
+                ElementCollection.Set(context, elements);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            ElementCollection.Set(context, elements);
-            StatusMessage.Set(context, status);
         }
     }
 }

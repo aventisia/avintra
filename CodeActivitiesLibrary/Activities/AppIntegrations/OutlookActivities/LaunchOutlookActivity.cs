@@ -79,14 +79,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
                         throw new InvalidOperationException("No running Outlook instance found.");
                     }
                 }
+                OutlookApplication.Set(context, outlookApp);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Outlook launched successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error launching Outlook: {ex.Message}";
+                OutlookApplication.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error launching Outlook: {ex.Message}");
             }
 
-            OutlookApplication.Set(context, outlookApp);
-            StatusMessage.Set(context, status);
+
         }
     }
 }

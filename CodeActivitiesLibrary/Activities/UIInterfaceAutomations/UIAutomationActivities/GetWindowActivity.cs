@@ -62,14 +62,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                 status = windowElement != null
                     ? "Window found successfully."
                     : "Window not found within the specified time.";
+                WindowElement.Set(context, windowElement);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            WindowElement.Set(context, windowElement);
-            StatusMessage.Set(context, status);
+
         }
     }
 }

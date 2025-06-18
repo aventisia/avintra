@@ -123,13 +123,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                 }
 
                 status += $" Successfully wrote data to '{filePath}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error writing to CSV file: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            StatusMessage.Set(context, status);
         }
 
         // ----------------------

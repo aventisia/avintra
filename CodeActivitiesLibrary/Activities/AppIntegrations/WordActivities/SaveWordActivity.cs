@@ -54,10 +54,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 }
 
                 Console.WriteLine("Document saved successfully.");
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Document saved successfully.");
             }
             catch (Exception ex)
             {
-                throw new Exception("Error saving Word document:", ex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error saving Word document:: {ex.Message}");
             }
         }
     }

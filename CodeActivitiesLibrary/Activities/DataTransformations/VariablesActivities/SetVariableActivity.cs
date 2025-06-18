@@ -23,13 +23,6 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [Description("The value (text, number, list, or object) to assign to the variable.")]
         public InArgument<object> ValueToSet { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
-
-
 
         // ----------------------
         // Execution Logic
@@ -54,13 +47,15 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                     throw new ArgumentException($"Variable '{variableName}' does not exist in the current context.");
 
                 propertyToSet.SetValue(context.DataContext, value);
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Variable '{variableName}' set successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error setting variable: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error setting variable: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

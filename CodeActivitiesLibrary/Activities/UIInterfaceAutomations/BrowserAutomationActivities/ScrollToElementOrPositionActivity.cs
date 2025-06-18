@@ -148,14 +148,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     default:
                         throw new ArgumentOutOfRangeException(nameof(scrollMode), "Unsupported scroll mode.");
                 }
+                IsSuccess.Set(context, true);
+                IsSuccess.Set(context, status.Contains("scrolled"));
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error during scroll operation: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            IsSuccess.Set(context, status.Contains("scrolled"));
-            StatusMessage.Set(context, status);
         }
     }
 

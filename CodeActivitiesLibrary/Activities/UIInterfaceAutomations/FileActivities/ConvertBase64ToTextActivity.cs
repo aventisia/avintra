@@ -38,18 +38,22 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
                 result = Encoding.UTF8.GetString(data);
 
                 status = "Base64 string successfully converted to plain text.";
+                PlainText.Set(context, result);
+                StatusMessage.Set(context, status);
             }
             catch (FormatException fex)
             {
                 status = $"Invalid Base64 format: {fex.Message}";
+                PlainText.Set(context, null);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error converting Base64 to text: {ex.Message}";
-            }
 
-            PlainText.Set(context, result);
-            StatusMessage.Set(context, status);
+                PlainText.Set(context, null);
+                StatusMessage.Set(context, status);
+            }
         }
     }
 }

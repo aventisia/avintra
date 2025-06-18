@@ -116,11 +116,14 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
                 // Set output arguments
                 RecognizedEntities.Set(context, recognizedEntities);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Recognizing entities succesfully");
             }
             catch (Exception ex)
             {
-                status = $"Error recognizing entities: {ex.Message}";
                 RecognizedEntities.Set(context, Array.Empty<string>());
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error recognizing entities: {ex.Message}");
             }
 
             // Set status message

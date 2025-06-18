@@ -73,15 +73,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
                         status = success ? "Logoff initiated via WTS API" : "Failed to initiate logoff via WTS API";
                         break;
                 }
+                Success.Set(context, success);
+                IsSuccess.Set(context, success);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error during logoff: {ex.Message}";
                 success = false;
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
-            Success.Set(context, success);
         }
 
         private bool LogoffWithShutdownCommand(bool force, int timeout)

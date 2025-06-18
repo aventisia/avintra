@@ -78,14 +78,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                 {
                     StatusMessage.Set(context, "Image not found within the specified timeout.");
                 }
+
+                Result.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error waiting for image: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
         }
 
         private static Bitmap CaptureScreen()

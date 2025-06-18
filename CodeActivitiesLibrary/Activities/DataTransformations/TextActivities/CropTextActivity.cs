@@ -115,12 +115,15 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
                 CroppedText.Set(context, result);
                 IsFlagFound.Set(context, flagFound);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Text cropped successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error cropping text: {ex.Message}";
                 CroppedText.Set(context, null);
                 IsFlagFound.Set(context, false);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error cropping text: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

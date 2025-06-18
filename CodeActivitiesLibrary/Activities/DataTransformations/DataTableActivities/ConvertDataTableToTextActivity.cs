@@ -56,7 +56,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
             var csvText = string.Empty;
 
             try
@@ -84,14 +83,14 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                     csvBuilder.AppendLine(string.Join(separator, row.ItemArray.Select(field => field.ToString())));
 
                 csvText = csvBuilder.ToString();
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Successfully converted data table to CSV.");
             }
             catch (Exception ex)
             {
-                status = $"Error converting data table to CSV: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error converting data table to CSV: {ex.Message}");
             }
-
-            CsvTextOutput.Set(context, csvText);
-            StatusMessage.Set(context, status);
         }
 
         private string GetSeparator(CodeActivityContext context, bool useCustom)

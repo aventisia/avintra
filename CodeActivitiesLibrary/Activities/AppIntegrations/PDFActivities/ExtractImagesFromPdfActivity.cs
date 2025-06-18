@@ -56,14 +56,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
                     }
 
                     status = $"Successfully extracted {imageCount} images from '{sourcePdfPath}' to '{targetFolder}'.";
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, status);
                 }
             }
             catch (Exception ex)
             {
                 status = $"Error extracting images from PDF: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

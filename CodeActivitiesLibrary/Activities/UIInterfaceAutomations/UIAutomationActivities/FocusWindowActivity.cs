@@ -38,14 +38,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                     }
                     windowElement.SetFocus();
                     status = "Window focused successfully.";
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, status);
                 }
             }
             catch (Exception ex)
             {
                 status = $"There was a problem focusing the window: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

@@ -140,13 +140,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 }
 
                 ExcelInstance.Set(context, excelApp);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Launched excel successfully");
             }
             catch (Exception ex)
             {
                 status = $"Error launching Excel: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
 
-            StatusMessage.Set(context, status);
         }
     }
 }

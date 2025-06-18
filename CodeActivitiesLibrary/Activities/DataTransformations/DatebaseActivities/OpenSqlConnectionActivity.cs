@@ -22,21 +22,23 @@ namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
         protected override void Execute(CodeActivityContext context)
         {
             var connectionString = ConnectionString.Get(context);
-            var status = "";
             SqlConnection connection = null;
+
             try
             {
                 connection = new SqlConnection(connectionString);
                 connection.Open();
-                status = "Database connection opened successfully.";
+                SqlConnection.Set(context, connection);
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Database connection opened successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error opening database connection: {ex.Message}";
+                SqlConnection.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error opening database connection: {ex.Message}");
             }
-
-            SqlConnection.Set(context, connection);
-            StatusMessage.Set(context, status);
         }
     }
 }

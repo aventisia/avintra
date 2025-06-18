@@ -101,15 +101,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 // Retrieve attribute value
                 result = element.GetAttribute(attributeName);
                 status = $"Successfully retrieved attribute '{attributeName}' from element '{searchKeywords}'.";
+                Result.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
+
             }
             catch (Exception ex)
             {
                 status = $"Error retrieving element attribute value: {ex.Message}";
                 result = null;
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 }

@@ -79,14 +79,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                     textboxContent = "Error: Not able to copy text from TextBox";
                     status = "Could not find or read the text box.";
                 }
+                TextBoxContent.Set(context, textboxContent);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error while reading text from the text box: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            TextBoxContent.Set(context, textboxContent);
-            StatusMessage.Set(context, status);
         }
     }
 }

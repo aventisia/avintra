@@ -61,13 +61,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
                         ? "Failed to empty all users' recycle bins (admin rights required?)."
                         : "Failed to empty current user's recycle bin.";
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
+                IsSuccess.Set(context, false);
                 status = $"Error emptying recycle bin: {ex.Message}";
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private bool EmptyAllRecycleBins(bool showConfirmation, bool showProgress)

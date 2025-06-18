@@ -42,10 +42,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.MouseAndKeyboardActivitie
                 // Set output arguments
                 context.SetValue(MousePosX, mousePosition.X);
                 context.SetValue(MousePosY, mousePosition.Y);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Mouse position retrieved successfully.");
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Failed to retrieve mouse position.", ex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error retrieving mouse position: {ex.Message}");
             }
         }
 

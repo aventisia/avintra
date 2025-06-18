@@ -128,15 +128,19 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
                     default:
                         throw new ArgumentOutOfRangeException(nameof(soundSource), "Invalid sound source.");
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
+                Played.Set(context, played);
+                Duration.Set(context, duration);
             }
             catch (Exception ex)
             {
                 status = $"Error playing sound: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
+                Played.Set(context, null);
+                Duration.Set(context, null);
             }
-
-            StatusMessage.Set(context, status);
-            Played.Set(context, played);
-            Duration.Set(context, duration);
         }
 
         private static void PlaySystemSound(SystemSoundNameEnum soundName)

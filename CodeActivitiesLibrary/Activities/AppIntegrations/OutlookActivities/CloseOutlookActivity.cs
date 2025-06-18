@@ -30,8 +30,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
-
             try
             {
                 var outlookApp = OutlookApplication.Get(context);
@@ -44,13 +42,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
 
                 // Release COM object to avoid memory leaks
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(outlookApp);
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Outlook closed successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error closing Outlook: {ex.Message}";
-            }
 
-            StatusMessage.Set(context, status);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error closing Outlook: {ex.Message}");
+            }
         }
     }
 }

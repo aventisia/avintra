@@ -19,12 +19,10 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
         [Description("Returns the output of the script.")]
         public OutArgument<string> ScriptOutput { get; set; }
 
-
         protected override void Execute(CodeActivityContext context)
         {
             var scriptCode = ScriptCode.Get(context);
             var output = "";
-            var status = "";
 
             try
             {
@@ -43,13 +41,13 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.ScriptingActivities
 
                 ScriptOutput.Set(context, output);
                 StatusMessage.Set(context, "VBScript executed successfully.");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
-                status = $"Error executing VBScript: {ex.Message}";
+                StatusMessage.Set(context, $"Error executing VBScript: {ex.Message}");
+                IsSuccess.Set(context, false);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

@@ -83,15 +83,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 
                     CmdSession.Set(context, cmdSessionDetails);
                     status += $" Successfully opened CMD session in '{workingFolder}'.";
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, status);
                 }
             }
             catch (Exception ex)
             {
                 status = $"Error opening CMD session: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            // Optionally, you can log or display the status message
-            Console.WriteLine(status);
         }
 
         // ----------------------

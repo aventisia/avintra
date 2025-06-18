@@ -89,13 +89,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 }
 
                 status = $"Successfully inserted image into Word document at '{insertLocation}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error inserting image into Word document: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private static Range GetInsertionRange(

@@ -85,7 +85,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
             var matchedRows = new List<DataRow>();
 
             try
@@ -356,16 +355,17 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                                 }
                             }
                         }
-
-                status = $"Processed {matchedRows.Count} rows.";
+                MatchedRows.Set(context, matchedRows);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Processed {matchedRows.Count} rows.");
             }
             catch (Exception ex)
             {
-                status = $"Error processing data table: {ex.Message}";
+                MatchedRows.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error processing data table: {ex.Message}");
             }
 
-            MatchedRows.Set(context, matchedRows);
-            StatusMessage.Set(context, status);
         }
     }
 }

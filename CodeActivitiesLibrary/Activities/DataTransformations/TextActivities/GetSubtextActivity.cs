@@ -105,11 +105,14 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                     : originalText.Substring(startIndex.Value, length.Value);
 
                 SubstringResult.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Substring extracted successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error extracting substring: {ex.Message}";
                 SubstringResult.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error extracting substring: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

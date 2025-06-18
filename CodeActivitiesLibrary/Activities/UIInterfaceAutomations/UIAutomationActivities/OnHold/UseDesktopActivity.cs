@@ -9,8 +9,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
     public class UseDesktopActivity : BaseCodeActivity
     {
 
-
-
         protected override void Execute(CodeActivityContext context)
         {
             var status = "";
@@ -19,13 +17,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
             {
                 // Simulate desktop operations using a hypothetical API
                 StatusMessage.Set(context, "Desktop operations performed successfully.");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
                 status = $"Error performing desktop operations: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

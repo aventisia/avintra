@@ -36,19 +36,19 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
             var key = Key.Get(context);
             var iv = IV.Get(context);
             var decryptedText = "";
-            var status = "";
             try
             {
                 decryptedText = Decrypt(ciphertext, key, iv);
-                status = "Text decrypted successfully.";
+                DecryptedText.Set(context, decryptedText);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Text decrypted successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error decrypting text with AES: {ex.Message}";
+                DecryptedText.Set(context, decryptedText);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error decrypting text with AES: {ex.Message}");
             }
-
-            DecryptedText.Set(context, decryptedText);
-            StatusMessage.Set(context, status);
         }
 
         private string Decrypt(string ciphertext, string key, string iv)

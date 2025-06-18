@@ -105,14 +105,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                 {
                     status = "Failed to expand or collapse the element within the specified time.";
                 }
+
+                WasSuccessful.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            WasSuccessful.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 

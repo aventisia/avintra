@@ -75,11 +75,15 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 }
 
                 ConvertedValue.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Text successfully converted to number.");
             }
             catch (Exception ex)
             {
                 status = $"Error converting text to number: {ex.Message}";
                 ConvertedValue.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error converting text to number: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

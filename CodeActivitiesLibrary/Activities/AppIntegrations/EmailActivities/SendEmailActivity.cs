@@ -78,18 +78,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 
         [DisplayName("SMTP Server Needs Authentication")]
         [Description("If true, authenticates with the SMTP server using credentials.")]
-        public InArgument<bool> SmtpServerNeedsAuthentication { get; set; }
+        public InArgument<bool> SmtpServerNeedsAuthentication { get; set; } = true;
 
 
         [DisplayName("User Name")]
         [Description("The username for authentication.")]
-        [RenderIfCondition(nameof(SmtpServerNeedsAuthentication), true)]
         public InArgument<string> UserName { get; set; }
 
 
         [DisplayName("Password")]
         [Description("The password for authentication.")]
-        [RenderIfCondition(nameof(SmtpServerNeedsAuthentication), true)]
         public InArgument<string> Password { get; set; }
 
 
@@ -108,8 +106,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
-            var isSuccess = true;
 
             try
             {
@@ -214,19 +210,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
                     client.Disconnect(true);
                 }
 
-                status = $"Email sent successfully to {to} with subject '{subject}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Email sent successfully to {to} with subject '{subject}'.");
             }
             catch (Exception ex)
             {
-                isSuccess = false;
-                status = $"Error sending email: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error sending email: {ex.Message}");
 
-                // Include inner exception details if available
-                if (ex.InnerException != null) status += $"\nInner Exception: {ex.InnerException.Message}";
             }
 
-            StatusMessage.Set(context, status);
-            IsSuccess.Set(context, isSuccess);
         }
     }
 

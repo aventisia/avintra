@@ -69,15 +69,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
                     var fileName = FileName.Get(context);
                     DownloadFile(connection, fileName, localDirectory, ifFileExists);
                     status = "File downloaded successfully.";
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, status);
                 }
             }
             catch (Exception ex)
             {
                 status = $"Error downloading file(s): {ex.Message}";
-                // Handle exception
-            }
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
 
-            StatusMessage.Set(context, status);
+            }
         }
 
         private void DownloadFile(FtpClient connection, string fileName, string localDirectory,

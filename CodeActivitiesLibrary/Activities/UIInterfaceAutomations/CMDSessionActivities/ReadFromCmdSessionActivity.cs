@@ -44,7 +44,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
 
             try
             {
@@ -77,15 +76,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.CMDSessionActivities
                     // Combine stdout and stderr into a single output
                     CmdOutput.Set(context, $"{stdout}{stderr}");
                 }
-
-                status += $" Successfully read output from CMD session.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $" Successfully read output from CMD session.");
             }
             catch (Exception ex)
             {
-                status = $"Error reading CMD session: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error reading CMD session: {ex.Message}");
             }
-
-            Console.WriteLine(status);
         }
     }
 

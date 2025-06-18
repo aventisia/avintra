@@ -35,15 +35,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
                 // Simulate extracting data using a hypothetical API
                 extractedData = "Extracted Data: Sample Data";
+                ExtractedData.Set(context, extractedData);
                 StatusMessage.Set(context, "Data extracted successfully.");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
                 status = $"Error extracting data: {ex.Message}";
+                StatusMessage.Set(context, status);
+                IsSuccess.Set(context, false);
             }
-
-            ExtractedData.Set(context, extractedData);
-            StatusMessage.Set(context, status);
         }
     }
 }

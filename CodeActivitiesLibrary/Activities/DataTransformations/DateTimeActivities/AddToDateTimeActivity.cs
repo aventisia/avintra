@@ -63,9 +63,13 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
                 }
 
                 ResultDateTime.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "DateTime modified successfully.");
             }
             catch (Exception ex)
             {
+                ResultDateTime.Set(context, baseDateTime);
+                IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error adding time to DateTime: {ex.Message}");
             }
         }

@@ -47,12 +47,14 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                 result.Reverse();
 
                 ReversedList.Set(context, result);
-                status = $"Successfully reversed list containing {result.Count} items.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"List reversed successfully. Result: [{string.Join(", ", result)}]");
             }
             catch (Exception ex)
             {
-                status = $"Error reversing list: {ex.Message}";
-                ReversedList.Set(context, new List<object>());
+                ReversedList.Set(context, 0);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error reversing list: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

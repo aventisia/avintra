@@ -56,11 +56,14 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                 var result = JsonSerializer.Deserialize(jsonData, targetType, options);
 
                 CustomObject.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "JSON converted to custom object successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error converting JSON to custom object: {ex.Message}";
                 CustomObject.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error converting JSON to custom object: {ex.Message}");
             }
 
             StatusMessage.Set(context, status);

@@ -67,14 +67,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
                         status = $"Successfully removed environment variable '{variableName}' from {(isSystemScope ? "System" : "User")} scope.";
                     }
                 }
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
-                status = $"Error deleting environment variable: {ex.Message}";
+                StatusMessage.Set(context, $"Error deleting environment variable: {ex.Message}");
+                IsSuccess.Set(context, false);
             }
-
-            // Set the output
-            StatusMessage.Set(context, status);
         }
     }
 }

@@ -57,7 +57,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
                 var activeMode = ActiveMode.Get(context);
                 var username = Username.Get(context);
                 var password = Password.Get(context);
-                var status = "FTP connection opened successfully.";
                 if (string.IsNullOrWhiteSpace(host))
                     throw new ArgumentException("Host cannot be empty.");
                 if (port <= 0)
@@ -74,14 +73,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.FTPActivities
                 };
                 client.Connect();
                 FtpConnection.Set(context, client);
-                StatusMessage.Set(context, status);
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "FTP connection open succesfully");
             }
             catch (Exception ex)
             {
                 // Status message is handled by BaseCodeActivity
                 FtpConnection.Set(context, null);
-                StatusMessage.Set(context, "Failed to connect to ftp server.");
-                throw;
+                StatusMessage.Set(context, $"Failed to connect to ftp server:{ex.Message}");
+                IsSuccess.Set(context, false);
             }
         }
     }

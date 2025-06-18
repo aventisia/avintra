@@ -43,9 +43,7 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
             var xpath = XPath.Get(context);
             var attributeName = AttributeName.Get(context);
             var getValueAs = GetValueAs.Get(context);
-
             string attributeValue = null;
-            var status = "";
 
             try
             {
@@ -100,16 +98,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.XMLActivities
                     default:
                         throw new ArgumentException($"Unsupported 'GetValueAs' option: {getValueAs}");
                 }
-
+                XmlAttributeValue.Set(context, attributeValue);
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Attribute retrieved successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error retrieving XML element attribute: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error retrieving XML element attribute: {ex.Message}");
             }
-
-            XmlAttributeValue.Set(context, attributeValue);
-            StatusMessage.Set(context, status);
         }
     }
 }

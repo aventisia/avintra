@@ -24,7 +24,6 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // Output Arguments
         // ----------------------
 
-
         [DisplayName("Shuffled List")]
         [Description("The shuffled version of the input list.")]
         public OutArgument<IEnumerable<object>> ShuffledList { get; set; }
@@ -34,7 +33,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            string status = "Operation completed successfully.";
+            var status = "Operation completed successfully.";
 
             try
             {
@@ -50,13 +49,15 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                 // Set output
                 ShuffledList.Set(context, shuffled);
                 status += $" List with {shuffled.Count()} items has been shuffled.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "List Shuffle successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error shuffling list: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error while shuffling the list: {ex.Message}");
             }
 
-            StatusMessage.Set(context, status);
         }
     }
 }

@@ -100,15 +100,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                     {
                         status = "Could not retrieve the requested detail from the UI element.";
                     }
+                    ElementDetails.Set(context, details);
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, status);
                 }
             }
             catch (Exception ex)
             {
                 status = $"Error retrieving UI element details: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            ElementDetails.Set(context, details);
-            StatusMessage.Set(context, status);
         }
     }
 

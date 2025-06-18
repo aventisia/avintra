@@ -72,10 +72,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 context.SetValue(WordInstance, wordApp);
 
                 Console.WriteLine($"Attached to Word document: {documentName}");
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Attach to Running Word successfully");
             }
             catch (Exception ex)
             {
-                throw new Exception("Error attaching to running Word:", ex);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error attaching to running Word: {ex.Message}");
             }
         }
     }

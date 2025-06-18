@@ -98,15 +98,18 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 // Get checkbox state
                 isChecked = checkbox.Selected;
                 status = $"Checkbox '{searchKeywords}' is {(isChecked ? "checked" : "not checked")}.";
+                IsChecked.Set(context, isChecked);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
+
             }
             catch (Exception ex)
             {
                 status = $"Error getting checkbox value: {ex.Message}";
                 isChecked = false;
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            IsChecked.Set(context, isChecked);
-            StatusMessage.Set(context, status);
         }
     }
 }

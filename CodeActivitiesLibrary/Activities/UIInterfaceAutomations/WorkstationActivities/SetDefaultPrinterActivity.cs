@@ -34,14 +34,15 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.WorkstationActivities
                             }
                 }
 
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Default printer set successfully.");
             }
             catch (Exception ex)
             {
                 status = $"Error setting default printer: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

@@ -125,15 +125,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     default:
                         throw new ArgumentOutOfRangeException(nameof(stateToCheck), "Unsupported state.");
                 }
+                IsStateMet.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error checking element state: {ex.Message}";
                 result = false;
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            IsStateMet.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 

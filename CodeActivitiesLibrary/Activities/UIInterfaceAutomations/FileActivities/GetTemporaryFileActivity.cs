@@ -1,4 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
@@ -15,14 +16,25 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            // Generate a unique temporary file path
-            var tempFilePath = Path.GetTempFileName();
+            try
+            {
+                // Generate a unique temporary file path
+                var tempFilePath = Path.GetTempFileName();
 
-            // Create the FileInfo object to represent the file
-            var fileInfo = new FileInfo(tempFilePath);
+                // Create the FileInfo object to represent the file
+                var fileInfo = new FileInfo(tempFilePath);
 
-            // Set the output
-            TempFile.Set(context, fileInfo);
+                // Set the output
+                TempFile.Set(context, fileInfo);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Temporary file created successfully.");
+            }
+            catch (Exception ex)
+            {
+                TempFile.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error creating temporary file: {ex.Message}");
+            }
         }
     }
 }

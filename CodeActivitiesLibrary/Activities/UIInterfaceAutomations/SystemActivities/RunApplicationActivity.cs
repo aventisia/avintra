@@ -142,15 +142,14 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.SystemActivities
                 }
 
                 // Set output arguments
+
                 StatusMessage.Set(context, $"Application '{applicationPath}' launched successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error launching application: {ex.Message}";
-            }
 
-            // Set status message
-            StatusMessages.Set(context, status);
+                StatusMessage.Set(context, $"Error launching application: {ex.Message}");
+            }
         }
 
         // Helper method to convert WindowStyleEnum to ProcessWindowStyle

@@ -21,9 +21,6 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
         [Description("Returns true if the search term is found, false otherwise.")]
         public OutArgument<bool> Result { get; set; }
 
-
-
-
         protected override void Execute(CodeActivityContext context)
         {
             var windowHandle = WindowHandle.Get(context);
@@ -45,15 +42,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
 
                 // Simulate checking if window contains using a hypothetical API
                 result = true; // Replace with actual logic
+                Result.Set(context, result);
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Search completed successfully.");
             }
             catch (Exception ex)
             {
                 status = $"Error searching window: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 }

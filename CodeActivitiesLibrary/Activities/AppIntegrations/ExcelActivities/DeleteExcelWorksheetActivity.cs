@@ -101,13 +101,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 excelApp.DisplayAlerts = true;
 
                 status = $"Successfully deleted worksheet.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error deleting worksheet: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

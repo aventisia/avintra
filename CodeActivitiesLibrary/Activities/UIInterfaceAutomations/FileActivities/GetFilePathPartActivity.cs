@@ -42,15 +42,27 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.FileActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var filePath = FilePath.Get(context);
+            try
+            {
+                var filePath = FilePath.Get(context);
 
-            if (string.IsNullOrWhiteSpace(filePath)) throw new ArgumentException("FilePath cannot be null or empty.");
+                if (string.IsNullOrWhiteSpace(filePath))
+                    throw new ArgumentException("FilePath cannot be null or empty.");
 
-            RootPath.Set(context, Path.GetPathRoot(filePath));
-            Directory.Set(context, Path.GetDirectoryName(filePath));
-            FileName.Set(context, Path.GetFileName(filePath));
-            FileNameNoExtension.Set(context, Path.GetFileNameWithoutExtension(filePath));
-            FileExtension.Set(context, Path.GetExtension(filePath));
+                RootPath.Set(context, Path.GetPathRoot(filePath));
+                Directory.Set(context, Path.GetDirectoryName(filePath));
+                FileName.Set(context, Path.GetFileName(filePath));
+                FileNameNoExtension.Set(context, Path.GetFileNameWithoutExtension(filePath));
+                FileExtension.Set(context, Path.GetExtension(filePath));
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "File path components extracted successfully.");
+            }
+            catch (Exception ex)
+            {
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error extracting file path components: {ex.Message}");
+            }
         }
     }
 }

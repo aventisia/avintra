@@ -94,14 +94,16 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.UIAutomationActivities
                 {
                     status = "Checkbox not found or state not changed.";
                 }
+                WasStateChanged.Set(context, stateChanged);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error setting checkbox state: {ex.Message}";
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            WasStateChanged.Set(context, stateChanged);
-            StatusMessage.Set(context, status);
         }
     }
 }

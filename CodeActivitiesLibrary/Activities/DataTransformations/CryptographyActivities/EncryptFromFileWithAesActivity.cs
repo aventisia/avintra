@@ -39,7 +39,6 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
             var key = Key.Get(context);
             var encodingFormat = EncodingFormat.Get(context);
             var outputFilePath = OutputFilePath.Get(context);
-            var status = "";
             try
             {
                 // Read the input file
@@ -66,14 +65,15 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 
                 // Write the encrypted content to the output file
                 File.WriteAllText(outputFilePath, encryptedContent);
-                status = "File encrypted successfully.";
+                // Set output success
+                StatusMessage.Set(context, "File encrypted successfully.");
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
-                status = $"Error encrypting file with AES: {ex.Message}";
+                StatusMessage.Set(context, $"Error encrypting file with AES: {ex.Message}");
+                IsSuccess.Set(context, false);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private byte[] Encrypt(string content, byte[] key)

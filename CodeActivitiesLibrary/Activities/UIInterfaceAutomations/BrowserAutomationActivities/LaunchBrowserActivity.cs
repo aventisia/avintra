@@ -156,19 +156,20 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                     default:
                         throw new ArgumentOutOfRangeException(nameof(windowState));
                 }
-
+                WebBrowser.Set(context, driver);
                 status = $"Successfully launched {GetBrowserName(browserType)} in {windowState} mode.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
+
             }
             catch (Exception ex)
             {
                 status = $"Error launching browser: {ex.Message}";
                 driver?.Quit(); // Clean up if partially launched
                 driver = null;
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            WebBrowser.Set(context, driver);
-            StatusMessage.Set(context, status);
-            return;
 
             // * --no-sandbox: This argument allows you to run browser without sandboxing. Sandboxing
             // is a security feature that prevents malicious code from accessing your system. However,

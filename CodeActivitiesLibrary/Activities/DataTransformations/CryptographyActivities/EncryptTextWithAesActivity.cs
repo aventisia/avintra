@@ -44,7 +44,6 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
             var iv = IV.Get(context);
             var encodingFormat = EncodingFormat.Get(context);
             var encryptedText = "";
-            var status = "";
             try
             {
                 // Encrypt the content using AES
@@ -67,15 +66,17 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
                 }
 
                 encryptedText = encryptedContent;
-                status = "Text encrypted successfully.";
+                EncryptedText.Set(context, encryptedText);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Text encrypted successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error encrypting text with AES: {ex.Message}";
+                EncryptedText.Set(context, null);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error encrypting text with AES: {ex.Message}");
             }
 
-            EncryptedText.Set(context, encryptedText);
-            StatusMessage.Set(context, status);
         }
 
         private byte[] Encrypt(string content, byte[] key, byte[] iv)

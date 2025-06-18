@@ -126,15 +126,17 @@ namespace CodeActivitiesLibrary.UIInterfaceAutomations.BrowserAutomationActiviti
                 {
                     status = "Created new tab without navigation.";
                 }
+                NewBrowserInstance.Set(context, newDriver);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error creating new tab: {ex.Message}";
                 newDriver = null;
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            NewBrowserInstance.Set(context, newDriver);
-            StatusMessage.Set(context, status);
         }
     }
 

@@ -15,9 +15,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
         [Category("Output"), Description("Returns the retrieved text from the terminal session.")]
         public OutArgument<string> Result { get; set; }
 
-
-
-
         protected override void Execute(CodeActivityContext context)
         {
             var sessionId = SessionId.Get(context);
@@ -29,15 +26,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
                 // Simulate retrieving text from the terminal session (actual implementation would use a terminal library like PoshConsole or similar)
                 result = "Simulated terminal text";
                 status = "Text retrieved successfully from terminal session.";
+                Result.Set(context, result);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 result = "";
                 status = $"Error retrieving text from terminal session: {ex.Message}";
+                Result.Set(context, result);
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
             }
-
-            Result.Set(context, result);
-            StatusMessage.Set(context, status);
         }
     }
 }
