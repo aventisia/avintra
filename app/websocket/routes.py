@@ -46,7 +46,7 @@ async def websocket_endpoint(websocket: WebSocket):
             user_message = bot_message = {
                 "username": "User",
                 "message": message,
-                "timestamp": str(datetime.datetime.utcnow)  # Timestamp in ISO 8601 format
+                "timestamp": str(datetime.datetime.utcnow())
             }
             await manager.send_personal_message(user_message, connection_id)
 
@@ -62,7 +62,7 @@ async def websocket_endpoint(websocket: WebSocket):
             bot_message = {
                 "username": "Bot",
                 "message": response['Data'],
-                "timestamp": str(datetime.datetime.utcnow)  # Timestamp in ISO 8601 format
+                "timestamp": str(datetime.datetime.utcnow())
             }
             await manager.send_personal_message(bot_message, connection_id)
 
