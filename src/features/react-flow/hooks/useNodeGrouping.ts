@@ -58,6 +58,18 @@ export function useNodeGrouping() {
     // Get full list of nodes involved in this group
     const fullSelectedNodes = nodes.filter((n) => expandedNodeIds.has(n.id));
 
+    // ✅ PRE-CHECK: Ensure none of the nodes are already grouped
+    const alreadyGrouped = fullSelectedNodes.some(
+      (node) => !!node.data?.groupId,
+    );
+
+    if (alreadyGrouped) {
+      toast.warning(
+        "One or more selected nodes are already part of another group.",
+      );
+      return;
+    }
+
     // ✅ PRE-CHECK: Ensure selected nodes are connected
     const isValidGroup = areNodesConnected(fullSelectedNodes, edges);
     if (!isValidGroup) {
