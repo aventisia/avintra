@@ -337,7 +337,7 @@ public class UploadedDocService : IUploadedDocService
 
                 // Construct the full path where the uploaded files will be saved.
                 // Combines the base upload directory from configuration with the lowercase subdirectory name.
-                
+
                 var fullDirectoryPath = Path.Combine(_fileUploadConfig.UploadDirectory, subDirectory.ToLower());
 
                 // Create the directory if it doesn't exist
@@ -361,7 +361,7 @@ public class UploadedDocService : IUploadedDocService
                 }
 
                 // Construct the file URL for referencing later
-                var fileUrl = $"/files/{uniqueFileName}".Replace("\\", "/");
+                var fileUrl = $"/{subDirectory.ToLower()}/{uniqueFileName}".Replace("\\", "/");
 
                 uploadedFiles.Add(new FileDetailDto
                 {
@@ -521,9 +521,10 @@ public class UploadedDocService : IUploadedDocService
 
             }
 
-            var fileName = pathParts.Last();   // The file name
+            var fileName = pathParts.Last();                     // The file name
+            var subDirectory = pathParts.Reverse().Skip(1).First();  // The sub directory
 
-            var filePath = Path.Combine(_fileUploadConfig.UploadDirectory, fileName);
+            var filePath = Path.Combine(_fileUploadConfig.UploadDirectory, subDirectory, fileName);
 
             if (File.Exists(filePath))
             {

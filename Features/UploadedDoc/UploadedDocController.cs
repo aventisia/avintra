@@ -14,7 +14,7 @@ public class UploadedDocController : BaseApiController
 
     //Upload files
     [HttpPost]
-    public async Task<ActionResult<ServiceResponse<FileDetailDto>>> UploadFiles(List<IFormFile> files, DocumentPurposeTypesEnum purpose)
+    public async Task<ActionResult<ServiceResponse<FileDetailDto>>> UploadFiles(List<IFormFile> files, DocumentPurposeTypesEnum purpose= DocumentPurposeTypesEnum.Default)
     {
         return ResultHelper(await _uploadedDocService.UploadFilesAsync(files, purpose));
     }
