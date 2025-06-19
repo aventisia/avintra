@@ -1,0 +1,15 @@
+meta {
+  name: Get ml model by api key
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/api-keys/ml-models
+  body: none
+  auth: none
+}
+
+headers {
+  X-API-Key: API_KEY
+}

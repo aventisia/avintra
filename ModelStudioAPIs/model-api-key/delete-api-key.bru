@@ -1,0 +1,11 @@
+meta {
+  name: Delete api key
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/api-keys/{{MODEL_API_KEY_ID}}
+  body: none
+  auth: none
+}
