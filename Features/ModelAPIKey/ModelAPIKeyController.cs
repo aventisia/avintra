@@ -46,4 +46,11 @@ public class ModelAPIKeyController : BaseApiController
     {
         return ResultHelper(await _modelAPIKeyService.DeleteMultipleAPIKeysAsync(modelAPiKeyIds));
     }
+
+    // Gets models using API key IDs from header
+    [HttpGet("ml-models")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ModelByAPIKeyDto>>>> GetModelsByApiKeys()
+    {
+        return ResultHelper(await _modelAPIKeyService.GetModelByApiKeyAsync());
+    }
 }

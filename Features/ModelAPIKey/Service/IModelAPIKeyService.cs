@@ -38,4 +38,10 @@ public interface IModelAPIKeyService
     /// <param name="modelAPIKeyIds">A list of API key IDs to be deleted.</param>
     /// <returns>A service response indicating the success status of the operation.</returns>
     Task<ServiceResponse<bool>> DeleteMultipleAPIKeysAsync([FromBody] List<Guid> modelAPIKeyIds);
+
+    /// <summary>
+    /// Retrieves the API key information using the API key provided in the request header.
+    /// </summary>
+    /// <returns>A service response containing the matching API key(s), if found.</returns>
+    Task<ServiceResponse<IEnumerable<ModelByAPIKeyDto>>> GetModelByApiKeyAsync();
 }

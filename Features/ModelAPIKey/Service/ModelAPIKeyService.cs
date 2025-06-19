@@ -1,9 +1,11 @@
 namespace MLModelBuilderAPIs.Services;
 
+
 public class ModelAPIKeyService : IModelAPIKeyService
 {
     private readonly ILogger<ModelAPIKeyService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly Guid _userId;
 
     public ModelAPIKeyService(
@@ -13,6 +15,7 @@ public class ModelAPIKeyService : IModelAPIKeyService
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _httpContextAccessor = httpContextAccessor;
 
         // Retrieve the user ID from the HTTP context claims
         _userId = Guid.Parse(
@@ -215,6 +218,61 @@ public class ModelAPIKeyService : IModelAPIKeyService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred during bulk API key deletion for user {UserId}", _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieves machine learning models associated with a provided API key in the request header.
+    public async Task<ServiceResponse<IEnumerable<ModelByAPIKeyDto>>> GetModelByApiKeyAsync()
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<ModelByAPIKeyDto>>
+        {
+            Data = null,
+            Message = "API key is missing or invalid."
+        };
+
+        try
+        {
+            // Retrieve the API key from the custom request header "X-API-KEY"
+            var apiKey = _httpContextAccessor.HttpContext?.Request.Headers["X-API-KEY"].FirstOrDefault();
+
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                _logger.LogWarning("Request is missing the 'X-API-KEY' header or it is empty.");
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("API key received. Starting lookup process.");
+
+            // Retrieve all entries that match the provided API key
+            var modelApiKeys = await _unitOfWork.ModelAPIKeyRepo
+                .GetByConditionAsync(entry => entry.ApiKey == apiKey)
+                .ToListAsync();
+
+            if (!modelApiKeys.Any())
+            {
+                _logger.LogWarning("No matching API key found in the database for: {ApiKey}", apiKey);
+                return serviceResponse;
+            }
+
+            // Extract model IDs from the matching API keys and retrieve associated ML models
+            var mlModelIds = modelApiKeys.Select(key => key.MLModelId);
+            var mlModels = await _unitOfWork.MLModelRepo
+                .GetByConditionAsync(w => mlModelIds.Contains(w.Id) && w.IsPublished)
+                .ProjectToType<ModelByAPIKeyDto>()
+                .ToListAsync();
+
+            // Update service response with retrieved models
+            serviceResponse.Data = mlModels;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "ML models retrieved successfully using the provided API key.";
+
+            _logger.LogInformation("Successfully retrieved {Count} ML models for API key: {ApiKey}", mlModels.Count, apiKey);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving ML models by API key.");
         }
 
         return serviceResponse;
