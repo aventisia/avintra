@@ -39,6 +39,7 @@ public class ModelAPIKeyService : IModelAPIKeyService
             var modelApiKeys = await _unitOfWork.ModelAPIKeyRepo
                 .GetByConditionAsync(w => w.CreatedByUserId == _userId)
                 .OrderByDescending(o => o.CreatedOn)
+                .Include(i => i.MLModel)
                 .ProjectToType<ModelAPIKeyDto>()
                 .ToListAsync();
 
@@ -106,8 +107,9 @@ public class ModelAPIKeyService : IModelAPIKeyService
             _logger.LogInformation("Fetching API key with ID {ApiKeyId} for user {UserId}", modelApiKeyId, _userId);
 
             var modelApiKey = await _unitOfWork.ModelAPIKeyRepo
-                .GetByConditionAsync(key => key.Id == modelApiKeyId && key.CreatedByUserId == _userId)
-                .Include(key => key.CreatedByUser)
+                .GetByConditionAsync(w => w.Id == modelApiKeyId)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.MLModel)
                 .SingleOrDefaultAsync();
 
             if (modelApiKey == null)
@@ -145,7 +147,7 @@ public class ModelAPIKeyService : IModelAPIKeyService
             _logger.LogInformation("Attempting to delete API key {ApiKeyId} for user {UserId}", modelApiKeyId, _userId);
 
             var modelApiKey = await _unitOfWork.ModelAPIKeyRepo
-                .GetByConditionAsync(key => key.Id == modelApiKeyId && key.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Id == modelApiKeyId)
                 .SingleOrDefaultAsync();
 
             if (modelApiKey == null)
@@ -191,7 +193,7 @@ public class ModelAPIKeyService : IModelAPIKeyService
             _logger.LogInformation("Attempting to delete {Count} API keys for user {UserId}", modelApiKeyIds.Count, _userId);
 
             var modelApiKeysToDelete = await _unitOfWork.ModelAPIKeyRepo
-                .GetByConditionAsync(key => modelApiKeyIds.Contains(key.Id) && key.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => modelApiKeyIds.Contains(w.Id) && w.CreatedByUserId == _userId)
                 .ToListAsync();
 
             if (!modelApiKeysToDelete.Any())
@@ -247,7 +249,7 @@ public class ModelAPIKeyService : IModelAPIKeyService
 
             // Retrieve all entries that match the provided API key
             var modelApiKeys = await _unitOfWork.ModelAPIKeyRepo
-                .GetByConditionAsync(entry => entry.ApiKey == apiKey)
+                .GetByConditionAsync(w => w.ApiKey == apiKey)
                 .ToListAsync();
 
             if (!modelApiKeys.Any())
