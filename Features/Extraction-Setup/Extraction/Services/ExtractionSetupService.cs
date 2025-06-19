@@ -73,18 +73,23 @@ public class ExtractionSetupService : IExtractionSetupService
             }
 
             // Assign unique string-based indices to each table metadata item and their headers
-            int tableIndex = 0;
-            foreach (var table in mLModelSetupDto.SetupObject.TableMetadata)
+            if (mLModelSetupDto.SetupObject?.TableMetadata != null)
             {
-                table.Index = tableIndex.ToString();
-                tableIndex++;
-
-                // Assign unique string-based indices to each table header within the current table
-                int headerIndex = 0;
-                foreach (var header in table.TableHeaders)
+                int tableIndex = 0;
+                foreach (var table in mLModelSetupDto.SetupObject.TableMetadata)
                 {
-                    header.Index = headerIndex.ToString();
-                    headerIndex++;
+                    table.Index = tableIndex.ToString();
+                    tableIndex++;
+
+                    if (table?.TableHeaders != null)
+                    {
+                        int headerIndex = 0;
+                        foreach (var header in table.TableHeaders)
+                        {
+                            header.Index = headerIndex.ToString();
+                            headerIndex++;
+                        }
+                    }
                 }
             }
 
