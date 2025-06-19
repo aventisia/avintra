@@ -38,7 +38,7 @@ const AIPersonaModel = () => {
   };
 
   return (
-    <div className="ml-2 rounded-lg bg-white shadow h-full flex flex-col">
+    <div className="rounded-lg bg-white shadow h-full flex flex-col max-w-screen-lg mx-auto self-center">
       {/* Only ONE Tabs wrapper */}
       <Tabs
         value={activeTab}

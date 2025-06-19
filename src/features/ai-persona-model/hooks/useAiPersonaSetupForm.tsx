@@ -1,6 +1,7 @@
 import { deleteInsertedFileById } from "@/features/file-uploader-setup/apis/file-upload-apis";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { toast } from "@aventisia/ui/sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -32,6 +33,7 @@ export const useAIPersonaSetupForm = () => {
       enableChat: false,
     },
   });
+  const { showDefaultAlertDialog } = useShowAlertHandler();
 
   const {
     formState: { isSubmitting, isDirty },
@@ -71,7 +73,13 @@ export const useAIPersonaSetupForm = () => {
 
   // Function to remove an object from categories
   const removeDocument = (id: string, index: number) => {
-    removeInsertedDocument({ id, index });
+    showDefaultAlertDialog({
+      confirmActionFn: () => {
+        removeInsertedDocument({ id, index });
+      },
+      alertType: "delete-record",
+      additionalText: `File`,
+    });
   };
 
   const queryClient = useQueryClient();
