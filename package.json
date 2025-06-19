@@ -9,7 +9,9 @@
     "build": "tsc -b && vite build",
     "format": "prettier --write . && eslint --fix .",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "tauri:testing": "npx cpy src-tauri/tauri.testing.conf.json . --rename=tauri.conf.json && tauri build && git checkout -- src-tauri/tauri.conf.json",
+    "tauri:staging": "npx cpy src-tauri/tauri.staging.conf.json . --rename=tauri.conf.json && tauri build && git checkout -- src-tauri/tauri.conf.json"
   },
   "dependencies": {
     "@aventisia/ui": "^0.0.43",
@@ -74,6 +76,7 @@
     "@typescript-eslint/parser": "^7.15.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.19",
+    "cpy-cli": "^5.0.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.57.1",
     "eslint-config-react-app": "^7.0.1",
