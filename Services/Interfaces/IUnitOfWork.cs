@@ -21,4 +21,5 @@ public interface IUnitOfWork
     IModelBuilderUserRepo ModelBuilderUserRepo { get; }
     IScheduledModelRepo ScheduledModelRepo { get; }
     IFineTuningLogRepo FineTuningLogRepo { get; }
+    IModelAPIKeyRepo ModelAPIKeyRepo { get; }
 }
