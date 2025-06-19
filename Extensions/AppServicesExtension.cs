@@ -27,6 +27,7 @@ public static class AppServicesExtension
         config.Apply(new SummarizationMappingProfile());
         config.Apply(new QuestionAnswerMappingProfile());
         config.Apply(new AIPersonaMappingProfile());
+        config.Apply(new ModelAPIKeyMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -49,6 +50,7 @@ public static class AppServicesExtension
         services.AddScoped<ISummarizationService, SummarizationService>();
         services.AddScoped<IQuestionAnswerService, QuestionAnswerService>();
         services.AddScoped<IAIPersonaService, AIPersonaService>();
+        services.AddScoped<IModelAPIKeyService, ModelAPIKeyService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
