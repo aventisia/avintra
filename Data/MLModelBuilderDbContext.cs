@@ -28,6 +28,7 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<UploadedDoc>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ScheduledModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FineTuningLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<ModelAPIKey>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         modelBuilder.Entity<MLModel>().HasIndex(index => new { index.Name, index.CreatedByUserId }).IsUnique();
@@ -111,4 +112,5 @@ public class MLModelBuilderDbContext : DbContext
     public DbSet<UploadedDoc> UploadedDocs { get; set; }
     public DbSet<ScheduledModel> ScheduledModels { get; set; }
     public DbSet<FineTuningLog> FineTuningLogs { get; set; }
+    public DbSet<ModelAPIKey> ModelAPIKeys { get; set; }
 }
