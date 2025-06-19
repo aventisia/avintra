@@ -6,8 +6,9 @@ public interface IUploadedDocService
     /// Upload multiple files
     /// </summary>
     /// <param name="files">List of files</param>
+    /// <param name="purpose">The purpose of the document upload (e.g., Identification, Contract, etc.).</param>
     /// <returns></returns>
-    Task<ServiceResponse<IEnumerable<FileDetailDto>>> UploadFilesAsync(List<IFormFile> files);
+    Task<ServiceResponse<IEnumerable<FileDetailDto>>> UploadFilesAsync(List<IFormFile> files, DocumentPurposeTypesEnum purpose);
 
     /// <summary>
     /// Insert uploaded doc records

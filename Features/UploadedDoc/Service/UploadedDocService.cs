@@ -28,7 +28,7 @@ public class UploadedDocService : IUploadedDocService
     }
 
     // Uploads multiple files for a given step and returns the saved file URLs.
-    public async Task<ServiceResponse<IEnumerable<FileDetailDto>>> UploadFilesAsync(List<IFormFile> files)
+    public async Task<ServiceResponse<IEnumerable<FileDetailDto>>> UploadFilesAsync(List<IFormFile> files, DocumentPurposeTypesEnum purpose)
     {
         // Initialize ServiceResponse with a failed response
         var serviceResponse = new ServiceResponse<IEnumerable<FileDetailDto>>
@@ -84,7 +84,7 @@ public class UploadedDocService : IUploadedDocService
             }
 
             // Write files to storage after validation
-            await WriteFilesToStorage(fileStreams, uploadedFiles);
+            await WriteFilesToStorage(fileStreams, uploadedFiles, purpose);
 
             serviceResponse.Data = uploadedFiles;
             serviceResponse.StatusCode = 200;
@@ -178,7 +178,7 @@ public class UploadedDocService : IUploadedDocService
             foreach (var uploadItem in uploadDataDto.Files)
             {
                 // Upload the file and get the result
-                var fileUploadResult = await UploadFilesAsync(new List<IFormFile> { uploadItem });
+                var fileUploadResult = await UploadFilesAsync(new List<IFormFile> { uploadItem }, uploadDataDto.Purpose);
 
                 // Check upload result
                 if (fileUploadResult.Data == null || !fileUploadResult.Data.Any())
@@ -324,7 +324,7 @@ public class UploadedDocService : IUploadedDocService
         return serviceResponse;
     }
 
-    private async Task WriteFilesToStorage(List<(string FileName, MemoryStream Stream)> fileStreams, List<FileDetailDto> uploadedFiles)
+    private async Task WriteFilesToStorage(List<(string FileName, MemoryStream Stream)> fileStreams, List<FileDetailDto> uploadedFiles, DocumentPurposeTypesEnum purpose)
     {
         foreach (var (fileName, stream) in fileStreams)
         {
@@ -332,8 +332,13 @@ public class UploadedDocService : IUploadedDocService
 
             try
             {
-                // Construct the full directory path for the file upload
-                var fullDirectoryPath = Path.Combine(_fileUploadConfig.UploadDirectory);
+                // Create a subdirectory name based on the document purpose (e.g., "viewer" becomes "viewer-files")
+                var subDirectory = $"{purpose}-files";
+
+                // Construct the full path where the uploaded files will be saved.
+                // Combines the base upload directory from configuration with the lowercase subdirectory name.
+                
+                var fullDirectoryPath = Path.Combine(_fileUploadConfig.UploadDirectory, subDirectory.ToLower());
 
                 // Create the directory if it doesn't exist
                 if (!Directory.Exists(fullDirectoryPath))

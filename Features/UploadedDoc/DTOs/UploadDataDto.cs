@@ -18,6 +18,11 @@ public class UploadDataDto
     public DocumentStageTypesEnum Stage { get; set; }
 
     /// <summary>
+    /// Gets or sets the intended purpose of the uploaded documents.
+    /// </summary>
+    public DocumentPurposeTypesEnum Purpose { get; set; }
+
+    /// <summary>
     /// Gets or sets the ML model record's primary key to which this record is associated.
     /// </summary>/
     public Guid MLModelId { get; set; }
