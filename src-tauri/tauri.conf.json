@@ -1,5 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "mainBinaryName": "WorcDesktopApp",
   "productName": "Worc Desktop App",
   "version": "0.1.2",
   "identifier": "com.aventisia.workspace",
@@ -7,7 +8,7 @@
     "frontendDist": "../dist",
     "devUrl": "http://localhost:3002",
     "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build -- --mode staging"
+    "beforeBuildCommand": "npm run build"
   },
   "app": {
     "windows": [
@@ -41,9 +42,9 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVGMjkwM0I1OEFFMzU5NTcKUldSWFdlT0t0UU1wN3o5TjMzTjNtdzFEWTdhUGJGdnV0ZFVaWWE2cDcwK2s5ZXNTYjBoVWFHeWwK",
       "endpoints": [
-        "https://uat-accounts.aventisia.com/api/desktop-app/update/{{target}}/{{arch}}/{{current_version}}"
+        "https://accounts.aventisia.com/api/desktop-app/update/{{target}}/{{arch}}/{{current_version}}"
       ],
-      "dialog": true,
+      "dialog": false,
       "windows": {
         "installMode": "passive"
       }
