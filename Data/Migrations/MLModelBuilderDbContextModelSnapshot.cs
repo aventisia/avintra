@@ -207,6 +207,55 @@ namespace MLModelBuilderAPIs.Migrations
                     b.ToTable("MLModels");
                 });
 
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ModelAPIKey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ApiKey")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("MLModelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("MLModelId");
+
+                    b.ToTable("ModelAPIKeys");
+                });
+
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ModelBuilderUser", b =>
                 {
                     b.Property<Guid>("Id")
@@ -440,6 +489,33 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastModifiedByUser");
+                });
+
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ModelAPIKey", b =>
+                {
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
+                        .WithMany()
+                        .HasForeignKey("MLModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+
+                    b.Navigation("MLModel");
                 });
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ScheduledModel", b =>
