@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
+namespace CodeActivitiesLibrary.DataTransformations.DatabaseActivities
 {
     [DisplayName("Close SQL Connection")]
     [Description("Close an open connection to a database")]

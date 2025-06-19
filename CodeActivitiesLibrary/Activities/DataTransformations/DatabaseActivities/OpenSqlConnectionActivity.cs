@@ -4,7 +4,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Data.SqlClient;
 
-namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
+namespace CodeActivitiesLibrary.DataTransformations.DatabaseActivities
 {
     [DisplayName("Open SQL Connection")]
     [Description("Open a new connection to a database")]

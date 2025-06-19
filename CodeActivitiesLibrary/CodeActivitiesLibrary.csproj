@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -244,10 +245,10 @@
     <Compile Include="Activities\DataTransformations\DataTableActivities\SortDataTableActivity.cs" />
     <Compile Include="Activities\DataTransformations\DataTableActivities\UpdateDataTableItemActivity.cs" />
     <Compile Include="Activities\DataTransformations\DataTableActivities\_DataTableCategoryMetaData.cs" />
-    <Compile Include="Activities\DataTransformations\DatebaseActivities\CloseSqlConnectionActivity.cs" />
-    <Compile Include="Activities\DataTransformations\DatebaseActivities\ExecuteSqlStatementActivity.cs" />
-    <Compile Include="Activities\DataTransformations\DatebaseActivities\OpenSqlConnectionActivity.cs" />
-    <Compile Include="Activities\DataTransformations\DatebaseActivities\_DatebaseCategoryMetaData.cs" />
+    <Compile Include="Activities\DataTransformations\DatabaseActivities\CloseSqlConnectionActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DatabaseActivities\ExecuteSqlStatementActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DatabaseActivities\OpenSqlConnectionActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DatabaseActivities\_DatabaseCategoryMetaData.cs" />
     <Compile Include="Activities\DataTransformations\DateTimeActivities\AddToDateTimeActivity.cs" />
     <Compile Include="Activities\DataTransformations\DateTimeActivities\GetCurrentDateTimeActivity.cs" />
     <Compile Include="Activities\DataTransformations\DateTimeActivities\IsCorrectDateTimeFormatActivity.cs" />

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace CodeActivitiesLibrary.DataTransformations.DatebaseActivities
+namespace CodeActivitiesLibrary.DataTransformations.DatabaseActivities
 {
     [DisplayName("Execute SQL Statement")]
     [Description("Connect to a database and execute an SQL statement")]
