@@ -19,7 +19,5 @@ public class ModelAPIKeyMappingProfile : IRegister
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
-
-        config.NewConfig<MLModel, ModelByAPIKeyDto>();
     }
 }
