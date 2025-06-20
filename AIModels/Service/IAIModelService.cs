@@ -13,4 +13,24 @@ public interface IAIModelService
     /// with an enumeration of AIModelDto objects, which represent the available AI models.
     /// </returns>
     Task<ServiceResponse<IEnumerable<AIModelDto>>> GetAIModelsAsync();
+    
+    /// <summary>
+    /// Retrieves the setup details for a specific AI model by its unique identifier.
+    /// </summary>
+    /// <param name="mlModelId">The unique identifier of the AI model.</param>
+    /// <returns>
+    /// A <see cref="ServiceResponse{T}"/> containing the setup data for the specified AI model,
+    /// or an appropriate error message if not found.
+    /// </returns>
+    Task<ServiceResponse<object>> GetAIModelSetupByIdAsync(Guid mlModelId);
+
+    /// <summary>
+    /// Executes an AI model using a large language model (LLM) based on the provided input request.
+    /// </summary>
+    /// <param name="extractRequestDto">The request payload containing the model ID and relevant input data.</param>
+    /// <returns>
+    /// A <see cref="ServiceResponse{T}"/> containing the execution result of the AI model,
+    /// or an appropriate error message if execution fails.
+    /// </returns>
+    Task<ServiceResponse<object>> ExecuteViaLLMAsync(ExtractRequestDto extractRequestDto);
 }
