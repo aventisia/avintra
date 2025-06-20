@@ -60,7 +60,6 @@ export const HeaderActionMenu: React.FC = () => {
           content="Execution Logs"
           onClick={() => setShowDialog(true)}
         />
-
         {IS_TAURI ? (
           <SimpleDDMenuItem
             size="md"
@@ -82,22 +81,22 @@ export const HeaderActionMenu: React.FC = () => {
             }}
           />
         ) : null}
-        <SimpleDDMenuItem size="md" Icon={UploadIcon} content="Export" />
-
-        {/* DropdownMenuSeparator component */}
-        <DropdownMenuSeparator />
-
-        <SimpleDDMenuItem size="md" Icon={LockOpenIcon} content="Lock" />
-        <SimpleDDMenuItem size="md" Icon={DockIcon} content="Archive" />
-
-        {/* DropdownMenuSeparator component */}
-        <DropdownMenuSeparator />
-
-        <SimpleDDMenuItem
-          size="md"
-          Icon={KeyboardIcon}
-          content="Keyboard Shortcuts"
-        />
+        {import.meta.env.MODE !== "production" ? (
+          <>
+            <SimpleDDMenuItem size="md" Icon={UploadIcon} content="Export" />
+            {/* DropdownMenuSeparator component */}
+            <DropdownMenuSeparator />
+            <SimpleDDMenuItem size="md" Icon={LockOpenIcon} content="Lock" />
+            <SimpleDDMenuItem size="md" Icon={DockIcon} content="Archive" />
+            {/* DropdownMenuSeparator component */}
+            <DropdownMenuSeparator />
+            <SimpleDDMenuItem
+              size="md"
+              Icon={KeyboardIcon}
+              content="Keyboard Shortcuts"
+            />
+          </>
+        ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
   );
