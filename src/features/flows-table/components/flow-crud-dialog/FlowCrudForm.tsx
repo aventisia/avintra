@@ -3,7 +3,6 @@ import {
   AutherCard,
   Form,
   InputField,
-  SelectField,
   SwitchField,
   TextareaField,
 } from "@aventisia/ui/form";
@@ -17,7 +16,6 @@ import {
   idProps,
   isDisabledProps,
   nameProps,
-  typeProps,
 } from "../../constants/flow-form-field-props";
 import { flowZodSchema } from "../../constants/flow-zod-schema";
 import { FlowsTableDto } from "../../dtos/flows-table-dto";
@@ -76,11 +74,11 @@ export const FlowCrudForm = () => {
       {isReadMode && <InputField {...idProps} />}
 
       {/* Type. TODO: Select field doesn't update. Applied workaround for now */}
-      {crudAction === "create" ? (
+      {/* {crudAction === "create" ? (
         <SelectField {...typeProps} />
       ) : (
         form.getValues("type") !== "" && <SelectField {...typeProps} />
-      )}
+      )} */}
 
       {/* Name */}
       <InputField
