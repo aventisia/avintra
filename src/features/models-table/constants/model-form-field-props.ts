@@ -9,6 +9,15 @@ import { enumToArray } from "@aventisia/ui/utils";
 import { ModelLLMEnum } from "../enums/model-llm-enum";
 import { ModelTypesEnum } from "../enums/model-type-enum";
 
+// TODO: Temporary adding this till the time we don't want to show the AI Persona in Prod
+enum ModelTypesEnumTemp {
+  Extraction = "Extraction",
+  Summarization = "Summarization",
+  Classification = "Classification",
+  SentimentAnalytics = "Sentiment Analytics",
+  QuestionAnswer = "Questions & Answers",
+}
+
 // Model Id
 const idProps: InputFieldProps = {
   name: "id",
@@ -21,7 +30,10 @@ const typeProps: SelectFieldProps = {
   name: "type",
   label: "Model Type",
   isRequired: true,
-  selectOptions: enumToArray(ModelTypesEnum),
+  selectOptions:
+    import.meta.env.MODE !== "production"
+      ? enumToArray(ModelTypesEnum)
+      : enumToArray(ModelTypesEnumTemp),
 };
 
 // LLM
