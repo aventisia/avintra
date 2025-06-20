@@ -19,6 +19,7 @@ global using MLModelBuilderAPIs.DTOs;
 global using MLModelBuilderAPIs.Entities;
 global using MLModelBuilderAPIs.MappingProfiles;
 global using MLModelBuilderAPIs.Enums;
+global using MLModelBuilderAPIs.Attributes;
 
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
@@ -32,6 +33,7 @@ global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 global using Microsoft.AspNetCore.SignalR;
+global using Microsoft.AspNetCore.Mvc.Filters;
 
 global using Serilog;
 global using Mapster;
