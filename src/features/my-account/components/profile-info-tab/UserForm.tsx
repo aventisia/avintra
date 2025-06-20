@@ -33,7 +33,7 @@ export const UserForm = () => {
       className="box flex flex-col p-5"
     >
       <div>
-        <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-2xl font-medium">
+        <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-xl font-medium">
           Profile Info
         </div>
 
@@ -85,19 +85,19 @@ export const UserForm = () => {
                 <div className="flex flex-col items-center md:flex-row">
                   <CheckboxFeildDiv.CheckboxInputFeildWrapper>
                     <CheckboxFeildDiv.CheckboxInputFeild value="Male" />
-                    <CheckboxFeildDiv.Label className="font-semibold text-slate-500">
+                    <CheckboxFeildDiv.Label className="text-sm text-slate-500">
                       Male
                     </CheckboxFeildDiv.Label>
                   </CheckboxFeildDiv.CheckboxInputFeildWrapper>
                   <CheckboxFeildDiv.CheckboxInputFeildWrapper>
                     <CheckboxFeildDiv.CheckboxInputFeild value="Female" />
-                    <CheckboxFeildDiv.Label className="font-semibold text-slate-500">
+                    <CheckboxFeildDiv.Label className="text-sm text-slate-500">
                       Female
                     </CheckboxFeildDiv.Label>
                   </CheckboxFeildDiv.CheckboxInputFeildWrapper>
                   <CheckboxFeildDiv.CheckboxInputFeildWrapper>
                     <CheckboxFeildDiv.CheckboxInputFeild value="PreferNotToSay" />
-                    <CheckboxFeildDiv.Label className="font-semibold text-slate-500">
+                    <CheckboxFeildDiv.Label className="text-sm text-slate-500">
                       Prefer Not To Say
                     </CheckboxFeildDiv.Label>
                   </CheckboxFeildDiv.CheckboxInputFeildWrapper>

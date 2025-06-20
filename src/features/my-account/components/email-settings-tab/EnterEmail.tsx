@@ -63,11 +63,11 @@ export const EnterEmail = () => {
       className="px-2.5 pb-5"
     >
       <div className="box flex flex-col p-5">
-        <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-[0.94rem] font-medium">
+        <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
           Email Settings
         </div>
         <div>
-          <div className="inline-flex gap-1 text-slate-500">
+          <div className="inline-flex gap-1 text-sm text-slate-500">
             Your current email address is
             <p className="font-medium">{userSession?.email}</p>
           </div>
@@ -85,7 +85,7 @@ export const EnterEmail = () => {
             <InputField
               name="email"
               type="email"
-              className="text-md border-slate-300/60 shadow-sm"
+              className="border-slate-300/60 text-sm shadow-sm"
               {...(userSession?.tenantName == DefaultTenantsEnum.IndividualUsers
                 ? {
                     onChangeCapture: (e) =>
@@ -105,7 +105,7 @@ export const EnterEmail = () => {
         <div className="mt-6 flex border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
           {userSession?.tenantName == DefaultTenantsEnum.IndividualUsers && (
             <SubmitButton
-              className="text-md"
+              className="text-sm"
               primaryText="Verify"
               isPending={isSubmitting || isCodePending}
               disabled={!isAvailable || isCheckPending}

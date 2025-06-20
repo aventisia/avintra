@@ -28,7 +28,7 @@ export const verificationCodeProps: InputOtpFieldProps = {
   children: "", // Add an empty children property
 };
 
-const className = "h-11 text-md";
+const className = "h-11 text-sm";
 
 // Email
 export const emailProps: InputFieldProps = {

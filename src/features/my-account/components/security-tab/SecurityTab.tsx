@@ -24,7 +24,7 @@ export const SecurityTab = () => {
       disabled={isPending}
       className="box box--stacked flex flex-col p-5"
     >
-      <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-[0.94rem] font-medium">
+      <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
         Security
       </div>
       <div>

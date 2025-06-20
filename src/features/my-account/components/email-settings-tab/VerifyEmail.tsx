@@ -54,7 +54,7 @@ export const VerifyEmail = () => {
       checkDirtyForm={false}
     >
       <div className="box flex flex-col p-5">
-        <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-[0.94rem] font-medium">
+        <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
           Email Settings
         </div>
         <div>
@@ -71,14 +71,14 @@ export const VerifyEmail = () => {
         </div>
         <div className="mt-6 flex flex-wrap border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
           <Button
-            className="text-md me-auto font-normal"
+            className="me-auto text-sm font-normal"
             variant={"link"}
             onClick={() => setStepNo(1)}
           >
             <Lucide icon="ArrowLeft" className="h-6 w-6" />
             <span className="ml-1">Incorrect Email</span>
           </Button>
-          <div className="text-md me-2 flex flex-row flex-wrap items-center gap-2">
+          <div className="me-2 flex flex-row flex-wrap items-center gap-2 text-sm">
             <p>Did not receive the code?</p>
             <ResendCodeButton
               isPending={isResendCodePending}
@@ -88,7 +88,7 @@ export const VerifyEmail = () => {
           </div>
           <SubmitButton
             primaryText="Submit"
-            className="text-md"
+            className="text-sm"
             isPending={isSubmitting || isUpdatePending}
           />
         </div>

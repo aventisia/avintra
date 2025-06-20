@@ -64,7 +64,7 @@ export const DeactivationVerifyEmailForm = () => {
       checkDirtyForm={false}
     >
       <div className="box flex flex-col p-5">
-        <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-[0.94rem] font-medium">
+        <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
           Email Settings
         </div>
         <div>
@@ -93,7 +93,7 @@ export const DeactivationVerifyEmailForm = () => {
         </div>
         <div className="mt-6 flex flex-wrap border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
           <Button
-            className="text-md me-auto font-normal"
+            className="text-sm me-auto font-normal"
             variant="link"
             type="reset"
             onClick={() => setStepNo(1)}
@@ -101,7 +101,7 @@ export const DeactivationVerifyEmailForm = () => {
             <Lucide icon="ArrowLeft" className="h-6 w-6" />
             <span className="ml-1">Cancel</span>
           </Button>
-          <div className="text-md me-2 flex flex-row flex-wrap items-center gap-2">
+          <div className="text-sm me-2 flex flex-row flex-wrap items-center gap-2">
             <p>Did not receive the code?</p>
             <ResendCodeButton
               isPending={isResendCodePending}
@@ -116,7 +116,7 @@ export const DeactivationVerifyEmailForm = () => {
                 : "Delete"
             }
             variant="destructive"
-            className="text-md"
+            className="text-sm"
             isPending={isSubmitting || isDeactivationPending || isLoading}
           />
         </div>

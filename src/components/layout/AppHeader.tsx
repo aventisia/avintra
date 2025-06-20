@@ -22,7 +22,7 @@ const AppHeader: React.FC = () => {
           )}
           <AppLogo />
         </div>
-        <SearchBox />
+        {import.meta.env.MODE !== "production" ? <SearchBox /> : null}
         <div className="ml-4 flex items-center gap-4">
           <UnreadNotifications />
           <UserAccountModal />

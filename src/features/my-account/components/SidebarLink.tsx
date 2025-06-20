@@ -16,13 +16,13 @@ export const MyAccountSidebarLink = ({
     <Link
       to={linkTo}
       className={clsx([
-        "flex items-center py-3 first:-mt-3 last:-mb-3 hover:text-primary [&.active]:font-medium [&.active]:text-primary",
+        "flex items-center py-3 text-sm first:-mt-3 last:-mb-3 hover:text-primary [&.active]:font-medium [&.active]:text-primary",
         {
           active: matchPath(linkTo, pathname),
         },
       ])}
     >
-      <Lucide icon={linkIcon} className="mr-3 h-6 w-6 stroke-[1.3]" />
+      <Lucide icon={linkIcon} className="mr-3 h-4 w-4 stroke-[2]" />
       {linkLabel}
     </Link>
   );

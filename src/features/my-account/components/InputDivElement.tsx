@@ -23,7 +23,7 @@ export function InputDivElement({
       <label className="mb-2 inline-block sm:mb-0 sm:mr-5 sm:text-right xl:mr-14 xl:w-60">
         <div className="text-left">
           <div className="flex items-center">
-            <div className="font-medium text-slate-800">
+            <div className="text-sm font-medium text-slate-800">
               {headingForInput}
               {isRequired && (
                 <span className="font-medium text-rose-500"> *</span>

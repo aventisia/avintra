@@ -41,7 +41,7 @@ export const CompanyForm = () => {
       disabled={userSession?.tenantName != DefaultTenantsEnum.IndividualUsers}
     >
       <div>
-        <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-2xl font-medium">
+        <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-xl font-medium">
           {userSession?.tenantName == DefaultTenantsEnum.IndividualUsers
             ? "Billing Info"
             : "Tenant Info"}

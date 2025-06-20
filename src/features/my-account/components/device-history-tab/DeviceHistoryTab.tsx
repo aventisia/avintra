@@ -12,11 +12,11 @@ export const DeviceHistoryTab = () => {
 
   return (
     <div className="box box--stacked flex flex-col p-5">
-      <div className="mb-6 flex items-center border-b border-dashed border-slate-300/70 pb-5 text-[0.94rem] font-medium">
+      <div className="mb-6 flex items-center border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
         Device History
       </div>
       <div>
-        <div className="text-slate-500">
+        <div className="text-sm text-slate-500">
           Access and control your currently connected devices.
         </div>
         <div className="mt-5 rounded-lg border border-slate-200/80">
@@ -24,16 +24,16 @@ export const DeviceHistoryTab = () => {
             <DeviceHistoryTable>
               <DeviceHistoryTable.Thead>
                 <DeviceHistoryTable.Tr>
-                  <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
+                  <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 text-sm font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
                     Browser
                   </DeviceHistoryTable.Td>
-                  <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
+                  <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 text-sm font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
                     Device
                   </DeviceHistoryTable.Td>
-                  <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
+                  {/* <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
                     Location
-                  </DeviceHistoryTable.Td>
-                  <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
+                  </DeviceHistoryTable.Td> */}
+                  <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 text-sm font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
                     Status
                   </DeviceHistoryTable.Td>
                 </DeviceHistoryTable.Tr>
@@ -51,7 +51,7 @@ export const DeviceHistoryTab = () => {
                       key={session.refreshToken.slice(0, 8).padEnd(index)}
                       className="[&_td]:last:border-b-0"
                     >
-                      <DeviceHistoryTable.Td className="dark:bg-darkmode-600 border-dashed border-slate-300/70 py-4">
+                      <DeviceHistoryTable.Td className="dark:bg-darkmode-600 border-dashed border-slate-300/70 py-4 text-sm">
                         <div className="flex items-center whitespace-nowrap">
                           <div className="image-fit h-4 w-4 zoom-in">
                             {(getImageSourceOfBrowser(session.browserType) && (
@@ -75,7 +75,7 @@ export const DeviceHistoryTab = () => {
                         </div>
                       </DeviceHistoryTable.Td>
 
-                      <DeviceHistoryTable.Td className="dark:bg-darkmode-600 border-dashed border-slate-300/70 py-4">
+                      <DeviceHistoryTable.Td className="dark:bg-darkmode-600 border-dashed border-slate-300/70 py-4 text-sm">
                         <div className="flex max-w-md items-center truncate whitespace-nowrap">
                           <Lucide
                             icon="Smartphone"
@@ -91,13 +91,13 @@ export const DeviceHistoryTab = () => {
                         </div>
                       </DeviceHistoryTable.Td>
 
-                      <DeviceHistoryTable.Td className="dark:bg-darkmode-600 border-dashed border-slate-300/70 py-4">
+                      {/* <DeviceHistoryTable.Td className="dark:bg-darkmode-600 border-dashed border-slate-300/70 py-4">
                         <div className="whitespace-nowrap">
                           {session.location}
                         </div>
-                      </DeviceHistoryTable.Td>
+                      </DeviceHistoryTable.Td> */}
 
-                      <DeviceHistoryTable.Td className="dark:bg-darkmode-600 border-dashed border-slate-300/70 py-4">
+                      <DeviceHistoryTable.Td className="dark:bg-darkmode-600 border-dashed border-slate-300/70 py-4 text-sm">
                         <div className="whitespace-nowrap">
                           {session.sessionExpiresOn < new Date()
                             ? "Ended"
