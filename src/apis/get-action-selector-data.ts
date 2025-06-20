@@ -15,6 +15,17 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
 
   if (!loader) throw new Error("Action selector data JSON not found");
 
-  const module = (await loader()) as { default: unknown };
-  return module.default as PrimaryCategoryType[];
+  const module = (await loader()) as { default: PrimaryCategoryType[] };
+  let data = module.default;
+
+  if (import.meta.env.MODE !== "production") {
+    // Explicit import of dev data
+    const devModule = (await import(
+      "../features/action-selector/constants/_DevActionSelectorData.json"
+    )) as unknown as { default: PrimaryCategoryType[] };
+
+    data = [...data, ...devModule.default];
+  }
+
+  return data;
 }
