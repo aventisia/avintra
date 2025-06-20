@@ -13,7 +13,7 @@ public interface IAIModelService
     /// with an enumeration of AIModelDto objects, which represent the available AI models.
     /// </returns>
     Task<ServiceResponse<IEnumerable<AIModelDto>>> GetAIModelsAsync();
-    
+
     /// <summary>
     /// Retrieves the setup details for a specific AI model by its unique identifier.
     /// </summary>
@@ -33,4 +33,13 @@ public interface IAIModelService
     /// or an appropriate error message if execution fails.
     /// </returns>
     Task<ServiceResponse<object>> ExecuteViaLLMAsync(ExtractRequestDto extractRequestDto);
+
+    /// <summary>
+    /// Add a new document records to the system using the provided metadata.
+    /// </summary>
+    /// <param name="request">The request containing document metadata and related details.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation, containing a service response with the result of the save action.
+    /// </returns>
+    Task<ServiceResponse<object>> AddDocumentRecordAsync(AddDocumentRequestDto request);
 }

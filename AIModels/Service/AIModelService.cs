@@ -264,5 +264,86 @@ public class AIModelService : IAIModelService
 
         return serviceResponse;
     }
+
+    // Adds a new document record by executing the associated AI model processing logic (e.g., Extraction, Classification, etc.) based on the model type.
+    public async Task<ServiceResponse<object>> AddDocumentRecordAsync(AddDocumentRequestDto addDocumentRequestDto)
+    {
+        var serviceResponse = new ServiceResponse<object>
+        {
+            Data = null,
+            Message = "Failed to process the document with the AI model. Please try again later."
+        };
+
+        try
+        {
+            _logger.LogDebug("Attempting to retrieve AI model with ID: {ModelId}", addDocumentRequestDto.MLModelId);
+
+            var mlModel = await _unitOfWork.MLModelRepo
+                .GetByConditionAsync(m => m.Id == addDocumentRequestDto.MLModelId)
+                .FirstOrDefaultAsync();
+
+            if (mlModel == null)
+            {
+                _logger.LogWarning("AI model not found for ID: {ModelId}", addDocumentRequestDto.MLModelId);
+                serviceResponse.Message = "AI model not found.";
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("Executing AI model of type: {ModelType} (ID: {ModelId})", mlModel.Type, mlModel.Id);
+
+            // Prepare request for review processing
+            var reviewRequest = new CreateModelReviewRequestDto
+            {
+                MLModelId = addDocumentRequestDto.MLModelId,
+                Type = ExtractedDataType.Viewer,
+                FileIds = addDocumentRequestDto.FileIds
+            };
+
+            object? processedData = null;
+
+            _logger.LogInformation("AI model processing started. Model Type: {ModelType}", mlModel.Type);
+            _logger.LogInformation("Attempting to add document record using model type: {ModelType}", mlModel.Type);
+
+            switch (mlModel.Type)
+            {
+                case ModelTypesEnum.Extraction:
+                    processedData = (await _extractionSetupService.AddReviewDataAsync(reviewRequest)).Data;
+                    break;
+
+                case ModelTypesEnum.Classification:
+                    processedData = (await _classificationService.AddReviewDataAsync(reviewRequest)).Data;
+                    break;
+
+                case ModelTypesEnum.Summarization:
+                    processedData = (await _summarizationService.AddReviewDataAsync(reviewRequest)).Data;
+                    break;
+
+                case ModelTypesEnum.SentimentAnalytics:
+                    processedData = (await _sentimentAnalyticsService.AddReviewDataAsync(reviewRequest)).Data;
+                    break;
+
+                case ModelTypesEnum.QuestionAnswer:
+                    processedData = (await _questionAnswerService.AddReviewDataAsync(reviewRequest)).Data;
+                    break;
+
+                default:
+                    _logger.LogWarning("Unsupported or unknown AI model type: {ModelType}", mlModel.Type);
+                    serviceResponse.Message = "Unsupported or unknown model type.";
+                    return serviceResponse;
+            }
+
+            _logger.LogInformation("AI model processing completed successfully. Model Type: {ModelType}", mlModel.Type);
+            serviceResponse.Data = processedData;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Document record added successfully.";
+            _logger.LogInformation("AI model execution completed successfully for model ID: {ModelId}", mlModel.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while processing document record for model ID: {ModelId}", addDocumentRequestDto.MLModelId);
+        }
+
+        return serviceResponse;
+    }
 }
 
