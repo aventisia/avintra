@@ -74,7 +74,9 @@ const AppHeader: React.FC = () => {
           <SearchCommandTrigger />
           {import.meta.env.MODE !== "production" ? <SettingsTrigger /> : null}
 
-          <StudioPreferences className="mt-0 mlg:mt-4" />
+          {import.meta.env.MODE !== "production" ? (
+            <StudioPreferences className="mt-0 mlg:mt-4" />
+          ) : null}
           <FlowComments className="mt-0 mlg:mt-4" />
         </div>
         {import.meta.env.MODE !== "production" ? <PublishFlow /> : null}
