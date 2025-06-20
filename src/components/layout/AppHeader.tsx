@@ -72,13 +72,12 @@ const AppHeader: React.FC = () => {
           <ExecuteFlow />
 
           <SearchCommandTrigger />
-
-          <SettingsTrigger />
+          {import.meta.env.MODE !== "production" ? <SettingsTrigger /> : null}
 
           <StudioPreferences className="mt-0 mlg:mt-4" />
           <FlowComments className="mt-0 mlg:mt-4" />
         </div>
-        <PublishFlow />
+        {import.meta.env.MODE !== "production" ? <PublishFlow /> : null}
         <Tooltip content="More">
           <HeaderActionMenu />
         </Tooltip>
