@@ -361,7 +361,7 @@ public class UploadedDocService : IUploadedDocService
                 }
 
                 // Construct the file URL for referencing later
-                var fileUrl = $"/{subDirectory.ToLower()}/{uniqueFileName}".Replace("\\", "/");
+                var fileUrl = $"/files/{subDirectory.ToLower()}/{uniqueFileName}".Replace("\\", "/");
 
                 uploadedFiles.Add(new FileDetailDto
                 {
