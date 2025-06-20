@@ -19,20 +19,7 @@ script:pre-request {
       context: faker.lorem.lines(),
       prompt: faker.lorem.lines(2),
       temperature: 0.2,
-      tableMetadata: [
-        {
-          context: faker.lorem.sentence(),
-          name: faker.company.name(),
-          tableHeaders: [
-            {
-              name: faker.book.author(),
-              type: "text",
-              instructions: faker.lorem.lines(2)
-            }
-          ]
-        }
-      ],
-      fieldSetups: [
+       fieldSetups: [
         {
           name: faker.book.author(),
           type: "text",
