@@ -394,43 +394,54 @@ public class ExtractionSetupService : IExtractionSetupService
                 try
                 {
                     documentExtractionData.ExtractedData = JsonSerializer.Deserialize<ExtractionSetupData>(llmResponse.Data, serializerOptions) ?? new ExtractionSetupData();
-                    documentExtractionData.Remarks = outputFormatJson;
+                    documentExtractionData.Remarks = "";
 
-                    // // Assign field names based on field index using the fieldDict dictionary
-                    // foreach (var field in documentExtractionData.ExtractedData.Fields)
-                    // {
-                    //     if (fieldDict.TryGetValue(field.Index, out var name))
-                    //     {
-                    //         field.Name = name;
-                    //     }
-                    // }
+                    // Assign field names based on field index using the fieldDict dictionary
+                    foreach (var field in documentExtractionData.ExtractedData.Fields)
+                    {
+                        if (fieldDict.TryGetValue(field.Index, out var name))
+                        {
+                            field.Name = name;
+                        }
+                    }
+                    // Ensure all necessary objects are not null
+                    if (documentExtractionData?.ExtractedData?.Tables != null)
+                    {
+                        foreach (var tableSchema in documentExtractionData.ExtractedData.Tables)
+                        {
+                            if (tableSchema == null)
+                                continue;
 
-                    // // Assign table names and header names using tableMetadataDict and tableHeaderDict
-                    // foreach (var tableSchema in documentExtractionData.ExtractedData.Tables)
-                    // {
-                    //     // Set the table name if available
-                    //     if (tableMetadataDict.TryGetValue(tableSchema.Index, out var tableName))
-                    //     {
-                    //         tableSchema.Name = tableName;
-                    //     }
+                            // Set the table name if available
+                            if (tableMetadataDict != null && tableMetadataDict.TryGetValue(tableSchema.Index, out var tableName))
+                            {
+                                tableSchema.Name = tableName;
+                            }
 
-                    //     // Set the header names for the table if available
-                    //     if (tableHeaderDict.TryGetValue(tableSchema.Index, out var headersDict))
-                    //     {
-                    //         foreach (var header in tableSchema.Headers)
-                    //         {
-                    //             if (headersDict.TryGetValue(header.Index, out var headerName))
-                    //             {
-                    //                 header.Name = headerName;
-                    //             }
-                    //         }
-                    //     }
-                    // }
+                            // Set the header names for the table if available
+                            if (tableHeaderDict != null && tableHeaderDict.TryGetValue(tableSchema.Index, out var headersDict))
+                            {
+                                if (tableSchema.Headers != null)
+                                {
+                                    foreach (var header in tableSchema.Headers)
+                                    {
+                                        if (header == null)
+                                            continue;
+
+                                        if (headersDict.TryGetValue(header.Index, out var headerName))
+                                        {
+                                            header.Name = headerName;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Deserialization failed for DocumentId: {DocumentId}", documentId);
-                    documentExtractionData.Remarks = $"005: Deserialization failed for DocumentId: {documentId}, Output:{outputFormatJson} , Response: {llmResponse.Data}";
+                    documentExtractionData.Remarks = $"005: Deserialization failed for DocumentId: {documentId}";
 
                     // Increment the failure count if there was existing extracted data for this document
                     if (existingDocumentData != null)
