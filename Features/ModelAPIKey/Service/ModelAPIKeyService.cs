@@ -71,7 +71,7 @@ public class ModelAPIKeyService : IModelAPIKeyService
             _logger.LogInformation("Generating new API key for user {UserId}", _userId);
 
             var newModelApiKey = apiKeyDto.Adapt<ModelAPIKey>();
-            newModelApiKey.ApiKey = Guid.NewGuid().ToString();
+            newModelApiKey.ApiKey = Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Replace("=", "").Replace("+", "").Replace("/", "");
             newModelApiKey.CreatedByUserId = _userId;
             newModelApiKey.LastModifiedByUserId = _userId;
 
