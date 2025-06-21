@@ -194,7 +194,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
             Predefined,
 
             [Display(Name = "Custom", Description = "Define a custom separator character or string.")]
-            Custom
+            Custom,
+
         }
         public enum PredefinedSeparatorEnum
         {

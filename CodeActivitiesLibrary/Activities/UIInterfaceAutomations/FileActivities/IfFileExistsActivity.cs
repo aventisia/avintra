@@ -30,8 +30,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
-
             try
             {
                 var condition = Condition.Get(context);
@@ -62,13 +60,12 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
                         throw new ArgumentOutOfRangeException(nameof(condition));
                 }
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"File existence check completed for '{filePath}'.");
             }
             catch (Exception ex)
             {
-                status = $"Error checking file existence: {ex.Message}";
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error checking file existence: {ex.Message}");
             }
         }
     }

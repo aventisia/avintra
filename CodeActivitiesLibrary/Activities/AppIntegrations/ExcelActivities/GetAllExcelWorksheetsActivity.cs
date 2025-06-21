@@ -48,6 +48,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                 result.AddRange(from Excel.Worksheet sheet in wb.Worksheets select sheet.Name);
 
+                WorksheetNames.Set(context, result);
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Retrieved all excel sheet successfully");
             }

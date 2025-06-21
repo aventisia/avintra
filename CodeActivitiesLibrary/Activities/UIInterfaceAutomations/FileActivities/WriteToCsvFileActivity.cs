@@ -45,7 +45,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
         [RenderIfCondition(nameof(UseCustomColumnSeparator), true)]
         public InArgument<string> CustomColumnSeparator { get; set; }
 
-
         [DisplayName("Predefined Separator")]
         [Description("The predefined separator used in the CSV file (e.g., Comma, Tab).")]
         [RenderIfCondition(nameof(UseCustomColumnSeparator), false)]
@@ -91,6 +90,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
                     var predefSep = PredefinedSeparator.Get(context);
                     switch (predefSep)
                     {
+                        case CsvPredefinedSeparatorEnum.SystemDefault:
+                            separator = ","; 
+                            break;
                         case CsvPredefinedSeparatorEnum.Comma:
                             separator = ",";
                             break;
@@ -208,6 +210,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 
         public enum CsvPredefinedSeparatorEnum
         {
+            [Display(Name = "System Default", Description = "Uses a System Default as the separator.")]
+            SystemDefault,
+
             [Display(Name = "Comma", Description = "Uses a comma (,) as the separator.")]
             Comma,
 

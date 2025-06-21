@@ -24,7 +24,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
         {
             var filePath = FilePath.Get(context);
             byte[] binaryData = null;
-            var status = "";
 
             try
             {
@@ -32,17 +31,15 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
                     throw new ArgumentException($"File not found: {filePath}");
 
                 binaryData = File.ReadAllBytes(filePath);
-                status = "File converted to binary data successfully.";
                 BinaryData.Set(context, binaryData);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, "File converted to binary data successfully.");
             }
             catch (Exception ex)
             {
-                status = $"Error converting file to binary data: {ex.Message}";
-                BinaryData.Set(context, binaryData);
+                BinaryData.Set(context, null);
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error converting file to binary data: {ex.Message}");
             }
         }
     }

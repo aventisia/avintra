@@ -39,12 +39,14 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 
                 status = "Base64 string successfully converted to plain text.";
                 PlainText.Set(context, result);
+                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }
             catch (FormatException fex)
             {
                 status = $"Invalid Base64 format: {fex.Message}";
                 PlainText.Set(context, null);
+                IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
             }
             catch (Exception ex)
@@ -52,6 +54,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
                 status = $"Error converting Base64 to text: {ex.Message}";
 
                 PlainText.Set(context, null);
+                IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
             }
         }
