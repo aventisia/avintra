@@ -37,6 +37,7 @@ import { SupportTicketsPage } from "./pages/SupportTicketsPage";
 import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
 import { TenantInfoPage } from "./pages/TenantsInfoPage";
 import { UsersPage } from "./pages/UsersPage";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 const routerConfig: RouteObject[] = [
   {
@@ -58,7 +59,9 @@ const routerConfig: RouteObject[] = [
       },
       {
         path: "/home",
-        element: <ComingSoon />,
+        element: (
+          <ProtectedRoute persmissions={["SA", "GA"]} page={<ComingSoon />} />
+        ),
       },
       {
         path: "/account",
@@ -90,19 +93,30 @@ const routerConfig: RouteObject[] = [
       },
       {
         path: "/marketplace",
-        element: <ComingSoon />,
+        element: (
+          <ProtectedRoute persmissions={["SA", "GA"]} page={<ComingSoon />} />
+        ),
       },
       {
         path: "/users",
-        element: <UsersPage />,
+        element: (
+          <ProtectedRoute persmissions={["SA", "GA"]} page={<UsersPage />} />
+        ),
       },
       {
         path: "/tenant",
-        element: <TenantInfoPage />,
+        element: (
+          <ProtectedRoute
+            persmissions={["SA", "GA"]}
+            page={<TenantInfoPage />}
+          />
+        ),
       },
       {
         path: "/billing",
-        element: <BillingPage />,
+        element: (
+          <ProtectedRoute persmissions={["SA", "GA"]} page={<BillingPage />} />
+        ),
       },
       {
         path: "/orchestrator",
@@ -112,35 +126,75 @@ const routerConfig: RouteObject[] = [
           {
             index: true,
             path: "/orchestrator/machines/:id?/:a?",
-            element: <MachinesPage />,
+            element: (
+              <ProtectedRoute
+                persmissions={["SA", "GA"]}
+                page={<MachinesPage />}
+              />
+            ),
           },
           {
             path: "/orchestrator/queues/:id?/:a?",
-            element: <QueuesPage />,
+            element: (
+              <ProtectedRoute
+                persmissions={["SA", "GA"]}
+                page={<QueuesPage />}
+              />
+            ),
           },
           {
             path: "/orchestrator/queues/work-items/:qid",
-            element: <QueuesWorkItemsPage />,
+            element: (
+              <ProtectedRoute
+                persmissions={["SA", "GA"]}
+                page={<QueuesWorkItemsPage />}
+              />
+            ),
           },
           {
             path: "/orchestrator/executions/:id?/:a?",
-            element: <ExecutionsPage />,
+            element: (
+              <ProtectedRoute
+                persmissions={["SA", "GA"]}
+                page={<ExecutionsPage />}
+              />
+            ),
           },
           {
             path: "/orchestrator/triggers/:id?/:a?",
-            element: <TriggersPage />,
+            element: (
+              <ProtectedRoute
+                persmissions={["SA", "GA"]}
+                page={<TriggersPage />}
+              />
+            ),
           },
           {
             path: "/orchestrator/keystore/:id?/:a?",
-            element: <KeystorePage />,
+            element: (
+              <ProtectedRoute
+                persmissions={["SA", "GA"]}
+                page={<KeystorePage />}
+              />
+            ),
           },
           {
             path: "/orchestrator/vault/:id?/:a?",
-            element: <VaultPage />,
+            element: (
+              <ProtectedRoute
+                persmissions={["SA", "GA"]}
+                page={<VaultPage />}
+              />
+            ),
           },
           {
             path: "/orchestrator/licenses/:id?/:a?",
-            element: <LicensesPage />,
+            element: (
+              <ProtectedRoute
+                persmissions={["SA", "GA"]}
+                page={<LicensesPage />}
+              />
+            ),
           },
         ],
       },
@@ -149,16 +203,31 @@ const routerConfig: RouteObject[] = [
         children: [
           {
             path: "/sa/tenants",
-            element: <TenantsPage />,
+            element: (
+              <ProtectedRoute
+                persmissions={["SA", "GA"]}
+                page={<TenantsPage />}
+              />
+            ),
             index: true,
           },
           {
             path: "/sa/licenses",
-            element: <SaLicensesPage />,
+            element: (
+              <ProtectedRoute
+                persmissions={["SA", "GA"]}
+                page={<SaLicensesPage />}
+              />
+            ),
           },
           {
             path: "/sa/pricing",
-            element: <PricingPage />,
+            element: (
+              <ProtectedRoute
+                persmissions={["SA", "GA"]}
+                page={<PricingPage />}
+              />
+            ),
           },
         ],
       },
