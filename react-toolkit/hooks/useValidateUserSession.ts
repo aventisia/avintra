@@ -7,13 +7,19 @@ import {
 } from "@/react-toolkit/apis/accounts-me-apis";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
+import { useShallow } from "zustand/react/shallow";
 
 /**
  * Custom hook to validate user session and handle session refresh.
  * @returns An object containing the `isPending` state.
  */
 export const useValidateUserSession = () => {
-  const { setUserSession } = useUserSessionStore();
+  const { userSession, setUserSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+      setUserSession: state.setUserSession,
+    })),
+  );
 
   // Validate user session
   const { mutate, isPending } = useMutation({
@@ -39,5 +45,5 @@ export const useValidateUserSession = () => {
   }, [mutate]);
 
   // return isPending state
-  return { isPending };
+  return { isPending, userSession };
 };

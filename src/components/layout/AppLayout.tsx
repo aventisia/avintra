@@ -1,3 +1,9 @@
+import { IS_TAURI } from "@/constants/constants";
+import {
+  useCheckForUpdate,
+  useRedirectOnRelaunch,
+} from "@/features/tauri-updater";
+import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { Sidebar } from "@aventisia/ui/layout";
 import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
@@ -5,18 +11,10 @@ import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-
-import {
-  useCheckForUpdate,
-  useRedirectOnRelaunch,
-} from "@/features/tauri-updater";
-import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
-
 import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppRedirectPage } from "./AppRedirectPage";
-import { sidebarMenuSections } from "./sidebar-menu-sections";
-import { IS_TAURI } from "@/constants/constants";
+import { getSidebarMenuBasedOnPersmissions } from "./sidebar-menu-sections";
 
 export const AppLayout = () => {
   // Get the state and actions from the base layout store
@@ -37,10 +35,13 @@ export const AppLayout = () => {
   useCheckForUpdate();
 
   // Validate user session
-  const { isPending } = useValidateUserSession();
+  const { isPending, userSession } = useValidateUserSession();
 
   // Set environment variables and sidebar menu sections only once
   useEffect(() => {
+    // If the user session is still pending, do not proceed
+    if (isPending) return;
+
     // Set the environment variables
     setViteEnvVars({
       BASE_URL: import.meta.env.BASE_URL,
@@ -49,8 +50,10 @@ export const AppLayout = () => {
     });
 
     // Set the sidebar menu sections
-    setSidebarMenuSections(sidebarMenuSections);
-  }, []);
+    setSidebarMenuSections(
+      getSidebarMenuBasedOnPersmissions(userSession?.userRoles || []),
+    );
+  }, [userSession, isPending]);
 
   return (
     <>
