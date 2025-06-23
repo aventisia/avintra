@@ -114,6 +114,7 @@ public class AIModelService : IAIModelService
                     var extractionSetup = await _extractionSetupService.GetExtractionSetupByMLModelIdAsync(mlModelId);
                     data = new
                     {
+                        Type = mlModel.Type,
                         Fields = extractionSetup.Data.SetupObject?.FieldSetups,
                         Tables = extractionSetup.Data.SetupObject?.TableMetadata
                     };
@@ -125,7 +126,11 @@ public class AIModelService : IAIModelService
                     // If the model type is Classification, fetch the classification setup
                     _logger.LogInformation("Processing AI model of type 'Classification'. Fetching setup...");
                     var classificationSetup = await _classificationService.GetClassificationSetupByMLModelIdAsync(mlModelId);
-                    data = new { Categories = classificationSetup.Data.SetupObject?.Categories };
+                    data = new 
+                    { 
+                        Type = mlModel.Type,
+                        Categories = classificationSetup.Data.SetupObject?.Categories
+                    };
                     _logger.LogInformation("Successfully retrieved classification setup data.");
                     break;
 
@@ -133,7 +138,11 @@ public class AIModelService : IAIModelService
                     // If the model type is Summarization, fetch the summarization setup
                     _logger.LogInformation("Processing AI model of type 'Summarization'. Fetching setup...");
                     var summarizationSetup = await _summarizationService.GetSummarizationSetupByMLModelIdAsync(mlModelId);
-                    data = summarizationSetup.Data.SetupObject;
+                    data = new 
+                    { 
+                        Type = mlModel.Type,
+                        Summary = string.Empty
+                    };
                     _logger.LogInformation("Successfully retrieved summarization setup data.");
                     break;
 
@@ -141,7 +150,11 @@ public class AIModelService : IAIModelService
                     // If the model type is Sentiment Analysis, fetch the sentiment setup
                     _logger.LogInformation("Processing AI model of type 'SentimentAnalytics'. Fetching setup...");
                     var sentimentAnalyticsSetup = await _sentimentAnalyticsService.GetSentimentAnalyticsSetupByMLModelIdAsync(mlModelId);
-                    data = new { Categories = sentimentAnalyticsSetup.Data.SetupObject?.Categories };
+                    data = new 
+                    { 
+                        Type = mlModel.Type,
+                        Categories = sentimentAnalyticsSetup.Data.SetupObject?.Categories
+                    };
                     _logger.LogInformation("Successfully retrieved sentiment analysis setup data.");
                     break;
 
@@ -149,7 +162,11 @@ public class AIModelService : IAIModelService
                     // If the model type is Question Answering, fetch the Q&A setup
                     _logger.LogInformation("Processing AI model of type 'QuestionAnswer'. Fetching setup...");
                     var questionAnswerSetup = await _questionAnswerService.GetQuestionAnswerSetupByMLModelIdAsync(mlModelId);
-                    data = new { QuestionAnswers = questionAnswerSetup.Data.SetupObject?.QuestionAnswers };
+                    data = new 
+                    { 
+                        Type = mlModel.Type,
+                        QuestionAnswers = questionAnswerSetup.Data.SetupObject?.QuestionAnswers
+                    };
                     _logger.LogInformation("Successfully retrieved question answering setup data.");
                     break;
 
@@ -157,7 +174,10 @@ public class AIModelService : IAIModelService
                     // If the model type is AI Persona, fetch the persona setup
                     _logger.LogInformation("Processing AI model of type 'AIPersona'. Fetching setup...");
                     var aiPersonaSetup = await _aiPersonaService.GetAIPersonaSetupByMLModelIdAsync(mlModelId);
-                    data = aiPersonaSetup.Data.SetupObject;
+                    data = new 
+                    { 
+                        Type = mlModel.Type,
+                    };
                     _logger.LogInformation("Successfully retrieved AI persona setup data.");
                     break;
 
