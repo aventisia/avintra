@@ -2,8 +2,10 @@ Prompt:{{Prompt}},
 Context: {{Context}}
 Task: Extract specific fields and table headers from the provided context. Populate the 'value' field for fields and 'values'array for table headers based on the extracted information. Assign a confidence score and a unique index to each extracted item.",
 OutputStructure: {{OutputFormat}},
+FileContent: {{FileContent}},
+
 Instructions:
-  - Extract information from the {{FileContent}} fill in the 'value' for each field and the 'values' array for each table header in the provided 'OutputStructure'.,
+  - Extract information from the FileContent fill in the 'value' for each field and the 'values' array for each table header in the provided 'OutputStructure'.,
   - For fields, if a value is found, populate the 'value' and assign a confidence score from 1 to 100 (e.g., "95"). If not found, leave 'value' as an empty string and set 'confidenceScore' to "0".",
   - For tables, if a row is found, populate the corresponding 'values' array for each header with the extracted column values. Each element in the 'values' array should correspond to a row in the table. If a table or a specific column has no values, keep the 'values' array empty.",
   - The confidence score for table header values is implicitly handled by the presence/absence of values in the 'values' array. Assign a confidence score for the field if it's found (e.g., "98") or "0" if not found.",
