@@ -78,4 +78,9 @@ public class MLModel : BaseEntity, IMustHaveTenant
     /// Gets or sets the ML model to which this schedule model are associated.
     /// </summary>
     public virtual ICollection<ScheduledModel>? ScheduledModels { get; set; }
+
+    /// <summary>
+    /// Gets or sets the API keys associated with this ML model.
+    /// </summary>
+    public virtual ICollection<ModelAPIKey>? ModelAPIKeys { get; set; }
 }
