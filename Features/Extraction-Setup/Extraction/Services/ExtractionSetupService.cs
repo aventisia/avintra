@@ -1,4 +1,3 @@
-
 namespace MLModelBuilderAPIs.Services;
 
 public class ExtractionSetupService : IExtractionSetupService
@@ -338,6 +337,8 @@ public class ExtractionSetupService : IExtractionSetupService
                 var prompt = model.GeneratedPrompt
                     .Replace("{{FileContent}}", documentText)
                     .Replace("{{OutputFormat}}", outputFormatJson);
+
+                _logger.LogWarning($"Prompt: {prompt}");
 
 
                 // Record the start time before calling the LLM extraction service
