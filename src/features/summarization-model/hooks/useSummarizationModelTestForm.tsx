@@ -50,7 +50,7 @@ export const useSummarizationModelTestForm = () => {
       form.reset({
         submitForFineTuning:
           matchingExtractedData?.submitForFineTuning ?? false,
-        summarizedText: matchingExtractedData?.extractedData.summary ?? "",
+        summarizedText: matchingExtractedData?.extractedData?.summary ?? "",
       });
     }
   }, [form, selectedFile, fieldDataValues]);

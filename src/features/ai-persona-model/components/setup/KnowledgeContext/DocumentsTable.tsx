@@ -38,7 +38,7 @@ const DocumentsTable = ({
           <PlusIcon className="h-5 w-5 stroke-2 text-primary" />
         </Button>
       </div>
-      {categoryFields.length > 1 && (
+      {categoryFields.length > 0 && (
         <div className="!mt-0.5 inline-block rounded-lg border w-full">
           <div className="grid grid-cols-2 bg-accent px-1 py-3 text-sm">
             <div className="px-3">File</div>

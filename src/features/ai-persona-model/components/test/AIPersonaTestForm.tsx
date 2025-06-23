@@ -2,13 +2,13 @@
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { toast } from "@aventisia/ui/sonner";
-// ChatUI core
 import {
   ChatCanvas,
   ChatInput,
   ChatMessage,
   ChatMessages,
   ChatSection,
+  useFile,
 } from "@llamaindex/chat-ui";
 import "@llamaindex/chat-ui/styles/markdown.css";
 import "@llamaindex/chat-ui/styles/pdf.css";
@@ -39,7 +39,13 @@ function AIPersonaTestForm() {
     browserSupportsSpeechRecognition,
   } = useSpeechRecognition();
 
-  // When transcript updates, reflect it in the input
+  const { imageUrl, getAnnotations, uploadFile, reset } = useFile({
+    uploadAPI: "/fake-upload-endpoint",
+  });
+
+  const annotations = getAnnotations();
+
+  // Reflect transcript in input
   useEffect(() => {
     if (transcript) {
       setInput(transcript);
@@ -58,17 +64,15 @@ function AIPersonaTestForm() {
       .start()
       .then(() => {
         if (!mounted) return;
-        // toast.success("Socket connected");
         setConn(connection);
       })
       .catch(
         () =>
           mounted &&
-          toast.error("Falied to establish connection. Please try again..."),
+          toast.error("Failed to establish connection. Please try again..."),
       );
 
     connection.on("ReceiveMessage", (userType: string, msg: string) => {
-      // Only handle assistant responses
       if (userType === "ChatBot") {
         setMessages((prev) => [...prev, { role: "assistant", content: msg }]);
         setIsLoading(false);
@@ -81,32 +85,42 @@ function AIPersonaTestForm() {
     };
   }, []);
 
-  // Custom ChatHandler implementation
+  // File upload handler
+  const handleUpload = async (file: File) => {
+    try {
+      await uploadFile(file);
+    } catch (error) {
+      console.error("Upload error:", error);
+    }
+  };
+
+  // Custom chat handler
   const handler = {
     input,
     setInput: (val: string) => setInput(val),
     isLoading,
     messages,
 
-    stop: () => {
-      /* e.g. cancel socket streaming if you supported it */
-    },
+    stop: () => {},
 
-    // append must return a Promise<string|null|undefined>
     append: async (message: Message) => {
-      // Immediately show this message in UI
-      setMessages((prev) => [...prev, message]);
+      const msgWithFiles = {
+        ...message,
+        annotations,
+      };
+
+      setMessages((prev) => [...prev, msgWithFiles]);
 
       if (message.role === "user" && conn) {
         setIsLoading(true);
         try {
           await conn.invoke("SendMessageAsync", message.content);
         } catch {
-          toast.error("Failed to send");
+          toast.error("Failed to send message");
         }
       }
 
-      // You can return an ID or metadata, or null if none.
+      reset(); // Clear uploaded files after sending
       return null;
     },
   };
@@ -115,16 +129,29 @@ function AIPersonaTestForm() {
     <div className="flex flex-col">
       <ChatSection handler={handler} className="pb-0">
         <div className="flex w-full flex-col gap-4 mx-auto h-[calc(100vh-9.5rem)] overflow-hidden p-0 md:p-5 md:pb-3">
-          {/* <ScrollArea className="flex-grow h-[calc(100vh-17rem)] pr-4"> */}
           <ChatMessages className="p-0">
             <ChatMessages.List>
               {messages.map((message, index) => (
                 <ChatMessage
-                  className="p-0 text-md"
+                  className="p-0 text-md items-start"
                   key={index}
                   message={message}
                   isLast={true}
-                />
+                >
+                  <ChatMessage.Avatar />
+                  <ChatMessage.Content
+                    isLoading={isLoading}
+                    append={handler.append}
+                  >
+                    <ChatMessage.Content.Markdown />
+
+                    <div className="w-1/4 self-end">
+                      <ChatMessage.Content.Image />
+                    </div>
+
+                    <ChatMessage.Content.DocumentFile />
+                  </ChatMessage.Content>
+                </ChatMessage>
               ))}
               <ChatMessages.Loading className="justify-start">
                 <div className="animate-pulse">Thinking...</div>
@@ -137,7 +164,7 @@ function AIPersonaTestForm() {
                   <p className="animate-[slide-up_0.5s_ease-out] text-base [animation-delay:300ms] [animation-fill-mode:forwards] text-center">
                     Initializing chat, please wait...
                   </p>
-                ) : !isLoading && conn ? (
+                ) : conn ? (
                   <>
                     <p className="mb-2 animate-[slide-up_0.5s_ease-out] text-3xl text-center font-semibold [animation-delay:100ms] [animation-fill-mode:forwards]">
                       Hello there!
@@ -154,16 +181,28 @@ function AIPersonaTestForm() {
               }
             />
           </ChatMessages>
-          <ChatCanvas className="w-1/3" />
-          {/* </ScrollArea> */}
 
-          <ChatInput className="p-0 box-border flex flex-col shrink-0">
-            <ChatInput.Form className="">
+          <ChatCanvas className="w-1/3" />
+
+          <ChatInput
+            annotations={annotations}
+            resetUploadedFiles={reset}
+            className="p-0 box-border flex flex-col shrink-0"
+          >
+            {imageUrl && (
+              <div className="px-4">
+                <img
+                  className="max-h-[100px] object-contain rounded-md border"
+                  src={imageUrl}
+                  alt="Uploaded preview"
+                />
+              </div>
+            )}
+            <ChatInput.Form>
               <ChatInput.Field
-                className=" rounded-lg box-border bg-accent focus-visible:ring-2 focus-visible:ring-offset-0 focus-visible:outline-none text-md min-h-0 h-28 max-h-52 px-4 py-5"
+                className=" rounded-lg box-border bg-accent focus-visible:ring-2 focus-visible:ring-offset-0 focus-visible:outline-none text-md min-h-0 h-24 max-h-52 px-4 py-5"
                 placeholder="Type your message..."
               />
-              {/* <ChatInput.Upload /> */}
               {browserSupportsSpeechRecognition && (
                 <Button
                   type="button"
@@ -184,12 +223,13 @@ function AIPersonaTestForm() {
                   <MicIcon />
                 </Button>
               )}
-              <ChatInput.Submit className="bottom-2" />
               <ChatInput.Upload
-                className="[&>label]:bg-accent [&>label]:text-accent-foreground [&>label]:p-0"
-                allowedExtensions={[".pdf", ".jpeg", ".jpg", ".png"]}
+                // allowedExtensions={[".pdf", ".jpeg", ".jpg", ".png"]}
                 multiple={true}
+                onUpload={handleUpload}
+                className="[&>label]:bg-accent [&>label]:text-accent-foreground [&>label]:p-0"
               />
+              <ChatInput.Submit className="bottom-2" />
             </ChatInput.Form>
           </ChatInput>
         </div>
@@ -199,3 +239,7 @@ function AIPersonaTestForm() {
 }
 
 export default AIPersonaTestForm;
+
+// Alow multiple file uploads
+// Add support for other file than images
+//
