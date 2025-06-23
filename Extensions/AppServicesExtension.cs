@@ -11,6 +11,7 @@ public static class AppServicesExtension
 
         services.AddDbContext<MLModelBuilderDbContext>(options => options.UseNpgsql(appDbConnectionString));
         services.AddDbContext<TenantDbContext>(options => options.UseNpgsql(tenantDbConnectionString));
+        services.AddDbContext<APIKeyDbContext>(options => options.UseNpgsql(appDbConnectionString));
     }
 
     public static void AddMappingProfiles(this IServiceCollection services)
