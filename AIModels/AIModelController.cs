@@ -19,7 +19,6 @@ public class AIModelController : BaseApiController
     }
 
     /// Fetches the extraction setup configuration for a specific ML model by ID
-    [ApiKeyAuth]
     [HttpGet("setup/{mlModelId}")]
     public async Task<ActionResult<ServiceResponse<object>>> GetSetupByMLModel(Guid mlModelId)
     {
