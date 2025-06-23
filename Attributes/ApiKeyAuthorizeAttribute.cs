@@ -24,10 +24,10 @@ public class ApiKeyAuthAttribute : Attribute, IAsyncActionFilter
         }
 
         // Get the DbContext from the service provider
-        var dbContext = context.HttpContext.RequestServices.GetRequiredService<MLModelBuilderDbContext>();
+        var dbContext = context.HttpContext.RequestServices.GetRequiredService<APIKeyDbContext>();
 
         // Await the async database query to find the API key record
-        var apiKeyRecord = await dbContext.ModelAPIKeys.Where(k => k.ApiKey == apiKey).SingleOrDefaultAsync();
+        var apiKeyRecord = await dbContext.ModelAPIKeyReadOnly.Where(k => k.ApiKey == apiKey).SingleOrDefaultAsync();
 
         // Return 401 Unauthorized if API key is invalid or inactive
         if (apiKeyRecord == null)
