@@ -11,6 +11,7 @@ public class AIModelService : IAIModelService
     private readonly IQuestionAnswerService _questionAnswerService;
     private readonly IAIPersonaService _aiPersonaService;
     private readonly Guid _userId;
+    private readonly string? _apiKey;
 
     public AIModelService(
         ILogger<AIModelService> logger,
@@ -34,6 +35,8 @@ public class AIModelService : IAIModelService
 
         // Attempt to extract the user ID from the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _apiKey = GetApiKeyOfRequestUtil.GetApiKeyOfRequest(httpContextAccessor.HttpContext);
+
     }
 
     // Retrieves a list of published ai models.
@@ -109,7 +112,12 @@ public class AIModelService : IAIModelService
                     // If the model type is Extraction, fetch the extraction setup
                     _logger.LogInformation("Processing AI model of type 'Extraction'. Fetching setup...");
                     var extractionSetup = await _extractionSetupService.GetExtractionSetupByMLModelIdAsync(mlModelId);
-                    data = extractionSetup.Data;
+                    data = new
+                    {
+                        Fields = extractionSetup.Data.SetupObject?.FieldSetups,
+                        Tables = extractionSetup.Data.SetupObject?.TableMetadata
+                    };
+
                     _logger.LogInformation("Successfully retrieved extraction setup data.");
                     break;
 
@@ -117,7 +125,7 @@ public class AIModelService : IAIModelService
                     // If the model type is Classification, fetch the classification setup
                     _logger.LogInformation("Processing AI model of type 'Classification'. Fetching setup...");
                     var classificationSetup = await _classificationService.GetClassificationSetupByMLModelIdAsync(mlModelId);
-                    data = classificationSetup.Data;
+                    data = new { Categories = classificationSetup.Data.SetupObject?.Categories };
                     _logger.LogInformation("Successfully retrieved classification setup data.");
                     break;
 
@@ -125,7 +133,7 @@ public class AIModelService : IAIModelService
                     // If the model type is Summarization, fetch the summarization setup
                     _logger.LogInformation("Processing AI model of type 'Summarization'. Fetching setup...");
                     var summarizationSetup = await _summarizationService.GetSummarizationSetupByMLModelIdAsync(mlModelId);
-                    data = summarizationSetup.Data;
+                    data = summarizationSetup.Data.SetupObject;
                     _logger.LogInformation("Successfully retrieved summarization setup data.");
                     break;
 
@@ -133,15 +141,15 @@ public class AIModelService : IAIModelService
                     // If the model type is Sentiment Analysis, fetch the sentiment setup
                     _logger.LogInformation("Processing AI model of type 'SentimentAnalytics'. Fetching setup...");
                     var sentimentAnalyticsSetup = await _sentimentAnalyticsService.GetSentimentAnalyticsSetupByMLModelIdAsync(mlModelId);
-                    data = sentimentAnalyticsSetup.Data;
+                    data = new { Categories = sentimentAnalyticsSetup.Data.SetupObject?.Categories };
                     _logger.LogInformation("Successfully retrieved sentiment analysis setup data.");
                     break;
 
                 case ModelTypesEnum.QuestionAnswer:
                     // If the model type is Question Answering, fetch the Q&A setup
                     _logger.LogInformation("Processing AI model of type 'QuestionAnswer'. Fetching setup...");
-                    var qaSetup = await _questionAnswerService.GetQuestionAnswerSetupByMLModelIdAsync(mlModelId);
-                    data = qaSetup.Data;
+                    var questionAnswerSetup = await _questionAnswerService.GetQuestionAnswerSetupByMLModelIdAsync(mlModelId);
+                    data = new { QuestionAnswers = questionAnswerSetup.Data.SetupObject?.QuestionAnswers };
                     _logger.LogInformation("Successfully retrieved question answering setup data.");
                     break;
 
@@ -149,7 +157,7 @@ public class AIModelService : IAIModelService
                     // If the model type is AI Persona, fetch the persona setup
                     _logger.LogInformation("Processing AI model of type 'AIPersona'. Fetching setup...");
                     var aiPersonaSetup = await _aiPersonaService.GetAIPersonaSetupByMLModelIdAsync(mlModelId);
-                    data = aiPersonaSetup.Data;
+                    data = aiPersonaSetup.Data.SetupObject;
                     _logger.LogInformation("Successfully retrieved AI persona setup data.");
                     break;
 
@@ -188,13 +196,23 @@ public class AIModelService : IAIModelService
 
             // Attempt to retrieve the AI model using the provided ModelId
             var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == extractRequestDto.ModelId)
+                .GetByConditionAsync(w => w.Id == extractRequestDto.ModelId && w.IsPublished)
+                .Include(i => i.ModelAPIKeys)
                 .FirstOrDefaultAsync();
 
             if (mlModel == null)
             {
                 _logger.LogWarning($"AI model not found for ID: {extractRequestDto.ModelId}");
                 serviceResponse.Message = "AI model not found.";
+                return serviceResponse;
+            }
+
+            // Check if the provided API key is associated with the model
+            var isApiKeyValid = mlModel.ModelAPIKeys.FirstOrDefault(key => key.ApiKey == _apiKey);
+            if (isApiKeyValid == null)
+            {
+                _logger.LogWarning($"Unauthorized access attempt with an invalid API key for model ID: {extractRequestDto.ModelId}");
+                serviceResponse.Message = "Authorization failed. Please verify your API key.";
                 return serviceResponse;
             }
 
@@ -280,12 +298,22 @@ public class AIModelService : IAIModelService
 
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(m => m.Id == addDocumentRequestDto.MLModelId)
+                .Include(i => i.ModelAPIKeys)
                 .FirstOrDefaultAsync();
 
             if (mlModel == null)
             {
                 _logger.LogWarning("AI model not found for ID: {ModelId}", addDocumentRequestDto.MLModelId);
                 serviceResponse.Message = "AI model not found.";
+                return serviceResponse;
+            }
+
+            // Check if the provided API key is associated with the model
+            var modelAPIKey = mlModel.ModelAPIKeys.FirstOrDefault(key => key.ApiKey == _apiKey);
+            if (modelAPIKey == null)
+            {
+                _logger.LogWarning($"Unauthorized access attempt with an invalid API key for model ID: {addDocumentRequestDto.MLModelId}");
+                serviceResponse.Message = "Authorization failed. Please verify your API key.";
                 return serviceResponse;
             }
 
