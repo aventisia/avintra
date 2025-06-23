@@ -20,7 +20,6 @@ import { TbCertificate } from "react-icons/tb";
 
 const sidebarMenuSections: SidebarMenuSectionType[] = [
   {
-    showSection: true, // TODO: Remove this once we have a way to handle this using user roles
     sectionName: "main menu",
     menuItems: [
       {
@@ -41,7 +40,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
     ],
   },
   {
-    showSection: true, // TODO: Remove this once we have a way to handle this using user roles
+    permissions: ["SA", "GA"],
     sectionName: "Orchestrator",
     menuItems: [
       {
@@ -77,7 +76,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
     ],
   },
   {
-    showSection: false, // TODO: Remove this once we have a way to handle this using user roles
+    permissions: ["SA", "GA"],
     sectionName: "Admin",
     menuItems: [
       {
@@ -103,7 +102,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
     ],
   },
   {
-    showSection: false, // TODO: Remove this once we have a way to handle this using user roles
+    permissions: ["SA"],
     sectionName: "Super Admin",
     menuItems: [
       {
@@ -130,4 +129,15 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
   },
 ];
 
-export { sidebarMenuSections };
+// TODO: Refactor this function to use a more efficient method of checking permissions
+// TODO: This function filters the sidebar menu sections based on the user's roles for now.
+function getSidebarMenuBasedOnPersmissions(userRoles: string[]) {
+  return sidebarMenuSections.filter(
+    (section) =>
+      // If section has no permissions, it is accessible to all users
+      !section.permissions ||
+      section.permissions?.some((role) => userRoles.includes(role)),
+  );
+}
+
+export { sidebarMenuSections, getSidebarMenuBasedOnPersmissions };
