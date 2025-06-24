@@ -1,53 +1,174 @@
 ﻿<Window x:Class="UIInspector.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         xmlns:models="clr-namespace:UIInspector.Models"
         xmlns:flauidef="clr-namespace:FlaUI.Core.Definitions;assembly=FlaUI.Core"
         xmlns:viewModels="clr-namespace:UIInspector.ViewModels"
-        Title="Agent Builder - UI Element Inspecter" d:DesignHeight="350" d:DesignWidth="500" d:LayoutOverrides="Width, Height" ResizeMode="CanResizeWithGrip">
+        xmlns:converters="clr-namespace:UIInspector.Converters"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        d:DesignHeight="350"
+        d:DesignWidth="900"
+        Width="900"
+        d:LayoutOverrides="Width, Height"
+        ResizeMode="CanResizeWithGrip"
+        Topmost="{Binding KeepWindowOnTop}"
+        Icon="../ui_inspector_logo.ico"
+        Title="Agent Builder - UI Inspecter">
+
     <Window.Resources>
-        <Style x:Key="SelectableLabel" TargetType="{x:Type TextBox}">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="IsReadOnly" Value="True" />
+        <Style x:Key="SelectableLabel"
+               TargetType="{x:Type TextBox}">
+            <Setter Property="Background"
+                    Value="Transparent"/>
+            <Setter Property="BorderThickness"
+                    Value="0"/>
+            <Setter Property="IsReadOnly"
+                    Value="True"/>
         </Style>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:AutomationTypeToDisplayConverter x:Key="AutomationTypeToDisplayConverter"/>
     </Window.Resources>
     <Window.InputBindings>
-        <KeyBinding Key="F5" Command="{Binding RefreshCommand}"/>
+        <KeyBinding Key="F5"
+                    Command="{Binding RefreshCommand}"/>
     </Window.InputBindings>
     <Grid>
         <DockPanel>
-            <Menu DockPanel.Dock="Top">
-                <MenuItem Header="_File">
-                    <MenuItem Header="_New Instance" Command="{Binding StartNewInstanceCommand}" />
-                    <MenuItem Header="_Capture selected item" Command="{Binding CaptureSelectedItemCommand}" />
-                    <MenuItem Header="_Refresh" Command="{Binding RefreshCommand}" InputGestureText="F5" />
-                    <Separator />
-                    <MenuItem Header="E_xit" Click="MenuItem_Click" />
-                </MenuItem>
-                <MenuItem Header="_Mode">
-                    <MenuItem Header="H_over Mode (use Ctrl)" IsCheckable="True" IsChecked="{Binding EnableHoverMode}" />
-                    <MenuItem Header="_Focus Tracking" IsCheckable="True" IsChecked="{Binding EnableFocusTrackingMode}" />
-                    <MenuItem Header="Show _XPath" IsCheckable="True" IsChecked="{Binding EnableXPath}" />
-                </MenuItem>
-            </Menu>
+            <ToolBarTray DockPanel.Dock="Top"
+                         IsLocked="True"
+                         Background="{StaticResource SecondaryBrush}">
+                <ToolBar ClipToBounds="False"
+                         Height="46"
+                         BorderBrush="{StaticResource BorderBrush}"
+                         BorderThickness="0 0 0 0"
+                         Background="{StaticResource SecondaryBrush}"
+                         Style="{StaticResource MaterialDesignToolBar}">
+                    <!--Select: Automation Type-->
+                    <ComboBox Width="140"
+                              Height="30"
+                              Margin="10 0"
+                              FontWeight="Medium"
+                              ToolTip="Choose how the tool looks at the app’s screen"
+                              ItemsSource="{Binding AutomationTypes}"
+                              Foreground="{StaticResource SecondaryForegroundBrush}"
+                              Background="{StaticResource SecondaryBrush}"
+                              SelectedItem="{Binding SelectedAutomationType, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={StaticResource AutomationTypeToDisplayConverter}}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="ComboBoxItem"
+                                   BasedOn="{StaticResource MaterialDesignComboBoxItemStyle}">
+                                <Setter Property="Foreground"
+                                        Value="{StaticResource ForegroundBrush}"/>
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                    </ComboBox>
+
+                    <!--Button: Reload Tree-->
+                    <Button ToolTip="Reload the UI Tree to load the latest UI elements"
+                            Command="{Binding RefreshCommand}"
+                            Style="{StaticResource GhostButtonStyle}">
+                        <StackPanel Margin="5 0"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+                            <md:PackIcon Height="18"
+                                         Kind="Refresh"/>
+                            <TextBlock Text="Reload"
+                                       Margin="3 0"
+                                       Style="{StaticResource TextBlockStyle}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!--Button: Capture Screenshot of selected element-->
+                    <Button ToolTip="Grab a screenshot of the selected UI element"
+                            Visibility="Collapsed"
+                            Command="{Binding CaptureSelectedItemCommand}"
+                            Style="{StaticResource GhostButtonStyle}">
+                        <StackPanel Margin="5 0"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+                            <md:PackIcon Height="18"
+                                         Kind="ImageOutline"/>
+                            <TextBlock Text="Capture"
+                                       Margin="3 0"
+                                       Style="{StaticResource TextBlockStyle}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!--Toggle: Hover Tracking-->
+                    <ToggleButton ToolTip="Move the mouse over an UI element (hold Ctrl key)"
+                                  IsChecked="{Binding EnableHoverMode}"
+                                  BorderBrush="#FFC7C6D4"
+                                  Style="{StaticResource GhostToggleStyle}">
+                        <StackPanel Margin="5 0"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+                            <md:PackIcon Height="18"
+                                         Kind="CursorDefaultOutline"/>
+                            <TextBlock Text="Hover"
+                                       Margin="3 0"
+                                       Style="{StaticResource TextBlockStyle}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ToggleButton>
+
+                    <!--Toggle: Focus Tracking-->
+                    <ToggleButton ToolTip="Follow what you're clicking or selecting"
+                                  Visibility="Collapsed"
+                                  IsChecked="{Binding EnableFocusTrackingMode}"
+                                  Style="{StaticResource GhostToggleStyle}">
+                        <StackPanel Margin="5 0"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+                            <md:PackIcon Height="18"
+                                         Kind="FocusFieldHorizontal"/>
+                            <TextBlock Text="Focus"
+                                       Margin="3 0"
+                                       Style="{StaticResource TextBlockStyle}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ToggleButton>
+
+                    <!--Toggle: Keep App Top most-->
+                    <ToggleButton ToolTip="Keep this window visible above all others"
+                                  IsChecked="{Binding KeepWindowOnTop}"
+                                  Style="{StaticResource GhostToggleStyle}">
+                        <StackPanel Margin="5 0"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+                            <md:PackIcon Height="18"
+                                         Kind="DockWindow"/>
+                            <TextBlock Text="Keep on Top"
+                                       Margin="3 0"
+                                       Style="{StaticResource TextBlockStyle}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ToggleButton>
+                </ToolBar>
+            </ToolBarTray>
             <StatusBar DockPanel.Dock="Bottom">
                 <StatusBarItem>
-                    <Label Content="{Binding SelectedAutomationType, FallbackValue=None}" />
-                </StatusBarItem>
-                <StatusBarItem>
-                    <StackPanel Orientation="Horizontal" Visibility="{Binding EnableXPath, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal"
+                                Visibility="{Binding EnableXPath, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Label>XPath:</Label>
                         <TextBox VerticalAlignment="Center">
                             <TextBox.Style>
-                                <Style BasedOn="{StaticResource SelectableLabel}" TargetType="{x:Type TextBox}">
+                                <Style BasedOn="{StaticResource SelectableLabel}"
+                                       TargetType="{x:Type TextBox}">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding EnableXPath}" Value="True">
-                                            <Setter Property="Text" Value="{Binding SelectedItemInTree.XPath, FallbackValue=None, Mode=OneWay}"/>
+                                        <DataTrigger Binding="{Binding EnableXPath}"
+                                                     Value="True">
+                                            <Setter Property="Text"
+                                                    Value="{Binding SelectedItemInTree.XPath, FallbackValue=None, Mode=OneWay}"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -61,150 +182,246 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="5"/>
                     <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <GroupBox Header="{Binding SelectedAutomationType, FallbackValue=None}" Grid.Column="0">
+
+                <GroupBox Margin="5"
+                        Padding="0"
+                          Grid.Column="0"
+                        Header="UI Elements"
+                          md:ColorZoneAssist.Background="{StaticResource PrimaryBrush}"
+                          md:ColorZoneAssist.Foreground="{StaticResource SecondaryForegroundBrush}"
+                          md:ColorZoneAssist.Mode="Custom"
+                          Style="{StaticResource MaterialDesignCardGroupBox}">
+
                     <TreeView ItemsSource="{Binding Elements}">
                         <TreeView.ItemContainerStyle>
                             <Style TargetType="{x:Type TreeViewItem}">
-                                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                                <Setter Property="FontWeight" Value="Normal" />
-                                <EventSetter Event="Selected" Handler="TreeViewSelectedHandler" />
+                                <Setter Property="IsExpanded"
+                                        Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                                <Setter Property="IsSelected"
+                                        Value="{Binding IsSelected, Mode=TwoWay}"/>
+                                <Setter Property="FontWeight"
+                                        Value="Normal"/>
+                                <EventSetter Event="Selected"
+                                             Handler="TreeViewSelectedHandler"/>
                                 <Style.Triggers>
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="FontWeight" Value="Bold" />
+                                    <Trigger Property="IsSelected"
+                                             Value="True">
+                                        <Setter Property="FontWeight"
+                                                Value="Bold"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
                         </TreeView.ItemContainerStyle>
                         <TreeView.ItemTemplate>
-                            <HierarchicalDataTemplate ItemsSource="{Binding Children}" DataType="{x:Type models:Element}">
+                            <HierarchicalDataTemplate ItemsSource="{Binding Children}"
+                                                      DataType="{x:Type models:Element}">
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Width="16" Height="16" Margin="0,0,5,0">
+                                    <Image Width="16"
+                                           Height="16"
+                                           Margin="0,0,5,0">
                                         <Image.Style>
                                             <Style TargetType="{x:Type Image}">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Button}">
-                                                        <Setter Property="Source" Value="/Resources/Button.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Button}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Button.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Calendar}">
-                                                        <Setter Property="Source" Value="/Resources/Calendar.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Calendar}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Calendar.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.CheckBox}">
-                                                        <Setter Property="Source" Value="/Resources/CheckBox.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.CheckBox}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/CheckBox.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.ComboBox}">
-                                                        <Setter Property="Source" Value="/Resources/ComboBox.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.ComboBox}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/ComboBox.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Custom}">
-                                                        <Setter Property="Source" Value="/Resources/Custom.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Custom}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Custom.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.DataGrid}">
-                                                        <Setter Property="Source" Value="/Resources/DataGrid.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.DataGrid}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/DataGrid.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.DataItem}">
-                                                        <Setter Property="Source" Value="/Resources/Item.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.DataItem}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Item.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Document}">
-                                                        <Setter Property="Source" Value="/Resources/Document.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Document}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Document.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Edit}">
-                                                        <Setter Property="Source" Value="/Resources/Edit.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Edit}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Edit.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Group}">
-                                                        <Setter Property="Source" Value="/Resources/Group.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Group}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Group.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Header}">
-                                                        <Setter Property="Source" Value="/Resources/Header.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Header}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Header.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.HeaderItem}">
-                                                        <Setter Property="Source" Value="/Resources/HeaderItem.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.HeaderItem}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/HeaderItem.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Hyperlink}">
-                                                        <Setter Property="Source" Value="/Resources/Hyperlink.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Hyperlink}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Hyperlink.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Image}">
-                                                        <Setter Property="Source" Value="/Resources/Image.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Image}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Image.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.List}">
-                                                        <Setter Property="Source" Value="/Resources/List.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.List}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/List.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.ListItem}">
-                                                        <Setter Property="Source" Value="/Resources/Item.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.ListItem}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Item.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Menu}">
-                                                        <Setter Property="Source" Value="/Resources/Menu.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Menu}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Menu.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.MenuBar}">
-                                                        <Setter Property="Source" Value="/Resources/Menu.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.MenuBar}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Menu.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.MenuItem}">
-                                                        <Setter Property="Source" Value="/Resources/MenuItem.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.MenuItem}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/MenuItem.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Pane}">
-                                                        <Setter Property="Source" Value="/Resources/Pane.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Pane}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Pane.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.ProgressBar}">
-                                                        <Setter Property="Source" Value="/Resources/ProgressBar.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.ProgressBar}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/ProgressBar.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.RadioButton}">
-                                                        <Setter Property="Source" Value="/Resources/RadioButton.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.RadioButton}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/RadioButton.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.ScrollBar}">
-                                                        <Setter Property="Source" Value="/Resources/ScrollBar.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.ScrollBar}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/ScrollBar.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Slider}">
-                                                        <Setter Property="Source" Value="/Resources/Slider.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Slider}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Slider.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Spinner}">
-                                                        <Setter Property="Source" Value="/Resources/Spinner.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Spinner}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Spinner.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.SplitButton}">
-                                                        <Setter Property="Source" Value="/Resources/SplitButton.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.SplitButton}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/SplitButton.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.StatusBar}">
-                                                        <Setter Property="Source" Value="/Resources/StatusBar.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.StatusBar}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/StatusBar.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Tab}">
-                                                        <Setter Property="Source" Value="/Resources/Tab.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Tab}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Tab.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.TabItem}">
-                                                        <Setter Property="Source" Value="/Resources/Item.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.TabItem}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Item.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Text}">
-                                                        <Setter Property="Source" Value="/Resources/Text.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Text}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Text.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Thumb}">
-                                                        <Setter Property="Source" Value="/Resources/Thumb.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Thumb}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Thumb.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.TitleBar}">
-                                                        <Setter Property="Source" Value="/Resources/TitleBar.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.TitleBar}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/TitleBar.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.ToolBar}">
-                                                        <Setter Property="Source" Value="/Resources/ToolBar.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.ToolBar}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/ToolBar.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.ToolTip}">
-                                                        <Setter Property="Source" Value="/Resources/ToolTip.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.ToolTip}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/ToolTip.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Tree}">
-                                                        <Setter Property="Source" Value="/Resources/Tree.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Tree}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Tree.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.TreeItem}">
-                                                        <Setter Property="Source" Value="/Resources/Item.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.TreeItem}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Item.png"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ControlType}" Value="{x:Static flauidef:ControlType.Window}">
-                                                        <Setter Property="Source" Value="/Resources/Window.png" />
+                                                    <DataTrigger Binding="{Binding ControlType}"
+                                                                 Value="{x:Static flauidef:ControlType.Window}">
+                                                        <Setter Property="Source"
+                                                                Value="/Resources/Window.png"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </Image.Style>
                                     </Image>
-                                    <TextBlock>
+                                    <TextBlock FontSize="13"
+                                               Margin="2"
+                                               Foreground="{StaticResource ForegroundBrush}">
                                         <TextBlock.Text>
                                             <MultiBinding StringFormat="{}{0} &quot;{1}&quot; &quot;{2}&quot;">
-                                                <Binding Path="ControlType" />
-                                                <Binding Path="Name" />
-                                                <Binding Path="AutomationId" />
+                                                <Binding Path="ControlType"/>
+                                                <Binding Path="Name"/>
+                                                <Binding Path="AutomationId"/>
                                             </MultiBinding>
                                         </TextBlock.Text>
                                     </TextBlock>
@@ -213,41 +430,81 @@
                         </TreeView.ItemTemplate>
                     </TreeView>
                 </GroupBox>
-                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="2">
-                    <GroupBox Header="Details">
+                <GridSplitter Grid.Column="1"
+                              HorizontalAlignment="Stretch"/>
+                <GroupBox Header="UI Element Details"
+                          Margin="5"
+                          Padding="0"
+                          Grid.Column="2"
+                          md:ColorZoneAssist.Background="{StaticResource PrimaryBrush}"
+                          md:ColorZoneAssist.Foreground="{StaticResource SecondaryForegroundBrush}"
+                          md:ColorZoneAssist.Mode="Custom"
+                          Style="{StaticResource MaterialDesignCardGroupBox}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                            HorizontalScrollBarVisibility="Auto">
                         <ItemsControl ItemsSource="{Binding SelectedItemDetails}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="viewModels:DetailGroupViewModel">
-                                    <Expander Header="{Binding Name}" IsExpanded="True">
-                                        <ItemsControl ItemsSource="{Binding Details}" Grid.IsSharedSizeScope="True">
+                                    <Expander
+                                        IsExpanded="True"
+                                        Margin="-10 0 0 0"
+                                        Background="{StaticResource BackgroundBrush}"
+                                        md:ExpanderAssist.ExpanderButtonPosition="Start">
+                                        <Expander.Header>
+                                            <TextBlock
+                                                Margin="10,0,0,0"
+                                                FontSize="13"
+                                                FontWeight="Medium"
+                                                Text="{Binding Name}"/>
+                                        </Expander.Header>
+                                        <ItemsControl ItemsSource="{Binding Details}"
+                                                      Margin="24 0 0 0"
+                                                      Grid.IsSharedSizeScope="True">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto" SharedSizeGroup="DetailColumnKey" />
-                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto"
+                                                                              SharedSizeGroup="DetailColumnKey"/>
+                                                            <ColumnDefinition Width="*"/>
                                                         </Grid.ColumnDefinitions>
-                                                        <TextBox Grid.Column="0" IsReadOnly="True" Text="{Binding Key}">
+                                                        <TextBox Grid.Column="0"
+                                                                 IsReadOnly="True"
+                                                                 FontSize="12"
+                                                                 Margin="0,2,0,0"
+                                                                 Text="{Binding Key}">
                                                             <TextBox.Style>
-                                                                <Style BasedOn="{StaticResource SelectableLabel}" TargetType="{x:Type TextBox}">
+                                                                <Style BasedOn="{StaticResource SelectableLabel}"
+                                                                       TargetType="{x:Type TextBox}">
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding Important}" Value="True">
-                                                                            <Setter Property="FontWeight" Value="Bold"/>
+                                                                        <DataTrigger Binding="{Binding Important}"
+                                                                                     Value="True">
+                                                                            <Setter Property="FontWeight"
+                                                                                    Value="Bold"/>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
                                                                 </Style>
                                                             </TextBox.Style>
                                                         </TextBox>
-                                                        <TextBox Grid.Column="1" IsReadOnly="True" Text="{Binding Value}" Margin="5,0,0,0">
+                                                        <TextBox Grid.Column="1"
+                                                                 IsReadOnly="True"
+                                                                 FontSize="12"
+                                                                 FontWeight="Medium"
+                                                                 Text="{Binding Value}"
+                                                                 Margin="10,2,0,0">
                                                             <TextBox.Style>
-                                                                <Style BasedOn="{StaticResource SelectableLabel}" TargetType="{x:Type TextBox}">
+                                                                <Style BasedOn="{StaticResource SelectableLabel}"
+                                                                       TargetType="{x:Type TextBox}">
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding Value}" Value="No">
-                                                                            <Setter Property="TextBox.Foreground" Value="Red" />
+                                                                        <DataTrigger Binding="{Binding Value}"
+                                                                                     Value="No">
+                                                                            <Setter Property="TextBox.Foreground"
+                                                                                    Value="Red"/>
                                                                         </DataTrigger>
-                                                                        <DataTrigger Binding="{Binding Value}" Value="Yes">
-                                                                            <Setter Property="TextBox.Foreground" Value="Green" />
+                                                                        <DataTrigger Binding="{Binding Value}"
+                                                                                     Value="Yes">
+                                                                            <Setter Property="TextBox.Foreground"
+                                                                                    Value="Green"/>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
                                                                 </Style>
@@ -261,8 +518,101 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                    </GroupBox>
-                </ScrollViewer>
+                    </ScrollViewer>
+                </GroupBox>
+
+                <GridSplitter Grid.Column="3"
+                              HorizontalAlignment="Stretch"/>
+
+                <GroupBox Margin="5"
+                        Padding="0"
+                          Grid.Column="4"
+                        Header="Details"
+                          md:ColorZoneAssist.Background="{StaticResource PrimaryBrush}"
+                          md:ColorZoneAssist.Foreground="{StaticResource SecondaryForegroundBrush}"
+                          md:ColorZoneAssist.Mode="Custom"
+                          Style="{StaticResource MaterialDesignCardGroupBox}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                            HorizontalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding SelectedItemDetails}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="viewModels:DetailGroupViewModel">
+                                    <Expander
+                                        IsExpanded="True"
+                                        Margin="-10 0 0 0"
+                                        Background="{StaticResource BackgroundBrush}"
+                                        md:ExpanderAssist.ExpanderButtonPosition="Start">
+                                        <Expander.Header>
+                                            <TextBlock
+                                                Margin="10,0,0,0"
+                                                FontSize="13"
+                                                FontWeight="Medium"
+                                                Text="{Binding Name}"/>
+                                        </Expander.Header>
+                                        <ItemsControl ItemsSource="{Binding Details}"
+                                                      Margin="24 0 0 0"
+                                                      Grid.IsSharedSizeScope="True">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"
+                                                                              SharedSizeGroup="DetailColumnKey"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBox Grid.Column="0"
+                                                                 IsReadOnly="True"
+                                                                 FontSize="12"
+                                                                 Margin="0,2,0,0"
+                                                                 Text="{Binding Key}">
+                                                            <TextBox.Style>
+                                                                <Style BasedOn="{StaticResource SelectableLabel}"
+                                                                       TargetType="{x:Type TextBox}">
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Important}"
+                                                                                     Value="True">
+                                                                            <Setter Property="FontWeight"
+                                                                                    Value="Bold"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBox.Style>
+                                                        </TextBox>
+                                                        <TextBox Grid.Column="1"
+                                                                 IsReadOnly="True"
+                                                                 FontSize="12"
+                                                                 FontWeight="Medium"
+                                                                 Text="{Binding Value}"
+                                                                 Margin="10,2,0,0">
+                                                            <TextBox.Style>
+                                                                <Style BasedOn="{StaticResource SelectableLabel}"
+                                                                       TargetType="{x:Type TextBox}">
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Value}"
+                                                                                     Value="No">
+                                                                            <Setter Property="TextBox.Foreground"
+                                                                                    Value="Red"/>
+                                                                        </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding Value}"
+                                                                                     Value="Yes">
+                                                                            <Setter Property="TextBox.Foreground"
+                                                                                    Value="Green"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBox.Style>
+                                                        </TextBox>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Expander>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </GroupBox>
+
             </Grid>
         </DockPanel>
     </Grid>

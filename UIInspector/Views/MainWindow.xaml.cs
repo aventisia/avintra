@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using FlaUI.Core;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using UIInspector.ViewModels;
@@ -16,8 +17,6 @@ namespace UIInspector.Views
         {
             InitializeComponent();
             AppendVersionToTitle();
-            Height = 550;
-            Width = 700;
             Loaded += MainWindow_Loaded;
             _vm = new MainViewModel();
             DataContext = _vm;
@@ -36,12 +35,8 @@ namespace UIInspector.Views
         {
             if (!_vm.IsInitialized)
             {
-                var dlg = new ChooseVersionWindow { Owner = this };
-                if (dlg.ShowDialog() != true)
-                {
-                    Close();
-                }
-                _vm.Initialize(dlg.SelectedAutomationType);
+                // Passing UIA3
+                _vm.Initialize(AutomationType.UIA3);
                 Loaded -= MainWindow_Loaded;
             }
         }
