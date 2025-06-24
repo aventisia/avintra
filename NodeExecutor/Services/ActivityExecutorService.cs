@@ -4,6 +4,7 @@ using NodeExecutor.Models;
 using System;
 using System.Activities;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
@@ -52,8 +53,26 @@ namespace NodeExecutor.Services
             }
         }
 
-        public static (bool, string) ExecuteNode(ActivityNodeData node, ExecutionContext executionContext)
+        public static (bool, NodeExecutionLog) ExecuteNode(ActivityNodeData node, ExecutionContext executionContext, DateTime startTime)
         {
+            // Initiaze the return object
+            var nodeExecutionlog = new NodeExecutionLog
+            {
+                NodeId = node.Id,
+                NodeName = node.NodeName,
+                IsSuccess = false,
+                Duration = 0,
+                Inputs = new List<NodeLogKeyValue>(),
+                Outputs = new List<NodeLogKeyValue>()
+            };
+
+            // Initialize input and output dictionaries
+            var inputValues = new Dictionary<string, object>();
+            var outputValues = new Dictionary<string, object>(){
+                { "Status", "Node executed successfully" }
+            };
+
+            // Execute the node
             try
             {
                 // Get Code activity instance
@@ -62,7 +81,6 @@ namespace NodeExecutor.Services
                 // Get the type of the activity instance
                 var activityType = activityInstance.GetType();
 
-                // Set InArguments via reflection
                 foreach (var input in node.NodeInputs)
                 {
                     // TODO: if input does not have value return (in case of optional fields. all activity optional arugments should have default value)
@@ -72,6 +90,9 @@ namespace NodeExecutor.Services
                     // Get the property info for the input key
                     var prop = activityType.GetProperty(input.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
                     if (prop == null) continue;
+
+                    // Get input label
+                    var displayName = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? prop.Name;
 
                     // Check if the property is an Argument<T>
                     var propType = prop.PropertyType;
@@ -116,17 +137,21 @@ namespace NodeExecutor.Services
                         }
 
                         prop.SetValue(activityInstance, inArgument);
+
+                        // Add to inputValues for logging
+                        inputValues[displayName] = convertedValue;
                     }
                 }
+
+                // Set inputValues to nodeExecutionLog object
+                nodeExecutionlog.Inputs = inputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value) }).ToList();
 
                 // Execute the activity
                 var outputs = WorkflowInvoker.Invoke((Activity)activityInstance);
 
-                // Activity has failed
-                //if (outputs != null && !Convert.ToBoolean(outputs["IsSuccess"]))
-                //    return (false, "");
+                // Set isSuccess activity status
+                nodeExecutionlog.IsSuccess = outputs != null && Convert.ToBoolean(outputs["IsSuccess"]);
 
-                // Set OutArguments via reflection
                 foreach (var nodeOutput in node.NodeOutputs)
                 {
                     // Get the property info for the output key
@@ -143,15 +168,27 @@ namespace NodeExecutor.Services
                     if (outputs != null && outputs.ContainsKey(nodeOutput.Key))
                     {
                         executionContext.Set(nodeOutput.Value.Value, outputs[nodeOutput.Key]);
+
+                        // Add to outputValues for logging
+                        outputValues[nodeOutput.Value.Value] = outputs[nodeOutput.Key];
                     }
                 }
 
-                return (true, "");
+                // Set status message to outputValues
+                if (outputs != null && outputs.ContainsKey("StatusMessage"))
+                    outputValues["Status"] = outputs["StatusMessage"];
+
+                // Update duration and outputValues
+                nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+                nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value) }).ToList();
+
+                // Return
+                return (nodeExecutionlog.IsSuccess, nodeExecutionlog);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in ExecuteNode: {ex.Message}");
-                return (false, $"Error in ExecuteNode: {ex.Message}");
+                outputValues["Status"] = $"Node execution has failed: {ex.Message}";
+                return (false, nodeExecutionlog);
             }
         }
 
@@ -160,6 +197,23 @@ namespace NodeExecutor.Services
             // If conditions null or empty return false
             if (conditions != null || conditions.Count == 0)
                 return (false, "");
+
+            //// Initiaze the return object
+            //var nodeExecutionlog = new NodeExecutionLog
+            //{
+            //    NodeId = node.Id,
+            //    NodeName = node.NodeName,
+            //    IsSuccess = false,
+            //    Duration = 0,
+            //    Inputs = new List<NodeLogKeyValue>(),
+            //    Outputs = new List<NodeLogKeyValue>()
+            //};
+
+            //// Initialize input and output dictionaries
+            //var inputValues = new Dictionary<string, object>();
+            //var outputValues = new Dictionary<string, object>(){
+            //    { "Status", "Node executed successfully" }
+            //};
 
             // Check conditions
             try
@@ -238,6 +292,23 @@ namespace NodeExecutor.Services
             // If listVarName or currentItemVarName is null or empty, return false
             if (string.IsNullOrEmpty(listVarName) || string.IsNullOrEmpty(currentItemVarName) || executionContext == null)
                 return (false, "");
+
+            //// Initiaze the return object
+            //var nodeExecutionlog = new NodeExecutionLog
+            //{
+            //    NodeId = node.Id,
+            //    NodeName = node.NodeName,
+            //    IsSuccess = false,
+            //    Duration = 0,
+            //    Inputs = new List<NodeLogKeyValue>(),
+            //    Outputs = new List<NodeLogKeyValue>()
+            //};
+
+            //// Initialize input and output dictionaries
+            //var inputValues = new Dictionary<string, object>();
+            //var outputValues = new Dictionary<string, object>(){
+            //    { "Status", "Node executed successfully" }
+            //};
 
             try
             {
@@ -402,6 +473,64 @@ namespace NodeExecutor.Services
                 Console.WriteLine($"Error in ResolveTemplate: {ex.Message}");
                 return template;
             }
+        }
+
+
+        public static string ConvertLogValueForLogging(string key, object value)
+        {
+            if (value == null)
+                return "null";
+
+            // Primitive types and string
+            var type = value.GetType();
+            if (type.IsPrimitive || value is string || value is decimal || value is DateTime || value is Guid || value is TimeSpan || value is Enum)
+                return value.ToString();
+
+            // DataTable as CSV
+            if (value is DataTable dt)
+            {
+                var sb = new StringBuilder();
+                var columns = dt.Columns.Cast<DataColumn>().Select(c => c.ColumnName);
+                sb.AppendLine(string.Join(",", columns));
+                foreach (DataRow row in dt.Rows)
+                    sb.AppendLine(string.Join(",", row.ItemArray.Select(x => x?.ToString() ?? "")));
+                return sb.ToString().Trim();
+            }
+
+            // // AutomationElement (UIAutomation)
+            // if (value.GetType().FullName == "System.Windows.Automation.AutomationElement")
+            // {
+            //     return $"[AutomationElement] {key}";
+            // }
+
+            // IEnumerable (but not string)
+            if (value is System.Collections.IEnumerable enumerable && !(value is string))
+            {
+                try
+                {
+                    return JsonConvert.SerializeObject(value);
+                }
+                catch
+                {
+                    // fallback: join items as string
+                    var items = new List<string>();
+                    foreach (var item in enumerable)
+                        items.Add(item?.ToString() ?? "null");
+                    return "[" + string.Join(", ", items) + "]";
+                }
+            }
+
+            // Complex object: try JSON
+            try
+            {
+                return JsonConvert.SerializeObject(value);
+            }
+            catch
+            {
+                // fallback: type name
+                return value.ToString();
+            }
+
         }
     }
 }

@@ -97,7 +97,6 @@ namespace NodeExecutor.Services
         {
             if (_socket != null && _socket.State == WebSocketState.Open)
             {
-                await SendCommandAsync("abort");
                 await _socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Client disconnect", CancellationToken.None);
             }
         }

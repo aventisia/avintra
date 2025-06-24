@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using NodeExecutor.Models;
 using NodeExecutor.Services;
 using System;
@@ -85,6 +86,8 @@ namespace NodeExecutor
                         DoResume();
                         break;
                     case "abort":
+                    case "complete":
+                    case "error":
                         DoAbort();
                         break;
                     case "process-node":
@@ -223,6 +226,9 @@ namespace NodeExecutor
 
         private async void ExecuteNodeAsync(string data)
         {
+            // Set the start time for the node execution
+            var startTime = DateTime.UtcNow;
+
             // Deserialize the node data
             var nodeData = JsonConvert.DeserializeObject<ActivityNodeData>(data);
 
@@ -236,7 +242,21 @@ namespace NodeExecutor
             lbl_NodeName.Text = nodeData.NodeName.Length > 0 ? nodeData.NodeName : "Node name not found";
 
             // Execute single node
-            ActivityExecutorService.ExecuteNode(nodeData, _executionContext);
+            var (isSuccess, nodeExecutionLog) = ActivityExecutorService.ExecuteNode(nodeData, _executionContext, startTime);
+
+            // Send the execution log back to the server
+            await _webSocket.SendCommandAsync("save-execution-log", JsonConvert.SerializeObject(nodeExecutionLog, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            }));
+
+            // Check if the node execution was successful
+            if (!isSuccess)
+            {
+                await _webSocket.SendCommandAsync("error");
+                DoAbort();
+                return;
+            }
 
             // Send next node command to the server
             await _webSocket.SendCommandAsync("next-node", nodeData.NextNodeId);
