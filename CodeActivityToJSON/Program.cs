@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace CodeActivityToJSON
 {
@@ -81,9 +82,35 @@ namespace CodeActivityToJSON
                     continue;
                 }
 
+                // Split the namespace to get the folder structure
+                var namespaceParts = activity.Namespace.Replace("CodeActivitiesLibrary", "").Trim().Split('.');
+
+                // Loop through the namespace parts to create a directory structure
+                for (int i = 0; i < namespaceParts.Length; i++)
+                {
+                    // If the part is empty, skip it
+                    if (string.IsNullOrEmpty(namespaceParts[i]))
+                        continue;
+
+                    // Replace "Activities" with an empty string
+                    namespaceParts[i] = namespaceParts[i].Replace("Activities", "").Trim();
+
+                    // Convert PascalCase to kebab-case (lowercase with hyphens)
+                    namespaceParts[i] = Regex.Replace(namespaceParts[i], "(?<!^)([A-Z])", "-$1").ToLower();
+                }
+
+                // Create the directory structure based on the namespace
+                var directoryPath = Path.Combine(outputDir, Path.Combine(namespaceParts));
+
+                // Create the file path for the JSON file (for documentation)
+                // Directory.CreateDirectory(directoryPath);
+                //var fileName = Path.Combine(directoryPath, activityDisplayName.DisplayName + ".json");
+
+                // Create the file path for the JSON file (for form generation)
                 var fileName = Path.Combine(outputDir, activity.Name + ".json");
+
+                // Write the JSON content to the file
                 File.WriteAllText(fileName, json);
-                //Console.WriteLine($"{activity.Name + ".json"} saved");
             }
             Console.WriteLine("Task complete");
             Console.ReadLine();
@@ -93,6 +120,7 @@ namespace CodeActivityToJSON
         public static string GetOutputDirectoryToSaveJsonFiles()
         {
             return @"C:\My Space\Gitea\Aventisia\studio\src\features\dynamic-config-panel\constants\config-json";
+            //return @"C:\My Space\Gitea\OpenAI Doc Generation\input";
             // Get user's Downloads folder
             var downloadsPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
