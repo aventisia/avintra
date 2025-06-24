@@ -1,7 +1,7 @@
 /**
  * Represents a data transfer object (DTO) for a model.
  */
-export interface ModelsTableDto {
+export interface ModelsListDto {
   /**
    * Gets or sets the primary key of the model record.
    *
@@ -28,54 +28,4 @@ export interface ModelsTableDto {
    * Gets or sets the description of the model.
    */
   description?: string;
-
-  /**
-   * Gets or sets the status of the model.
-   */
-  setupStatus?: string;
-
-  /**
-   * Gets or sets the accuracy of the model.
-   */
-  accuracy?: string;
-
-  /**
-   * Gets or sets the description of the model. Max-500
-   */
-  docsProcessed?: number;
-
-  /**
-   * Gets or sets the date and time when the model record was created.
-   */
-  createdOn?: Date;
-
-  /**
-   * Gets or sets the date and time when the model record was last modified.
-   */
-  trainedOn?: Date;
-
-  /**
-   * Gets or sets the tenant id.
-   */
-  tenantId?: string;
-
-  /**
-   * Gets or sets the created by id.
-   */
-  createdByUserId?: string;
-
-  /**
-   * Gets or sets the last modified by user id.
-   */
-  lastModifiedByUserId?: string;
-
-  /**
-   * Gets or sets the created by.
-   */
-  createdBy?: string;
-
-  /**
-   * Gets or sets the created by username.
-   */
-  createdByUsername?: string;
 }
