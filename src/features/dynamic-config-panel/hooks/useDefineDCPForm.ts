@@ -30,6 +30,9 @@ export const useDefineDCPForm = () => {
 
   // Local state for node config and zod schema
   const [nodeConfig, setNodeConfig] = useState<DCPFieldSchemaType[]>([]);
+
+  const [isLoading, setIsLoading] = useState(false);
+
   const [isFormReady, setIsFormReady] = useState(false); // Flag to check if form is ready with default values. It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled".
   const [nodeConfigZodSchema, setNodeConfigZodSchema] = useState<
     z.ZodObject<Record<string, ZodTypeAny>>
@@ -40,11 +43,19 @@ export const useDefineDCPForm = () => {
     // nodeUniqueName is not available
     if (!nodeUniqueName) return;
 
+    setIsLoading(true);
+
     // Get node config from API and Set node config and zod schema
-    getNodeConfig(nodeUniqueName).then((config) => {
-      setNodeConfig(config);
-      setNodeConfigZodSchema(generateZodSchema(config));
-    });
+    getNodeConfig(nodeUniqueName)
+      .then((config) => {
+        setNodeConfig(config);
+        setNodeConfigZodSchema(generateZodSchema(config));
+
+        setIsLoading(false);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, [nodeUniqueName, nodeId]);
 
   // Get input and output keys (required at the time of form submission)
@@ -87,5 +98,6 @@ export const useDefineDCPForm = () => {
     outputKeys,
     nodeLabel,
     setShowDialog,
+    isLoading,
   };
 };
