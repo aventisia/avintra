@@ -4,22 +4,59 @@ export async function generateOutputConfigFromData() {
   const response = await getModels();
   const data = response.data;
 
-  const inputItem = {
-    direction: "Input",
-    type: "model-select",
-    name: "MLModel",
-    label: "Select Model",
-    description: "Select the ML model.",
-    defaultValue: "",
-    required: true,
-  };
+  const inputItem = [
+    {
+      direction: "Input",
+      type: "model-select",
+      name: "MLModel",
+      label: "Select Model",
+      description: "Select the ML model.",
+      defaultValue: "",
+      required: true,
+    },
+    {
+      direction: "Input",
+      type: "text",
+      name: "fileId",
+      label: "File Id",
+      description: "Enter the file id.",
+      defaultValue: "",
+      required: true,
+      renderIf: {
+        conditions: [
+          {
+            field: "MLModel",
+            notEquals: "",
+          },
+        ],
+      },
+    },
+    {
+      direction: "Input",
+      type: "text",
+      name: "modelApiKey",
+      label: "Model API Key",
+      description:
+        "Enter the API key required to authenticate requests to the selected ML model.",
+      defaultValue: "",
+      required: true,
+      renderIf: {
+        conditions: [
+          {
+            field: "MLModel",
+            notEquals: "",
+          },
+        ],
+      },
+    },
+  ];
 
   const outputItems = data.map((item) => ({
     direction: "Output",
-    type: "config-panel-output",
-    name: "ItemVariableName",
+    type: "config-panel-model-output",
+    name: item.name,
     label: item.type,
-    description: `type:${item.type}\n \n id:${item.id}`,
+    description: item.id,
     defaultValue: {
       value: item.type,
       enabled: true,
@@ -34,5 +71,5 @@ export async function generateOutputConfigFromData() {
     },
   }));
 
-  return [inputItem, ...outputItems];
+  return [...inputItem, ...outputItems];
 }
