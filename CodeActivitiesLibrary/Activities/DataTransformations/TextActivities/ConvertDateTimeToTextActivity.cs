@@ -3,6 +3,7 @@ using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
@@ -104,35 +105,37 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
             }
         }
 
-        private static string FormatStandard(DateTime dateTime, StandardFormatOptionEnum format)
+        public static string FormatStandard(DateTime dateTime, StandardFormatOptionEnum format)
         {
             switch (format)
             {
                 case StandardFormatOptionEnum.ShortDate:
-                    return dateTime.ToShortDateString();
+                    return dateTime.ToShortDateString(); // e.g., 4/6/2024
                 case StandardFormatOptionEnum.LongDate:
-                    return dateTime.ToLongDateString();
+                    return dateTime.ToLongDateString(); // e.g., Saturday, April 6, 2024
                 case StandardFormatOptionEnum.ShortTime:
-                    return dateTime.ToShortTimeString();
+                    return dateTime.ToShortTimeString(); // e.g., 3:45 PM
                 case StandardFormatOptionEnum.LongTime:
-                    return dateTime.ToLongTimeString();
+                    return dateTime.ToLongTimeString(); // e.g., 3:45:12 PM
+                case StandardFormatOptionEnum.FullDatetimeLongTime:
+                    return dateTime.ToString("F", CultureInfo.InvariantCulture); // e.g., Saturday, April 06, 2024 3:45:12 PM
                 case StandardFormatOptionEnum.FullDatetimeShortTime:
-                    return dateTime.ToString("F");
+                    return dateTime.ToString("d") + " " + dateTime.ToShortTimeString(); // e.g., 4/6/2024 3:45 PM
                 case StandardFormatOptionEnum.GeneralDatetimeShortTime:
-                    return dateTime.ToString("g");
+                    return dateTime.ToString("g"); // e.g., 4/6/2024 3:45 PM
                 case StandardFormatOptionEnum.GeneralDatetimeLongTime:
-                    return dateTime.ToString("G");
+                    return dateTime.ToString("G"); // e.g., 4/6/2024 3:45:12 PM
                 case StandardFormatOptionEnum.SortableDatetime:
-                    return dateTime.ToString("u");
+                    return dateTime.ToString("u"); // e.g., 2024-04-06 15:45:12Z
                 default:
                     throw new ArgumentOutOfRangeException(nameof(format), format, "Invalid standard format.");
             }
         }
 
-        private static string FormatCustom(DateTime dateTime, string customFormat)
+        public static string FormatCustom(DateTime dateTime, string customFormat)
         {
             if (string.IsNullOrWhiteSpace(customFormat))
-                throw new ArgumentException("Custom format cannot be empty or whitespace.");
+                throw new ArgumentException("Custom format cannot be empty or whitespace.", nameof(customFormat));
 
             return dateTime.ToString(customFormat);
         }

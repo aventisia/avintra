@@ -45,17 +45,9 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
                     out outputDate
                 );
                 IsValid.Set(context, isValid);
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Date/time format is valid: {isValid}");
 
-                if (isValid)
-                {
-                    IsSuccess.Set(context, true);
-                    StatusMessage.Set(context, "Date/time format is valid.");
-                }
-                else
-                {
-                    IsSuccess.Set(context, false);
-                    StatusMessage.Set(context, "Date/time format is invalid.");
-                }
             }
             catch (Exception ex)
             {

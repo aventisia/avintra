@@ -38,8 +38,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
-
             try
             {
                 var textToConvert = TextToConvert.Get(context);
@@ -80,13 +78,10 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
             }
             catch (Exception ex)
             {
-                status = $"Error converting text to number: {ex.Message}";
                 ConvertedValue.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error converting text to number: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

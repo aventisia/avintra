@@ -170,13 +170,22 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 .Cast<Match>()
                 .Select(m => m.Value);
         }
-
         private static IEnumerable<string> ExtractNumberRangeEntities(string text)
         {
-            // Example: 1-10, 20-30
-            return Regex.Matches(text, @"\b\d+-\d+\b")
-                .Cast<Match>()
-                .Select(m => m.Value);
+            var matches = Regex.Matches(text,
+                @"\b(\d+)\s*(?:-|to|and)\s*(\d+)\b",
+                RegexOptions.IgnoreCase);
+
+            foreach (Match match in matches)
+            {
+                int start = int.Parse(match.Groups[1].Value);
+                int end = int.Parse(match.Groups[2].Value);
+
+                if (start > end)
+                    (start, end) = (end, start);
+
+                yield return $"{start} to {end}";
+            }
         }
 
         private static IEnumerable<string> ExtractNumberEntities(string text)
@@ -193,13 +202,13 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 .Cast<Match>()
                 .Select(m => m.Value);
         }
-
         private static IEnumerable<string> ExtractPercentageEntities(string text)
         {
-            // Example: 50%, 75%
-            return Regex.Matches(text, @"\b\d+(\.\d+)?%\b")
+            var pattern = @"\b\d+(?:\.\d+)?\s*(?:%|percent|per\s+cent)\b";
+
+            return Regex.Matches(text, pattern, RegexOptions.IgnoreCase)
                 .Cast<Match>()
-                .Select(m => m.Value);
+                .Select(m => m.Value.Trim());
         }
 
         private static IEnumerable<string> ExtractPhoneNumberEntities(string text)
@@ -231,12 +240,13 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 .Cast<Match>()
                 .Select(m => m.Value);
         }
-
         private static IEnumerable<string> ExtractURLEntities(string text)
         {
-            return Regex.Matches(text, @"https?://[^\s]+")
-                .Cast<Match>()
-                .Select(m => m.Value);
+            var pattern = @"(?:https?://|www\.)[^\s\""]+";
+
+            return Regex.Matches(text, pattern)
+                        .Cast<Match>()
+                        .Select(m => m.Value.TrimEnd('.', ',', ';', ')', '(', '"'));
         }
 
         private static IEnumerable<string> ExtractHashtagEntities(string text)

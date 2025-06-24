@@ -25,18 +25,6 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [Description("A single item or comma-separated values to add to the list.")]
         public InArgument<string> ItemToAdd { get; set; }
 
-
-        [DisplayName("Custom Separator")]
-        [Description(
-            "Optional. If provided, splits the input using this separator instead of default ones (',', ';', '|').")]
-        public InArgument<string> CustomSeparator { get; set; }
-
-
-        [DisplayName("Trim Values")]
-        [Description("If true, trims whitespace from each value before adding it to the list.")]
-        [DefaultValue(false)]
-        public InArgument<bool> TrimValues { get; set; }
-
         // ----------------------
         // Output Arguments
         // ----------------------
@@ -51,14 +39,10 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
-
             try
             {
                 var targetList = TargetList.Get(context);
                 var itemToAdd = ItemToAdd.Get(context);
-                var separator = CustomSeparator.Get(context);
-                var trimValues = TrimValues.Get(context);
 
                 if (targetList == null)
                     throw new ArgumentException("Target list cannot be null.");
@@ -66,13 +50,11 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                 if (string.IsNullOrWhiteSpace(itemToAdd))
                     throw new ArgumentException("Item To Add cannot be empty.");
 
+                // Split by default separators: comma, semicolon, pipe
+                var items = itemToAdd.Split(new[] { ',', ';', '|' }, StringSplitOptions.RemoveEmptyEntries);
 
-                // Default separators
-                var items =
-                    itemToAdd.Split(string.IsNullOrEmpty(separator) ? new[] { ',', ';', '|' } : new[] { separator[0] },
-                        StringSplitOptions.RemoveEmptyEntries);
-
-                targetList.AddRange(items.Select(item => trimValues ? item.Trim() : item).Cast<object>());
+                // Add each item as object to the list
+                targetList.AddRange(items.Cast<object>());
 
                 ModifiedList.Set(context, targetList);
                 IsSuccess.Set(context, true);
@@ -84,8 +66,6 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error adding item(s) to list: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

@@ -23,31 +23,34 @@ namespace CodeActivitiesLibrary.DataTransformations.OcrActivities
 
         protected override void Execute(CodeActivityContext context)
         {
+            // Get input arguments
             var imagePath = ImagePath.Get(context);
-            var extractedText = "";
-            var status = "";
+
             try
             {
+                // Validate image path
                 if (string.IsNullOrEmpty(imagePath) || !System.IO.File.Exists(imagePath))
                 {
                     throw new ArgumentException("Image path is invalid or file does not exist.");
                 }
 
-                using (var engine = new TesseractEngine(System.IO.Path.GetDirectoryName(imagePath), "eng",
-                           EngineMode.Default))
+                // Initialize Tesseract engine with the correct data directory
+                string tessDataPath = @"./tessdata"; // Ensure this points to the actual tessdata directory
+                using (var engine = new TesseractEngine(tessDataPath, "eng", EngineMode.Default))
                 {
+                    // Load the image
                     using (var img = Pix.LoadFromFile(imagePath))
                     {
+                        // Process the image and extract text
                         using (var page = engine.Process(img))
                         {
-                            extractedText = page.GetText();
+                            var extractedText = page.GetText();
+                            ExtractedText.Set(context, extractedText);
                         }
                     }
-
-                    status = "Text extracted successfully.";
                 }
 
-                ExtractedText.Set(context, extractedText);
+                // Set success status and message
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Text extracted successfully.");
             }

@@ -1,6 +1,7 @@
 ﻿using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.Json;
 
@@ -19,15 +20,9 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [Description("The JSON string that will be converted to a custom object.")]
         public InArgument<string> JsonData { get; set; }
 
-        [RequiredArgument]
-        [DisplayName("Target Type")]
-        [Description("Specifies the type of the custom object to deserialize the JSON into.")]
-        public InArgument<Type> TargetType { get; set; }
-
         // ----------------------
         // Output Arguments
         // ----------------------
-
 
         [DisplayName("Custom Object")]
         [Description("Returns the resulting custom object after JSON deserialization.")]
@@ -38,35 +33,32 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
-
             try
             {
                 var jsonData = JsonData.Get(context);
-                var targetType = TargetType.Get(context);
 
                 if (string.IsNullOrWhiteSpace(jsonData))
                     throw new ArgumentException("JSON data cannot be empty.");
 
-                if (targetType == null)
-                    throw new ArgumentException("Target type must be specified for deserialization.");
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    WriteIndented = true
+                };
 
-                // Deserialize JSON into the specified target type
-                var options = new JsonSerializerOptions { WriteIndented = true };
-                var result = JsonSerializer.Deserialize(jsonData, targetType, options);
+                // Deserialize to Dictionary<string, object>
+                var result = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonData, options);
 
                 CustomObject.Set(context, result);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "JSON converted to custom object successfully.");
+                StatusMessage.Set(context, "JSON successfully converted to object.");
             }
             catch (Exception ex)
             {
                 CustomObject.Set(context, null);
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error converting JSON to custom object: {ex.Message}");
+                StatusMessage.Set(context, $"Error converting JSON to object: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }
