@@ -27,24 +27,32 @@ const BaseNode: React.FC<BaseNodeProps> = ({
 }) => {
   const { toggleGroupExpand } = useGroupToggle();
 
+  const renderCount = nodeData?.count
+    ? nodeData?.count === 2
+      ? 1
+      : nodeData?.count === 3
+        ? 2
+        : nodeData?.count >= 4
+          ? 3
+          : 0
+    : 0;
+
   return (
     <ReactFlowContextMenu>
       <div className={nodeData?.isGroupHead ? "relative" : ""}>
-        {nodeData?.isGroupHead && !nodeData?.isExpanded && (
-          <>
+        {nodeData?.isGroupHead &&
+          !nodeData?.isExpanded &&
+          Array.from({ length: renderCount }).map((_, i) => (
             <div
-              className={
-                "absolute inset-0 left-[0.175rem] top-[0.175rem] -z-10 h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-slate-300 bg-white hover:hidden hover:ring hover:ring-ring"
-              }
+              key={i}
+              className={`absolute inset-0 left-${renderCount - i} top-${renderCount - i} -z-10 h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 ${nodeData.color} bg-white hover:ring hover:ring-ring`}
             />
-            <div
-              className={
-                "absolute inset-0 left-[0.35rem] top-[0.35rem] -z-20 h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-slate-300 bg-white hover:hidden hover:ring hover:ring-ring"
-              }
-            />
-          </>
-        )}
-        <NodeContainer {...{ nodeId, nodeData, selected }} {...props}>
+          ))}
+        <NodeContainer
+          className={nodeData?.color}
+          {...{ nodeId, nodeData, selected }}
+          {...props}
+        >
           <NodeHeader>
             {nodeData.icon ? (
               iconMapper[nodeData.icon]

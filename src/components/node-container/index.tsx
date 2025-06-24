@@ -21,9 +21,9 @@ export const NodeContainer = ({
     <div
       className={cn(
         "flex h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-slate-300 hover:ring hover:ring-ring",
-        className,
         nodeData.type == "forLoopNode" && "border-blue-500",
         nodeData.type == "conditionalNode" && "border-violet-400",
+        className,
         selected && "border-primary ring ring-ring",
       )}
       {...props}
