@@ -6,6 +6,7 @@ import {
   DCPFieldSchemaType,
 } from "..";
 import { ModelSelectField } from "./fields-for-form/ModelSelectField";
+import { ConfigPanelModelOutputField } from "./fields-for-form/ConfigPanelModelOutputField";
 
 // Helper to render the correct field type
 export const RenderField = (field: DCPFieldSchemaType) => {
@@ -52,6 +53,8 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       return <ConfigPanelOuputField {...baseProps} />;
     case "model-select":
       return <ModelSelectField {...baseProps} />;
+    case "config-panel-model-output":
+      return <ConfigPanelModelOutputField {...baseProps} />;
     default:
       return null;
   }
