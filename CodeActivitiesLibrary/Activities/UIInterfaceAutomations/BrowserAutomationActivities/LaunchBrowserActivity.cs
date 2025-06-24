@@ -45,12 +45,16 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(BrowsingModeEnum.Normal)]
         public InArgument<BrowsingModeEnum> BrowsingMode { get; set; }
 
+        [DisplayName("Store Data")]
+        [Description(
+            "If true, stores browser data (e.g., user profiles) in a specified path. If false, uses default browser settings. this usefull when launchin multiple instances of the same browser.")]
+        public InArgument<bool> StoreData { get; set; } = true;
 
         [DisplayName("User Data Storage Path")]
         [Description(
             "Path to store browser data (e.g., user profiles). Required if need for store data somewhere else.")]
+        [RenderIfCondition(nameof(StoreData), true)]
         public InArgument<string> UserDataStoragePath { get; set; }
-
 
         [DisplayName("Custom Browser Name")]
         [Description("Name of the custom browser (required if 'Browser Type' is 'Custom').")]
@@ -71,7 +75,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
         [RenderIfCondition(nameof(BrowserType), BrowserTypeEnum.Custom)]
         public InArgument<string> DriverExecutablePath { get; set; }
 
-
         [DisplayName("Window State")]
         [Description("Specifies the initial browser window state.")]
         [DefaultValue(WindowStateEnum.Maximized)]
@@ -80,7 +83,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
         // Output Arguments
         // ----------------------
-
 
         [DisplayName("Web Browser")]
         [Description("Returns the WebDriver (WebBrowser) object for further automation steps.")]
@@ -103,6 +105,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                 var customBrowserName = CustomBrowserName.Get(context);
                 var browserExePath = BrowserExecutablePath.Get(context);
                 var driverExePath = DriverExecutablePath.Get(context);
+                var storeData = StoreData.Get(context);
                 var userDataDir = UserDataStoragePath.Get(context);
                 var launchWithUrl = LaunchWithUrl.Get(context);
                 var launchUrl = LaunchUrl.Get(context);
@@ -111,26 +114,29 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                 {
                     case BrowserTypeEnum.MicrosoftEdge:
                         {
-                            driver = OpenMicrosoftEdgeBrowser(browsingMode, launchWithUrl, launchUrl, userDataDir);
+                            driver = OpenMicrosoftEdgeBrowser(browsingMode, launchWithUrl, launchUrl,
+                                storeData, userDataDir);
                             break;
                         }
 
                     case BrowserTypeEnum.GoogleChrome:
                         {
-                            driver = OpenChromeBrowser(browsingMode, launchWithUrl, launchUrl, userDataDir);
+                            driver = OpenChromeBrowser(browsingMode, launchWithUrl, launchUrl,
+                                storeData, userDataDir);
                             break;
                         }
 
                     case BrowserTypeEnum.MozillaFirefox:
                         {
-                            driver = OpenFireFox(browsingMode, launchWithUrl, launchUrl, userDataDir);
+                            driver = OpenFireFox(browsingMode, launchWithUrl, launchUrl,
+                                storeData, userDataDir);
                             break;
                         }
 
                     case BrowserTypeEnum.Custom:
                         {
                             driver = OpenCustomBrowser(customBrowserName, browserExePath, driverExePath, browsingMode,
-                                launchWithUrl, launchUrl);
+                                launchWithUrl, launchUrl, storeData);
                             break;
                         }
 
@@ -156,11 +162,25 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                     default:
                         throw new ArgumentOutOfRangeException(nameof(windowState));
                 }
+
                 WebBrowser.Set(context, driver);
                 status = $"Successfully launched {GetBrowserName(browserType)} in {windowState} mode.";
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
-
+            }
+            catch (WebDriverException ex) when (ex.Message.Contains("SessionNotCreated"))
+            {
+                status =
+                    "Error launching browser: there many be a another instance of the same browser already running. " +
+                    $"Please close all instances of {GetBrowserName(BrowserType.Get(context))} or here you can try, " +
+                    "\n1). entering the different custom User Data Storage Path" +
+                    "\n2). using a same instance and adding tab instead of launching a new browser instance.";
+                driver?.Quit(); // Clean up if partially launched
+                driver = null;
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, status);
+                Console.WriteLine(status);
+                throw;
             }
             catch (Exception ex)
             {
@@ -170,69 +190,204 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
             }
+        }
 
-            // * --no-sandbox: This argument allows you to run browser without sandboxing. Sandboxing
-            // is a security feature that prevents malicious code from accessing your system. However,
-            // in some cases, you might need to disable it.
-            //
-            // * --disable-dev-shm-usage: This argument prevents browser from
-            // using shared memory for rendering. This can help prevent performance issues.
-            IWebDriver OpenMicrosoftEdgeBrowser(BrowsingModeEnum browsingMode, bool launchWithUrl, string launchUrl,
-                string userDataDir = null)
+        // * --no-sandbox: This argument allows you to run browser without sandboxing. Sandboxing
+        // is a security feature that prevents malicious code from accessing your system. However,
+        // in some cases, you might need to disable it.
+        //
+        // * --disable-dev-shm-usage: This argument prevents browser from
+        // using shared memory for rendering. This can help prevent performance issues.
+        private static IWebDriver OpenMicrosoftEdgeBrowser(BrowsingModeEnum browsingMode, bool launchWithUrl,
+            string launchUrl,
+            bool useUserDataDir, string userDataDir = null)
+        {
+            try
             {
-                try
+                var edgeOptions = new EdgeOptions();
+                var arguments = new List<string>
                 {
-                    var edgeOptions = new EdgeOptions();
-                    var arguments = new List<string>
+                    "--start-maximized",
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage"
+                };
+
+                // Set default Edge user data directory if not specified
+                userDataDir = userDataDir ?? Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Microsoft", "Edge", "AutomationProfile");
+
+                if (useUserDataDir && !string.IsNullOrEmpty(userDataDir) && browsingMode != BrowsingModeEnum.Private)
+                {
+                    Directory.CreateDirectory(userDataDir); // Ensure directory exists
+                    arguments.Add($"--user-data-dir={userDataDir}");
+                    Console.WriteLine($"Edge user data: {userDataDir}");
+                }
+
+                if (browsingMode == BrowsingModeEnum.Private)
+                    arguments.Add("--inprivate");
+
+
+                edgeOptions.AddArguments(arguments);
+                var edgeService = EdgeDriverService.CreateDefaultService();
+                edgeService.HideCommandPromptWindow = true;
+
+                var edriver = new EdgeDriver(edgeService, edgeOptions, TimeSpan.FromSeconds(30));
+                if (launchWithUrl && !string.IsNullOrWhiteSpace(launchUrl))
+                    edriver.Navigate().GoToUrl(launchUrl);
+                return edriver;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Edge Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        private static IWebDriver OpenChromeBrowser(BrowsingModeEnum browsingMode, bool launchWithUrl, string launchUrl,
+            bool useUserDataDir, string userDataDir = null)
+        {
+            try
+            {
+                var chromeOptions = new ChromeOptions();
+                var arguments = new List<string>
+                {
+                    "--start-maximized",
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage"
+                };
+
+                // Set default Chrome user data directory if not specified
+                userDataDir = userDataDir ?? Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Google", "Chrome", "AutomationProfile");
+
+                if (useUserDataDir && !string.IsNullOrEmpty(userDataDir) && browsingMode != BrowsingModeEnum.Private)
+                {
+                    Directory.CreateDirectory(userDataDir);
+                    arguments.Add($"--user-data-dir={userDataDir}");
+                    Console.WriteLine($"Chrome user data: {userDataDir}");
+                }
+
+                if (browsingMode == BrowsingModeEnum.Private) arguments.Add("--incognito");
+
+                chromeOptions.AddArguments(arguments);
+                var chromeService = ChromeDriverService.CreateDefaultService();
+                chromeService.HideCommandPromptWindow = true;
+
+                var cdriver = new ChromeDriver(chromeService, chromeOptions, TimeSpan.FromSeconds(30));
+                if (launchWithUrl && !string.IsNullOrWhiteSpace(launchUrl))
+                    cdriver.Navigate().GoToUrl(launchUrl);
+                return cdriver;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Chrome Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        private static IWebDriver OpenFireFox(BrowsingModeEnum browsingMode, bool launchWithUrl, string launchUrl,
+            bool useProfilePath, string profilePath = null)
+        {
+            try
+            {
+                var firefoxOptions = new FirefoxOptions();
+
+                // Set default Firefox profile directory if not specified
+                profilePath = profilePath ?? Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "Mozilla", "Firefox", "AutomationProfile");
+
+                if (useProfilePath && !string.IsNullOrEmpty(profilePath) && browsingMode != BrowsingModeEnum.Private)
+                {
+                    Directory.CreateDirectory(profilePath);
+                    firefoxOptions.Profile = new FirefoxProfile(profilePath);
+                    Console.WriteLine($"Firefox profile: {profilePath}");
+                }
+
+                if (browsingMode == BrowsingModeEnum.Private)
+                    firefoxOptions.SetPreference("browser.privatebrowsing.autostart", true);
+
+                var service = FirefoxDriverService.CreateDefaultService();
+                service.HideCommandPromptWindow = true;
+
+                var fdriver = new FirefoxDriver(service, firefoxOptions, TimeSpan.FromSeconds(30));
+
+                if (launchWithUrl && !string.IsNullOrWhiteSpace(launchUrl))
+                    fdriver.Navigate().GoToUrl(launchUrl);
+                return fdriver;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Firefox Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        private static IWebDriver OpenCustomBrowser(
+            string customBrowserName,
+            string browserExePath,
+            string driverExePath,
+            BrowsingModeEnum browsingMode, bool launchWithUrl, string launchUrl,
+            bool useUserDataDir, string userDataDir = null)
+        {
+            // Validate inputs
+            if (string.IsNullOrWhiteSpace(customBrowserName))
+                throw new ArgumentException("Browser name cannot be empty", nameof(customBrowserName));
+
+            if (!File.Exists(browserExePath))
+                throw new FileNotFoundException("Browser executable not found", browserExePath);
+
+            if (!File.Exists(driverExePath))
+                throw new FileNotFoundException("Driver executable not found", driverExePath);
+
+            try
+            {
+                var driverDir = Path.GetDirectoryName(driverExePath) ??
+                                throw new InvalidOperationException("Invalid driver path");
+
+                // Common arguments for all browsers
+                var commonArgs = new List<string>
+                {
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--disable-infobars"
+                };
+
+                if (customBrowserName.Equals("firefox", StringComparison.OrdinalIgnoreCase))
+                {
+                    var options = new FirefoxOptions
                     {
-                        "--start-maximized",
-                        "--no-sandbox",
-                        "--disable-dev-shm-usage"
+                        BinaryLocation = browserExePath,
+                        AcceptInsecureCertificates = true
                     };
 
-                    // Set default Edge user data directory if not specified
-                    userDataDir = userDataDir ?? Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                        "Microsoft", "Edge", "AutomationProfile");
-
-                    if (!string.IsNullOrEmpty(userDataDir) && browsingMode != BrowsingModeEnum.Private)
+                    // Handle profile persistence
+                    if (useUserDataDir && !string.IsNullOrEmpty(userDataDir) &&
+                        browsingMode != BrowsingModeEnum.Private)
                     {
-                        Directory.CreateDirectory(userDataDir); // Ensure directory exists
-                        arguments.Add($"--user-data-dir={userDataDir}");
-                        Console.WriteLine($"Edge user data: {userDataDir}");
+                        Directory.CreateDirectory(userDataDir);
+                        options.Profile = new FirefoxProfile(userDataDir);
+                        Console.WriteLine($"Using Firefox profile: {userDataDir}");
                     }
 
+                    if (launchWithUrl)
+                        if (!string.IsNullOrEmpty(launchUrl))
+                            options.AddArgument($"--url={launchUrl}");
+
                     if (browsingMode == BrowsingModeEnum.Private)
-                        arguments.Add("--inprivate");
+                        options.SetPreference("browser.privatebrowsing.autostart", true);
 
-
-                    edgeOptions.AddArguments(arguments);
-                    var edgeService = EdgeDriverService.CreateDefaultService();
-                    edgeService.HideCommandPromptWindow = true;
-
-                    var edriver = new EdgeDriver(edgeService, edgeOptions, TimeSpan.FromSeconds(30));
-                    if (launchWithUrl && !string.IsNullOrWhiteSpace(launchUrl))
-                        edriver.Navigate().GoToUrl(launchUrl);
-                    return edriver;
+                    return new FirefoxDriver(driverDir, options, TimeSpan.FromSeconds(30));
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Edge Error: {ex.Message}");
-                    throw;
-                }
-            }
 
-            IWebDriver OpenChromeBrowser(BrowsingModeEnum browsingMode, bool launchWithUrl, string launchUrl,
-                string userDataDir = null)
-            {
-                try
+                if (customBrowserName.Equals("chrome", StringComparison.OrdinalIgnoreCase))
                 {
-                    var chromeOptions = new ChromeOptions();
-                    var arguments = new List<string>
+                    var options = new ChromeOptions
                     {
-                        "--start-maximized",
-                        "--no-sandbox",
-                        "--disable-dev-shm-usage"
+                        BinaryLocation = browserExePath
                     };
 
                     // Set default Chrome user data directory if not specified
@@ -240,210 +395,78 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                         "Google", "Chrome", "AutomationProfile");
 
-                    if (!string.IsNullOrEmpty(userDataDir) && browsingMode != BrowsingModeEnum.Private)
+                    if (useUserDataDir && !string.IsNullOrEmpty(userDataDir) &&
+                        browsingMode != BrowsingModeEnum.Private)
                     {
                         Directory.CreateDirectory(userDataDir);
-                        arguments.Add($"--user-data-dir={userDataDir}");
-                        Console.WriteLine($"Chrome user data: {userDataDir}");
+                        options.AddArguments($"--user-data-dir={userDataDir}");
+                        Console.WriteLine($"Using Chrome profile: {userDataDir}");
                     }
 
-                    if (browsingMode == BrowsingModeEnum.Private) arguments.Add("--incognito");
+                    options.AddArguments(commonArgs);
+                    options.AddArguments(browsingMode == BrowsingModeEnum.Private
+                        ? "--incognito"
+                        : "--start-maximized");
 
-                    chromeOptions.AddArguments(arguments);
-                    var chromeService = ChromeDriverService.CreateDefaultService();
-                    chromeService.HideCommandPromptWindow = true;
+                    if (launchWithUrl)
+                        if (!string.IsNullOrEmpty(launchUrl))
+                            options.AddArgument($"--app={launchUrl}");
 
-                    var cdriver = new ChromeDriver(chromeService, chromeOptions, TimeSpan.FromSeconds(30));
-                    if (launchWithUrl && !string.IsNullOrWhiteSpace(launchUrl))
-                        cdriver.Navigate().GoToUrl(launchUrl);
-                    return cdriver;
+                    return new ChromeDriver(driverDir, options, TimeSpan.FromSeconds(30));
                 }
-                catch (Exception ex)
+
+                if (customBrowserName.Equals("edge", StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine($"Chrome Error: {ex.Message}");
-                    throw;
-                }
-            }
-
-            IWebDriver OpenFireFox(BrowsingModeEnum browsingMode, bool launchWithUrl, string launchUrl,
-                string profilePath = null)
-            {
-                try
-                {
-                    var firefoxOptions = new FirefoxOptions();
-
-                    // Set default Firefox profile directory if not specified
-                    profilePath = profilePath ?? Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                        "Mozilla", "Firefox", "AutomationProfile");
-
-                    if (!string.IsNullOrEmpty(profilePath) && browsingMode != BrowsingModeEnum.Private)
+                    var options = new EdgeOptions
                     {
-                        Directory.CreateDirectory(profilePath);
-                        firefoxOptions.Profile = new FirefoxProfile(profilePath);
-                        Console.WriteLine($"Firefox profile: {profilePath}");
-                    }
-
-                    if (browsingMode == BrowsingModeEnum.Private)
-                        firefoxOptions.SetPreference("browser.privatebrowsing.autostart", true);
-
-                    var service = FirefoxDriverService.CreateDefaultService();
-                    service.HideCommandPromptWindow = true;
-
-                    var fdriver = new FirefoxDriver(service, firefoxOptions, TimeSpan.FromSeconds(30));
-
-                    if (launchWithUrl && !string.IsNullOrWhiteSpace(launchUrl))
-                        fdriver.Navigate().GoToUrl(launchUrl);
-                    return fdriver;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Firefox Error: {ex.Message}");
-                    throw;
-                }
-            }
-
-            IWebDriver OpenCustomBrowser(
-                string customBrowserName,
-                string browserExePath,
-                string driverExePath,
-                BrowsingModeEnum browsingMode, bool launchWithUrl, string launchUrl,
-                string userDataDir = null)
-            {
-                // Validate inputs
-                if (string.IsNullOrWhiteSpace(customBrowserName))
-                    throw new ArgumentException("Browser name cannot be empty", nameof(customBrowserName));
-
-                if (!File.Exists(browserExePath))
-                    throw new FileNotFoundException("Browser executable not found", browserExePath);
-
-                if (!File.Exists(driverExePath))
-                    throw new FileNotFoundException("Driver executable not found", driverExePath);
-
-                try
-                {
-                    var driverDir = Path.GetDirectoryName(driverExePath) ??
-                                    throw new InvalidOperationException("Invalid driver path");
-
-                    // Common arguments for all browsers
-                    var commonArgs = new List<string>
-                    {
-                        "--no-sandbox",
-                        "--disable-dev-shm-usage",
-                        "--disable-gpu",
-                        "--disable-infobars"
+                        BinaryLocation = browserExePath
                     };
 
-                    if (customBrowserName.Equals("firefox", StringComparison.OrdinalIgnoreCase))
+                    // Set default Edge user data directory if not specified
+                    userDataDir = userDataDir ?? Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                        "Microsoft", "Edge", "AutomationProfile");
+
+                    if (useUserDataDir && !string.IsNullOrEmpty(userDataDir) &&
+                        browsingMode != BrowsingModeEnum.Private)
                     {
-                        var options = new FirefoxOptions
-                        {
-                            BinaryLocation = browserExePath,
-                            AcceptInsecureCertificates = true
-                        };
-
-                        // Handle profile persistence
-                        if (!string.IsNullOrEmpty(userDataDir) && browsingMode != BrowsingModeEnum.Private)
-                        {
-                            Directory.CreateDirectory(userDataDir);
-                            options.Profile = new FirefoxProfile(userDataDir);
-                            Console.WriteLine($"Using Firefox profile: {userDataDir}");
-                        }
-
-                        if (launchWithUrl)
-                            if (!string.IsNullOrEmpty(launchUrl))
-                                options.AddArgument($"--url={launchUrl}");
-
-                        if (browsingMode == BrowsingModeEnum.Private)
-                            options.SetPreference("browser.privatebrowsing.autostart", true);
-
-                        return new FirefoxDriver(driverDir, options, TimeSpan.FromSeconds(30));
+                        Directory.CreateDirectory(userDataDir);
+                        options.AddArguments($"--user-data-dir={userDataDir}");
+                        Console.WriteLine($"Using Edge profile: {userDataDir}");
                     }
-                    else if (customBrowserName.Equals("chrome", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var options = new ChromeOptions
-                        {
-                            BinaryLocation = browserExePath
-                        };
 
-                        // Set default Chrome user data directory if not specified
-                        userDataDir = userDataDir ?? Path.Combine(
-                            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                            "Google", "Chrome", "AutomationProfile");
+                    options.AddArguments(commonArgs);
+                    options.AddArguments(browsingMode == BrowsingModeEnum.Private
+                        ? "--inprivate"
+                        : "--start-maximized");
 
-                        if (!string.IsNullOrEmpty(userDataDir) && browsingMode != BrowsingModeEnum.Private)
-                        {
-                            Directory.CreateDirectory(userDataDir);
-                            options.AddArguments($"--user-data-dir={userDataDir}");
-                            Console.WriteLine($"Using Chrome profile: {userDataDir}");
-                        }
+                    if (launchWithUrl)
+                        if (!string.IsNullOrEmpty(launchUrl))
+                            options.AddArgument($"--app={launchUrl}");
 
-                        options.AddArguments(commonArgs);
-                        options.AddArguments(browsingMode == BrowsingModeEnum.Private
-                            ? "--incognito"
-                            : "--start-maximized");
+                    var service =
+                        EdgeDriverService.CreateDefaultService(driverDir, Path.GetFileName(driverExePath));
+                    service.HideCommandPromptWindow = true;
 
-                        if (launchWithUrl)
-                            if (!string.IsNullOrEmpty(launchUrl))
-                                options.AddArgument($"--app={launchUrl}");
-
-                        return new ChromeDriver(driverDir, options, TimeSpan.FromSeconds(30));
-                    }
-                    else if (customBrowserName.Equals("edge", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var options = new EdgeOptions
-                        {
-                            BinaryLocation = browserExePath
-                        };
-
-                        // Set default Edge user data directory if not specified
-                        userDataDir = userDataDir ?? Path.Combine(
-                            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                            "Microsoft", "Edge", "AutomationProfile");
-
-                        if (!string.IsNullOrEmpty(userDataDir) && browsingMode != BrowsingModeEnum.Private)
-                        {
-                            Directory.CreateDirectory(userDataDir);
-                            options.AddArguments($"--user-data-dir={userDataDir}");
-                            Console.WriteLine($"Using Edge profile: {userDataDir}");
-                        }
-
-                        options.AddArguments(commonArgs);
-                        options.AddArguments(browsingMode == BrowsingModeEnum.Private
-                            ? "--inprivate"
-                            : "--start-maximized");
-
-                        if (launchWithUrl)
-                            if (!string.IsNullOrEmpty(launchUrl))
-                                options.AddArgument($"--app={launchUrl}");
-
-                        var service =
-                            EdgeDriverService.CreateDefaultService(driverDir, Path.GetFileName(driverExePath));
-                        service.HideCommandPromptWindow = true;
-
-                        return new EdgeDriver(service, options, TimeSpan.FromSeconds(30));
-                    }
-                    else
-                    {
-                        throw new NotSupportedException($"Browser '{customBrowserName}' is not supported. " +
-                                                        "Supported browsers: Firefox, Chrome, Edge");
-                    }
+                    return new EdgeDriver(service, options, TimeSpan.FromSeconds(30));
                 }
-                catch (WebDriverException ex)
-                {
-                    Console.WriteLine($"WebDriver Error ({customBrowserName}): {ex.Message}");
-                    if (ex.Message.Contains("version"))
-                        Console.WriteLine("Please ensure browser and driver versions match");
 
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Failed to initialize {customBrowserName}: {ex.Message}");
-                    throw;
-                }
+                throw new NotSupportedException($"Browser '{customBrowserName}' is not supported. " +
+                                                "Supported browsers: Firefox, Chrome, Edge");
+            }
+            catch (WebDriverException ex) when (ex.Message.Contains("version"))
+            {
+                Console.WriteLine($"WebDriver Error ({customBrowserName}): {ex.Message}");
+                Console.WriteLine("Please ensure browser and driver versions match");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to initialize {customBrowserName}: {ex.Message}");
+                throw;
             }
         }
+
 
         private static string GetBrowserName(BrowserTypeEnum browserType)
         {
