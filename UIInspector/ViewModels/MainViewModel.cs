@@ -90,11 +90,30 @@ namespace UIInspector.ViewModels
             set { SetProperty(value); }
         }
 
+        public bool KeepWindowOnTop
+        {
+            get { return GetProperty<bool>(); }
+            set { SetProperty(value); }
+        }
+
         public AutomationType SelectedAutomationType
         {
-            get { return GetProperty<AutomationType>(); }
-            private set { SetProperty(value); }
+            get => _selectedAutomationType;
+            set
+            {
+                if (_selectedAutomationType != value)
+                {
+                    _selectedAutomationType = value;
+                    OnPropertyChanged();
+                    Elements.Clear();
+                    Initialize(_selectedAutomationType);
+                }
+            }
         }
+
+        public ObservableCollection<AutomationType> AutomationTypes { get; } = new ObservableCollection<AutomationType> { AutomationType.UIA3, AutomationType.UIA2 };
+
+        private AutomationType _selectedAutomationType = AutomationType.UIA3;
 
         public ObservableCollection<ElementViewModel> Elements { get; private set; }
 
@@ -115,6 +134,7 @@ namespace UIInspector.ViewModels
         public void Initialize(AutomationType selectedAutomationType)
         {
             SelectedAutomationType = selectedAutomationType;
+            EnableXPath = true;
             IsInitialized = true;
 
             _automation = selectedAutomationType == AutomationType.UIA2 ? (AutomationBase)new UIA2Automation() : new UIA3Automation();
