@@ -146,41 +146,51 @@ export const useDagreAutoLayout = () => {
   /** Organize the nodes and edges using the Dagre auto layout algorithm */
   const autoLayout = useCallback(
     (newNodesEdgesObj?: { newNodes: Node[]; newEdges: Edge[] }) => {
-      // Get layouted nodes and edges
-      const { nodes: layoutedNodes, edges: layoutedEdges } =
-        getLayoutedElements(
-          newNodesEdgesObj ? newNodesEdgesObj.newNodes : nodes,
-          newNodesEdgesObj ? newNodesEdgesObj.newEdges : edges,
-          layoutDirection,
-        );
+      const currentNodes = newNodesEdgesObj?.newNodes || nodes;
+      const currentEdges = newNodesEdgesObj?.newEdges || edges;
 
-      // Set the layouted edges
-      setEdges([...layoutedEdges]);
+      // 💡 Filter only visible nodes
+      const visibleNodes = currentNodes.filter((node) => !node.hidden);
 
-      // Set duration for the animation
-      const duration = AUTO_LAYOUT_ANIMATION_DURATION; // In milliseconds
+      // 💡 Filter edges where both source and target are visible
+      const visibleNodeIds = new Set(visibleNodes.map((n) => n.id));
+      const visibleEdges = currentEdges.filter(
+        (edge) =>
+          visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target),
+      );
 
-      // Set start and end positions for the nodes
-      const startPositions = newNodesEdgesObj
-        ? newNodesEdgesObj.newNodes.map((node) => node.position)
-        : nodes.map((node) => node.position);
-      const endPositions = layoutedNodes.map((node) => node.position);
+      // 🧠 Layout only visible nodes and edges
+      const { nodes: layoutedVisibleNodes } = getLayoutedElements(
+        visibleNodes,
+        visibleEdges,
+        layoutDirection,
+      );
 
-      // Animate the nodes using D3 timer
+      // 💾 Keep original positions for hidden nodes
+      const hiddenNodes = currentNodes.filter((node) => node.hidden);
+
+      // 🧩 Merge back all nodes: layouted visible + unchanged hidden
+      const allLayoutedNodes = [...layoutedVisibleNodes, ...hiddenNodes];
+
+      setEdges([...currentEdges]); // Keep all original edges including temporary
+      const duration = AUTO_LAYOUT_ANIMATION_DURATION;
+
+      const startPositions = currentNodes.map((node) => node.position);
+      const endPositions = allLayoutedNodes.map((node) => node.position);
+
+      // Animate using D3
       const d3Timer = timer((elapsed: number) => {
-        // Calculate the progress of the animation
         const progress = Math.min(elapsed / duration, 1);
-
         // Interpolate the positions of the nodes
-        const interpolatedNodes = layoutedNodes.map((node, index) => ({
+        const interpolatedNodes = allLayoutedNodes.map((node, index) => ({
           ...node,
           position: {
             x:
-              startPositions[index].x +
-              (endPositions[index].x - startPositions[index].x) * progress,
+              startPositions[index]?.x +
+              (endPositions[index]?.x - startPositions[index]?.x) * progress,
             y:
-              startPositions[index].y +
-              (endPositions[index].y - startPositions[index].y) * progress,
+              startPositions[index]?.y +
+              (endPositions[index]?.y - startPositions[index]?.y) * progress,
           },
         }));
 
