@@ -3,6 +3,7 @@ using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Data;
 using System.Linq;
 using Excel = Microsoft.Office.Interop.Excel;
 
@@ -23,8 +24,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [RequiredArgument]
         [DisplayName("Value To Write")]
-        [Description("The value to write into the specified cell or range.")]
-        public InArgument<string> ValueToWrite { get; set; }
+        [Description("The value (text or DataTable) to write into the specified cell or range.")]
+        public InArgument<object> ValueToWrite { get; set; }
 
         [RequiredArgument]
         [DisplayName("Write Mode")]
@@ -73,7 +74,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             try
             {
                 var excelApp = ExcelApplication.Get(context);
-                var valueToWrite = ValueToWrite.Get(context);
+                var rawValue = ValueToWrite.Get(context); // Get as object
                 var writeMode = WriteMode.Get(context);
 
                 if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
@@ -97,7 +98,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             if (targetCell == null)
                                 throw new ArgumentException($"Invalid cell reference: {colLetter}{rowNumber}");
 
-                            targetCell.Value = valueToWrite;
+                            WriteValueToRange(targetCell, rawValue);
                             break;
                         }
 
@@ -107,7 +108,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             if (activeCell == null)
                                 throw new InvalidOperationException("No active cell found.");
 
-                            activeCell.Value = valueToWrite;
+                            WriteValueToRange(activeCell, rawValue);
                             break;
                         }
 
@@ -123,10 +124,34 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             if (namedRange == null)
                                 throw new ArgumentException($"Named range '{name}' not found.");
 
-                            if (populateEntireRange)
-                                namedRange.Value = valueToWrite;
+                            if (rawValue is DataTable dataTable)
+                            {
+                                if (dataTable.Rows.Count == 0 || dataTable.Columns.Count == 0)
+                                    throw new ArgumentException("DataTable is empty.");
+
+                                int rowCount = dataTable.Rows.Count;
+                                int colCount = dataTable.Columns.Count;
+
+                                Excel.Range targetRange = namedRange.Resize[rowCount, colCount];
+                                object[,] values = new object[rowCount, colCount];
+
+                                for (int r = 0; r < rowCount; r++)
+                                {
+                                    for (int c = 0; c < colCount; c++)
+                                    {
+                                        values[r, c] = dataTable.Rows[r][c];
+                                    }
+                                }
+
+                                targetRange.Value = values;
+                            }
                             else
-                                namedRange.Cells[1, 1].Value = valueToWrite;
+                            {
+                                if (populateEntireRange)
+                                    namedRange.Value = rawValue?.ToString();
+                                else
+                                    namedRange.Cells[1, 1].Value = rawValue?.ToString();
+                            }
 
                             break;
                         }
@@ -134,16 +159,54 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                     default:
                         throw new ArgumentOutOfRangeException(nameof(writeMode));
                 }
-
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error writing to Excel: {ex.Message}";
-                IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
             }
+
+            StatusMessage.Set(context, status);
+        }
+
+        private void WriteValueToRange(Excel.Range range, object value)
+        {
+            if (value is DataTable dataTable)
+            {
+                WriteDataTableToRange(range, dataTable);
+            }
+            else
+            {
+                range.Value = value?.ToString();
+            }
+        }
+
+        private void WriteDataTableToRange(Excel.Range startCell, DataTable dataTable)
+        {
+            if (dataTable.Rows.Count == 0 || dataTable.Columns.Count == 0)
+                return;
+
+            int rowCount = dataTable.Rows.Count;
+            int colCount = dataTable.Columns.Count;
+
+            object[,] values = new object[rowCount + 1, colCount]; // +1 for header
+
+            // Write headers
+            for (int c = 0; c < colCount; c++)
+            {
+                values[0, c] = dataTable.Columns[c].ColumnName;
+            }
+
+            // Write rows
+            for (int r = 0; r < rowCount; r++)
+            {
+                for (int c = 0; c < colCount; c++)
+                {
+                    values[r + 1, c] = dataTable.Rows[r][c];
+                }
+            }
+
+            Excel.Range targetRange = startCell.Resize[rowCount + 1, colCount];
+            targetRange.Value = values;
         }
 
         private static int GetColumnIndex(string columnName)
