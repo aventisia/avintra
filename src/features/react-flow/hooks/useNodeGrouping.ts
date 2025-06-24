@@ -6,6 +6,7 @@ import { areNodesConnected } from "../utils/getNodesConnectivity";
 import { toast } from "@aventisia/ui/sonner";
 import { Edge } from "@xyflow/react";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
+import { MARKER_ARROW_PREFIX } from "@/constants";
 
 export function useNodeGrouping() {
   const { selectedNode } = useContextMenuActionsStore();
@@ -76,19 +77,43 @@ export function useNodeGrouping() {
       toast.warning("Selected nodes are not continuos in order.");
       return;
     }
+    const lightBgColors = [
+      "border-orange-300",
+      "border-green-300",
+      "border-yellow-300",
+      "border-pink-300",
+    ];
+
     const groupHead = fullSelectedNodes[0];
     const groupMembers = fullSelectedNodes.slice(1);
 
     const groupId = `group-${Date.now()}`;
 
-    // Store original edges (full edge objects)
-    const originalEdges = edges.filter((edge) =>
-      fullSelectedNodes.some(
-        (node) => node.id === edge.source || node.id === edge.target,
-      ),
+    const groupedNodeIds = fullSelectedNodes.map((n) => n.id);
+    const lastNode = fullSelectedNodes[fullSelectedNodes.length - 1];
+
+    // Find the next connected node *outside* the group (if any)
+    const outgoingEdge = edges.find(
+      (e) => e.source === lastNode.id && !groupedNodeIds.includes(e.target),
     );
 
-    // Update nodes
+    const tempEdge: Edge | null = outgoingEdge
+      ? {
+          id: `temp-${groupId}-${outgoingEdge.target}`,
+          source: groupHead.id,
+          target: outgoingEdge.target,
+          markerEnd: `${MARKER_ARROW_PREFIX}temp-${groupId}-${outgoingEdge.target}`,
+          deletable: true,
+          label: "plus",
+          data: {
+            isTemporary: true,
+            originalSource: outgoingEdge.source,
+            originalTarget: outgoingEdge.target,
+          },
+        }
+      : null;
+
+    const color = lightBgColors[Math.floor(Math.random() * 4)];
     const updatedNodes = nodes.map((node) => {
       if (node.id === groupHead.id) {
         return {
@@ -96,18 +121,20 @@ export function useNodeGrouping() {
           data: {
             ...node.data,
             groupId,
+            count: selectedNodes.length,
+            color,
             isGroupHead: true,
             isExpanded: false,
-            originalEdges, // full edge data
           },
         };
       }
-      if (groupMembers.some((member) => member.id === node.id)) {
+      if (groupMembers.some((m) => m.id === node.id)) {
         return {
           ...node,
           hidden: true,
           data: {
             ...node.data,
+            color,
             groupId,
           },
         };
@@ -115,57 +142,7 @@ export function useNodeGrouping() {
       return node;
     });
 
-    // Remove edges connected to grouped nodes
-    const edgesToRemove = edges.filter((edge) =>
-      fullSelectedNodes.some(
-        (node) => node.id === edge.source || node.id === edge.target,
-      ),
-    );
-
-    // Create temporary "bypass" edges
-    const temporaryEdges: Edge[] = [];
-
-    edgesToRemove.forEach((edge) => {
-      const isSourceInGroup = fullSelectedNodes.some(
-        (node) => node.id === edge.source,
-      );
-      const isTargetInGroup = fullSelectedNodes.some(
-        (node) => node.id === edge.target,
-      );
-
-      if (isSourceInGroup && !isTargetInGroup) {
-        temporaryEdges.push({
-          id: `temp-${groupId}-${edge.target}`,
-          source: groupHead.id,
-          target: edge.target,
-          deletable: true,
-          label: "plus",
-          data: {
-            isTemporary: true,
-            originalSource: edge.source,
-            originalTarget: edge.target,
-          },
-        });
-      } else if (!isSourceInGroup && isTargetInGroup) {
-        temporaryEdges.push({
-          id: `temp-${edge.source}-${groupId}`,
-          source: edge.source,
-          target: groupHead.id,
-          deletable: true,
-          label: "plus",
-          data: {
-            isTemporary: true,
-            originalSource: edge.source,
-            originalTarget: edge.target,
-          },
-        });
-      }
-    });
-
-    const finalEdges = [
-      ...edges.filter((e) => !edgesToRemove.includes(e)),
-      ...temporaryEdges,
-    ];
+    const finalEdges = tempEdge ? [...edges, tempEdge] : [...edges];
 
     setNodes(updatedNodes);
     setEdges(finalEdges);
@@ -176,42 +153,35 @@ export function useNodeGrouping() {
 
     const groupId = selectedNode.data.groupId as string;
 
-    // Get all nodes in this group
-    const groupedNodes = nodes.filter(
-      (node) => node?.data?.groupId === groupId,
-    );
-
-    const groupHead = groupedNodes.find((node) => node.data.isGroupHead);
-    if (!groupHead) return;
-
-    const restoredOriginalEdges: Edge[] = (groupHead.data.originalEdges ||
-      []) as Edge[];
+    const keysToRemove = [
+      "groupId",
+      "isGroupHead",
+      "isExpanded",
+      "count",
+      "color",
+    ];
 
     const updatedNodes = nodes.map((node) => {
       if (node?.data?.groupId === groupId) {
         return {
           ...node,
           hidden: false,
-          data: {
-            ...node.data,
-            groupId: undefined,
-            isGroupHead: undefined,
-            originalEdges: undefined,
-          },
+          data: Object.fromEntries(
+            Object.entries(node.data).filter(
+              ([key]) => !keysToRemove.includes(key),
+            ),
+          ),
         };
       }
       return node;
     });
 
-    // Remove temp edges for this group
-    const nonTempEdges = edges.filter(
-      (edge) => !edge?.data?.isTemporary || !edge.id.includes(groupId),
+    const updatedEdges = edges.filter(
+      (edge) => !(edge.data?.isTemporary && edge.id.includes(groupId)),
     );
 
-    const finalEdges = [...nonTempEdges, ...restoredOriginalEdges];
-
     setNodes(updatedNodes);
-    setEdges(finalEdges);
+    setEdges(updatedEdges);
   };
   return { groupNodes, ungroupNodes };
 }

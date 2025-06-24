@@ -3,6 +3,7 @@ import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { Edge, Node } from "@xyflow/react";
 import { useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { MARKER_ARROW_PREFIX } from "@/constants";
 
 export function useGroupToggle() {
   const { nodes, edges, setNodes, setEdges } = useReactFlowExtStore(
@@ -13,6 +14,7 @@ export function useGroupToggle() {
       setEdges: state.setEdges,
     })),
   );
+
   const autoLayout = useDagreAutoLayout();
 
   const [pendingLayoutTrigger, setPendingLayoutTrigger] = useState(false);
@@ -26,8 +28,9 @@ export function useGroupToggle() {
 
     const isCurrentlyExpanded = groupHead.data?.isExpanded ?? false;
 
-    // Get all nodes in the group
     const groupNodes = nodes.filter((n) => n.data?.groupId === groupId);
+    const groupNodeIds = groupNodes.map((n) => n.id);
+    const lastNode = groupNodes[groupNodes.length - 1];
 
     let updatedNodes: Node[] = [];
     let updatedEdges: Edge[] = [];
@@ -35,7 +38,6 @@ export function useGroupToggle() {
     if (!isCurrentlyExpanded) {
       // --- EXPAND ---
 
-      // Show nodes
       updatedNodes = nodes.map((node) => {
         if (node.data?.groupId === groupId) {
           return {
@@ -50,19 +52,16 @@ export function useGroupToggle() {
         return node;
       });
 
-      // Remove temporary edges (the bypass ones)
-      const nonTempEdges = edges.filter(
+      // Remove temporary edge(s)
+      const cleanedEdges = edges.filter(
         (e) => !(e.data?.isTemporary && e.id.includes(groupId)),
       );
 
-      // Restore the original edges for this group
-      const restoredEdges = (groupHead.data.originalEdges || []) as Edge[];
-
-      updatedEdges = [...nonTempEdges, ...restoredEdges];
+      updatedEdges = cleanedEdges;
     } else {
       // --- COLLAPSE ---
 
-      // Hide group members (leave head visible)
+      // Hide group members except head
       updatedNodes = nodes.map((node) => {
         if (node.id === groupHead.id) {
           return {
@@ -82,50 +81,32 @@ export function useGroupToggle() {
         return node;
       });
 
-      // Remove internal edges and reintroduce bypass edges
-      const groupNodeIds = groupNodes.map((n) => n.id);
-      const originalEdges = (groupHead.data.originalEdges || []) as Edge[];
-
-      const restoredTempEdges: Edge[] = [];
-
-      for (const edge of originalEdges) {
-        const isSourceInGroup = groupNodeIds.includes(edge.source);
-        const isTargetInGroup = groupNodeIds.includes(edge.target);
-
-        if (isSourceInGroup && !isTargetInGroup) {
-          restoredTempEdges.push({
-            id: `temp-${groupId}-${edge.target}`,
-            source: groupHead.id,
-            target: edge.target,
-            deletable: true,
-            label: "plus",
-            data: {
-              isTemporary: true,
-              originalSource: edge.source,
-              originalTarget: edge.target,
-            },
-          });
-        } else if (!isSourceInGroup && isTargetInGroup) {
-          restoredTempEdges.push({
-            id: `temp-${edge.source}-${groupId}`,
-            source: edge.source,
-            target: groupHead.id,
-            deletable: true,
-            label: "plus",
-            data: {
-              isTemporary: true,
-              originalSource: edge.source,
-              originalTarget: edge.target,
-            },
-          });
-        }
-      }
-
-      const remainingEdges = edges.filter(
-        (e) => !originalEdges.some((orig) => orig.id === e.id),
+      // Add back single bypass edge from group head to next node (outside group)
+      const outgoingEdge = edges.find(
+        (e) => e.source === lastNode.id && !groupNodeIds.includes(e.target),
       );
 
-      updatedEdges = [...remainingEdges, ...restoredTempEdges];
+      const tempEdge: Edge | null = outgoingEdge
+        ? {
+            id: `temp-${groupId}-${outgoingEdge.target}`,
+            source: groupHead.id,
+            target: outgoingEdge.target,
+            markerEnd: `${MARKER_ARROW_PREFIX}temp-${groupId}-${outgoingEdge.target}`,
+            deletable: true,
+            label: "plus",
+            data: {
+              isTemporary: true,
+              originalSource: outgoingEdge.source,
+              originalTarget: outgoingEdge.target,
+            },
+          }
+        : null;
+
+      const cleanedEdges = edges.filter(
+        (e) => !(e.data?.isTemporary && e.id.includes(groupId)),
+      );
+
+      updatedEdges = tempEdge ? [...cleanedEdges, tempEdge] : cleanedEdges;
     }
 
     setNodes(updatedNodes);
@@ -149,7 +130,6 @@ export function useGroupToggle() {
       }
     };
   }, [pendingLayoutTrigger, autoLayout]);
-  return {
-    toggleGroupExpand,
-  };
+
+  return { toggleGroupExpand };
 }
