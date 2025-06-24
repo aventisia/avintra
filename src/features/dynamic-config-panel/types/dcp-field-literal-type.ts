@@ -43,4 +43,5 @@ export type DCPControlType =
   | "textarea"
   | "condition-groups"
   | "config-panel-output"
-  | "model-select";
+  | "model-select"
+  | "config-panel-model-output";

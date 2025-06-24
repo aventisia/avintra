@@ -23,7 +23,8 @@ export const AIModelNode = ({
     <ReactFlowContextMenu>
       <div
         className={cn(
-          "flex h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-indigo-700 hover:ring hover:ring-ring",
+          "flex h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-indigo-300 hover:ring hover:ring-ring",
+          data.color,
           selected && "border-primary ring ring-ring",
         )}
       >

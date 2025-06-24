@@ -39,6 +39,8 @@ type NodeDataType = {
   isGroupHead?: boolean;
   groupId?: string;
   isExpanded?: boolean;
+  count?: number;
+  color?: string;
 };
 
 export type {

@@ -13,6 +13,7 @@ import {
   useDefineDCPForm,
   useUpdateNodeDataIO,
 } from "..";
+import { LoadingSpinner } from "@aventisia/ui";
 
 export const DCPForm = () => {
   const [showOuputFields, setShowOutputFields] = useState(false);
@@ -29,6 +30,7 @@ export const DCPForm = () => {
     outputKeys,
     nodeLabel,
     setShowDialog,
+    isLoading,
   } = useDefineDCPForm();
 
   // Watch all form values
@@ -85,7 +87,11 @@ export const DCPForm = () => {
   // Return the form
   return (
     <>
-      {!isFormReady ? (
+      {isLoading ? (
+        <div className="flex h-[calc(100vh-9rem)] items-center justify-center gap-2 text-sm">
+          <LoadingSpinner className="h-5 w-5 text-primary" />
+        </div>
+      ) : !isFormReady ? (
         <div className="flex h-[calc(100vh-9rem)] items-center justify-center gap-2 text-sm">
           <SearchCodeIcon className="text-icon h-5 w-5" />
           Configuration not found for this node.
