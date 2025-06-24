@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.DataTransformations.DataTableActivities.Helpers;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -56,7 +57,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                     throw new ArgumentException("Filter expression cannot be empty.");
 
                 // Apply filter
-                var filteredRows = dataTable.Select(filterExpression, matchCase ? "Binary" : "");
+                var filteredRows = dataTable.CaseSensitiveSelect(filterExpression, matchCase);
 
                 // Create a new DataTable with the same schema
                 var filteredTable = dataTable.Clone();
@@ -67,7 +68,8 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 // Set outputs
                 FilteredDataTable.Set(context, filteredTable);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $"Filtered data table successfully. Rows matched: {filteredTable.Rows.Count}.");
+                StatusMessage.Set(context,
+                    $"Filtered data table successfully. Rows matched: {filteredTable.Rows.Count}.");
             }
             catch (Exception ex)
             {

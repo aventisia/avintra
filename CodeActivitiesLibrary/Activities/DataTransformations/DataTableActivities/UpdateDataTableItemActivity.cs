@@ -34,7 +34,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [DisplayName("Modified Data Table")]
         [Description("The DataTable after the specified cell has been updated.")]
         public OutArgument<DataTable> ModifiedDataTable { get; set; }
-
         protected override void Execute(CodeActivityContext context)
         {
             // Retrieve input values
@@ -57,11 +56,14 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
             try
             {
-                // Update the specified cell
-                dataTable.Rows[rowIndex][columnName] = newValue;
+                // Clone the DataTable to ensure modifications are visible externally
+                var modifiedTable = dataTable.Copy();
+
+                // Update the specified cell in the cloned table
+                modifiedTable.Rows[rowIndex][columnName] = newValue;
 
                 // Set outputs
-                ModifiedDataTable.Set(context, dataTable);
+                ModifiedDataTable.Set(context, modifiedTable);
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, $"Successfully updated cell at Row {rowIndex}, Column '{columnName}'.");
             }

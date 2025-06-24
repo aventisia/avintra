@@ -19,7 +19,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [Description("The DataTable containing the data to be sorted.")]
         public InArgument<DataTable> DataTable { get; set; }
 
-
         [RequiredArgument]
         [DisplayName("Specify Column With")]
         [Description("Choose whether to specify the column by name or index.")]
@@ -30,13 +29,13 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
         [DisplayName("Column Name")]
         [Description("The name of the column to sort by (used when 'Specify Column With' is set to 'Name').")]
+        [RenderIfCondition(nameof(SpecifyColumnWith), DataTableSortColumnByEnum.Name)]
         public InArgument<string> ColumnName { get; set; }
-
 
         [DisplayName("Column Index")]
         [Description("The index of the column to sort by (used when 'Specify Column With' is set to 'Index').")]
+        [RenderIfCondition(nameof(SpecifyColumnWith), DataTableSortColumnByEnum.Index)]
         public InArgument<int> ColumnIndex { get; set; }
-
 
         [RequiredArgument]
         [DisplayName("Order")]
@@ -44,7 +43,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [DefaultValue(SortOrderEnum.Ascending)]
         public InArgument<SortOrderEnum> Order { get; set; } =
             new InArgument<SortOrderEnum>(SortOrderEnum.Ascending);
-
 
         [DisplayName("Sorted Data Table")]
         [Description("The DataTable after it has been sorted based on the specified criteria.")]

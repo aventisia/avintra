@@ -46,15 +46,19 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 if (dataTable == null)
                     throw new ArgumentException("Data table cannot be null.");
 
+                if (dataTable.Rows.Count == 0)
+                    throw new InvalidOperationException("Cannot delete row from an empty data table.");
+
                 if (rowIndex < 0 || rowIndex >= dataTable.Rows.Count)
                     throw new ArgumentOutOfRangeException(nameof(rowIndex),
                         $"Row index must be between 0 and {dataTable.Rows.Count - 1}.");
 
-                // Delete the specified row
-                dataTable.Rows.RemoveAt(rowIndex);
+                // Delete the specified row. Clone the table to avoid mutating the original
+                var clonedTable = dataTable.Copy();
+                clonedTable.Rows.RemoveAt(rowIndex);
 
                 // Set outputs
-                ModifiedDataTable.Set(context, dataTable);
+                ModifiedDataTable.Set(context, clonedTable);
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, $"Successfully deleted row at index {rowIndex}.");
             }

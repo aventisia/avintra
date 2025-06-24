@@ -59,6 +59,10 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                     throw new ArgumentException(
                         $"Number of row values ({rowValues.Length}) does not match the number of columns in the data table ({dataTable.Columns.Count}).");
 
+
+                var newRow = dataTable.NewRow();
+                newRow.ItemArray = rowValues;
+
                 switch (insertLocation)
                 {
                     case DataTableInsertRowLocationEnum.BeforeRowIndex:
@@ -69,21 +73,13 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                                 throw new ArgumentOutOfRangeException(nameof(RowIndex),
                                     $"Row index must be between 0 and {dataTable.Rows.Count}.");
 
-                            var newRow = dataTable.NewRow();
-                            for (var i = 0; i < rowValues.Length; i++) newRow[i] = rowValues[i];
-
                             dataTable.Rows.InsertAt(newRow, rowIndex);
                             break;
                         }
 
                     case DataTableInsertRowLocationEnum.EndOfDataTable:
-                        {
-                            var newRow = dataTable.NewRow();
-                            for (var i = 0; i < rowValues.Length; i++) newRow[i] = rowValues[i];
-
-                            dataTable.Rows.Add(newRow);
-                            break;
-                        }
+                        dataTable.Rows.Add(newRow);
+                        break;
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(insertLocation));

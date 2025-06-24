@@ -34,10 +34,14 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [RenderIfCondition(nameof(CompareMode), DataTableColumnCompareModeEnum.SelectedColumns)]
         public InArgument<List<string>> ColumnNamesToCompare { get; set; }
 
+        [DisplayName("Modified Data Table")]
+        [Description("Returns the updated data table with duplicate rows removed.")]
+        public OutArgument<DataTable> ModifiedDataTable { get; set; }
 
         // ----------------------
         // Execution Logic
         // ----------------------
+
         protected override void Execute(CodeActivityContext context)
         {
             try
@@ -53,7 +57,8 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 switch (compareMode)
                 {
                     case DataTableColumnCompareModeEnum.AllColumns:
-                        columnsToCompare = dataTable.Columns.Cast<DataColumn>().Select(c => c.ColumnName).ToList();
+                        columnsToCompare = dataTable.Columns.Cast<DataColumn>()
+                            .Select(c => c.ColumnName).ToList();
                         break;
 
                     case DataTableColumnCompareModeEnum.SelectedColumns:
@@ -68,34 +73,39 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
                 // Validate all column names exist in the data table
                 foreach (var colName in columnsToCompare)
+                {
                     if (!dataTable.Columns.Contains(colName))
                         throw new ArgumentException($"Column '{colName}' not found in data table.");
+                }
 
-                // Remove duplicate rows
+                // Create a new DataTable to avoid modifying the original
+                var resultTable = dataTable.Clone(); // Copies schema only
+
                 var seen = new HashSet<string>();
-                var uniqueRows = new List<DataRow>();
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    var key = string.Join("|", columnsToCompare.Select(c => row[c]));
-                    if (seen.Add(key))
-                        uniqueRows.Add(row);
+                    // Create a key by combining values as a string representation of an anonymous object
+                    var key = string.Join("|", columnsToCompare.Select(c => row[c] ?? DBNull.Value));
+
+                    if (!seen.Contains(key))
+                    {
+                        seen.Add(key);
+                        resultTable.ImportRow(row);
+                    }
                 }
 
-                // Clear original table and add back unique rows
-                dataTable.Rows.Clear();
-
-                foreach (var row in uniqueRows) dataTable.ImportRow(row);
-
+                // Set outputs
+                ModifiedDataTable.Set(context, resultTable);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Duplicate rows deleted successfully.");
+                StatusMessage.Set(context, $"Successfully deleted duplicate rows. {resultTable.Rows.Count} unique rows remain.");
             }
             catch (Exception ex)
             {
+                ModifiedDataTable.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error deleting duplicate rows: {ex.Message}");
             }
-
         }
     }
 }

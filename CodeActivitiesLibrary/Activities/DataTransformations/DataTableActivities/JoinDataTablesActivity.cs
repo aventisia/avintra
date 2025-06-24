@@ -42,15 +42,17 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         protected override void Execute(CodeActivityContext context)
         {
             // Retrieve input values
-            var firstDataTable = context.GetValue(FirstDataTable);
-            var secondDataTable = context.GetValue(SecondDataTable);
-            var joinOperation = context.GetValue(JoinOperation);
-            var joinRules = context.GetValue(JoinRules);
+            var firstDataTable = FirstDataTable.Get(context);
+            var secondDataTable = SecondDataTable.Get(context);
+            var joinOperation = JoinOperation.Get(context);
+            var joinRules = JoinRules.Get(context);
 
             // Validate inputs
-            if (firstDataTable == null) throw new ArgumentException("First Data Table cannot be null.");
+            if (firstDataTable == null)
+                throw new ArgumentException("First Data Table cannot be null.");
 
-            if (secondDataTable == null) throw new ArgumentException("Second Data Table cannot be null.");
+            if (secondDataTable == null)
+                throw new ArgumentException("Second Data Table cannot be null.");
 
             if (string.IsNullOrWhiteSpace(joinRules))
                 throw new ArgumentException("Join Rules cannot be null or empty.");
@@ -76,35 +78,27 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         private DataTable PerformJoin(DataTable firstDataTable, DataTable secondDataTable,
             DataTableJoinOperationEnum dataTableJoinOperation, string joinRules)
         {
-            // Convert DataTables to LINQ queryable objects
-            var firstTableQuery = firstDataTable.AsEnumerable().AsQueryable();
-            var secondTableQuery = secondDataTable.AsEnumerable().AsQueryable();
-
             // Parse the join rules to extract column names
             var joinCondition = ParseJoinRules(joinRules);
-
-            // Perform the join based on the specified operation
-            IQueryable<DataRow> joinedRows;
-            switch (dataTableJoinOperation)
-            {
-                case DataTableJoinOperationEnum.Inner:
-                    joinedRows = PerformInnerJoin(firstTableQuery, secondTableQuery, joinCondition);
-                    break;
-                case DataTableJoinOperationEnum.Left:
-                    joinedRows = PerformLeftJoin(firstTableQuery, secondTableQuery, joinCondition);
-                    break;
-                case DataTableJoinOperationEnum.Full:
-                    joinedRows = PerformFullJoin(firstTableQuery, secondTableQuery, joinCondition);
-                    break;
-                default:
-                    throw new ArgumentException($"Unsupported join operation: {dataTableJoinOperation}");
-            }
 
             // Create a new DataTable with combined columns
             var joinedDataTable = CreateJoinedDataTable(firstDataTable, secondDataTable);
 
-            // Add rows to the joined DataTable
-            foreach (var row in joinedRows) joinedDataTable.Rows.Add(row.ItemArray);
+            // Perform the join based on the specified operation
+            switch (dataTableJoinOperation)
+            {
+                case DataTableJoinOperationEnum.Inner:
+                    PerformInnerJoin(joinedDataTable, firstDataTable, secondDataTable, joinCondition);
+                    break;
+                case DataTableJoinOperationEnum.Left:
+                    PerformLeftJoin(joinedDataTable, firstDataTable, secondDataTable, joinCondition);
+                    break;
+                case DataTableJoinOperationEnum.Full:
+                    PerformFullJoin(joinedDataTable, firstDataTable, secondDataTable, joinCondition);
+                    break;
+                default:
+                    throw new ArgumentException($"Unsupported join operation: {dataTableJoinOperation}");
+            }
 
             return joinedDataTable;
         }
@@ -127,35 +121,82 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             };
         }
 
-        private static IQueryable<DataRow> PerformInnerJoin(IQueryable<DataRow> firstTable,
-            IQueryable<DataRow> secondTable, Dictionary<string, string> joinCondition)
+        private static void PerformInnerJoin(DataTable joinedDataTable, DataTable firstDataTable, DataTable secondDataTable, Dictionary<string, string> joinCondition)
         {
-            return from firstRow in firstTable
-                   join secondRow in secondTable
-                       on firstRow[joinCondition["FirstColumn"]] equals secondRow[joinCondition["SecondColumn"]]
-                   select firstRow;
+            foreach (DataRow firstRow in firstDataTable.Rows)
+            {
+                var matchingRows = secondDataTable.AsEnumerable()
+                    .Where(row => row[joinCondition["SecondColumn"]].Equals(firstRow[joinCondition["FirstColumn"]]));
+
+                foreach (var secondRow in matchingRows)
+                {
+                    var newRow = joinedDataTable.NewRow();
+                    CopyRowValues(newRow, firstRow, firstDataTable.Columns);
+                    CopyRowValues(newRow, secondRow, secondDataTable.Columns, prefix: "Second_");
+                    joinedDataTable.Rows.Add(newRow);
+                }
+            }
         }
 
-        private static IQueryable<DataRow> PerformLeftJoin(IQueryable<DataRow> firstTable,
-            IQueryable<DataRow> secondTable, Dictionary<string, string> joinCondition)
+        private static void PerformLeftJoin(DataTable joinedDataTable, DataTable firstDataTable, DataTable secondDataTable, Dictionary<string, string> joinCondition)
         {
-            return from firstRow in firstTable
-                   join secondRow in secondTable
-                       on firstRow[joinCondition["FirstColumn"]] equals secondRow[joinCondition["SecondColumn"]]
-                       into joinedRows
-                   from secondRow in joinedRows.DefaultIfEmpty()
-                   select firstRow;
+            foreach (DataRow firstRow in firstDataTable.Rows)
+            {
+                var matchingRows = secondDataTable.AsEnumerable()
+                    .Where(row => row[joinCondition["SecondColumn"]].Equals(firstRow[joinCondition["FirstColumn"]]));
+
+                if (!matchingRows.Any())
+                {
+                    var newRow = joinedDataTable.NewRow();
+                    CopyRowValues(newRow, firstRow, firstDataTable.Columns);
+                    joinedDataTable.Rows.Add(newRow);
+                }
+                else
+                {
+                    foreach (var secondRow in matchingRows)
+                    {
+                        var newRow = joinedDataTable.NewRow();
+                        CopyRowValues(newRow, firstRow, firstDataTable.Columns);
+                        CopyRowValues(newRow, secondRow, secondDataTable.Columns, prefix: "Second_");
+                        joinedDataTable.Rows.Add(newRow);
+                    }
+                }
+            }
         }
 
-        private static IQueryable<DataRow> PerformFullJoin(IQueryable<DataRow> firstTable,
-            IQueryable<DataRow> secondTable, Dictionary<string, string> joinCondition)
+        private static void PerformFullJoin(DataTable joinedDataTable, DataTable firstDataTable, DataTable secondDataTable, Dictionary<string, string> joinCondition)
         {
-            return from firstRow in firstTable
-                   join secondRow in secondTable
-                       on firstRow[joinCondition["FirstColumn"]] equals secondRow[joinCondition["SecondColumn"]]
-                       into joinedRows
-                   from secondRow in joinedRows.DefaultIfEmpty()
-                   select firstRow;
+            // Perform left join first
+            PerformLeftJoin(joinedDataTable, firstDataTable, secondDataTable, joinCondition);
+
+            // Add unmatched rows from the second table
+            var matchedKeys = new HashSet<object>();
+            foreach (DataRow row in joinedDataTable.Rows)
+            {
+                var key = row[joinCondition["FirstColumn"]];
+                if (key != DBNull.Value)
+                    matchedKeys.Add(key);
+            }
+
+            foreach (DataRow secondRow in secondDataTable.Rows)
+            {
+                if (!matchedKeys.Contains(secondRow[joinCondition["SecondColumn"]]))
+                {
+                    var newRow = joinedDataTable.NewRow();
+                    CopyRowValues(newRow, secondRow, secondDataTable.Columns, prefix: "Second_");
+                    joinedDataTable.Rows.Add(newRow);
+                }
+            }
+        }
+
+        private static void CopyRowValues(DataRow targetRow, DataRow sourceRow, DataColumnCollection sourceColumns, string prefix = "")
+        {
+            foreach (DataColumn col in sourceColumns)
+            {
+                var targetColumnName = prefix + col.ColumnName;
+                if (targetRow.Table.Columns.Contains(targetColumnName))
+                    targetRow[targetColumnName] = sourceRow[col];
+            }
         }
 
         private static DataTable CreateJoinedDataTable(DataTable firstDataTable, DataTable secondDataTable)

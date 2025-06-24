@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Convert Data Table to CSV Text")]
     [Description("Converts a data table into a CSV (comma-separated values) text representation.")]
-    public class ConvertDataTableToTextActivity : BaseCodeActivity
+    public class ConvertDataTableToCsvTextActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -80,7 +80,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
                 // Add rows
                 foreach (DataRow row in dataTable.Rows)
-                    csvBuilder.AppendLine(string.Join(separator, row.ItemArray.Select(field => field.ToString())));
+                    csvBuilder.AppendLine(string.Join(separator, row.ItemArray.Select(field => FormatField(field))));
 
                 csvText = csvBuilder.ToString();
                 IsSuccess.Set(context, true);
@@ -88,8 +88,13 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             }
             catch (Exception ex)
             {
+                csvText = string.Empty;
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error converting data table to CSV: {ex.Message}");
+            }
+            finally
+            {
+                CsvTextOutput.Set(context, csvText);
             }
         }
 
@@ -119,6 +124,19 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
                 return customSep;
             }
+        }
+
+        private string FormatField(object field)
+        {
+            var value = field?.ToString() ?? string.Empty;
+
+            // If field contains comma, newline, or double quote, wrap in quotes
+            if (value.Contains(",") || value.Contains("\n") || value.Contains("\""))
+            {
+                value = $"\"{value.Replace("\"", "\"\"")}\""; // Escape double quotes
+            }
+
+            return value;
         }
     }
 }

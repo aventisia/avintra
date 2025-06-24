@@ -38,12 +38,16 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [RenderIfCondition(nameof(SpecifyColumnWith), DataTableDeleteColumnByEnum.Index)]
         public InArgument<int> ColumnIndex { get; set; }
 
+        [DisplayName("Modified Data Table")]
+        [Description("Returns the updated data table after the column is deleted.")]
+        public OutArgument<DataTable> ModifiedDataTable { get; set; }
+
         // ----------------------
         // Execution Logic
         // ----------------------
+
         protected override void Execute(CodeActivityContext context)
         {
-
             try
             {
                 var dataTable = DataTable.Get(context);
@@ -51,6 +55,9 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
                 if (dataTable == null)
                     throw new ArgumentException("Data table cannot be null.");
+
+                // Clone the input table to avoid mutating the original
+                var resultTable = dataTable.Copy();
 
                 switch (specifyColumnWith)
                 {
@@ -61,10 +68,10 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                             if (string.IsNullOrWhiteSpace(columnName))
                                 throw new ArgumentException("Column name cannot be empty when using 'Name' mode.");
 
-                            if (!dataTable.Columns.Contains(columnName))
+                            if (!resultTable.Columns.Contains(columnName))
                                 throw new ArgumentException($"Column '{columnName}' not found in the data table.");
 
-                            dataTable.Columns.Remove(columnName);
+                            resultTable.Columns.Remove(columnName);
                             break;
                         }
 
@@ -72,21 +79,25 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                         {
                             var columnIndex = ColumnIndex.Get(context);
 
-                            if (columnIndex < 0 || columnIndex >= dataTable.Columns.Count)
-                                throw new ArgumentException($"Invalid column index: {columnIndex}");
+                            if (columnIndex < 0 || columnIndex >= resultTable.Columns.Count)
+                                throw new ArgumentException($"Invalid column index: {columnIndex}. Valid range is 0 to {resultTable.Columns.Count - 1}.");
 
-                            dataTable.Columns.RemoveAt(columnIndex);
+                            resultTable.Columns.RemoveAt(columnIndex);
                             break;
                         }
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(specifyColumnWith));
                 }
+
+                // Set outputs
+                ModifiedDataTable.Set(context, resultTable);
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Column deleted successfully.");
             }
             catch (Exception ex)
             {
+                ModifiedDataTable.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error deleting column: {ex.Message}");
             }
