@@ -23,7 +23,7 @@ export const NodeContainer = ({
         "flex h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-slate-300 hover:ring hover:ring-ring",
         className,
         nodeData.type == "forLoopNode" && "border-blue-500",
-        nodeData.type == "conditionalNode" && "border-indigo-500",
+        nodeData.type == "conditionalNode" && "border-violet-400",
         selected && "border-primary ring ring-ring",
       )}
       {...props}
@@ -32,17 +32,17 @@ export const NodeContainer = ({
         className={cn(
           "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center rounded-l-lg bg-slate-100",
           nodeData.type == "forLoopNode" && "bg-blue-100",
-          nodeData.type == "conditionalNode" && "bg-indigo-100",
+          nodeData.type == "conditionalNode" && "bg-violet-200",
         )}
       >
-        <GripVertical className={cn("h-5 w-5 text-slate-300")} />
+        <GripVertical className={cn("h-5 w-5 text-slate-50")} />
       </div>
       <OpenNodeConfig {...{ nodeData, nodeId }}>
         <div
           className={cn(
             "flex w-[18rem] grow flex-col gap-2 rounded-r-lg bg-white px-4 pb-3.5 pt-[0.7rem]",
             nodeData.type == "forLoopNode" && "bg-blue-50",
-            nodeData.type == "conditionalNode" && "bg-indigo-50",
+            nodeData.type == "conditionalNode" && "bg-violet-100",
           )}
         >
           {children}
