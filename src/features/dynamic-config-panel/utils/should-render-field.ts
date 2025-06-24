@@ -27,8 +27,10 @@ export function shouldRenderField(
   // Get conditions and operator from renderIf
   const { conditions, _operator } = renderIf;
 
-  const results = conditions.map(
-    (cond) => formValues[cond.field] === cond.equals,
+  const results = conditions.map((cond) =>
+    typeof cond == "object" && "equals" in cond
+      ? formValues[cond.field] === cond.equals
+      : formValues[cond.field] !== cond.notEquals,
   );
 
   return _operator === "AND" ? results.every(Boolean) : results.some(Boolean);

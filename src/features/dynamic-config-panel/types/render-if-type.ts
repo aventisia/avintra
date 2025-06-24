@@ -1,6 +1,7 @@
 type RenderIfConditionType = {
   field: string;
-  equals: unknown;
+  equals?: unknown;
+  notEquals?: unknown;
 };
 
 type RenderIfType = {
