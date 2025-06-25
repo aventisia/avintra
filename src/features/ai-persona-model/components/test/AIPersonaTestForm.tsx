@@ -55,7 +55,7 @@ function AIPersonaTestForm() {
   // SignalR setup
   useEffect(() => {
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl("https://dev-mlmodelbuilder.aventisia.com/api/chatHub")
+      .withUrl(`${import.meta.env.VITE_AI_STUDIO_API_URL}/chatHub`)
       .withAutomaticReconnect()
       .build();
 

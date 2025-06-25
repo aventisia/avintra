@@ -92,7 +92,6 @@ export const useAIPersonaSetupForm = () => {
 
     // Extract setupObject from fetched data
     const setupFormData = data?.data.setupObject;
-    console.log(setupFormData);
 
     form.reset({
       name: setupFormData?.name ?? "",
