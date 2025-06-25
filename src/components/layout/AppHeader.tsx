@@ -16,6 +16,7 @@ import { AppLogo } from "./AppLogo";
 import { HeaderActionMenu } from "./header-menu-actions";
 import SearchCommandTrigger from "./Search";
 import { SettingsTrigger } from "@/features/flow-settings/components/SettingsTrigger";
+import { useIsAgentsAssist } from "@/features/agents-assist/hooks/useIsAgentsAssist";
 
 const AppHeader: React.FC = () => {
   // Get global store state and actions
@@ -33,33 +34,35 @@ const AppHeader: React.FC = () => {
     })),
   );
 
+  const isAssist = useIsAgentsAssist();
+
   return (
     <HeaderContainer className="bg-slate-200">
       <Header>
         <div className="flex flex-grow items-center gap-3 text-white">
           {/* Back Button */}
-          <Tooltip content="Back">
-            <Button
-              size="icon8"
-              variant="ghost"
-              className="hover:bg-white/10"
-              onClick={() => window.history.back()}
-            >
-              <ArrowLeftIcon className="h-4 w-4 text-white/80" />
-            </Button>
-          </Tooltip>
-
+          {!isAssist && (
+            <Tooltip content="Back">
+              <Button
+                size="icon8"
+                variant="ghost"
+                className="hover:bg-white/10"
+                onClick={() => window.history.back()}
+              >
+                <ArrowLeftIcon className="h-4 w-4 text-white/80" />
+              </Button>
+            </Tooltip>
+          )}
           {/* App Logo */}
           <AppLogo />
-
           {/* separator */}
-          <span className="rotate-12 text-white/50">/</span>
-
+          {!isAssist && <span className="rotate-12 text-white/50">/</span>}
           {/* Agent name */}
-          <span className="truncate text-xs">{currentFlow.name}</span>
-
+          {!isAssist && (
+            <span className="truncate text-xs">{currentFlow.name}</span>
+          )}
           {/* Version selector */}
-          <FlowVersions />
+          {!isAssist && <FlowVersions />}{" "}
         </div>
         <div>
           <Avatar className={cn("flex h-7 w-7")}>
@@ -68,21 +71,27 @@ const AppHeader: React.FC = () => {
             </AvatarFallback>
           </Avatar>
         </div>
-        <div className="mx-4 flex items-center gap-1 text-white">
-          <ExecuteFlow />
+        {!isAssist && (
+          <div className="mx-4 flex items-center gap-1 text-white">
+            <ExecuteFlow />
 
-          <SearchCommandTrigger />
-          {import.meta.env.MODE !== "production" ? <SettingsTrigger /> : null}
+            <SearchCommandTrigger />
+            {import.meta.env.MODE !== "production" ? <SettingsTrigger /> : null}
 
-          {import.meta.env.MODE !== "production" ? (
-            <StudioPreferences className="mt-0 mlg:mt-4" />
-          ) : null}
-          <FlowComments className="mt-0 mlg:mt-4" />
-        </div>
-        {import.meta.env.MODE !== "production" ? <PublishFlow /> : null}
-        <Tooltip content="More">
-          <HeaderActionMenu />
-        </Tooltip>
+            {import.meta.env.MODE !== "production" ? (
+              <StudioPreferences className="mt-0 mlg:mt-4" />
+            ) : null}
+            <FlowComments className="mt-0 mlg:mt-4" />
+          </div>
+        )}
+        {!isAssist && import.meta.env.MODE !== "production" ? (
+          <PublishFlow />
+        ) : null}
+        {!isAssist && (
+          <Tooltip content="More">
+            <HeaderActionMenu />
+          </Tooltip>
+        )}
       </Header>
     </HeaderContainer>
   );
