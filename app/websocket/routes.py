@@ -20,9 +20,12 @@ async def websocket_chat_handler(websocket: WebSocket):
     Authenticates the user, processes messages, and returns responses from an LLM.
     """
     try:
+        logger.info("🔌 WebSocket connection attempt received")
+
         # Step 1: Authenticate user from token query param
         token = websocket.query_params.get("token")
         if not token:
+            logger.warning("❌ No token provided — closing connection with 1008")
             await websocket.close(code=1008)  # Policy Violation
             return
 
