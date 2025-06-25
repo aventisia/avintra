@@ -188,7 +188,9 @@
                 <GroupBox Margin="6"
                           Padding="0"
                           Grid.Column="0"
-                          Header="UI Elements"
+                          Header="UI Elements Tree"
+                          FontSize="13"
+                          FontWeight="Medium"
                           md:ColorZoneAssist.Background="{StaticResource PrimaryBrush}"
                           md:ColorZoneAssist.Foreground="{StaticResource SecondaryForegroundBrush}"
                           md:ColorZoneAssist.Mode="Custom"
@@ -434,14 +436,32 @@
                 </GroupBox>
                 <GridSplitter Grid.Column="1"
                               HorizontalAlignment="Stretch"/>
-                <GroupBox Header="Selected Element"
-                          Margin="6"
+                <GroupBox Margin="6"
                           Padding="0"
                           Grid.Column="2"
                           md:ColorZoneAssist.Background="{StaticResource PrimaryBrush}"
                           md:ColorZoneAssist.Foreground="{StaticResource SecondaryForegroundBrush}"
                           md:ColorZoneAssist.Mode="Custom"
                           Style="{StaticResource MaterialDesignCardGroupBox}">
+                    <GroupBox.Header>
+                        <Grid Margin="6 0 0 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="UI Element (New)"
+                                       FontSize="13"
+                                       FontWeight="Medium"
+                                       Foreground="{StaticResource SecondaryForegroundBrush}"/>
+                            <Button Grid.Column="1"
+                                    Margin="10 0 0 0"
+                                    Command="{Binding CopyIdentificationPathJsonCommand}"
+                                    Style="{StaticResource IconButtonStyle}">
+                                <md:PackIcon Kind="ContentCopy"/>
+                            </Button>
+                        </Grid>
+                    </GroupBox.Header>
+
                     <ScrollViewer VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Auto"
                                   BorderThickness="1"
@@ -636,8 +656,7 @@
                                         <Button Grid.Row="0"
                                                 Grid.RowSpan="2"
                                                 Grid.Column="1"
-                                                HorizontalAlignment="Right"
-                                                Style="{StaticResource GhostTestButtonStyle}">
+                                                HorizontalAlignment="Right">
                                             <TextBlock Text="Test"
                                                        Margin="3 0 0 2"
                                                        FontSize="13"
@@ -676,8 +695,7 @@
                                         <Button Grid.Row="0"
                                                 Grid.RowSpan="2"
                                                 Grid.Column="1"
-                                                HorizontalAlignment="Right"
-                                                Style="{StaticResource GhostTestButtonStyle}">
+                                                HorizontalAlignment="Right">
                                             <TextBlock Text="Test"
                                                        Margin="3 0 0 2"
                                                        FontSize="13"

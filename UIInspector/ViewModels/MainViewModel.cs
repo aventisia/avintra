@@ -8,11 +8,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Reflection;
 using System.Windows.Input;
 using UIInspector.Core;
 using UIInspector.Models;
+using System.Text.Json;
 
 namespace UIInspector.ViewModels
 {
@@ -50,6 +50,11 @@ namespace UIInspector.ViewModels
             RefreshCommand = new RelayCommand(o =>
             {
                 RefreshTree();
+            });
+            CopyIdentificationPathJsonCommand = new RelayCommand(o =>
+            {
+                var json = GetIdentificationPathAsJson();
+                System.Windows.Clipboard.SetText(json); // Copies JSON to clipboard
             });
         }
 
@@ -124,6 +129,8 @@ namespace UIInspector.ViewModels
 
         public ICommand RefreshCommand { get; private set; }
 
+        public ICommand CopyIdentificationPathJsonCommand { get; private set; }
+
         public ObservableCollection<DetailGroupViewModel> SelectedItemDetails => SelectedItemInTree?.ItemDetails;
 
         public ObservableCollection<IdentificationPathStep> IdentificationPath { get; } = new ObservableCollection<IdentificationPathStep>();
@@ -158,6 +165,16 @@ namespace UIInspector.ViewModels
             // Initialize focus tracking
             _focusTrackingMode = new FocusTrackingMode(_automation);
             _focusTrackingMode.ElementFocused += ElementToSelectChanged;
+        }
+
+        public string GetIdentificationPathAsJson()
+        {
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase // This line ensures camelCase
+            };
+            return JsonSerializer.Serialize(IdentificationPath, options);
         }
 
         public void ElementToSelectChanged(AutomationElement obj)
@@ -230,6 +247,7 @@ namespace UIInspector.ViewModels
                     PathHeading = pathHeading,
                     Index = identificationPathVm[i].Index,
                     Name = elementName,
+                    OriginalName = elementName,
                     NameMatchMode = NameMatchModeEnum.Equals, // Default to Equals, can be changed later
                     ClassName = identificationPathVm[i].AutomationElement.Properties.ClassName.ValueOrDefault,
                     ControlType = elementControlType,

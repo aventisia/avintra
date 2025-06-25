@@ -40,7 +40,7 @@ namespace UIInspector.Models
             OnPropertyChanged(nameof(OriginalName));
         }
 
-        public string OriginalName { get; private set; }
+        public string OriginalName { get; set; }
         public string PathHeading { get; set; }
         public int Index { get; set; }
         public NameMatchModeEnum NameMatchMode { get; set; }

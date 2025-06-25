@@ -201,6 +201,9 @@
     <PackageReference Include="System.Management">
       <Version>9.0.6</Version>
     </PackageReference>
+    <PackageReference Include="System.Text.Json">
+      <Version>9.0.6</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="ui_inspector_logo.ico">
