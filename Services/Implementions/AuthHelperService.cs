@@ -212,7 +212,7 @@ public class AuthHelperService : IAuthHelperService
         // SigningCredentials
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.SecretKey)),
-            SecurityAlgorithms.HmacSha512Signature);
+            SecurityAlgorithms.HmacSha512);
 
         // TokenOptions
         var securityTokenDescriptor = new SecurityTokenDescriptor
