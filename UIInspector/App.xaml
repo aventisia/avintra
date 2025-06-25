@@ -12,6 +12,7 @@
                 <!-- Custom Styles & Icons -->
                 <ResourceDictionary Source="pack://application:,,,/Styles/Colors.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Styles/ButtonStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Styles/ExpanderStyle.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Styles/ToolTipStyle.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Styles/TextBlockStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>

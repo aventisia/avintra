@@ -52,8 +52,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-
+    
     <!--Ghost Toggle Style-->
     <Style x:Key="GhostToggleStyle" TargetType="ToggleButton" BasedOn="{StaticResource MaterialDesignFlatToggleButton}">
         <Setter Property="Height" Value="30"/>
@@ -82,5 +81,5 @@
             </Setter.Value>
         </Setter>
     </Style>
-
+    
 </ResourceDictionary>
