@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Input;
 using UIInspector.Core;
+using UIInspector.Models;
 
 namespace UIInspector.ViewModels
 {
@@ -125,6 +126,8 @@ namespace UIInspector.ViewModels
 
         public ObservableCollection<DetailGroupViewModel> SelectedItemDetails => SelectedItemInTree?.ItemDetails;
 
+        public ObservableCollection<IdentificationPathStep> IdentificationPath { get; } = new ObservableCollection<IdentificationPathStep>();
+
         public ElementViewModel SelectedItemInTree
         {
             get { return GetProperty<ElementViewModel>(); }
@@ -157,7 +160,7 @@ namespace UIInspector.ViewModels
             _focusTrackingMode.ElementFocused += ElementToSelectChanged;
         }
 
-        private void ElementToSelectChanged(AutomationElement obj)
+        public void ElementToSelectChanged(AutomationElement obj)
         {
             // Build a stack from the root to the hovered item
             var pathToRoot = new Stack<AutomationElement>();
@@ -186,6 +189,7 @@ namespace UIInspector.ViewModels
             }
 
             var elementVm = Elements[0];
+            var identificationPathVm = new List<ElementViewModel>(); // This will hold the path to the element 
             while (pathToRoot.Count > 0)
             {
                 var elementOnPath = pathToRoot.Pop();
@@ -208,14 +212,53 @@ namespace UIInspector.ViewModels
                 {
                     elementVm.IsExpanded = true;
                 }
+                identificationPathVm.Add(elementVm); // Collect the path as you go
             }
             // Select the last element
             elementVm.IsSelected = true;
+
+            // Update IdentificationPath here
+            IdentificationPath.Clear();
+            for (int i = 0; i < identificationPathVm.Count; i++)
+            {
+                var elementName = identificationPathVm[i].AutomationElement.Properties.Name.ValueOrDefault;
+                var elementControlType = identificationPathVm[i].ControlType.ToString();
+                var pathHeading = !string.IsNullOrEmpty(elementName) ? $"{i} - {elementName} {elementControlType.ToLower()}" : $"{i} - {elementControlType} element";
+
+                var step = new IdentificationPathStep
+                {
+                    PathHeading = pathHeading,
+                    Index = identificationPathVm[i].Index,
+                    Name = elementName,
+                    NameMatchMode = NameMatchModeEnum.Equals, // Default to Equals, can be changed later
+                    ClassName = identificationPathVm[i].AutomationElement.Properties.ClassName.ValueOrDefault,
+                    ControlType = elementControlType,
+                    FrameworkId = identificationPathVm[i].AutomationElement.Properties.FrameworkId.ValueOrDefault,
+                    AutomationId = identificationPathVm[i].AutomationElement.Properties.AutomationId.ValueOrDefault
+                };
+                IdentificationPath.Add(step);
+            }
         }
 
         private ElementViewModel FindElement(ElementViewModel parent, AutomationElement element)
         {
-            return parent.Children.FirstOrDefault(child => child.AutomationElement.Equals(element));
+            for (int i = 0; i < parent.Children.Count; i++)
+            {
+                var child = parent.Children[i];
+                if (child.AutomationElement.Equals(element))
+                {
+                    // Set the index of the found element
+                    child.Index = i;
+                    return child;
+                }
+                // Recursively search in children
+                var elementVm = FindElement(child, element);
+                if (elementVm != null)
+                {
+                    return elementVm;
+                }
+            }
+            return null;
         }
 
         private void DesktopViewModel_SelectionChanged(ElementViewModel obj)
@@ -228,6 +271,7 @@ namespace UIInspector.ViewModels
         {
             Elements.Clear();
             Initialize(SelectedAutomationType);
+            IdentificationPath.Clear();
         }
     }
 }

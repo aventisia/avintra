@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using UIInspector.ViewModels;
 
 namespace UIInspector.Views
@@ -53,6 +54,38 @@ namespace UIInspector.Views
             {
                 item.BringIntoView();
                 e.Handled = true;
+
+                // Get the selected ElementViewModel
+                if (item.DataContext is ElementViewModel selectedElement)
+                {
+                    // Call ElementToSelectChanged on the ViewModel
+                    _vm.ElementToSelectChanged(selectedElement.AutomationElement);
+                }
+            }
+        }
+
+        private void NameTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            if (textBox != null)
+            {
+                var binding = textBox.GetBindingExpression(TextBox.TextProperty);
+                binding?.UpdateSource();
+            }
+        }
+
+        private void NameTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                var textBox = sender as TextBox;
+                if (textBox != null)
+                {
+                    var binding = textBox.GetBindingExpression(TextBox.TextProperty);
+                    binding?.UpdateSource();
+                    // Optionally move focus away to trigger LostFocus
+                    Keyboard.ClearFocus();
+                }
             }
         }
     }

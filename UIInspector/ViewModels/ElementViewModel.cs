@@ -82,6 +82,8 @@ namespace UIInspector.ViewModels
             }
         }
 
+        public int Index { get; set; } = -1;
+
         public string Name => NormalizeString(AutomationElement.Properties.Name.ValueOrDefault);
 
         public string AutomationId => NormalizeString(AutomationElement.Properties.AutomationId.ValueOrDefault);
