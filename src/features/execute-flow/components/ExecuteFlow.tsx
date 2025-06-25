@@ -10,8 +10,16 @@ import { Loader2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { clearNodeExecutionLog, CURRENT_VERSION_ID_KEY } from "..";
 import useWebSocket from "../hooks/useWebSocket";
+import { useFetchFlowToExecute } from "@/features/agents-assist/hooks/useFetchFlowToExecute";
+import { useEffect } from "react";
 
-const ExecuteFlow = () => {
+const ExecuteFlow = ({
+  isAssist = false,
+  flowId,
+}: {
+  flowId?: string;
+  isAssist?: boolean;
+}) => {
   // Get current flow and execution state from current flow store
   const { currentFlow, executionState, setExecutionState } =
     useCurrentFlowStore(
@@ -29,6 +37,8 @@ const ExecuteFlow = () => {
       edges: state.edges,
     })),
   );
+
+  const { isFlowReady, getFlow } = useFetchFlowToExecute();
 
   // Connect to websocket server and get sendCommand function
   const { sendCommand } = useWebSocket();
@@ -80,6 +90,10 @@ const ExecuteFlow = () => {
       setExecutionState("stopped");
     }
   };
+  //To handle execution form Assist window
+  useEffect(() => {
+    if (isFlowReady) startExecution();
+  }, [isFlowReady]);
 
   return (
     <div className="flex items-center gap-2">
@@ -133,7 +147,11 @@ const ExecuteFlow = () => {
             variant="ghost"
             size="icon8"
             className="hover:bg-white/10"
-            onClick={startExecution}
+            onClick={() => {
+              if (isAssist) {
+                getFlow(flowId || "");
+              } else startExecution();
+            }}
           >
             {executionState === "launching-executor" ? (
               <Loader2 className="h-[1.1rem] w-[1.1rem] animate-spin text-white/80" />
