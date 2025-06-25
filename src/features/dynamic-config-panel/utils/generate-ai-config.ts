@@ -17,9 +17,9 @@ export async function generateOutputConfigFromData() {
     {
       direction: "Input",
       type: "text",
-      name: "fileId",
-      label: "File Id",
-      description: "Enter the file id.",
+      name: "inputText",
+      label: "Input Text",
+      description: "Enter the text to be processed.",
       defaultValue: "",
       required: true,
       renderIf: {
