@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
 import { FlowPage } from "./pages/FlowPage";
+import { AgentsAssistPage } from "./pages/AgentsAssistPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,6 +33,10 @@ const router = createBrowserRouter(
         {
           path: "/agent",
           element: <FlowPage />,
+        },
+        {
+          path: "/agents-assist",
+          element: <AgentsAssistPage />,
         },
         {
           path: "/page-not-found",
