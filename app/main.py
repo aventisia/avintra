@@ -1,6 +1,7 @@
 # main.py
 
 from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.api.Extraction import router as pdf_extraction_router
 from app.api.TextToSpeech import router as text_to_speech_router
 from app.api.SpeechToText import router as speech_to_text_router
@@ -21,6 +22,14 @@ app.include_router(text_to_speech_router, tags=["Text-to-Speech"])
 app.include_router(speech_to_text_router, tags=["Speech-to-Text"])
 app.include_router(kokoro_text_to_speech_router, tags=["Kokoro TTS"])
 app.include_router(websocket_routes.router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Replace * with specific domains if needed, e.g., ["https://your-frontend-domain.com"]
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow any method (GET, POST, etc.)
+    allow_headers=["*"],  # Allow any header
+)
 
 # Define the root endpoint of the API
 @app.get("/", tags=["General"])
