@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # JWT settings
-    secret_key: str = os.getenv("SECRET_KEY", "env_var")  # Can be loaded from environment variable
+    secret_key: str = os.getenv("SECRET_KEY", "some_random_secret_key_some_random_secret_key_some_random_secret_key_some_random_secret_key_some_random_secret_key_some_random_secret_key_some_random_secret_key")  # Can be loaded from environment variable
     algorithm: str = "HS512"
     issuer: str = os.getenv("JWT_ISSUER", "localhost")
     audience: str = os.getenv("JWT_AUDIENCE", "localhost")

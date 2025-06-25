@@ -16,8 +16,7 @@ def verify_token(token: str):
             settings.secret_key,
             algorithms=[settings.algorithm],
             audience=settings.audience,
-            issuer=settings.issuer,
-            options={"verify_signature": False}
+            issuer=settings.issuer
         )
         logger.info("✅ JWT token successfully verified.")
         return payload
