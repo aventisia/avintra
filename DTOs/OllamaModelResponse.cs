@@ -38,4 +38,44 @@ public class ModelDetails
     /// Gets or sets the size of the model in bytes.
     /// </summary>
     public long SizeInBytes { get; set; }
+
+    /// <summary>
+    /// Gets or sets the digest (hash) of the model.
+    /// </summary>
+    public string? Digest { get; set; }
+
+    /// <summary>
+    /// Gets or sets the format of the model (e.g., GGUF).
+    /// </summary>
+    public string? Format { get; set; }
+
+    /// <summary>
+    /// Gets or sets the family of the model.
+    /// </summary>
+    public string? Family { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of families the model belongs to.
+    /// </summary>
+    public List<string> Families { get; set; } = new List<string>();
+
+    /// <summary>
+    /// Gets or sets the parameter size of the model (e.g., 9B).
+    /// </summary>
+    public string? ParameterSize { get; set; }
+
+    /// <summary>
+    /// Gets or sets the quantization level of the model (e.g., Q4_0).
+    /// </summary>
+    public string? QuantizationLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the expiration date and time of the model.
+    /// </summary>
+    public DateTime ExpiresAt { get; set; }
+
+    /// <summary>
+    /// Gets or sets the VRAM size used by the model.
+    /// </summary>
+    public long SizeVRAM { get; set; }
 }
