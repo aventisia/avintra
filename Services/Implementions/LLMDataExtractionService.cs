@@ -16,25 +16,26 @@ public class LLMDataExtractionService : ILLMDataExtractionService
     {
         var serviceResponse = new ServiceResponse<string>()
         {
+            // Default failure message
             Message = "Data extraction failed. Please try again."
         };
 
         _logger.LogInformation("Initiating data extraction process.");
 
-        // Step 1: Map LLM model identifiers to their corresponding API models
+        // Mapping model identifiers to the actual model versions
         var llmModelMapper = new Dictionary<string, string>
-            {
-                {"deepseek-r1", "deepseek-r1:7b"},
-                {"phi4", "phi4:14b"},
-                {"llama3.1", "llama3.1:8b"},
-                {"llama3.2", "llama3.2:3b"},
-                {"mistral", "mistral:7b"},
-                {"gemma", "gemma:7b"},
-            };
+        {
+            { "deepseek-r1", "deepseek-r1:7b" },
+            { "phi4", "phi4:14b" },
+            { "llama3.1", "llama3.1:8b" },
+            { "llama3.2", "llama3.2:3b" },
+            { "mistral", "mistral:7b" },
+            { "gemma", "gemma:7b" },
+        };
 
         try
         {
-            // Step 2: Validate the input parameters
+            // Step 1: Validate input parameters
             if (string.IsNullOrEmpty(prompt))
             {
                 serviceResponse.Message = "Prompt is required.";
@@ -49,32 +50,92 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 return serviceResponse;
             }
 
-            // Step 3: Attempt to send the prompt and extracted text to the LLM API, with retries
+            // Initialize llmResponse as an empty string
             string llmResponse = string.Empty;
+
+            // Step 2: Map the provided model identifier to the actual model version
+            string? mappedModel = llmModelMapper.GetValueOrDefault(llmModel);
+
+            // If the model identifier is unrecognized, return an error
+            if (string.IsNullOrEmpty(mappedModel))
+            {
+                serviceResponse.Message = $"Unrecognized model identifier: {llmModel}";
+                _logger.LogWarning("Invalid model identifier: {llmModel}", llmModel);
+                return serviceResponse;
+            }
+
+            // Step 3: Attempt data extraction with retries (up to 3 attempts)
             for (int attempt = 1; attempt <= 3; attempt++)
             {
-                _logger.LogInformation("Attempt {attempt} of 3 to process the LLM model.", attempt);
+                _logger.LogInformation("Attempt {Attempt} of 3 to process the LLM model.", attempt);
 
                 using (HttpClient client = new HttpClient())
                 {
-                    // Add API key to the HTTP request
                     client.DefaultRequestHeaders.Add("API_KEY", _extractViaLLMConfig.OllamaAPIKey);
+                    var baseUri = _extractViaLLMConfig.OllamaAPI; // Get the base URI for the API
 
+                    // Step 4: Get currently loaded models from the API
+                    var loadedModelsResponse = await client.GetAsync($"{baseUri}/{OllamaApiRoutes.GetLoadedModels}");
+                    if (!loadedModelsResponse.IsSuccessStatusCode)
+                    {
+                        // Log the full response details
+                        var responseContent = await loadedModelsResponse.Content.ReadAsStringAsync();
+                        _logger.LogWarning("Failed to get loaded models. StatusCode: {StatusCode}, Headers: {Headers}, Content: {ResponseContent}",
+                            loadedModelsResponse.StatusCode,
+                            loadedModelsResponse.Headers,
+                            responseContent);
+                        continue;
+                    }
+
+                    // Deserialize the list of loaded models from the response
+                    var loadedModels = System.Text.Json.JsonSerializer.Deserialize<OllamaModelResponse>(
+                        await loadedModelsResponse.Content.ReadAsStringAsync());
+
+                    // If the required model isn't loaded, unload all other models
+                    if (loadedModels?.ModelDetails != null && !loadedModels.ModelDetails.Any(a => a.Model != null && a.Model.Contains(mappedModel)))
+                    {
+                        _logger.LogInformation("Target model '{MappedModel}' not loaded. Unloading existing models...", mappedModel);
+
+                        // Unload any currently loaded models
+                        foreach (var modelDetail in loadedModels.ModelDetails)
+                        {
+                            var unloadRequest = new
+                            {
+                                model = modelDetail.Model,
+                                keep_alive = 0 // Indicate that the model should be unloaded
+                            };
+
+                            // Send the unload request
+                            var unloadContent = new StringContent(System.Text.Json.JsonSerializer.Serialize(unloadRequest), Encoding.UTF8, "application/json");
+                            var unloadResponse = await client.PostAsync($"{baseUri}/{OllamaApiRoutes.Generate}", unloadContent);
+
+                            if (!unloadResponse.IsSuccessStatusCode)
+                            {
+                                _logger.LogWarning("Failed to unload model: {Model}", modelDetail.Model);
+                            }
+                            else
+                            {
+                                _logger.LogInformation("Successfully unloaded model: {Model}", modelDetail.Model);
+                            }
+                        }
+                    }
+
+                    // Step 5: Send the generation request to the model with the prompt and temperature
                     var requestDto = new
                     {
                         stream = false,
                         temperature = modelTemperature,
                         prompt = prompt,
-                        model = llmModelMapper.GetValueOrDefault(llmModel),
+                        model = mappedModel
                     };
 
-                    var jsonRequest = System.Text.Json.JsonSerializer.Serialize(requestDto);
-                    var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+                    var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(requestDto), Encoding.UTF8, "application/json");
+                    _logger.LogInformation("Sending request to LLM model: {MappedModel}", mappedModel);
 
-                    _logger.LogInformation("Sending request to LLM model: {model}", llmModelMapper.GetValueOrDefault(llmModel));
-                    HttpResponseMessage response = await client.PostAsync(_extractViaLLMConfig.OllamaAPI, content);
+                    // Step 6: Send POST request to generate the data from the LLM
+                    HttpResponseMessage response = await client.PostAsync($"{baseUri}/{OllamaApiRoutes.Generate}", content);
 
-                    // If the response is unsuccessful, log the error and retry
+                    // Step 7: Handle the response from the API
                     if (!response.IsSuccessStatusCode)
                     {
                         _logger.LogError("Failed to get a valid response from LLM model. Status Code: {statusCode}", response.StatusCode);
@@ -84,46 +145,49 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                     // Parse the LLM API response
                     var ollamaResponse = await response.Content.ReadAsStringAsync();
 
-                    // Check if the response contains the expected field
+                    // Step 8: Ensure the response contains the expected "response" field
                     if (!ollamaResponse.Contains("response"))
                     {
                         _logger.LogWarning("LLM response is missing the 'response' field.");
                         continue;
                     }
 
-                    // Step 4: Process and clean the LLM-generated response
+                    // Step 9: Process and clean the LLM-generated content
                     using JsonDocument doc = JsonDocument.Parse(ollamaResponse);
-                    llmResponse = doc.RootElement.GetProperty("response").GetString() ?? "";
+                    llmResponse = doc.RootElement.GetProperty("response").GetString() ?? string.Empty;
 
                     _logger.LogInformation("Raw LLM response received: {llmResponse}", llmResponse);
 
-                    // Remove known debug or formatting tags from the response
+                    // Clean up known debug or formatting tags from the response
                     if (llmResponse.Contains("</think>"))
                     {
+                        // Remove <think> tags and content between them
                         llmResponse = llmResponse.Remove(llmResponse.IndexOf("<think>"), llmResponse.IndexOf("</think>") - llmResponse.IndexOf("<think>") + 8);
                         _logger.LogInformation("Removed <think> tag content from response.");
                     }
 
                     if (llmResponse.Contains("```json"))
                     {
+                        // Remove the "```json" code block tag
                         llmResponse = llmResponse.Remove(llmResponse.IndexOf("```json"), 7);
                         _logger.LogInformation("Removed ```json tag from response.");
                     }
 
                     if (llmResponse.Contains("```"))
                     {
+                        // Remove any remaining "```" code block tag
                         llmResponse = llmResponse.Remove(llmResponse.IndexOf("```"), 3);
                         _logger.LogInformation("Removed ``` tag from response.");
                     }
 
-                    llmResponse = llmResponse.Trim();  // Clean up any excess whitespace
+                    llmResponse = llmResponse.Trim(); // Clean up any excess whitespace
                     _logger.LogInformation("Final cleaned LLM response: {llmResponse}", llmResponse);
 
-                    break; // Exit the retry loop if the extraction was successful
+                    break; // Exit retry loop if the extraction was successful
                 }
             }
 
-            // Step 5: Return a successful response
+            // Step 10: Return a successful response with the extracted data
             serviceResponse.Data = llmResponse;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Data successfully extracted.";
@@ -131,10 +195,11 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         }
         catch (Exception ex)
         {
-            // Step 6: Handle unexpected errors
+            // Step 11: Catch unexpected errors and log them
             _logger.LogError("An unexpected error occurred during the extraction process: {ErrorMessage}.", ex.Message);
         }
 
+        // Return the response, which may contain an error message if something went wrong
         return serviceResponse;
     }
 
