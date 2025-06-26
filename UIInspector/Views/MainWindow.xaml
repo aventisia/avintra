@@ -441,15 +441,14 @@
                           Grid.Column="2"
                           md:ColorZoneAssist.Background="{StaticResource PrimaryBrush}"
                           md:ColorZoneAssist.Foreground="{StaticResource SecondaryForegroundBrush}"
-                          md:ColorZoneAssist.Mode="Custom"
-                          Style="{StaticResource MaterialDesignCardGroupBox}">
+                          md:ColorZoneAssist.Mode="Custom">
                     <GroupBox.Header>
                         <Grid Margin="6 0 0 0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="UI Element (New)"
+                            <TextBlock Text="UI Element"
                                        FontSize="13"
                                        FontWeight="Medium"
                                        Foreground="{StaticResource SecondaryForegroundBrush}"/>
@@ -461,6 +460,20 @@
                             </Button>
                         </Grid>
                     </GroupBox.Header>
+                    <GroupBox.Style>
+                        <Style TargetType="GroupBox"
+                               BasedOn="{StaticResource MaterialDesignCardGroupBox}">
+                            <Setter Property="Visibility"
+                                    Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedItemInTree}"
+                                             Value="{x:Null}">
+                                    <Setter Property="Visibility"
+                                            Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </GroupBox.Style>
 
                     <ScrollViewer VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Auto"
@@ -786,6 +799,46 @@
                             </ItemsControl>
                         </Grid>
                     </ScrollViewer>
+                </GroupBox>
+
+                <GroupBox Grid.Column="2"
+                          Margin="6"
+                          Padding="40"
+                          md:ColorZoneAssist.Mode="Custom">
+                    <GroupBox.Style>
+                        <Style TargetType="GroupBox"
+                               BasedOn="{StaticResource MaterialDesignCardGroupBox}">
+                            <Setter Property="Visibility"
+                                    Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedItemInTree}"
+                                             Value="{x:Null}">
+                                    <Setter Property="Visibility"
+                                            Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </GroupBox.Style>
+                    <StackPanel HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <md:PackIcon Kind="CursorDefaultOutline"
+                                     HorizontalAlignment="Center"
+                                     Width="28"
+                                     Height="28"
+                                     Foreground="{StaticResource MutedForegroundBrush}"
+                                     Margin="0 0 0 10"/>
+                        <TextBlock Text="No UI element selected."
+                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   Margin="0 0 0 10"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="Enable the Hover option above and move your mouse over an application to start inspecting UI elements (use Ctrl)."
+                                   FontSize="13"
+                                   Foreground="{StaticResource MutedForegroundBrush}"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
                 </GroupBox>
             </Grid>
         </DockPanel>
