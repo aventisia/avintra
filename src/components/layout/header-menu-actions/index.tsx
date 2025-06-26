@@ -10,6 +10,7 @@ import { toast } from "@aventisia/ui/sonner";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { invoke } from "@tauri-apps/api/core";
 import {
+  ArrowLeftRightIcon,
   DockIcon,
   DownloadIcon,
   KeyboardIcon,
@@ -19,10 +20,17 @@ import {
 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { HeaderActionMenuTrigger } from "./HeaderActionMenuTrigger";
+import { useInputOutputsStore } from "@/features/add-input-output/stores/inputs-outputs-store";
 
 export const HeaderActionMenu: React.FC = () => {
   // Get flow execution store state & actions
   const { setShowDialog } = useFlowExecutionLogStore(
+    useShallow((state) => ({
+      setShowDialog: state.setShowDialog,
+    })),
+  );
+
+  const { setShowDialog: setExportDialog } = useInputOutputsStore(
     useShallow((state) => ({
       setShowDialog: state.setShowDialog,
     })),
@@ -84,6 +92,14 @@ export const HeaderActionMenu: React.FC = () => {
         {import.meta.env.MODE !== "production" ? (
           <>
             <SimpleDDMenuItem size="md" Icon={UploadIcon} content="Export" />
+            <DropdownMenuSeparator />
+
+            <SimpleDDMenuItem
+              onClick={() => setExportDialog(true)}
+              size="md"
+              Icon={ArrowLeftRightIcon}
+              content="Add Input/Output"
+            />
             {/* DropdownMenuSeparator component */}
             <DropdownMenuSeparator />
             <SimpleDDMenuItem size="md" Icon={LockOpenIcon} content="Lock" />
