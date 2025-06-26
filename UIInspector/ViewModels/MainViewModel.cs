@@ -13,6 +13,7 @@ using System.Windows.Input;
 using UIInspector.Core;
 using UIInspector.Models;
 using System.Text.Json;
+using System.Linq;
 
 namespace UIInspector.ViewModels
 {
@@ -171,12 +172,36 @@ namespace UIInspector.ViewModels
 
         public string GetIdentificationPathAsJson()
         {
+            var filtered = IdentificationPath.ToList()
+                .Select(step =>
+                {
+                    var obj = new Dictionary<string, object>();
+
+                    if (step.IsIndexSelected && !string.IsNullOrEmpty(step.Index))
+                        obj["index"] = step.Index;
+                    if (step.IsNameSelected && !string.IsNullOrEmpty(step.Name))
+                        obj["name"] = step.Name;
+                    if (step.IsClassNameSelected && !string.IsNullOrEmpty(step.ClassName))
+                        obj["className"] = step.ClassName;
+                    if (step.IsControlTypeSelected && !string.IsNullOrEmpty(step.ControlType))
+                        obj["controlType"] = step.ControlType;
+                    if (step.IsFrameworkIdSelected && !string.IsNullOrEmpty(step.FrameworkId))
+                        obj["frameworkId"] = step.FrameworkId;
+                    if (step.IsAutomationIdSelected && !string.IsNullOrEmpty(step.AutomationId))
+                        obj["automationId"] = step.AutomationId;
+                    // If you want to include NameMatchMode only if Name is selected:
+                    if (step.IsNameSelected && step.NameMatchMode != NameMatchModeEnum.Equals)
+                        obj["nameMatchMode"] = step.NameMatchMode.ToString();
+
+                    return obj;
+                }).ToList();
+
             var options = new JsonSerializerOptions
             {
                 WriteIndented = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase // This line ensures camelCase
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
-            return JsonSerializer.Serialize(IdentificationPath, options);
+            return JsonSerializer.Serialize(filtered, options);
         }
 
         public void ElementToSelectChanged(AutomationElement obj)
@@ -248,6 +273,7 @@ namespace UIInspector.ViewModels
                 {
                     PathHeading = pathHeading,
                     Index = i == 0 ? null : identificationPathVm[i].Index.ToString(),
+                    IsIndexSelected = i == 0 ? false : elementName == null, // index is not selected for the root element and if the name is not set
                     Name = elementName,
                     OriginalName = elementName,
                     NameMatchMode = NameMatchModeEnum.Equals, // Default to Equals, can be changed later
