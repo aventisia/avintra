@@ -196,7 +196,7 @@
                           md:ColorZoneAssist.Mode="Custom"
                           Style="{StaticResource MaterialDesignCardGroupBox}">
 
-                    <TreeView ItemsSource="{Binding Elements}"
+                    <TreeView x:Name="UIElementsTree" ItemsSource="{Binding Elements}"
                               BorderThickness="1"
                               BorderBrush="{StaticResource RingBrush}">
                         <TreeView.ItemContainerStyle>

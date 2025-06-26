@@ -69,6 +69,7 @@
     </Compile>
     <Compile Include="Converters\AutomationTypeToDisplayConverter.cs" />
     <Compile Include="Converters\StringNullOrEmptyToVisibilityConverter.cs" />
+    <Compile Include="Helpers\FindVisualChildHelpers.cs" />
     <Compile Include="Models\IdentificationPathStep.cs" />
     <Compile Include="ViewModels\DetailGroupViewModel.cs" />
     <Compile Include="ViewModels\DetailViewModel.cs" />

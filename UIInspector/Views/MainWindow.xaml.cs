@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using UIInspector.ViewModels;
+using UIInspector.Helpers;
 
 namespace UIInspector.Views
 {
@@ -21,6 +22,9 @@ namespace UIInspector.Views
             Loaded += MainWindow_Loaded;
             _vm = new MainViewModel();
             DataContext = _vm;
+
+            // Subscribe to the event and call the scroll reset method
+            _vm.RequestTreeScrollReset += TreeScrollReset;
         }
 
         private void AppendVersionToTitle()
@@ -86,6 +90,16 @@ namespace UIInspector.Views
                     // Optionally move focus away to trigger LostFocus
                     Keyboard.ClearFocus();
                 }
+            }
+        }
+
+        private void TreeScrollReset()
+        {
+            var scrollViewer = FindVisualChildHelpers.FindVisualChild<ScrollViewer>(UIElementsTree);
+            if (scrollViewer != null)
+            {
+                scrollViewer.ScrollToHorizontalOffset(0);
+                scrollViewer.ScrollToVerticalOffset(0);
             }
         }
     }

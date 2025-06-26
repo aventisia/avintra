@@ -131,6 +131,8 @@ namespace UIInspector.ViewModels
 
         public ICommand CopyIdentificationPathJsonCommand { get; private set; }
 
+        public event Action RequestTreeScrollReset;
+
         public ObservableCollection<DetailGroupViewModel> SelectedItemDetails => SelectedItemInTree?.ItemDetails;
 
         public ObservableCollection<IdentificationPathStep> IdentificationPath { get; } = new ObservableCollection<IdentificationPathStep>();
@@ -291,6 +293,7 @@ namespace UIInspector.ViewModels
             SelectedItemInTree = null;
             Initialize(SelectedAutomationType);
             IdentificationPath.Clear();
+            RequestTreeScrollReset?.Invoke();
         }
     }
 }
