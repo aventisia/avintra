@@ -96,7 +96,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
 
                     _logger.LogInformation($"Loaded models: '{string.Join(", ", loadedModels?.Models.Select(s => s.Model) ?? Enumerable.Empty<string>())}'");
 
-                    if (loadedModels != null && loadedModels.Models.Any() && TryGetMatchingModel(loadedModels, mappedModel))
+                    if (loadedModels != null && !loadedModels.Models.Any(s => s.Model != null && s.Model.Contains(mappedModel)))
                     {
                         // No exact match found — proceed to unload all currently loaded models
                         _logger.LogInformation($"No match found for model: '{mappedModel}'");
@@ -250,28 +250,5 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             _logger.LogError("An error occurred while retrieving file text: {error}", ex.Message);
             return string.Empty;
         }
-    }
-
-    // Tries to find a matching model in the loaded models based on the base model name
-    private static bool TryGetMatchingModel(OllamaModelResponse? loadedModels, string mappedModel)
-    {
-        // Check if loadedModels or ModelDetails is null, return false if so
-        if (loadedModels?.Models == null)
-            return false;
-
-        // Use FirstOrDefault to find the first model where the part before the colon matches mappedModel
-        var matchingModel = loadedModels.Models
-            .FirstOrDefault(w =>
-            {
-                // If the model is null, skip it
-                if (w.Model == null) return false;
-
-                // Split the model string by the colon and check if the first part matches mappedModel
-                var parts = w.Model.Split(':', 2);
-                return string.Equals(parts[0], mappedModel, StringComparison.InvariantCultureIgnoreCase);
-            });
-
-        // Return true if we not found a matching model, otherwise false
-        return matchingModel == null;
     }
 }
