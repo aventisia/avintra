@@ -6,7 +6,7 @@ const fieldItemSchema = z.object({
     .string()
     .min(1, "Name is required")
     .regex(/^[^\s]+$/, "Name must not contain spaces"), // disallows any whitespace
-  direction: z.string().min(1, "Direction is required"),
+  direction: z.enum(["Input", "Output"]),
   label: z.string().optional(),
   defaultValue: z.string().min(1, "Default value is required"),
   description: z.string().optional(),
