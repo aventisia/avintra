@@ -288,6 +288,7 @@ namespace UIInspector.ViewModels
         private void RefreshTree()
         {
             Elements.Clear();
+            SelectedItemInTree = null;
             Initialize(SelectedAutomationType);
             IdentificationPath.Clear();
         }
