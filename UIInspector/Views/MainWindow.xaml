@@ -73,7 +73,8 @@
                     </ComboBox>
 
                     <!--Button: Reload Tree-->
-                    <Button ToolTip="Reload the UI Tree to load the latest UI elements"
+                    <Button Visibility="Collapsed"
+                            ToolTip="Reload the UI Tree to load the latest UI elements"
                             Command="{Binding RefreshCommand}"
                             Style="{StaticResource GhostButtonStyle}">
                         <StackPanel Margin="5 0"
@@ -188,15 +189,36 @@
                 <GroupBox Margin="6"
                           Padding="0"
                           Grid.Column="0"
-                          Header="UI Elements Tree"
                           FontSize="13"
                           FontWeight="Medium"
                           md:ColorZoneAssist.Background="{StaticResource PrimaryBrush}"
                           md:ColorZoneAssist.Foreground="{StaticResource SecondaryForegroundBrush}"
                           md:ColorZoneAssist.Mode="Custom"
                           Style="{StaticResource MaterialDesignCardGroupBox}">
-
-                    <TreeView x:Name="UIElementsTree" ItemsSource="{Binding Elements}"
+                    <GroupBox.Header>
+                        <Grid Margin="6 0 0 0"
+                              Height="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="UI Elements Tree"
+                                       FontSize="13"
+                                       FontWeight="Medium"
+                                       Foreground="{StaticResource SecondaryForegroundBrush}"/>
+                            <Button Grid.Column="1"
+                                    Style="{StaticResource IconButtonStyle}"
+                                    ToolTip="Reload the UI Tree to load the latest UI elements"
+                                    Command="{Binding RefreshCommand}">
+                                <md:PackIcon Kind="Refresh"
+                                             Width="18"
+                                             Height="18"
+                                             Foreground="{StaticResource SecondaryForegroundBrush}"/>
+                            </Button>
+                        </Grid>
+                    </GroupBox.Header>
+                    <TreeView x:Name="UIElementsTree"
+                              ItemsSource="{Binding Elements}"
                               BorderThickness="1"
                               BorderBrush="{StaticResource RingBrush}">
                         <TreeView.ItemContainerStyle>
@@ -443,7 +465,8 @@
                           md:ColorZoneAssist.Foreground="{StaticResource SecondaryForegroundBrush}"
                           md:ColorZoneAssist.Mode="Custom">
                     <GroupBox.Header>
-                        <Grid Margin="6 0 0 0">
+                        <Grid Margin="6 0 0 0"
+                              Height="20">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
@@ -453,6 +476,7 @@
                                        FontWeight="Medium"
                                        Foreground="{StaticResource SecondaryForegroundBrush}"/>
                             <Button Grid.Column="1"
+                                    Foreground="{StaticResource SecondaryForegroundBrush}"
                                     Margin="10 0 0 0"
                                     Command="{Binding CopyIdentificationPathJsonCommand}"
                                     Style="{StaticResource IconButtonStyle}">

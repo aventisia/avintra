@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
     <!--Icon Button Style-->
-    <Style x:Key="IconButtonStyle" TargetType="Button">
+    <Style x:Key="IconButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialDesignIconButton}">
         <Setter Property="Height" Value="20"/>
         <Setter Property="Width" Value="20"/>
         <Setter Property="Background" Value="Transparent"/>
