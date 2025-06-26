@@ -525,7 +525,8 @@
                                                 </Expander.Header>
                                                 <StackPanel Margin="55 2 0 5"
                                                             Orientation="Vertical">
-                                                    <StackPanel Orientation="Horizontal">
+                                                    <StackPanel Orientation="Horizontal"
+                                                                Visibility="{Binding Index, Converter={StaticResource StringNullOrEmptyToVisibilityConverter}}">
                                                         <CheckBox Margin="0 0 5 0"
                                                                   IsChecked="{Binding IsIndexSelected}"/>
                                                         <TextBlock Text="Index"

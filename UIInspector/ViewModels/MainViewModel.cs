@@ -245,7 +245,7 @@ namespace UIInspector.ViewModels
                 var step = new IdentificationPathStep
                 {
                     PathHeading = pathHeading,
-                    Index = identificationPathVm[i].Index,
+                    Index = i == 0 ? null : identificationPathVm[i].Index.ToString(),
                     Name = elementName,
                     OriginalName = elementName,
                     NameMatchMode = NameMatchModeEnum.Equals, // Default to Equals, can be changed later

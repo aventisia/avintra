@@ -42,7 +42,7 @@ namespace UIInspector.Models
 
         public string OriginalName { get; set; }
         public string PathHeading { get; set; }
-        public int Index { get; set; }
+        public string Index { get; set; }
         public NameMatchModeEnum NameMatchMode { get; set; }
         public string ClassName { get; set; }
         public string ControlType { get; set; }
