@@ -35,17 +35,20 @@ const InputFields = ({
   return (
     <div
       key={field.id}
-      className="relative mb-3 grid grid-cols-2 items-center gap-2.5 rounded-lg border bg-gray-50 p-4"
+      className="mb-3 grid grid-cols-2 items-center gap-2.5 rounded-lg border bg-slate-50 p-4"
     >
-      <Button
-        variant="ghost"
-        type="button"
-        size="sm"
-        onClick={() => remove(index)}
-        className="absolute right-0 top-0 text-red-500 hover:bg-red-50 hover:text-red-700"
-      >
-        <Trash2 className="h-4 w-4" />
-      </Button>
+      <div className="col-span-2 flex justify-between">
+        <span className="text-sm">Input {index + 1}</span>
+        <Button
+          variant="ghost"
+          type="button"
+          size="xs"
+          onClick={() => remove(index)}
+          className="text-red-500 hover:bg-red-50 hover:text-red-700"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
 
       {/* Name Field */}
       <Controller

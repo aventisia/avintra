@@ -3,11 +3,11 @@ import { useInputsOutputsForm } from "../hooks/useInputsOutputsForm";
 import { Form } from "@aventisia/ui/form";
 import { Plus } from "lucide-react";
 import { InputsOutputsFieldsFormType } from "../constants/inputs-outputs-zod-schema";
-import { ScrollArea } from "@aventisia/ui/scroll";
 import OutputFields from "./OutputFields";
 import InputFields from "./InputFields";
 import { useInputOutputsStore } from "../stores/inputs-outputs-store";
 import { useShallow } from "zustand/react/shallow";
+import { transformFormDataToDCPJson } from "../utils/formdataToJson";
 
 const AddInputsOutputsForm = () => {
   const {
@@ -31,18 +31,19 @@ const AddInputsOutputsForm = () => {
   );
 
   const onSubmit = (formData: InputsOutputsFieldsFormType) => {
-    console.log(formData);
+    console.log(transformFormDataToDCPJson(formData));
     setShowDialog(false);
   };
+
   return (
     <>
       <Form
         methods={form}
         onSubmit={form.handleSubmit(onSubmit)}
-        className="p-2"
+        className="px-2.5 pb-5"
       >
-        <div className="rounded-lg border">
-          <div className="flex items-center justify-between px-3 pt-1">
+        <div>
+          <div className="mb-2 flex items-center justify-between">
             <h2>Inputs</h2>
             <Button
               variant="ghost"
@@ -54,19 +55,17 @@ const AddInputsOutputsForm = () => {
               Field
             </Button>
           </div>
-          <ScrollArea className="h-[35vh] px-2.5">
-            {inputFields.map((field, index) => (
-              <InputFields
-                field={field}
-                control={control}
-                index={index}
-                remove={removeInput}
-              />
-            ))}
-          </ScrollArea>
+          {inputFields.map((field, index) => (
+            <InputFields
+              field={field}
+              control={control}
+              index={index}
+              remove={removeInput}
+            />
+          ))}
         </div>
-        <div className="rounded-lg border">
-          <div className="flex items-center justify-between px-3 pt-1">
+        <div>
+          <div className="mb-2 flex items-center justify-between">
             <h2>Outputs</h2>
             <Button
               variant="ghost"
@@ -78,16 +77,14 @@ const AddInputsOutputsForm = () => {
               Field
             </Button>
           </div>
-          <ScrollArea className="h-[35vh] px-2.5">
-            {outputFields.map((field, index) => (
-              <OutputFields
-                field={field}
-                control={control}
-                index={index}
-                remove={removeOutput}
-              />
-            ))}
-          </ScrollArea>
+          {outputFields.map((field, index) => (
+            <OutputFields
+              field={field}
+              control={control}
+              index={index}
+              remove={removeOutput}
+            />
+          ))}
         </div>
         {/* Submit button */}
         <div className="flex justify-end">
