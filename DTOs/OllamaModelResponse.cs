@@ -6,7 +6,7 @@ public class OllamaModelResponse
     /// <summary>
     /// Gets or sets the list of available models with their details.
     /// </summary>
-    public List<ModelDetails> ModelDetails { get; set; } = new List<ModelDetails>();
+    public List<ModelDetails> Models { get; set; } = new List<ModelDetails>();
 }
 
 /// <summary>

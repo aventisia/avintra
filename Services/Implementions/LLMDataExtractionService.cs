@@ -89,15 +89,20 @@ public class LLMDataExtractionService : ILLMDataExtractionService
 
                     // Deserialize the list of loaded models from the response
                     var loadedModels = System.Text.Json.JsonSerializer.Deserialize<OllamaModelResponse>(
-                        await loadedModelsResponse.Content.ReadAsStringAsync());
+                        await loadedModelsResponse.Content.ReadAsStringAsync(), new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
 
-                    // If the required model isn't loaded, unload all other models
-                    if (loadedModels?.ModelDetails != null && !loadedModels.ModelDetails.Any(a => a.Model != null && a.Model.Contains(mappedModel)))
+                    _logger.LogInformation($"Loaded models: '{string.Join(", ", loadedModels?.Models.Select(s => s.Model) ?? Enumerable.Empty<string>())}'");
+
+                    if (loadedModels != null && loadedModels.Models.Any() && TryGetMatchingModel(loadedModels, mappedModel))
                     {
-                        _logger.LogInformation("Target model '{MappedModel}' not loaded. Unloading existing models...", mappedModel);
+                        // No exact match found — proceed to unload all currently loaded models
+                        _logger.LogInformation($"No match found for model: '{mappedModel}'");
 
                         // Unload any currently loaded models
-                        foreach (var modelDetail in loadedModels.ModelDetails)
+                        foreach (var modelDetail in loadedModels.Models)
                         {
                             var unloadRequest = new
                             {
@@ -118,6 +123,10 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                                 _logger.LogInformation("Successfully unloaded model: {Model}", modelDetail.Model);
                             }
                         }
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"Loaded models: '{string.Join(", ", loadedModels?.Models.Select(s => s.Model) ?? Enumerable.Empty<string>())}'");
                     }
 
                     // Step 5: Send the generation request to the model with the prompt and temperature
@@ -241,5 +250,28 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             _logger.LogError("An error occurred while retrieving file text: {error}", ex.Message);
             return string.Empty;
         }
+    }
+
+    // Tries to find a matching model in the loaded models based on the base model name
+    private static bool TryGetMatchingModel(OllamaModelResponse? loadedModels, string mappedModel)
+    {
+        // Check if loadedModels or ModelDetails is null, return false if so
+        if (loadedModels?.Models == null)
+            return false;
+
+        // Use FirstOrDefault to find the first model where the part before the colon matches mappedModel
+        var matchingModel = loadedModels.Models
+            .FirstOrDefault(w =>
+            {
+                // If the model is null, skip it
+                if (w.Model == null) return false;
+
+                // Split the model string by the colon and check if the first part matches mappedModel
+                var parts = w.Model.Split(':', 2);
+                return string.Equals(parts[0], mappedModel, StringComparison.InvariantCultureIgnoreCase);
+            });
+
+        // Return true if we not found a matching model, otherwise false
+        return matchingModel == null;
     }
 }
