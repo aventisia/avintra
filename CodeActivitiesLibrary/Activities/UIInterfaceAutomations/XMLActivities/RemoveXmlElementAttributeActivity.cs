@@ -32,32 +32,47 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var xmlContent = XmlContent.Get(context);
-            var xpath = XPath.Get(context);
-            var attributeName = AttributeName.Get(context);
-            string updatedXmlContent = null;
-
             try
             {
+                // Retrieve inputs
+                var xmlContent = XmlContent.Get(context);
+                var xpath = XPath.Get(context);
+                var attributeName = AttributeName.Get(context);
+
+                // Validate inputs
                 if (string.IsNullOrEmpty(xmlContent))
                     throw new ArgumentException("XML content cannot be null or empty.");
 
-                if (string.IsNullOrEmpty(xpath)) throw new ArgumentException("XPath cannot be null or empty.");
+                if (string.IsNullOrEmpty(xpath))
+                    throw new ArgumentException("XPath cannot be null or empty.");
 
                 if (string.IsNullOrEmpty(attributeName))
                     throw new ArgumentException("Attribute name cannot be null or empty.");
 
+                // Load XML into XmlDocument
                 var xmlDoc = new XmlDocument();
                 xmlDoc.LoadXml(xmlContent);
 
+                // Locate the element using XPath
                 var node = xmlDoc.SelectSingleNode(xpath);
-                if (node == null) throw new ArgumentException($"No element found at XPath: {xpath}");
+                if (node == null)
+                    throw new ArgumentException($"No element found at XPath: {xpath}");
 
+                // Remove the attribute
                 var attr = node.Attributes?[attributeName];
-                if (attr != null) node.Attributes?.Remove(attr);
+                if (attr != null)
+                {
+                    node.Attributes?.Remove(attr);
+                }
+                else
+                {
+                    StatusMessage.Set(context, $"Attribute '{attributeName}' not found on the element.");
+                }
 
-                updatedXmlContent = xmlDoc.OuterXml;
+                // Return the updated XML content
+                var updatedXmlContent = xmlDoc.OuterXml;
                 UpdatedXmlContent.Set(context, updatedXmlContent);
+
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Attribute removed successfully.");
             }

@@ -1,19 +1,20 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Convert Binary Data to File")]
-    [Description("Converts binary data to a file at the specified path.")]
+    [Description("Converts binary data (byte[] or Base64 string) to a file at the specified path.")]
     public class ConvertBinaryDataToFileActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Binary Data")]
-        [Description("The binary data to convert.")]
-        public InArgument<byte[]> BinaryData { get; set; }
+        [Description("The binary data to convert. Can be either byte[] or Base64 string.")]
+        public InArgument<object> BinaryData { get; set; }
 
         [RequiredArgument]
         [DisplayName("File Path")]
@@ -23,39 +24,82 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
         [RequiredArgument]
         [DisplayName("If File Exists")]
         [Description("Specifies the behavior when a file already exists in the destination folder.")]
-        [DefaultValue(IfExistsActionEnum.DoNothing)]
-        public InArgument<IfExistsActionEnum> IfExistsAction { get; set; }
-
+        [DefaultValue(Enums.IfExistsActionEnum.DoNothing)]
+        public InArgument<Enums.IfExistsActionEnum> IfExistsAction { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var binaryData = BinaryData.Get(context);
-            var filePath = FilePath.Get(context);
-            var ifExistsAction = IfExistsAction.Get(context);
-            string status;
+            var status = "Operation completed successfully.";
 
             try
             {
-                if (binaryData == null || binaryData.Length == 0)
-                    throw new ArgumentException("Binary data cannot be null or empty.");
+                // Get inputs
+                var binaryDataObj = BinaryData.Get(context);
+                var filePath = FilePath.Get(context);
+                var ifExistsAction = IfExistsAction.Get(context);
 
-                var dir = Path.GetDirectoryName(filePath);
-                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                // Validate inputs
+                if (binaryDataObj == null)
+                    throw new ArgumentException("Binary data cannot be null.", nameof(BinaryData));
 
+                if (string.IsNullOrWhiteSpace(filePath))
+                    throw new ArgumentException("File path cannot be null, empty, or whitespace.", nameof(FilePath));
+
+                // Convert input to byte[]
+                byte[] binaryData;
+
+                switch (binaryDataObj)
+                {
+                    case byte[] bytes:
+                        binaryData = bytes;
+                        break;
+                    case string base64String:
+                        try
+                        {
+                            binaryData = Convert.FromBase64String(base64String);
+                        }
+                        catch (FormatException ex)
+                        {
+                            throw new ArgumentException("Invalid Base64 string provided.", nameof(BinaryData), ex);
+                        }
+
+                        break;
+                    default:
+                        throw new ArgumentException("Unsupported binary data type. Must be byte[] or Base64 string.",
+                            nameof(BinaryData));
+                }
+
+                // Ensure directory exists
+                var directory = Path.GetDirectoryName(filePath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                // Handle existing file
                 if (File.Exists(filePath))
+                {
                     switch (ifExistsAction)
                     {
-                        case IfExistsActionEnum.DoNothing:
-                            status = $"File already exists at {filePath}. No action was taken.";
+                        case Enums.IfExistsActionEnum.DoNothing:
+                            status = $"File already exists at '{filePath}'. No action was taken.";
+                            IsSuccess.Set(context, true);
                             StatusMessage.Set(context, status);
                             return;
-                        case IfExistsActionEnum.Overwrite:
-                            // continue to overwrite below
-                            break;
-                    }
 
+                        case Enums.IfExistsActionEnum.Overwrite:
+                            File.Delete(filePath);
+                            break;
+
+                        default:
+                            throw new InvalidOperationException(
+                                $"Unsupported 'IfExistsAction' value: {ifExistsAction}");
+                    }
+                }
+
+                // Write binary data to file
                 File.WriteAllBytes(filePath, binaryData);
-                status = $"Binary data successfully saved to file at {filePath}.";
+                status = $"Binary data successfully saved to file at '{filePath}'.";
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }

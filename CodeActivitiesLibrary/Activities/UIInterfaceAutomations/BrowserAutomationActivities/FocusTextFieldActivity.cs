@@ -24,11 +24,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
         public InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
         [RequiredArgument]
-        [DisplayName("UI Element")]
-        [Description("The selector used to locate the text field on the page.")]
-        public InArgument<string> UiElement { get; set; }
-
-        [RequiredArgument]
         [DisplayName("Find Type")]
         [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
         [DefaultValue(ElementSelectorTypeEnum.XPath)]
@@ -69,12 +64,12 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            string status = string.Empty;
 
             try
             {
                 var driver = WebBrowserInstance.Get(context);
-                var uiElement = UiElement.Get(context);
+                var uiElement = ValueToFind.Get(context);
                 var findType = FindType.Get(context);
                 var waitForPage = WaitForPageToLoad.Get(context);
                 var timeout = TimeoutForPageLoad.Get(context);
@@ -82,33 +77,62 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                 var dialogButton = DialogButtonToPress.Get(context);
 
                 if (driver == null)
-                    throw new ArgumentException("Web browser instance cannot be null.");
+                    throw new ArgumentNullException(nameof(driver), "Web browser instance cannot be null.");
 
                 if (string.IsNullOrWhiteSpace(uiElement))
-                    throw new ArgumentException("UI Element must be specified.");
+                    throw new ArgumentException("Value To Find cannot be null or empty.");
 
-                // Wait for the page to load
-                if (waitForPage && timeout > 0)
+                // Wait for page load if required
+                if (waitForPage)
                 {
                     var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeout));
                     wait.Until(d =>
                         ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
                 }
 
-                // Locate the element
+                // Get By locator
                 var by = BrowserAutomationHelper.GetWebElementLocator(findType, uiElement);
                 if (by == null)
-                    throw new ArgumentException("Invalid find type provided.");
+                    throw new ArgumentException($"Invalid selector type or empty value: {findType}, {uiElement}");
 
+                // Locate the element
                 var element = BrowserAutomationHelper.FindElement(driver, findType, uiElement);
-
                 if (element == null)
-                    throw new InvalidOperationException($"No element found using '{findType}': '{uiElement}'");
+                    throw new InvalidOperationException($"Element not found using {findType}: {uiElement}");
 
-                // Focus on the element
-                new Actions(driver).MoveToElement(element).Click().Build().Perform();
+                // Scroll into view and focus
+                ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].scrollIntoView(true);", element);
+                new Actions(driver).MoveToElement(element).Click().Perform();
 
-                status = $"Focused on UI element '{uiElement}' using '{findType}'.";
+                // Optional: Handle Dialog (future implementation)
+                if (dialogAction == DialogActionEnum.AcceptAlert)
+                {
+                    try
+                    {
+                        IAlert alert = driver.SwitchTo().Alert();
+                        alert.Accept();
+                        status += "Alert accepted.";
+                    }
+                    catch (NoAlertPresentException)
+                    {
+                        /* no alert, skip */
+                    }
+                }
+                else if (dialogAction == DialogActionEnum.DismissAlert)
+                {
+                    try
+                    {
+                        IAlert alert = driver.SwitchTo().Alert();
+                        alert.Dismiss();
+                        status += "Alert dismissed.";
+                    }
+                    catch (NoAlertPresentException)
+                    {
+                        /* no alert, skip */
+                    }
+                }
+
+                status = $"Focused on element using {findType}: {uiElement}";
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }

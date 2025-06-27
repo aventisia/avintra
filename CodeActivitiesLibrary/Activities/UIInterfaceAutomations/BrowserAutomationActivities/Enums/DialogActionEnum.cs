@@ -14,6 +14,12 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
         DoNothing,
 
         [Display(Name = "Close It / Press a Button", Description = "Close or press a button on the dialog.")]
-        CloseOrPress
+        CloseOrPress,
+
+        [Display(Name = "Accept Alert", Description = "Accept the alert dialog that appears.")]
+        AcceptAlert,
+
+        [Display(Name = "Dismiss Alert", Description = "Dismiss the alert dialog that appears.")]
+        DismissAlert
     }
 }

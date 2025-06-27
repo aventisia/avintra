@@ -7,8 +7,8 @@ using System.Windows.Forms;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 {
-    [DisplayName("Display Select From List Dialog")]
-    [Description("Displays a dialog box with options that lets the user select from a list.")]
+    //[DisplayName("Display Select From List Dialog")]
+    //[Description("Displays a dialog box with options that lets the user select from a list.")]
     public class DisplaySelectFromListDialogActivity : BaseCodeActivity
     {
 
@@ -61,39 +61,69 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
         {
             try
             {
-                var title = context.GetValue(DialogTitle) ?? "Select Item";
-                var message = context.GetValue(DialogMessage) ?? "Please select from the list below:";
-                var listInput = context.GetValue(ListToChooseFrom) ?? "";
-                var keepOnTop = context.GetValue(KeepOnTop);
-                var allowEmpty = context.GetValue(AllowEmptySelection);
-                var allowMultiple = context.GetValue(AllowMultipleSelection);
-                var preselectPlus = context.GetValue(PreselectItemsStartingWithPlus);
+                var title = DialogTitle.Get(context) ?? "Select Item";
+                var message = DialogMessage.Get(context) ?? "Please select from the list below:";
+                var allowMultiSelect = AllowMultipleSelection.Get(context);
+                var preselectPlus = PreselectItemsStartingWithPlus.Get(context);
 
-                var items = listInput
-                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(s => s.Trim())
-                    .ToList();
+                object rawListInput = ListToChooseFrom.Get(context);
 
+                if (rawListInput == null)
+                {
+                    throw new ArgumentException("List to choose from cannot be null.");
+                }
+
+                // Convert input to list of strings
+                var items = new System.Collections.Generic.List<string>();
+
+                switch (rawListInput)
+                {
+                    case string str when !string.IsNullOrWhiteSpace(str):
+                        items = str
+                            .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(i => i.Trim())
+                            .ToList();
+                        break;
+
+                    case System.Collections.IEnumerable collection:
+                        foreach (var item in collection)
+                        {
+                            if (item != null)
+                                items.Add(item.ToString());
+                        }
+                        break;
+
+                    default:
+                        throw new ArgumentException("Unsupported list format. Please pass a comma-separated string or a list of strings.");
+                }
+
+                if (!items.Any())
+                {
+                    throw new ArgumentException("No valid items found in the list.");
+                }
+
+                // Create ListBox
                 var listBox = new ListBox
                 {
-                    SelectionMode = allowMultiple ? SelectionMode.MultiExtended : SelectionMode.One,
+                    SelectionMode = allowMultiSelect ? SelectionMode.MultiExtended : SelectionMode.One,
                     Dock = DockStyle.Fill
                 };
 
-                for (var i = 0; i < items.Count; i++)
+                for (int i = 0; i < items.Count; i++)
                 {
                     var item = items[i];
                     listBox.Items.Add(item);
-                    if (preselectPlus && allowMultiple && item.StartsWith("+"))
+                    if (preselectPlus && allowMultiSelect && item.StartsWith("+"))
                     {
                         listBox.SetSelected(i, true);
                     }
                 }
 
+                // Create Form
                 var form = new Form
                 {
                     Text = title,
-                    TopMost = keepOnTop,
+                    TopMost = true,
                     Width = 400,
                     Height = 300,
                     StartPosition = FormStartPosition.CenterScreen
@@ -121,8 +151,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
                     Dock = DockStyle.Bottom
                 };
 
-                form.Controls.Add(listBox);
                 form.Controls.Add(label);
+                form.Controls.Add(listBox);
                 form.Controls.Add(okButton);
                 form.Controls.Add(cancelButton);
                 form.AcceptButton = okButton;
@@ -132,43 +162,31 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 
                 if (result == DialogResult.OK)
                 {
-                    if (listBox.SelectedIndices.Count == 0 && !allowEmpty)
-                    {
-                        StatusMessage.Set(context, "Selection required but not provided.");
-                        ButtonPressed.Set(context, false);
-                        SelectedItem.Set(context, null);
-                        SelectedIndex.Set(context, null);
-                        IsSuccess.Set(context, false);
-                        return;
-                    }
-
                     var selectedItems = string.Join(", ", listBox.SelectedItems.Cast<string>());
-                    var selectedIndexes = listBox.SelectedIndices.Cast<int>().ToArray();
+                    var selectedIndexArray = listBox.SelectedIndices.Cast<int>().ToArray();
 
-                    ButtonPressed.Set(context, true);
-                    StatusMessage.Set(context, "OK pressed.");
                     SelectedItem.Set(context, selectedItems);
-                    SelectedIndex.Set(context, selectedIndexes);
+                    SelectedIndex.Set(context, selectedIndexArray);
+                    ButtonPressed.Set(context, true);
+                    StatusMessage.Set(context, "User clicked OK and made a selection.");
                     IsSuccess.Set(context, true);
                 }
                 else
                 {
-                    ButtonPressed.Set(context, false);
-                    StatusMessage.Set(context, "Cancel pressed.");
                     SelectedItem.Set(context, null);
                     SelectedIndex.Set(context, null);
+                    ButtonPressed.Set(context, false);
+                    StatusMessage.Set(context, "User canceled the dialog.");
                     IsSuccess.Set(context, true);
                 }
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Selection dialog completed successfully.");
             }
             catch (Exception ex)
             {
-                ButtonPressed.Set(context, false);
                 SelectedItem.Set(context, null);
                 SelectedIndex.Set(context, null);
+                ButtonPressed.Set(context, false);
+                StatusMessage.Set(context, $"Error: {ex.Message}");
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error in selection dialog: {ex.Message}");
             }
         }
 

@@ -24,23 +24,23 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
         [Description("Specifies the encoding to use for reading the XML file.")]
         public InArgument<XmlFileEncodingEnum> EncodingType { get; set; }
 
-        [DisplayName("XML Document Loaded")]
-        [Description("Returns true if the XML file was successfully read and parsed, false otherwise.")]
-        public OutArgument<bool> XmlDocument { get; set; }
 
+        [DisplayName("XML Document Loaded")]
+        [Description("Returns the parsed XmlDocument object if the XML file was successfully read and parsed.")]
+        public OutArgument<XmlDocument> XmlDocument { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
             var filePath = FilePath.Get(context);
             var encodingType = EncodingType.Get(context);
 
-            var success = false;
-
             try
             {
-                if (string.IsNullOrEmpty(filePath)) throw new ArgumentException("File path cannot be null or empty.");
+                if (string.IsNullOrEmpty(filePath))
+                    throw new ArgumentException("File path cannot be null or empty.");
 
-                if (!File.Exists(filePath)) throw new FileNotFoundException($"XML file not found at path: {filePath}");
+                if (!File.Exists(filePath))
+                    throw new FileNotFoundException($"XML file not found at path: {filePath}");
 
                 // Map the enum value to the corresponding encoding
                 var encoding = GetEncoding(encodingType);
@@ -52,8 +52,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
                 var xmlDoc = new XmlDocument();
                 xmlDoc.LoadXml(xmlContent);
 
-                success = true;
-                XmlDocument.Set(context, success);
+                // Set the output as the parsed XmlDocument
+                XmlDocument.Set(context, xmlDoc);
+
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "XML file read and parsed successfully.");
             }

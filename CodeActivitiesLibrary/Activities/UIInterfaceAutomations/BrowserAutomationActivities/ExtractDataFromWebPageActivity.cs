@@ -81,11 +81,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(60)]
         public InArgument<int> Timeout { get; set; }
 
-        [DisplayName("Excel Instance Output")]
-        [Description("Returns the Excel instance if storing data in Excel.")]
-        public OutArgument<string> ExcelInstanceOutput { get; set; }
-
-
         [DisplayName("Data From Web Page Output")]
         [Description("Returns the extracted data as a single value, list, data row, or data table.")]
         public OutArgument<object> DataFromWebPageOutput { get; set; }
@@ -95,7 +90,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            var status = string.Empty;
             object outputData = null;
 
             try
@@ -104,99 +99,111 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                 var uiElement = ValueToFind.Get(context);
                 var findType = FindType.Get(context);
                 var extractionMode = ExtractionMode.Get(context);
-                var usePaging = UsePaging.Get(context);
-                var getAllPages = GetAllWebPages.Get(context);
-                var maxPages = MaxWebPagesToProcess.Get(context);
-                var pageCssSelector = PageCssSelector.Get(context);
-                var sendPhysicalClick = SendPhysicalClickForNextPage.Get(context);
-                var processData = ProcessDataUponExtraction.Get(context);
                 var timeout = Timeout.Get(context);
 
                 if (driver == null)
-                    throw new ArgumentException("Web browser instance cannot be null.");
+                    throw new ArgumentNullException(nameof(driver), "Web browser instance cannot be null.");
 
                 if (string.IsNullOrWhiteSpace(uiElement))
-                    throw new ArgumentException("UI Element must be specified.");
+                    throw new ArgumentException("Selector value cannot be empty.");
 
-                // Locate the target element
                 var by = BrowserAutomationHelper.GetWebElementLocator(findType, uiElement);
                 if (by == null)
-                    throw new ArgumentException("Invalid find type provided.");
+                    throw new ArgumentException("Invalid selector type.");
 
                 var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeout));
-                var element = wait.Until(drv => drv.FindElement(by));
+                wait.Until(drv => drv.FindElement(by));
 
                 switch (extractionMode)
                 {
                     case ExtractionModeEnum.SingleValue:
-                        outputData = element.Text.Trim();
-                        status = $"Extracted single value: '{outputData}'";
+                        var singleElement = driver.FindElement(by);
+                        outputData = singleElement.Text.Trim();
+                        status = $"Extracted single value: {outputData}";
                         break;
 
                     case ExtractionModeEnum.List:
+                        wait.Until(drv => drv.FindElements(by).Count > 0);
                         var elements = driver.FindElements(by);
-                        var dataList = elements.Select(el => el.Text).ToList();
-
-                        outputData = dataList;
-                        status = $"Extracted list with {dataList.Count} items.";
+                        var list = elements
+                            .Select(e => e.Text.Trim())
+                            .Where(text => !string.IsNullOrWhiteSpace(text))
+                            .ToList();
+                        outputData = list;
+                        status = $"Extracted list with {list.Count} items.";
                         break;
 
                     case ExtractionModeEnum.Table:
-                        var dataTable = ExtractTable(element);
-                        outputData = dataTable;
-                        status = $"Extracted table with {dataTable.Rows.Count} rows.";
+                        var tableElement = driver.FindElement(by);
+                        outputData = ExtractTable(tableElement);
+                        status = "Extracted table data.";
                         break;
 
                     case ExtractionModeEnum.EntireHtmlTable:
-                        outputData = element.GetAttribute("outerHTML");
-                        status = "Extracted entire HTML table structure.";
+                        var htmlElement = driver.FindElement(by);
+                        outputData = htmlElement?.GetAttribute("outerHTML") ?? string.Empty;
+                        status = "Extracted full HTML table.";
                         break;
 
                     case ExtractionModeEnum.HandpickedValues:
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(extractionMode), "Unsupported extraction mode.");
-                }
+                        throw new NotSupportedException("HandpickedValues extraction mode is not implemented.");
 
+                    default:
+                        throw new NotSupportedException("Unsupported extraction mode.");
+                } 
                 DataFromWebPageOutput.Set(context, outputData);
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
+
             }
             catch (Exception ex)
             {
-                status = $"Error extracting data: {ex.Message}";
-                outputData = null;
-                ExcelInstanceOutput.Set(context, false);
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error: {ex.Message}");
+                DataFromWebPageOutput.Set(context, null);
             }
         }
 
-        private static DataTable ExtractTable(IWebElement tableElement)
+        private DataTable ExtractTable(IWebElement tableElement)
         {
             var table = new DataTable();
             var rows = tableElement.FindElements(By.TagName("tr"));
 
-            if (rows.Count == 0) return table;
+            if (rows.Count == 0)
+                return table;
 
-            // Process headers
+            // Headers
             var headers = rows[0].FindElements(By.TagName("th"));
-            foreach (var header in headers) table.Columns.Add(header.Text.Trim());
-
-            // Process rows
-            for (var i = 1; i < rows.Count; i++)
+            if (headers.Count > 0)
             {
-                var cells = rows[i].FindElements(By.TagName("td"));
-                if (cells.Count == 0) continue;
+                foreach (var th in headers)
+                    table.Columns.Add(th.Text.Trim());
+            }
+            else
+            {
+                int columns = rows[0].FindElements(By.TagName("td")).Count;
+                for (int i = 0; i < columns; i++)
+                    table.Columns.Add($"Column{i + 1}");
+            }
 
-                var row = table.NewRow();
-                for (var j = 0; j < Math.Min(cells.Count, table.Columns.Count); j++) row[j] = cells[j].Text.Trim();
+            // Data rows
+            foreach (var row in rows.Skip(1))
+            {
+                var cells = row.FindElements(By.TagName("td"));
+                if (cells.Count == 0)
+                    continue;
 
-                table.Rows.Add(row);
+                var dataRow = table.NewRow();
+                for (int i = 0; i < cells.Count && i < table.Columns.Count; i++)
+                    dataRow[i] = cells[i].Text.Trim();
+
+                table.Rows.Add(dataRow);
             }
 
             return table;
         }
     }
+
 
     public enum ExtractionModeEnum
     {

@@ -53,9 +53,8 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                     if (string.IsNullOrEmpty(format))
                         throw new ArgumentException("Format String cannot be empty when using custom format.");
 
-                    if (!DateTime.TryParseExact(textToConvert, format, CultureInfo.InvariantCulture,
-                            DateTimeStyles.None, out result))
-                        throw new FormatException($"Cannot parse '{textToConvert}' with format '{format}'.");
+                    result = DateTime.ParseExact(textToConvert, format, CultureInfo.InvariantCulture,
+                        DateTimeStyles.None);
                 }
                 else
                 {
@@ -74,8 +73,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error converting text to DateTime: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
     }
 }

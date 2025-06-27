@@ -1,65 +1,234 @@
-﻿using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Linq;
+using CodeActivitiesLibrary.Extensions;
 using UglyToad.PdfPig;
+using UglyToad.PdfPig.Content;
 
 namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
-    [DisplayName("Extract Text from PDF (PDFPig)")]
-    [Description("Extracts text from a PDF file using PdfPig library.")]
+    [DisplayName("Extract Text from PDF")]
+    [Description("Extracts text from a PDF file.")]
     public class ExtractTextFromPdfActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [Category("Input")]
+        [DisplayName("PDF File")]
         [Description("The path to the source PDF file.")]
         public InArgument<string> SourcePdfPath { get; set; }
 
-        [Category("Output")]
+        [RequiredArgument]
+        [DisplayName("Page Selection Mode")]
+        [Description("Select how to choose pages for extraction: All, Single, or Range.")]
+        public InArgument<PdfPageSelectionModeEnum> PageSelection { get; set; }
+
+        [RequiredArgument]
+        [DisplayName("Extraction Type")]
+        [Description("Select the type of extraction: Text, Images, or Both.")]
+        public InArgument<PdfExtractionTypeEnum> ExtractionType { get; set; }
+
+        [DisplayName("Page Number (for Single)")]
+        [Description("The specific page number to extract from. Only used if Page Selection is set to Single.")]
+        [RenderIfCondition(nameof(PageSelection), PdfPageSelectionModeEnum.Single)]
+        public InArgument<int> PageNumber { get; set; }
+
+        [DisplayName("From Page Number (for Range)")]
+        [Description(
+            "The starting page number for extraction. Only used if Page Selection is set to Range.")]
+        [RenderIfCondition(nameof(PageSelection), PdfPageSelectionModeEnum.Range)]
+        public InArgument<int> FromPageNumber { get; set; }
+
+        [DisplayName("To Page Number (for Range)")]
+        [Description(
+            "The ending page number for extraction. Only used if Page Selection is set to Range.")]
+        [RenderIfCondition(nameof(PageSelection), PdfPageSelectionModeEnum.Range)]
+        public InArgument<int> ToPageNumber { get; set; }
+
+        [DisplayName("Password")]
+        [Description("Optional password for encrypted PDF files. Leave empty if not required.")]
+        public InArgument<string> Password { get; set; }
+
+        [DisplayName("Output Folder Path")]
+        [Description("The folder where extracted images will be saved.")]
+        [RenderIfCondition(nameof(ExtractionType), PdfExtractionTypeEnum.Images)]
+        [RenderIfCondition(nameof(ExtractionType), PdfExtractionTypeEnum.Both)]
+
+        public InArgument<string> OutputFolderPath { get; set; }
+
+
         [DisplayName("Extracted Text")]
         [Description("Returns the extracted text from the PDF.")]
+        [RenderIfCondition(nameof(ExtractionType), PdfExtractionTypeEnum.Text)]
+        [RenderIfCondition(nameof(ExtractionType), PdfExtractionTypeEnum.Both)]
         public OutArgument<string> ExtractedText { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
-            var resultText = "";
+            var status = "Operation started.";
+            var resultText = string.Empty;
 
             try
             {
                 var sourcePdfPath = SourcePdfPath.Get(context);
+                var pageSelection = PageSelection.Get(context);
+                var extractionType = ExtractionType.Get(context);
+                var password = Password.Get(context);
+                var outputFolderPath = OutputFolderPath.Get(context);
 
+                // Validate input paths
                 if (!File.Exists(sourcePdfPath))
                     throw new FileNotFoundException("Source PDF file not found.", sourcePdfPath);
 
-                // Open PDF document using PdfPig
-                using (var document = PdfDocument.Open(sourcePdfPath))
+                if (!Directory.Exists(outputFolderPath))
+                    Directory.CreateDirectory(outputFolderPath);
+
+                // Open PDF document
+                PdfDocument document;
+                try
                 {
-                    var textBuilder = new System.Text.StringBuilder();
+                    var parsingOptions = string.IsNullOrEmpty(password)
+                        ? new ParsingOptions()
+                        : new ParsingOptions { Password = password };
 
-                    foreach (var page in document.GetPages())
-                    {
-                        textBuilder.AppendLine(page.Text);
-                    }
-
-                    resultText = textBuilder.ToString();
-                    status = $"Successfully extracted text from '{sourcePdfPath}'.";
-
-
-                    ExtractedText.Set(context, resultText);
-                    IsSuccess.Set(context, true);
-                    StatusMessage.Set(context, status);
+                    document = PdfDocument.Open(sourcePdfPath, parsingOptions);
                 }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Error opening PDF file: {ex.Message}");
+                }
+
+                var totalPages = document.GetPages().Count();
+                var textBuilder = new System.Text.StringBuilder();
+
+                switch (pageSelection)
+                {
+                    case PdfPageSelectionModeEnum.All:
+                        foreach (var page in document.GetPages())
+                        {
+                            if (extractionType == PdfExtractionTypeEnum.Text ||
+                                extractionType == PdfExtractionTypeEnum.Both)
+                                textBuilder.AppendLine(page.Text);
+
+                            if (extractionType == PdfExtractionTypeEnum.Images ||
+                                extractionType == PdfExtractionTypeEnum.Both)
+                                ExtractImages(page, outputFolderPath);
+                        }
+
+                        status += $"\nProcessed all pages.";
+                        break;
+
+                    case PdfPageSelectionModeEnum.Single:
+                        var pageNumber = PageNumber.Get(context);
+                        if (pageNumber < 1 || pageNumber > totalPages)
+                            throw new ArgumentException(
+                                $"Invalid page number: {pageNumber}. Must be between 1 and {totalPages}.");
+
+                        var singlePage = document.GetPage(pageNumber);
+                        if (extractionType == PdfExtractionTypeEnum.Text ||
+                            extractionType == PdfExtractionTypeEnum.Both)
+                            textBuilder.AppendLine(singlePage.Text);
+
+                        if (extractionType == PdfExtractionTypeEnum.Images ||
+                            extractionType == PdfExtractionTypeEnum.Both)
+
+                            ExtractImages(singlePage, outputFolderPath);
+
+                        status += $"\nProcessed page {pageNumber}.";
+                        break;
+
+                    case PdfPageSelectionModeEnum.Range:
+                        var fromPageNumber = FromPageNumber.Get(context);
+                        var toPageNumber = ToPageNumber.Get(context);
+
+                        if (fromPageNumber < 1 || fromPageNumber > totalPages)
+                            throw new ArgumentException(
+                                $"Invalid 'From Page Number': {fromPageNumber}. Must be between 1 and {totalPages}.");
+                        if (toPageNumber < 1 || toPageNumber > totalPages)
+                            throw new ArgumentException(
+                                $"Invalid 'To Page Number': {toPageNumber}. Must be between 1 and {totalPages}.");
+                        if (fromPageNumber > toPageNumber)
+                            throw new ArgumentException(
+                                "'From Page Number' must be less than or equal to 'To Page Number'.");
+
+                        for (var i = fromPageNumber; i <= toPageNumber; i++)
+                        {
+                            var page = document.GetPage(i);
+                            if (extractionType == PdfExtractionTypeEnum.Text ||
+                                extractionType == PdfExtractionTypeEnum.Both)
+                                textBuilder.AppendLine(page.Text);
+
+                            if (extractionType == PdfExtractionTypeEnum.Images ||
+                                extractionType == PdfExtractionTypeEnum.Both)
+
+                                ExtractImages(page, outputFolderPath);
+                        }
+
+                        status += $"\nProcessed pages {fromPageNumber} to {toPageNumber}.";
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(pageSelection));
+                }
+
+                resultText = textBuilder.ToString();
+                status = $"Successfully processed '{sourcePdfPath}'.";
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
+                ExtractedText.Set(context, resultText);
             }
             catch (Exception ex)
             {
-                resultText = "";
-                status = $"Error extracting text from PDF: {ex.Message}";
-                ExtractedText.Set(context, resultText);
+                resultText = string.Empty;
+                status = $"Error processing PDF: {ex.Message}";
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
+                ExtractedText.Set(context, resultText);
             }
         }
+
+        private static void ExtractImages(Page page, string outputFolderPath)
+        {
+            foreach (var image in page.GetImages())
+            {
+                var rawBytes = image.RawBytes.ToArray();
+                if (rawBytes == null || rawBytes.Length <= 0) continue;
+                var imageName = $"{Guid.NewGuid()}.png"; // Generate unique filename
+                var imagePath = Path.Combine(outputFolderPath, imageName);
+
+                using (var stream = new MemoryStream(rawBytes))
+                using (var imageStream = new FileStream(imagePath, FileMode.Create, FileAccess.Write))
+                {
+                    stream.CopyTo(imageStream);
+                }
+            }
+        }
+    }
+
+    // Enum for specifying the page selection mode
+    public enum PdfPageSelectionModeEnum
+    {
+        [Display(Name = "All", Description = "Extract text and images from all pages.")]
+        All,
+
+        [Display(Name = "Single", Description = "Extract text and images from a single page.")]
+        Single,
+
+        [Display(Name = "Range", Description = "Extract text and images from a range of pages.")]
+        Range
+    }
+
+    public enum PdfExtractionTypeEnum
+    {
+        [Display(Name = "Text", Description = "Extract only text from the PDF.")]
+        Images,
+
+        [Display(Name = "Images", Description = "Extract only images from the PDF.")]
+        Text,
+
+        [Display(Name = "Both", Description = "Extract both text and images from the PDF.")]
+        Both
     }
 }

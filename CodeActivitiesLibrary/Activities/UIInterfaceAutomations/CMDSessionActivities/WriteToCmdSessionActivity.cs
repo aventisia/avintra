@@ -6,7 +6,6 @@ using System.Diagnostics;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
 {
-
     [DisplayName("Write to CMD Session")]
     [Description("Executes a command on an open CMD session.")]
     public class WriteToCmdSessionActivity : BaseCodeActivity
@@ -30,14 +29,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
         [Description("Specifies whether to send an Enter key after the command.")]
         public InArgument<bool> SendEnterAfterCommand { get; set; } = new InArgument<bool>(true);
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
 
         // ----------------------
         // Execution Logic
         // ----------------------
-
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Success";
@@ -46,7 +41,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
             {
                 var cmdSession = CmdSession.Get(context);
                 var command = Command.Get(context);
-                var sendEnterAfterCommand = SendEnterAfterCommand.Get(context);
+                var sendEnter = SendEnterAfterCommand.Get(context);
 
                 if (cmdSession == null)
                     throw new ArgumentException("CMD session cannot be null.");
@@ -57,34 +52,40 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
                 // Ensure the process has started and is running
                 if (!cmdSession.HasExited)
                 {
-                    // Write the command to the standard input stream
-                    cmdSession.StandardInput.WriteLine(command);
+                    // Ensure we can write to standard input
+                    if (!cmdSession.StartInfo.RedirectStandardInput)
+                        throw new InvalidOperationException(
+                            "CMD session was not started with RedirectStandardInput = true.");
 
-                    // Optionally send Enter key (\r\n)
-                    if (sendEnterAfterCommand)
+                    // Write the command
+                    if (sendEnter)
                     {
-                        cmdSession.StandardInput.WriteLine();
+                        cmdSession.StandardInput.WriteLine(command);
+                    }
+                    else
+                    {
+                        cmdSession.StandardInput.Write(command + "\r\n");
                     }
 
-                    Console.WriteLine($"Command executed: {command}");
+                    // Optional: flush to ensure data is sent immediately
+                    cmdSession.StandardInput.Flush();
+
+                    Console.WriteLine($"Command written to CMD: {command}");
+                    status += $": '{command}'";
                 }
                 else
                 {
                     throw new InvalidOperationException("CMD session has already exited.");
                 }
 
-                status += $" Successfully wrote command to CMD session.";
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
-                status = $"Error writing to CMD session: {ex.Message}";
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error writing to CMD session: {ex.Message}");
             }
-
         }
     }
-
 }

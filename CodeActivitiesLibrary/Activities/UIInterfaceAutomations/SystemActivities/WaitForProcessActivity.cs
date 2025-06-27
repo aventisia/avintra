@@ -43,14 +43,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
         public InArgument<int> Duration { get; set; }
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-        [DisplayName("Status Message")]
-        [Description("Provides information about the execution outcome.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-        // ----------------------
         // Execution Logic
         // ----------------------
 
@@ -87,6 +79,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
             }
         }
     }
+
     public enum WaitForProcessEnum
     {
         [Display(Name = "Start", Description = "Waits for the process to start.")]

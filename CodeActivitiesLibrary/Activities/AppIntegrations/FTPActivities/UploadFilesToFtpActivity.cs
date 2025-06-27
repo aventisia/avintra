@@ -54,16 +54,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         // Output Arguments
         // ----------------------
 
-
-        [DisplayName("Status Message")]
-        [Description("Returns status information about the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-
         [DisplayName("Uploaded Files Count")]
         [Description("Returns the number of files successfully uploaded.")]
         public OutArgument<int> UploadedFilesCount { get; set; }
-
 
         [DisplayName("Skipped Files")]
         [Description("Returns the list of files that were skipped during upload.")]

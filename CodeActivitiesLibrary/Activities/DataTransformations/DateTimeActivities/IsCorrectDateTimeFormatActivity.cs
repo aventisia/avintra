@@ -26,34 +26,38 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var input = InputDateTime.Get(context);
-            var format = DateTimeFormat.Get(context);
-            var isValid = false;
             try
             {
+                // Get input arguments
+                var input = InputDateTime.Get(context);
+                var format = DateTimeFormat.Get(context);
+
+                // Validate inputs
                 if (string.IsNullOrWhiteSpace(input))
                     throw new ArgumentException("InputDateTime cannot be null or empty.", nameof(InputDateTime));
                 if (string.IsNullOrWhiteSpace(format))
                     throw new ArgumentException("DateTimeFormat cannot be null or empty.", nameof(DateTimeFormat));
-                var formats = new[] { format };
-                DateTime outputDate;
-                isValid = DateTime.TryParseExact(
+
+                // Trim any extra whitespace from the input
+                input = input.Trim();
+
+                // Parse the datetime string
+                bool isValid = DateTime.TryParseExact(
                     input,
-                    formats,
+                    new[] { format }, 
                     DateTimeFormatInfo.InvariantInfo,
                     DateTimeStyles.None,
-                    out outputDate
+                    out DateTime parsedDate
                 );
                 IsValid.Set(context, isValid);
-                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, $"Date/time format is valid: {isValid}");
-
+                IsSuccess.Set(context, true);
             }
             catch (Exception ex)
-            {
-                IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error during format validation: {ex.Message}");
+            {              
                 IsValid.Set(context, false);
+                StatusMessage.Set(context, $"Error during format validation: {ex.Message}");
+                IsSuccess.Set(context, false);
             }
         }
     }

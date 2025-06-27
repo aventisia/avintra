@@ -53,22 +53,41 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
             try
             {
                 var startTime = DateTime.Now;
+                bool success = false;
 
                 while (true)
                 {
-                    var fileExists = File.Exists(filePath);
-
-                    if ((mode == WaitForFileModeEnum.Create && fileExists) ||
-                        (mode == WaitForFileModeEnum.Delete && !fileExists))
+                    try
                     {
-                        status = $"File '{filePath}' {(mode == WaitForFileModeEnum.Create ? "created" : "deleted")}.";
-                        break;
+                        if (mode == WaitForFileModeEnum.Create)
+                        {
+                            if (!File.Exists(filePath))
+                                File.Create(filePath).Close(); // Create empty file
+                            success = File.Exists(filePath);
+                        }
+                        else if (mode == WaitForFileModeEnum.Delete)
+                        {
+                            if (File.Exists(filePath))
+                                File.Delete(filePath);
+                            success = !File.Exists(filePath);
+                        }
+
+                        if (success)
+                        {
+                            status = $"File '{filePath}' successfully {(mode == WaitForFileModeEnum.Create ? "created" : "deleted")}.";
+                            break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        status = $"Error during file operation: {ex.Message}";
+                        if (!failWithTimeoutError)
+                            break;
                     }
 
                     if (failWithTimeoutError && (DateTime.Now - startTime).TotalSeconds >= duration)
                     {
-                        status =
-                            $"Timeout: File '{filePath}' was not {(mode == WaitForFileModeEnum.Create ? "created" : "deleted")} within {duration} seconds.";
+                        status = $"Timeout: File '{filePath}' was not {(mode == WaitForFileModeEnum.Create ? "created" : "deleted")} within {duration} seconds.";
                         throw new TimeoutException(status);
                     }
 
@@ -80,6 +99,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
             {
                 status = $"Error waiting for file: {ex.Message}";
                 StatusMessage.Set(context, status);
+                throw;
             }
         }
     }

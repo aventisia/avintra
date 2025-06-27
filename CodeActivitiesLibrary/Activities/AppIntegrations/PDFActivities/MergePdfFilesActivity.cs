@@ -10,8 +10,8 @@ using UglyToad.PdfPig.Writer;
 
 namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
-    [DisplayName("Merge PDF Files")]
-    [Description("Merges multiple PDF files into a new one.")]
+    //[DisplayName("Merge PDF Files")]
+    //[Description("Merges multiple PDF files into a new one.")]
     public class MergePdfFilesActivity : BaseCodeActivity
     {
         [RequiredArgument]

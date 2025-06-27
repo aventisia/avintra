@@ -1,36 +1,36 @@
-﻿using CodeActivitiesLibrary.DataTransformations.CryptographyActivities.Enums;
-using CodeActivitiesLibrary.Extensions;
-using System;
+﻿using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using CodeActivitiesLibrary.DataTransformations.CryptographyActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 
 namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Encrypt from File with AES")]
-    [Description("Encrypt the contents of a file with AES, using a key and a specified encoding format")]
+    [Description("Encrypts the contents of a file using AES. Supports Base64, Hex encoding for output.")]
     public class EncryptFromFileWithAesActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Input File Path")]
-        [Description("The path to the input file.")]
+        [Description("The path to the input file to be encrypted.")]
         public InArgument<string> InputFilePath { get; set; }
 
         [RequiredArgument]
         [DisplayName("Encryption Key")]
-        [Description("The encryption key.")]
+        [Description("Secret key used for encryption. Short keys will be hashed to 32 bytes (AES-256).")]
         public InArgument<string> Key { get; set; }
 
         [RequiredArgument]
         [DisplayName("Encoding Format")]
-        [Description("The encoding format for the encrypted content.")]
+        [Description("Encoding used for the encrypted content: Base64 or Hex.")]
         public InArgument<EncodingFormatEnum> EncodingFormat { get; set; }
 
         [RequiredArgument]
         [DisplayName("Output File Path")]
-        [Description("The path to the output file.")]
+        [Description("The path where the encrypted file should be saved.")]
         public InArgument<string> OutputFilePath { get; set; }
 
         protected override void Execute(CodeActivityContext context)
@@ -39,34 +39,47 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
             var key = Key.Get(context);
             var encodingFormat = EncodingFormat.Get(context);
             var outputFilePath = OutputFilePath.Get(context);
+
             try
             {
-                // Read the input file
+                // Validate inputs
+                ValidateInputs(inputFilePath, key, outputFilePath);
+
+                // Read input file
                 var content = File.ReadAllText(inputFilePath);
-                // Encrypt the content using AES
-                var keyBytes = Encoding.UTF8.GetBytes(key);
-                var encryptedBytes = Encrypt(content, keyBytes);
-                // Convert the encrypted bytes based on the encoding format
-                var encryptedContent = "";
+
+                // Derive valid key from input
+                var keyBytes = GetValidKeyBytes(key);
+
+                // Encrypt content
+                var encryptedData = Encrypt(content, keyBytes); // Returns byte[] including IV
+
+                // Convert based on encoding format
+                string encryptedContent;
                 switch (encodingFormat)
                 {
                     case EncodingFormatEnum.Base64:
-                        encryptedContent = Convert.ToBase64String(encryptedBytes);
+                        encryptedContent = Convert.ToBase64String(encryptedData);
                         break;
                     case EncodingFormatEnum.Hex:
-                        encryptedContent = ByteArrayToHexString(encryptedBytes);
+                        encryptedContent = ByteArrayToHexString(encryptedData);
                         break;
                     case EncodingFormatEnum.Utf8:
-                        encryptedContent =
-                            Convert.ToBase64String(
-                                encryptedBytes); // UTF8 isn't typically used for encrypted data; Base64 is safer
+                        encryptedContent = Encoding.UTF8.GetString(encryptedData);
                         break;
+                    default:
+                        throw new ArgumentException($"Unsupported encoding format: {encodingFormat}");
                 }
 
-                // Write the encrypted content to the output file
+                // Ensure output folder exists
+                var outputDir = Path.GetDirectoryName(outputFilePath);
+                if (!string.IsNullOrEmpty(outputDir) && !Directory.Exists(outputDir))
+                    Directory.CreateDirectory(outputDir);
+
+                // Write to output file
                 File.WriteAllText(outputFilePath, encryptedContent);
-                // Set output success
-                StatusMessage.Set(context, "File encrypted successfully.");
+
+                StatusMessage.Set(context, $"File successfully encrypted and saved at '{outputFilePath}'.");
                 IsSuccess.Set(context, true);
             }
             catch (Exception ex)
@@ -76,14 +89,44 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
             }
         }
 
-        private byte[] Encrypt(string content, byte[] key)
+        private static void ValidateInputs(string inputPath, string key, string outputPath)
+        {
+            if (!File.Exists(inputPath))
+                throw new FileNotFoundException("Input file not found.", inputPath);
+
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentException("Key cannot be null or empty.");
+
+            if (string.IsNullOrWhiteSpace(outputPath))
+                throw new ArgumentException("Output file path cannot be null or empty.");
+        }
+
+        private static byte[] GetValidKeyBytes(string key)
+        {
+            var keyBytes = Encoding.UTF8.GetBytes(key);
+
+            // If already valid length (AES supports 16, 24, or 32 bytes), return as-is
+            if (keyBytes.Length == 16 || keyBytes.Length == 24 || keyBytes.Length == 32)
+                return keyBytes;
+
+            // Else hash it to 32 bytes (AES-256)
+            using (var sha256 = SHA256.Create())
+            {
+                return sha256.ComputeHash(keyBytes);
+            }
+        }
+
+        private static byte[] Encrypt(string content, byte[] keyBytes)
         {
             using (var aes = Aes.Create())
             {
-                aes.Key = key;
-                aes.GenerateIV(); // Generate a random IV
+                aes.Key = keyBytes;
+                aes.GenerateIV(); // Generate random IV
                 var iv = aes.IV;
-                var contentBytes = Encoding.UTF8.GetBytes(content);
+
+                aes.Mode = CipherMode.CBC;
+                aes.Padding = PaddingMode.PKCS7;
+
                 using (var encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
                 using (var msEncrypt = new MemoryStream())
                 {
@@ -94,20 +137,23 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
                     }
 
                     var encryptedBytes = msEncrypt.ToArray();
-                    var finalEncryptedBytes = new byte[iv.Length + encryptedBytes.Length];
-                    Array.Copy(iv, 0, finalEncryptedBytes, 0, iv.Length);
-                    Array.Copy(encryptedBytes, 0, finalEncryptedBytes, iv.Length, encryptedBytes.Length);
-                    return finalEncryptedBytes;
+
+                    // Combine IV + Encrypted Content
+                    var result = new byte[iv.Length + encryptedBytes.Length];
+                    Buffer.BlockCopy(iv, 0, result, 0, iv.Length);
+                    Buffer.BlockCopy(encryptedBytes, 0, result, iv.Length, encryptedBytes.Length);
+
+                    return result;
                 }
             }
         }
 
         private string ByteArrayToHexString(byte[] bytes)
         {
-            var sb = new StringBuilder();
+            var sb = new StringBuilder(bytes.Length * 2);
             foreach (var b in bytes)
             {
-                sb.Append(b.ToString("x2"));
+                sb.AppendFormat("{0:x2}", b);
             }
 
             return sb.ToString();

@@ -23,11 +23,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
         [DefaultValue(ScopeEnum.User)]
         public InArgument<ScopeEnum> Type { get; set; }
 
-        // Output: Status Message
-        [DisplayName("Status Message")]
-        [Description("The status message of the operation.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
         protected override void Execute(CodeActivityContext context)
         {
             // Retrieve input values

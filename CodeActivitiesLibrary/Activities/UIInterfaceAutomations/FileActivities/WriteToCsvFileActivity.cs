@@ -91,7 +91,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
                     switch (predefSep)
                     {
                         case CsvPredefinedSeparatorEnum.SystemDefault:
-                            separator = ","; 
+                            separator = ",";
                             break;
                         case CsvPredefinedSeparatorEnum.Comma:
                             separator = ",";
@@ -107,11 +107,14 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
                     }
                 }
 
-                var mode = ifFileExists == FileExistOptionEnum.Append
+                var fileMode = ifFileExists == FileExistOptionEnum.Append
                     ? FileMode.Append
                     : FileMode.Create;
 
-                using (var writer = new StreamWriter(filePath, false, GetEncoding(encodingEnum)))
+                var encoding = GetEncoding(encodingEnum);
+
+                using (var fileStream = new FileStream(filePath, fileMode, FileAccess.Write, FileShare.None))
+                using (var writer = new StreamWriter(fileStream, encoding))
                 {
                     if (variableToWrite is DataTable dataTable)
                         WriteDataTable(writer, dataTable, separator);
@@ -134,7 +137,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
             }
-
         }
 
         // ----------------------
@@ -143,6 +145,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 
         private static void WriteDataTable(StreamWriter writer, DataTable dataTable, string separator)
         {
+            // Write headers
             for (var i = 0; i < dataTable.Columns.Count; i++)
             {
                 writer.Write(dataTable.Columns[i].ColumnName);
@@ -152,6 +155,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 
             writer.WriteLine();
 
+            // Write rows
             foreach (DataRow row in dataTable.Rows)
             {
                 for (var i = 0; i < dataTable.Columns.Count; i++)
@@ -180,7 +184,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
         private static void WriteEnumerable(StreamWriter writer, System.Collections.IEnumerable enumerable,
             string separator)
         {
-            foreach (var item in enumerable) writer.WriteLine(item?.ToString() ?? "");
+            foreach (var item in enumerable)
+                writer.WriteLine(item?.ToString() ?? "");
         }
 
         private static Encoding GetEncoding(CsvEncodingEnum encoding)

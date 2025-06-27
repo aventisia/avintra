@@ -61,21 +61,31 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
                 // Start CMD process
                 using (var process = new Process())
                 {
-                    process.StartInfo.FileName = "cmd.exe";
-                    process.StartInfo.WorkingDirectory = workingFolder;
+                    var processStartInfo = new ProcessStartInfo
+                    {
+                        FileName = "cmd.exe",
+                        WorkingDirectory = workingFolder,
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    };
+
 
                     // Set encoding if required
                     if (changeCodePage)
                     {
-                        string codePageCommand = GetCodePageCommand(encoding);
+                        var codePageCommand = GetCodePageCommand(encoding);
                         process.StartInfo.Arguments = $"/K chcp {codePageCommand}";
                     }
 
+                    process.StartInfo = processStartInfo;
                     process.Start();
                     process.WaitForExit();
 
                     // Store the CMD session details (e.g., PID or command used)
-                    string cmdSessionDetails = $"CMD Session started in {workingFolder}";
+                    var cmdSessionDetails = $"CMD Session started in {workingFolder}";
                     if (changeCodePage)
                     {
                         cmdSessionDetails += $" with encoding: {GetEncodingDescription(encoding)}";
@@ -157,23 +167,26 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
         {
             [Description("UTF-8 : Unicode (UTF-8)")]
             UTF8,
+
             [Description("UTF-7 : Unicode (UTF-7)")]
             UTF7,
-            [Description("ASCII : US-ASCII")]
-            ASCII,
+            [Description("ASCII : US-ASCII")] ASCII,
+
             [Description("Windows-1252 : Western European (Windows)")]
             Windows1252,
-            [Description("ISO-8859-1 : Latin-1")]
-            ISO8859_1,
+            [Description("ISO-8859-1 : Latin-1")] ISO8859_1,
+
             [Description("x-iscii-as : ISCII Assamese")]
             ISCIIAssamese,
+
             [Description("x-iscii-or : ISCII Oriya")]
             ISCIIOriya,
+
             [Description("x-iscii-ma : ISCII Malayalam")]
             ISCIIMalayalam,
+
             [Description("x-iscii-ka : ISCII Kannada")]
             ISCIIKannada,
-
         }
     }
 }

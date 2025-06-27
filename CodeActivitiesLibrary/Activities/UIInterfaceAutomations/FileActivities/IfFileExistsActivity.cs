@@ -7,7 +7,7 @@ using System.IO;
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("If File Exists")]
-    [Description("Checks if a file exists and marks the beginning of a conditional block of actions.")]
+    [Description("Checks if a file exists or does not exist and marks the beginning of a conditional block.")]
     public class IfFileExistsActivity : Extensions.BaseCodeActivity
     {
         // ----------------------
@@ -25,6 +25,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
         [Description("The full path of the file to check.")]
         public InArgument<string> FilePath { get; set; }
 
+        [DisplayName("Result")]
+        [Description("Indicates whether the file meets the specified condition (exists or doesn't exist).")]
+        public OutArgument<FileExistenceEnum?> Result { get; set; }
+
         // ----------------------
         // Execution Logic
         // ----------------------
@@ -35,36 +39,42 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
                 var condition = Condition.Get(context);
                 var filePath = FilePath.Get(context);
 
+                // Validate inputs
                 if (string.IsNullOrWhiteSpace(filePath))
-                    throw new ArgumentException("File path cannot be empty.");
+                    throw new ArgumentException("File path cannot be empty.", nameof(FilePath));
 
-                var result = File.Exists(filePath);
+                if (filePath.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+                    throw new ArgumentException("File path contains invalid characters.", nameof(FilePath));
+
+                // Check file existence
+                var fileExists = File.Exists(filePath);
+
+                // Determine result based on condition
+                FileExistenceEnum? resultEnum = null;
 
                 switch (condition)
                 {
                     case FileExistenceEnum.Exists:
-                        if (result)
-                            StatusMessage.Set(context, $"File '{filePath}' exists.");
-                        else
-                            StatusMessage.Set(context, $"File '{filePath}' does not exist.");
+                        resultEnum = fileExists ? FileExistenceEnum.Exists : FileExistenceEnum.DoesntExist;
                         break;
 
                     case FileExistenceEnum.DoesntExist:
-                        if (!result)
-                            StatusMessage.Set(context, $"File '{filePath}' does not exist.");
-                        else
-                            StatusMessage.Set(context, $"File '{filePath}' exists.");
+                        resultEnum = !fileExists ? FileExistenceEnum.DoesntExist : FileExistenceEnum.Exists;
                         break;
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(condition));
                 }
+
+                // Set result and status
+                Result.Set(context, resultEnum);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $"File existence check completed for '{filePath}'.");
+                StatusMessage.Set(context, $"File '{filePath}' {(fileExists ? "exists" : "does not exist")}.");
             }
             catch (Exception ex)
             {
                 IsSuccess.Set(context, false);
+                Result.Set(context, null);
                 StatusMessage.Set(context, $"Error checking file existence: {ex.Message}");
             }
         }

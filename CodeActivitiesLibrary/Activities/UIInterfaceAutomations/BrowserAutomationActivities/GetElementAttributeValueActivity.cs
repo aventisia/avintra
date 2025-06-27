@@ -74,15 +74,15 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 
                 if (driver == null)
                     throw new ArgumentException("Web browser instance cannot be null.");
-
                 if (string.IsNullOrWhiteSpace(searchKeywords))
-                    throw new ArgumentException("Search keywords must be specified.");
-
+                    throw new ArgumentException("ValueToFind must be specified.");
                 if (string.IsNullOrWhiteSpace(attributeName))
-                    throw new ArgumentException("Attribute name must be specified.");
+                    throw new ArgumentException("AttributeName must be specified.");
 
-                // Locate the element
                 var by = BrowserAutomationHelper.GetWebElementLocator(findType, searchKeywords);
+                if (by == null)
+                    throw new ArgumentException("Invalid selector or unsupported FindType.");
+
                 IWebElement element = null;
 
                 if (waitForElement && timeoutSeconds > 0)
@@ -96,11 +96,22 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                 }
 
                 if (element == null)
-                    throw new InvalidOperationException($"No element found using '{findType}': '{searchKeywords}'");
+                    throw new InvalidOperationException($"Element not found using '{findType}': '{searchKeywords}'");
 
                 // Retrieve attribute value
                 result = element.GetAttribute(attributeName);
-                status = $"Successfully retrieved attribute '{attributeName}' from element '{searchKeywords}'.";
+
+                if (result == null)
+                {
+                    status = $"Element found, but attribute '{attributeName}' is not present.";
+                    IsSuccess.Set(context, false);
+                }
+                else
+                {
+                    status = $"Successfully retrieved attribute '{attributeName}': {result}";
+                    IsSuccess.Set(context, true);
+                }
+
                 Result.Set(context, result);
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
@@ -108,10 +119,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
             }
             catch (Exception ex)
             {
-                status = $"Error retrieving element attribute value: {ex.Message}";
-                result = null;
+                status = $"Error retrieving attribute: {ex.Message}";
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
+                Result.Set(context, null);
             }
         }
     }

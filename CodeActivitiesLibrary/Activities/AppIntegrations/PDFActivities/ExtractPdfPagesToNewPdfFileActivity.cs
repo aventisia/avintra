@@ -10,8 +10,8 @@ using UglyToad.PdfPig.Writer;
 
 namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
-    [DisplayName("Extract PDF Pages to New File")]
-    [Description("Extracts specific pages from a PDF file and saves them as a new PDF.")]
+    //[DisplayName("Extract PDF Pages to New File")]
+    //[Description("Extracts specific pages from a PDF file and saves them as a new PDF.")]
     public class ExtractPdfPagesToNewPdfFileActivity : BaseCodeActivity
     {
         [RequiredArgument]
