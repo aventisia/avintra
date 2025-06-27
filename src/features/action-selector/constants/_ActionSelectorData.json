@@ -2973,31 +2973,5 @@
         ]
       }
     ]
-  },
-  {
-    "label": "AI Integrations",
-    "description": "AI-powered advanced actions for smarter, dynamic automation",
-    "icon": "IntelligentAutomationIcon",
-    "img": null,
-    "actionCategories": [
-      {
-        "label": "AI Actions",
-        "description": "AI Actions",
-        "icon": null,
-        "img": "/function.png",
-        "listType": "list",
-        "actions": [
-          {
-            "type": "activityNode",
-            "name": "informationExtractor",
-            "label": "Information Extractor",
-            "description": "Extract information out of a pdf file",
-            "docsLink": null,
-            "icon": null,
-            "img": "/function.png"
-          }
-        ]
-      }
-    ]
   }
 ]
