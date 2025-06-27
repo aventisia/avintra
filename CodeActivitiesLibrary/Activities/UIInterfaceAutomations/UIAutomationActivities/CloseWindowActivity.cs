@@ -1,8 +1,8 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using FlaUI.Core.AutomationElements;
 using System;
 using System.Activities;
 using System.ComponentModel;
-using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
@@ -15,40 +15,45 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
         [Description("Select the window you want to close.")]
         public InArgument<AutomationElement> WindowElement { get; set; }
 
-
+        // Output argument to indicate success or failure
+        [DisplayName("Is Window Closed Successfully")]
+        [Description("Indicates whether the window was closed successfully.")]
+        public OutArgument<bool> IsWindowClosed { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
             var windowElement = WindowElement.Get(context);
-            string status = "";
+            string statusMessage = "";
 
             try
             {
                 if (windowElement == null)
                 {
-                    status = "No window was provided to close.";
+                    statusMessage = "No window was provided to close.";
+                    IsWindowClosed.Set(context, false);
                 }
                 else
                 {
-                    var windowPattern = windowElement.GetCurrentPattern(WindowPattern.Pattern) as WindowPattern;
-                    if (windowPattern != null)
+                    var window = windowElement.AsWindow();
+                    if (window != null)
                     {
-                        windowPattern.Close();
-                        status = "The window was closed successfully.";
+                        window.Close();
+                        IsWindowClosed.Set(context, true);
+                        statusMessage = "The window was closed successfully.";
                     }
                     else
                     {
-                        status = "Sorry, this window cannot be closed automatically.";
+                        IsWindowClosed.Set(context, false);
+                        statusMessage = "Sorry, this window cannot be closed automatically.";
                     }
                 }
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, statusMessage);
             }
             catch (Exception ex)
             {
-                status = $"There was a problem closing the window: {ex.Message}";
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"There was a problem closing the window: {ex.Message}");
             }
         }
     }
