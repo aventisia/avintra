@@ -324,6 +324,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("FlowVariablesObject")
                         .HasColumnType("text");
 
+                    b.Property<string>("InputOutputObject")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsArchived")
                         .HasColumnType("boolean");
 
