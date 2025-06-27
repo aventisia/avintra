@@ -14,7 +14,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
     {
         [RequiredArgument]
         [DisplayName("UI Element")]
-        [Description("The UI element identification object which you would like to click.")]
+        [Description("The UI element which you would like to click.")]
         public InArgument<string> IdentificationObjectPath { get; set; }
 
         [DisplayName("Click Type")]
@@ -23,7 +23,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
         public InArgument<ClickTypeEnum> ClickType { get; set; }
 
         [DisplayName("Max Wait Time (seconds)")]
-        [Description("Maximum time to wait for the click action (in seconds).")]
+        [Description("Maximum time to wait to find the UI element (in seconds).")]
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
 

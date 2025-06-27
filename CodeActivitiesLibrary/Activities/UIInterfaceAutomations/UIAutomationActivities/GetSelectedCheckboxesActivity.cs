@@ -14,7 +14,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
     {
         [RequiredArgument]
         [DisplayName("UI Element")]
-        [Description("The UI element identification object which you would like to click.")]
+        [Description("The UI element which you would like to read the selected checkboxes from.")]
         public InArgument<string> IdentificationObjectPath { get; set; }
 
         [DisplayName("Max Wait Time (seconds)")]

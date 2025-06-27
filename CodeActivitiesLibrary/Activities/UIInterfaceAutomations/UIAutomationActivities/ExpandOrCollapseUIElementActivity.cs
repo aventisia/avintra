@@ -13,15 +13,13 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
     {
         [RequiredArgument]
         [DisplayName("UI Element")]
-        [Description("The UI element identification object which you would like to click.")]
+        [Description("The UI element which you would like to expand or collapse.")]
         public InArgument<string> IdentificationObjectPath { get; set; }
-
 
         [DisplayName("Action Type")]
         [Description("Choose whether to expand or collapse the element.")]
         [DefaultValue(ExpandCollapseActionEnum.Expand)]
         public InArgument<ExpandCollapseActionEnum> ActionType { get; set; }
-
 
         [DisplayName("Max Wait Time (seconds)")]
         [Description("Maximum time to wait to find the UI element (in seconds).")]
