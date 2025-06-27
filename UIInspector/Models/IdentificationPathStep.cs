@@ -7,6 +7,7 @@ namespace UIInspector.Models
     {
         private string _name;
         private string _originalName;
+        private NameMatchModeEnum _nameMatchMode;
 
         public string Name
         {
@@ -43,7 +44,18 @@ namespace UIInspector.Models
         public string OriginalName { get; set; }
         public string PathHeading { get; set; }
         public string Index { get; set; }
-        public NameMatchModeEnum NameMatchMode { get; set; }
+        public NameMatchModeEnum NameMatchMode
+        {
+            get => _nameMatchMode;
+            set
+            {
+                if (_nameMatchMode != value)
+                {
+                    _nameMatchMode = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
         public string ClassName { get; set; }
         public string ControlType { get; set; }
         public string FrameworkId { get; set; }
