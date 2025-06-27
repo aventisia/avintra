@@ -1,8 +1,8 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using FlaUI.Core.AutomationElements;
 using System;
 using System.Activities;
 using System.ComponentModel;
-using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
@@ -25,44 +25,50 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
         [Description("Enter the new Y position (in pixels) for the window.")]
         public InArgument<double> YPosition { get; set; }
 
-
+        [DisplayName("Is Window Moved Successfully")]
+        [Description("Indicates whether the window was moved successfully.")]
+        public OutArgument<bool> IsWindowMoved { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
             var windowElement = WindowElement.Get(context);
             var xPosition = XPosition.Get(context);
             var yPosition = YPosition.Get(context);
-            string status = "";
+            string statusMessage = "";
 
             try
             {
                 if (windowElement == null)
                 {
-                    status = "No window was provided to move.";
+                    statusMessage = "No window was provided to move.";
+                    IsWindowMoved.Set(context, false);
+                    IsSuccess.Set(context, false);
                 }
                 else
                 {
-                    var transformPattern = windowElement.GetCurrentPattern(TransformPattern.Pattern) as TransformPattern;
-                    if (transformPattern != null && transformPattern.Current.CanMove)
+                    var transformPattern = windowElement.Patterns.Transform.PatternOrDefault;
+                    if (transformPattern != null && transformPattern.CanMove)
                     {
                         transformPattern.Move(xPosition, yPosition);
-                        status = "Window moved successfully.";
+                        statusMessage = "Window moved successfully.";
+                        IsWindowMoved.Set(context, true);
+                        IsSuccess.Set(context, true);
                     }
                     else
                     {
-                        status = "Sorry, this window cannot be moved automatically.";
+                        statusMessage = "Sorry, this window cannot be moved automatically.";
+                        IsWindowMoved.Set(context, false);
+                        IsSuccess.Set(context, false);
                     }
                 }
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, statusMessage);
             }
             catch (Exception ex)
             {
-                status = $"There was a problem moving the window: {ex.Message}";
+                IsWindowMoved.Set(context, false);
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"There was a problem moving the window: {ex.Message}");
             }
-
         }
     }
 }
