@@ -4,6 +4,7 @@ using FlaUI.UIA3;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Text.Json;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers
 {
@@ -197,6 +198,32 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.He
             }
         }
 
+        public static List<IdentificationObject> ConvertIdentificationObjectPath(string identificationObjectPath)
+        {
+            // If the string is null or empty, return an empty list
+            if (string.IsNullOrEmpty(identificationObjectPath))
+                return new List<IdentificationObject>();
+
+            try
+            {
+                // Try to deserialize as a list
+                var list = JsonSerializer.Deserialize<List<IdentificationObject>>(identificationObjectPath);
+                if (list != null)
+                    return list;
+
+                // If not a list, try to deserialize as a single object
+                var single = JsonSerializer.Deserialize<IdentificationObject>(identificationObjectPath);
+                if (single != null)
+                    return new List<IdentificationObject> { single };
+            }
+            catch
+            {
+                // Optionally log or handle the exception
+            }
+
+            // If deserialization fails, return an empty list
+            return new List<IdentificationObject>();
+        }
         public static System.Windows.Automation.AutomationElement GetElementWithWait(System.Windows.Automation.AutomationElement parentElement, System.Windows.Automation.Condition condition, int maxWaitTime)
         {
             System.Windows.Automation.AutomationElement element = null;
