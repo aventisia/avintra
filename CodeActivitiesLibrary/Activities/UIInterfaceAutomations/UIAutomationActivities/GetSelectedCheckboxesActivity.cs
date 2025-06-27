@@ -1,11 +1,10 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Enums;
 using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
+using FlaUI.Core.Definitions;
 using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
@@ -14,68 +13,60 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
     public class GetSelectedCheckboxesActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("Parent Element")]
-        [Description("The parent UI element or window where the checkbox group is located.")]
-        public InArgument<AutomationElement> ParentElement { get; set; }
+        [DisplayName("UI Element")]
+        [Description("The UI element identification object which you would like to click.")]
+        public InArgument<string> IdentificationObjectPath { get; set; }
 
-        [RequiredArgument]
-        [DisplayName("Property Type")]
-        [Description("How to search for the checkbox group (by Name, AutomationId, ClassName, or ControlType).")]
-        [DefaultValue(PropertyTypeEnum.Name)]
-        public InArgument<PropertyTypeEnum> PropertyType { get; set; }
-
-        [RequiredArgument]
-        [DisplayName("Property Value")]
-        [Description("The value to search for (for example, the group or container's name or ID).")]
-        public InArgument<string> PropertyValue { get; set; }
-
+        [DisplayName("Max Wait Time (seconds)")]
+        [Description("Maximum time to wait for the drop-down list and selected item (in seconds).")]
+        [DefaultValue(5)]
+        public InArgument<int> MaxWaitTime { get; set; } = 5;
 
         [DisplayName("Selected Checkboxes")]
         [Description("Returns the list of selected checkbox names.")]
         public OutArgument<List<string>> SelectedCheckboxes { get; set; }
 
-
-
         protected override void Execute(CodeActivityContext context)
         {
-            var parentElement = ParentElement.Get(context);
-            var propertyType = PropertyType.Get(context);
-            var propertyValue = PropertyValue.Get(context);
+            // Convert IdentificationObjectPath string to list of IdentificationObject
+            var identificationObjectPath = UIAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
 
+            var maxWaitTime = MaxWaitTime.Get(context);
             List<string> selectedCheckboxes = new List<string>();
-            string status = "";
+            string statusMessage = "";
 
             try
             {
-                var groupCondition = UIAutomationElementHelper.CreatePropertyCondition(propertyType, propertyValue);
-                AutomationElement groupElement = UIAutomationElementHelper.GetElementWithWait(parentElement, groupCondition, 5);
+                // Get the automation element for the UI element
+                var groupElement = UIAutomationElementHelper.GetElementByPath(identificationObjectPath, maxWaitTime);
 
                 if (groupElement == null)
                 {
-                    status = "Could not find the checkbox group.";
+                    statusMessage = "Could not find the checkbox group.";
+                    IsSuccess.Set(context, false);
                 }
                 else
                 {
-                    var checkboxes = groupElement.FindAll(TreeScope.Descendants, new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.CheckBox));
-                    foreach (AutomationElement checkbox in checkboxes)
+                    // Find all descendant checkboxes using FlaUI
+                    var checkboxes = groupElement.FindAllDescendants(cf => cf.ByControlType(ControlType.CheckBox));
+                    foreach (var checkbox in checkboxes)
                     {
-                        var togglePattern = checkbox.GetCurrentPattern(TogglePattern.Pattern) as TogglePattern;
-                        if (togglePattern != null && togglePattern.Current.ToggleState == ToggleState.On)
+                        var togglePattern = checkbox.Patterns.Toggle.PatternOrDefault;
+                        if (togglePattern != null && togglePattern.ToggleState.Value == ToggleState.On)
                         {
-                            selectedCheckboxes.Add(checkbox.Current.Name);
+                            selectedCheckboxes.Add(checkbox.Name);
                         }
                     }
-                    status = "Selected checkboxes retrieved successfully.";
+                    statusMessage = "Selected checkboxes retrieved successfully.";
+                    IsSuccess.Set(context, true);
                 }
                 SelectedCheckboxes.Set(context, selectedCheckboxes);
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, statusMessage);
             }
             catch (Exception ex)
             {
-                status = $"Error retrieving selected checkboxes: {ex.Message}";
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error retrieving selected checkboxes: {ex.Message}");
             }
         }
     }
