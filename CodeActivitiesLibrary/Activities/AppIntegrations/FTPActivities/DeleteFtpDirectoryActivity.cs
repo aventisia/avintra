@@ -1,12 +1,11 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using FluentFTP;
 using System;
 using System.Activities;
 using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
-    using FluentFTP;
-
     [DisplayName("Delete FTP Directory")]
     [Description("Deletes a directory from an FTP server.")]
     public class DeleteFtpDirectoryActivity : BaseCodeActivity

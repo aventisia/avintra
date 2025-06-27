@@ -1,13 +1,12 @@
 ﻿using CodeActivitiesLibrary.AppIntegrations.FtpActivities.Helpers;
 using CodeActivitiesLibrary.Extensions;
+using FluentFTP;
 using System;
 using System.Activities;
 using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
-    using FluentFTP;
-
     [DisplayName("Invoke FTP Command")]
     [Description("Invokes the given literal FTP command on the server.")]
     public class InvokeFtpCommandActivity : BaseCodeActivity

@@ -1,4 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using FluentFTP;
 using System;
 using System.Activities;
 using System.Collections.Generic;
@@ -8,8 +9,6 @@ using System.Linq;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
-    using FluentFTP;
-
     [DisplayName("List FTP Directory")]
     [Description("Retrieves subdirectories and files in the current directory of an FTP connection.")]
     public class ListFtpDirectoryActivity : BaseCodeActivity

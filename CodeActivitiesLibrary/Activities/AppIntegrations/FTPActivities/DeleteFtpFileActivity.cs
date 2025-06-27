@@ -1,4 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using FluentFTP;
 using System;
 using System.Activities;
 using System.Collections.Generic;
@@ -6,8 +7,6 @@ using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
-    using FluentFTP;
-
     [DisplayName("Delete FTP File")]
     [Description("Deletes one or more files from an FTP server.")]
     public class DeleteFtpFileActivity : BaseCodeActivity
