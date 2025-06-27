@@ -7,11 +7,11 @@ using System.Threading;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers
 {
-    public class ElementIdentificationObject
+    public class IdentificationObject
     {
         public string Index { get; set; }
         public string Name { get; set; }
-        public NameMatchModeEnum NameMatchType { get; set; } = NameMatchModeEnum.Equals;
+        public NameMatchModeEnum NameMatchMode { get; set; } = NameMatchModeEnum.Equals;
         public string ClassName { get; set; }
         public string ControlType { get; set; }
         public string FrameworkId { get; set; }
@@ -20,7 +20,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.He
 
     public static class UIAutomationElementHelper
     {
-        public static bool IsIdentificationObjectEmpty(ElementIdentificationObject identificationObject)
+        public static bool IsIdentificationObjectEmpty(IdentificationObject identificationObject)
         {
             // Check if all properties of the identification object are null or empty
             return string.IsNullOrEmpty(identificationObject.Index) &&
@@ -63,7 +63,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.He
             }
         }
 
-        public static AutomationElement FindChildElement(AutomationElement parent, ElementIdentificationObject identificationObject)
+        public static AutomationElement FindChildElement(AutomationElement parent, IdentificationObject identificationObject)
         {
             // Return null if parent or identificationObject is null
             if (parent == null || identificationObject == null)
@@ -102,7 +102,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.He
                 if (!string.IsNullOrEmpty(identificationObject.Name))
                 {
                     var trimmedIdentificationName = identificationObject.Name.Trim();
-                    switch (identificationObject.NameMatchType)
+                    switch (identificationObject.NameMatchMode)
                     {
                         case NameMatchModeEnum.Equals:
                             if (name != trimmedIdentificationName)
@@ -136,7 +136,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.He
             return null; // No matching child found
         }
 
-        public static AutomationElement GetElementByPath(List<ElementIdentificationObject> path, int maxWaitTime = 0)
+        public static AutomationElement GetElementByPath(List<IdentificationObject> path, int maxWaitTime = 0)
         {
             // Get the window by using the first identification object in the path
             if (path == null || path.Count == 0)
