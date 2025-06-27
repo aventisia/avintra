@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ElementInstance",
-    "label": "Element Instance",
-    "description": "The AutomationElement instance to click.",
+    "name": "IdentificationObjectPath",
+    "label": "UI Element",
+    "description": "The UI element which you would like to click.",
     "defaultValue": "",
     "required": true
   },
@@ -34,8 +34,20 @@
     "type": "text",
     "name": "MaxWaitTime",
     "label": "Max Wait Time (seconds)",
-    "description": "Maximum time to wait for the click action (in seconds).",
+    "description": "Maximum time to wait to find the UI element (in seconds).",
     "defaultValue": 5,
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "IsClicked",
+    "label": "Button Clicked Successfully",
+    "description": "Indicates whether the UI element was clicked successfully.",
+    "defaultValue": {
+      "value": "IsClicked",
+      "enabled": true
+    },
     "required": false
   }
 ]

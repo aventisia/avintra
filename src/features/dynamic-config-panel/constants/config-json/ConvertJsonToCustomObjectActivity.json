@@ -9,15 +9,6 @@
     "required": true
   },
   {
-    "direction": "Input",
-    "type": "text",
-    "name": "TargetType",
-    "label": "Target Type",
-    "description": "Specifies the type of the custom object to deserialize the JSON into.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "CustomObject",

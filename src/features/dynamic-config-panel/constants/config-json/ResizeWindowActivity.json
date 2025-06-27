@@ -25,5 +25,17 @@
     "description": "Enter the new height for the window (in pixels).",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "IsWindowResized",
+    "label": "Is Window Resized Successfully",
+    "description": "Indicates whether the window was resized successfully.",
+    "defaultValue": {
+      "value": "IsWindowResized",
+      "enabled": true
+    },
+    "required": false
   }
 ]

@@ -13,9 +13,9 @@
     "type": "select",
     "name": "InsertImageTo",
     "label": "Insert Image To",
-    "description": "Specifies where in the document to insert the image.",
-    "defaultValue": "EndOfWordFile",
-    "required": true,
+    "description": "Specifies the location in the document where the image should be inserted.",
+    "defaultValue": "BeginningOfWordFile",
+    "required": false,
     "selectOptions": [
       {
         "label": "Beginning of Word file",
@@ -53,10 +53,10 @@
     "direction": "Input",
     "type": "select",
     "name": "InsertImageFrom",
-    "label": "Image Source",
-    "description": "Specifies whether the image is inserted from a file or clipboard.",
+    "label": "Insert Image From",
+    "description": "Specifies whether the image is from a file or clipboard.",
     "defaultValue": "File",
-    "required": true,
+    "required": false,
     "selectOptions": [
       {
         "label": "File",
@@ -75,26 +75,8 @@
     "type": "text",
     "name": "ImagePath",
     "label": "Image Path",
-    "description": "The file path of the image to insert (if source is File).",
+    "description": "The file path of the image to insert.",
     "defaultValue": "",
     "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "BookmarkName",
-    "label": "Bookmark Name",
-    "description": "The name of the bookmark to use for inserting before/after it.",
-    "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "TextToSearch",
-    "label": "Text to Search",
-    "description": "The text to search for when inserting before or after it.",
-    "defaultValue": "",
-    "required": false
   }
 ]

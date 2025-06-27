@@ -79,12 +79,29 @@
   },
   {
     "direction": "Input",
+    "type": "switch",
+    "name": "StoreData",
+    "label": "Store Data",
+    "description": "If true, stores browser data (e.g., user profiles) in a specified path. If false, uses default browser settings. this usefull when launchin multiple instances of the same browser.",
+    "defaultValue": true,
+    "required": false
+  },
+  {
+    "direction": "Input",
     "type": "text",
     "name": "UserDataStoragePath",
     "label": "User Data Storage Path",
     "description": "Path to store browser data (e.g., user profiles). Required if need for store data somewhere else.",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "StoreData",
+          "equals": true
+        }
+      ]
+    }
   },
   {
     "direction": "Input",

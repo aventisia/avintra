@@ -13,7 +13,7 @@
     "type": "text",
     "name": "ValueToWrite",
     "label": "Value To Write",
-    "description": "The value to write into the specified cell or range.",
+    "description": "The value (text or DataTable) to write into the specified cell or range.",
     "defaultValue": "",
     "required": true
   },

@@ -10,15 +10,6 @@
   },
   {
     "direction": "Input",
-    "type": "text",
-    "name": "UiElement",
-    "label": "UI Element",
-    "description": "The selector used to locate the text field on the page.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
     "type": "select",
     "name": "FindType",
     "label": "Find Type",
@@ -183,6 +174,16 @@
         "label": "Close It / Press a Button",
         "value": "CloseOrPress",
         "description": "Close or press a button on the dialog."
+      },
+      {
+        "label": "Accept Alert",
+        "value": "AcceptAlert",
+        "description": "Accept the alert dialog that appears."
+      },
+      {
+        "label": "Dismiss Alert",
+        "value": "DismissAlert",
+        "description": "Dismiss the alert dialog that appears."
       }
     ]
   },

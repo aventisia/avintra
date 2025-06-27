@@ -7,5 +7,17 @@
     "description": "Select the window you want to focus.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "IsWindowFocused",
+    "label": "Is Window Focused Successfully",
+    "description": "Indicates whether the window was focused successfully.",
+    "defaultValue": {
+      "value": "IsWindowFocused",
+      "enabled": true
+    },
+    "required": false
   }
 ]

@@ -62,5 +62,17 @@
         }
       ]
     }
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ModifiedDataTable",
+    "label": "Modified Data Table",
+    "description": "Returns the updated data table after the column is deleted.",
+    "defaultValue": {
+      "value": "ModifiedDataTable",
+      "enabled": true
+    },
+    "required": false
   }
 ]

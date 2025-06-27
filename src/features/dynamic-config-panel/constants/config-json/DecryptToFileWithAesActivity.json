@@ -4,7 +4,7 @@
     "type": "text",
     "name": "EncryptedFilePath",
     "label": "Encrypted File Path",
-    "description": "The path to the encrypted file.",
+    "description": "The path to the file containing the encrypted data.",
     "defaultValue": "",
     "required": true
   },
@@ -12,8 +12,8 @@
     "direction": "Input",
     "type": "text",
     "name": "Key",
-    "label": "Key",
-    "description": "The decryption key.",
+    "label": "Decryption Key",
+    "description": "Secret key used for decryption. Short keys will be hashed to 32 bytes (AES-256).",
     "defaultValue": "",
     "required": true
   },
@@ -22,7 +22,7 @@
     "type": "select",
     "name": "EncodingFormat",
     "label": "Encoding Format",
-    "description": "The encoding format of the encrypted content.",
+    "description": "Encoding used for the encrypted content: Base64, Hex, or UTF8.",
     "defaultValue": "",
     "required": true,
     "selectOptions": [
@@ -46,9 +46,18 @@
   {
     "direction": "Input",
     "type": "text",
+    "name": "Iv",
+    "label": "Initialization Vector (IV)",
+    "description": "16-character IV used during encryption. Must match the one used during encryption.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
     "name": "OutputFilePath",
     "label": "Output File Path",
-    "description": "The path to the output file.",
+    "description": "The path where the decrypted file should be saved.",
     "defaultValue": "",
     "required": true
   }

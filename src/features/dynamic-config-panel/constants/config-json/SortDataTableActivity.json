@@ -36,7 +36,15 @@
     "label": "Column Name",
     "description": "The name of the column to sort by (used when \u0027Specify Column With\u0027 is set to \u0027Name\u0027).",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SpecifyColumnWith",
+          "equals": "Name"
+        }
+      ]
+    }
   },
   {
     "direction": "Input",
@@ -45,7 +53,15 @@
     "label": "Column Index",
     "description": "The index of the column to sort by (used when \u0027Specify Column With\u0027 is set to \u0027Index\u0027).",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SpecifyColumnWith",
+          "equals": "Index"
+        }
+      ]
+    }
   },
   {
     "direction": "Input",

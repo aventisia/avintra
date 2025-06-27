@@ -1,12 +1,24 @@
 [
   {
     "direction": "Input",
-    "type": "text",
+    "type": "select",
     "name": "LaunchMode",
     "label": "Launch Mode",
     "description": "Select how to launch Word: \u0027Blank Document\u0027 or \u0027Open Existing Document\u0027.",
-    "defaultValue": "Blank Document",
-    "required": false
+    "defaultValue": "BlankDocument",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Blank Document",
+        "value": "BlankDocument",
+        "description": "Launches Excel with a blank document."
+      },
+      {
+        "label": "Open Existing Document",
+        "value": "OpenExistingDocument",
+        "description": "Launches Excel and opens the specified document."
+      }
+    ]
   },
   {
     "direction": "Input",

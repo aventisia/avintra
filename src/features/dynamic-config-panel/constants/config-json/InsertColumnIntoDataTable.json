@@ -52,7 +52,7 @@
     "type": "text",
     "name": "ColumnIndex",
     "label": "Column Index",
-    "description": "The zero-based index at which to insert the column (required if \u0027Insert Location\u0027 is \u0027Before Column Index\u0027).",
+    "description": "The zero-based index at which to insert the column (used if \u0027Insert Location\u0027 is \u0027Before Column Index\u0027).",
     "defaultValue": "",
     "required": false,
     "renderIf": {

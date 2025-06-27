@@ -230,18 +230,6 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "ExcelInstanceOutput",
-    "label": "Excel Instance Output",
-    "description": "Returns the Excel instance if storing data in Excel.",
-    "defaultValue": {
-      "value": "ExcelInstanceOutput",
-      "enabled": true
-    },
-    "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
     "name": "DataFromWebPageOutput",
     "label": "Data From Web Page Output",
     "description": "Returns the extracted data as a single value, list, data row, or data table.",

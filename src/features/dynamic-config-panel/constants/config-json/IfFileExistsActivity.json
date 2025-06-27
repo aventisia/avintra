@@ -28,5 +28,17 @@
     "description": "The full path of the file to check.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "Indicates whether the file meets the specified condition (exists or doesn\u0027t exist).",
+    "defaultValue": {
+      "value": "Result",
+      "enabled": true
+    },
+    "required": false
   }
 ]

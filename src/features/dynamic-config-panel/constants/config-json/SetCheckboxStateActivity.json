@@ -18,9 +18,19 @@
     "required": true,
     "selectOptions": [
       {
+        "label": "Name",
+        "value": "Name",
+        "description": "Find element by its visible name."
+      },
+      {
         "label": "Class Name",
         "value": "ClassName",
         "description": "Find element by its class name."
+      },
+      {
+        "label": "Control Type",
+        "value": "ControlType",
+        "description": "Find element by its control type (e.g., button, textbox)."
       },
       {
         "label": "ID",
@@ -28,14 +38,9 @@
         "description": "Find element by its automation ID."
       },
       {
-        "label": "Name",
-        "value": "Name",
-        "description": "Find element by its visible name."
-      },
-      {
-        "label": "Control Type",
-        "value": "ControlType",
-        "description": "Find element by its control type (e.g., button, textbox)."
+        "label": "Framework ID",
+        "value": "FrameworkId",
+        "description": "Find element by its framework ID (e.g., WPF, WinForms)."
       }
     ]
   },
