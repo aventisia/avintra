@@ -33,4 +33,8 @@ public class FlowSilentUpdateDto
     /// This property contains a JSON string that includes the name, value, and datatype of each variable.
     /// </summary>
     public string? FlowVariablesObject { get; set; }
+
+    /// <summary>
+    /// Gets or sets the InputOutputObject, which is a JSON string that defines the input and output data for the flow.
+    public string? InputOutputObject { get; set; }
 }

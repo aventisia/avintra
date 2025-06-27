@@ -37,6 +37,11 @@ public class LoadFlowDto
     public string? FlowVariablesObject { get; set; }
 
     /// <summary>
+    /// Gets or sets the InputOutputObject, which is a JSON string that defines the input and output data for the flow.
+    /// </summary>
+    public string? InputOutputObject { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the version is in locked state.
     /// </summary>
     public bool IsLocked { get; set; }

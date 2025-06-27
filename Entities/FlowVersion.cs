@@ -39,6 +39,11 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     public string? FlowVariablesObject { get; set; }
 
     /// <summary>
+    /// Gets or sets the InputOutputObject, which is a JSON string that defines the input and output data for the flow.
+    /// </summary>
+    public string? InputOutputObject { get; set; }
+
+    /// <summary>
     /// Gets or sets the ID of the flow to which the flow version belongs.
     /// </summary>
     public required Guid FlowId { get; set; }
