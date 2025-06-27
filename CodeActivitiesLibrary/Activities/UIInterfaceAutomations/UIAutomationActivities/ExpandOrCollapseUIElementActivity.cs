@@ -1,12 +1,9 @@
 using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Enums;
 using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Threading;
-using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
@@ -15,21 +12,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
     public class ExpandOrCollapseUIElementActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("Parent Element")]
-        [Description("The parent UI element under which to search for the target element.")]
-        public InArgument<AutomationElement> ParentElement { get; set; }
-
-        [RequiredArgument]
-        [DisplayName("Property Type")]
-        [Description("The property type to search by (e.g., Name, AutomationId, ClassName, ControlType).")]
-        [DefaultValue(PropertyTypeEnum.Name)]
-        public InArgument<PropertyTypeEnum> PropertyType { get; set; }
-
-        [RequiredArgument]
-        [DisplayName("Property Value")]
-        [Description("The value of the property to match for the target element.")]
-        [DefaultValue("")]
-        public InArgument<string> PropertyValue { get; set; }
+        [DisplayName("UI Element")]
+        [Description("The UI element identification object which you would like to click.")]
+        public InArgument<string> IdentificationObjectPath { get; set; }
 
 
         [DisplayName("Action Type")]
@@ -43,7 +28,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
 
-
         [DisplayName("Was Successful")]
         [Description("True if the element was expanded or collapsed successfully, otherwise false.")]
         [DefaultValue(false)]
@@ -51,70 +35,56 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var parentElement = ParentElement.Get(context);
-            var propertyType = PropertyType.Get(context);
-            var propertyValue = PropertyValue.Get(context);
+            // Convert IdentificationObjectPath string to list of IdentificationObject
+            var identificationObjectPath = UIAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
             var actionType = ActionType.Get(context);
             var maxWaitTime = MaxWaitTime.Get(context);
 
             bool result = false;
-            string status = "";
+            string statusMessage = "";
 
             try
             {
-                for (int i = 0; i <= (maxWaitTime * 5); i++)
+                // Get the automation element for the UI element
+                var elementInstance = UIAutomationElementHelper.GetElementByPath(identificationObjectPath, maxWaitTime);
+                
+                if (elementInstance != null)
                 {
-                    try
+                    var expandCollapsePattern = elementInstance.Patterns.ExpandCollapse.PatternOrDefault;
+                    if (expandCollapsePattern != null)
                     {
-                        var condition = UIAutomationElementHelper.CreatePropertyCondition(propertyType, propertyValue);
-                        var actionableElement = UIAutomationElementHelper.GetElementWithWait(parentElement, condition, 1);
-                        if (actionableElement != null)
+                        if (actionType == ExpandCollapseActionEnum.Expand)
                         {
-                            var expandCollapsePattern = actionableElement.GetCurrentPattern(ExpandCollapsePattern.Pattern) as ExpandCollapsePattern;
-                            if (expandCollapsePattern != null)
-                            {
-                                if (actionType == ExpandCollapseActionEnum.Expand)
-                                {
-                                    expandCollapsePattern.Expand();
-                                    status = "Element expanded successfully.";
-                                }
-                                else
-                                {
-                                    expandCollapsePattern.Collapse();
-                                    status = "Element collapsed successfully.";
-                                }
-                                result = true;
-                            }
-                            else
-                            {
-                                status = "Expand/Collapse pattern not supported on the element.";
-                            }
-                            break;
+                            expandCollapsePattern.Expand();
+                            statusMessage = "Element expanded successfully.";
                         }
                         else
                         {
-                            Thread.Sleep(500);
+                            expandCollapsePattern.Collapse();
+                            statusMessage = "Element collapsed successfully.";
                         }
+                        result = true;
                     }
-                    catch
+                    else
                     {
-                        Thread.Sleep(500);
+                        statusMessage = "Expand/Collapse pattern not supported on the element.";
                     }
                 }
-                if (!result && string.IsNullOrEmpty(status))
+                
+
+                if (!result && string.IsNullOrEmpty(statusMessage))
                 {
-                    status = "Failed to expand or collapse the element within the specified time.";
+                    statusMessage = "Failed to expand or collapse the element within the specified time.";
                 }
 
                 WasSuccessful.Set(context, result);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, statusMessage);
             }
             catch (Exception ex)
             {
-                status = $"Error: {ex.Message}";
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error: {ex.Message}");
             }
         }
     }
