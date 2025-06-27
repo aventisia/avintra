@@ -7,8 +7,8 @@ using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
-    [DisplayName("Find Child Window")]
-    [Description("Finds a child window inside a parent window by its name.")]
+    //[DisplayName("Find Child Window")]
+    //[Description("Finds a child window inside a parent window by its name.")]
     public class GetChildWindowElementActivity : BaseCodeActivity
     {
         [RequiredArgument]

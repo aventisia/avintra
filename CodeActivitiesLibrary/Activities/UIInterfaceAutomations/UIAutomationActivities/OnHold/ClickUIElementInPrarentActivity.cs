@@ -9,8 +9,8 @@ using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
-    [DisplayName("Click UI Element in Parent")]
-    [Description("Finds a UI element by property and clicks or invokes it using UI Automation or mouse click.")]
+    //[DisplayName("Click UI Element in Parent")]
+    //[Description("Finds a UI element by property and clicks or invokes it using UI Automation or mouse click.")]
     public class ClickUIElementInParentActivity : BaseCodeActivity
     {
         [RequiredArgument]

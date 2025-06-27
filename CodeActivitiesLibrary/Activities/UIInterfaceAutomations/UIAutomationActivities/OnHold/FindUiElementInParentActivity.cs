@@ -8,8 +8,8 @@ using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
-    [DisplayName("Find UI element in parent element")]
-    [Description("Finds a specific UI element inside a window or parent element, such as a button or text box, using the property you choose.")]
+    //[DisplayName("Find UI element in parent element")]
+    //[Description("Finds a specific UI element inside a window or parent element, such as a button or text box, using the property you choose.")]
     public class FindUIElementInParentActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -8,8 +8,8 @@ using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
-    [DisplayName("Get Element Collection")]
-    [Description("Finds and returns a collection of UI elements under a parent element using the specified property type and value.")]
+    //[DisplayName("Get Element Collection")]
+    //[Description("Finds and returns a collection of UI elements under a parent element using the specified property type and value.")]
     public class GetElementCollectionActivity : BaseCodeActivity
     {
         [RequiredArgument]

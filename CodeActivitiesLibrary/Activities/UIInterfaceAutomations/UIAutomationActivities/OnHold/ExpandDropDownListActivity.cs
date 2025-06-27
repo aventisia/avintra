@@ -9,8 +9,8 @@ using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
-    [DisplayName("Expand Drop-Down List")]
-    [Description("Expands a drop-down list so you can see all available options.")]
+    //[DisplayName("Expand Drop-Down List")]
+    //[Description("Expands a drop-down list so you can see all available options.")]
     public class ExpandDropDownListActivity : BaseCodeActivity
     {
         [RequiredArgument]

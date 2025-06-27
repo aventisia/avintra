@@ -11,8 +11,8 @@ using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
-    [DisplayName("Click Element from Collection")]
-    [Description("Finds an element in a collection by property and name, then clicks or invokes it using UI Automation or mouse click.")]
+    //[DisplayName("Click Element from Collection")]
+    //[Description("Finds an element in a collection by property and name, then clicks or invokes it using UI Automation or mouse click.")]
     public class ClickUIElementFromCollectionActivity : BaseCodeActivity
     {
         [RequiredArgument]
