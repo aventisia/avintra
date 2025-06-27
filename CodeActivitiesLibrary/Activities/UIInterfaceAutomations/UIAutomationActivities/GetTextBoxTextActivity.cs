@@ -1,93 +1,79 @@
 using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Enums;
 using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
-using System.Threading;
-using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Get Text from Text Box")]
-    [Description("Reads and returns the text from a text box in a window using the property you choose.")]
+    [Description("Reads and returns the text from a text box or editable field in a window using the UI element you provide.")]
     public class GetTextBoxTextActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("Parent Window")]
-        [Description("Select the window or parent element where the text box is located.")]
-        public InArgument<AutomationElement> ParentElement { get; set; }
+        [DisplayName("UI Element")]
+        [Description("The UI Element for the text box or editable field you want to read.")]
+        public InArgument<string> IdentificationObjectPath { get; set; }
 
-        [RequiredArgument]
-        [DisplayName("Property Type")]
-        [Description("Choose how you want to search for the text box (by Name, ID, Class Name, or Control Type).")]
-        [DefaultValue(PropertyTypeEnum.AutomationId)]
-        public InArgument<PropertyTypeEnum> PropertyType { get; set; }
-
-        [RequiredArgument]
-        [DisplayName("Property Value")]
-        [Description("Enter the value to search for (for example, the text box's name or ID).")]
-        public InArgument<string> PropertyValue { get; set; }
-
+        [DisplayName("Max Wait Time (seconds)")]
+        [Description("Maximum time to wait to find the UI element (in seconds).")]
+        [DefaultValue(5)]
+        public InArgument<int> MaxWaitTime { get; set; } = 5;
 
         [DisplayName("Text Box Content")]
-        [Description("The text found in the text box.")]
+        [Description("The text found in the text box or editable field.")]
         public OutArgument<string> TextBoxContent { get; set; }
-
-
 
         protected override void Execute(CodeActivityContext context)
         {
-            var parentElement = ParentElement.Get(context);
-            var propertyType = PropertyType.Get(context);
-            var propertyValue = PropertyValue.Get(context);
-
+            var identificationObjectPath = UIAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
+            var maxWaitTime = MaxWaitTime.Get(context);
             string textboxContent = "";
-            string status = "";
+            string statusMessage = "";
 
             try
             {
-                AutomationElement textboxElement = null;
-                TextPattern textboxPattern = null;
-
-                for (int i = 1; i <= 500; i++)
+                // Get the automation element for the UI element
+                var textboxElement = UIAutomationElementHelper.GetElementByPath(identificationObjectPath, maxWaitTime);
+                if (textboxElement != null)
                 {
-                    try
+                    // Try ValuePattern first (most common for text boxes)
+                    var valuePattern = textboxElement.Patterns.Value.PatternOrDefault;
+                    if (valuePattern != null)
                     {
-                        textboxElement = parentElement.FindFirst(
-                            TreeScope.Descendants,
-                            UIAutomationElementHelper.CreatePropertyCondition(propertyType, propertyValue)
-                        );
-                        if (textboxElement != null)
+                        textboxContent = valuePattern.Value;
+                        statusMessage = "Text copied from the text box successfully.";
+                    }
+                    else
+                    {
+                        // Try TextPattern for document-style controls (e.g., RichTextBox)
+                        var textPattern = textboxElement.Patterns.Text.PatternOrDefault;
+                        if (textPattern != null)
                         {
-                            textboxPattern = textboxElement.GetCurrentPattern(TextPattern.Pattern) as TextPattern;
-                            if (textboxPattern != null)
-                            {
-                                textboxContent = textboxPattern.DocumentRange.GetText(-1).TrimEnd('\r');
-                                status = "Text copied from the text box successfully.";
-                                break;
-                            }
+                            textboxContent = textPattern.DocumentRange.GetText(-1)?.TrimEnd('\r', '\n');
+                            statusMessage = "Text copied from the text box successfully.";
+                        }
+                        else
+                        {
+                            textboxContent = "Error: Not able to copy text from TextBox";
+                            statusMessage = "Could not find or read the text box.";
                         }
                     }
-                    catch
-                    {
-                        Thread.Sleep(10);
-                    }
                 }
-                if (textboxElement == null || textboxPattern == null)
+                else
                 {
                     textboxContent = "Error: Not able to copy text from TextBox";
-                    status = "Could not find or read the text box.";
+                    statusMessage = "Could not find or read the text box.";
                 }
+
                 TextBoxContent.Set(context, textboxContent);
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                IsSuccess.Set(context, !textboxContent.StartsWith("Error:"));
+                StatusMessage.Set(context, statusMessage);
             }
             catch (Exception ex)
             {
-                status = $"Error while reading text from the text box: {ex.Message}";
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error while reading text from text box: {ex.Message}");
             }
         }
     }
