@@ -24,7 +24,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 
 
         [DisplayName("Max Wait Time (seconds)")]
-        [Description("Maximum time to wait for the element and action (in seconds).")]
+        [Description("Maximum time to wait to find the UI element (in seconds).")]
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
 

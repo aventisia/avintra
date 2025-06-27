@@ -18,7 +18,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
         public InArgument<string> IdentificationObjectPath { get; set; }
 
         [DisplayName("Max Wait Time (seconds)")]
-        [Description("Maximum time to wait for the drop-down list and selected item (in seconds).")]
+        [Description("Maximum time to wait to find the UI element (in seconds).")]
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
 
