@@ -1,10 +1,9 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Enums;
 using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
+using FlaUI.Core.Definitions;
 using System;
 using System.Activities;
 using System.ComponentModel;
-using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
@@ -13,21 +12,14 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
     public class GetSelectedRadioButtonActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("Parent Element")]
-        [Description("The window or parent element where the radio button group is located.")]
-        public InArgument<AutomationElement> ParentElement { get; set; }
+        [DisplayName("UI Element")]
+        [Description("The UI element identification object which you would like to click.")]
+        public InArgument<string> IdentificationObjectPath { get; set; }
 
-        [RequiredArgument]
-        [DisplayName("Property Type")]
-        [Description("How to search for the radio button group (by Name, AutomationId, ClassName, or ControlType).")]
-        [DefaultValue(PropertyTypeEnum.Name)]
-        public InArgument<PropertyTypeEnum> PropertyType { get; set; }
-
-        [RequiredArgument]
-        [DisplayName("Property Value")]
-        [Description("The value to search for (for example, the group or container's name or ID).")]
-        public InArgument<string> PropertyValue { get; set; }
-
+        [DisplayName("Max Wait Time (seconds)")]
+        [Description("Maximum time to wait to find the UI element (in seconds).")]
+        [DefaultValue(5)]
+        public InArgument<int> MaxWaitTime { get; set; } = 5;
 
         [DisplayName("Selected Radio Button Name")]
         [Description("Returns the name of the selected radio button, or empty if none is selected.")]
@@ -35,17 +27,15 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var parentElement = ParentElement.Get(context);
-            var propertyType = PropertyType.Get(context);
-            var propertyValue = PropertyValue.Get(context);
-
+            var identificationObjectPath = UIAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
+            var maxWaitTime = MaxWaitTime.Get(context);
             string selectedRadioButton = null;
             string status = "";
 
             try
             {
-                var groupCondition = UIAutomationElementHelper.CreatePropertyCondition(propertyType, propertyValue);
-                AutomationElement groupElement = UIAutomationElementHelper.GetElementWithWait(parentElement, groupCondition, 5);
+                // Get the automation element for the UI element
+                var groupElement = UIAutomationElementHelper.GetElementByPath(identificationObjectPath, maxWaitTime);
 
                 if (groupElement == null)
                 {
@@ -53,13 +43,14 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
                 }
                 else
                 {
-                    var radioButtons = groupElement.FindAll(TreeScope.Descendants, new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.RadioButton));
-                    foreach (AutomationElement radio in radioButtons)
+                    // Find all descendant radio buttons using FlaUI
+                    var radioButtons = groupElement.FindAllDescendants(cf => cf.ByControlType(ControlType.RadioButton));
+                    foreach (var radio in radioButtons)
                     {
-                        var selectionItemPattern = radio.GetCurrentPattern(SelectionItemPattern.Pattern) as SelectionItemPattern;
-                        if (selectionItemPattern != null && selectionItemPattern.Current.IsSelected)
+                        var selectionItemPattern = radio.Patterns.SelectionItem.PatternOrDefault;
+                        if (selectionItemPattern != null && selectionItemPattern.IsSelected.Value)
                         {
-                            selectedRadioButton = radio.Current.Name;
+                            selectedRadioButton = radio.Name;
                             status = "Selected radio button retrieved successfully.";
                             break;
                         }
@@ -75,9 +66,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
             }
             catch (Exception ex)
             {
-                status = $"Error retrieving selected radio button: {ex.Message}";
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error retrieving selected radio button: {ex.Message}");
             }
         }
     }
