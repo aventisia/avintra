@@ -1,11 +1,8 @@
 using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Enums;
 using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
-using System.Threading;
-using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
@@ -14,89 +11,70 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
     public class GetDropDownSelectedItemActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("Parent Window")]
-        [Description("Select the window or parent element where the drop-down list is located.")]
-        public InArgument<AutomationElement> ParentElement { get; set; }
+        [DisplayName("UI Element")]
+        [Description("The UI element identification object which you would like to click.")]
+        public InArgument<string> IdentificationObjectPath { get; set; }
 
-        [RequiredArgument]
-        [DisplayName("Property Type")]
-        [Description("Choose how you want to search for the drop-down list (by Name, ID, Class Name, or Control Type).")]
-        [DefaultValue(PropertyTypeEnum.Name)]
-        public InArgument<PropertyTypeEnum> PropertyType { get; set; }
-
-        [RequiredArgument]
-        [DisplayName("Property Value")]
-        [Description("Enter the value to search for (for example, the drop-down list's name or ID).")]
-        public InArgument<string> PropertyValue { get; set; }
-
+        [DisplayName("Max Wait Time (seconds)")]
+        [Description("Maximum time to wait for the drop-down list and selected item (in seconds).")]
+        [DefaultValue(5)]
+        public InArgument<int> MaxWaitTime { get; set; } = 5;
 
         [DisplayName("Selected Item")]
         [Description("The selected item found in the drop-down list.")]
         public OutArgument<string> SelectedItem { get; set; }
 
-
-
         protected override void Execute(CodeActivityContext context)
         {
-            var parentElement = ParentElement.Get(context);
-            var propertyType = PropertyType.Get(context);
-            var propertyValue = PropertyValue.Get(context);
+            // Convert IdentificationObjectPath string to list of IdentificationObject
+            var identificationObjectPath = UIAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
 
+            var maxWaitTime = MaxWaitTime.Get(context);
             string dropdownContent = "";
-            string status = "";
+            string statusMessage = "";
 
             try
             {
-                AutomationElement dropdownElement = null;
-                SelectionPattern selectionPattern = null;
+                // Get the automation element for the UI element
+                var dropdownElement = UIAutomationElementHelper.GetElementByPath(identificationObjectPath, maxWaitTime);
 
-                for (int i = 0; i <= 500; i++)
+                if (dropdownElement != null)
                 {
-                    try
+                    var selectionPattern = dropdownElement.Patterns.Selection.PatternOrDefault;
+                    if (selectionPattern != null)
                     {
-                        dropdownElement = parentElement.FindFirst(
-                            TreeScope.Descendants,
-                            UIAutomationElementHelper.CreatePropertyCondition(propertyType, propertyValue)
-                        );
-                        if (dropdownElement != null)
+                        var itemsSelected = selectionPattern.Selection.Value;
+                        if (itemsSelected != null && itemsSelected.Length > 0)
                         {
-                            selectionPattern = dropdownElement.GetCurrentPattern(SelectionPattern.Pattern) as SelectionPattern;
-                            if (selectionPattern != null)
-                            {
-                                AutomationElement[] itemsSelected = selectionPattern.Current.GetSelection();
-                                foreach (AutomationElement item in itemsSelected)
-                                {
-                                    dropdownContent = item.Current.Name;
-                                }
-                                status = "Selected item retrieved successfully.";
-                            }
-                            else
-                            {
-                                dropdownContent = "Error: Drop-down list does not support selection pattern.";
-                                status = "Drop-down list does not support selection pattern.";
-                            }
-                            break;
+                            dropdownContent = itemsSelected[0].Name;
+                            statusMessage = "Selected item retrieved successfully.";
+                        }
+                        else
+                        {
+                            dropdownContent = "Error: No item is selected in the drop-down list.";
+                            statusMessage = "No item is selected in the drop-down list.";
                         }
                     }
-                    catch
+                    else
                     {
-                        Thread.Sleep(10);
-                    }
-                    if (dropdownElement == null)
-                    {
-                        dropdownContent = "Error: Not able to extract selected item";
-                        status = "Could not find the drop-down list.";
+                        dropdownContent = "Error: Drop-down list does not support selection pattern.";
+                        statusMessage = "Drop-down list does not support selection pattern.";
                     }
                 }
+                else
+                {
+                    dropdownContent = "Error: Not able to extract selected item";
+                    statusMessage = "Could not find the drop-down list.";
+                }
+
                 SelectedItem.Set(context, dropdownContent);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, statusMessage);
             }
             catch (Exception ex)
             {
-                status = $"Error while reading selected item from drop-down list: {ex.Message}";
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error while reading selected item from drop-down list: {ex.Message}");
             }
         }
     }
