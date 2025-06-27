@@ -508,7 +508,7 @@
           },
           {
             "type": "activityNode",
-            "name": "ConvertDataTableToTextActivity",
+            "name": "ConvertDataTableToCsvTextActivity",
             "label": "Convert Data Table to CSV Text",
             "description": "Converts a data table into a CSV (comma-separated values) text representation.",
             "docsLink": "https://docs.aventisia.com",
@@ -654,7 +654,7 @@
             "type": "activityNode",
             "name": "DecryptTextWithAesActivity",
             "label": "Decrypt Text with AES",
-            "description": "Decrypt a string using AES encryption with a specified key and initialization vector.",
+            "description": "Decrypts a Base64-encoded string using AES with optional key hashing for short keys.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -663,7 +663,7 @@
             "type": "activityNode",
             "name": "DecryptToFileWithAesActivity",
             "label": "Decrypt to File with AES",
-            "description": "Decrypt the contents of a file with AES based on a specified key and an encoding format",
+            "description": "Decrypts an encrypted file using AES. Supports Base64, Hex, and UTF8-encoded inputs.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -672,7 +672,7 @@
             "type": "activityNode",
             "name": "EncryptFromFileWithAesActivity",
             "label": "Encrypt from File with AES",
-            "description": "Encrypt the contents of a file with AES, using a key and a specified encoding format",
+            "description": "Encrypts the contents of a file using AES. Supports Base64, Hex encoding for output.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -681,7 +681,7 @@
             "type": "activityNode",
             "name": "EncryptTextWithAesActivity",
             "label": "Encrypt Text with AES",
-            "description": "Encrypts a string using AES encryption",
+            "description": "Encrypts a string using AES encryption. Short keys are hashed securely to 32 bytes.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -912,15 +912,6 @@
           },
           {
             "type": "activityNode",
-            "name": "SetDefaultPrinterActivity",
-            "label": "Set Default Printer",
-            "description": "Sets a printer as the default printer.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "SetScreenResolutionActivity",
             "label": "Set Screen Resolution",
             "description": "Sets the width, height, bit count, and frequency of a selected monitor.",
@@ -975,36 +966,9 @@
           },
           {
             "type": "activityNode",
-            "name": "ClickUIElementFromCollectionActivity",
-            "label": "Click Element from Collection",
-            "description": "Finds an element in a collection by property and name, then clicks or invokes it using UI Automation or mouse click.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "ClickUIElementInParentActivity",
-            "label": "Click UI Element in Parent",
-            "description": "Finds a UI element by property and clicks or invokes it using UI Automation or mouse click.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "CloseWindowActivity",
             "label": "Close Window",
             "description": "Closes the selected application window.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "ExpandDropDownListActivity",
-            "label": "Expand Drop-Down List",
-            "description": "Expands a drop-down list so you can see all available options.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1020,15 +984,6 @@
           },
           {
             "type": "activityNode",
-            "name": "FindUIElementInParentActivity",
-            "label": "Find UI element in parent element",
-            "description": "Finds a specific UI element inside a window or parent element, such as a button or text box, using the property you choose.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "FocusWindowActivity",
             "label": "Focus Window",
             "description": "Brings the selected window to the front and makes it active.",
@@ -1038,27 +993,9 @@
           },
           {
             "type": "activityNode",
-            "name": "GetChildWindowElementActivity",
-            "label": "Find Child Window",
-            "description": "Finds a child window inside a parent window by its name.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "GetDropDownSelectedItemActivity",
             "label": "Get Selected Item from Drop-Down List",
             "description": "Reads and returns the selected item from a drop-down list in a window using the property you choose.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "GetElementCollectionActivity",
-            "label": "Get Element Collection",
-            "description": "Finds and returns a collection of UI elements under a parent element using the specified property type and value.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1085,7 +1022,7 @@
             "type": "activityNode",
             "name": "GetTextBoxTextActivity",
             "label": "Get Text from Text Box",
-            "description": "Reads and returns the text from a text box in a window using the property you choose.",
+            "description": "Reads and returns the text from a text box or editable field in a window using the UI element you provide.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1121,7 +1058,7 @@
             "type": "activityNode",
             "name": "PopulateTextFieldInWindowActivity",
             "label": "Populate Text Field in Window",
-            "description": "Fills a text box in a window with the specified text using the method you choose.",
+            "description": "Fills a text box or editable field in a window with the specified text using the method you choose.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1148,7 +1085,7 @@
             "type": "activityNode",
             "name": "SelectTabActivity",
             "label": "Select Tab",
-            "description": "Selects a tab from a group of tabs in a window by index or name.",
+            "description": "Selects a tab from a group of tabs in a window.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1479,15 +1416,6 @@
           },
           {
             "type": "activityNode",
-            "name": "DisplaySelectDateDialogActivity",
-            "label": "Display Select Date Dialog",
-            "description": "Displays a dialog box that prompts the user to enter a date or date range.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "DisplaySelectFileDialog",
             "label": "Display Select File Dialog",
             "description": "Displays a file selection dialog to let users choose one or more files.",
@@ -1500,15 +1428,6 @@
             "name": "DisplaySelectFolderDialog",
             "label": "Display Select Folder Dialog",
             "description": "Displays a folder selection dialog to let users choose a folder.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "DisplaySelectFromListDialogActivity",
-            "label": "Display Select From List Dialog",
-            "description": "Displays a dialog box with options that lets the user select from a list.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1634,7 +1553,7 @@
             "type": "activityNode",
             "name": "ConvertBinaryDataToFileActivity",
             "label": "Convert Binary Data to File",
-            "description": "Converts binary data to a file at the specified path.",
+            "description": "Converts binary data (byte[] or Base64 string) to a file at the specified path.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1688,7 +1607,7 @@
             "type": "activityNode",
             "name": "IfFileExistsActivity",
             "label": "If File Exists",
-            "description": "Checks if a file exists and marks the beginning of a conditional block of actions.",
+            "description": "Checks if a file exists or does not exist and marks the beginning of a conditional block.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2173,7 +2092,7 @@
             "type": "activityNode",
             "name": "InsertImageInWordDocumentActivity",
             "label": "Insert Image in Word Document",
-            "description": "Inserts an image into a Word file at a specified location.",
+            "description": "Inserts an image into a Word file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2369,45 +2288,9 @@
         "actions": [
           {
             "type": "activityNode",
-            "name": "ExtractImagesFromPdfActivity",
-            "label": "Extract Images from PDF",
-            "description": "Extracts images from a PDF file by specifying the source PDF file and the target folder.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "ExtractPdfPagesToNewPdfFileActivity",
-            "label": "Extract PDF Pages to New File",
-            "description": "Extracts specific pages from a PDF file and saves them as a new PDF.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "ExtractTablesFromPdfActivity",
-            "label": "Extract Tables From PDF (PDFPig)",
-            "description": "Extracts tables from a PDF file using PdfPig library.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "ExtractTextFromPdfActivity",
-            "label": "Extract Text from PDF (PDFPig)",
-            "description": "Extracts text from a PDF file using PdfPig library.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "MergePdfFilesActivity",
-            "label": "Merge PDF Files",
-            "description": "Merges multiple PDF files into a new one.",
+            "label": "Extract Text from PDF",
+            "description": "Extracts text from a PDF file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -3084,6 +2967,32 @@
             "label": "Send Email",
             "description": "Creates and sends a new email message using MailKit.",
             "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "AI Integrations",
+    "description": "AI-powered advanced actions for smarter, dynamic automation",
+    "icon": "IntelligentAutomationIcon",
+    "img": null,
+    "actionCategories": [
+      {
+        "label": "AI Actions",
+        "description": "AI Actions",
+        "icon": null,
+        "img": "/function.png",
+        "listType": "list",
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "informationExtractor",
+            "label": "Information Extractor",
+            "description": "Extract information out of a pdf file",
+            "docsLink": null,
             "icon": null,
             "img": "/function.png"
           }
