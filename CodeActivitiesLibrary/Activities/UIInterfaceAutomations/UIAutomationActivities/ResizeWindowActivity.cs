@@ -1,8 +1,8 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using FlaUI.Core.AutomationElements;
 using System;
 using System.Activities;
 using System.ComponentModel;
-using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
@@ -25,43 +25,49 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
         [Description("Enter the new height for the window (in pixels).")]
         public InArgument<double> Height { get; set; }
 
-
+        [DisplayName("Is Window Resized Successfully")]
+        [Description("Indicates whether the window was resized successfully.")]
+        public OutArgument<bool> IsWindowResized { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
             var windowElement = WindowElement.Get(context);
             var width = Width.Get(context);
             var height = Height.Get(context);
-            string status = "";
+            string statusMessage = "";
 
             try
             {
                 if (windowElement == null)
                 {
-                    status = "No window was provided to resize.";
+                    statusMessage = "No window was provided to resize.";
+                    IsWindowResized.Set(context, false);
+                    IsSuccess.Set(context, false);
                 }
                 else
                 {
-                    var transformPattern = windowElement.GetCurrentPattern(TransformPattern.Pattern) as TransformPattern;
-                    if (transformPattern != null && transformPattern.Current.CanResize)
+                    var transformPattern = windowElement.Patterns.Transform.PatternOrDefault;
+                    if (transformPattern != null && transformPattern.CanResize)
                     {
                         transformPattern.Resize(width, height);
-                        status = "Window resized successfully.";
+                        statusMessage = "Window resized successfully.";
+                        IsWindowResized.Set(context, true);
+                        IsSuccess.Set(context, true);
                     }
                     else
                     {
-                        status = "Sorry, this window cannot be resized automatically.";
+                        statusMessage = "Sorry, this window cannot be resized automatically.";
+                        IsWindowResized.Set(context, false);
+                        IsSuccess.Set(context, false);
                     }
                 }
-
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, statusMessage);
             }
             catch (Exception ex)
             {
-                status = $"There was a problem resizing the window: {ex.Message}";
+                IsWindowResized.Set(context, false);
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"There was a problem resizing the window: {ex.Message}");
             }
         }
     }
