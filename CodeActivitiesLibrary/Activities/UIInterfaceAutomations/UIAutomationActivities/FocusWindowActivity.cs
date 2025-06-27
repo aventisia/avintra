@@ -1,8 +1,8 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using FlaUI.Core.AutomationElements;
 using System;
 using System.Activities;
 using System.ComponentModel;
-using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
@@ -15,38 +15,74 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
         [Description("Select the window you want to focus.")]
         public InArgument<AutomationElement> WindowElement { get; set; }
 
-
+        [DisplayName("Is Window Focused Successfully")]
+        [Description("Indicates whether the window was focused successfully.")]
+        public OutArgument<bool> IsWindowFocused { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
             var windowElement = WindowElement.Get(context);
-            string status = "";
+            string statusMessage = "";
 
             try
             {
                 if (windowElement == null)
                 {
-                    status = "No window was provided to focus.";
+                    statusMessage = "No window was provided to focus.";
+                    IsSuccess.Set(context, false);
+                    StatusMessage.Set(context, statusMessage);
+                    IsWindowFocused.Set(context, false);
+                    return;
+                }
+
+                var window = windowElement.AsWindow();
+                if (window != null)
+                {
+                    // Restore if minimized
+                    var windowPattern = window.Patterns.Window.PatternOrDefault;
+                    if (windowPattern != null && windowPattern.WindowVisualState.Value == FlaUI.Core.Definitions.WindowVisualState.Minimized)
+                    {
+                        windowPattern.SetWindowVisualState(FlaUI.Core.Definitions.WindowVisualState.Normal);
+                    }
+
+                    window.Focus();
+
+                    // Check if the window is now focused
+                    bool isFocused = false;
+                    try
+                    {
+                        var automation = window.Automation;
+                        var focusedElement = automation.FocusedElement();
+                        // Compare by native window handle or automation element equality
+                        isFocused = focusedElement != null &&
+                                    focusedElement.Properties.NativeWindowHandle.ValueOrDefault == window.Properties.NativeWindowHandle.ValueOrDefault;
+                    }
+                    catch
+                    {
+                        // fallback: cannot determine focus, assume false
+                        isFocused = false;
+                    }
+                    IsWindowFocused.Set(context, isFocused);
+
+                    statusMessage = isFocused
+                        ? "Window focused successfully."
+                        : "Tried to focus the window, but it is not the active window.";
+                    IsSuccess.Set(context, isFocused);
+                    StatusMessage.Set(context, statusMessage);
                 }
                 else
                 {
-                    var windowPattern = windowElement.GetCurrentPattern(WindowPattern.Pattern) as WindowPattern;
-                    if (windowPattern != null)
-                    {
-                        windowPattern.SetWindowVisualState(WindowVisualState.Normal);
-                        windowPattern.WaitForInputIdle(1000);
-                    }
-                    windowElement.SetFocus();
-                    status = "Window focused successfully.";
-                    IsSuccess.Set(context, true);
-                    StatusMessage.Set(context, status);
+                    statusMessage = "The provided element is not a window.";
+                    IsSuccess.Set(context, false);
+                    StatusMessage.Set(context, statusMessage);
+                    IsWindowFocused.Set(context, false);
                 }
             }
             catch (Exception ex)
             {
-                status = $"There was a problem focusing the window: {ex.Message}";
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"There was a problem focusing the window: {ex.Message}");
+                IsWindowFocused.Set(context, false);
             }
         }
     }
