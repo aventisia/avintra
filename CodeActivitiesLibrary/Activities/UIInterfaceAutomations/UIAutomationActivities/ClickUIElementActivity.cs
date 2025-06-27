@@ -5,8 +5,6 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Threading;
-using System.Windows;
-using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
@@ -15,32 +13,38 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
     public class ClickUIElementActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("Element Instance")]
-        [Description("The AutomationElement instance to click.")]
-        public InArgument<AutomationElement> ElementInstance { get; set; }
-
+        [DisplayName("UI Element")]
+        [Description("The UI element identification object which you would like to click.")]
+        public InArgument<string> IdentificationObjectPath { get; set; }
 
         [DisplayName("Click Type")]
         [Description("Type of click: UIAutomationClick or MouseClick.")]
         [DefaultValue(ClickTypeEnum.UIAutomationClick)]
         public InArgument<ClickTypeEnum> ClickType { get; set; }
 
-
         [DisplayName("Max Wait Time (seconds)")]
         [Description("Maximum time to wait for the click action (in seconds).")]
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
 
+        [DisplayName("Button Clicked Successfully")]
+        [Description("Indicates whether the UI element was clicked successfully.")]
+        public OutArgument<bool> IsClicked { get; set; }
+
         protected override void Execute(CodeActivityContext context)
         {
-            var elementInstance = ElementInstance.Get(context);
+            // Convert IdentificationObjectPath string to list of IdentificationObject
+            var identificationObjectPath = UIAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
             var clickType = ClickType.Get(context);
             var maxWaitTime = MaxWaitTime.Get(context);
             bool elementClicked = false;
-            string status = "";
+            string statusMessage = "";
 
             try
             {
+                // Get the automation element for the UI element
+                var elementInstance = UIAutomationElementHelper.GetElementByPath(identificationObjectPath, maxWaitTime);
+
                 for (int i = 0; i <= (maxWaitTime * 5); i++)
                 {
                     try
@@ -49,20 +53,25 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
                         {
                             if (clickType == ClickTypeEnum.UIAutomationClick)
                             {
-                                var invokePattern = elementInstance.GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
-                                invokePattern.Invoke();
-                                elementClicked = true;
-                                status = "UI element invoked successfully.";
-                                break;
+                                var invokePattern = elementInstance.Patterns.Invoke.PatternOrDefault;
+                                if (invokePattern != null)
+                                {
+                                    invokePattern.Invoke();
+                                    elementClicked = true;
+                                    statusMessage = "UI element clicked successfully.";
+                                    break;
+                                }
+                                else
+                                    statusMessage = "Invoke pattern not supported on this element.";
                             }
                             else if (clickType == ClickTypeEnum.MouseClick)
                             {
                                 Thread.Sleep(200);
-                                Point clickablePoint = elementInstance.GetClickablePoint();
-                                MouseHelper.SendMouseClick(MouseHelper.MouseClickTypeEnum.LeftClick, clickablePoint.X, clickablePoint.Y);
+                                // FlaUI: Click() will move the mouse and click the element's clickable point
+                                elementInstance.Click();
                                 elementClicked = true;
                                 Thread.Sleep(500);
-                                status = "UI element clicked using mouse successfully.";
+                                statusMessage = "UI element clicked using mouse successfully.";
                                 break;
                             }
                         }
@@ -75,16 +84,16 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 
                 if (!elementClicked)
                 {
-                    status = "Failed to click the UI element within the specified time.";
+                    statusMessage = "Failed to click the UI element within the specified time.";
                 }
+                IsClicked.Set(context, elementClicked);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, statusMessage);
             }
             catch (Exception ex)
             {
-                status = $"Error: {ex.Message}";
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error: {ex.Message}");
             }
         }
     }
