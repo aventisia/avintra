@@ -441,6 +441,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\ClickUIElementInPrarentActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\CloseWindowActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\Enums\ClickTypeEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\Enums\NameMatchModeEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\Enums\PropertyTypeEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\Enums\WindowStateEnum.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\ExpandDropDownListActivity.cs" />

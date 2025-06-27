@@ -18,22 +18,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.He
         public string AutomationId { get; set; }
     }
 
-    public enum NameMatchModeEnum
-    {
-        Equals,
-        Contains,
-        StartsWith
-    }
-
-    public enum PropertyNameEnum
-    {   
-        Name,
-        ClassName,
-        ControlType,
-        FrameworkId,
-        AutomationId,
-    }
-
     public static class UIAutomationElementHelper
     {
         public static bool IsIdentificationObjectEmpty(ElementIdentificationObject identificationObject)
@@ -47,7 +31,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.He
                    string.IsNullOrEmpty(identificationObject.AutomationId);
         }
 
-        public static string GetPropertyValue(AutomationElement element, PropertyNameEnum propertyName)
+        public static string GetPropertyValue(AutomationElement element, PropertyTypeEnum propertyName)
         {
             // Return null if element or propertyName is null
             if (element == null)
@@ -58,15 +42,15 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.He
                 // Get the property value based on the property name
                 switch (propertyName)
                 {
-                    case PropertyNameEnum.Name:
+                    case PropertyTypeEnum.Name:
                         return element.Properties.Name.ValueOrDefault?.Trim();
-                    case PropertyNameEnum.ClassName:
+                    case PropertyTypeEnum.ClassName:
                         return element.Properties.ClassName.ValueOrDefault?.Trim();
-                    case PropertyNameEnum.ControlType:
+                    case PropertyTypeEnum.ControlType:
                         return element.ControlType.ToString().Trim();
-                    case PropertyNameEnum.FrameworkId:
+                    case PropertyTypeEnum.FrameworkId:
                         return element.Properties.FrameworkId.ValueOrDefault?.Trim();
-                    case PropertyNameEnum.AutomationId:
+                    case PropertyTypeEnum.AutomationId:
                         return element.Properties.AutomationId.ValueOrDefault?.Trim();
                     default:
                         return null; // Unknown property
@@ -101,11 +85,11 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.He
             foreach (var child in children)
             {
                 // Get and Trim the properties to avoid leading/trailing whitespace issues
-                var name = GetPropertyValue(child, PropertyNameEnum.Name);
-                var className = GetPropertyValue(child, PropertyNameEnum.ClassName);
-                var controlType = GetPropertyValue(child, PropertyNameEnum.ControlType);
-                var frameworkId = GetPropertyValue(child, PropertyNameEnum.FrameworkId);
-                var automationId = GetPropertyValue(child, PropertyNameEnum.AutomationId);
+                var name = GetPropertyValue(child, PropertyTypeEnum.Name);
+                var className = GetPropertyValue(child, PropertyTypeEnum.ClassName);
+                var controlType = GetPropertyValue(child, PropertyTypeEnum.ControlType);
+                var frameworkId = GetPropertyValue(child, PropertyTypeEnum.FrameworkId);
+                var automationId = GetPropertyValue(child, PropertyTypeEnum.AutomationId);
 
                 // Check if the child matches the identification criteria
                 bool isMatch = true;
@@ -245,6 +229,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.He
         {
             switch (propertyType)
             {
+                case PropertyTypeEnum.FrameworkId:
+                    return new System.Windows.Automation.PropertyCondition(System.Windows.Automation.AutomationElement.FrameworkIdProperty, propertyValue);
                 case PropertyTypeEnum.AutomationId:
                     return new System.Windows.Automation.PropertyCondition(System.Windows.Automation.AutomationElement.AutomationIdProperty, propertyValue);
                 case PropertyTypeEnum.ClassName:
