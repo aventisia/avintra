@@ -29,12 +29,14 @@ export const useUpdateFlowSilently = () => {
     isSavePending,
     setIsSavePending,
     flowVariablesObject,
+    inputOutputObject,
     isPublished,
   } = useReactFlowExtStore(
     useShallow((state) => ({
       nodes: state.nodes,
       edges: state.edges,
       flowVariablesObject: state.flowVariablesObject,
+      inputOutputObject: state.inputOutputObject,
       isSavePending: state.isSavePending,
       setIsSavePending: state.setIsSavePending,
       isPublished: state.isPublished,
@@ -94,6 +96,7 @@ export const useUpdateFlowSilently = () => {
         id: currentFlow.id,
         reactFlowObject: JSON.stringify(reactFlowObject),
         flowVariablesObject: JSON.stringify(flowVariablesObject),
+        inputOutputObject: JSON.stringify(inputOutputObject),
         versionId: currentFlow.versionId,
       });
     }, DEBOUNCE_SAVE_DELAY); // Debounce save operation
@@ -110,5 +113,6 @@ export const useUpdateFlowSilently = () => {
     viewportState,
     isPublished,
     currentFlow.versionId,
+    inputOutputObject,
   ]);
 };

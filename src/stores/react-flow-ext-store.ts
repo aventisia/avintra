@@ -1,4 +1,5 @@
 import { MARKER_ARROW_PREFIX } from "@/constants";
+import { DCPFieldSchemaType } from "@/features/dynamic-config-panel";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
 import {
   Connection,
@@ -31,6 +32,9 @@ type State = {
   /** Output flow variables */
   flowVariablesObject: FlowVariablesObjectType[] | [];
 
+  /** Input output json */
+  inputOutputObject: DCPFieldSchemaType[] | [];
+
   /** Flag to track pending flow save */
   isSavePending: boolean;
 
@@ -57,6 +61,9 @@ type Actions = {
   /** Set Flow Vairables */
   setFlowVariablesObject: (variabels: FlowVariablesObjectType[]) => void;
 
+  /**Set InputOutput json */
+  setInputOutputObject: (inputOutputObject: DCPFieldSchemaType[]) => void;
+
   /** Toggle arrow / grab handle of ReactFlow */
   togglePanOnDrag: (panOnDrag: boolean) => void;
 
@@ -76,6 +83,7 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   nodes: [],
   edges: [],
   flowVariablesObject: [],
+  inputOutputObject: [],
   panOnDrag: false,
   isSavePending: false,
   contextMenuOrigin: null,
@@ -128,6 +136,10 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
 
   setFlowVariablesObject: (variables: FlowVariablesObjectType[]) => {
     set({ flowVariablesObject: variables });
+  },
+
+  setInputOutputObject: (inputOutputObject: DCPFieldSchemaType[]) => {
+    set({ inputOutputObject });
   },
 
   togglePanOnDrag: (value) => {
