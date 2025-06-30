@@ -7,7 +7,10 @@ export interface FlowSilentUpdateDto {
   reactFlowObject: string;
 
   /** Flow Output variables */
-  flowVariablesObject: string;
+  flowVariablesObject?: string;
+
+  /** Flow's inputs outputs JSON data in string format */
+  inputOutputObject?: string;
 
   versionId?: string;
 }
