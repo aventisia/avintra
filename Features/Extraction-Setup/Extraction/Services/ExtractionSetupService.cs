@@ -1332,7 +1332,7 @@ public class ExtractionSetupService : IExtractionSetupService
                     {
                         // Replace the placeholders {{Prompt}}, {{Context}}, and {{OutputFormat}} in the template with the respective sections
                         {"{{Prompt}}", defaultPrompt.Replace("\n","").ToString()  },
-                        {"{{Context}}", mlModelSetupDto.SetupObject.Context },
+                        //{"{{Context}}", mlModelSetupDto.SetupObject.Context },
                     }
                 );
 
