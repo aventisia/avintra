@@ -8,10 +8,10 @@ const fieldItemSchema = z.object({
     .regex(/^[^\s]+$/, "Name must not contain spaces"), // disallows any whitespace
   direction: z.enum(["Input", "Output"]),
   label: z.string().optional(),
-  defaultValue: z.string().min(1, "Default value is required"),
+  defaultValue: z.string(),
   description: z.string().optional(),
   selectOptions: z.string().optional(),
-  type: z.enum(["text", "select", "switch", "config-panel-output"]),
+  type: z.enum(["text", "select", "switch", "password", "config-panel-output"]),
   required: z.boolean().default(false),
 });
 
