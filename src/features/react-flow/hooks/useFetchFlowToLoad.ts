@@ -28,15 +28,21 @@ export const useFetchFlowToLoad = () => {
   );
 
   // Get ReactFlowExt store state & actions
-  const { setNodes, setEdges, setFlowVariablesObject, setIsPublished } =
-    useReactFlowExtStore(
-      useShallow((state) => ({
-        setNodes: state.setNodes,
-        setEdges: state.setEdges,
-        setFlowVariablesObject: state.setFlowVariablesObject,
-        setIsPublished: state.setIsPublished,
-      })),
-    );
+  const {
+    setNodes,
+    setEdges,
+    setFlowVariablesObject,
+    setInputOutputObject,
+    setIsPublished,
+  } = useReactFlowExtStore(
+    useShallow((state) => ({
+      setNodes: state.setNodes,
+      setEdges: state.setEdges,
+      setFlowVariablesObject: state.setFlowVariablesObject,
+      setInputOutputObject: state.setInputOutputObject,
+      setIsPublished: state.setIsPublished,
+    })),
+  );
 
   // Get react flow hook to set viewport
   const { setViewport, fitView } = useReactFlow();
@@ -80,11 +86,14 @@ export const useFetchFlowToLoad = () => {
     // Parse Flow Variables Object
     const flowVarObjs = JSON.parse(data.data.flowVariablesObject);
 
+    const inputOutputObj = JSON.parse(data.data?.inputOutputObject || "[]");
+
     if (flow) {
       // Set nodes and edges
       setNodes(flow.nodes);
       setEdges(flow.edges);
       setFlowVariablesObject(flowVarObjs || []);
+      setInputOutputObject(inputOutputObj || []);
 
       // If flow has more than 2 nodes then set the saved viewport
       if (flow.nodes.length > 2) {
@@ -106,5 +115,6 @@ export const useFetchFlowToLoad = () => {
     setViewport,
     fitView,
     setIsPublished,
+    setInputOutputObject,
   ]);
 };
