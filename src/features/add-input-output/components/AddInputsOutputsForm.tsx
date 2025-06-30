@@ -7,7 +7,11 @@ import OutputFields from "./OutputFields";
 import InputFields from "./InputFields";
 import { useInputOutputsStore } from "../stores/inputs-outputs-store";
 import { useShallow } from "zustand/react/shallow";
-import { transformFormDataToDCPJson } from "../utils/formdataToJson";
+import { formDataToDCPJson } from "../utils/formdataToJson";
+import { useUpdateInputOutput } from "../hooks/useUpdateInputOutput";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useViewport } from "@xyflow/react";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 const AddInputsOutputsForm = () => {
   const {
@@ -23,6 +27,22 @@ const AddInputsOutputsForm = () => {
     removeOutput,
   } = useInputsOutputsForm();
 
+  // Get global store state & actions
+  const { currentFlow } = useCurrentFlowStore(
+    useShallow((state) => ({
+      currentFlow: state.currentFlow,
+    })),
+  );
+
+  // Get ReactFlowExt store state & actions
+  const { nodes, edges, setInputOutputObject } = useReactFlowExtStore(
+    useShallow((state) => ({
+      nodes: state.nodes,
+      edges: state.edges,
+      setInputOutputObject: state.setInputOutputObject,
+    })),
+  );
+
   const { setShowDialog } = useInputOutputsStore(
     useShallow((state) => ({
       showDialog: state.showDialog,
@@ -30,8 +50,29 @@ const AddInputsOutputsForm = () => {
     })),
   );
 
+  // Get viewport state
+  const viewportState = useViewport();
+
+  const reactFlowObject = {
+    nodes: nodes,
+    edges: edges,
+    viewport: viewportState,
+  };
+
+  const { mutate: updateInputOutput } = useUpdateInputOutput();
+
   const onSubmit = (formData: InputsOutputsFieldsFormType) => {
-    console.log(transformFormDataToDCPJson(formData));
+    const refinedData = formDataToDCPJson(formData);
+
+    setInputOutputObject(refinedData);
+
+    updateInputOutput({
+      id: currentFlow.id,
+      reactFlowObject: JSON.stringify(reactFlowObject),
+      versionId: currentFlow.versionId,
+      inputOutputObject: JSON.stringify(refinedData),
+    });
+
     setShowDialog(false);
   };
 
