@@ -20,7 +20,7 @@ import { TbCertificate } from "react-icons/tb";
 
 const sidebarMenuSections: SidebarMenuSectionType[] = [
   {
-    sectionName: "main menu",
+    sectionName: "my projects",
     menuItems: [
       {
         Icon: BotIcon,
@@ -31,11 +31,6 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: FileBoxIcon,
         name: "AI Models",
         route: "/ai-models",
-      },
-      {
-        Icon: QuestionMarkCircleIcon,
-        name: "support",
-        route: "/supportticket",
       },
     ],
   },
@@ -106,6 +101,12 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: UsersIcon,
         name: "users",
         route: "/users",
+      },
+      {
+        permissions: ["SA", "GA"],
+        Icon: QuestionMarkCircleIcon,
+        name: "support",
+        route: "/supportticket",
       },
     ],
   },
