@@ -29,6 +29,7 @@ public interface IUnitOfWork
     ITriggerRepo TriggerRepo { get; }
     ITriggerFlowRepo TriggerFlowRepo { get; }
     IFlowUserRepo FlowUserRepo { get; }
+    IFlowBlockRepo FlowBlockRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

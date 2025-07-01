@@ -46,6 +46,7 @@ public class UnitOfWork : IUnitOfWork
 
     public ITriggerFlowRepo TriggerFlowRepo => new TriggerFlowRepo(_workspaceDbContext);
     public IFlowUserRepo FlowUserRepo => new FlowUserRepo(_workspaceDbContext);
+    public IFlowBlockRepo FlowBlockRepo => new FlowBlockRepo(_workspaceDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
