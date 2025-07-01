@@ -22,28 +22,5 @@
     "description": "Seamlessly integrate with apps and services such as Twilio, Slack, and more",
     "icon": "AppIntegrationsIcon",
     "actionCategories": []
-  },
-  {
-    "label": "AI Integrations",
-    "description": "AI-powered advanced actions for smarter, dynamic automation",
-    "icon": "IntelligentAutomationIcon",
-    "actionCategories": [
-      {
-        "label": "AI Actions",
-        "description": "AI Actions",
-        "listType": "list",
-        "img": "/function.png",
-        "actions": [
-          {
-            "type": "activityNode",
-            "name": "informationExtractor",
-            "label": "Information Extractor",
-            "description": "Extract information out of a pdf file",
-            "img": "/function.png",
-            "formType": "custom"
-          }
-        ]
-      }
-    ]
   }
 ]

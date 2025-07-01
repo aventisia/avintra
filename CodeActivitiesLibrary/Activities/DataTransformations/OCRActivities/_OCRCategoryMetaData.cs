@@ -1,6 +1,6 @@
 using CodeActivitiesLibrary.Extensions;
 
-namespace CodeActivitiesLibrary.DataTransformations.OCRActivities
+namespace CodeActivitiesLibrary.DataTransformations.OcrActivities
 {
     [ActivityCategoryMetadata(
         primaryCategory: "Data Transformations",
