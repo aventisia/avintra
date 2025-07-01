@@ -1,0 +1,40 @@
+meta {
+  name: Repeat - Insert flow block
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/flow-block
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+      
+  }
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    name: faker.commerce.product(),
+    description: faker.lorem.paragraph(),
+    reactFlowObject: "{nodes: [], edges: [], viewport: {x: 0, y: 0,zoom: 1}}",
+    flowVariablesObject: "",
+    inputOutputObject: "",
+    refId: bru.getGlobalEnvVar("FLOW_ID"),
+    type: "TenantLevel"
+  })
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "FLOW_BLOCK_ID",
+          res.getBody().data.id
+      );
+  }
+}
