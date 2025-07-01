@@ -78,6 +78,7 @@ public static class AppServicesExtension
         services.AddScoped<IVaultService, VaultService>();
         services.AddScoped<ITriggerService, TriggerService>();
         services.AddScoped<IFileUploadService, FileUploadService>();
+        services.AddScoped<IFlowUserRepo, IFlowUserRepo>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
