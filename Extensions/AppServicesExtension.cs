@@ -40,6 +40,7 @@ public static class AppServicesExtension
         config.Apply(new JobTableMappingProfile());
         config.Apply(new KeyStoreMappingProfile());
         config.Apply(new VaultMappingProfile());
+        config.Apply(new FlowUserMappingProfile());
 
         services.AddSingleton(config);
     }
