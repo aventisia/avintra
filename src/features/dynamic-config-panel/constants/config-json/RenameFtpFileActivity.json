@@ -34,17 +34,5 @@
     "description": "Maximum time in seconds to wait before failing due to timeout.",
     "defaultValue": 30,
     "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "Success",
-    "label": "Success",
-    "description": "Returns true if the file was successfully renamed.",
-    "defaultValue": {
-      "value": "Success",
-      "enabled": true
-    },
-    "required": false
   }
 ]

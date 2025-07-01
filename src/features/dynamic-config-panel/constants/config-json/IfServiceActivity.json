@@ -230,5 +230,17 @@
         "description": "User Experience Virtualization Service."
       }
     ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ConditionResult",
+    "label": "Condition Result",
+    "description": "Returns true if the service matches the specified condition.",
+    "defaultValue": {
+      "value": "ConditionResult",
+      "enabled": true
+    },
+    "required": false
   }
 ]

@@ -4,7 +4,7 @@
     "type": "select",
     "name": "ServiceToResume",
     "label": "Service to Resume",
-    "description": "The name of the service to resume.",
+    "description": "Select a service from the list to resume.",
     "defaultValue": "",
     "required": true,
     "selectOptions": [
@@ -194,5 +194,14 @@
         "description": "User Experience Virtualization Service."
       }
     ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "CustomServiceName",
+    "label": "Custom Service Name",
+    "description": "Optional: Enter a custom service name if not available in the Service To Resume list.",
+    "defaultValue": "",
+    "required": false
   }
 ]

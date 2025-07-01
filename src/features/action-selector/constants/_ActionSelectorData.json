@@ -2092,7 +2092,7 @@
             "type": "activityNode",
             "name": "InsertImageInWordDocumentActivity",
             "label": "Insert Image in Word Document",
-            "description": "Inserts an image into a Word file.",
+            "description": "Inserts an image into a Word file at a specified location.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2650,7 +2650,7 @@
             "type": "activityNode",
             "name": "CopyExcelWorksheetActivity",
             "label": "Copy Excel Worksheet",
-            "description": "Copies a worksheet from one Excel instance to another or within the same instance.",
+            "description": "Copies a worksheet from one Excel instance to another.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
