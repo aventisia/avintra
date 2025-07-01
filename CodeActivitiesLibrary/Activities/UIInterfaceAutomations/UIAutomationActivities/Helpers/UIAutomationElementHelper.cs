@@ -96,10 +96,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.He
                 bool isMatch = true;
                 if (!string.IsNullOrEmpty(identificationObject.Index) && index.ToString() != identificationObject.Index.Trim())
                     isMatch = false;
-                if (!string.IsNullOrEmpty(identificationObject.Index) && automationId != identificationObject.AutomationId.Trim())
-                    isMatch = false;
-                if (!string.IsNullOrEmpty(identificationObject.AutomationId) && automationId != identificationObject.AutomationId.Trim())
-                    isMatch = false;
                 if (!string.IsNullOrEmpty(identificationObject.Name))
                 {
                     var trimmedIdentificationName = identificationObject.Name.Trim();
@@ -124,6 +120,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.He
                 if (!string.IsNullOrEmpty(identificationObject.ControlType) && controlType != identificationObject.ControlType.Trim())
                     isMatch = false;
                 if (!string.IsNullOrEmpty(identificationObject.FrameworkId) && frameworkId != identificationObject.FrameworkId.Trim())
+                    isMatch = false;
+                if (!string.IsNullOrEmpty(identificationObject.AutomationId) && automationId != identificationObject.AutomationId.Trim())
                     isMatch = false;
 
                 // Increment index
@@ -206,13 +204,18 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.He
 
             try
             {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true // allows case-insensitive matching
+                };
+
                 // Try to deserialize as a list
-                var list = JsonSerializer.Deserialize<List<IdentificationObject>>(identificationObjectPath);
+                var list = JsonSerializer.Deserialize<List<IdentificationObject>>(identificationObjectPath, options);
                 if (list != null)
                     return list;
 
                 // If not a list, try to deserialize as a single object
-                var single = JsonSerializer.Deserialize<IdentificationObject>(identificationObjectPath);
+                var single = JsonSerializer.Deserialize<IdentificationObject>(identificationObjectPath, options);
                 if (single != null)
                     return new List<IdentificationObject> { single };
             }
