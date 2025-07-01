@@ -43,4 +43,11 @@ public class WorkspaceUserController : BaseApiController
     {
         return ResultHelper(await _userService.DeleteWorkspaceUserAsync(id));
     }
+
+    // Searches for workspace users matching the specified key.
+    [HttpGet("search/{searchKey}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> SearchWorkspaceUser(string searchKey)
+    {
+        return ResultHelper(await _userService.SearchWorkspaceUserAsync(searchKey));
+    }
 }

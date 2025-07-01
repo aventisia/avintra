@@ -292,4 +292,53 @@ public class WorkspaceUserService : IWorkspaceUserService
 
         return serviceResponse;
     }
+
+    // Searches workspace users whose first name, last name, or username contains the given search key.
+    public async Task<ServiceResponse<IEnumerable<WorkspaceUserDto>>> SearchWorkspaceUserAsync(string searchKey)
+    {
+        // Initialize the response with a default "Bad Request" status
+        var serviceResponse = new ServiceResponse<IEnumerable<WorkspaceUserDto>>
+        {
+            Data = null,
+            Message = "Failed to search user. Please try again."
+        };
+
+        try
+        {
+            // Validate that the search key is not null or empty
+            if (string.IsNullOrWhiteSpace(searchKey))
+            {
+                _logger.LogWarning("Workspace user search failed: search key was empty or null.");
+                serviceResponse.Message = "Search key cannot be empty.";
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("User '{User}' initiated a workspace user search with key: '{SearchKey}'", _userName, searchKey);
+
+            // Search workspace users by FirstName, LastName, or UserName
+            var users = await _unitOfWork.WorkspaceUserRepo
+                .GetByConditionAsync(w =>
+                    w.Id != _userId && 
+                    (
+                        w.FirstName.Contains(searchKey) ||
+                        w.LastName.Contains(searchKey) ||
+                        w.UserName.Contains(searchKey))
+                    )
+                .ProjectToType<WorkspaceUserDto>()
+                .ToListAsync();
+
+            // Update and return the successful response
+            serviceResponse.Data = users;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = $"Search completed. {users.Count} user(s) found.";
+            _logger.LogInformation("Workspace user search succeeded for key '{SearchKey}'. Total matches: {Count}.", searchKey, users.Count);
+        }
+        catch (Exception ex)
+        {
+            // Log unexpected error and return error response
+            _logger.LogError(ex, "Error occurred while searching workspace users with key '{SearchKey}'", searchKey);
+        }
+
+        return serviceResponse;
+    }
 }

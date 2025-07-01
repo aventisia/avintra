@@ -36,4 +36,11 @@ public interface IWorkspaceUserService
     /// <param name="id">The ID of the workspace user to delete.</param>
     /// <returns>The task result contains a boolean indicating whether the deletion was successful.</returns>
     Task<ServiceResponse<bool>> DeleteWorkspaceUserAsync(Guid id);
+
+    /// <summary>
+    /// Retrieves a list of workspace users whose properties match the provided search key.
+    /// </summary>
+    /// <param name="searchKey">The keyword to search workspace users by.</param>
+    /// <returns>A task that returns a service response with an enumerable collection of matching workspace user DTOs.</returns>
+    Task<ServiceResponse<IEnumerable<WorkspaceUserDto>>> SearchWorkspaceUserAsync(string searchKey);
 }
