@@ -41,6 +41,7 @@ public static class AppServicesExtension
         config.Apply(new KeyStoreMappingProfile());
         config.Apply(new VaultMappingProfile());
         config.Apply(new FlowUserMappingProfile());
+        config.Apply(new FlowBlockMappingProfile());
 
         services.AddSingleton(config);
     }
