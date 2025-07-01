@@ -60,4 +60,8 @@ public class Flow : BaseEntity, IMustHaveTenant
     /// </summary>
     public virtual ICollection<FlowTemplate>? FlowTemplate { get; set; }
 
+    /// <summary>
+    /// Gets or sets the list of FlowUsers to manage the many-to-many relation.
+    /// </summary>
+    public virtual ICollection<FlowUser>? FlowUsers { get; set; }
 }
