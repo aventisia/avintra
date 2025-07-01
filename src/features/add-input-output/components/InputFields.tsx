@@ -99,6 +99,7 @@ const InputFields = ({
             size="xs"
             selectOptions={[
               { label: "TextBox", value: "text" },
+              { label: "Password", value: "password" },
               { label: "Select (Dropdown)", value: "select" },
               { label: "Toggle (Switch)", value: "switch" },
             ]}

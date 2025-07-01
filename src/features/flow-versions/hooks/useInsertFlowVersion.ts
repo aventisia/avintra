@@ -36,6 +36,7 @@ export const useInsertFlowVersionMutation = () => {
           id: httpResponse.data.flowId,
           versionId: httpResponse.data.id,
           reactFlowObject: flowsData?.data.reactFlowObject,
+          inputOutputObject: flowsData?.data.inputOutputObject,
           flowVariablesObject: flowsData.data.flowVariablesObject,
         }).then(() => {
           handleOpenFlowAction(httpResponse.data.flowId, httpResponse.data.id);

@@ -48,36 +48,10 @@ const OutputFields = ({
             {...field}
             fieldSize="xs"
             description="Unique identifier for the field "
-            label="Name"
+            label="Output variable"
           />
         )}
       />
-      <Controller
-        name={`outputs.${index}.label`}
-        control={control}
-        render={({ field }) => (
-          <InputField
-            {...field}
-            fieldSize="xs"
-            description="User-friendly name displayed in the form UI"
-            label="Label"
-          />
-        )}
-      />
-
-      <Controller
-        name={`outputs.${index}.defaultValue`}
-        control={control}
-        render={({ field }) => (
-          <InputField
-            {...field}
-            fieldSize="xs"
-            label="Default value"
-            description="Initial value for the field"
-          />
-        )}
-      />
-
       <Controller
         name={`outputs.${index}.description`}
         control={control}

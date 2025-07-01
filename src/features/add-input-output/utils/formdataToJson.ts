@@ -5,17 +5,9 @@ import {
   OutputFieldFormValues,
 } from "../constants/inputs-outputs-zod-schema";
 
-export const transformFormDataToDCPJson = (
+export const formDataToDCPJson = (
   formData: InputsOutputsFieldsFormType,
 ): DCPFieldSchemaType[] => {
-  const toCamelCase = (str: string) =>
-    str
-      .replace(/[^a-zA-Z0-9 ]/g, "") // remove special characters
-      .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) =>
-        index === 0 ? word.toLowerCase() : word.toUpperCase(),
-      )
-      .replace(/\s+/g, "");
-
   const transformField = (
     field: FieldItemFormValues | OutputFieldFormValues,
   ): DCPFieldSchemaType => {
@@ -27,9 +19,9 @@ export const transformFormDataToDCPJson = (
       direction,
       type,
       name,
-      label,
+      label: direction === "Output" ? name : label, // Set label to name for Output fields
       description,
-      defaultValue: transformDefaultValue(type, defaultValue),
+      defaultValue: transformDefaultValue(type, defaultValue, name),
       required,
     };
 
@@ -41,17 +33,21 @@ export const transformFormDataToDCPJson = (
         .filter((opt: string) => opt.length > 0)
         .map((opt: string) => ({
           label: opt,
-          value: toCamelCase(opt),
+          value: opt, // value and label should be the same
         }));
     }
 
     return baseField;
   };
 
-  const transformDefaultValue = (type: string, value: unknown): unknown => {
+  const transformDefaultValue = (
+    type: string,
+    value: unknown,
+    name: string,
+  ): unknown => {
     if (type === "config-panel-output") {
       return {
-        value: value || "",
+        value: value || name, // output field's default value should be the name
         enabled: true,
       };
     }

@@ -20,6 +20,9 @@ export interface LoadFlowDto {
   /** Output Variables object, i..e the Flow Variables */
   flowVariablesObject: string;
 
+  /** Flow's inputs outputs JSON data in string format */
+  inputOutputObject?: string;
+
   isPublished: boolean;
   isLocked: boolean;
   isDraft: boolean;
