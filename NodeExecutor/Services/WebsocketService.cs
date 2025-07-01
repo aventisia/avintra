@@ -64,20 +64,30 @@ namespace NodeExecutor.Services
 
         private async Task ReceiveLoop()
         {
-            var buffer = new byte[1024];
+            var buffer = new byte[1048576]; // 1 MB buffer, adjust as needed
 
             while (_socket.State == WebSocketState.Open)
             {
                 try
                 {
-                    var result = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer), _cts.Token);
+                    var messageBuffer = new ArraySegment<byte>(buffer);
+                    var message = new StringBuilder();
+                    WebSocketReceiveResult result;
+
+                    do
+                    {
+                        result = await _socket.ReceiveAsync(messageBuffer, _cts.Token);
+                        message.Append(Encoding.UTF8.GetString(buffer, 0, result.Count));
+                    }
+                    while (!result.EndOfMessage);
+
                     if (result.MessageType == WebSocketMessageType.Close)
                     {
                         await _socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", _cts.Token);
                         break;
                     }
 
-                    var json = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    var json = message.ToString();
                     var msg = JsonConvert.DeserializeObject<CommandMessage>(json);
 
                     if (msg.Source != "wpf")

@@ -224,4 +224,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetDir)*.*" "C:\My Space\Gitea\Aventisia\workspace\src-tauri\binaries\ui-inspector" /E /Y /I</PostBuildEvent>
+  </PropertyGroup>
 </Project>
