@@ -34,12 +34,17 @@ public class FlowBuilderService : IFlowBuilderService
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.FlowId == flowId &&
-                    w.CreatedByUserId == _userId &&
+                    w.CreatedByUserId == _userId ||
+                    (
+                        w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                    ) &&
                     (versionId == null || w.Id == versionId)
+
                 )
                 .Include(u => u.CreatedByUser)
                 .Include(lm => lm.LastModifiedByUser)
                 .Include(f => f.Flow)
+                .ThenInclude(i2 => i2.FlowUsers)
                 .OrderByDescending(a => a.CreatedOn) // Ensure the latest version is retrieved
                 .FirstOrDefaultAsync();
 
@@ -82,7 +87,12 @@ public class FlowBuilderService : IFlowBuilderService
                 .GetByConditionAsync(w =>
                     (flowSilentUpdateDto.VersionId == null || w.Id == flowSilentUpdateDto.VersionId) &&
                     w.FlowId == flowSilentUpdateDto.Id &&
-                    w.CreatedByUserId == _userId)
+                    w.CreatedByUserId == _userId ||
+                    (
+                        w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                    ))
+                .Include(i => i.Flow)
+                .ThenInclude(i2 => i2.FlowUsers)
                 .OrderByDescending(a => a.CreatedOn)
                 .SingleOrDefaultAsync();
 
@@ -141,8 +151,13 @@ public class FlowBuilderService : IFlowBuilderService
                                         .GetByConditionAsync(w =>
                                             (flowSilentUpdateDto.VersionId == null || w.Id == flowSilentUpdateDto.VersionId) &&
                                             w.FlowId == flowSilentUpdateDto.Id &&
-                                            w.CreatedByUserId == _userId 
+                                            w.CreatedByUserId == _userId ||
+                                            (
+                                                w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                                            )
                                         )
+                                        .Include(i => i.Flow)
+                                        .ThenInclude(i2 => i2.FlowUsers)
                                         .OrderByDescending(a => a.CreatedOn)
                                         .SingleOrDefaultAsync();
 

@@ -35,11 +35,15 @@ public class FlowsTableService : IFlowsTableService
         {
             // Get flows
             var flows = await _unitOfWork.FlowRepo
-                                         .GetByConditionAsync(w =>
-                                            w.CreatedByUserId == _userId) // TODO: Update condition
-                                         .OrderByDescending(w => w.CreatedOn)
-                                         .ProjectToType<FlowsTableDto>()
-                                         .ToListAsync();
+            .GetByConditionAsync(w =>
+                w.CreatedByUserId == _userId ||
+                (
+                    w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
+                )) // TODO: Update condition
+                .OrderByDescending(w => w.CreatedOn)
+                .Include(w => w.FlowUsers)
+                .ProjectToType<FlowsTableDto>()
+                .ToListAsync();
 
             // Task successful
             serviceResponse.Data = flows.Adapt<IEnumerable<FlowsTableDto>>();
@@ -259,7 +263,11 @@ public class FlowsTableService : IFlowsTableService
             var flow = await _unitOfWork.FlowRepo
                                         .GetByConditionAsync(w =>
                                             w.Id == id &&
-                                            w.CreatedByUserId == _userId)
+                                            w.CreatedByUserId == _userId ||
+                                            (
+                                                w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
+                                            ))
+                                        .Include(i => i.FlowUsers)
                                         .SingleOrDefaultAsync();
 
             // Flow does not exist
@@ -311,8 +319,13 @@ public class FlowsTableService : IFlowsTableService
             // Validate flows existence
             var flows = await _unitOfWork.FlowRepo
                                             .GetByConditionAsync(w =>
-                                                w.CreatedByUserId == _userId &&
-                                                ids.Contains(w.Id))
+                                                ids.Contains(w.Id) &&
+                                                w.CreatedByUserId == _userId ||
+                                                (
+                                                    w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
+                                                )
+                                            )
+                                            .Include(i => i.FlowUsers)
                                             .ToListAsync();
 
             // Flows do not exist
