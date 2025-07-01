@@ -80,6 +80,7 @@ public static class AppServicesExtension
         services.AddScoped<ITriggerService, TriggerService>();
         services.AddScoped<IFileUploadService, FileUploadService>();
         services.AddScoped<IFlowUserService, FlowUserService>();
+        services.AddScoped<IFlowBlockService, FlowBlockService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
