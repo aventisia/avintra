@@ -116,6 +116,8 @@ public class FlowUserService : IFlowUserService
 
             // Map the DTO to the FlowUser entity model
             var newFlowUser = flowUserDto.Adapt<FlowUser>();
+            newFlowUser.CreatedByUserId = _userId;
+            newFlowUser.LastModifiedByUserId = _userId;
 
             // Insert the new entity in repository
             await _unitOfWork.FlowUserRepo.InsertAsync(newFlowUser);

@@ -9,17 +9,23 @@ public class FlowUserDto
     /// Gets or sets the unique identifier for the FlowUser record.
     /// </summary>
     public Guid Id { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the access type of the user within the flow.
     /// </summary>
     public AgentAccessTypesEnum Type { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the identifier of the flow that the user is linked to.
     /// </summary>
     [RequiredGuid]
     public Guid FlowId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ID of the user associated with this flow.
+    /// </summary>
+    [RequiredGuid]
+    public Guid UserId { get; set; }
 
     /// <summary>
     /// Gets or sets the full name of the user associated with the flow.
