@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
     [DisplayName("Download File(s) from FTP")]
     [Description("Downloads one or more files from an FTP server.")]
     public class DownloadFilesFromFtpActivity : BaseCodeActivity
-    {
+    {   
         [RequiredArgument]
         [DisplayName("FTP Connection")]
         [Description("The FTP connection object.")]
@@ -47,55 +47,103 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         [Description("The operation to perform if the file already exists locally.")]
         [DefaultValue(FileExistsOperation.Overwrite)]
         public InArgument<FileExistsOperation> IfFileExists { get; set; } = FileExistsOperation.Overwrite;
+ 
+        [DisplayName("Downloaded Files Count")]
+        [Description("Returns the number of files successfully downloaded.")]
+        public OutArgument<int> DownloadedFilesCount { get; set; }
 
+        [DisplayName("Skipped Files")]
+        [Description("Returns the list of files that were skipped during download.")]
+        public OutArgument<List<string>> SkippedFiles { get; set; }
+
+        // ----------------------
+        // Execution Logic
+        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var connection = FtpConnection.Get(context);
-            var localDirectory = LocalDirectory.Get(context);
-            var ifFileExists = IfFileExists.Get(context);
-
-            var status = "";
+            var status = "Operation completed.";
+            var downloadedCount = 0;
+            var skippedFiles = new List<string>();
 
             try
             {
+                var connection = FtpConnection.Get(context);
+                var localDirectory = LocalDirectory.Get(context);
+                var ifFileExists = IfFileExists.Get(context);
+
+                if (connection == null || !connection.IsConnected)
+                    throw new ArgumentException("FTP connection must be valid and active.");
+
+                if (!Directory.Exists(localDirectory))
+                    Directory.CreateDirectory(localDirectory);
+
                 if (DownloadMultipleFiles.Get(context))
                 {
-                    var fileNames = FileNames.Get(context);
-                    DownloadFiles(connection, fileNames, localDirectory, ifFileExists);
-                    status = "Files downloaded successfully.";
+                    var fileNames = FileNames.Get(context) ?? new List<string>();
+                    foreach (var fileName in fileNames)
+                    {
+                        if (!connection.FileExists(fileName))
+                        {
+                            skippedFiles.Add(fileName);
+                            continue;
+                        }
+
+                        DownloadFile(connection, fileName, localDirectory, ifFileExists);
+                        downloadedCount++;
+                    }
+                    status = $"Successfully downloaded {downloadedCount} files.";
+                    if (skippedFiles.Count > 0)
+                        status += $" Skipped: {string.Join(", ", skippedFiles)}";
                 }
                 else
                 {
                     var fileName = FileName.Get(context);
-                    DownloadFile(connection, fileName, localDirectory, ifFileExists);
-                    status = "File downloaded successfully.";
-                    IsSuccess.Set(context, true);
-                    StatusMessage.Set(context, status);
+                    if (!connection.FileExists(fileName))
+                    {
+                        status = $"File '{fileName}' does not exist on the server.";
+                        skippedFiles.Add(fileName);
+                    }
+                    else
+                    {
+                        DownloadFile(connection, fileName, localDirectory, ifFileExists);
+                        downloadedCount++;
+                        status = $"File '{fileName}' downloaded successfully.";
+                    }
                 }
+
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, status);
+                DownloadedFilesCount.Set(context, downloadedCount);
+                SkippedFiles.Set(context, skippedFiles);
             }
             catch (Exception ex)
             {
                 status = $"Error downloading file(s): {ex.Message}";
+                Console.WriteLine($"FTP Download Error: {ex}");
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
-
+                DownloadedFilesCount.Set(context, null);
+                SkippedFiles.Set(context, null);
             }
         }
 
         private void DownloadFile(FtpClient connection, string fileName, string localDirectory,
-            FileExistsOperation ifFileExists = FileExistsOperation.Overwrite)
+            FileExistsOperation ifFileExists)
         {
             var localFilePath = Path.Combine(localDirectory, fileName);
+
             switch (ifFileExists)
             {
                 case FileExistsOperation.Overwrite:
                     connection.DownloadFile(fileName, localFilePath);
                     break;
+
                 case FileExistsOperation.DontDownload:
                     if (File.Exists(localFilePath))
                         return;
                     connection.DownloadFile(fileName, localFilePath);
                     break;
+
                 case FileExistsOperation.DownloadWithUniqueName:
                     // Generate a unique file name
                     var fileExt = Path.GetExtension(fileName);
@@ -103,23 +151,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                     var i = 1;
                     while (File.Exists(localFilePath))
                     {
-                        localFilePath = $"{localDirectory}/{baseName}_{i}{fileExt}";
+                        localFilePath = Path.Combine(localDirectory, $"{baseName}_{i}{fileExt}");
                         i++;
                     }
 
                     connection.DownloadFile(fileName, localFilePath);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(ifFileExists), ifFileExists, null);
-            }
-        }
-
-        private void DownloadFiles(FtpClient connection, List<string> fileNames, string localDirectory,
-            FileExistsOperation ifFileExists = FileExistsOperation.Overwrite)
-        {
-            foreach (var fileName in fileNames)
-            {
-                DownloadFile(connection, fileName, localDirectory, ifFileExists);
+                    throw new ArgumentOutOfRangeException();
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities.Enums;
+﻿using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -12,7 +13,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
     [DisplayName("If process")]
     [Description(
         "Marks the beginning of a conditional block of actions depending on whether a process is running or not.")]
-    public class IfProcessActivity : Extensions.BaseCodeActivity
+    public class IfProcessActivity :BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -37,15 +38,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
         [DisplayName("User name")]
         [Description("The name of the user to check (only applicable if 'From User' is enabled).")]
         public InArgument<string> UserName { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
-        [DisplayName("Status Message")]
-        [Description("Provides status information about the operation.")]
-        public OutArgument<string> StatusMessages { get; set; }
 
         // ----------------------
         // Execution Logic

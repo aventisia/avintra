@@ -1,7 +1,11 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 {
@@ -21,18 +25,44 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
         protected override void Execute(CodeActivityContext context)
         {
             var scriptCode = ScriptCode.Get(context);
+            string output = string.Empty;
 
             try
             {
-                // Use Roslyn or other .NET scripting engine to execute the code
-                // For simplicity, this example assumes the script is valid C# code
+                // Validate input
+                if (string.IsNullOrWhiteSpace(scriptCode))
+                {
+                    throw new ArgumentException(".NET Script code cannot be null or empty.");
+                }
+
+                // Create a StringWriter to capture script output
+                using (var writer = new StringWriter())
+                {
+                    // Configure script options
+                    var options = ScriptOptions.Default
+                        .AddReferences(typeof(object).Assembly, typeof(Console).Assembly)
+                        .AddImports("System");
+
+                    // Create the script with the text writer
+                    var script = CSharpScript.Create(scriptCode, options);
+
+                    // Run the script with the custom output writer
+                    var runner = script.CreateDelegate();
+                    var result = Task.Run(() => runner(writer)).Result;
+
+                    // Get the captured output
+                    output = writer.ToString().Trim();
+                }
+
+                // Set the output and success status
+                ScriptOutput.Set(context, output);
                 StatusMessage.Set(context, "Script executed successfully.");
                 IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error executing .NET script: {ex.Message}");
+                StatusMessage.Set(context, $"Error executing .NET script: {ex.InnerException?.Message ?? ex.Message}");
             }
         }
     }

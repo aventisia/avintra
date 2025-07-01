@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.Activities.AppIntegrations.FTPActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using FluentFTP;
 using System;
 using System.Activities;
@@ -93,8 +94,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                     ftpClient.CreateDirectory(remoteDir);
 
                 // Set timeouts
-                ftpClient.Config.ReadTimeout = TimeSpan.FromSeconds(TimeoutSeconds.Get(context)).Milliseconds;
-                ftpClient.Config.DataConnectionConnectTimeout = ftpClient.Config.ReadTimeout;
+                int timeoutMs = TimeoutSeconds.Get(context) * 1000;
+                ftpClient.Config.ReadTimeout = timeoutMs;
+                ftpClient.Config.DataConnectionConnectTimeout = timeoutMs;
 
                 // Upload each file
                 foreach (var filePath in localFiles)
@@ -106,7 +108,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                     }
 
                     var fileName = Path.GetFileName(filePath);
-                    var remotePath = remoteDir + "/" + fileName;
+                    var remotePath = $"{remoteDir}/{fileName}";
 
                     // Check overwrite conditions
                     if (ftpClient.FileExists(remotePath))
@@ -115,8 +117,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                         var remoteInfo = ftpClient.GetFileSize(remotePath);
                         var remoteTime = ftpClient.GetModifiedTime(remotePath);
 
-                        var shouldOverwrite = false;
+                        bool shouldOverwrite = false;
 
+                        // Replace switch expression with standard switch
                         switch (overwriteMode)
                         {
                             case OverwriteModeEnum.Always:
@@ -132,8 +135,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                                 shouldOverwrite = localInfo.Length != remoteInfo;
                                 break;
                             case OverwriteModeEnum.IfNewerOrSizeDifferent:
-                                shouldOverwrite = localInfo.LastWriteTime > remoteTime ||
-                                                  localInfo.Length != remoteInfo;
+                                shouldOverwrite = localInfo.LastWriteTime > remoteTime || localInfo.Length != remoteInfo;
+                                break;
+                            default:
+                                shouldOverwrite = false;
                                 break;
                         }
 
@@ -145,14 +150,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                     }
 
                     // Upload the file
-                    var success = false;
-                    if (ftpClient is FtpClient ftp)
-                    {
-                        ftp.UploadFile(filePath, remotePath, FtpRemoteExists.Overwrite);
-                        success = ftp.FileExists(remotePath);
-                    }
+                    var uploadResult = ftpClient.UploadFile(filePath, remotePath, FtpRemoteExists.Overwrite, false);
 
-                    if (success)
+                    if (uploadResult == FtpStatus.Success)
                     {
                         uploadedCount++;
                     }
@@ -165,9 +165,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                 status = $"Successfully uploaded {uploadedCount} files to '{remoteDir}'.";
                 if (skippedFiles.Count > 0)
                 {
-                    status += $" Skipped {skippedFiles.Count} files.";
+                    status += $" Skipped {skippedFiles.Count} files: {string.Join(", ", skippedFiles)}";
                 }
                 status += $" Total files processed: {localFiles.Count}.";
+
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
                 UploadedFilesCount.Set(context, uploadedCount);
@@ -176,6 +177,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
             catch (Exception ex)
             {
                 status = $"Error uploading files to FTP: {ex.Message}";
+                Console.WriteLine(status); // Optional: log error
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
                 UploadedFilesCount.Set(context, null);
@@ -183,4 +185,5 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
             }
         }
     }
+
 }

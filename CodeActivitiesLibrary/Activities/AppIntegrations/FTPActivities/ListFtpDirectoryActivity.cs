@@ -5,6 +5,7 @@ using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
@@ -20,7 +21,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 
         [RequiredArgument]
         [DisplayName("Directory Name")]
-        [Description("The name of the directory to create.")]
+        [Description("The name of the directory to list contents from.")]
         public InArgument<string> DirectoryName { get; set; }
 
         [DisplayName("List Type")]
@@ -29,27 +30,51 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         public InArgument<ListTypeEnum> ListType { get; set; }
 
         [DisplayName("Files and Folders Result")]
-        [Description("Returns the list subdirectories and files.")]
+        [Description("Returns the list of subdirectories and files.")]
         public OutArgument<List<string>> Result { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
+            var status = "Operation completed.";
+            List<string> result = new List<string>();
+            bool success = false;
+
             try
             {
                 var connection = FtpConnection.Get(context);
-                var listType = ListType.Get(context);
                 var path = DirectoryName.Get(context);
+                var listType = ListType.Get(context);
 
-                var result = ListItems(connection, listType, path);
-                // set result;
-                Result.Set(context, result.ToList());
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Retrieved List FTP Directory succesfully");
+                // Validate inputs
+                if (connection == null || !connection.IsConnected)
+                    throw new ArgumentException("FTP connection must be valid and active.");
+
+                if (string.IsNullOrWhiteSpace(path))
+                    throw new ArgumentException("Directory path cannot be empty.");
+
+                if (!connection.DirectoryExists(path))
+                    throw new DirectoryNotFoundException($"Directory '{path}' does not exist on the server.");
+
+                // Retrieve items
+                result = ListItems(connection, listType, path).ToList();
+
+                // Output result
+                Result.Set(context, result);
+                status = $"Successfully retrieved {result.Count} item(s) from '{path}'.";
+                success = true;
             }
             catch (Exception ex)
             {
-                IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error to retrived list FTP Directory: {ex.Message}");
+                status = $"Error retrieving FTP directory listing: {ex.Message}";
+                Console.WriteLine($"FTP Listing Error: {ex}");
+                result = null;
+                success = false;
+            }
+            finally
+            {
+                IsSuccess.Set(context, success);
+                StatusMessage.Set(context, status);
+                Result.Set(context, result);
             }
         }
 
@@ -59,13 +84,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
             switch (listType)
             {
                 case ListTypeEnum.Files:
-                    return ftpListItems.Where(item => item.Type == FtpObjectType.File).Select(item => item.Name);
+                    return ftpListItems
+                        .Where(item => item.Type == FtpObjectType.File)
+                        .Select(item => item.Name);
                 case ListTypeEnum.Folders:
-                    return ftpListItems.Where(item => item.Type == FtpObjectType.Directory).Select(item => item.Name);
+                    return ftpListItems
+                        .Where(item => item.Type == FtpObjectType.Directory)
+                        .Select(item => item.Name);
                 case ListTypeEnum.FilesAndFolders:
                     return ftpListItems.Select(item => item.Name);
                 default:
-                    throw new ArgumentException("Invalid ListType.");
+                    throw new ArgumentException("Invalid ListType value.", nameof(listType));
             }
         }
 

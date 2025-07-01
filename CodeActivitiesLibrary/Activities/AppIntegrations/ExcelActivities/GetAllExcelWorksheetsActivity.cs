@@ -4,6 +4,7 @@ using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -36,30 +37,50 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         protected override void Execute(CodeActivityContext context)
         {
             var result = new List<string>();
+            string status = "Success";
+
+            Excel.Application excelApp = null;
+            Excel.Workbook workbook = null;
 
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                excelApp = ExcelApplication.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null)
-                    throw new InvalidOperationException("Excel application or workbook is not available.");
+                if (excelApp == null)
+                    throw new InvalidOperationException("Excel application is not available.");
 
-                var wb = excelApp.ActiveWorkbook;
+                workbook = excelApp.ActiveWorkbook;
+                if (workbook == null)
+                    throw new InvalidOperationException("No active workbook found.");
 
-                result.AddRange(from Excel.Worksheet sheet in wb.Worksheets select sheet.Name);
+                // Safely loop through worksheets
+                foreach (Excel.Worksheet sheet in workbook.Worksheets)
+                {
+                    if (sheet != null)
+                    {
+                        result.Add(sheet.Name);
+                        Marshal.ReleaseComObject(sheet);
+                    }
+                }
 
                 WorksheetNames.Set(context, result);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Retrieved all excel sheet successfully");
+                status = $"Successfully retrieved {result.Count} worksheet(s).";
             }
             catch (Exception ex)
             {
                 result.Clear();
                 WorksheetNames.Set(context, result);
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error retrieving worksheets: {ex.Message}");
+                status = $"Error retrieving worksheets: {ex.Message}";
             }
-
+            finally
+            {
+                // Release COM objects
+                if (workbook != null) Marshal.ReleaseComObject(workbook);
+                if (excelApp != null) Marshal.ReleaseComObject(excelApp);
+                StatusMessage.Set(context, status);
+            }
         }
     }
 }

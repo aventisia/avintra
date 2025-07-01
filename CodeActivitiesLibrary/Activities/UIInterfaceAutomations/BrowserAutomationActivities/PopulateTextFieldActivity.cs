@@ -180,7 +180,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                 {
                     var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
                     wait.Until(d =>
-                        ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
+                        (d as IJavaScriptExecutor)?.ExecuteScript("return document.readyState")?.ToString() ==
+                        "complete");
                 }
 
                 // Optional: Handle alert popup

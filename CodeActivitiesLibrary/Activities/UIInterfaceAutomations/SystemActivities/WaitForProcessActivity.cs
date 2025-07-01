@@ -4,6 +4,10 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.Linq;
+using System.Management;
+
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
@@ -48,35 +52,110 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 
         protected override void Execute(CodeActivityContext context)
         {
+                try
+                {
+                    var processName = ProcessName.Get(context).ToString();
+                    var fromUser = FromUser.Get(context);
+                    var userName = fromUser ? UserName.Get(context) : null;
+                    var waitForProcessTo = WaitForProcessTo.Get(context);
+                    var failWithTimeout = FailWithTimeoutError.Get(context);
+                    var duration = failWithTimeout ? Duration.Get(context) : 60; // Default timeout if not set
+
+                    bool conditionMet = false;
+                    var timeoutTimer = new TimeSpan(0, 0, duration);
+                    var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+                    while (stopwatch.Elapsed < timeoutTimer)
+                    {
+                        var processes = Process.GetProcessesByName(processName);
+
+                        if (fromUser && !string.IsNullOrEmpty(userName))
+                        {
+                            processes = processes.Where(p =>
+                            {
+                                try
+                                {
+                                    string owner = GetProcessOwner(p.Id);
+                                    return owner?.Equals(userName, StringComparison.OrdinalIgnoreCase) == true;
+                                }
+                                catch
+                                {
+                                    return false;
+                                }
+                            }).ToArray();
+                        }
+
+                        bool exists = processes.Length > 0;
+
+                        if ((waitForProcessTo == WaitForProcessEnum.Start && exists) ||
+                            (waitForProcessTo == WaitForProcessEnum.Stop && !exists))
+                        {
+                            conditionMet = true;
+                            break;
+                        }
+
+                        System.Threading.Thread.Sleep(500); // Poll every 0.5 seconds
+                    }
+
+                    stopwatch.Stop();
+
+                    if (conditionMet)
+                    {
+                        StatusMessage.Set(context, $"Process '{processName}' {(waitForProcessTo == WaitForProcessEnum.Start ? "started" : "stopped")} successfully after {stopwatch.Elapsed.TotalSeconds:F1} seconds.");
+                        IsSuccess.Set(context, true);
+                    }
+                    else
+                    {
+                        string message = $"Timed out waiting for process '{processName}' to {(waitForProcessTo == WaitForProcessEnum.Start ? "start" : "stop")}.";
+
+                        if (failWithTimeout)
+                        {
+                            StatusMessage.Set(context, message);
+                            IsSuccess.Set(context, false);
+                        }
+                        else
+                        {
+                            StatusMessage.Set(context, message + " Proceeding without error.");
+                            IsSuccess.Set(context, true);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    StatusMessage.Set(context, $"Error waiting for process: {ex.Message}");
+                    IsSuccess.Set(context, false);
+                }
+        }
+
+        private static string GetProcessOwner(int processId)
+        {
             try
             {
-                var processName = ProcessName.Get(context);
-                var fromUser = FromUser.Get(context);
-                var userName = fromUser ? UserName.Get(context) : null;
-                var waitForProcessTo = WaitForProcessTo.Get(context);
-                var failWithTimeout = FailWithTimeoutError.Get(context);
-                var duration = failWithTimeout ? Duration.Get(context) : 0;
+                using (var searcher = new ManagementObjectSearcher(
+                    $"SELECT * FROM Win32_Process WHERE ProcessId = {processId}"))
+                {
+                    foreach (ManagementObject obj in searcher.Get())
+                    {
+                        string[] ownerInfo = new string[2];
+                        // ownerInfo[0] = User, ownerInfo[1] = Domain
+                        int returnVal = Convert.ToInt32(obj.InvokeMethod("GetOwner", ownerInfo));
 
-                // Simulate waiting logic
-                // Replace this with actual process monitoring logic using Process API
-                Console.WriteLine($"Waiting for process '{processName}' to {waitForProcessTo}...");
-
-                if (fromUser)
-                    Console.WriteLine($"Filtering by user: {userName}");
-
-                if (failWithTimeout)
-                    Console.WriteLine($"Timeout set to {duration} seconds.");
-
-                // Placeholder for actual process check logic
-                // You can use System.Diagnostics.Process to monitor processes
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Wait For Process success");
+                        if (returnVal == 0)
+                        {
+                            // success
+                            string user = ownerInfo[0];
+                            string domain = ownerInfo[1];
+                            return string.IsNullOrEmpty(domain) ? user : $"{domain}\\{user}";
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
-                StatusMessage.Set(context, $"Error Wait For Process To: {ex.Message}");
-                IsSuccess.Set(context, false);
+                // usually "Access Denied" or "Insufficient Privilege"
+                Console.WriteLine($"Error getting process owner for PID {processId}: {ex.Message}");
             }
+            return null;
         }
     }
 

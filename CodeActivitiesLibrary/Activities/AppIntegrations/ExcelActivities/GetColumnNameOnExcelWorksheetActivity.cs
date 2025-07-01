@@ -56,7 +56,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                 ColumnName.Set(context, columnName);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Retrieved Column Name on Excel Worksheet");
+                StatusMessage.Set(context, $"Retrieved column name: {columnName}");
             }
             catch (Exception ex)
             {
@@ -64,24 +64,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error getting column name: {ex.Message}");
             }
-
         }
 
-        // Helper method to convert column index to Excel column name
         private static string GetExcelColumnName(int columnIndex)
         {
             if (columnIndex <= 0)
-                throw new ArgumentException("Column index must be a positive value.", nameof(columnIndex));
+                throw new ArgumentException("Column index must be greater than zero.", nameof(columnIndex));
 
-            var colLetters = new char[26];
-            for (var i = 0; i < 26; i++) colLetters[i] = (char)('A' + i);
+            string columnName = string.Empty;
 
-            var columnName = string.Empty;
             while (columnIndex > 0)
             {
-                columnIndex--;
-                columnName = colLetters[columnIndex % 26] + columnName;
-                columnIndex /= 26;
+                int remainder = (columnIndex - 1) % 26;
+                columnName = (char)('A' + remainder) + columnName;
+                columnIndex = (columnIndex - 1) / 26;
             }
 
             return columnName;

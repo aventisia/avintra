@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities.Enums;
+﻿using CodeActivitiesLibrary.Activities.AppIntegrations.WindowsServiceActivities.Helpers;
+using CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities.Enums;
 using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
@@ -30,15 +31,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
         public InArgument<ServiceNameEnum> ServiceName { get; set; }
 
         [DisplayName("Fail with Timeout Error")]
-        [Description(
-            "If enabled, the activity will fail if the service does not reach the desired state within the specified duration.")]
-        public InArgument<bool> FailWithTimeoutError { get; set; }
+        [Description("If true, activity fails on timeout. Otherwise, continues.")]
+        public InArgument<bool> FailWithTimeoutError { get; set; } = new InArgument<bool>(true);
 
         // Use RenderIfCondition to make Duration dependent on FailWithTimeoutError
         [DisplayName("Duration (seconds)")]
         [Description("The maximum time to wait for the service to reach the desired state.")]
         [RenderIfCondition("FailWithTimeoutError", "True")]
-        public InArgument<int> Duration { get; set; }
+        public InArgument<int> Duration { get; set; } = new InArgument<int>(30); // Default 30 seconds
 
         // ----------------------
         // Execution Logic
@@ -49,27 +49,32 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
             try
             {
                 var waitForAction = WaitForAction.Get(context);
-                var serviceName = ServiceName.Get(context).ToString();
+                var serviceNameEnum = ServiceName.Get(context);
+                var serviceName = WindowServiceHelper.GetActualServiceName(serviceNameEnum);
+
                 var failWithTimeoutError = FailWithTimeoutError.Get(context);
                 var duration = Duration.Get(context);
 
                 if (string.IsNullOrWhiteSpace(serviceName))
                     throw new ArgumentException("Service name cannot be null or empty.");
 
-                var serviceController = new ServiceController(serviceName);
-
-                // Validate service existence
                 if (!IsServiceInstalled(serviceName))
                     throw new InvalidOperationException($"Service '{serviceName}' is not installed.");
 
-                // Wait for the desired state
-                var success = WaitForServiceState(serviceController, waitForAction, duration);
+                var serviceController = new ServiceController(serviceName);
+                var targetStatus = GetTargetStatus(waitForAction);
+
+                status = $"Waiting for service '{serviceName}' to reach state: {targetStatus}";
+
+                bool success = WaitForServiceState(serviceController, targetStatus, duration);
 
                 if (!success && failWithTimeoutError)
-                    throw new System.TimeoutException(
-                        $"Service '{serviceName}' did not reach the desired state within {duration} seconds.");
+                {
+                    status = $"Timeout reached ({duration}s). Service '{serviceName}' did not reach '{targetStatus}'.";
+                    throw new System.TimeoutException(status);
+                }
 
-                status = $"Service '{serviceName}' reached the desired state";
+                status = $"Service '{serviceName}' has reached the desired state: {targetStatus}";
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }
@@ -79,21 +84,27 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
             }
+            finally
+            {
+                StatusMessage.Set(context, status);
+            }
         }
 
-        private static bool WaitForServiceState(ServiceController serviceController,
-            WaitForTheServiceToEnum waitForAction, int duration)
+        private static bool WaitForServiceState(
+            ServiceController controller,
+            ServiceControllerStatus targetStatus,
+            int durationInSeconds)
         {
             var startTime = DateTime.Now;
-            var targetStatus = GetTargetStatus(waitForAction);
+            var timeout = TimeSpan.FromSeconds(durationInSeconds);
 
-            while ((DateTime.Now - startTime).TotalSeconds < duration)
+            while ((DateTime.Now - startTime) < timeout)
             {
                 try
                 {
-                    serviceController.Refresh();
+                    controller.Refresh();
 
-                    if (serviceController.Status == targetStatus)
+                    if (controller.Status == targetStatus)
                         return true;
 
                     Thread.Sleep(500); // Wait 500ms before checking again
@@ -101,24 +112,31 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
                 catch
                 {
                     // Ignore transient errors and retry
+                    Thread.Sleep(250);
                 }
             }
 
             return false;
         }
 
-        private static ServiceControllerStatus GetTargetStatus(WaitForTheServiceToEnum waitForAction)
+        private static ServiceControllerStatus GetTargetStatus(WaitForTheServiceToEnum action)
         {
-            switch (waitForAction)
+            switch (action)
             {
                 case WaitForTheServiceToEnum.Start:
                     return ServiceControllerStatus.Running;
+
                 case WaitForTheServiceToEnum.Stop:
                     return ServiceControllerStatus.Stopped;
+
                 case WaitForTheServiceToEnum.Pause:
                     return ServiceControllerStatus.Paused;
+
                 default:
-                    throw new ArgumentException($"Unsupported action: {waitForAction}");
+                    throw new ArgumentOutOfRangeException(
+                        nameof(action),
+                        action,
+                        $"Unsupported action: {action}");
             }
         }
 
@@ -126,8 +144,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
         {
             try
             {
-                var services = ServiceController.GetServices();
-                return services.Any(s => s.ServiceName == serviceName);
+                return ServiceController.GetServices().Any(s => s.ServiceName == serviceName);
             }
             catch
             {

@@ -21,30 +21,54 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var scriptCode = ScriptCode.Get(context);
-            var output = "";
+            string scriptCode = ScriptCode.Get(context);
+            string output = string.Empty;
 
             try
             {
-                using (var process = new Process())
+                // Validate input
+                if (string.IsNullOrWhiteSpace(scriptCode))
                 {
-                    process.StartInfo.FileName = "cscript.exe";
-                    process.StartInfo.Arguments = $"/nologo /E:vbscript \"\" echo {scriptCode} \"\"";
-                    process.StartInfo.RedirectStandardOutput = true;
-                    process.StartInfo.UseShellExecute = false;
-                    process.StartInfo.CreateNoWindow = true;
-
-                    process.Start();
-                    output = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
+                    throw new ArgumentException("VBScript code cannot be null or empty.");
                 }
 
+                // Set up process to run cscript.exe with inline VBScript
+                using (Process process = new Process())
+                {
+                    process.StartInfo.FileName = "cscript.exe";
+                    process.StartInfo.Arguments = $"/nologo /E:vbscript - \"{scriptCode.Replace("\"", "\"\"")}\"";
+                    process.StartInfo.UseShellExecute = false;
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.RedirectStandardError = true;
+                    process.StartInfo.CreateNoWindow = true;
+
+                    // Start the process
+                    process.Start();
+
+                    // Read output and error streams
+                    output = process.StandardOutput.ReadToEnd();
+                    string error = process.StandardError.ReadToEnd();
+
+                    // Wait for exit
+                    process.WaitForExit();
+
+                    // If there's an error, throw it
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        throw new Exception($"VBScript error: {error}");
+                    }
+
+                    // Trim and clean the output
+                    output = output.Trim();
+                }
+
+                // Set output and success status
                 ScriptOutput.Set(context, output);
                 StatusMessage.Set(context, "VBScript executed successfully.");
                 IsSuccess.Set(context, true);
             }
             catch (Exception ex)
-            {
+            {               
                 StatusMessage.Set(context, $"Error executing VBScript: {ex.Message}");
                 IsSuccess.Set(context, false);
             }

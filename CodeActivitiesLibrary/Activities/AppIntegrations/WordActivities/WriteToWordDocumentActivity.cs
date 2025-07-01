@@ -2,6 +2,7 @@
 using Microsoft.Office.Interop.Word;
 using System;
 using System.Activities;
+using System.Activities.Statements;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Word = Microsoft.Office.Interop.Word;
@@ -12,14 +13,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
     [Description("Writes or appends text to a Word file.")]
     public class WriteToWordDocumentActivity : BaseCodeActivity
     {
+        [RequiredArgument]
         [DisplayName("Word Instance")]
         [Description("The specific Word instance to use.")]
-        [RequiredArgument]
         public InArgument<Word.Application> WordInstance { get; set; }
 
+        [RequiredArgument]
         [DisplayName("Text to Write")]
         [Description("The text to be written or appended to the Word document.")]
-        [RequiredArgument]
+
         public InArgument<string> TextToWrite { get; set; }
 
         [DisplayName("Append New Line")]
@@ -74,9 +76,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                         throw new ArgumentException("Invalid Write Location.");
                 }
 
-                Console.WriteLine("Text written to Word document successfully.");
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Text written to Word document successfully");
+                StatusMessage.Set(context, "Text written to Word document successfully.");
             }
             catch (Exception ex)
             {

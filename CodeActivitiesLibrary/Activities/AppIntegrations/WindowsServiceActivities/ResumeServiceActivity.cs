@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities.Enums;
+﻿using CodeActivitiesLibrary.Activities.AppIntegrations.WindowsServiceActivities.Helpers;
+using CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities.Enums;
 using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
@@ -19,8 +20,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
 
         [RequiredArgument]
         [DisplayName("Service to Resume")]
-        [Description("The name of the service to resume.")]
+        [Description("Select a service from the list to resume.")]
+        [DefaultValue(null)]
         public InArgument<ServiceNameEnum> ServiceToResume { get; set; }
+
+        [DisplayName("Custom Service Name")]
+        [Description("Optional: Enter a custom service name if not available in the Service To Resume list.")]
+        public InArgument<string> CustomServiceName { get; set; }
 
         // ----------------------
         // Execution Logic
@@ -28,56 +34,99 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
+            bool success = false;
+
             try
             {
-                var serviceName = ServiceToResume.Get(context).ToString();
+                string serviceName;
+
+                var customName = CustomServiceName.Get(context);
+                if (!string.IsNullOrWhiteSpace(customName))
+                {
+                    serviceName = customName.Trim();
+                }
+                else
+                {
+                    var enumValue = ServiceToResume.Get(context);
+                    serviceName = WindowServiceHelper.GetActualServiceName(enumValue);
+                }
 
                 if (string.IsNullOrWhiteSpace(serviceName))
                     throw new ArgumentException("Service name cannot be null or empty.");
 
-                var serviceController = new ServiceController(serviceName);
-
-                // Validate service existence
                 if (!IsServiceInstalled(serviceName))
                     throw new InvalidOperationException($"Service '{serviceName}' is not installed.");
 
-                // Check if the service is already running
+                var serviceController = new ServiceController(serviceName);
+
+                // Check admin rights
+                if (!WindowServiceHelper.IsUserAdministrator())
+                    throw new UnauthorizedAccessException("This activity requires elevated privileges (Run as Administrator).");
+
+                // Ensure service supports pause/resume
+                if (!serviceController.CanPauseAndContinue)
+                    throw new InvalidOperationException($"Service '{serviceName}' does not support pause/resume.");
+
+                // Check current state
                 if (serviceController.Status == ServiceControllerStatus.Running)
                 {
                     status = $"Service '{serviceName}' is already running.";
+                    success = true;
                     return;
                 }
 
-                // Check if the service is paused
                 if (serviceController.Status != ServiceControllerStatus.Paused)
                 {
-                    status = $"Service '{serviceName}' is not paused and cannot be resumed.";
-                    return;
+                    status = $"Service '{serviceName}' is not paused. Current status: {serviceController.Status}. Cannot resume.";
+                    throw new InvalidOperationException(status);
                 }
 
                 // Resume the service
                 serviceController.Continue();
-                serviceController.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
+                WaitForServiceState(serviceController, ServiceControllerStatus.Running, 60);
 
                 status = $"Service '{serviceName}' has been resumed successfully.";
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                success = true;
             }
             catch (Exception ex)
             {
                 status = $"Error resuming service: {ex.Message}";
-                IsSuccess.Set(context, false);
+                success = false;
+            }
+            finally
+            {
                 StatusMessage.Set(context, status);
+                IsSuccess.Set(context, success);
+            }
+        }
+
+        private static void WaitForServiceState(
+            ServiceController controller,
+            ServiceControllerStatus targetStatus,
+            int timeoutSeconds)
+        {
+            var startTime = DateTime.Now;
+            var timeout = TimeSpan.FromSeconds(timeoutSeconds);
+
+            while ((DateTime.Now - startTime) < timeout)
+            {
+                controller.Refresh();
+
+                if (controller.Status == targetStatus)
+                    return;
+
+                System.Threading.Thread.Sleep(500);
             }
 
+            throw new System.TimeoutException(
+                $"Timeout reached ({timeoutSeconds}s). Service '{controller.ServiceName}' did not reach '{targetStatus}'.");
         }
 
         private static bool IsServiceInstalled(string serviceName)
         {
             try
             {
-                var services = ServiceController.GetServices();
-                return services.Any(s => s.ServiceName == serviceName);
+                return ServiceController.GetServices().Any(s => s.ServiceName == serviceName);
             }
             catch
             {

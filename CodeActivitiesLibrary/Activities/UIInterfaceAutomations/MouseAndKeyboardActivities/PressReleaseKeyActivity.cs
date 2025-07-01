@@ -14,10 +14,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
     [Description("Presses (and holds) or releases one or more modifier keys (Alt, Control, Shift, Win). Supports combinations like Ctrl+Alt.")]
     public class PressReleaseKeyActivity : BaseCodeActivity
     {
-        // ----------------------
+         // ----------------------
         // Input Arguments
         // ----------------------
-
         [RequiredArgument]
         [DisplayName("Action To Perform")]
         [Description("Select whether to press or release the keys.")]
@@ -39,6 +38,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
         [Description("Toggle to include the Windows key in the action.")]
         public InArgument<bool> UseWin { get; set; }
 
+        [DisplayName("Key To Press")]
+        [Description("The main key to simulate (e.g., A, Enter, Tab). Leave blank if only using modifiers).")]
+        public InArgument<Keys> KeyToPress { get; set; }
+
         [DisplayName("Wait Before Releasing (ms)")]
         [Description("Optional delay in milliseconds before releasing the key (used when pressing only).")]
         [DefaultValue(0)]
@@ -50,19 +53,20 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
-            var action = ActionToPerform.Get(context);
-            var useControl = UseControl.Get(context);
-            var useAlt = UseAlt.Get(context);
-            var useShift = UseShift.Get(context);
-            var useWin = UseWin.Get(context);
-            var waitTime = WaitBeforeReleasing.Get(context);
-
             try
             {
+                var action = ActionToPerform.Get(context);
+                var useControl = UseControl.Get(context);
+                var useAlt = UseAlt.Get(context);
+                var useShift = UseShift.Get(context);
+                var useWin = UseWin.Get(context);
+                var key = KeyToPress.Get(context);
+                var waitTime = WaitBeforeReleasing.Get(context);
+
                 if (action == default(ActionTypeEnum))
                     throw new ArgumentException("Action value must be specified.");
 
-                var keys = GetSelectedKeys(useControl, useAlt, useShift, useWin);
+                var keys = GetSelectedKeys(useControl, useAlt, useShift, useWin, key);
 
                 if (keys == null || keys.Length == 0)
                     throw new InvalidOperationException("No valid key combination provided.");
@@ -71,24 +75,22 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
                 {
                     case ActionTypeEnum.Press:
                         foreach (var k in keys)
-                            _SimulateKeyPress(k);
-
+                            NativeMethods.KeyDown(k);
                         status = $"Successfully pressed key(s): '{string.Join(", ", keys)}'.";
-
                         if (waitTime > 0)
                             Thread.Sleep(waitTime);
                         break;
 
                     case ActionTypeEnum.Release:
                         foreach (var k in keys)
-                            _SimulateKeyRelease(k);
-
+                            NativeMethods.KeyUp(k);
                         status = $"Successfully released key(s): '{string.Join(", ", keys)}'.";
                         break;
 
                     default:
                         throw new ArgumentException("Invalid action specified.");
                 }
+
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }
@@ -100,65 +102,19 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
             }
         }
 
-        private static Keys[] GetSelectedKeys(bool useControl, bool useAlt, bool useShift, bool useWin)
+        private static Keys[] GetSelectedKeys(bool useControl, bool useAlt, bool useShift, bool useWin, Keys key)
         {
             var selectedKeys = new List<Keys>();
 
-            if (useControl)
-                selectedKeys.Add(Keys.Control);
+            if (useControl) selectedKeys.Add(Keys.Control);
+            if (useAlt) selectedKeys.Add(Keys.Alt);
+            if (useShift) selectedKeys.Add(Keys.Shift);
+            if (useWin) selectedKeys.Add(Keys.LWin);
 
-            if (useAlt)
-                selectedKeys.Add(Keys.Alt);
-
-            if (useShift)
-                selectedKeys.Add(Keys.Shift);
-
-            if (useWin)
-                selectedKeys.Add(Keys.LWin);
+            if (key != Keys.None)
+                selectedKeys.Add(key);
 
             return selectedKeys.ToArray();
-        }
-
-        private static void _SimulateKeyPress(Keys key)
-        {
-            switch (key)
-            {
-                case Keys.Control:
-                    NativeMethods.KeyDown((uint)NativeMethods.VkCode.KEYEVENTF_KEYDOWN, NativeMethods.VkCode.VK_CONTROL);
-                    break;
-                case Keys.Shift:
-                    NativeMethods.KeyDown((uint)NativeMethods.VkCode.KEYEVENTF_KEYDOWN, NativeMethods.VkCode.VK_SHIFT);
-                    break;
-                case Keys.Alt:
-                    NativeMethods.KeyDown((uint)NativeMethods.VkCode.KEYEVENTF_KEYDOWN, NativeMethods.VkCode.VK_MENU);
-                    break;
-                case Keys.LWin:
-                    NativeMethods.KeyDown((uint)NativeMethods.VkCode.KEYEVENTF_KEYDOWN, NativeMethods.VkCode.VK_LWIN);
-                    break;
-                default:
-                    throw new ArgumentException($"Unsupported key: {key}");
-            }
-        }
-
-        private static void _SimulateKeyRelease(Keys key)
-        {
-            switch (key)
-            {
-                case Keys.Control:
-                    NativeMethods.KeyUp((uint)NativeMethods.VkCode.KEYEVENTF_KEYUP, NativeMethods.VkCode.VK_CONTROL);
-                    break;
-                case Keys.Shift:
-                    NativeMethods.KeyUp((uint)NativeMethods.VkCode.KEYEVENTF_KEYUP, NativeMethods.VkCode.VK_SHIFT);
-                    break;
-                case Keys.Alt:
-                    NativeMethods.KeyUp((uint)NativeMethods.VkCode.KEYEVENTF_KEYUP, NativeMethods.VkCode.VK_MENU);
-                    break;
-                case Keys.LWin:
-                    NativeMethods.KeyUp((uint)NativeMethods.VkCode.KEYEVENTF_KEYUP, NativeMethods.VkCode.VK_LWIN);
-                    break;
-                default:
-                    throw new ArgumentException($"Unsupported key: {key}");
-            }
         }
 
         private static class NativeMethods
@@ -166,31 +122,17 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
             [DllImport("user32.dll")]
             private static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
 
-            public static void KeyDown(uint dwFlags, VkCode vk)
+            public static void KeyDown(Keys key)
             {
-                keybd_event((byte)vk, 0, dwFlags, UIntPtr.Zero);
+                keybd_event((byte)key, 0, 0, UIntPtr.Zero); // KEYEVENTF_KEYDOWN
             }
 
-            public static void KeyUp(uint dwFlags, VkCode vk)
+            public static void KeyUp(Keys key)
             {
-                keybd_event((byte)vk, 0, dwFlags | 0x0002, UIntPtr.Zero); // KEYEVENTF_KEYUP
-            }
-
-            public enum VkCode : byte
-            {
-                VK_SHIFT = 0x10,
-                VK_CONTROL = 0x11,
-                VK_MENU = 0x12, // Alt
-                VK_LWIN = 0x5B, // Left Windows key
-                VK_RETURN = 0x0D,
-                VK_TAB = 0x09,
-                VK_ESCAPE = 0x1B,
-                KEYEVENTF_KEYDOWN = 0x00,
-                KEYEVENTF_KEYUP = 0x02
+                keybd_event((byte)key, 0, 0x0002, UIntPtr.Zero); // KEYEVENTF_KEYUP
             }
         }
 
-        // Define the enum for ActionToPerform
         public enum ActionTypeEnum
         {
             [Display(Name = "Press", Description = "Presses and holds the selected key(s).")]

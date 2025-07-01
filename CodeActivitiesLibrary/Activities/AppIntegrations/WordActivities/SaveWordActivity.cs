@@ -2,6 +2,7 @@
 using Microsoft.Office.Interop.Word;
 using System;
 using System.Activities;
+using System.Activities.Statements;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,9 +12,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
     [Description("Saves a previously launched Word instance.")]
     public class SaveWordActivity : BaseCodeActivity
     {
+        [RequiredArgument]
         [DisplayName("Word Instance")]
         [Description("The specific Word instance to save.")]
-        [RequiredArgument]
+
         public InArgument<Application> WordInstance { get; set; }
 
         [DisplayName("Save Mode")]
@@ -53,14 +55,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                         throw new ArgumentException("Invalid SaveMode option.");
                 }
 
-                Console.WriteLine("Document saved successfully.");
+
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Document saved successfully.");
             }
             catch (Exception ex)
             {
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error saving Word document:: {ex.Message}");
+                StatusMessage.Set(context, $"Error saving Word document: {ex.Message}");
             }
         }
     }

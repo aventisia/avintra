@@ -18,18 +18,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
         [DefaultValue(LogoffMethodEnum.ShutdownCommand)]
         public InArgument<LogoffMethodEnum> Method { get; set; } = LogoffMethodEnum.ShutdownCommand;
 
-
         [DisplayName("Force Logoff")]
         [Description("Force logoff if applications don't respond")]
         [DefaultValue(false)]
         public InArgument<bool> Force { get; set; } = false;
-
-
-        [DisplayName("Timeout Seconds")]
-        [Description("Timeout in seconds before forced logoff (if Force is true)")]
-        [DefaultValue(30)]
-        public InArgument<int> TimeoutSeconds { get; set; } = 30;
-
 
         [DisplayName("Success")]
         [Description("True if the logoff was initiated successfully")]
@@ -39,7 +31,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
         {
             var method = Method.Get(context);
             var force = Force.Get(context);
-            var timeout = TimeoutSeconds.Get(context);
             var status = string.Empty;
             var success = false;
 
@@ -55,7 +46,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
                 switch (method)
                 {
                     case LogoffMethodEnum.ShutdownCommand:
-                        success = LogoffWithShutdownCommand(force, timeout);
+                        success = LogoffWithShutdownCommand(force);
                         status = success
                             ? "Logoff initiated via shutdown command"
                             : "Failed to initiate logoff via shutdown command";
@@ -70,9 +61,12 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 
                     case LogoffMethodEnum.WTSAPI:
                         success = LogoffWithWTSAPI();
-                        status = success ? "Logoff initiated via WTS API" : "Failed to initiate logoff via WTS API";
+                        status = success
+                            ? "Logoff initiated via WTS API"
+                            : "Failed to initiate logoff via WTS API";
                         break;
                 }
+
                 Success.Set(context, success);
                 IsSuccess.Set(context, success);
                 StatusMessage.Set(context, status);
@@ -80,20 +74,20 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
             catch (Exception ex)
             {
                 status = $"Error during logoff: {ex.Message}";
-                success = false;
+                Success.Set(context, false);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
             }
         }
 
-        private bool LogoffWithShutdownCommand(bool force, int timeout)
+        private bool LogoffWithShutdownCommand(bool force)
         {
             try
             {
                 var args = "/l";
                 if (force)
                 {
-                    args += $" /t {timeout} /f";
+                    args += " /f";
                 }
 
                 var startInfo = new ProcessStartInfo
@@ -117,17 +111,21 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
         {
             try
             {
+                EnablePrivilege("SeShutdownPrivilege");
+
                 var flags = NativeMethods.EWX_LOGOFF;
                 if (force)
-                {
                     flags |= NativeMethods.EWX_FORCE;
-                }
                 else
-                {
                     flags |= NativeMethods.EWX_FORCEIFHUNG;
-                }
 
-                return NativeMethods.ExitWindowsEx(flags, 0);
+                var result = NativeMethods.ExitWindowsEx(flags, 0);
+                if (!result)
+                {
+                    var error = Marshal.GetLastWin32Error();
+                    Debug.WriteLine($"ExitWindowsEx error: {error}");
+                }
+                return result;
             }
             catch
             {
@@ -135,10 +133,31 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
             }
         }
 
+        private void EnablePrivilege(string privilege)
+        {
+            var identity = WindowsIdentity.GetCurrent(TokenAccessLevels.AdjustPrivileges | TokenAccessLevels.Query);
+            NativeMethods.LUID luid;
+            if (!NativeMethods.LookupPrivilegeValue(null, privilege, out luid))
+                throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+
+            NativeMethods.TOKEN_PRIVILEGES tp;
+            tp.PrivilegeCount = 1;
+            tp.Luid = luid;
+            tp.Attributes = NativeMethods.SE_PRIVILEGE_ENABLED;
+
+            if (!NativeMethods.AdjustTokenPrivileges(identity.Token, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero))
+                throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+        }
+
         private bool LogoffWithWTSAPI()
         {
             try
             {
+                if (Environment.UserInteractive)
+                {
+                    // WTSDisconnectSession does not apply to console
+                    return false;
+                }
                 return NativeMethods.WTSDisconnectSession(
                     NativeMethods.WTS_CURRENT_SERVER_HANDLE,
                     NativeMethods.WTS_CURRENT_SESSION,
@@ -152,18 +171,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 
         private bool IsCurrentUserInteractive()
         {
-            try
-            {
-                var identity = WindowsIdentity.GetCurrent();
-                if (identity == null) return false;
-
-                var principal = new WindowsPrincipal(identity);
-                return principal.IsInRole(WindowsBuiltInRole.User);
-            }
-            catch
-            {
-                return false;
-            }
+            return Environment.UserInteractive;
         }
 
         private static class NativeMethods
@@ -171,12 +179,40 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
             [DllImport("advapi32.dll", SetLastError = true)]
             public static extern bool ExitWindowsEx(uint uFlags, uint dwReason);
 
+            [DllImport("advapi32.dll", SetLastError = true)]
+            public static extern bool LookupPrivilegeValue(string lpSystemName, string lpName, out LUID lpLuid);
+
+            [DllImport("advapi32.dll", SetLastError = true)]
+            public static extern bool AdjustTokenPrivileges(
+                IntPtr TokenHandle,
+                bool DisableAllPrivileges,
+                ref TOKEN_PRIVILEGES NewState,
+                uint Zero,
+                IntPtr Null1,
+                IntPtr Null2);
+
             [DllImport("wtsapi32.dll", SetLastError = true)]
             public static extern bool WTSDisconnectSession(
                 IntPtr hServer,
                 int sessionId,
                 bool bWait);
 
+            [StructLayout(LayoutKind.Sequential)]
+            public struct LUID
+            {
+                public uint LowPart;
+                public int HighPart;
+            }
+
+            [StructLayout(LayoutKind.Sequential)]
+            public struct TOKEN_PRIVILEGES
+            {
+                public uint PrivilegeCount;
+                public LUID Luid;
+                public uint Attributes;
+            }
+
+            public const uint SE_PRIVILEGE_ENABLED = 0x00000002;
             public const uint EWX_LOGOFF = 0x00;
             public const uint EWX_FORCE = 0x04;
             public const uint EWX_FORCEIFHUNG = 0x10;

@@ -61,14 +61,29 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
                         }
 
                         break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(action), action, null);
                 }
+
+                if (!success)
+                {
+                    status = "Operation failed. Could not perform desktop action.";
+                    IsSuccess.Set(context, false);
+                    StatusMessage.Set(context, status);
+                }
+                else
+                {
+                    IsSuccess.Set(context, true);
+                }
+
                 IsDesktopVisible.Set(context, isVisible);
-                IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
                 status = $"Error managing desktop windows: {ex.Message}";
+                Console.WriteLine($"Desktop Activity Error: {ex}");
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
             }
@@ -94,18 +109,20 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
             {
                 try
                 {
-                    var lHwnd = FindWindow("Shell_TrayWnd", null);
-                    var lHwndChild = FindWindowEx(lHwnd, IntPtr.Zero, "Button", null);
-                    if (lHwndChild != IntPtr.Zero)
-                    {
-                        SendMessage(lHwnd, WM_COMMAND, (IntPtr)MIN_ALL, IntPtr.Zero);
-                        return true;
-                    }
+                    var shellTrayWnd = FindWindow("Shell_TrayWnd", null);
+                    if (shellTrayWnd == IntPtr.Zero)
+                        return false;
 
-                    return false;
+                    var buttonWnd = FindWindowEx(shellTrayWnd, IntPtr.Zero, "Button", null);
+                    if (buttonWnd == IntPtr.Zero)
+                        return false;
+
+                    SendMessage(shellTrayWnd, WM_COMMAND, (IntPtr)MIN_ALL, IntPtr.Zero);
+                    return true;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Console.WriteLine($"MinimizeAllWindows error: {ex.Message}");
                     return false;
                 }
             }
@@ -114,18 +131,20 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
             {
                 try
                 {
-                    var lHwnd = FindWindow("Shell_TrayWnd", null);
-                    var lHwndChild = FindWindowEx(lHwnd, IntPtr.Zero, "Button", null);
-                    if (lHwndChild != IntPtr.Zero)
-                    {
-                        SendMessage(lHwnd, WM_COMMAND, (IntPtr)MIN_ALL_UNDO, IntPtr.Zero);
-                        return true;
-                    }
+                    var shellTrayWnd = FindWindow("Shell_TrayWnd", null);
+                    if (shellTrayWnd == IntPtr.Zero)
+                        return false;
 
-                    return false;
+                    var buttonWnd = FindWindowEx(shellTrayWnd, IntPtr.Zero, "Button", null);
+                    if (buttonWnd == IntPtr.Zero)
+                        return false;
+
+                    SendMessage(shellTrayWnd, WM_COMMAND, (IntPtr)MIN_ALL_UNDO, IntPtr.Zero);
+                    return true;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Console.WriteLine($"RestoreAllWindows error: {ex.Message}");
                     return false;
                 }
             }
@@ -134,23 +153,29 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
             {
                 try
                 {
-                    // This is a heuristic approach - may need refinement
-                    var progMan = FindWindow("Progman", "Program Manager");
-                    if (progMan == IntPtr.Zero) return false;
+                    // Try to find Program Manager
+                    var progman = FindWindow("Progman", "Program Manager");
+                    if (progman == IntPtr.Zero)
+                        return false;
 
+                    // Look for SHELLDLL_DefView inside WorkerW window
                     var workerW = IntPtr.Zero;
-                    var defView = FindWindowEx(progMan, IntPtr.Zero, "SHELLDLL_DefView", null);
+                    var defView = FindWindowEx(progman, IntPtr.Zero, "SHELLDLL_DefView", null);
+
                     if (defView == IntPtr.Zero)
                     {
-                        // When desktop is visible, there's a WorkerW window between Progman and DefView
-                        workerW = FindWindowEx(IntPtr.Zero, progMan, "WorkerW", null);
-                        defView = FindWindowEx(workerW, IntPtr.Zero, "SHELLDLL_DefView", null);
+                        // If not found directly, look through WorkerW windows
+                        workerW = FindWindowEx(IntPtr.Zero, progman, "WorkerW", null);
+                        defView = workerW != IntPtr.Zero
+                            ? FindWindowEx(workerW, IntPtr.Zero, "SHELLDLL_DefView", null)
+                            : IntPtr.Zero;
                     }
 
                     return defView != IntPtr.Zero;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Console.WriteLine($"IsDesktopVisible error: {ex.Message}");
                     return false;
                 }
             }
@@ -167,6 +192,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
             [Display(Name = "Toggle", Description = "Toggles between showing desktop and restoring windows")]
             Toggle
         }
-
+        
     }
 }

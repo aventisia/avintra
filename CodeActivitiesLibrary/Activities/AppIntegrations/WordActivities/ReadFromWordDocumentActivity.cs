@@ -2,6 +2,7 @@
 using Microsoft.Office.Interop.Word;
 using System;
 using System.Activities;
+using System.Activities.Statements;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Word = Microsoft.Office.Interop.Word;
@@ -12,9 +13,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
     [Description("Reads the text content from a document of a Word instance.")]
     public class ReadFromWordDocumentActivity : BaseCodeActivity
     {
+        [RequiredArgument]
         [DisplayName("Word Instance")]
         [Description("The specific Word instance to read from.")]
-        [RequiredArgument]
+
         public InArgument<Word.Application> WordInstance { get; set; }
 
         [DisplayName("Retrieve")]
@@ -42,6 +44,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 // Get the active document
                 _Document activeDocument = wordApp.ActiveDocument;
 
+                if (activeDocument == null)
+                {
+                    throw new InvalidOperationException("No active document found in Word.");
+                }
+
                 var content = string.Empty;
 
                 // Perform the specified action
@@ -66,15 +73,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 
                 // Set the output WordData
                 context.SetValue(WordData, content);
-
-                Console.WriteLine("Content retrieved successfully.");
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Content retrieved successfully");
+                StatusMessage.Set(context, "Read from word document successfully");
             }
             catch (Exception ex)
             {
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error reading from Word document:: {ex.Message}");
+                StatusMessage.Set(context, $"Error reading from Word document: {ex.Message}");
+            }
+            finally
+            {
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Read from word document successfully"); // Optional: update base class status
             }
         }
     }

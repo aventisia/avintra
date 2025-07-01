@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities.Enums;
+﻿using CodeActivitiesLibrary.Activities.AppIntegrations.WindowsServiceActivities.Helpers;
+using CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities.Enums;
 using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
@@ -23,64 +24,82 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
         [Description("The name of the service to start.")]
         public InArgument<ServiceNameEnum> ServiceToStart { get; set; }
 
+        [DisplayName("Custom Service Name")]
+        [Description("Optional: Enter a custom service name if not available in the Service To Start list.")]
+        public InArgument<string> CustomServiceName { get; set; }
+
         // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
+            bool success = false;
+
             try
             {
-                var serviceName = ServiceToStart.Get(context).ToString();
+                string serviceName;
+
+                var customName = CustomServiceName.Get(context);
+                if (!string.IsNullOrWhiteSpace(customName))
+                {
+                    serviceName = customName.Trim();
+                }
+                else
+                {
+                    var enumValue = ServiceToStart.Get(context);
+                    serviceName = WindowServiceHelper.GetActualServiceName(enumValue);
+                }
 
                 if (string.IsNullOrWhiteSpace(serviceName))
                     throw new ArgumentException("Service name cannot be null or empty.");
 
-                var serviceController = new ServiceController(serviceName);
-
-                // Validate service existence
                 if (!IsServiceInstalled(serviceName))
                     throw new InvalidOperationException($"Service '{serviceName}' is not installed.");
 
-                // Check if the service is already running
+                var serviceController = new ServiceController(serviceName);
+
+                // Check admin rights
+                if (!WindowServiceHelper.IsUserAdministrator())
+                    throw new UnauthorizedAccessException("This activity requires elevated privileges (Run as Administrator).");
+
                 if (serviceController.Status == ServiceControllerStatus.Running)
                 {
                     status = $"Service '{serviceName}' is already running.";
+                    success = true;
                     return;
+                }
+
+                if (serviceController.Status != ServiceControllerStatus.Stopped)
+                {
+                    status = $"Service '{serviceName}' is not stopped. Current status: {serviceController.Status}. Cannot start.";
+                    throw new InvalidOperationException(status);
                 }
 
                 // Start the service
-                if (serviceController.Status != ServiceControllerStatus.Stopped)
-                {
-                    status = $"Service '{serviceName}' is not stopped and cannot be started.";
-                    return;
-                }
-
                 serviceController.Start();
-                serviceController.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
+                serviceController.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(60));
 
                 status = $"Service '{serviceName}' has been started successfully.";
-
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                success = true;
             }
-
             catch (Exception ex)
             {
                 status = $"Error starting service: {ex.Message}";
-                IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                success = false;
             }
-
-            StatusMessage.Set(context, status);
+            finally
+            {
+                StatusMessage.Set(context, status);
+                IsSuccess.Set(context, success);
+            }
         }
 
         private static bool IsServiceInstalled(string serviceName)
         {
             try
             {
-                var services = ServiceController.GetServices();
-                return services.Any(s => s.ServiceName == serviceName);
+                return ServiceController.GetServices().Any(s => s.ServiceName == serviceName);
             }
             catch
             {

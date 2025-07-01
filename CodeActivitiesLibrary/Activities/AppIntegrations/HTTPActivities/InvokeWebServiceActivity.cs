@@ -148,6 +148,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
             var status = "Operation completed successfully.";
             var responseCode = 0;
             var responseHeaders = new Dictionary<string, string>();
+
             try
             {
                 var response = task.Result;
@@ -173,6 +174,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
                 ResponseCode.Set(context, responseCode);
                 ResponseHeaders.Set(context, responseHeaders);
             }
+
             catch (AggregateException ae)
             {
                 var ex = ae.InnerException;

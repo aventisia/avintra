@@ -2,6 +2,7 @@
 using Microsoft.Office.Interop.Word;
 using System;
 using System.Activities;
+using System.Activities.Statements;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Word = Microsoft.Office.Interop.Word;
@@ -12,10 +13,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
     [Description("Closes a Word instance.")]
     public class CloseWordActivity : BaseCodeActivity
     {
-
+        [RequiredArgument]
         [DisplayName("Word Instance")]
         [Description("The specific Word instance to close.")]
-        [RequiredArgument]
         public InArgument<Word.Application> WordInstance { get; set; }
 
         [DisplayName("Before Closing Word")]
@@ -67,7 +67,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
             catch (Exception ex)
             {
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error to close Word: {ex.Message}");
+                StatusMessage.Set(context, $"Error closing Word: {ex.Message}");
+                throw new Exception($"Error closing Word:", ex);
             }
         }
     }

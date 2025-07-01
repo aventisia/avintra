@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.Activities.AppIntegrations.FTPActivities.Enums;
+using CodeActivitiesLibrary.Extensions;
 using FluentFTP;
 using System;
 using System.Activities;
@@ -44,7 +45,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         public InArgument<FileCompareMethodEnum> FileComparisonMethod { get; set; }
 
         [DisplayName("Delete Files Not Present Locally")]
-        [Description("If true, deletes files from the remote directory that are not present in the local directory.")]
+        [Description("If true, deletes files from the target location that are not present in the source.")]
         public InArgument<bool> DeleteFilesNotPresentLocally { get; set; }
 
         [DisplayName("Include Subdirectories")]
@@ -52,7 +53,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         public InArgument<bool> IncludeSubDirectories { get; set; }
 
         [DisplayName("Overwrite Mode")]
-        [Description("Specifies when to overwrite files on the remote server.")]
+        [Description("Specifies when to overwrite files.")]
         [DefaultValue(OverwriteModeEnum.IfNewerOrSizeDifferent)]
         public InArgument<OverwriteModeEnum> OverwriteMode { get; set; }
 
@@ -70,7 +71,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         public OutArgument<int> FilesTransferred { get; set; }
 
         [DisplayName("Directories Created")]
-        [Description("Returns the number of directories created on the remote server.")]
+        [Description("Returns the number of directories created during synchronization.")]
         public OutArgument<int> DirectoriesCreated { get; set; }
 
         // ----------------------
@@ -103,39 +104,28 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                 if (string.IsNullOrWhiteSpace(remoteDir))
                     throw new ArgumentException("Remote directory cannot be empty.");
 
-                // Set configuration
-                ftpClient.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;
-                ftpClient.Config.EncryptionMode = ftpClient.Config.EncryptionMode;
+                  // Set configuration
+                    ftpClient.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;
                 ftpClient.Config.ValidateAnyCertificate = true;
                 ftpClient.Config.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls;
 
                 switch (syncMode)
                 {
                     case SyncModeEnum.Upload:
-                        UploadDirectory(ftpClient, localDir, remoteDir, includeSubdirs, overwriteMode,
-                            compareMethod, ref filesTransferred, ref dirsCreated);
+                        UploadDirectory(ftpClient, localDir, remoteDir, includeSubdirs, overwriteMode, compareMethod, ref filesTransferred, ref dirsCreated, deleteMissing);
                         break;
-
                     case SyncModeEnum.Download:
-                        DownloadDirectory(ftpClient, localDir, remoteDir, includeSubdirs, overwriteMode,
-                            compareMethod, ref filesTransferred, ref dirsCreated);
+                        DownloadDirectory(ftpClient, localDir, remoteDir, includeSubdirs, overwriteMode, compareMethod, ref filesTransferred, ref dirsCreated, deleteMissing);
                         break;
-
                     case SyncModeEnum.Bidirectional:
-                        // First upload, then download
-                        UploadDirectory(ftpClient, localDir, remoteDir, includeSubdirs, overwriteMode,
-                            compareMethod, ref filesTransferred, ref dirsCreated);
-
-                        DownloadDirectory(ftpClient, localDir, remoteDir, includeSubdirs, overwriteMode,
-                            compareMethod, ref filesTransferred, ref dirsCreated);
+                        UploadDirectory(ftpClient, localDir, remoteDir, includeSubdirs, overwriteMode, compareMethod, ref filesTransferred, ref dirsCreated, deleteMissing);
+                        DownloadDirectory(ftpClient, localDir, remoteDir, includeSubdirs, overwriteMode, compareMethod, ref filesTransferred, ref dirsCreated, deleteMissing);
                         break;
-
                     default:
                         throw new ArgumentOutOfRangeException(nameof(syncMode));
                 }
 
-                status = $"Successfully synchronized '{localDir}' with '{remoteDir}'. " +
-                         $"{filesTransferred} files transferred, {dirsCreated} directories created.";
+                status = $"Synchronization complete: {filesTransferred} files transferred, {dirsCreated} directories created.";
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
                 FilesTransferred.Set(context, filesTransferred);
@@ -143,37 +133,48 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
             }
             catch (Exception ex)
             {
-                status = $"Error synchronizing directories: {ex.Message}";
+                status = $"Error during synchronization: {ex.Message}";
                 FilesTransferred.Set(context, null);
                 DirectoriesCreated.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
             }
-
-
         }
 
+        // ------------------------
+        // Upload logic
+        // ------------------------
         private void UploadDirectory(FtpClient client, string localDir, string remoteDir,
             bool includeSubdirs, OverwriteModeEnum overwriteMode, FileCompareMethodEnum compareMethod,
-            ref int filesTransferred, ref int dirsCreated)
+            ref int filesTransferred, ref int dirsCreated, bool deleteFilesNotPresentLocally)
         {
-            // Create remote directory if it doesn't exist
             if (!client.DirectoryExists(remoteDir))
             {
                 client.CreateDirectory(remoteDir);
                 dirsCreated++;
             }
 
-            // Upload files
-            foreach (var file in Directory.GetFiles(localDir))
+            var localFiles = Directory.GetFiles(localDir);
+            foreach (var file in localFiles)
             {
-                var fileName = Path.GetFileName(file);
-                var remoteFile = remoteDir + "/" + fileName;
+                var remoteFile = remoteDir + "/" + Path.GetFileName(file);
 
-                if (!ShouldUpload(client, file, remoteFile, overwriteMode)) continue;
+                if (!ShouldUpload(client, file, remoteFile, overwriteMode, compareMethod)) continue;
+
                 if (client.UploadFile(file, remoteFile, FtpRemoteExists.Overwrite, false) == FtpStatus.Success)
-                {
                     filesTransferred++;
+            }
+
+            if (deleteFilesNotPresentLocally)
+            {
+                var remoteFiles = client.GetNameListing(remoteDir);
+                foreach (var remoteItem in remoteFiles)
+                {
+                    var remoteName = Path.GetFileName(remoteItem);
+                    var localPath = Path.Combine(localDir, remoteName);
+
+                    if (!File.Exists(localPath) && client.FileExists(remoteItem))
+                        client.DeleteFile(remoteItem);
                 }
             }
 
@@ -181,23 +182,22 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
             {
                 foreach (var dir in Directory.GetDirectories(localDir))
                 {
-                    var dirName = new DirectoryInfo(dir).Name;
-                    var remoteSubdir = remoteDir + "/" + dirName;
-
-                    UploadDirectory(client, dir, remoteSubdir, includeSubdirs, overwriteMode, compareMethod,
-                        ref filesTransferred, ref dirsCreated);
+                    var remoteSubdir = remoteDir + "/" + Path.GetFileName(dir);
+                    UploadDirectory(client, dir, remoteSubdir, includeSubdirs, overwriteMode, compareMethod, ref filesTransferred, ref dirsCreated, deleteFilesNotPresentLocally);
                 }
             }
         }
 
+        // ------------------------
+        // Download logic
+        // ------------------------
         private void DownloadDirectory(FtpClient client, string localDir, string remoteDir,
             bool includeSubdirs, OverwriteModeEnum overwriteMode, FileCompareMethodEnum compareMethod,
-            ref int filesTransferred, ref int dirsCreated)
+            ref int filesTransferred, ref int dirsCreated, bool deleteFilesNotPresentLocally)
         {
             if (!Directory.Exists(localDir))
                 Directory.CreateDirectory(localDir);
 
-            // Get list of files from remote
             var remoteItems = client.GetListing(remoteDir, FtpListOption.AllFiles);
             foreach (var item in remoteItems)
             {
@@ -206,11 +206,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                     var localFile = Path.Combine(localDir, item.Name);
                     var remoteFile = remoteDir + "/" + item.Name;
 
-                    if (!ShouldDownload(client, localFile, remoteFile, overwriteMode)) continue;
+                    if (!ShouldDownload(client, localFile, remoteFile, overwriteMode, compareMethod)) continue;
+
                     if (client.DownloadFile(localFile, remoteFile) == FtpStatus.Success)
-                    {
                         filesTransferred++;
-                    }
                 }
                 else if (item.Type == FtpObjectType.Directory && includeSubdirs)
                 {
@@ -223,73 +222,64 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                         dirsCreated++;
                     }
 
-                    DownloadDirectory(client, localSubdir, remoteSubdir, includeSubdirs, overwriteMode,
-                        compareMethod, ref filesTransferred, ref dirsCreated);
+                    DownloadDirectory(client, localSubdir, remoteSubdir, includeSubdirs, overwriteMode, compareMethod, ref filesTransferred, ref dirsCreated, deleteFilesNotPresentLocally);
+                }
+            }
+
+            if (deleteFilesNotPresentLocally)
+            {
+                foreach (var local in Directory.GetFiles(localDir))
+                {
+                    var name = Path.GetFileName(local);
+                    var remoteFile = remoteDir + "/" + name;
+                    if (!client.FileExists(remoteFile) && File.Exists(local))
+                        File.Delete(local);
                 }
             }
         }
 
-        private bool ShouldUpload(FtpClient client, string localFile, string remoteFile, OverwriteModeEnum mode)
+        // ------------------------
+        // Compare helpers
+        // ------------------------
+        private bool ShouldUpload(FtpClient client, string localFile, string remoteFile, OverwriteModeEnum mode, FileCompareMethodEnum compareMethod)
         {
             if (!client.FileExists(remoteFile))
                 return true;
 
-            if (mode == OverwriteModeEnum.Always)
-                return true;
-
-            if (mode == OverwriteModeEnum.Never)
-                return false;
-
             var localInfo = new FileInfo(localFile);
-            var remoteInfo = client.GetFileSize(remoteFile);
+            var remoteSize = client.GetFileSize(remoteFile);
             var remoteTime = client.GetModifiedTime(remoteFile);
 
-            if (mode == OverwriteModeEnum.IfNewer)
+            switch (compareMethod)
             {
-                return localInfo.LastWriteTime > remoteTime;
-            }
-
-            if (mode == OverwriteModeEnum.IfSizeDifferent)
-            {
-                return localInfo.Length != remoteInfo;
-            }
-
-            if (mode == OverwriteModeEnum.IfNewerOrSizeDifferent)
-            {
-                return localInfo.LastWriteTime > remoteTime || localInfo.Length != remoteInfo;
+                case FileCompareMethodEnum.ByNameOnly:
+                    return true;
+                case FileCompareMethodEnum.ByNameAndSize:
+                    return localInfo.Length != remoteSize;
+                case FileCompareMethodEnum.ByNameAndDate:
+                    return localInfo.LastWriteTime > remoteTime;
             }
 
             return false;
         }
 
-        private bool ShouldDownload(FtpClient client, string localFile, string remoteFile, OverwriteModeEnum mode)
+        private bool ShouldDownload(FtpClient client, string localFile, string remoteFile, OverwriteModeEnum mode, FileCompareMethodEnum compareMethod)
         {
             if (!File.Exists(localFile))
                 return true;
 
-            if (mode == OverwriteModeEnum.Always)
-                return true;
-
-            if (mode == OverwriteModeEnum.Never)
-                return false;
-
-            var remoteInfo = client.GetFileSize(remoteFile);
-            var remoteTime = client.GetModifiedTime(remoteFile);
             var localInfo = new FileInfo(localFile);
+            var remoteSize = client.GetFileSize(remoteFile);
+            var remoteTime = client.GetModifiedTime(remoteFile);
 
-            if (mode == OverwriteModeEnum.IfNewer)
+            switch (compareMethod)
             {
-                return remoteTime > localInfo.LastWriteTime;
-            }
-
-            if (mode == OverwriteModeEnum.IfSizeDifferent)
-            {
-                return remoteInfo != localInfo.Length;
-            }
-
-            if (mode == OverwriteModeEnum.IfNewerOrSizeDifferent)
-            {
-                return remoteTime > localInfo.LastWriteTime || remoteInfo != localInfo.Length;
+                case FileCompareMethodEnum.ByNameOnly:
+                    return true;
+                case FileCompareMethodEnum.ByNameAndSize:
+                    return remoteSize != localInfo.Length;
+                case FileCompareMethodEnum.ByNameAndDate:
+                    return remoteTime > localInfo.LastWriteTime;
             }
 
             return false;
@@ -318,23 +308,5 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 
         [Display(Name = "By Name and Date", Description = "Compares files by name and last modified date.")]
         ByNameAndDate
-    }
-
-    public enum OverwriteModeEnum
-    {
-        [Display(Name = "Always", Description = "Always overwrite files.")]
-        Always,
-
-        [Display(Name = "Never", Description = "Never overwrite files.")]
-        Never,
-
-        [Display(Name = "If newer", Description = "Overwrite if remote file is newer.")]
-        IfNewer,
-
-        [Display(Name = "If size different", Description = "Overwrite if file sizes differ.")]
-        IfSizeDifferent,
-
-        [Display(Name = "If newer or size different", Description = "Overwrite if remote is newer or size differs.")]
-        IfNewerOrSizeDifferent
     }
 }

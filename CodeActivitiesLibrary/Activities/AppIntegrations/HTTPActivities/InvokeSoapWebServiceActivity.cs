@@ -53,7 +53,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
         // Output Arguments
         // ----------------------
 
-
         [DisplayName("Result")]
         [Description("Returns the raw XML response from the SOAP service.")]
         public OutArgument<string> Result { get; set; }
@@ -64,8 +63,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var result = "";
             var status = "Operation completed successfully.";
+            string result = null;
 
             try
             {
@@ -94,29 +93,39 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
                 var envelope = new XElement(soapNs + "Envelope",
                     new XElement(soapNs + "Body",
                         new XElement(actionNs + method,
-                            parameters.Select(p => new XElement(p.Key, p.Value))
+                            parameters.Select(p => new XElement(p.Key, p.Value.ToString()))
                         )
                     )
                 );
 
-                // Send request
-                using (var client = new HttpClient())
+                var requestBody = envelope.ToString();
+
+                // Configure HTTP Client
+                using (var handler = new HttpClientHandler())
                 {
-                    client.Timeout = timeout;
+                    // Optional: handle insecure certificates during development
+                    // handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
 
-                    var content = new StringContent(envelope.ToString(), System.Text.Encoding.UTF8, "text/xml");
-                    content.Headers.Add("SOAPAction", $"{actionNs}{method}");
+                    using (var client = new HttpClient(handler))
+                    {
+                        client.Timeout = timeout;
 
-                    var response = client.PostAsync(url, content).Result;
-                    if (response.IsSuccessStatusCode)
-                    {
-                        result = response.Content.ReadAsStringAsync().Result;
-                        status = $"Successfully invoked '{method}' on '{url}'.";
-                    }
-                    else
-                    {
-                        result = "";
-                        status = $"Failed to invoke '{method}': {response.ReasonPhrase}";
+                        var request = new StringContent(requestBody, System.Text.Encoding.UTF8, "text/xml");
+                        request.Headers.Add("SOAPAction", $"\"{actionNs}{method}\"");
+
+                        // Send request synchronously (safe only in non-UI contexts)
+                        var response = client.PostAsync(url, request).Result;
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            result = response.Content.ReadAsStringAsync().Result;
+                            status = $"Successfully invoked '{method}' on '{url}'.";
+                        }
+                        else
+                        {
+                            result = "";
+                            status = $"Failed to invoke '{method}': {response.ReasonPhrase}";
+                        }
                     }
                 }
                 Result.Set(context, result);
@@ -126,7 +135,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
             catch (Exception ex)
             {
                 status = $"Error invoking SOAP web service: {ex.Message}";
-                Result.Set(context, result);
+                Result.Set(context, result ?? "");
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
             }

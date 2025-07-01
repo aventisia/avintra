@@ -4,6 +4,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
@@ -80,17 +81,26 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Success";
+            Excel.Application excelApp = null;
+            Excel.Worksheet worksheet = null;
 
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                excelApp = ExcelApplication.Get(context);
                 var copyMode = CopyMode.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+                if (excelApp?.ActiveWorkbook == null)
+                    throw new InvalidOperationException("Excel application or workbook is not available.");
 
-                if (!(excelApp.ActiveSheet is Excel.Worksheet worksheet))
-                    throw new InvalidOperationException("Worksheet is not available.");
+                string worksheetName = SourceWorksheetName.Get(context);
+                var workbook = excelApp.ActiveWorkbook;
+
+                worksheet = string.IsNullOrEmpty(worksheetName)
+                    ? (Excel.Worksheet)workbook.ActiveSheet
+                    : (Excel.Worksheet)workbook.Worksheets[worksheetName];
+
+                if (worksheet == null)
+                    throw new InvalidOperationException($"Worksheet '{worksheetName}' not found.");
 
                 switch (copyMode)
                 {
@@ -98,43 +108,49 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         {
                             var colStr = StartColumn.Get(context);
                             var row = StartRow.Get(context);
+                            int colNum = GetColumnIndex(colStr);
 
-                            if (!int.TryParse(colStr, out var colNum))
-                                // Convert column letter (like "A", "B") to number
-                                colNum = GetColumnIndex(colStr);
-
-                            if (!(worksheet.Cells[row, colNum] is Excel.Range targetCell))
+                            var cell = worksheet.Cells[row, colNum] as Excel.Range;
+                            if (cell == null)
                                 throw new InvalidOperationException($"Cell at Row {row}, Column {colStr} does not exist.");
 
-                            targetCell.Copy();
+                            cell.Copy();
                             status = $"Copied cell at Row {row}, Column {colStr}.";
+                            Marshal.ReleaseComObject(cell);
                             break;
                         }
 
                     case CellCopyModeEnum.NamedCells:
                         {
                             var name = Name.Get(context);
-                            var namedRange = worksheet.Names.Item(name)?.RefersToRange;
+                            var namedItem = worksheet.Names.Item(name);
+                            if (namedItem == null)
+                                throw new InvalidOperationException($"Named range '{name}' not found.");
 
+                            var namedRange = namedItem.RefersToRange;
                             if (namedRange != null)
                             {
                                 namedRange.Copy();
                                 status = $"Copied named range '{name}'.";
+                                Marshal.ReleaseComObject(namedRange);
                             }
                             else
                             {
                                 status = $"Named range '{name}' not found.";
                             }
 
+                            Marshal.ReleaseComObject(namedItem);
                             break;
                         }
 
                     case CellCopyModeEnum.Selection:
                         {
-                            if (worksheet.Application.Selection is Excel.Range selection)
+                            var selection = excelApp.Selection as Excel.Range;
+                            if (selection != null)
                             {
                                 selection.Copy();
                                 status = "Copied selected range.";
+                                Marshal.ReleaseComObject(selection);
                             }
                             else
                             {
@@ -151,17 +167,19 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             var startRow = StartRow.Get(context);
                             var endRow = EndRow.Get(context);
 
-                            int startColNum, endColNum;
+                            int startColNum = GetColumnIndex(startColStr);
+                            int endColNum = GetColumnIndex(endColStr);
 
-                            if (!int.TryParse(startColStr, out startColNum)) startColNum = GetColumnIndex(startColStr);
+                            var startCell = worksheet.Cells[startRow, startColNum];
+                            var endCell = worksheet.Cells[endRow, endColNum];
+                            var range = worksheet.Range[startCell, endCell];
 
-                            if (!int.TryParse(endColStr, out endColNum)) endColNum = GetColumnIndex(endColStr);
-
-                            var range = worksheet.Range[worksheet.Cells[startRow, startColNum],
-                                worksheet.Cells[endRow, endColNum]];
                             range.Copy();
-                            status =
-                                $"Copied range from Row {startRow}, Column {startColStr} to Row {endRow}, Column {endColStr}.";
+                            status = $"Copied range from Row {startRow}, Column {startColStr} to Row {endRow}, Column {endColStr}.";
+
+                            Marshal.ReleaseComObject(startCell);
+                            Marshal.ReleaseComObject(endCell);
+                            Marshal.ReleaseComObject(range);
                             break;
                         }
 
@@ -176,6 +194,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 status = $"Error copying cells: {ex.Message}";
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
+            }
+            finally
+            {
+                if (worksheet != null) Marshal.ReleaseComObject(worksheet);
+                // Don't release excelApp unless you're sure it was created by this activity
             }
         }
 

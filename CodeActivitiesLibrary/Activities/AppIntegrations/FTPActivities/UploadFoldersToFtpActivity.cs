@@ -91,7 +91,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 
                 // Set configuration
                 ftpClient.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;
-                ftpClient.Config.EncryptionMode = ftpClient.Config.EncryptionMode;
                 ftpClient.Config.ValidateAnyCertificate = true;
                 ftpClient.Config.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls;
                 ftpClient.Config.ReadTimeout = TimeSpan.FromSeconds(TimeoutSeconds.Get(context)).Milliseconds;
@@ -106,25 +105,24 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                 {
                     if (!Directory.Exists(folderPath))
                     {
+                        // Only log skipped folder path as skipped if needed
                         skippedFiles.Add(folderPath);
                         continue;
                     }
 
                     var folderName = new DirectoryInfo(folderPath).Name;
-                    var targetDir = remoteDir + "/" + folderName;
+                    var targetDir = $"{remoteDir}/{folderName}";
 
-                    // Create remote directory
+                    // Create remote directory if it doesn't exist
                     if (!ftpClient.DirectoryExists(targetDir))
                         ftpClient.CreateDirectory(targetDir);
 
-                    // Upload files
-                    UploadFolder(ftpClient, folderPath, targetDir, includeSubdirs, overwrite, ref filesUploaded,
-                        ref skippedFiles);
+                    // Upload files recursively
+                    UploadFolder(ftpClient, folderPath, targetDir, includeSubdirs, overwrite, ref filesUploaded, ref skippedFiles);
                     foldersUploaded++;
                 }
 
-                status =
-                    $"Successfully uploaded {foldersUploaded} folders containing {filesUploaded} files to '{remoteDir}'.";
+                status = $"Successfully uploaded {foldersUploaded} folders containing {filesUploaded} files to '{remoteDir}'.";
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
                 FoldersUploadedCount.Set(context, foldersUploaded);
@@ -134,6 +132,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
             catch (Exception ex)
             {
                 status = $"Error uploading folders to FTP: {ex.Message}";
+                Console.WriteLine($"Error uploading folders: {ex}");
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
                 FoldersUploadedCount.Set(context, null);
@@ -156,26 +155,28 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                 // Upload files in current directory
                 foreach (var file in Directory.GetFiles(localPath))
                 {
+                    if (!File.Exists(file)) // Validate file exists
+                    {
+                        skippedList.Add(file);
+                        continue;
+                    }
+
                     var fileName = Path.GetFileName(file);
                     var remoteFile = $"{remotePath}/{fileName}";
 
-                    if (client.FileExists(remoteFile))
+                    if (client.FileExists(remoteFile) && !overwrite)
                     {
-                        if (!overwrite)
-                        {
-                            skippedList.Add(file);
-                            continue;
-                        }
-
-                        // Optional: Compare dates or sizes
-                        var localInfo = new FileInfo(file);
-                        var remoteInfo = client.GetFileSize(remoteFile);
+                        skippedList.Add(file);
+                        continue;
                     }
 
-                    // Upload file
                     if (client.UploadFile(file, remoteFile, FtpRemoteExists.Overwrite, false) == FtpStatus.Success)
                     {
                         fileCount++;
+                    }
+                    else
+                    {
+                        skippedList.Add(file);
                     }
                 }
 
@@ -186,10 +187,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                     {
                         var dirName = new DirectoryInfo(dir).Name;
                         var targetSubdir = $"{remotePath}/{dirName}";
+
                         if (!client.DirectoryExists(targetSubdir))
                             client.CreateDirectory(targetSubdir);
-                        UploadFolder(client, dir, targetSubdir, includeSubdirs, overwrite, ref fileCount,
-                            ref skippedList);
+
+                        UploadFolder(client, dir, targetSubdir, includeSubdirs, overwrite, ref fileCount, ref skippedList);
                     }
                 }
             }

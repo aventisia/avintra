@@ -2,6 +2,7 @@
 using Microsoft.Office.Interop.Word;
 using System;
 using System.Activities;
+using System.Activities.Statements;
 using System.ComponentModel;
 using Word = Microsoft.Office.Interop.Word;
 
@@ -11,10 +12,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
     [Description("Finds text and replaces it with another in the active document of a Word instance.")]
     public class FindAndReplaceWordsActivity : BaseCodeActivity
     {
-
+        [RequiredArgument]
         [DisplayName("Word Instance")]
         [Description("The specific Word instance to use.")]
-        [RequiredArgument]
         public InArgument<Word.Application> WordInstance { get; set; }
 
         [DisplayName("All Matches")]
@@ -22,14 +22,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [DefaultValue(false)]
         public InArgument<bool> AllMatches { get; set; }
 
+        [RequiredArgument]
         [DisplayName("Text to Find")]
         [Description("The text to search for in the document.")]
-        [RequiredArgument]
+
         public InArgument<string> TextToFind { get; set; }
 
+        [RequiredArgument]
         [DisplayName("Text to Replace With")]
         [Description("The text to replace the found text with.")]
-        [RequiredArgument]
+
         public InArgument<string> TextToReplaceWith { get; set; }
 
         [DisplayName("Use Wildcards")]
@@ -88,20 +90,19 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 {
                     // Replace all occurrences
                     findObject.Execute(
-                        Replace: WdReplace.wdReplaceAll,
-                        Format: false,
-                        Wrap: WdFindWrap.wdFindContinue);
+                    Replace: WdReplace.wdReplaceAll,
+                    Format: false,
+                    Wrap: WdFindWrap.wdFindContinue);
                 }
                 else
                 {
                     // Replace the first occurrence
                     findObject.Execute(
-                        Replace: WdReplace.wdReplaceOne,
-                        Format: false,
-                        Wrap: WdFindWrap.wdFindContinue);
+                    Replace: WdReplace.wdReplaceOne,
+                    Format: false,
+                    Wrap: WdFindWrap.wdFindContinue);
                 }
 
-                Console.WriteLine("Text replaced successfully.");
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Text replaced successfully.");
             }

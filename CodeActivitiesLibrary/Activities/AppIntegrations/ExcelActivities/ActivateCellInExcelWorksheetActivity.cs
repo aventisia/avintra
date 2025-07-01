@@ -84,10 +84,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         var colStr = Column.Get(context);
 
                         if (!int.TryParse(colStr, out var colNum))
-                            // Convert column letter (like "A", "B") to number
+                           // Convert column letter (like "A", "B") to number
                             colNum = GetColumnIndex(colStr);
 
-                        worksheet.Select(worksheet.Cells[row, colNum]);
+                        worksheet.Cells[row, colNum]?.Select(); 
                         status = $"Activated cell at Row {row}, Column {colStr}.";
                         break;
 
@@ -95,46 +95,67 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         var direction = Direction.Get(context);
                         var offset = OffsetFromActiveCell.Get(context);
 
-                        var activeCell = (Excel.Range)excelApp.ActiveCell;
-                        Excel.Range targetCell = null;
-
-                        switch (direction)
+                        if (excelApp.ActiveCell is Excel.Range activeCell)
                         {
-                            case CellMoveDirectionEnum.Up:
-                                targetCell = activeCell.Offset[-offset, 0];
-                                break;
-                            case CellMoveDirectionEnum.Down:
-                                targetCell = activeCell.Offset[offset, 0];
-                                break;
-                            case CellMoveDirectionEnum.Left:
-                                targetCell = activeCell.Offset[0, -offset];
-                                break;
-                            case CellMoveDirectionEnum.Right:
-                                targetCell = activeCell.Offset[0, offset];
-                                break;
-                        }
+                            Excel.Range targetCell = null;
 
-                        if (targetCell != null)
-                        {
-                            targetCell.Select();
-                            status = $"Activated cell {offset} cells {direction} from active cell.";
+                            switch (direction)
+                            {
+                                case CellMoveDirectionEnum.Up:
+                                    targetCell = activeCell.Offset[-offset, 0];
+                                    break;
+                                case CellMoveDirectionEnum.Down:
+                                    targetCell = activeCell.Offset[offset, 0];
+                                    break;
+                                case CellMoveDirectionEnum.Left:
+                                    targetCell = activeCell.Offset[0, -offset];
+                                    break;
+                                case CellMoveDirectionEnum.Right:
+                                    targetCell = activeCell.Offset[0, offset];
+                                    break;
+                            }
+
+                            if (targetCell != null)
+                            {
+                                targetCell.Select();
+                                status = $"Activated cell {offset} cells {direction} from active cell.";
+                            }
+                            else
+                            {
+                                status = "Failed to calculate relative cell.";
+                            }
+
+                            // Optional: release COM objects
+                            GC.KeepAlive(targetCell);
+                            GC.KeepAlive(activeCell);
                         }
                         else
                         {
-                            status = "Failed to activate relative cell.";
+                            status = "No active cell found.";
                         }
 
                         break;
 
                     case ActivationModeEnum.NamedRange:
                         var name = Name.Get(context);
-                        worksheet.Range[name]?.Select();
-                        status = $"Activated named range '{name}'.";
+                        var range = worksheet.Range[name];
+
+                        if (range != null)
+                        {
+                            range.Select();
+                            status = $"Activated named range '{name}'.";
+                        }
+                        else
+                        {
+                            status = $"Named range '{name}' not found.";
+                        }
+
                         break;
 
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }
@@ -144,16 +165,28 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
             }
+            finally
+            {
+                // Optional: Force garbage collection to clean up COM objects
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
         }
 
-        // Helper method to convert column letters to numbers
+     // Helper method to convert column letters to numbers
         private static int GetColumnIndex(string columnName)
         {
             if (string.IsNullOrEmpty(columnName)) return -1;
 
             columnName = columnName.ToUpperInvariant();
 
-            return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
+            int columnIndex = 0;
+            foreach (char c in columnName)
+            {
+                columnIndex = columnIndex * 26 + (c - 'A' + 1);
+            }
+
+            return columnIndex;
         }
     }
 }

@@ -3,6 +3,8 @@ using CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities.Enums;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
@@ -59,6 +61,15 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
                 // Convert enum to actual environment variable name
                 var envVarNameString = GetEnvVarName(envVarName);
 
+                // Check if the process has elevated privileges for system-level changes
+                if (envVarType == ScopeEnum.System && !IsProcessElevated())
+                {
+                    throw new UnauthorizedAccessException(
+                        "Insufficient privileges to modify system-level environment variables. " +
+                        "Please run the application with administrative privileges."
+                    );
+                }
+
                 // Set the environment variable based on the type
                 switch (envVarType)
                 {
@@ -66,8 +77,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
                         Environment.SetEnvironmentVariable(envVarNameString, newValue, EnvironmentVariableTarget.User);
                         break;
                     case ScopeEnum.System:
-                        Environment.SetEnvironmentVariable(envVarNameString, newValue,
-                            EnvironmentVariableTarget.Machine);
+                        Environment.SetEnvironmentVariable(envVarNameString, newValue, EnvironmentVariableTarget.Machine);
                         break;
                     default:
                         throw new NotSupportedException($"Unsupported environment variable type: {envVarType}");
@@ -120,6 +130,18 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
                 default:
                     throw new ArgumentException("Invalid environment variable name.");
             }
+        }
+
+        // Helper method to check if the process is elevated
+        private static bool IsProcessElevated()
+        {
+            bool result;
+            using (var identity = WindowsIdentity.GetCurrent())
+            {
+                var principal = new WindowsPrincipal(identity);
+                result = principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            return result;
         }
     }
 }

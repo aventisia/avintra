@@ -3,6 +3,7 @@ using Microsoft.Office.Interop.Word;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
@@ -13,8 +14,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
     {
         [DisplayName("Launch Mode")]
         [Description("Select how to launch Word: 'Blank Document' or 'Open Existing Document'.")]
-        [DefaultValue("Blank Document")]
-        public InArgument<string> LaunchMode { get; set; }
+        [DefaultValue(LaunchWordModeEnum.BlankDocument)]
+        public InArgument<LaunchWordModeEnum> LaunchMode { get; set; }
 
         [DisplayName("Document Path")]
         [Description("The file path of the document to open. Required if 'Launch Mode' is 'Open Existing Document'.")]
@@ -47,41 +48,51 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 wordApp.Visible = makeInstanceVisible;
 
                 // Determine action based on launch mode
-                if (launchMode == "Blank Document")
+                switch (launchMode)
                 {
-                    // Create a new blank document
-                    _Document wordDoc = wordApp.Documents.Add();
-                }
-                else if (launchMode == "Open Existing Document")
-                {
-                    // Open an existing document
-                    if (!string.IsNullOrEmpty(documentPath))
-                    {
-                        _Document wordDoc = wordApp.Documents.Open(documentPath);
-                    }
-                    else
-                    {
+                    case LaunchWordModeEnum.BlankDocument:
+                        // Create a new blank document
+                        _Document wordDoc = wordApp.Documents.Add();
+                        break;
+
+                    case LaunchWordModeEnum.OpenExistingDocument:
+                        // Open an existing document
+                        if (!string.IsNullOrEmpty(documentPath))
+                        {
+                            _Document document = wordApp.Documents.Open(documentPath);
+                        }
+                        else
+                        {
+                            throw new ArgumentException(
+                                "Document Path is required when launching with 'Open Existing Document'.");
+                        }
+
+                        break;
+
+                    default:
                         throw new ArgumentException(
-                            "Document Path is required when launching with 'Open Existing Document'.");
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException(
-                        "Invalid Launch Mode. Supported values are 'Blank Document' and 'Open Existing Document'.");
+                            "Invalid Launch Mode. Supported values are 'Blank Document' and 'Open Existing Document'.");
                 }
 
                 // Set the output WordInstance
                 context.SetValue(WordInstance, wordApp);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Word launch Successfully");
+                StatusMessage.Set(context, "Word launched successfully.");
             }
             catch (Exception ex)
             {
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Failed to launch Word.: {ex.Message}");
-
+                StatusMessage.Set(context, $"Error launching Word: {ex.Message}");
             }
+        }
+
+        public enum LaunchWordModeEnum
+        {
+            [Display(Name = "Blank Document", Description = "Launches Excel with a blank document.")]
+            BlankDocument,
+
+            [Display(Name = "Open Existing Document", Description = "Launches Excel and opens the specified document.")]
+            OpenExistingDocument
         }
     }
 }

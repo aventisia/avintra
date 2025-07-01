@@ -19,10 +19,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
         [Description("The process representing the open CMD session.")]
         public InArgument<Process> CmdSession { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
+         
         // ----------------------
         // Execution Logic
         // ----------------------

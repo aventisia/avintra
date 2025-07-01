@@ -54,41 +54,39 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
                 var searchInScope = SearchForVariableOnlyInScope.Get(context);
                 var scope = Scope.Get(context);
 
-                // Convert enum to actual environment variable name
+                  // Convert enum to actual environment variable name
                 var envVarNameString = GetEnvVarName(envVarName);
 
                 // Retrieve the environment variable value
                 string value = null;
 
                 if (searchInScope)
+                {
                     switch (scope)
                     {
                         case ScopeEnum.User:
-                            value = Environment.GetEnvironmentVariable(envVarNameString,
-                                EnvironmentVariableTarget.User);
+                            value = Environment.GetEnvironmentVariable(envVarNameString, EnvironmentVariableTarget.User);
                             break;
                         case ScopeEnum.System:
-                            value = Environment.GetEnvironmentVariable(envVarNameString,
-                                EnvironmentVariableTarget.Machine);
+                            value = Environment.GetEnvironmentVariable(envVarNameString, EnvironmentVariableTarget.Machine);
                             break;
                         default:
                             throw new NotSupportedException($"Unsupported scope: {scope}");
                     }
+                }
                 else
-                    // Search in both User and System scopes
-                    value = Environment.GetEnvironmentVariable(envVarNameString);
+                {
+                    value = Environment.GetEnvironmentVariable(envVarNameString); // Search all scopes
+                }
 
-                // Set output arguments
                 EnvironmentVariableValue.Set(context, value);
-
-                // Set status message
-                StatusMessages.Set(context, "Retrieving environment variable successfully");
+                StatusMessage.Set(context, "Environment variable retrieved successfully.");
                 IsSuccess.Set(context, true);
             }
             catch (Exception ex)
             {
-                IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error retrieving environment variable: {ex.Message}");
+                IsSuccess.Set(context, false);
             }
         }
 
