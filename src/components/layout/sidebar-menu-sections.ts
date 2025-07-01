@@ -143,7 +143,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
 
 // TODO: Refactor this function to use a more efficient method of checking permissions
 // TODO: This function filters the sidebar menu sections based on the user's roles for now.
-function getSidebarMenuBasedOnPersmissions(userRoles: string[]) {
+function getSidebarMenuBasedOnPersmissions(userRoles: string[]): SidebarMenuSectionType[] {
   return sidebarMenuSections
     .map((section) => {
       // Filter menuItems based on item-level permissions (if present)
@@ -161,7 +161,7 @@ function getSidebarMenuBasedOnPersmissions(userRoles: string[]) {
         menuItems: filteredMenuItems,
       };
     })
-    .filter(Boolean); // Remove null sections
+    .filter((section): section is SidebarMenuSectionType => section !== null); // Remove null sections with type guard
 }
 
 export { sidebarMenuSections, getSidebarMenuBasedOnPersmissions };
