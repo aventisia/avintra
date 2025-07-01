@@ -20,8 +20,9 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    flowId: bru.getGlobalEnvVar("FLOW_ID"),
     id: bru.getGlobalEnvVar("FLOW_USER_ID"),
+    flowId: bru.getGlobalEnvVar("FLOW_ID"),
+    userId: bru.getGlobalEnvVar("USER_ID"),
     type: "Viewer",
     isDisabled: false  
   })
