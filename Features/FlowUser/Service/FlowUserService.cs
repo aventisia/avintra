@@ -69,7 +69,8 @@ public class FlowUserService : IFlowUserService
         {
             // Attempt to find the flow user with the specified Id
             var flowUser = await _unitOfWork.FlowUserRepo
-                .GetByConditionAsync(u => u.Id == flowUserId)
+                .GetByConditionAsync(w => w.Id == flowUserId)
+                .Include(i => i.User)
                 .SingleOrDefaultAsync();
 
             // If not found, log and return default response
@@ -109,6 +110,22 @@ public class FlowUserService : IFlowUserService
 
         try
         {
+            var flowUser = await _unitOfWork.FlowUserRepo
+            .GetByConditionAsync(w => w.UserId == flowUserDto.UserId && w.FlowId == flowUserDto.FlowId)
+            .SingleOrDefaultAsync();
+
+            // Check if the flow user already exists based on UserId and FlowId
+            if (flowUser != null)
+            {
+                // Log that the flow user exists and provide the flow user details (including the Id)
+                _logger.LogInformation($"Attempted to update Flow user with UserId {flowUserDto.UserId} and FlowId {flowUserDto.FlowId}. User already exists. FlowUser ID: {flowUser.Id}");
+
+                // Set the message for the service response, indicating that the user already exists for the given flow
+                serviceResponse.Message = "User already exists for the specified flow.";
+
+                return serviceResponse;
+            }
+
             // Clean string properties to remove leading/trailing whitespace
             flowUserDto = TrimDtoStringPropsUtil.TrimDtoStringProps(flowUserDto);
 
@@ -161,7 +178,7 @@ public class FlowUserService : IFlowUserService
         {
             // Retrieve existing flow user entity by Id
             var flowUser = await _unitOfWork.FlowUserRepo
-                .GetByConditionAsync(u => u.Id == flowUserDto.Id)
+                .GetByConditionAsync(w => w.Id == flowUserDto.Id)
                 .SingleOrDefaultAsync();
 
             // Check if the flow user exists
@@ -223,7 +240,7 @@ public class FlowUserService : IFlowUserService
         {
             // Retrieve the flow user entity by Id
             var flowUser = await _unitOfWork.FlowUserRepo
-                .GetByConditionAsync(u => u.Id == flowUserId)
+                .GetByConditionAsync(w => w.Id == flowUserId)
                 .SingleOrDefaultAsync();
 
             // If flow user does not exist, return error response
