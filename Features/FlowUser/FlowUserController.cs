@@ -48,7 +48,7 @@ public class FlowUserController : BaseApiController
     }
 
     // Deletes multiple flow users by a list of their unique identifiers.
-    [HttpDelete("delete-multiple")]
+    [HttpPost("delete-multiple")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteMultipleFlowUsers([FromBody] IEnumerable<Guid> flowUserIds)
     {
         return ResultHelper(await _flowUserService.DeleteMultipleFlowUsersAsync(flowUserIds));
