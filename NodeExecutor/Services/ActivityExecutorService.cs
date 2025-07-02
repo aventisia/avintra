@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using NodeExecutor.Models;
 using System;
 using System.Activities;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -324,7 +325,12 @@ namespace NodeExecutor.Services
                 }
 
                 // Try to cast to IEnumerable (but not string)
-                if (!(listObj is System.Collections.IEnumerable enumerable) || listObj is string)
+                IEnumerable enumerable;
+                if (listObj is DataTable dt)
+                    enumerable = dt.Rows;
+                else if (listObj is IEnumerable en && !(listObj is string))
+                    enumerable = en;
+                else
                     return (false, "");
 
                 // Convert to a list for indexing
