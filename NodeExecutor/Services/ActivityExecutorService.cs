@@ -328,6 +328,8 @@ namespace NodeExecutor.Services
                 IEnumerable enumerable;
                 if (listObj is DataTable dt)
                     enumerable = dt.Rows;
+                else if (listObj is DataRowCollection rowCollection)
+                    enumerable = rowCollection;
                 else if (listObj is IEnumerable en && !(listObj is string))
                     enumerable = en;
                 else
