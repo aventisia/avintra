@@ -2,54 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ParentElement",
-    "label": "Parent Element",
-    "description": "The window or parent element where the radio button group is located.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "select",
-    "name": "PropertyType",
-    "label": "Property Type",
-    "description": "How to search for the radio button group (by Name, AutomationId, ClassName, or ControlType).",
-    "defaultValue": "Name",
-    "required": true,
-    "selectOptions": [
-      {
-        "label": "Name",
-        "value": "Name",
-        "description": "Find element by its visible name."
-      },
-      {
-        "label": "Class Name",
-        "value": "ClassName",
-        "description": "Find element by its class name."
-      },
-      {
-        "label": "Control Type",
-        "value": "ControlType",
-        "description": "Find element by its control type (e.g., button, textbox)."
-      },
-      {
-        "label": "ID",
-        "value": "AutomationId",
-        "description": "Find element by its automation ID."
-      },
-      {
-        "label": "Framework ID",
-        "value": "FrameworkId",
-        "description": "Find element by its framework ID (e.g., WPF, WinForms)."
-      }
-    ]
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "PropertyValue",
-    "label": "Property Value",
-    "description": "The value to search for (for example, the group or container\u0027s name or ID).",
+    "name": "IdentificationObjectPath",
+    "label": "UI Element",
+    "description": "The radio button group you want to select from.",
     "defaultValue": "",
     "required": true
   },
@@ -67,7 +22,7 @@
     "type": "text",
     "name": "MaxWaitTime",
     "label": "Max Wait Time (seconds)",
-    "description": "Maximum time to wait for the radio button group and selection (in seconds).",
+    "description": "Maximum time to wait to find the UI element (in seconds).",
     "defaultValue": 5,
     "required": false
   },

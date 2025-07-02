@@ -1031,7 +1031,7 @@
             "type": "activityNode",
             "name": "GetUiElementDetailsActivity",
             "label": "Get UI Element Details",
-            "description": "Get information like position or text from a UI element in a window.",
+            "description": "Get information like position, text, or state from a UI element in a window.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1076,7 +1076,7 @@
             "type": "activityNode",
             "name": "SelectRadioButtonActivity",
             "label": "Select Radio Button",
-            "description": "Selects a radio button in a window or parent element by property and value, using the radio button's name or index.",
+            "description": "Selects a radio button in a group by its name or zero-based index.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1103,7 +1103,7 @@
             "type": "activityNode",
             "name": "SetCheckboxStateActivity",
             "label": "Set Checkbox State",
-            "description": "Checks or unchecks a checkbox UI element by searching for it using property and name.",
+            "description": "Checks or unchecks a checkbox UI element by searching for it by name within a parent element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"

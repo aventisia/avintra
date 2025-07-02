@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "Element",
+    "name": "IdentificationObjectPath",
     "label": "UI Element",
-    "description": "Select the UI element you want to get details from.",
+    "description": "The UI element from which you want to retrieve details.",
     "defaultValue": "",
     "required": true
   },
@@ -33,18 +33,37 @@
         "description": "Get the text from a label element."
       },
       {
-        "label": "TextBox Text",
-        "value": "TextBoxText",
-        "description": "Get the text from a textbox element."
+        "label": "Is Enabled",
+        "value": "IsEnabled",
+        "description": "Check if the element is enabled."
+      },
+      {
+        "label": "Is Offscreen",
+        "value": "IsOffscreen",
+        "description": "Check if the element is offscreen (not visible to the user)."
+      },
+      {
+        "label": "Is Password",
+        "value": "IsPassword",
+        "description": "Check if the element is a password field."
       }
     ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "MaxWaitTime",
+    "label": "Max Wait Time (seconds)",
+    "description": "Maximum time to wait to find the UI element (in seconds).",
+    "defaultValue": 5,
+    "required": false
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "ElementDetails",
     "label": "Element Details",
-    "description": "Returns the requested details of the UI element (for example, position or text).",
+    "description": "Returns the requested details of the UI element (for example, position, text, or state).",
     "defaultValue": {
       "value": "ElementDetails",
       "enabled": true
