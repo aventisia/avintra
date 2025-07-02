@@ -1,8 +1,8 @@
 using CodeActivitiesLibrary.Extensions;
+using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
 using System;
 using System.Activities;
 using System.ComponentModel;
-using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
@@ -10,40 +10,53 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
     [Description("Brings the specified UI element into focus, allowing further interaction.")]
     public class SetFocusOnElementActivity : BaseCodeActivity
     {
-
+        [RequiredArgument]
         [DisplayName("UI Element")]
         [Description("The UI element to bring into focus.")]
-        [RequiredArgument]
-        public InArgument<AutomationElement> Element { get; set; }
+        public InArgument<string> IdentificationObjectPath { get; set; }
 
+        [DisplayName("Max Wait Time (seconds)")]
+        [Description("Maximum time to wait to find the UI element (in seconds).")]
+        [DefaultValue(5)]
+        public InArgument<int> MaxWaitTime { get; set; } = 5;
 
-        [DisplayName("Result")]
-        [Description("Shows whether the focus was set successfully or not")]
-        [DefaultValue("")]
-        public OutArgument<bool> Result { get; set; }
-
-
+        [DisplayName("Is Focus Set Successfully")]
+        [Description("True if the focus was set successfully, otherwise false.")]
+        [DefaultValue(false)]
+        public OutArgument<bool> IsFocued { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var element = Element.Get(context);
-            var result = true;
-            string statusMsg = "Focus set successfully.";
+            var identificationObjectPath = UIAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
+            var maxWaitTime = MaxWaitTime.Get(context);
+
+            bool focusSet = false;
+            string statusMessage = "";
 
             try
             {
-                element.SetFocus();
+                var elementInstance = UIAutomationElementHelper.GetElementByPath(identificationObjectPath, maxWaitTime);
 
-                Result.Set(context, result);
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, statusMsg);
+                if (elementInstance == null)
+                {
+                    statusMessage = "UI element not found. Please check the identification path.";
+                }
+                else
+                {
+                    elementInstance.Focus();
+                    focusSet = true;
+                    statusMessage = "Focus set successfully.";
+                }
+
+                IsFocued.Set(context, focusSet);
+                IsSuccess.Set(context, focusSet);
+                StatusMessage.Set(context, statusMessage);
             }
             catch (Exception ex)
             {
-                result = false;
-                statusMsg = $"Could not set focus: {ex.Message}";
+                IsFocued.Set(context, false);
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, statusMsg);
+                StatusMessage.Set(context, $"Could not set focus: {ex.Message}");
             }
         }
     }

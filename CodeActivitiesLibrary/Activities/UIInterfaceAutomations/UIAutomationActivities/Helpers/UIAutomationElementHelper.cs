@@ -227,6 +227,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.He
             // If deserialization fails, return an empty list
             return new List<IdentificationObject>();
         }
+        
+        // TODO: Need to remove below methods once OnHold CodeActivites are converted to FlaUI
         public static System.Windows.Automation.AutomationElement GetElementWithWait(System.Windows.Automation.AutomationElement parentElement, System.Windows.Automation.Condition condition, int maxWaitTime)
         {
             System.Windows.Automation.AutomationElement element = null;

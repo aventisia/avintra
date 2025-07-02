@@ -1,33 +1,22 @@
 ﻿using CodeActivitiesLibrary.Extensions;
 using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Enums;
 using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
+using FlaUI.Core.AutomationElements;
+using FlaUI.Core.Definitions;
 using System;
 using System.Activities;
 using System.ComponentModel;
-using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Set Checkbox State")]
-    [Description("Checks or unchecks a checkbox UI element by searching for it using property and name.")]
+    [Description("Checks or unchecks a checkbox UI element by searching for it by name within a parent element.")]
     public class SetCheckboxStateActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("Parent Element")]
-        [Description("The parent UI element under which to search for the checkbox.")]
-        public InArgument<AutomationElement> ParentElement { get; set; }
-
-        [RequiredArgument]
-        [DisplayName("Property Type")]
-        [Description("The property type to search by (e.g., Name, AutomationId, ClassName, ControlType).")]
-        [DefaultValue(PropertyTypeEnum.Name)]
-        public InArgument<PropertyTypeEnum> PropertyType { get; set; }
-
-        [RequiredArgument]
-        [DisplayName("Property Value")]
-        [Description("The value of the property to match for the checkbox.")]
-        [DefaultValue("")]
-        public InArgument<string> PropertyValue { get; set; }
+        [DisplayName("UI Element Identification Path")]
+        [Description("The parent UI element where the checkboxes are located.")]
+        public InArgument<string> IdentificationObjectPath { get; set; }
 
         [RequiredArgument]
         [DisplayName("Checkbox Name")]
@@ -37,10 +26,14 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 
         [RequiredArgument]
         [DisplayName("Desired State")]
-        [Description("Whether to check or uncheck the checkbox.")]
+        [Description("Whether to check (true) or uncheck (false) the checkbox.")]
         [DefaultValue(false)]
         public InArgument<bool> Checked { get; set; }
 
+        [DisplayName("Max Wait Time (seconds)")]
+        [Description("Maximum time to wait to find the UI element (in seconds).")]
+        [DefaultValue(5)]
+        public InArgument<int> MaxWaitTime { get; set; } = 5;
 
         [DisplayName("Was State Changed")]
         [Description("True if the checkbox state was changed successfully, otherwise false.")]
@@ -49,60 +42,67 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var parentElement = ParentElement.Get(context);
-            var propertyType = PropertyType.Get(context);
-            var propertyValue = PropertyValue.Get(context);
+            var identificationObjectPath = UIAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
+            var maxWaitTime = MaxWaitTime.Get(context);
             var checkboxName = CheckboxName.Get(context);
             var shouldBeChecked = Checked.Get(context);
 
             bool stateChanged = false;
-            string status = "";
+            string statusMessage = "";
 
             try
             {
-                var condition = UIAutomationElementHelper.CreatePropertyCondition(propertyType, propertyValue);
-                AutomationElementCollection elColl = parentElement?.FindAll(TreeScope.Descendants, condition);
+                // Get the automation element for the parent UI element
+                var parentElement = UIAutomationElementHelper.GetElementByPath(identificationObjectPath, maxWaitTime);
 
-                if (elColl != null)
+                if (parentElement == null)
                 {
-                    for (int i = 0; i < elColl.Count; i++)
+                    statusMessage = "Parent UI element not found. Please check the identification path.";
+                }
+                else
+                {
+                    // Get all child elements that are checkboxes
+                    var checkboxesCollection = parentElement.FindAllChildren(cf => cf.ByControlType(ControlType.CheckBox));
+
+                    foreach (var element in checkboxesCollection)
                     {
-                        var element = elColl[i];
-                        if (checkboxName.Equals(element.Current.Name))
+                        if (checkboxName.Equals(element.Name, StringComparison.OrdinalIgnoreCase))
                         {
-                            var togglePattern = element.GetCurrentPattern(TogglePattern.Pattern) as TogglePattern;
+                            var togglePattern = element.Patterns.Toggle.PatternOrDefault;
                             if (togglePattern != null)
                             {
-                                bool isCurrentlyChecked = togglePattern.Current.ToggleState == ToggleState.On;
+                                bool isCurrentlyChecked = togglePattern.ToggleState.Value == ToggleState.On;
                                 if (isCurrentlyChecked != shouldBeChecked)
                                 {
                                     togglePattern.Toggle();
                                 }
                                 stateChanged = true;
-                                status = "Checkbox state updated successfully.";
+                                statusMessage = "Checkbox state updated successfully.";
                             }
                             else
                             {
-                                status = "Toggle pattern not supported on the element.";
+                                statusMessage = "Toggle pattern not supported on the element.";
                             }
                             break;
                         }
                     }
                 }
 
-                if (!stateChanged && string.IsNullOrEmpty(status))
+                if (!stateChanged && string.IsNullOrEmpty(statusMessage))
                 {
-                    status = "Checkbox not found or state not changed.";
+                    statusMessage = "Checkbox not found or state not changed.";
                 }
+
                 WasStateChanged.Set(context, stateChanged);
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                IsSuccess.Set(context, stateChanged);
+                StatusMessage.Set(context, statusMessage);
             }
             catch (Exception ex)
             {
-                status = $"Error setting checkbox state: {ex.Message}";
+                statusMessage = $"Error setting checkbox state: {ex.Message}";
+                WasStateChanged.Set(context, false);
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, statusMessage);
             }
         }
     }

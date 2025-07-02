@@ -1,11 +1,11 @@
 ﻿using CodeActivitiesLibrary.Extensions;
-using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Enums;
 using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
+using FlaUI.Core.AutomationElements;
+using FlaUI.Core.Definitions;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Threading;
-using System.Windows.Automation;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
@@ -14,122 +14,95 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
     public class SetDropDownListValueActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("Parent Window")]
-        [Description("Select the window or parent element where the drop-down list is located.")]
-        public InArgument<AutomationElement> ParentElement { get; set; }
-
-        [RequiredArgument]
-        [DisplayName("Property Type")]
-        [Description("Choose how you want to search for the drop-down list (by Name, ID, Class Name, or Control Type).")]
-        [DefaultValue(PropertyTypeEnum.Name)]
-        public InArgument<PropertyTypeEnum> PropertyType { get; set; }
-
-        [RequiredArgument]
-        [DisplayName("Property Value")]
-        [Description("Enter the value to search for (for example, the drop-down list's name or ID).")]
-        public InArgument<string> PropertyValue { get; set; }
+        [DisplayName("UI Element")]
+        [Description("The drop-down list element you would like to set the value for.")]
+        public InArgument<string> IdentificationObjectPath { get; set; }
 
         [RequiredArgument]
         [DisplayName("Option to Select")]
         [Description("The value or text of the option to select in the drop-down list.")]
         public InArgument<string> OptionToSelect { get; set; }
 
+        [DisplayName("Max Wait Time (seconds)")]
+        [Description("Maximum time to wait to find the UI element (in seconds).")]
+        [DefaultValue(5)]
+        public InArgument<int> MaxWaitTime { get; set; } = 5;
 
+        [DisplayName("Is Option Selected Successfully")]
+        [Description("True if the option was selected successfully, otherwise false.")]
+        [DefaultValue(false)]
+        public OutArgument<bool> IsOptionSelected { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var parentElement = ParentElement.Get(context);
-            var propertyType = PropertyType.Get(context);
-            var propertyValue = PropertyValue.Get(context);
+            // Convert IdentificationObjectPath string to list of IdentificationObject
+            var identificationObjectPath = UIAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
+            var maxWaitTime = MaxWaitTime.Get(context);
             var optionToSelect = OptionToSelect.Get(context);
 
-            string status = "";
+            string statusMessage = "";
             bool itemSelected = false;
 
             try
             {
-                AutomationElement dropdownElement = null;
-                SelectionPattern selectionPattern = null;
-                ExpandCollapsePattern expandCollapsePattern = null;
+                // Get the automation element for the drop-down list
+                var dropdownElement = UIAutomationElementHelper.GetElementByPath(identificationObjectPath, maxWaitTime);
+
+                if (dropdownElement == null)
+                {
+                    statusMessage = "Could not find the drop-down list within the specified time.";
+                    IsOptionSelected.Set(context, false);
+                    StatusMessage.Set(context, statusMessage);
+                    return;
+                }
 
                 for (int i = 1; i <= 5; i++)
                 {
                     try
                     {
-                        dropdownElement = parentElement.FindFirst(
-                            TreeScope.Descendants,
-                            UIAutomationElementHelper.CreatePropertyCondition(propertyType, propertyValue)
-                        );
-
-                        if (dropdownElement != null)
+                        // Try to expand the drop-down if possible
+                        var expandCollapsePattern = dropdownElement.Patterns.ExpandCollapse.PatternOrDefault;
+                        if (expandCollapsePattern != null && expandCollapsePattern.ExpandCollapseState.Value != ExpandCollapseState.Expanded)
                         {
-                            selectionPattern = dropdownElement.GetCurrentPattern(SelectionPattern.Pattern) as SelectionPattern;
-                            if (selectionPattern != null)
+                            expandCollapsePattern.Expand();
+                            Thread.Sleep(200);
+                        }
+
+                        // Find all list items (options)
+                        var listItems = dropdownElement.FindAllDescendants(cf => cf.ByControlType(ControlType.ListItem));
+                        AutomationElement itemToSelect = null;
+                        foreach (var item in listItems)
+                        {
+                            if (item.Name.Equals(optionToSelect, StringComparison.OrdinalIgnoreCase))
                             {
-                                AutomationElement[] itemsSelected = selectionPattern.Current.GetSelection();
-                                if (itemsSelected.Length == 0)
-                                {
-                                    expandCollapsePattern = dropdownElement.GetCurrentPattern(ExpandCollapsePattern.Pattern) as ExpandCollapsePattern;
-                                    if (expandCollapsePattern != null)
-                                    {
-                                        expandCollapsePattern.Expand();
-                                        expandCollapsePattern.Collapse();
-                                    }
-                                    AutomationElement listItem = dropdownElement.FindFirst(
-                                        TreeScope.Subtree,
-                                        UIAutomationElementHelper.CreatePropertyCondition(PropertyTypeEnum.Name, optionToSelect)
-                                    );
-                                    if (listItem != null)
-                                    {
-                                        var ptrnSI = listItem.GetCurrentPattern(SelectionItemPattern.Pattern) as SelectionItemPattern;
-                                        if (ptrnSI != null)
-                                        {
-                                            ptrnSI.Select();
-                                            itemSelected = true;
-                                            status = "Option selected successfully.";
-                                            break;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    bool alreadySelected = false;
-                                    foreach (AutomationElement item in itemsSelected)
-                                    {
-                                        if (item.Current.Name.Equals(optionToSelect, StringComparison.OrdinalIgnoreCase))
-                                        {
-                                            alreadySelected = true;
-                                            status = "Option is already selected.";
-                                            itemSelected = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!alreadySelected)
-                                    {
-                                        expandCollapsePattern = dropdownElement.GetCurrentPattern(ExpandCollapsePattern.Pattern) as ExpandCollapsePattern;
-                                        if (expandCollapsePattern != null)
-                                        {
-                                            expandCollapsePattern.Expand();
-                                            expandCollapsePattern.Collapse();
-                                        }
-                                        AutomationElement listItem = dropdownElement.FindFirst(
-                                            TreeScope.Subtree,
-                                            UIAutomationElementHelper.CreatePropertyCondition(PropertyTypeEnum.Name, optionToSelect)
-                                        );
-                                        if (listItem != null)
-                                        {
-                                            var ptrnSI = listItem.GetCurrentPattern(SelectionItemPattern.Pattern) as SelectionItemPattern;
-                                            if (ptrnSI != null)
-                                            {
-                                                ptrnSI.Select();
-                                                itemSelected = true;
-                                                status = "Option selected successfully.";
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
+                                itemToSelect = item;
+                                break;
                             }
+                        }
+
+                        if (itemToSelect != null)
+                        {
+                            var selectionItemPattern = itemToSelect.Patterns.SelectionItem.PatternOrDefault;
+                            if (selectionItemPattern != null)
+                            {
+                                selectionItemPattern.Select();
+                                itemSelected = true;
+                                statusMessage = "Option selected successfully.";
+                            }
+                            else
+                            {
+                                statusMessage = "The option does not support selection.";
+                            }
+                        }
+                        else
+                        {
+                            statusMessage = "Could not find the specified option in the drop-down list.";
+                        }
+
+                        // Optionally collapse the drop-down after selection
+                        if (expandCollapsePattern != null && expandCollapsePattern.ExpandCollapseState.Value == ExpandCollapseState.Expanded)
+                        {
+                            expandCollapsePattern.Collapse();
                         }
                     }
                     catch
@@ -140,19 +113,20 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
                         break;
                 }
 
-                if (!itemSelected && string.IsNullOrEmpty(status))
+                if (!itemSelected && string.IsNullOrEmpty(statusMessage))
                 {
-                    status = "Could not select the option in the drop-down list.";
+                    statusMessage = "Could not select the option in the drop-down list.";
                 }
 
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                IsOptionSelected.Set(context, itemSelected);
+                IsSuccess.Set(context, itemSelected);
+                StatusMessage.Set(context, statusMessage);
             }
             catch (Exception ex)
             {
-                status = $"Error setting drop-down list value: {ex.Message}";
+                IsOptionSelected.Set(context, false);
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error setting drop-down list value: {ex.Message}");
             }
         }
     }
