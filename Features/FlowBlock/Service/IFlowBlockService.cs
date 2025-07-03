@@ -3,11 +3,12 @@ namespace WorkspaceAPIs.Services;
 public interface IFlowBlockService
 {
     /// <summary>
-    /// Retrieves a list of flow blocks associated with a specific flow, identified by the flow's Id.
+    /// Retrieves a collection of flow blocks associated with the specified reference ID, 
+    /// which may represent either a Flow ID or a Tenant ID.
     /// </summary>
-    /// <param name="flowId">The unique identifier of the flow (Primary Key of Flow Entity)</param>
-    /// <returns>A service response containing a list of flow blocks linked to the specified flowId</returns>
-    Task<ServiceResponse<IEnumerable<FlowBlockDto>>> GetFlowBlocksByFlowIdAsync(Guid? flowId);
+    /// <param name="refId">The reference ID, which can be a Flow ID or a Tenant ID.</param>
+    /// <returns>A service response containing a list of flow blocks linked to the given refId.</returns>
+    Task<ServiceResponse<IEnumerable<FlowBlockDto>>> GetFlowBlocksByIdAsync(Guid? refId);
 
     /// <summary>
     /// Retrieves a specific flow block by its unique identifier.

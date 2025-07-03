@@ -12,11 +12,11 @@ public class FlowBlockController : BaseApiController
         _flowBlockService = flowBlockService;
     }
 
-    // Retrieves a list of flow blocks associated with a specific flow.
+    // Retrieves a list of flow blocks associated with a specific refId.
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowBlockDto>>>> GetFlowBlocks(Guid? flowId)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowBlockDto>>>> GetFlowBlocks(Guid? refId)
     {
-        return ResultHelper(await _flowBlockService.GetFlowBlocksByFlowIdAsync(flowId));
+        return ResultHelper(await _flowBlockService.GetFlowBlocksByIdAsync(refId));
     }
 
     // Retrieves a specific flow block by its unique identifier.

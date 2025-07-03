@@ -20,8 +20,8 @@ public class FlowBlockService : IFlowBlockService
         _unitOfWork = unitOfWork;
     }
 
-    // Retrieves a list of flow blocks based on the specified flowId and user context (tenant and type of sharing).
-    public async Task<ServiceResponse<IEnumerable<FlowBlockDto>>> GetFlowBlocksByFlowIdAsync(Guid? flowId)
+    // Retrieves a list of flow blocks based on the specified refId.
+    public async Task<ServiceResponse<IEnumerable<FlowBlockDto>>> GetFlowBlocksByIdAsync(Guid? refId)
     {
         // Initialize the response object with default failure state
         var serviceResponse = new ServiceResponse<IEnumerable<FlowBlockDto>>
@@ -32,18 +32,9 @@ public class FlowBlockService : IFlowBlockService
 
         try
         {
-            // Fetch flow blocks based on the conditions:
-            // - Public blocks are returned for any FlowId
-            // - Tenant-level blocks are returned only for the current TenantId
-            // - Agent-level blocks are returned only if the FlowId matches the provided flowId
-            // Additionally, we ensure that if flowId is null, we do not apply the FlowId filter.
+            // Fetch flow blocks based on the provided ref id:
             var flowBlocks = await _unitOfWork.FlowBlockRepo
-                .GetByConditionAsync(w =>
-                    (w.Type == BlockSharingTypesEnum.Public) ||
-                    (w.Type == BlockSharingTypesEnum.TenantLevel && w.TenantId == _tenantId) ||
-                    (w.Type == BlockSharingTypesEnum.AgentLevel && w.FlowId == flowId) &&
-                    (flowId == null || w.FlowId == flowId)
-                )
+                .GetByConditionAsync(w => w.RefId == refId)
                 .ProjectToType<FlowBlockDto>()
                 .ToListAsync();
 
@@ -53,13 +44,12 @@ public class FlowBlockService : IFlowBlockService
             serviceResponse.Message = "Flow blocks retrieved successfully.";
 
             // Log the success and the number of flow blocks retrieved for debugging and tracking
-            _logger.LogInformation($"Successfully retrieved {flowBlocks.Count()} flow blocks for flowId: {flowId}. " +
-                                   $"Filter applied: Public, TenantLevel (TenantId: {_tenantId}), Agent (FlowId: {flowId}).");
+            _logger.LogInformation($"Successfully retrieved {flowBlocks.Count()} flow blocks for refId: {refId}. ");
         }
         catch (Exception ex)
         {
             // Log the exception details with the stack trace if an error occurs
-            _logger.LogError(ex, $"Error occurred while retrieving flow blocks for flowId: {flowId}.");
+            _logger.LogError(ex, $"Error occurred while retrieving flow blocks for refId: {refId}.");
 
         }
 
@@ -125,16 +115,16 @@ public class FlowBlockService : IFlowBlockService
         {
             // Check if a FlowBlock with the same FlowId already exists
             var flowBlock = await _unitOfWork.FlowBlockRepo
-                .GetByConditionAsync(w => w.FlowId == flowBlockDto.FlowId)
+                .GetByConditionAsync(w => w.RefId == flowBlockDto.RefId && w.Name.ToLower() == flowBlockDto.Name.ToString())
                 .SingleOrDefaultAsync();
 
             if (flowBlock != null)
             {
                 // Log the error if a FlowBlock already exists with the given FlowId
-                _logger.LogError($"A flow block with FlowId {flowBlockDto.FlowId} already exists. Cannot add duplicate flow block.");
+                _logger.LogError($"A flow block with RefId {flowBlockDto.RefId} already exists. Cannot add duplicate flow block.");
 
                 // Set the response message to inform the user about the duplication
-                serviceResponse.Message = "A flow block with the given FlowId already exists.";
+                serviceResponse.Message = "A flow block with the given refId already exists.";
             }
 
             // Trim string properties to ensure no unwanted whitespace in the DTO
@@ -163,7 +153,7 @@ public class FlowBlockService : IFlowBlockService
             serviceResponse.Message = "Flow block added successfully.";
 
             // Log the success of the operation
-            _logger.LogInformation($"Flow block added successfully for FlowId {newBlock.FlowId}. Created by UserId {newBlock.CreatedByUserId}.");
+            _logger.LogInformation($"Flow block added successfully for RefId {newBlock.RefId}. Created by UserId {newBlock.CreatedByUserId}.");
         }
         catch (Exception ex)
         {
