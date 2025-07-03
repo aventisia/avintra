@@ -34,7 +34,11 @@ public class FlowBlockService : IFlowBlockService
         {
             // Fetch flow blocks based on the provided ref id:
             var flowBlocks = await _unitOfWork.FlowBlockRepo
-                .GetByConditionAsync(w => w.RefId == refId)
+                .GetByConditionAsync(w =>
+                    (w.Type == AccessTypesEnum.Public && w.RefId == null) ||
+                    (w.Type == AccessTypesEnum.AgentLevel && w.RefId == refId) ||
+                    (w.Type == AccessTypesEnum.TenantLevel && w.RefId == _tenantId)
+                )
                 .ProjectToType<FlowBlockDto>()
                 .ToListAsync();
 
@@ -113,11 +117,24 @@ public class FlowBlockService : IFlowBlockService
 
         try
         {
-            // Check if a FlowBlock with the same FlowId already exists
+            // Validate conditions based on Type and RefId
+            if ((flowBlockDto.Type == AccessTypesEnum.AgentLevel || flowBlockDto.Type == AccessTypesEnum.TenantLevel) &&
+                (flowBlockDto.RefId == null || flowBlockDto.RefId == Guid.Empty))
+            {
+                // Log the validation error
+                _logger.LogError($"Validation failed for FlowBlock. Type: {flowBlockDto.Type}, RefId: {flowBlockDto.RefId}. RefId cannot be null or empty for AgentLevel or TenantLevel types.");
+
+                // Set the response message indicating the validation issue
+                serviceResponse.Message = "RefId cannot be null or empty.";
+                return serviceResponse;
+            }
+
+            // Fetch existing flow block by RefId and Name
             var flowBlock = await _unitOfWork.FlowBlockRepo
-                .GetByConditionAsync(w => w.RefId == flowBlockDto.RefId && w.Name.ToLower() == flowBlockDto.Name.ToString())
+                .GetByConditionAsync(w => w.RefId == flowBlockDto.RefId && w.Name.ToLower() == flowBlockDto.Name.ToLower())
                 .SingleOrDefaultAsync();
 
+            // Check if a flow block already exists
             if (flowBlock != null)
             {
                 // Log the error if a FlowBlock already exists with the given FlowId
@@ -178,6 +195,18 @@ public class FlowBlockService : IFlowBlockService
 
         try
         {
+            // Validate conditions based on Type and RefId
+            if ((flowBlockDto.Type == AccessTypesEnum.AgentLevel || flowBlockDto.Type == AccessTypesEnum.TenantLevel) &&
+                (flowBlockDto.RefId == null || flowBlockDto.RefId == Guid.Empty))
+            {
+                // Log the validation error
+                _logger.LogError($"Validation failed for FlowBlock. Type: {flowBlockDto.Type}, RefId: {flowBlockDto.RefId}. RefId cannot be null or empty for AgentLevel or TenantLevel types.");
+
+                // Set the response message indicating the validation issue
+                serviceResponse.Message = "RefId cannot be null or empty.";
+                return serviceResponse;
+            }
+
             // Retrieve the existing flow block entity from the repository using the provided Id
             var flowBlock = await _unitOfWork.FlowBlockRepo
                 .GetByConditionAsync(w => w.Id == flowBlockDto.Id && w.CreatedByUserId == _userId)
