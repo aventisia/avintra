@@ -84,9 +84,12 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
               onClick={() => ungroupNodes()}
             />
 
-            <ContextMenuSeparator className="h-[0.5px]" />
-            {/* Create block */}
-            <FBCreateButton />
+            {import.meta.env.MODE !== "production" && (
+              <>
+                <ContextMenuSeparator className="h-[0.5px]" />
+                <FBCreateButton />
+              </>
+            )}
           </>
         ) : (
           <SimpleCMItem
