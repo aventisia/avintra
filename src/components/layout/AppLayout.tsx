@@ -13,6 +13,7 @@ import { useShallow } from "zustand/react/shallow";
 import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppRedirectPage } from "./AppRedirectPage";
+import { useGetBlockActions } from "@/features/react-flow/hooks/useGetBlockActions";
 
 export const AppLayout = () => {
   const [loading, setLoading] = useState(true);
@@ -39,6 +40,9 @@ export const AppLayout = () => {
       setActionSelectorData: state.setActionSelectorData,
     })),
   );
+
+  //Get block category actions
+  useGetBlockActions();
 
   // Set action selector data on mount
   useEffect(() => {
