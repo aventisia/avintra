@@ -102,6 +102,16 @@
         "label": "Close It / Press a Button",
         "value": "CloseOrPress",
         "description": "Close or press a button on the dialog."
+      },
+      {
+        "label": "Accept Alert",
+        "value": "AcceptAlert",
+        "description": "Accept the alert dialog that appears."
+      },
+      {
+        "label": "Dismiss Alert",
+        "value": "DismissAlert",
+        "description": "Dismiss the alert dialog that appears."
       }
     ]
   },

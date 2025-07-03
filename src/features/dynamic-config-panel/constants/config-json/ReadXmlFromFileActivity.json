@@ -54,7 +54,7 @@
     "type": "config-panel-output",
     "name": "XmlDocument",
     "label": "XML Document Loaded",
-    "description": "Returns true if the XML file was successfully read and parsed, false otherwise.",
+    "description": "Returns the parsed XmlDocument object if the XML file was successfully read and parsed.",
     "defaultValue": {
       "value": "XmlDocument",
       "enabled": true

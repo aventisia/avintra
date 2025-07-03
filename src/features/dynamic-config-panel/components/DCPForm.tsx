@@ -14,6 +14,7 @@ import {
   useUpdateNodeDataIO,
 } from "..";
 import { LoadingSpinner } from "@aventisia/ui";
+import { stringifyIfValidJson } from "../utils/valid-json-utils";
 
 export const DCPForm = () => {
   const [showOuputFields, setShowOutputFields] = useState(false);
@@ -62,7 +63,7 @@ export const DCPForm = () => {
     // Extract node inputs and outputs from formData
     const inputs: NodeInputType[] = inputKeys.map((key) => ({
       key,
-      value: formData[key],
+      value: stringifyIfValidJson(formData[key]),
     }));
     const outputs: NodeOutputType[] = outputKeys.map((key) => ({
       key,

@@ -226,8 +226,8 @@
     "type": "switch",
     "name": "FailWithTimeoutError",
     "label": "Fail with Timeout Error",
-    "description": "If enabled, the activity will fail if the service does not reach the desired state within the specified duration.",
-    "defaultValue": "",
+    "description": "If true, activity fails on timeout. Otherwise, continues.",
+    "defaultValue": true,
     "required": false
   },
   {
@@ -236,7 +236,7 @@
     "name": "Duration",
     "label": "Duration (seconds)",
     "description": "The maximum time to wait for the service to reach the desired state.",
-    "defaultValue": "",
+    "defaultValue": 30,
     "required": false,
     "renderIf": {
       "conditions": [

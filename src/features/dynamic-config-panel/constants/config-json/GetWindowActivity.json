@@ -10,6 +10,32 @@
   },
   {
     "direction": "Input",
+    "type": "select",
+    "name": "MatchMode",
+    "label": "Name Match Mode",
+    "description": "How to match the window name. Options: Equals, Contains, Starts With.",
+    "defaultValue": "Equals",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Equals",
+        "value": "Equals",
+        "description": "Match the name exactly."
+      },
+      {
+        "label": "Contains",
+        "value": "Contains",
+        "description": "Match if the name contains the specified text."
+      },
+      {
+        "label": "Starts With",
+        "value": "StartsWith",
+        "description": "Match if the name starts with the specified text."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
     "type": "text",
     "name": "MaxWaitTime",
     "label": "Max Wait Time (seconds)",

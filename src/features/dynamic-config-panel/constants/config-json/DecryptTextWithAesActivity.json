@@ -4,7 +4,7 @@
     "type": "text",
     "name": "Ciphertext",
     "label": "Ciphertext to Decrypt",
-    "description": "Enter the ciphertext that you want to decrypt.",
+    "description": "The Base64-encoded encrypted text to decrypt.",
     "defaultValue": "",
     "required": true
   },
@@ -13,7 +13,7 @@
     "type": "text",
     "name": "Key",
     "label": "Decryption Key",
-    "description": "Enter the key used for decrypting the ciphertext.",
+    "description": "The key used for decryption. If it\u0027s shorter than required, it will be hashed to a valid length (16/24/32 bytes).",
     "defaultValue": "",
     "required": true
   },
@@ -21,8 +21,8 @@
     "direction": "Input",
     "type": "text",
     "name": "IV",
-    "label": "Initialization Vector",
-    "description": "Enter the initialization vector (IV) used in the decryption process.",
+    "label": "Initialization Vector (IV)",
+    "description": "The initialization vector (must be exactly 16 characters long).",
     "defaultValue": "",
     "required": true
   },
@@ -31,7 +31,7 @@
     "type": "config-panel-output",
     "name": "DecryptedText",
     "label": "Decrypted Text Result",
-    "description": "Outputs the decrypted text after the decryption process.",
+    "description": "Outputs the decrypted plain text after decryption.",
     "defaultValue": {
       "value": "DecryptedText",
       "enabled": true

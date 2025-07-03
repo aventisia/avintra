@@ -33,5 +33,17 @@
         "description": "Show the window minimized."
       }
     ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "IsWindowStateChanged",
+    "label": "Is Window State Changed Successfully",
+    "description": "Indicates whether the window state was changed successfully.",
+    "defaultValue": {
+      "value": "IsWindowStateChanged",
+      "enabled": true
+    },
+    "required": false
   }
 ]

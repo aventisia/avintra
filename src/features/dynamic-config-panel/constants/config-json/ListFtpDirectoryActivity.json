@@ -13,7 +13,7 @@
     "type": "text",
     "name": "DirectoryName",
     "label": "Directory Name",
-    "description": "The name of the directory to create.",
+    "description": "The name of the directory to list contents from.",
     "defaultValue": "",
     "required": true
   },
@@ -48,7 +48,7 @@
     "type": "config-panel-output",
     "name": "Result",
     "label": "Files and Folders Result",
-    "description": "Returns the list subdirectories and files.",
+    "description": "Returns the list of subdirectories and files.",
     "defaultValue": {
       "value": "Result",
       "enabled": true

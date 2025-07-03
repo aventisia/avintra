@@ -7,5 +7,17 @@
     "description": "Select the window you want to close.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "IsWindowClosed",
+    "label": "Is Window Closed Successfully",
+    "description": "Indicates whether the window was closed successfully.",
+    "defaultValue": {
+      "value": "IsWindowClosed",
+      "enabled": true
+    },
+    "required": false
   }
 ]

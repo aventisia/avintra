@@ -4,7 +4,7 @@
     "type": "text",
     "name": "Plaintext",
     "label": "Plaintext to Encrypt",
-    "description": "The text you want to encrypt",
+    "description": "The text you want to encrypt.",
     "defaultValue": "",
     "required": true
   },
@@ -13,7 +13,7 @@
     "type": "text",
     "name": "Key",
     "label": "Encryption Key",
-    "description": "The key used for encryption (must be32 bytes long)",
+    "description": "Secret key used for encryption. Short keys will be hashed to 32 bytes (AES-256).",
     "defaultValue": "",
     "required": true
   },
@@ -22,7 +22,7 @@
     "type": "text",
     "name": "IV",
     "label": "Initialization Vector (IV)",
-    "description": "The initialization vector used for encryption",
+    "description": "16-character IV used in encryption process.",
     "defaultValue": "",
     "required": true
   },
@@ -31,7 +31,7 @@
     "type": "select",
     "name": "EncodingFormat",
     "label": "Encoding Format",
-    "description": "The format of the encrypted text (Base64, Hex, or UTF8)",
+    "description": "Encoding used for the encrypted output: Base64 or Hex.",
     "defaultValue": "",
     "required": true,
     "selectOptions": [
@@ -56,8 +56,8 @@
     "direction": "Output",
     "type": "config-panel-output",
     "name": "EncryptedText",
-    "label": "Encrypted Text",
-    "description": "The encrypted text",
+    "label": "Encrypted Text Result",
+    "description": "Returns the encrypted text based on selected encoding format.",
     "defaultValue": {
       "value": "EncryptedText",
       "enabled": true

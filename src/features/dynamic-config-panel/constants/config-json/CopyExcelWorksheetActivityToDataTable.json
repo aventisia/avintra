@@ -18,6 +18,15 @@
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "switch",
+    "name": "HasHeaders",
+    "label": "Has Headers",
+    "description": "Indicates whether the first row contains column headers.",
+    "defaultValue": true,
+    "required": false
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "CopiedData",

@@ -94,6 +94,11 @@
     "required": false,
     "selectOptions": [
       {
+        "label": "System Default",
+        "value": "SystemDefault",
+        "description": "Uses a System Default as the separator."
+      },
+      {
         "label": "Comma",
         "value": "Comma",
         "description": "Uses a comma (,) as the separator."

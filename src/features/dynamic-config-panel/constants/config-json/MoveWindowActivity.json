@@ -25,5 +25,17 @@
     "description": "Enter the new Y position (in pixels) for the window.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "IsWindowMoved",
+    "label": "Is Window Moved Successfully",
+    "description": "Indicates whether the window was moved successfully.",
+    "defaultValue": {
+      "value": "IsWindowMoved",
+      "enabled": true
+    },
+    "required": false
   }
 ]

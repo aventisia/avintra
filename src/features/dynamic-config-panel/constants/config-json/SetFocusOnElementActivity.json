@@ -2,20 +2,29 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "Element",
+    "name": "IdentificationObjectPath",
     "label": "UI Element",
     "description": "The UI element to bring into focus.",
     "defaultValue": "",
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "text",
+    "name": "MaxWaitTime",
+    "label": "Max Wait Time (seconds)",
+    "description": "Maximum time to wait to find the UI element (in seconds).",
+    "defaultValue": 5,
+    "required": false
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
-    "description": "Shows whether the focus was set successfully or not",
+    "name": "IsFocued",
+    "label": "Is Focus Set Successfully",
+    "description": "True if the focus was set successfully, otherwise false.",
     "defaultValue": {
-      "value": "Result",
+      "value": "IsFocued",
       "enabled": true
     },
     "required": false

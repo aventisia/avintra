@@ -194,5 +194,14 @@
         "description": "User Experience Virtualization Service."
       }
     ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "CustomServiceName",
+    "label": "Custom Service Name",
+    "description": "Optional: Enter a custom service name if not available in the Service To Stop list.",
+    "defaultValue": "",
+    "required": false
   }
 ]

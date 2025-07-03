@@ -58,6 +58,987 @@
   },
   {
     "direction": "Input",
+    "type": "select",
+    "name": "KeyToPress",
+    "label": "Key To Press",
+    "description": "The main key to simulate (e.g., A, Enter, Tab). Leave blank if only using modifiers).",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "None",
+        "value": "None",
+        "description": ""
+      },
+      {
+        "label": "LButton",
+        "value": "LButton",
+        "description": ""
+      },
+      {
+        "label": "RButton",
+        "value": "RButton",
+        "description": ""
+      },
+      {
+        "label": "Cancel",
+        "value": "Cancel",
+        "description": ""
+      },
+      {
+        "label": "MButton",
+        "value": "MButton",
+        "description": ""
+      },
+      {
+        "label": "XButton1",
+        "value": "XButton1",
+        "description": ""
+      },
+      {
+        "label": "XButton2",
+        "value": "XButton2",
+        "description": ""
+      },
+      {
+        "label": "Back",
+        "value": "Back",
+        "description": ""
+      },
+      {
+        "label": "Tab",
+        "value": "Tab",
+        "description": ""
+      },
+      {
+        "label": "LineFeed",
+        "value": "LineFeed",
+        "description": ""
+      },
+      {
+        "label": "Clear",
+        "value": "Clear",
+        "description": ""
+      },
+      {
+        "label": "Return",
+        "value": "Return",
+        "description": ""
+      },
+      {
+        "label": "Return",
+        "value": "Return",
+        "description": ""
+      },
+      {
+        "label": "ShiftKey",
+        "value": "ShiftKey",
+        "description": ""
+      },
+      {
+        "label": "ControlKey",
+        "value": "ControlKey",
+        "description": ""
+      },
+      {
+        "label": "Menu",
+        "value": "Menu",
+        "description": ""
+      },
+      {
+        "label": "Pause",
+        "value": "Pause",
+        "description": ""
+      },
+      {
+        "label": "Capital",
+        "value": "Capital",
+        "description": ""
+      },
+      {
+        "label": "Capital",
+        "value": "Capital",
+        "description": ""
+      },
+      {
+        "label": "KanaMode",
+        "value": "KanaMode",
+        "description": ""
+      },
+      {
+        "label": "KanaMode",
+        "value": "KanaMode",
+        "description": ""
+      },
+      {
+        "label": "KanaMode",
+        "value": "KanaMode",
+        "description": ""
+      },
+      {
+        "label": "JunjaMode",
+        "value": "JunjaMode",
+        "description": ""
+      },
+      {
+        "label": "FinalMode",
+        "value": "FinalMode",
+        "description": ""
+      },
+      {
+        "label": "HanjaMode",
+        "value": "HanjaMode",
+        "description": ""
+      },
+      {
+        "label": "HanjaMode",
+        "value": "HanjaMode",
+        "description": ""
+      },
+      {
+        "label": "Escape",
+        "value": "Escape",
+        "description": ""
+      },
+      {
+        "label": "IMEConvert",
+        "value": "IMEConvert",
+        "description": ""
+      },
+      {
+        "label": "IMENonconvert",
+        "value": "IMENonconvert",
+        "description": ""
+      },
+      {
+        "label": "IMEAceept",
+        "value": "IMEAceept",
+        "description": ""
+      },
+      {
+        "label": "IMEAceept",
+        "value": "IMEAceept",
+        "description": ""
+      },
+      {
+        "label": "IMEModeChange",
+        "value": "IMEModeChange",
+        "description": ""
+      },
+      {
+        "label": "Space",
+        "value": "Space",
+        "description": ""
+      },
+      {
+        "label": "PageUp",
+        "value": "PageUp",
+        "description": ""
+      },
+      {
+        "label": "PageUp",
+        "value": "PageUp",
+        "description": ""
+      },
+      {
+        "label": "Next",
+        "value": "Next",
+        "description": ""
+      },
+      {
+        "label": "Next",
+        "value": "Next",
+        "description": ""
+      },
+      {
+        "label": "End",
+        "value": "End",
+        "description": ""
+      },
+      {
+        "label": "Home",
+        "value": "Home",
+        "description": ""
+      },
+      {
+        "label": "Left",
+        "value": "Left",
+        "description": ""
+      },
+      {
+        "label": "Up",
+        "value": "Up",
+        "description": ""
+      },
+      {
+        "label": "Right",
+        "value": "Right",
+        "description": ""
+      },
+      {
+        "label": "Down",
+        "value": "Down",
+        "description": ""
+      },
+      {
+        "label": "Select",
+        "value": "Select",
+        "description": ""
+      },
+      {
+        "label": "Print",
+        "value": "Print",
+        "description": ""
+      },
+      {
+        "label": "Execute",
+        "value": "Execute",
+        "description": ""
+      },
+      {
+        "label": "PrintScreen",
+        "value": "PrintScreen",
+        "description": ""
+      },
+      {
+        "label": "PrintScreen",
+        "value": "PrintScreen",
+        "description": ""
+      },
+      {
+        "label": "Insert",
+        "value": "Insert",
+        "description": ""
+      },
+      {
+        "label": "Delete",
+        "value": "Delete",
+        "description": ""
+      },
+      {
+        "label": "Help",
+        "value": "Help",
+        "description": ""
+      },
+      {
+        "label": "D0",
+        "value": "D0",
+        "description": ""
+      },
+      {
+        "label": "D1",
+        "value": "D1",
+        "description": ""
+      },
+      {
+        "label": "D2",
+        "value": "D2",
+        "description": ""
+      },
+      {
+        "label": "D3",
+        "value": "D3",
+        "description": ""
+      },
+      {
+        "label": "D4",
+        "value": "D4",
+        "description": ""
+      },
+      {
+        "label": "D5",
+        "value": "D5",
+        "description": ""
+      },
+      {
+        "label": "D6",
+        "value": "D6",
+        "description": ""
+      },
+      {
+        "label": "D7",
+        "value": "D7",
+        "description": ""
+      },
+      {
+        "label": "D8",
+        "value": "D8",
+        "description": ""
+      },
+      {
+        "label": "D9",
+        "value": "D9",
+        "description": ""
+      },
+      {
+        "label": "A",
+        "value": "A",
+        "description": ""
+      },
+      {
+        "label": "B",
+        "value": "B",
+        "description": ""
+      },
+      {
+        "label": "C",
+        "value": "C",
+        "description": ""
+      },
+      {
+        "label": "D",
+        "value": "D",
+        "description": ""
+      },
+      {
+        "label": "E",
+        "value": "E",
+        "description": ""
+      },
+      {
+        "label": "F",
+        "value": "F",
+        "description": ""
+      },
+      {
+        "label": "G",
+        "value": "G",
+        "description": ""
+      },
+      {
+        "label": "H",
+        "value": "H",
+        "description": ""
+      },
+      {
+        "label": "I",
+        "value": "I",
+        "description": ""
+      },
+      {
+        "label": "J",
+        "value": "J",
+        "description": ""
+      },
+      {
+        "label": "K",
+        "value": "K",
+        "description": ""
+      },
+      {
+        "label": "L",
+        "value": "L",
+        "description": ""
+      },
+      {
+        "label": "M",
+        "value": "M",
+        "description": ""
+      },
+      {
+        "label": "N",
+        "value": "N",
+        "description": ""
+      },
+      {
+        "label": "O",
+        "value": "O",
+        "description": ""
+      },
+      {
+        "label": "P",
+        "value": "P",
+        "description": ""
+      },
+      {
+        "label": "Q",
+        "value": "Q",
+        "description": ""
+      },
+      {
+        "label": "R",
+        "value": "R",
+        "description": ""
+      },
+      {
+        "label": "S",
+        "value": "S",
+        "description": ""
+      },
+      {
+        "label": "T",
+        "value": "T",
+        "description": ""
+      },
+      {
+        "label": "U",
+        "value": "U",
+        "description": ""
+      },
+      {
+        "label": "V",
+        "value": "V",
+        "description": ""
+      },
+      {
+        "label": "W",
+        "value": "W",
+        "description": ""
+      },
+      {
+        "label": "X",
+        "value": "X",
+        "description": ""
+      },
+      {
+        "label": "Y",
+        "value": "Y",
+        "description": ""
+      },
+      {
+        "label": "Z",
+        "value": "Z",
+        "description": ""
+      },
+      {
+        "label": "LWin",
+        "value": "LWin",
+        "description": ""
+      },
+      {
+        "label": "RWin",
+        "value": "RWin",
+        "description": ""
+      },
+      {
+        "label": "Apps",
+        "value": "Apps",
+        "description": ""
+      },
+      {
+        "label": "Sleep",
+        "value": "Sleep",
+        "description": ""
+      },
+      {
+        "label": "NumPad0",
+        "value": "NumPad0",
+        "description": ""
+      },
+      {
+        "label": "NumPad1",
+        "value": "NumPad1",
+        "description": ""
+      },
+      {
+        "label": "NumPad2",
+        "value": "NumPad2",
+        "description": ""
+      },
+      {
+        "label": "NumPad3",
+        "value": "NumPad3",
+        "description": ""
+      },
+      {
+        "label": "NumPad4",
+        "value": "NumPad4",
+        "description": ""
+      },
+      {
+        "label": "NumPad5",
+        "value": "NumPad5",
+        "description": ""
+      },
+      {
+        "label": "NumPad6",
+        "value": "NumPad6",
+        "description": ""
+      },
+      {
+        "label": "NumPad7",
+        "value": "NumPad7",
+        "description": ""
+      },
+      {
+        "label": "NumPad8",
+        "value": "NumPad8",
+        "description": ""
+      },
+      {
+        "label": "NumPad9",
+        "value": "NumPad9",
+        "description": ""
+      },
+      {
+        "label": "Multiply",
+        "value": "Multiply",
+        "description": ""
+      },
+      {
+        "label": "Add",
+        "value": "Add",
+        "description": ""
+      },
+      {
+        "label": "Separator",
+        "value": "Separator",
+        "description": ""
+      },
+      {
+        "label": "Subtract",
+        "value": "Subtract",
+        "description": ""
+      },
+      {
+        "label": "Decimal",
+        "value": "Decimal",
+        "description": ""
+      },
+      {
+        "label": "Divide",
+        "value": "Divide",
+        "description": ""
+      },
+      {
+        "label": "F1",
+        "value": "F1",
+        "description": ""
+      },
+      {
+        "label": "F2",
+        "value": "F2",
+        "description": ""
+      },
+      {
+        "label": "F3",
+        "value": "F3",
+        "description": ""
+      },
+      {
+        "label": "F4",
+        "value": "F4",
+        "description": ""
+      },
+      {
+        "label": "F5",
+        "value": "F5",
+        "description": ""
+      },
+      {
+        "label": "F6",
+        "value": "F6",
+        "description": ""
+      },
+      {
+        "label": "F7",
+        "value": "F7",
+        "description": ""
+      },
+      {
+        "label": "F8",
+        "value": "F8",
+        "description": ""
+      },
+      {
+        "label": "F9",
+        "value": "F9",
+        "description": ""
+      },
+      {
+        "label": "F10",
+        "value": "F10",
+        "description": ""
+      },
+      {
+        "label": "F11",
+        "value": "F11",
+        "description": ""
+      },
+      {
+        "label": "F12",
+        "value": "F12",
+        "description": ""
+      },
+      {
+        "label": "F13",
+        "value": "F13",
+        "description": ""
+      },
+      {
+        "label": "F14",
+        "value": "F14",
+        "description": ""
+      },
+      {
+        "label": "F15",
+        "value": "F15",
+        "description": ""
+      },
+      {
+        "label": "F16",
+        "value": "F16",
+        "description": ""
+      },
+      {
+        "label": "F17",
+        "value": "F17",
+        "description": ""
+      },
+      {
+        "label": "F18",
+        "value": "F18",
+        "description": ""
+      },
+      {
+        "label": "F19",
+        "value": "F19",
+        "description": ""
+      },
+      {
+        "label": "F20",
+        "value": "F20",
+        "description": ""
+      },
+      {
+        "label": "F21",
+        "value": "F21",
+        "description": ""
+      },
+      {
+        "label": "F22",
+        "value": "F22",
+        "description": ""
+      },
+      {
+        "label": "F23",
+        "value": "F23",
+        "description": ""
+      },
+      {
+        "label": "F24",
+        "value": "F24",
+        "description": ""
+      },
+      {
+        "label": "NumLock",
+        "value": "NumLock",
+        "description": ""
+      },
+      {
+        "label": "Scroll",
+        "value": "Scroll",
+        "description": ""
+      },
+      {
+        "label": "LShiftKey",
+        "value": "LShiftKey",
+        "description": ""
+      },
+      {
+        "label": "RShiftKey",
+        "value": "RShiftKey",
+        "description": ""
+      },
+      {
+        "label": "LControlKey",
+        "value": "LControlKey",
+        "description": ""
+      },
+      {
+        "label": "RControlKey",
+        "value": "RControlKey",
+        "description": ""
+      },
+      {
+        "label": "LMenu",
+        "value": "LMenu",
+        "description": ""
+      },
+      {
+        "label": "RMenu",
+        "value": "RMenu",
+        "description": ""
+      },
+      {
+        "label": "BrowserBack",
+        "value": "BrowserBack",
+        "description": ""
+      },
+      {
+        "label": "BrowserForward",
+        "value": "BrowserForward",
+        "description": ""
+      },
+      {
+        "label": "BrowserRefresh",
+        "value": "BrowserRefresh",
+        "description": ""
+      },
+      {
+        "label": "BrowserStop",
+        "value": "BrowserStop",
+        "description": ""
+      },
+      {
+        "label": "BrowserSearch",
+        "value": "BrowserSearch",
+        "description": ""
+      },
+      {
+        "label": "BrowserFavorites",
+        "value": "BrowserFavorites",
+        "description": ""
+      },
+      {
+        "label": "BrowserHome",
+        "value": "BrowserHome",
+        "description": ""
+      },
+      {
+        "label": "VolumeMute",
+        "value": "VolumeMute",
+        "description": ""
+      },
+      {
+        "label": "VolumeDown",
+        "value": "VolumeDown",
+        "description": ""
+      },
+      {
+        "label": "VolumeUp",
+        "value": "VolumeUp",
+        "description": ""
+      },
+      {
+        "label": "MediaNextTrack",
+        "value": "MediaNextTrack",
+        "description": ""
+      },
+      {
+        "label": "MediaPreviousTrack",
+        "value": "MediaPreviousTrack",
+        "description": ""
+      },
+      {
+        "label": "MediaStop",
+        "value": "MediaStop",
+        "description": ""
+      },
+      {
+        "label": "MediaPlayPause",
+        "value": "MediaPlayPause",
+        "description": ""
+      },
+      {
+        "label": "LaunchMail",
+        "value": "LaunchMail",
+        "description": ""
+      },
+      {
+        "label": "SelectMedia",
+        "value": "SelectMedia",
+        "description": ""
+      },
+      {
+        "label": "LaunchApplication1",
+        "value": "LaunchApplication1",
+        "description": ""
+      },
+      {
+        "label": "LaunchApplication2",
+        "value": "LaunchApplication2",
+        "description": ""
+      },
+      {
+        "label": "Oem1",
+        "value": "Oem1",
+        "description": ""
+      },
+      {
+        "label": "Oem1",
+        "value": "Oem1",
+        "description": ""
+      },
+      {
+        "label": "Oemplus",
+        "value": "Oemplus",
+        "description": ""
+      },
+      {
+        "label": "Oemcomma",
+        "value": "Oemcomma",
+        "description": ""
+      },
+      {
+        "label": "OemMinus",
+        "value": "OemMinus",
+        "description": ""
+      },
+      {
+        "label": "OemPeriod",
+        "value": "OemPeriod",
+        "description": ""
+      },
+      {
+        "label": "OemQuestion",
+        "value": "OemQuestion",
+        "description": ""
+      },
+      {
+        "label": "OemQuestion",
+        "value": "OemQuestion",
+        "description": ""
+      },
+      {
+        "label": "Oemtilde",
+        "value": "Oemtilde",
+        "description": ""
+      },
+      {
+        "label": "Oemtilde",
+        "value": "Oemtilde",
+        "description": ""
+      },
+      {
+        "label": "OemOpenBrackets",
+        "value": "OemOpenBrackets",
+        "description": ""
+      },
+      {
+        "label": "OemOpenBrackets",
+        "value": "OemOpenBrackets",
+        "description": ""
+      },
+      {
+        "label": "Oem5",
+        "value": "Oem5",
+        "description": ""
+      },
+      {
+        "label": "Oem5",
+        "value": "Oem5",
+        "description": ""
+      },
+      {
+        "label": "Oem6",
+        "value": "Oem6",
+        "description": ""
+      },
+      {
+        "label": "Oem6",
+        "value": "Oem6",
+        "description": ""
+      },
+      {
+        "label": "Oem7",
+        "value": "Oem7",
+        "description": ""
+      },
+      {
+        "label": "Oem7",
+        "value": "Oem7",
+        "description": ""
+      },
+      {
+        "label": "Oem8",
+        "value": "Oem8",
+        "description": ""
+      },
+      {
+        "label": "OemBackslash",
+        "value": "OemBackslash",
+        "description": ""
+      },
+      {
+        "label": "OemBackslash",
+        "value": "OemBackslash",
+        "description": ""
+      },
+      {
+        "label": "ProcessKey",
+        "value": "ProcessKey",
+        "description": ""
+      },
+      {
+        "label": "Packet",
+        "value": "Packet",
+        "description": ""
+      },
+      {
+        "label": "Attn",
+        "value": "Attn",
+        "description": ""
+      },
+      {
+        "label": "Crsel",
+        "value": "Crsel",
+        "description": ""
+      },
+      {
+        "label": "Exsel",
+        "value": "Exsel",
+        "description": ""
+      },
+      {
+        "label": "EraseEof",
+        "value": "EraseEof",
+        "description": ""
+      },
+      {
+        "label": "Play",
+        "value": "Play",
+        "description": ""
+      },
+      {
+        "label": "Zoom",
+        "value": "Zoom",
+        "description": ""
+      },
+      {
+        "label": "NoName",
+        "value": "NoName",
+        "description": ""
+      },
+      {
+        "label": "Pa1",
+        "value": "Pa1",
+        "description": ""
+      },
+      {
+        "label": "OemClear",
+        "value": "OemClear",
+        "description": ""
+      },
+      {
+        "label": "KeyCode",
+        "value": "KeyCode",
+        "description": ""
+      },
+      {
+        "label": "Shift",
+        "value": "Shift",
+        "description": ""
+      },
+      {
+        "label": "Control",
+        "value": "Control",
+        "description": ""
+      },
+      {
+        "label": "Alt",
+        "value": "Alt",
+        "description": ""
+      },
+      {
+        "label": "Modifiers",
+        "value": "Modifiers",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "direction": "Input",
     "type": "text",
     "name": "WaitBeforeReleasing",
     "label": "Wait Before Releasing (ms)",

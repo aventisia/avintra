@@ -106,5 +106,29 @@
         "description": "Download the file with a unique name if it exists."
       }
     ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "DownloadedFilesCount",
+    "label": "Downloaded Files Count",
+    "description": "Returns the number of files successfully downloaded.",
+    "defaultValue": {
+      "value": "DownloadedFilesCount",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "SkippedFiles",
+    "label": "Skipped Files",
+    "description": "Returns the list of files that were skipped during download.",
+    "defaultValue": {
+      "value": "SkippedFiles",
+      "enabled": true
+    },
+    "required": false
   }
 ]

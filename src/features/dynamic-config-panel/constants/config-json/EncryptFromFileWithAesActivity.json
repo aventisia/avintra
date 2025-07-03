@@ -4,7 +4,7 @@
     "type": "text",
     "name": "InputFilePath",
     "label": "Input File Path",
-    "description": "The path to the input file.",
+    "description": "The path to the input file to be encrypted.",
     "defaultValue": "",
     "required": true
   },
@@ -13,7 +13,7 @@
     "type": "text",
     "name": "Key",
     "label": "Encryption Key",
-    "description": "The encryption key.",
+    "description": "Secret key used for encryption. Short keys will be hashed to 32 bytes (AES-256).",
     "defaultValue": "",
     "required": true
   },
@@ -22,7 +22,7 @@
     "type": "select",
     "name": "EncodingFormat",
     "label": "Encoding Format",
-    "description": "The encoding format for the encrypted content.",
+    "description": "Encoding used for the encrypted content: Base64 or Hex.",
     "defaultValue": "",
     "required": true,
     "selectOptions": [
@@ -48,7 +48,7 @@
     "type": "text",
     "name": "OutputFilePath",
     "label": "Output File Path",
-    "description": "The path to the output file.",
+    "description": "The path where the encrypted file should be saved.",
     "defaultValue": "",
     "required": true
   }

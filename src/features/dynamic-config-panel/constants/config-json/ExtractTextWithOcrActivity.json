@@ -9,6 +9,24 @@
     "required": true
   },
   {
+    "direction": "Input",
+    "type": "text",
+    "name": "LanguageCode",
+    "label": "Language Code",
+    "description": "The language code used by Tesseract (e.g., \u0027eng\u0027, \u0027deu\u0027, \u0027fra\u0027).",
+    "defaultValue": "eng",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TessDataPath",
+    "label": "TessData Path",
+    "description": "The directory containing Tesseract language data files (tessdata).",
+    "defaultValue": "C:\\Program Files\\Tesseract-OCR\\tessdata",
+    "required": false
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "ExtractedText",

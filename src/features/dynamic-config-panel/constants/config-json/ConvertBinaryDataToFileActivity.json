@@ -4,7 +4,7 @@
     "type": "text",
     "name": "BinaryData",
     "label": "Binary Data",
-    "description": "The binary data to convert.",
+    "description": "The binary data to convert. Can be either byte[] or Base64 string.",
     "defaultValue": "",
     "required": true
   },

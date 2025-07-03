@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ElementInstance",
-    "label": "Element Instance",
-    "description": "The UI element instance to select.",
+    "name": "IdentificationObjectPath",
+    "label": "UI Element",
+    "description": "The UI element you would like to select.",
     "defaultValue": "",
     "required": true
   },
@@ -13,7 +13,7 @@
     "type": "text",
     "name": "MaxWaitTime",
     "label": "Max Wait Time (seconds)",
-    "description": "Maximum time to wait for the selection action (in seconds).",
+    "description": "Maximum time to wait to find the UI element (in seconds).",
     "defaultValue": 5,
     "required": false
   },

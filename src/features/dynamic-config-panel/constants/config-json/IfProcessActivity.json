@@ -148,17 +148,5 @@
     "description": "The name of the user to check (only applicable if \u0027From User\u0027 is enabled).",
     "defaultValue": "",
     "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "StatusMessages",
-    "label": "Status Message",
-    "description": "Provides status information about the operation.",
-    "defaultValue": {
-      "value": "StatusMessages",
-      "enabled": true
-    },
-    "required": false
   }
 ]

@@ -83,7 +83,7 @@
     "type": "switch",
     "name": "DeleteFilesNotPresentLocally",
     "label": "Delete Files Not Present Locally",
-    "description": "If true, deletes files from the remote directory that are not present in the local directory.",
+    "description": "If true, deletes files from the target location that are not present in the source.",
     "defaultValue": "",
     "required": false
   },
@@ -101,7 +101,7 @@
     "type": "select",
     "name": "OverwriteMode",
     "label": "Overwrite Mode",
-    "description": "Specifies when to overwrite files on the remote server.",
+    "description": "Specifies when to overwrite files.",
     "defaultValue": "IfNewerOrSizeDifferent",
     "required": false,
     "selectOptions": [
@@ -158,7 +158,7 @@
     "type": "config-panel-output",
     "name": "DirectoriesCreated",
     "label": "Directories Created",
-    "description": "Returns the number of directories created on the remote server.",
+    "description": "Returns the number of directories created during synchronization.",
     "defaultValue": {
       "value": "DirectoriesCreated",
       "enabled": true

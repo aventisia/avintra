@@ -18,24 +18,6 @@
     "required": true
   },
   {
-    "direction": "Input",
-    "type": "text",
-    "name": "CustomSeparator",
-    "label": "Custom Separator",
-    "description": "Optional. If provided, splits the input using this separator instead of default ones (\u0027,\u0027, \u0027;\u0027, \u0027|\u0027).",
-    "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "switch",
-    "name": "TrimValues",
-    "label": "Trim Values",
-    "description": "If true, trims whitespace from each value before adding it to the list.",
-    "defaultValue": false,
-    "required": false
-  },
-  {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "ModifiedList",

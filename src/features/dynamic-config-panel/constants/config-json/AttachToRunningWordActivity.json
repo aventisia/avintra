@@ -4,7 +4,7 @@
     "type": "text",
     "name": "DocumentName",
     "label": "Document Name",
-    "description": "The name of the Word document to attach to.",
+    "description": "The name or full path of the Word document to attach to.",
     "defaultValue": "",
     "required": true
   },
