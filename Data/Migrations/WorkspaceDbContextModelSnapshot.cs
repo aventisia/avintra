@@ -78,6 +78,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<Guid?>("FlowBlockId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
@@ -112,6 +115,8 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FlowBlockId");
+
                     b.HasIndex("LastModifiedByUserId");
 
                     b.HasIndex("CreatedByUserId", "Name")
@@ -135,9 +140,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("FlowId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("FlowVariablesObject")
                         .HasColumnType("text");
 
@@ -160,7 +162,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("ReactFlowObject")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("TenantId")
+                    b.Property<Guid?>("RefId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Type")
@@ -176,9 +178,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("FlowId")
-                        .IsUnique();
 
                     b.HasIndex("LastModifiedByUserId");
 
@@ -1494,6 +1493,10 @@ namespace WorkspaceAPIs.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("WorkspaceAPIs.Entities.FlowBlock", "FlowBlock")
+                        .WithMany()
+                        .HasForeignKey("FlowBlockId");
+
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
                         .WithMany()
                         .HasForeignKey("LastModifiedByUserId")
@@ -1501,6 +1504,8 @@ namespace WorkspaceAPIs.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("CreatedByUser");
+
+                    b.Navigation("FlowBlock");
 
                     b.Navigation("LastModifiedByUser");
                 });
@@ -1513,12 +1518,6 @@ namespace WorkspaceAPIs.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WorkspaceAPIs.Entities.Flow", "Flow")
-                        .WithOne("FlowBlock")
-                        .HasForeignKey("WorkspaceAPIs.Entities.FlowBlock", "FlowId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
                         .WithMany()
                         .HasForeignKey("LastModifiedByUserId")
@@ -1526,8 +1525,6 @@ namespace WorkspaceAPIs.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("CreatedByUser");
-
-                    b.Navigation("Flow");
 
                     b.Navigation("LastModifiedByUser");
                 });
@@ -2050,8 +2047,6 @@ namespace WorkspaceAPIs.Data.Migrations
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Flow", b =>
                 {
-                    b.Navigation("FlowBlock");
-
                     b.Navigation("FlowComments");
 
                     b.Navigation("FlowExecutionLogs");
