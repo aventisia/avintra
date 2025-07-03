@@ -11,7 +11,17 @@ const modules = {
  * For now, loads the JSON statically from the constants/config-json folder.
  * @param nodeUniqueName The node Unique name/activity name (e.g., "WriteTextToFileActivity")
  */
-export const getNodeConfig = async (nodeUniqueName: string) => {
+export const getNodeConfig = async (
+  nodeUniqueName: string,
+  nodeType?: string,
+) => {
+  if (nodeType == "blockNode") {
+    const blockConfig = JSON.parse(
+      sessionStorage.getItem("block-config") || "{}",
+    );
+    return blockConfig[nodeUniqueName];
+  }
+
   if (nodeUniqueName == "AIModel") {
     return (await generateOutputConfigFromData()) as DCPFieldSchemaType[];
   }
