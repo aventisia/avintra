@@ -1,0 +1,30 @@
+meta {
+  name: Update api key
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/api-keys
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("MODEL_API_KEY_ID"),
+    name: "api-key",
+    mlModelId: bru.getGlobalEnvVar("MLMODEL_ID")
+  })
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    bru.setGlobalEnvVar(
+    "MODEL_API_KEY_ID",
+    res.getBody().data.id
+    );
+  }
+}
