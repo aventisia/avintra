@@ -18,7 +18,7 @@ const ActionsList = ({ item, nodeSelectionHandler }: ActionsListProps) => {
               disabled={action.disabled}
               key={action.name}
               value={action.label}
-              className="rounded-lg p-1 hover:bg-accent"
+              className="w-full rounded-lg p-1 hover:bg-accent"
               onSelect={() => nodeSelectionHandler(action)}
             >
               {/* Action item */}
