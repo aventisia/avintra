@@ -29,7 +29,7 @@ public class ModelAPIKeyService : IModelAPIKeyService
         var serviceResponse = new ServiceResponse<IEnumerable<ModelAPIKeyDto>>
         {
             Data = null,
-            Message = "Unable to fetch API keys. Please try again later."
+            Message = "Failed to retrieve API keys. Please try again later."
         };
 
         try
@@ -69,6 +69,9 @@ public class ModelAPIKeyService : IModelAPIKeyService
         try
         {
             _logger.LogInformation("Generating new API key for user {UserId}", _userId);
+
+            // Trim dto' string props
+            apiKeyDto = TrimDtoStringPropsUtil.TrimDtoStringProps(apiKeyDto);
 
             var newModelApiKey = apiKeyDto.Adapt<ModelAPIKey>();
             newModelApiKey.ApiKey = Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Replace("=", "").Replace("+", "").Replace("/", "");
@@ -134,6 +137,73 @@ public class ModelAPIKeyService : IModelAPIKeyService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving API key {ApiKeyId} for user {UserId}", modelApiKeyId, _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Updates the API key for the authenticated user.
+    public async Task<ServiceResponse<ModelAPIKeyDto>> UpdateAPIKeyAsync(ModelAPIKeyDto apiKeyDto)
+    {
+        var serviceResponse = new ServiceResponse<ModelAPIKeyDto>
+        {
+            Data = null,
+            Message = "Failed to update API key. Please try again later."
+        };
+
+        try
+        {
+            // Log the start of the API key update process
+            _logger.LogInformation("Updating API key for user {UserId}", _userId);
+
+            // Retrieve the existing API key from the repository
+            var existingModelApiKey = await _unitOfWork.ModelAPIKeyRepo
+                .GetByConditionAsync(w => w.Id == apiKeyDto.Id && w.CreatedByUserId == _userId)
+                .SingleOrDefaultAsync();
+
+            if (existingModelApiKey == null)
+            {
+                // If no existing API key is found, log and return a response indicating failure
+                _logger.LogWarning("No existing API key found for user {UserId}", _userId);
+                serviceResponse.Message = "No existing API key found to update.";
+                return serviceResponse;
+            }
+
+            // Trim any extra spaces from the string properties in the DTO
+            apiKeyDto = TrimDtoStringPropsUtil.TrimDtoStringProps(apiKeyDto);
+
+            // Map the updated DTO values to the existing model
+            apiKeyDto.Adapt(existingModelApiKey);
+
+            // Set the current user as the one who modified the API key
+            existingModelApiKey.LastModifiedByUserId = _userId;
+
+            // Update the API key in the repository
+            _unitOfWork.ModelAPIKeyRepo.Update(existingModelApiKey);
+
+            // Persist changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                // Log a warning if saving fails and return the service response
+                _logger.LogWarning("Failed to persist updated API key for user {UserId}", _userId);
+                return serviceResponse;
+            }
+
+            // Map the updated entity to a DTO to return to the client
+            apiKeyDto = existingModelApiKey.Adapt<ModelAPIKeyDto>();
+
+            // Return the updated API key DTO with success status
+            serviceResponse.Data = apiKeyDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "API key updated successfully.";
+
+            // Log successful update
+            _logger.LogInformation("API key successfully updated for user {UserId}", _userId);
+        }
+        catch (Exception ex)
+        {
+            // Log any exceptions that occur during the update process
+            _logger.LogError(ex, "Error updating API key for user {UserId}", _userId);
         }
 
         return serviceResponse;

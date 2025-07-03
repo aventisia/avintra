@@ -18,6 +18,13 @@ public interface IModelAPIKeyService
     /// <param name="modelAPIKeyDto">The API key details to be created.</param>
     /// <returns>A service response containing the created API key.</returns>
     Task<ServiceResponse<ModelAPIKeyDto>> GenerateAPIKeyAsync(ModelAPIKeyDto modelAPIKeyDto);
+   
+    /// <summary>
+    /// Updates an existing API key for the authenticated user.
+    /// </summary>
+    /// <param name="apiKeyDto">The DTO containing the API key details to be updated.</param>
+    /// <returns>A service response containing the updated API key DTO and status message.</returns>
+    Task<ServiceResponse<ModelAPIKeyDto>> UpdateAPIKeyAsync(ModelAPIKeyDto apiKeyDto);
 
     /// <summary>
     /// Deletes a specific API key by its unique identifier.

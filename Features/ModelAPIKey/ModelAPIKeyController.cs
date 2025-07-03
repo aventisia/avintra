@@ -26,6 +26,13 @@ public class ModelAPIKeyController : BaseApiController
         return ResultHelper(await _modelAPIKeyService.GenerateAPIKeyAsync(apiKeyDto));
     }
 
+    // Update existing api key details
+    [HttpPut()]
+    public async Task<ActionResult<ServiceResponse<ModelAPIKeyDto>>> UpdateAPIKey(ModelAPIKeyDto apiKeyDto)
+    {
+        return ResultHelper(await _modelAPIKeyService.UpdateAPIKeyAsync(apiKeyDto));
+    }
+
     // Deletes a specific API key by its ID
     [HttpDelete("{modelAPiKeyId}")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteAPIKey(Guid modelAPiKeyId)
