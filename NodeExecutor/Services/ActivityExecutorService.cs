@@ -1,5 +1,6 @@
 ﻿using CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NodeExecutor.Models;
 using System;
 using System.Activities;
@@ -425,34 +426,164 @@ namespace NodeExecutor.Services
         {
             try
             {
-                // If template is null or empty, return as-is
                 if (string.IsNullOrEmpty(template))
                     return template;
 
-                // If the template is exactly a single variable reference like {{myVar}}
+                // Helper to resolve variable with dot notation and indexers
+                object ResolveKey(string key)
+                {
+                    // Split by dot, but ignore dots inside brackets
+                    var parts = Regex.Split(key, @"\.(?![^\[]*\])");
+                    object current = null;
+
+                    // Extract base variable and possible indexer from parts[0]
+                    var baseMatch = Regex.Match(parts[0], @"^(?<var>\w+)(\[(?<idx>.+?)\])?$");
+                    if (!baseMatch.Success)
+                        return null;
+
+                    var baseKey = baseMatch.Groups["var"].Value;
+                    if (!context.TryGet(baseKey, out current) || current == null)
+                        return null;
+
+                    // Handle indexer on base variable, e.g., CurrentItem[0]
+                    if (baseMatch.Groups["idx"].Success)
+                    {
+                        var idx = baseMatch.Groups["idx"].Value.Trim('\'', '"');
+                        if (current is IList list && int.TryParse(idx, out int intIdx))
+                        {
+                            if (intIdx >= 0 && intIdx < list.Count)
+                                current = list[intIdx];
+                            else
+                                return null;
+                        }
+                        else if (current is IDictionary dict && dict.Contains(idx))
+                        {
+                            current = dict[idx];
+                        }
+                        else if (current is DataTable dt)
+                        {
+                            if (int.TryParse(idx, out int rowIdx) && rowIdx >= 0 && rowIdx < dt.Rows.Count)
+                                current = dt.Rows[rowIdx];
+                            else if (dt.Columns.Contains(idx))
+                                current = dt.Rows[0][idx];
+                            else
+                                return null;
+                        }
+                        else if (current is DataRow row)
+                        {
+                            if (row.Table.Columns.Contains(idx))
+                                current = row[idx];
+                            else if (int.TryParse(idx, out int colIdx) && colIdx >= 0 && colIdx < row.Table.Columns.Count)
+                                current = row[colIdx];
+                            else
+                                return null;
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+
+                    // Special handling for JObject or JSON string
+                    if ((current is string s && s.TrimStart().StartsWith("{")) || current is JObject)
+                    {
+                        // If key is like myJsonObject.user.profile.name, extract the path after the base
+                        var jsonPath = string.Join(".", parts.Skip(1));
+                        if (string.IsNullOrEmpty(jsonPath))
+                            return current;
+
+                        string jsonString = current is JObject jObj ? jObj.ToString() : current.ToString();
+                        var jsonValue = GetJsonProperty(jsonString, jsonPath);
+                        return jsonValue;
+                    }
+
+                    // Traverse properties/indexers as before
+                    for (int i = 1; i < parts.Length; i++)
+                    {
+                        var part = parts[i];
+
+                        // Handle indexer: e.g., [1], ["email"]
+                        var indexMatch = Regex.Match(part, @"^(?<prop>\w+)?\[(?<idx>.+?)\]$");
+                        if (indexMatch.Success)
+                        {
+                            var propName = indexMatch.Groups["prop"].Value;
+                            var idx = indexMatch.Groups["idx"].Value.Trim('\'', '"');
+
+                            // Property first, if any
+                            if (!string.IsNullOrEmpty(propName))
+                            {
+                                var prop = current.GetType().GetProperty(propName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                                if (prop != null)
+                                    current = prop.GetValue(current);
+                                else
+                                    return null;
+                            }
+
+                            // Indexer
+                            if (current is IList list && int.TryParse(idx, out int intIdx))
+                            {
+                                if (intIdx >= 0 && intIdx < list.Count)
+                                    current = list[intIdx];
+                                else
+                                    return null;
+                            }
+                            else if (current is IDictionary dict && dict.Contains(idx))
+                            {
+                                current = dict[idx];
+                            }
+                            else if (current is DataTable dt)
+                            {
+                                if (int.TryParse(idx, out int rowIdx) && rowIdx >= 0 && rowIdx < dt.Rows.Count)
+                                    current = dt.Rows[rowIdx];
+                                else if (dt.Columns.Contains(idx))
+                                    current = dt.Rows[0][idx];
+                                else
+                                    return null;
+                            }
+                            else if (current is DataRow row)
+                            {
+                                if (row.Table.Columns.Contains(idx))
+                                    current = row[idx];
+                                else
+                                    return null;
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }
+                        else
+                        {
+                            // Simple property
+                            var prop = current.GetType().GetProperty(part, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                            if (prop != null)
+                                current = prop.GetValue(current);
+                            else
+                                return null;
+                        }
+                    }
+                    return current;
+                }
+
+                // If the template is exactly a single variable reference like {{myVar}} or {{MyList.Count}}
                 var singleVarMatch = Regex.Match(template, @"^\s*\{\{([^\}]+)\}\}\s*$");
                 if (singleVarMatch.Success)
                 {
                     var key = singleVarMatch.Groups[1].Value.Trim();
-                    if (context.TryGet(key, out var value))
-                        return value;
-                    return null;
+                    return ResolveKey(key);
                 }
 
                 // Otherwise, do string replacement for embedded variables
-                // Match double curly-brace variables like {{username}} but not \{{username}}
                 Regex PlaceholderRegex = new Regex(@"(?<!\\)\{\{(?<key>[^\}]+)\}\}");
 
-                // Replace {{key}} with context value
                 var result = PlaceholderRegex.Replace(template, match =>
                 {
                     var key = match.Groups["key"].Value.Trim();
-                    if (context.TryGet(key, out var value) && value != null)
+                    var value = ResolveKey(key);
+                    if (value != null)
                     {
-                        // Handle DataTable
                         if (value is DataTable dt)
                         {
-                            // Example: Convert DataTable to CSV string
                             var sb = new StringBuilder();
                             var columns = dt.Columns.Cast<DataColumn>().Select(c => c.ColumnName);
                             sb.AppendLine(string.Join(",", columns));
@@ -460,18 +591,16 @@ namespace NodeExecutor.Services
                                 sb.AppendLine(string.Join(",", row.ItemArray.Select(x => x?.ToString() ?? "")));
                             return sb.ToString().Trim();
                         }
-                        // Handle IEnumerable (but not string)
                         else if (value is System.Collections.IEnumerable enumerable && !(value is string))
                         {
-                            return JsonConvert.SerializeObject(value); // for JSON
+                            return JsonConvert.SerializeObject(value);
                         }
-                        // Default: ToString
                         else
                         {
                             return value.ToString();
                         }
                     }
-                    return match.Value; // leave as-is if not found
+                    return match.Value;
                 });
 
                 return result;
@@ -483,6 +612,26 @@ namespace NodeExecutor.Services
             }
         }
 
+        public static string GetJsonProperty(string jsonString, string propertyPath)
+        {
+            if (string.IsNullOrWhiteSpace(jsonString) || string.IsNullOrWhiteSpace(propertyPath))
+                return null;
+
+            try
+            {
+                JObject obj = JObject.Parse(jsonString);
+
+                // SelectToken supports JSONPath syntax
+                JToken token = obj.SelectToken(propertyPath);
+
+                return token?.ToString();
+            }
+            catch
+            {
+                // We can log the error if needed, but for now just return null
+                return null;
+            }
+        }
 
         public static string ConvertLogValueForLogging(string key, object value)
         {
