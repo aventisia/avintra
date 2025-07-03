@@ -12,11 +12,11 @@ public class ModelAPIKeyController : BaseApiController
         _modelAPIKeyService = modelAPIKeyService;
     }
 
-    // Retrieves a list of API keys for the authenticated user
-    [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<ModelAPIKeyDto>>>> GetAPIKeys()
+    // Retrieves all API keys linked to the specified machine learning model for the current user
+    [HttpGet("list/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ModelAPIKeyDto>>>> GetAPIKeysByModelId(Guid mlModelId)
     {
-        return ResultHelper(await _modelAPIKeyService.GetAPIKeysAsync());
+        return ResultHelper(await _modelAPIKeyService.GetAPIKeysByModelIdAsync(mlModelId));
     }
 
     // Creates a new API key

@@ -6,10 +6,11 @@ namespace MLModelBuilderAPIs.Services;
 public interface IModelAPIKeyService
 {
     /// <summary>
-    /// Retrieves all API keys associated with the current user's models.
+    /// Retrieves all API keys linked to the specified machine learning model for the current user.
     /// </summary>
-    /// <returns>A service response containing a list of API key DTOs.</returns>
-    Task<ServiceResponse<IEnumerable<ModelAPIKeyDto>>> GetAPIKeysAsync();
+    /// <param name="mlModelId">The unique identifier of the machine learning model.</param>
+    /// <returns>A service response containing a collection of API key DTOs.</returns>
+    Task<ServiceResponse<IEnumerable<ModelAPIKeyDto>>> GetAPIKeysByModelIdAsync(Guid mlModelId);
 
     /// <summary>
     /// Creates and stores a new API key.

@@ -23,8 +23,8 @@ public class ModelAPIKeyService : IModelAPIKeyService
         );
     }
 
-    // Fetches all API keys created by the current user.
-    public async Task<ServiceResponse<IEnumerable<ModelAPIKeyDto>>> GetAPIKeysAsync()
+    // Retrieves all API keys linked to the specified machine learning model for the current user.
+    public async Task<ServiceResponse<IEnumerable<ModelAPIKeyDto>>> GetAPIKeysByModelIdAsync(Guid mlModelId)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<ModelAPIKeyDto>>
         {
@@ -37,7 +37,7 @@ public class ModelAPIKeyService : IModelAPIKeyService
             _logger.LogInformation("Fetching API keys for user {UserId}", _userId);
 
             var modelApiKeys = await _unitOfWork.ModelAPIKeyRepo
-                .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.MLModelId == mlModelId && w.CreatedByUserId == _userId)
                 .OrderByDescending(o => o.CreatedOn)
                 .Include(i => i.MLModel)
                 .ProjectToType<ModelAPIKeyDto>()
@@ -83,7 +83,13 @@ public class ModelAPIKeyService : IModelAPIKeyService
                 return serviceResponse;
             }
 
-            serviceResponse.Data = newModelApiKey.Adapt<ModelAPIKeyDto>();
+            // Map the persisted entity to a DTO for returning to the client
+            var modelApiKeyDto = newModelApiKey.Adapt<ModelAPIKeyDto>();
+
+            // Explicitly set the API key value in the DTO
+            modelApiKeyDto.ApiKey = newModelApiKey.ApiKey;
+
+            serviceResponse.Data = modelApiKeyDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "API key created successfully.";
 
