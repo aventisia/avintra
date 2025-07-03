@@ -64,9 +64,4 @@ public class Flow : BaseEntity, IMustHaveTenant
     /// Gets or sets the list of FlowUsers to manage the many-to-many relation.
     /// </summary>
     public virtual ICollection<FlowUser>? FlowUsers { get; set; }
-
-    /// <summary>
-    /// Gets or sets the associated FlowBlock, representing a one-to-many relationship.
-    /// </summary>
-    public virtual FlowBlock? FlowBlock { get; set; }
 }
