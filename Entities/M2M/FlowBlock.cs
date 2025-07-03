@@ -1,12 +1,7 @@
 namespace WorkspaceAPIs.Entities;
 
-public class FlowBlock : BaseEntity, IMustHaveTenant
+public class FlowBlock : BaseEntity
 {
-    /// <summary>
-    /// Gets or sets the unique identifier for the tenant, enabling multi-tenant filtering.
-    /// </summary>
-    public Guid TenantId { get; set; }
-
     /// <summary>
     /// Gets or sets the name of the flow block.
     /// </summary>
@@ -18,9 +13,9 @@ public class FlowBlock : BaseEntity, IMustHaveTenant
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the sharing level for the flow block. Possible values include: Agent Level, Tenant Level, and Public.
+    /// Gets or sets the access level for the flow block. Possible values include: Agent Level, Tenant Level, and Public.
     /// </summary>
-    public BlockSharingTypesEnum Type { get; set; }
+    public AccessTypesEnum Type { get; set; }
 
     /// <summary>
     /// Gets or sets the JSON string representing the flow’s nodes, edges, and viewport. The default value is an empty object.
@@ -38,13 +33,8 @@ public class FlowBlock : BaseEntity, IMustHaveTenant
     public string? InputOutputObject { get; set; }
 
     /// <summary>
-    /// Gets or sets the unique identifier for the flow that this flow block belongs to.
+    /// Gets or sets the reference identifier associated with this flow block.
+    /// This can refer to a Flow ID, a Tenant, or be null.
     /// </summary>
-    public required Guid FlowId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the associated flow record corresponding to the given FlowId.
-    /// </summary>
-    [ForeignKey("FlowId")]
-    public virtual Flow? Flow { get; set; }
+    public Guid? RefId { get; set; }
 }

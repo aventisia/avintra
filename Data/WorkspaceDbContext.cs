@@ -71,7 +71,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Triggers>().Property(e => e.Environment).HasConversion(new EnumToStringConverter<EnvironmentTypesEnum>());
         modelBuilder.Entity<Triggers>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<TriggerFrequencyTypesEnum>());
         modelBuilder.Entity<FlowUser>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AgentAccessTypesEnum>());
-        modelBuilder.Entity<FlowBlock>().Property(e => e.Type).HasConversion(new EnumToStringConverter<BlockSharingTypesEnum>());
+        modelBuilder.Entity<FlowBlock>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AccessTypesEnum>());
 
         modelBuilder.Entity<Triggers>().Property(e => e.RepeateOn).HasColumnType("TEXT[]");
         modelBuilder.Entity<Triggers>().Property(e => e.NonWorkingDays).HasColumnType("TIMESTAMP[]").HasConversion(v => v, v => v);
