@@ -117,14 +117,25 @@ public class FlowBlockService : IFlowBlockService
 
         try
         {
-            // Validate conditions based on Type and RefId
-            if ((flowBlockDto.Type == AccessTypesEnum.AgentLevel || flowBlockDto.Type == AccessTypesEnum.TenantLevel) &&
-                (flowBlockDto.RefId == null || flowBlockDto.RefId == Guid.Empty))
+            // Set RefId based on the Type
+            if (flowBlockDto.Type == AccessTypesEnum.TenantLevel)
             {
-                // Log the validation error
-                _logger.LogError($"Validation failed for FlowBlock. Type: {flowBlockDto.Type}, RefId: {flowBlockDto.RefId}. RefId cannot be null or empty for AgentLevel or TenantLevel types.");
+                // For TenantLevel, set RefId to the tenant's ID
+                flowBlockDto.RefId = _tenantId;
+            }
+            else if (flowBlockDto.Type == AccessTypesEnum.Public)
+            {
+                // For Public type, set RefId to null
+                flowBlockDto.RefId = null;
+            }
 
-                // Set the response message indicating the validation issue
+            // Validate RefId for AgentLevel type
+            if (flowBlockDto.Type == AccessTypesEnum.AgentLevel && (flowBlockDto.RefId == null || flowBlockDto.RefId == Guid.Empty))
+            {
+                // Log an error if RefId is missing or empty for AgentLevel
+                _logger.LogError($"Validation failed for FlowBlock. Type: {flowBlockDto.Type}, RefId: {flowBlockDto.RefId}. RefId cannot be null or empty for AgentLevel or TenantLevel.");
+
+                // Set validation error message
                 serviceResponse.Message = "RefId cannot be null or empty.";
                 return serviceResponse;
             }
@@ -195,14 +206,25 @@ public class FlowBlockService : IFlowBlockService
 
         try
         {
-            // Validate conditions based on Type and RefId
-            if ((flowBlockDto.Type == AccessTypesEnum.AgentLevel || flowBlockDto.Type == AccessTypesEnum.TenantLevel) &&
-                (flowBlockDto.RefId == null || flowBlockDto.RefId == Guid.Empty))
+            // Set RefId based on the Type
+            if (flowBlockDto.Type == AccessTypesEnum.TenantLevel)
             {
-                // Log the validation error
-                _logger.LogError($"Validation failed for FlowBlock. Type: {flowBlockDto.Type}, RefId: {flowBlockDto.RefId}. RefId cannot be null or empty for AgentLevel or TenantLevel types.");
+                // For TenantLevel, set RefId to the tenant's ID
+                flowBlockDto.RefId = _tenantId;
+            }
+            else if (flowBlockDto.Type == AccessTypesEnum.Public)
+            {
+                // For Public type, set RefId to null
+                flowBlockDto.RefId = null;
+            }
 
-                // Set the response message indicating the validation issue
+            // Validate RefId for AgentLevel type
+            if (flowBlockDto.Type == AccessTypesEnum.AgentLevel && (flowBlockDto.RefId == null || flowBlockDto.RefId == Guid.Empty))
+            {
+                // Log an error if RefId is missing or empty for AgentLevel
+                _logger.LogError($"Validation failed for FlowBlock. Type: {flowBlockDto.Type}, RefId: {flowBlockDto.RefId}. RefId cannot be null or empty for AgentLevel or TenantLevel.");
+
+                // Set validation error message
                 serviceResponse.Message = "RefId cannot be null or empty.";
                 return serviceResponse;
             }
