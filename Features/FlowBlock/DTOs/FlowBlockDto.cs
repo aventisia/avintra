@@ -1,12 +1,12 @@
 namespace WorkspaceAPIs.DTOs;
 
 /// <summary>
-/// Data Transfer Object (DTO) representing a user associated with a flow.
+/// Data Transfer Object (DTO) representing a flow block associated with a specific flow version.
 /// </summary>
 public class FlowBlockDto
 {
     /// <summary>
-    /// Gets or sets the unique identifier for the FlowUser record.
+    /// Gets or sets the unique identifier for the flow block.
     /// </summary>
     public Guid Id { get; set; }
 
@@ -17,7 +17,7 @@ public class FlowBlockDto
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the description for the flow block.
+    /// Gets or sets the description of the flow block.
     /// </summary>
     [StringLength(500)]
     public string? Description { get; set; }
@@ -25,59 +25,57 @@ public class FlowBlockDto
     /// <summary>
     /// Gets or sets the access level for the flow block. Possible values include: Agent Level, Tenant Level, and Public.
     /// </summary>
-    public required AccessTypesEnum Type { get; set; }
+    public AccessTypesEnum Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the JSON string representing the flow’s nodes, edges, and viewport. The default value is an empty object.
+    /// Gets or sets the JSON string representing the flow version’s nodes, edges, and viewport. The default value is an empty object.
     /// </summary>
     public string? ReactFlowObject { get; set; }
 
     /// <summary>
-    /// Gets or sets the JSON string containing the flow variables, including the name, value, and data type for each variable.
+    /// Gets or sets the JSON string containing the variables defined in the flow version, including the name, value, and data type of each variable.
     /// </summary>
     public string? FlowVariablesObject { get; set; }
 
     /// <summary>
-    /// Gets or sets the JSON string that defines the flow's input and output data, referred to as the InputOutputObject.
+    /// Gets or sets the JSON string defining the input and output structure for the flow version.
     /// </summary>
     public string? InputOutputObject { get; set; }
 
     /// <summary>
-/// Gets or sets the reference identifier associated with this flow block.
-/// This can refer to a Flow ID, a Tenant, or be null.
-/// </summary>
-public Guid? RefId { get; set; }
-
+    /// Gets or sets the unique identifier for the flow version to which this flow block belongs.
+    /// </summary>
+    public required Guid FlowVersionId { get; set; }
 
     /// <summary>
-    /// Gets or sets a flag indicating whether the user record is disabled.
+    /// Gets or sets a flag indicating whether the flow block is disabled.
     /// </summary>
     /// <remarks>
-    /// Note: It's important to have this property nullable because we need to differentiate between true, false, and null.
+    /// Note: This property is nullable to allow differentiation between true, false, and unspecified (null) states.
     /// </remarks>
     public bool? IsDisabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the username of the user who created the user record. 
-    /// This property is intended for use in responses only and should not be included in requests.
+    /// Gets or sets the username of the user who created the flow block.
+    /// This property is intended for response use only and should not be included in requests.
     /// </summary>
     public string? CreatedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the date and time when the user record was created. 
-    /// This property is intended for use in responses only and should not be included in requests.
+    /// Gets or sets the date and time when the flow block was created.
+    /// This property is intended for response use only and should not be included in requests.
     /// </summary>
     public DateTimeOffset? CreatedOn { get; set; }
 
     /// <summary>
-    /// Gets or sets the username of the user who last modified the user record.
-    /// This property is intended for use in responses only and should not be included in requests.
+    /// Gets or sets the username of the user who last modified the flow block.
+    /// This property is intended for response use only and should not be included in requests.
     /// </summary>
     public string? LastModifiedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the date and time when the user record was last modified. 
-    /// This property is intended for use in responses only and should not be included in requests.
+    /// Gets or sets the date and time when the flow block was last modified.
+    /// This property is intended for response use only and should not be included in requests.
     /// </summary>
     public DateTimeOffset? LastModifiedOn { get; set; }
 }
