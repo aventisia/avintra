@@ -34,17 +34,20 @@ public class BlockService : IBlockService
         {
             // Fetch blocks based on the provided ref id:
             var flowBlocks = await _unitOfWork.BlockRepo
-                .GetByConditionAsync(w =>
-                    (w.FlowVersion.IsPublished || w.CreatedByUserId == _userId) &&
+            .GetByConditionAsync(w =>
+                (
+                    w.FlowVersion.IsPublished &&
                     (
                         w.Type == AccessTypesEnum.Public ||
                         (w.Type == AccessTypesEnum.TenantLevel && w.TenantId == _tenantId) ||
                         (w.Type == AccessTypesEnum.AgentLevel && w.FlowVersionId == flowVersionId)
                     )
-                )
-                .Include(i => i.FlowVersion)
-                .ProjectToType<BlockDto>()
-                .ToListAsync();
+                ) ||
+                (w.CreatedByUserId == _userId && w.FlowVersionId == flowVersionId)
+            )
+            .Include(i => i.FlowVersion)
+            .ProjectToType<BlockDto>()
+            .ToListAsync();
 
             // If successful, set the retrieved data, success status, and success message
             serviceResponse.Data = flowBlocks;
