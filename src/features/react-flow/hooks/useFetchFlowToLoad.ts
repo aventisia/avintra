@@ -3,22 +3,17 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useQuery } from "@tanstack/react-query";
 import { Edge, Node, useReactFlow, Viewport } from "@xyflow/react";
-import { useEffect, useMemo } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { getFlowToLoad } from "../apis/react-flow-apis";
 import { deepParse } from "../utils/deepParse";
 
 export const useFetchFlowToLoad = () => {
-  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Get flow id and version id from url
-  const queryParams = useMemo(
-    () => new URLSearchParams(location.search),
-    [location.search],
-  );
-  const flowId = queryParams.get("f");
-  const versionId = queryParams.get("v") || undefined;
+  const flowId = searchParams.get("f");
+  const versionId = searchParams.get("v") || undefined;
 
   const { setCurrentFlow, setIsFlowLoading } = useCurrentFlowStore(
     useShallow((state) => ({
@@ -75,6 +70,12 @@ export const useFetchFlowToLoad = () => {
       description: data.data.description || "",
     });
     setIsPublished(data?.data?.isPublished || false);
+
+    // Check if 'v' query parameter exists
+    if (!searchParams.has("v")) {
+      searchParams.set("v", data.data.versionId);
+      setSearchParams(searchParams);
+    }
 
     // Parse react flow object
     const flow = deepParse(data.data.reactFlowObject) as unknown as {

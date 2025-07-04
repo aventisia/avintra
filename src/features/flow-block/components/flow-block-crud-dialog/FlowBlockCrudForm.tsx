@@ -86,7 +86,7 @@ export const FlowBlockCrudForm = () => {
       insertBlock({
         ...refineFormData(formData),
         id: rowId,
-        refId: currentFlow.id,
+        flowVersionId: currentFlow.versionId,
         reactFlowObject: JSON.stringify(flowBlockObject),
         inputOutputObject: JSON.stringify(formDataToDCPJson(formData)),
       } as unknown as FlowBlockDto);
@@ -94,7 +94,7 @@ export const FlowBlockCrudForm = () => {
       // Create or update the flow
       updateBlock({
         ...refineFormData(formData),
-        refId: currentFlow.id,
+        flowVersionId: currentFlow.versionId,
         reactFlowObject: JSON.stringify(flowBlockObject),
         inputOutputObject: JSON.stringify(formDataToDCPJson(formData)),
       } as unknown as FlowBlockDto);

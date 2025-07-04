@@ -2,7 +2,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { FlowBlockDto } from "../dtos/flow-block-dtos";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/flow-block`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/block`;
 
 /**
  * Gets single flow Block to edit the Block
@@ -16,9 +16,9 @@ const getFlowBlock = (id: string) => {
 /**
  * Gets list of flow Blocks of single flow using flow Id.
  */
-const getFlowBlocks = (flowId: string) => {
+const getFlowBlocks = (versionId: string) => {
   return axiosInstance
-    .get<IHttpResponse<FlowBlockDto[]>>(`${baseAPIURL}/list/?refId=${flowId}`)
+    .get<IHttpResponse<FlowBlockDto[]>>(`${baseAPIURL}/list/?id=${versionId}`)
     .then((res) => res.data);
 };
 
