@@ -68,10 +68,11 @@ const sendExecutionComplete = (
 ) => {
   // Remove the items from local storage
   if (command === "complete" || command === "error" || command === "abort") {
-    localStorage.removeItem("nodes");
-    localStorage.removeItem("edges");
-    localStorage.removeItem("conditionalExecutionGroup");
-    localStorage.removeItem("loopExecutionGroup");
+    // TODO: For now we are not removing the items from local storage so that we can debug the execution flow by running NodeExecuter in debug mode
+    //localStorage.removeItem("nodes");
+    //localStorage.removeItem("edges");
+    //localStorage.removeItem("conditionalExecutionGroup");
+    //localStorage.removeItem("loopExecutionGroup");
     sendCommand(command);
   }
 
