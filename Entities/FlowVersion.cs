@@ -83,4 +83,9 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     /// Configures the many-to-many relationship between trigger and flow versions.
     /// </summary>
     public virtual ICollection<TriggersFlowVersion>? TriggerFlowVersions { get; set; }
+
+    /// <summary>
+    /// Configures the many-to-many relationship between block and flow versions.
+    /// </summary>
+    public virtual ICollection<Block>? Blocks { get; set; }
 }

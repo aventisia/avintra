@@ -41,7 +41,7 @@ public static class AppServicesExtension
         config.Apply(new KeyStoreMappingProfile());
         config.Apply(new VaultMappingProfile());
         config.Apply(new FlowUserMappingProfile());
-        config.Apply(new FlowBlockMappingProfile());
+        config.Apply(new BlockMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -81,7 +81,7 @@ public static class AppServicesExtension
         services.AddScoped<ITriggerService, TriggerService>();
         services.AddScoped<IFileUploadService, FileUploadService>();
         services.AddScoped<IFlowUserService, FlowUserService>();
-        services.AddScoped<IFlowBlockService, FlowBlockService>();
+        services.AddScoped<IBlockService, BlockService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

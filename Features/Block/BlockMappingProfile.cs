@@ -1,11 +1,11 @@
 namespace WorkspaceAPIs.MappingProfiles;
 
-public class FlowBlockMappingProfile : IRegister
+public class BlockMappingProfile : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
         // Mapping of DTO to get list of blocks to show on the UI.
-        config.NewConfig<FlowBlock, FlowBlockDto>()
+        config.NewConfig<Block, BlockDto>()
             .Map(dest => dest.CreatedBy, 
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
@@ -16,7 +16,7 @@ public class FlowBlockMappingProfile : IRegister
                     : null);
 
         // Mapping of DTO for inserting flow block. Note: Update mapping is manual.
-        config.NewConfig<FlowBlockDto, FlowBlock>()
+        config.NewConfig<BlockDto, Block>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)

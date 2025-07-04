@@ -1,6 +1,7 @@
 namespace WorkspaceAPIs.Entities;
 
-public class FlowBlock : BaseEntity, IMustHaveTenant
+[Table("Blocks")]
+public class Block : BaseEntity, IMustHaveTenant
 {
     /// <summary>
     /// Gets or sets the unique identifier for the tenant, enabling multi-tenant filtering.
@@ -8,17 +9,17 @@ public class FlowBlock : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the flow block.
+    /// Gets or sets the name of the block.
     /// </summary>
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the description of the flow block.
+    /// Gets or sets the description of the block.
     /// </summary>
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the access level for the flow block. Possible values include: Agent Level, Tenant Level, and Public.
+    /// Gets or sets the access level for the block. Possible values include: Agent Level, Tenant Level, and Public.
     /// </summary>
     public AccessTypesEnum Type { get; set; }
 
@@ -38,7 +39,7 @@ public class FlowBlock : BaseEntity, IMustHaveTenant
     public string? InputOutputObject { get; set; }
 
     /// <summary>
-    /// Gets or sets the unique identifier for the flow version to which this flow block belongs.
+    /// Gets or sets the unique identifier for the version to which this  block belongs.
     /// </summary>
     public required Guid FlowVersionId { get; set; }
 
