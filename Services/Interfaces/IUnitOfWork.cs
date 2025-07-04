@@ -18,7 +18,7 @@ public interface IUnitOfWork
     IActionExecutionLogRepo ActionExecutionLogRepo { get; }
     IMachineRepo MachineRepo { get; }
     IMachineFlowRepo MachineFlowRepo { get; }
-    IFlowTemplateRepo FlowTemplateRepo { get; }
+    IWorcTemplateRepo WorcTemplateRepo { get; }
     IQueueRepo QueueRepo { get; }
     IQueueFlowVersionRepo QueueFlowVersionRepo { get; }
     IQueueTransactionRepo QueueTransactionRepo { get; }

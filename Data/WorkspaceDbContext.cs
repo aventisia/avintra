@@ -35,7 +35,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<MachineFlow>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
-        modelBuilder.Entity<FlowTemplate>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<WorcTemplate>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Plan>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -61,7 +61,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Notification>().Property(e => e.Type).HasConversion(new EnumToStringConverter<NotificationTypesEnum>());
         modelBuilder.Entity<Flow>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FlowTypesEnum>());
         modelBuilder.Entity<FlowLog>().Property(e => e.Status).HasConversion(new EnumToStringConverter<FlowLogStatusEnum>());
-        modelBuilder.Entity<FlowTemplate>().Property(e => e.Type).HasConversion(new EnumToStringConverter<CategoryTypesEnum>());
+        modelBuilder.Entity<WorcTemplate>().Property(e => e.Type).HasConversion(new EnumToStringConverter<CategoryTypesEnum>());
         modelBuilder.Entity<Machine>().Property(e => e.Type).HasConversion(new EnumToStringConverter<MachineTypeEnum>());
         modelBuilder.Entity<Machine>().Property(e => e.Status).HasConversion(new EnumToStringConverter<MachineStatusTypeEnum>());
         modelBuilder.Entity<Machine>().Property(e => e.Environment).HasConversion(new EnumToStringConverter<EnvironmentTypesEnum>());
@@ -100,7 +100,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Flow>().HasMany(many => many.FlowLog).WithOne(one => one.Flow).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Restrict);
 
         // Configure One-to-Many Relationship between Flow and FlowTemplate
-        modelBuilder.Entity<Flow>().HasMany(many => many.FlowTemplate).WithOne(one => one.Flow).HasForeignKey(f => f.FlowId).IsRequired();
+        modelBuilder.Entity<FlowVersion>().HasMany(many => many.WorcTemplates).WithOne(one => one.FlowVersion).HasForeignKey(f => f.FlowVersionId).IsRequired();
 
 
         //Configure one-to-many relationship between Flow and Flow version
@@ -172,7 +172,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<SupportTicketRemark> SupportTicketRemarks { get; set; }
     public DbSet<FlowLog> FlowLog { get; set; }
 
-    public DbSet<FlowTemplate> FlowTemplates { get; set; }
+    public DbSet<WorcTemplate> WorcTemplates { get; set; }
     public DbSet<FlowVersion> FlowVersions { get; set; }
     public DbSet<Plan> Plans { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }

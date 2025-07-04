@@ -1,51 +1,53 @@
-namespace WorkspaceAPIs.Entities
+namespace WorkspaceAPIs.Entities;
+
+/// <summary>
+/// Represents an entity that holds the data for a Worc template.
+/// </summary>
+public class WorcTemplate : BaseEntity, IMustHaveTenant
 {
     /// <summary>
-    /// Represents an entity that stores flow template data.
+    /// Gets or sets the unique identifier for the tenant associated with this record.
     /// </summary>
-    public class FlowTemplate : BaseEntity,IMustHaveTenant
-    {
-        /// <summary>
-        /// Gets or sets the primary key of the tenant record.
-        /// </summary>
-        public Guid TenantId { get; set; }
+    public Guid TenantId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the name of the flow template. Max-255 characters.
-        /// </summary>
-        [MaxLength(255)]
-        public required string Name { get; set; }
+    /// <summary>
+    /// Gets or sets the name of the Worc template. Maximum length of 255 characters.
+    /// </summary>
+    [MaxLength(255)]
+    public required string Name { get; set; }
 
-        /// <summary>
-        /// Gets or sets the description of the flow template. Max-500 characters.
-        /// </summary>
-        [MaxLength(500)]
-        public string? Description { get; set; }
+    /// <summary>
+    /// Gets or sets the description of the Worc template. Maximum length of 500 characters.
+    /// </summary>
+    [MaxLength(500)]
+    public string? Description { get; set; }
 
-        /// <summary>
-        /// Gets or sets the flow template's nodes, edges, and viewport JSON data in string format.
-        /// The default value will be an empty object.
-        /// </summary>
-        public string? ReactFlowObject { get; set; } = "{\"nodes\":[],\"edges\":[],\"viewport\":{\"x\":0,\"y\":0,\"zoom\":1}}";
+    /// <summary>
+    /// Gets or sets the JSON representation of the Worc template's nodes, edges, and viewport. 
+    /// Defaults to an empty object if not provided.
+    /// </summary>
+    public string? ReactFlowObject { get; set; } = "{\"nodes\":[],\"edges\":[],\"viewport\":{\"x\":0,\"y\":0,\"zoom\":1}}";
 
-        /// <summary>
-        /// Gets or sets the category of the flow template (e.g., Workflow, Automation, etc.).
-        /// </summary>
-        [MaxLength(50)]
-        public CategoryTypesEnum Type { get; set; }
-         
-        /// <summary>
-        /// Gets or sets the number of times this template has been used to create flows.
-        /// This will be used to track trending templates.
-        /// </summary>
-        public int UsagesCount { get; set; }
+    /// <summary>
+    /// Gets or sets the category for the Worc template (e.g., Workflow, Automation, etc.).
+    /// </summary>
+    [MaxLength(50)]
+    public CategoryTypesEnum Type { get; set; }
 
-        public required Guid FlowId { get; set; }
-        /// <summary>
-        /// Gets or sets the list of Flows that are based on this template 
-        /// </summary>     
-        [ForeignKey("FlowId")]
-        public virtual Flow? Flow { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the number of times the template has been used to create flows. 
+    /// This helps in tracking popular or trending templates.
+    /// </summary>
+    public int UsagesCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier for the version of the flow that this template belongs to.
+    /// </summary>
+    public required Guid FlowVersionId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the associated FlowVersion for this Worc template.
+    /// </summary>
+    [ForeignKey("FlowVersionId")]
+    public virtual FlowVersion? FlowVersion { get; set; }
 }
-
