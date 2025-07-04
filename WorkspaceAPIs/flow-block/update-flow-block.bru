@@ -5,7 +5,7 @@ meta {
 }
 
 put {
-  url: {{WORKSPACE_APIS_BASE_URL}}/flow-block
+  url: {{WORKSPACE_APIS_BASE_URL}}/block
   body: none
   auth: none
 }
@@ -26,7 +26,7 @@ script:pre-request {
     reactFlowObject: "",
     flowVariablesObject: "",
     inputOutputObject: "",
-    refId: bru.getGlobalEnvVar("FLOW_ID"),
+    flowVersionId: bru.getGlobalEnvVar("FLOW_VERSION_ID"),
     type: "TenantLevel",
     isDisabled: false  
   })
