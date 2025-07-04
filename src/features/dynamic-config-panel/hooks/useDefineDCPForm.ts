@@ -46,7 +46,7 @@ export const useDefineDCPForm = () => {
     setIsLoading(true);
 
     // Get node config from API and Set node config and zod schema
-    getNodeConfig(nodeUniqueName)
+    getNodeConfig(nodeUniqueName, nodeData?.type)
       .then((config) => {
         setNodeConfig(config);
         setNodeConfigZodSchema(generateZodSchema(config));
