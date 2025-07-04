@@ -62,6 +62,70 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("ActionExecutionLogs");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.Block", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FlowVariablesObject")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("FlowVersionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("InputOutputObject")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ReactFlowObject")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("FlowVersionId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.ToTable("Blocks");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.Flow", b =>
                 {
                     b.Property<Guid>("Id")
@@ -77,9 +141,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
-
-                    b.Property<Guid?>("FlowBlockId")
-                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
@@ -115,73 +176,12 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FlowBlockId");
-
                     b.HasIndex("LastModifiedByUserId");
 
                     b.HasIndex("CreatedByUserId", "Name")
                         .IsUnique();
 
                     b.ToTable("Flows");
-                });
-
-            modelBuilder.Entity("WorkspaceAPIs.Entities.FlowBlock", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("FlowVariablesObject")
-                        .HasColumnType("text");
-
-                    b.Property<string>("InputOutputObject")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ReactFlowObject")
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("RefId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastModifiedByUserId");
-
-                    b.ToTable("FlowBlocks");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.FlowComment", b =>
@@ -1485,6 +1485,33 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("FlowExecutionLog");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.Block", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.FlowVersion", "FlowVersion")
+                        .WithMany("Blocks")
+                        .HasForeignKey("FlowVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("FlowVersion");
+
+                    b.Navigation("LastModifiedByUser");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.Flow", b =>
                 {
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
@@ -1493,35 +1520,10 @@ namespace WorkspaceAPIs.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("WorkspaceAPIs.Entities.FlowBlock", "FlowBlock")
-                        .WithMany()
-                        .HasForeignKey("FlowBlockId");
-
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
                         .WithMany()
                         .HasForeignKey("LastModifiedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("FlowBlock");
-
-                    b.Navigation("LastModifiedByUser");
-                });
-
-            modelBuilder.Entity("WorkspaceAPIs.Entities.FlowBlock", b =>
-                {
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CreatedByUser");
@@ -2067,6 +2069,8 @@ namespace WorkspaceAPIs.Data.Migrations
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.FlowVersion", b =>
                 {
+                    b.Navigation("Blocks");
+
                     b.Navigation("Jobs");
 
                     b.Navigation("MachineFlows");
