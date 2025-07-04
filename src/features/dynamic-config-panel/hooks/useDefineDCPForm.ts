@@ -94,6 +94,7 @@ export const useDefineDCPForm = () => {
     isFormReady,
     nodeConfigZodSchema,
     nodeId,
+    nodeUniqueName,
     inputKeys,
     outputKeys,
     nodeLabel,

@@ -1,5 +1,4 @@
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 import { Button } from "@aventisia/ui/buttons";
 import { Form } from "@aventisia/ui/form";
 import { toast } from "@aventisia/ui/sonner";
@@ -14,7 +13,7 @@ import {
   useUpdateNodeDataIO,
 } from "..";
 import { LoadingSpinner } from "@aventisia/ui";
-import { stringifyIfValidJson } from "../utils/valid-json-utils";
+import { refineSubmittedIO } from "../utils/refine-submitted-io";
 
 export const DCPForm = () => {
   const [showOuputFields, setShowOutputFields] = useState(false);
@@ -27,6 +26,7 @@ export const DCPForm = () => {
     isFormReady,
     nodeConfigZodSchema,
     nodeId,
+    nodeUniqueName,
     inputKeys,
     outputKeys,
     nodeLabel,
@@ -61,21 +61,19 @@ export const DCPForm = () => {
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof nodeConfigZodSchema>) => {
     // Extract node inputs and outputs from formData
-    const inputs: NodeInputType[] = inputKeys.map((key) => ({
-      key,
-      value: stringifyIfValidJson(formData[key]),
-    }));
-    const outputs: NodeOutputType[] = outputKeys.map((key) => ({
-      key,
-      value: formData[key],
-    }));
+    const { inputs, outputs } = refineSubmittedIO(
+      nodeUniqueName,
+      formData,
+      inputKeys,
+      outputKeys,
+    );
 
     // Update node data inputs and outputs
     if (nodeId) {
       updateNodeDataIO(nodeId, inputs, outputs, nodeLabel);
 
       // Update flow variables object
-      if (outputKeys.length > 0) updateFlowVariablesObject(nodeId, outputs);
+      if (outputs.length > 0) updateFlowVariablesObject(nodeId, outputs);
     } else {
       toast.error("Node id is undefined. Cannot update node data");
       console.error("Node id is undefined. Cannot update node data.");
