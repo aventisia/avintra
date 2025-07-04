@@ -186,15 +186,24 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 var rowCount = range.Rows.Count;
                 var colCount = range.Columns.Count;
 
+                // Determine the starting row based on whether the first line contains column names
+                var startRow = firstLineContainsColumnNames ? 2 : 1;
+
+                // If the range is empty, return an empty DataTable
+                if (rowCount < startRow || colCount < 1)
+                    return dataTable; // Return empty DataTable
+                
                 // Add columns dynamically
                 for (var j = 1; j <= colCount; j++)
                 {
-                    var cellValue = (range.Cells[1, j] as Excel.Range)?.Text?.ToString() ?? $"Column{j}";
-                    dataTable.Columns.Add(cellValue);
+                    string columnName = $"Column{j}";
+                    if (firstLineContainsColumnNames)
+                        columnName = (range.Cells[1, j] as Excel.Range)?.Text?.ToString() ?? $"Column{j}";
+                    dataTable.Columns.Add(columnName);
                 }
 
                 // Add rows
-                for (var i = 1; i <= rowCount; i++)
+                for (var i = startRow; i <= rowCount; i++)
                 {
                     var row = dataTable.NewRow();
                     for (var j = 1; j <= colCount; j++)
@@ -205,11 +214,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                     dataTable.Rows.Add(row);
                 }
-
-                if (!firstLineContainsColumnNames)
-                    // Remove the first row if it's treated as data
-                    if (dataTable.Rows.Count > 0)
-                        dataTable.Rows.RemoveAt(0);
             }
             catch (Exception ex)
             {
