@@ -7,15 +7,6 @@ export async function generateOutputConfigFromData() {
   const inputItem = [
     {
       direction: "Input",
-      type: "model-select",
-      name: "MLModel",
-      label: "Select Model",
-      description: "Select the ML model.",
-      defaultValue: "",
-      required: true,
-    },
-    {
-      direction: "Input",
       type: "text",
       name: "inputText",
       label: "Input Text",
@@ -71,5 +62,37 @@ export async function generateOutputConfigFromData() {
     },
   }));
 
-  return [...inputItem, ...outputItems];
+  const llmItems = data.map((item) => ({
+    direction: "Input",
+    type: "text",
+    name: "llmKey" + item.name,
+    label: "LLM",
+    description: "LLM used for selected model",
+    defaultValue: item.llm,
+    disabled: true,
+    required: false,
+    renderIf: {
+      conditions: [
+        {
+          field: "MLModel",
+          equals: item.id,
+        },
+      ],
+    },
+  }));
+  console.log(llmItems);
+  return [
+    {
+      direction: "Input",
+      type: "model-select",
+      name: "MLModel",
+      label: "Select Model",
+      description: "Select the ML model.",
+      defaultValue: "",
+      required: true,
+    },
+    ...llmItems,
+    ...inputItem,
+    ...outputItems,
+  ];
 }
