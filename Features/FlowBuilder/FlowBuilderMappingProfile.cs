@@ -16,5 +16,8 @@ public class FlowBuilderMappingProfile : IRegister
         config.NewConfig<FlowSilentUpdateDto, FlowVersion>()
             .Map(dest => dest.Id, src => src.VersionId)
             .Map(dest => dest.FlowId, src => src.Id);
+
+         // To Update flow's node, edges etc silently in the background
+        config.NewConfig<PublishFlowVersionDto, FlowVersion>();
     }
 }

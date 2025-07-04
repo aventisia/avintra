@@ -3,15 +3,15 @@ namespace WorkspaceAPIs.DTOs;
 public class PublishFlowVersionDto
 {
     /// <summary>
-    /// Gets or sets the unique identifier for the flow record.
+    /// Gets or sets the unique identifier for the flow version record.
     /// </summary>
     [RequiredGuid]
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the optional identifier for a specific version of the flow.
+    /// Gets or sets the optional identifier of the flow.
     /// </summary>
-    public Guid? VersionId { get; set; }
+    public Guid FlowId { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the block pr template.

@@ -105,8 +105,8 @@ public class FlowBuilderService : IFlowBuilderService
             // Step 2: Fetch the flow version with matching ID, flow ID, and ownership or shared access by current user
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
-                    w.Id == publishFlowVersionDto.VersionId &&
-                    w.FlowId == publishFlowVersionDto.Id &&
+                    w.Id == publishFlowVersionDto.Id &&
+                    w.FlowId == publishFlowVersionDto.FlowId &&
                     (
                         w.CreatedByUserId == _userId ||
                         (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId))
@@ -119,7 +119,7 @@ public class FlowBuilderService : IFlowBuilderService
             // If the flow version is not found, return failure message
             if (flowVersion == null)
             {
-                _logger.LogInformation($"No flow version found for FlowId {publishFlowVersionDto.Id} with VersionId {publishFlowVersionDto.VersionId}.");
+                _logger.LogInformation($"No flow version found for FlowId {publishFlowVersionDto.FlowId} with VersionId {publishFlowVersionDto.Id}.");
                 serviceResponse.Message = "Flow version does not exist or user has no access to it.";
                 return serviceResponse;
             }
@@ -129,10 +129,9 @@ public class FlowBuilderService : IFlowBuilderService
             {
                 case PublishTypesEnum.Agent:
                     // Log the start of publishing Agent type
-                    _logger.LogInformation($"Publishing flow version as Agent. VersionId: {publishFlowVersionDto.VersionId}, FlowId: {publishFlowVersionDto.Id}");
+                    _logger.LogInformation($"Publishing flow version as Agent. FlowVersionId: {publishFlowVersionDto.Id}, FlowId: {publishFlowVersionDto.Id}");
 
                     // Adapt the DTO values into the flow version object
-                    publishFlowVersionDto.VersionId = flowVersion.Id;
                     publishFlowVersionDto.Adapt(flowVersion);
 
                     // Mark the flow version as published
@@ -155,7 +154,7 @@ public class FlowBuilderService : IFlowBuilderService
 
                 case PublishTypesEnum.Block:
                     // Log the start of publishing Block type
-                    _logger.LogInformation($"Publishing flow version as Block. VersionId: {publishFlowVersionDto.VersionId}, FlowId: {publishFlowVersionDto.Id}");
+                    _logger.LogInformation($"Publishing flow version as Block. FlowVersionId: {publishFlowVersionDto.Id}, FlowId: {publishFlowVersionDto.Id}");
 
                     // Create a new Block using values from the DTO
                     var block = new Block
@@ -187,7 +186,7 @@ public class FlowBuilderService : IFlowBuilderService
                 case PublishTypesEnum.AgentTemplate:
                 case PublishTypesEnum.BlockTemplate:
                     // Log the start of publishing Template type (AgentTemplate/BlockTemplate)
-                    _logger.LogInformation($"Publishing flow version as Template. VersionId: {publishFlowVersionDto.VersionId}, FlowId: {publishFlowVersionDto.Id}");
+                    _logger.LogInformation($"Publishing flow version as Template. FlowVersionId: {publishFlowVersionDto.Id}, FlowId: {publishFlowVersionDto.Id}");
 
                     // Create a new template (WorcTemplate)
                     var template = new WorcTemplate

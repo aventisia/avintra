@@ -35,7 +35,7 @@ public class BlockService : IBlockService
             // Fetch blocks based on the provided ref id:
             var flowBlocks = await _unitOfWork.BlockRepo
                 .GetByConditionAsync(w =>
-                    w.FlowVersion.IsPublished &&
+                    (w.FlowVersion.IsPublished || w.CreatedByUserId == _userId) &&
                     (
                         w.Type == AccessTypesEnum.Public ||
                         (w.Type == AccessTypesEnum.TenantLevel && w.TenantId == _tenantId) ||
@@ -79,9 +79,12 @@ public class BlockService : IBlockService
         {
             // Fetch the block based on the provided flowBlockId
             var flowBlock = await _unitOfWork.BlockRepo
-                .GetByConditionAsync(w => w.Id == flowBlockId && w.FlowVersion.IsPublished)
-                .Include(i => i.FlowVersion)
-                .SingleOrDefaultAsync();
+            .GetByConditionAsync(w =>
+                w.Id == flowBlockId &&
+                (w.FlowVersion.IsPublished || w.CreatedByUserId == _userId)
+            )
+            .Include(i => i.FlowVersion)
+            .SingleOrDefaultAsync();
 
             // If the block does not exist, log the information and return the failure response
             if (flowBlock == null)
