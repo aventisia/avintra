@@ -4,6 +4,7 @@ import {
   CalendarCheck,
   ChevronsLeftRightEllipsis,
   CircleAlert,
+  Combine,
   DatabaseZap,
   FileCheck,
   Globe,
@@ -28,6 +29,7 @@ export const iconMapper: { [key: string]: JSX.Element } = {
   AutomationEssentialsIcon: <NodesCategoryL1Icon Icon={SquareFunction} />,
   UIAutomationAndUserActionsIcon: <NodesCategoryL1Icon Icon={Keyboard} />,
   IntelligentAutomationIcon: <NodesCategoryL1Icon Icon={BrainCircuit} />,
+  BLockIcon: <NodesCategoryL1Icon Icon={Combine} />,
 
   // Logical Nodes
   ConditionalNodeIcon: <ConditionalNodeIcon />,

@@ -1,8 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@aventisia/ui/buttons";
-import {
-  InputsOutputsFieldsFormType,
-  OutputFieldFormValues,
-} from "../constants/inputs-outputs-zod-schema";
+import { OutputFieldFormValues } from "../constants/inputs-outputs-zod-schema";
 import { Control, Controller, UseFieldArrayRemove } from "react-hook-form";
 import { Trash2 } from "lucide-react";
 import { InputField } from "@aventisia/ui/form";
@@ -17,7 +15,7 @@ const OutputFields = ({
   remove,
 }: {
   field: OutputFieldsProps;
-  control: Control<InputsOutputsFieldsFormType>;
+  control: Control<any>;
   index: number;
   remove: UseFieldArrayRemove;
 }) => {

@@ -93,7 +93,7 @@ export function useGroupToggle() {
             target: outgoingEdge.target,
             markerEnd: `${MARKER_ARROW_PREFIX}temp-${groupId}-${outgoingEdge.target}`,
             deletable: true,
-            label: "plus",
+            // label: "plus",
             data: {
               isTemporary: true,
               originalSource: outgoingEdge.source,

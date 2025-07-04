@@ -14,4 +14,5 @@ export type CustomNodeType =
   | "forLoopNode"
   | "forEachLoopNode"
   | "flowEndNode"
-  | "aiNode";
+  | "aiNode"
+  | "blockNode";

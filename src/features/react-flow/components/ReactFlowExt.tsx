@@ -29,6 +29,7 @@ import ExecutionLogDialog from "@/features/flow-execution-log/components";
 import SearchCommandDialog from "@/features/search/componets";
 import { FlowSettings } from "@/features/flow-settings/components";
 import AddInputsOutputsDialog from "@/features/add-input-output/components/AddInputsOutputsDialog";
+import { FlowBlockCrudDialog } from "@/features/flow-block/components/flow-block-crud-dialog";
 
 /**
  * A custom extension of the ReactFlow component.
@@ -127,6 +128,7 @@ export const ReactFlowExt = () => {
       <SearchCommandDialog />
       <AddInputsOutputsDialog />
       <FlowSettings />
+      <FlowBlockCrudDialog />
     </DCPDialog>
   );
 };

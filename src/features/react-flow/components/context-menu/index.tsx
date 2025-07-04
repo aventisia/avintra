@@ -11,6 +11,7 @@ import { SimpleCMItem } from "@aventisia/ui/context-menu";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { Library, GroupIcon, UngroupIcon } from "lucide-react";
 import { useNodeGrouping } from "../../hooks/useNodeGrouping";
+import { FBCreateButton } from "@/features/flow-block/components/flow-block-crud-dialog/FBCreateButton";
 
 export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
   // Auto layout the flow
@@ -75,12 +76,21 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
 
         {/* Group items. */}
         {isGroupHead ? (
-          <SimpleCMItem
-            size="sm"
-            content="Ungroup"
-            Icon={UngroupIcon}
-            onClick={() => ungroupNodes()}
-          />
+          <>
+            <SimpleCMItem
+              size="sm"
+              content="Ungroup"
+              Icon={UngroupIcon}
+              onClick={() => ungroupNodes()}
+            />
+
+            {import.meta.env.MODE !== "production" && (
+              <>
+                <ContextMenuSeparator className="h-[0.5px]" />
+                <FBCreateButton />
+              </>
+            )}
+          </>
         ) : (
           <SimpleCMItem
             size="sm"

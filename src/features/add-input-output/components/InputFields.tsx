@@ -1,8 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@aventisia/ui/buttons";
-import {
-  InputsOutputsFieldsFormType,
-  FieldItemFormValues,
-} from "../constants/inputs-outputs-zod-schema";
+import { FieldItemFormValues } from "../constants/inputs-outputs-zod-schema";
 import {
   Control,
   Controller,
@@ -23,7 +21,7 @@ const InputFields = ({
   remove,
 }: {
   field: InputFieldsProps;
-  control: Control<InputsOutputsFieldsFormType>;
+  control: Control<any>;
   index: number;
   remove: UseFieldArrayRemove;
 }) => {
