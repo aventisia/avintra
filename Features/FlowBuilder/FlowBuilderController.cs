@@ -28,8 +28,8 @@ public class FlowBuilderController : BaseApiController
 
     // Updates the IsPublished,flow's nodes, edges, etc. silently in the background whenever the user makes any changes
     [HttpPut("publish")]
-    public async Task<ActionResult<ServiceResponse<bool>>> PublishFlowVersion([FromBody] FlowSilentUpdateDto flowSilentUpdateDto)
+    public async Task<ActionResult<ServiceResponse<bool>>> PublishFlowVersion([FromBody] PublishFlowVersionDto publishFlowVersionDto)
     {
-        return ResultHelper(await _flowBuilderService.PublishFlowVersionAsync(flowSilentUpdateDto));
+        return ResultHelper(await _flowBuilderService.PublishFlowVersionAsync(publishFlowVersionDto));
     }
 }

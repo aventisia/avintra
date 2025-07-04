@@ -71,68 +71,167 @@ public class FlowBuilderService : IFlowBuilderService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<bool>> PublishFlowVersionAsync(FlowSilentUpdateDto flowSilentUpdateDto)
+    // Publishes a flow version based on the specified type (Agent, Block, Template).
+    public async Task<ServiceResponse<bool>> PublishFlowVersionAsync(PublishFlowVersionDto publishFlowVersionDto)
     {
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
-            StatusCode = 400,
             Message = "Failed to publish the flow version. Please try again."
         };
 
         try
         {
-            // Validate that the flow version exists and is owned by the current user
+            // Step 1: Validate required parameters based on the specified publish type
+            if ((publishFlowVersionDto.Type == PublishTypesEnum.Block ||
+                 publishFlowVersionDto.Type == PublishTypesEnum.BlockTemplate ||
+                 publishFlowVersionDto.Type == PublishTypesEnum.AgentTemplate) &&
+                string.IsNullOrEmpty(publishFlowVersionDto.Name))
+            {
+                // Log warning if 'Name' is not provided for Block, BlockTemplate, or AgentTemplate types
+                _logger.LogWarning("PublishFlowVersionAsync: 'Name' is required for Block, BlockTemplate, or AgentTemplate types.");
+                serviceResponse.Message = "'Name' is a mandatory field for the selected type.";
+                return serviceResponse;
+            }
+
+            if (publishFlowVersionDto.Type == PublishTypesEnum.Block && publishFlowVersionDto.AccessType == null)
+            {
+                // Log warning if 'AccessType' is missing for Block type
+                _logger.LogWarning("PublishFlowVersionAsync: Missing 'AccessType' for Block type.");
+                serviceResponse.Message = "'AccessType' must be specified for the Block type.";
+                return serviceResponse;
+            }
+
+            // Step 2: Fetch the flow version with matching ID, flow ID, and ownership or shared access by current user
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
-                    (flowSilentUpdateDto.VersionId == null || w.Id == flowSilentUpdateDto.VersionId) &&
-                    w.FlowId == flowSilentUpdateDto.Id &&
-                    w.CreatedByUserId == _userId ||
+                    w.Id == publishFlowVersionDto.VersionId &&
+                    w.FlowId == publishFlowVersionDto.Id &&
                     (
-                        w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                        w.CreatedByUserId == _userId ||
+                        (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId))
                     ))
-                .Include(i => i.Flow)
-                .ThenInclude(i2 => i2.FlowUsers)
-                .OrderByDescending(a => a.CreatedOn)
+                .Include(fv => fv.Flow)
+                .ThenInclude(flow => flow.FlowUsers)
+                .OrderByDescending(fv => fv.CreatedOn)
                 .SingleOrDefaultAsync();
 
+            // If the flow version is not found, return failure message
             if (flowVersion == null)
             {
-                _logger.LogInformation($"No flow version found for FlowId {flowSilentUpdateDto.Id}.");
-                serviceResponse.Message = "Flow version does not exist.";
+                _logger.LogInformation($"No flow version found for FlowId {publishFlowVersionDto.Id} with VersionId {publishFlowVersionDto.VersionId}.");
+                serviceResponse.Message = "Flow version does not exist or user has no access to it.";
                 return serviceResponse;
             }
 
-            flowSilentUpdateDto.VersionId = flowVersion.Id;
-
-            // Adapt DTO changes and set publish status
-            flowSilentUpdateDto.Adapt(flowVersion);
-            flowVersion.IsPublished = true;
-            flowVersion.LastModifiedByUserId = _userId;
-            flowVersion.LastModifiedOn = DateTimeOffset.UtcNow;
-
-            // Update and save
-            _unitOfWork.FlowVersionRepo.Update(flowVersion);
-
-            if (!await _unitOfWork.SaveAsync())
+            // Step 3: Handle publish based on the type specified in the DTO
+            switch (publishFlowVersionDto.Type)
             {
-                _logger.LogInformation("Failed to save changes while publishing the flow version.");
-                return serviceResponse;
+                case PublishTypesEnum.Agent:
+                    // Log the start of publishing Agent type
+                    _logger.LogInformation($"Publishing flow version as Agent. VersionId: {publishFlowVersionDto.VersionId}, FlowId: {publishFlowVersionDto.Id}");
+
+                    // Adapt the DTO values into the flow version object
+                    publishFlowVersionDto.VersionId = flowVersion.Id;
+                    publishFlowVersionDto.Adapt(flowVersion);
+
+                    // Mark the flow version as published
+                    flowVersion.IsPublished = true;
+                    flowVersion.LastModifiedByUserId = _userId;
+                    flowVersion.LastModifiedOn = DateTimeOffset.UtcNow;
+
+                    // Update and persist changes
+                    _unitOfWork.FlowVersionRepo.Update(flowVersion);
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogError("Failed to save changes while publishing the flow version as Agent.");
+                        return serviceResponse;
+                    }
+
+                    // Log success and set response message
+                    _logger.LogInformation("Flow version successfully published as Agent.");
+                    serviceResponse.Message = "Flow version published successfully as Agent.";
+                    break;
+
+                case PublishTypesEnum.Block:
+                    // Log the start of publishing Block type
+                    _logger.LogInformation($"Publishing flow version as Block. VersionId: {publishFlowVersionDto.VersionId}, FlowId: {publishFlowVersionDto.Id}");
+
+                    // Create a new Block using values from the DTO
+                    var block = new Block
+                    {
+                        Name = !string.IsNullOrEmpty(publishFlowVersionDto.Name) ? publishFlowVersionDto.Name : string.Empty,
+                        Description = !string.IsNullOrEmpty(publishFlowVersionDto.Description) ? publishFlowVersionDto.Description : null,
+                        Type = publishFlowVersionDto.AccessType ?? AccessTypesEnum.TenantLevel,
+                        FlowVersionId = flowVersion.Id,
+                        InputOutputObject = publishFlowVersionDto.InputOutputObject,
+                        ReactFlowObject = publishFlowVersionDto.ReactFlowObject,
+                        FlowVariablesObject = publishFlowVersionDto.FlowVariablesObject,
+                        CreatedByUserId = _userId,
+                        LastModifiedByUserId = _userId
+                    };
+
+                    // Insert and persist changes
+                    await _unitOfWork.BlockRepo.InsertAsync(block);
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogError("Failed to save changes while publishing the flow version as Block.");
+                        return serviceResponse;
+                    }
+
+                    // Log success and set response message
+                    _logger.LogInformation("Flow version successfully published as Block.");
+                    serviceResponse.Message = "Block added successfully.";
+                    break;
+
+                case PublishTypesEnum.AgentTemplate:
+                case PublishTypesEnum.BlockTemplate:
+                    // Log the start of publishing Template type (AgentTemplate/BlockTemplate)
+                    _logger.LogInformation($"Publishing flow version as Template. VersionId: {publishFlowVersionDto.VersionId}, FlowId: {publishFlowVersionDto.Id}");
+
+                    // Create a new template (WorcTemplate)
+                    var template = new WorcTemplate
+                    {
+                        Name = !string.IsNullOrEmpty(publishFlowVersionDto.Name) ? publishFlowVersionDto.Name : string.Empty,
+                        Description = publishFlowVersionDto.Description,
+                        FlowVersionId = flowVersion.Id,
+                        ReactFlowObject = publishFlowVersionDto.ReactFlowObject,
+                        CreatedByUserId = _userId,
+                        LastModifiedByUserId = _userId
+                    };
+
+                    // Insert and persist changes
+                    await _unitOfWork.WorcTemplateRepo.InsertAsync(template);
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogError("Failed to save changes while publishing the flow version as Template.");
+                        return serviceResponse;
+                    }
+
+                    // Log success and set response message
+                    _logger.LogInformation("Flow version successfully published as Template.");
+                    serviceResponse.Message = "Template added successfully.";
+                    break;
+
+                default:
+                    // Log message for invalid publish type
+                    _logger.LogWarning($"Invalid publish type encountered: {publishFlowVersionDto.Type}");
+                    serviceResponse.Message = "Invalid publish type provided.";
+                    return serviceResponse;
             }
 
+            // Final success response
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Flow version published successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
-            return serviceResponse;
+            // Log any exceptions that occur
+            _logger.LogError($"Exception occurred in PublishFlowVersionAsync: {ex.Message}");
         }
 
         return serviceResponse;
     }
-
 
     // Updates the flow version nodes, edges, and viewport in the background when the user makes changes
     public async Task<ServiceResponse<bool>> UpdateFlowSilentlyAsync(FlowSilentUpdateDto flowSilentUpdateDto)
