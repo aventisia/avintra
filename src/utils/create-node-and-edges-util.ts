@@ -50,6 +50,9 @@ const createNodesAndEdgesUtil = (
     case "aiNode":
       nodesAndEdgesObj = createAINode(newNodeData, sourceNode);
       break;
+    case "blockNode":
+      nodesAndEdgesObj = createAINode(newNodeData, sourceNode);
+      break;
     default:
       return nodesAndEdgesObj;
   }

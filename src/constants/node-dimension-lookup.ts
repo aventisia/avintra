@@ -29,4 +29,5 @@ export const nodeDimensionLookup: Record<CustomNodeType, NodeDimensionType> = {
   forLoopNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   forEachLoopNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   aiNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
+  blockNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
 };

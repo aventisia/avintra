@@ -1,5 +1,6 @@
 import { ActivityNode } from "@/components/nodes/ActivityNode";
 import { AIModelNode } from "@/components/nodes/AIModelNode";
+import { BlockNode } from "@/components/nodes/BlockNode";
 import { BranchEndNode } from "@/components/nodes/BranchEndNode";
 import { BranchNode } from "@/components/nodes/BranchNode";
 import { BranchNode1 } from "@/components/nodes/BranchNode1";
@@ -37,4 +38,5 @@ export const CustomNodeTypeObj = {
 
   //AI Node
   aiNode: AIModelNode,
+  blockNode: BlockNode,
 };

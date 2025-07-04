@@ -19,7 +19,7 @@ export function createActivityJson(
       listType: "list" as const,
       actions: [
         {
-          type: "activityNode",
+          type: "blockNode",
           name: value.name ?? "",
           label: value.name ?? "",
           description: value.description ?? "",

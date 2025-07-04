@@ -41,6 +41,7 @@ type NodeDataType = {
   isExpanded?: boolean;
   count?: number;
   color?: string;
+  isBlock?: boolean;
 };
 
 export type {
