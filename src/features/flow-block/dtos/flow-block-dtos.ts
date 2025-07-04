@@ -11,7 +11,7 @@ export interface FlowBlockDto {
   type: string;
 
   /**Null for public tenant id for tenant level and flowId for Agent level */
-  refId: string | null;
+  flowVersionId: string | null;
 
   isDisabled?: boolean;
 

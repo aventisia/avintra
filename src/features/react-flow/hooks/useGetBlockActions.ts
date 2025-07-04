@@ -14,12 +14,12 @@ export const useGetBlockActions = () => {
     () => new URLSearchParams(location.search),
     [location.search],
   );
-  const flowId = queryParams.get("f") || "";
+  const versionId = queryParams.get("v") || "";
 
   const { data } = useQuery({
     queryKey: [FLOW_BLOCK_QUERY_KEY],
-    queryFn: () => getFlowBlocks(flowId),
-    enabled: !!flowId,
+    queryFn: () => getFlowBlocks(versionId),
+    enabled: !!versionId,
   });
 
   // Get setActionSelectorData function from the store
