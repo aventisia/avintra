@@ -26,18 +26,24 @@ export const useUpdateNodeDataIO = () => {
    */
   const updateNodeDataIO = (
     nodeId: string,
-    nodeLabel: string,
     newInputs: NodeInputType[],
     newOutputs: NodeOutputType[],
+    nodeLabel?: string,
   ) => {
     // Find the node by id and update its inputs and outputs
     const updatedNodes = nodes.map((node: Node) => {
       if (node.id === nodeId) {
+        // Set valid node label
+        const validNodeLabel =
+          typeof nodeLabel === "string" && nodeLabel.length > 0
+            ? nodeLabel
+            : node.data.label;
+
         return {
           ...node,
           data: {
             ...node.data,
-            label: nodeLabel,
+            label: validNodeLabel,
             inputs: newInputs,
             outputs: newOutputs,
           },

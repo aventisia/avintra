@@ -72,7 +72,7 @@ export const DCPForm = () => {
 
     // Update node data inputs and outputs
     if (nodeId) {
-      updateNodeDataIO(nodeId, nodeLabel || "", inputs, outputs);
+      updateNodeDataIO(nodeId, inputs, outputs, nodeLabel);
 
       // Update flow variables object
       if (outputKeys.length > 0) updateFlowVariablesObject(nodeId, outputs);
