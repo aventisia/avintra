@@ -5,8 +5,15 @@ namespace WorkspaceAPIs.DTOs;
 /// </summary>
 public class WorcTemplateDto
 {
+    /// <summary>
+    /// Gets or sets the unique identifier of the WORC template.
+    /// </summary>
     public Guid Id { get; set; }
-    public Guid FlowId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the associated flow version.
+    /// </summary>
+    public Guid FlowVersionId { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the worc template. Max-255 characters.

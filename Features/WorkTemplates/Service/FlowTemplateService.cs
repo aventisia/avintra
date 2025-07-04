@@ -63,7 +63,7 @@ namespace WorkspaceAPIs.Services
         }
 
         // Publish flow as a Worc template
-        public async Task<ServiceResponse<WorcTemplateDto>> PublishWorcTemplateAsync(Guid flowId)
+        public async Task<ServiceResponse<WorcTemplateDto>> PublishWorcTemplateAsync(Guid flowVersionId)
         {
             // Initialize ServiceResponse with failed response
             var serviceResponse = new ServiceResponse<WorcTemplateDto>
@@ -73,16 +73,16 @@ namespace WorkspaceAPIs.Services
             };
             try
             {
-                var flow = await _unitOfWork.FlowRepo.GetByConditionAsync(w => w.Id == flowId).FirstOrDefaultAsync();
-                if (flow == null)
+                var flowVersion = await _unitOfWork.FlowVersionRepo.GetByConditionAsync(w => w.Id == flowVersionId).FirstOrDefaultAsync();
+                if (flowVersion == null)
                 {
-                    _logger.LogError($"Flow not found for Id:{flowId}");
-                    serviceResponse.Message = "Flow does not exist";
+                    _logger.LogError($"Flow not found for Id:{flowVersionId}");
+                    serviceResponse.Message = "Flow version does not exist";
                     return serviceResponse;
                 }
 
                 // Trim dto string properties
-                var trimmedFlow = TrimDtoStringPropsUtil.TrimDtoStringProps(flow);
+                var trimmedFlow = TrimDtoStringPropsUtil.TrimDtoStringProps(flowVersion);
 
                 // Map the DTO to the entity
                 var newWorcTemplate = trimmedFlow.Adapt<WorcTemplate>();
