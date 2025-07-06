@@ -1,18 +1,19 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
-using CodeActivitiesLibrary.Extensions;
 using UglyToad.PdfPig;
 using UglyToad.PdfPig.Content;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
     [DisplayName("Extract Text from PDF")]
-    [Description("Extracts text from a PDF file.")]
+    [Description("Extracts text or images from a PDF file based on selection.")]
     public class ExtractTextFromPdfActivity : BaseCodeActivity
     {
         [RequiredArgument]
@@ -82,8 +83,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
                 if (!File.Exists(sourcePdfPath))
                     throw new FileNotFoundException("Source PDF file not found.", sourcePdfPath);
 
-                if (!Directory.Exists(outputFolderPath))
-                    Directory.CreateDirectory(outputFolderPath);
+                // Only validate and create output folder if we are extracting images
+                if ((extractionType == PdfExtractionTypeEnum.Images || extractionType == PdfExtractionTypeEnum.Both) &&
+                    !string.IsNullOrEmpty(outputFolderPath))
+                {
+                    if (!Directory.Exists(outputFolderPath))
+                        Directory.CreateDirectory(outputFolderPath);
+                }
+                else if ((extractionType == PdfExtractionTypeEnum.Images || extractionType == PdfExtractionTypeEnum.Both) &&
+                         string.IsNullOrEmpty(outputFolderPath))
+                {
+                    throw new ArgumentException("Output Folder Path is required when extracting images.");
+                }
 
                 // Open PDF document
                 PdfDocument document;
@@ -92,7 +103,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
                     var parsingOptions = string.IsNullOrEmpty(password)
                         ? new ParsingOptions()
                         : new ParsingOptions { Password = password };
-
                     document = PdfDocument.Open(sourcePdfPath, parsingOptions);
                 }
                 catch (Exception ex)
@@ -116,7 +126,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
                                 extractionType == PdfExtractionTypeEnum.Both)
                                 ExtractImages(page, outputFolderPath);
                         }
-
                         status += $"\nProcessed all pages.";
                         break;
 
@@ -125,7 +134,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
                         if (pageNumber < 1 || pageNumber > totalPages)
                             throw new ArgumentException(
                                 $"Invalid page number: {pageNumber}. Must be between 1 and {totalPages}.");
-
                         var singlePage = document.GetPage(pageNumber);
                         if (extractionType == PdfExtractionTypeEnum.Text ||
                             extractionType == PdfExtractionTypeEnum.Both)
@@ -133,7 +141,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 
                         if (extractionType == PdfExtractionTypeEnum.Images ||
                             extractionType == PdfExtractionTypeEnum.Both)
-
                             ExtractImages(singlePage, outputFolderPath);
 
                         status += $"\nProcessed page {pageNumber}.";
@@ -142,7 +149,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
                     case PdfPageSelectionModeEnum.Range:
                         var fromPageNumber = FromPageNumber.Get(context);
                         var toPageNumber = ToPageNumber.Get(context);
-
                         if (fromPageNumber < 1 || fromPageNumber > totalPages)
                             throw new ArgumentException(
                                 $"Invalid 'From Page Number': {fromPageNumber}. Must be between 1 and {totalPages}.");
@@ -162,10 +168,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 
                             if (extractionType == PdfExtractionTypeEnum.Images ||
                                 extractionType == PdfExtractionTypeEnum.Both)
-
                                 ExtractImages(page, outputFolderPath);
                         }
-
                         status += $"\nProcessed pages {fromPageNumber} to {toPageNumber}.";
                         break;
 
@@ -207,7 +211,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
         }
     }
 
-    // Enum for specifying the page selection mode
     public enum PdfPageSelectionModeEnum
     {
         [Display(Name = "All", Description = "Extract text and images from all pages.")]
@@ -223,10 +226,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
     public enum PdfExtractionTypeEnum
     {
         [Display(Name = "Text", Description = "Extract only text from the PDF.")]
-        Images,
+        Text,
 
         [Display(Name = "Images", Description = "Extract only images from the PDF.")]
-        Text,
+        Images,
 
         [Display(Name = "Both", Description = "Extract both text and images from the PDF.")]
         Both
