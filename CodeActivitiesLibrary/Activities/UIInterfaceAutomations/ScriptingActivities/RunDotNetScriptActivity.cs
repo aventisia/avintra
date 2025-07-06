@@ -37,15 +37,14 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 
                 // Configure script options
                 var options = ScriptOptions.Default
-                    .AddReferences(typeof(object).Assembly, typeof(Console).Assembly)
-                    .AddImports("System")
-                    .WithGlobalObjects(new { Console });
+                        .AddReferences(typeof(object).Assembly, typeof(Console).Assembly)
+                        .AddImports("System");
 
                 // Create and run the script
                 var result = CSharpScript.RunAsync(scriptCode, options).Result;
 
-                // Capture the output from Console.WriteLine
-                output = result.ToString();
+                // Capture the output from the script result
+                output = result.ReturnValue?.ToString() ?? string.Empty;
 
                 // Set the output and success status
                 ScriptOutput.Set(context, output);

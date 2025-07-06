@@ -98,7 +98,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
                             Dock = DockStyle.Fill,
                             TextAlign = ContentAlignment.MiddleCenter,
                             MaximumSize = new Size(600, 400),
-                            AutoSizeMode = AutoSizeMode.GrowAndShrink
                         };
 
                         form.Controls.Add(label);

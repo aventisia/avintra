@@ -42,7 +42,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 
                 // normalize to full path
                 string fullPath = documentPath;
-                if (!Path.IsPathFullyQualified(documentPath) && File.Exists(documentPath))
+                if (!Path.IsPathRooted(documentPath) && File.Exists(documentPath))
                 {
                     fullPath = Path.GetFullPath(documentPath);
                 }
