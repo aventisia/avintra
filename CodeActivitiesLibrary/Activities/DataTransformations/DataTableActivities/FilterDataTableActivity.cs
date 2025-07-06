@@ -1,5 +1,4 @@
-﻿using CodeActivitiesLibrary.DataTransformations.DataTableActivities.Helpers;
-using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -11,7 +10,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     [Description("Filters the data table rows based on the applied rules.")]
     public sealed class FilterDataTableActivity : BaseCodeActivity
     {
-        // ----------------------
+       // ----------------------
         // Input Arguments
         // ----------------------
 
@@ -28,12 +27,13 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
         [DisplayName("Match Case")]
         [Description("If true, performs a case-sensitive filter.")]
+        [DefaultValue(false)]
         public InArgument<bool> MatchCase { get; set; }
 
         // ----------------------
         // Output Arguments
         // ----------------------
-
+       
 
         [DisplayName("Filtered Data Table")]
         [Description("The filtered data table.")]
@@ -56,26 +56,57 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 if (string.IsNullOrWhiteSpace(filterExpression))
                     throw new ArgumentException("Filter expression cannot be empty.");
 
-                // Apply filter
-                var filteredRows = dataTable.CaseSensitiveSelect(filterExpression, matchCase);
+                // Apply filtering
+                var filteredRows = DataTableHelper.CaseSensitiveSelectMethod(dataTable, filterExpression, matchCase);
 
-                // Create a new DataTable with the same schema
+                // Clone structure and import matching rows
                 var filteredTable = dataTable.Clone();
-
-                // Copy filtered rows to the new DataTable
-                foreach (var row in filteredRows) filteredTable.ImportRow(row);
+                foreach (DataRow row in filteredRows)
+                {
+                    filteredTable.ImportRow(row);
+                }
 
                 // Set outputs
                 FilteredDataTable.Set(context, filteredTable);
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context,
-                    $"Filtered data table successfully. Rows matched: {filteredTable.Rows.Count}.");
+                    $"Successfully filtered data table. Rows matched: {filteredTable.Rows.Count}");
             }
             catch (Exception ex)
             {
+                // Handle error
                 FilteredDataTable.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error filtering data table: {ex.Message}");
+            }
+        }
+    }
+    
+    internal static class DataTableHelper
+    {
+        /// <summary>
+        /// Filters the DataTable rows based on a filter expression and case sensitivity.
+        /// </summary>
+        public static DataRow[] CaseSensitiveSelectMethod(DataTable table, string filterExpression, bool matchCase)
+        {
+            if (table == null)
+                throw new ArgumentNullException(nameof(table));
+            if (string.IsNullOrWhiteSpace(filterExpression))
+                throw new ArgumentException("Filter expression cannot be empty.", nameof(filterExpression));
+
+            if (!matchCase)
+                return table.Select(filterExpression);
+
+            // Use case-sensitive comparison by temporarily setting CaseSensitive = true
+            var originalCaseSensitivity = table.CaseSensitive;
+            try
+            {
+                table.CaseSensitive = true;
+                return table.Select(filterExpression);
+            }
+            finally
+            {
+                table.CaseSensitive = originalCaseSensitivity;
             }
         }
     }
