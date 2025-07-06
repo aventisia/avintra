@@ -3,12 +3,14 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 {
     [DisplayName("Display Message")]
-    [Description("Displays a message box.")]
+    [Description("Displays a message box")]
     public class DisplayMessageActivity : BaseCodeActivity
     {
         [DisplayName("Message Box Title")]
@@ -17,8 +19,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 
 
         [DisplayName("Message to Display")]
-        [Description("The main text content of the message box.")]
-        public InArgument<string> Message { get; set; }
+        [Description("The main content of the message box (supports string, DataTable, or any object).")]
+        public InArgument<object> Message { get; set; }
 
 
         [DisplayName("Message Box Icon")]
@@ -61,7 +63,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
             try
             {
                 var title = context.GetValue(Title) ?? "Message";
-                var message = context.GetValue(Message);
+                var messageObj = context.GetValue(Message);
                 var iconEnum = context.GetValue(Icon);
                 var buttonEnum = context.GetValue(Buttons);
                 var defaultEnum = context.GetValue(DefaultButton);
@@ -74,6 +76,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
                 var defaultButton = GetDefaultButton(defaultEnum);
 
                 DialogResult result;
+
+                // Format message based on type
+                string messageText = FormatMessage(messageObj);
 
                 if (autoClose && timeout > 0)
                 {
@@ -89,12 +94,14 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 
                         var label = new Label
                         {
-                            Text = message,
+                            Text = messageText,
                             Dock = DockStyle.Fill,
-                            TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+                            TextAlign = ContentAlignment.MiddleCenter,
+                            MaximumSize = new Size(600, 400),
+                            AutoSizeMode = AutoSizeMode.GrowAndShrink
                         };
-                        form.Controls.Add(label);
 
+                        form.Controls.Add(label);
                         form.Show();
                         System.Threading.Thread.Sleep(timeout * 1000);
                         form.Close();
@@ -108,7 +115,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
                     if (keepOnTop) options |= MessageBoxOptions.ServiceNotification;
 
                     result = MessageBox.Show(
-                        message,
+                        messageText,
                         title,
                         buttons,
                         icon,
@@ -128,6 +135,47 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
             }
         }
 
+        private string FormatMessage(object obj)
+        {
+            if (obj == null) return string.Empty;
+
+            // If it's a DataTable, format as a simple grid-like text
+            if (obj is DataTable table)
+            {
+                return FormatDataTable(table);
+            }
+
+            // Otherwise, convert to string
+            return obj.ToString();
+        }
+
+        private string FormatDataTable(DataTable table)
+        {
+            if (table.Rows.Count == 0 || table.Columns.Count == 0)
+                return "No data available.";
+
+            // Build header row
+            string header = string.Join(" | ", table.Columns);
+            string separator = new string('-', header.Length);
+
+            // Build data rows
+            var rows = new System.Collections.Generic.List<string>();
+            foreach (DataRow row in table.Rows)
+            {
+                rows.Add(string.Join(" | ", row.ItemArray));
+            }
+
+            // Combine all into a formatted string
+            var output = new System.Text.StringBuilder();
+            output.AppendLine(header);
+            output.AppendLine(separator);
+            foreach (var r in rows)
+            {
+                output.AppendLine(r);
+            }
+
+            return output.ToString();
+        }
 
         private MessageBoxIcon GetMessageBoxIcon(MessageBoxIconEnum iconEnum)
         {
@@ -196,6 +244,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
         [Display(Name = "Error", Description = "An error icon (X).")]
         Error
     }
+
     public enum MessageBoxButtonsEnum
     {
         [Display(Name = "OK", Description = "Displays an OK button.")]
