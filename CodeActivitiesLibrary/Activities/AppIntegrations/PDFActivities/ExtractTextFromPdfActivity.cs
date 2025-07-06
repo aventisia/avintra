@@ -9,6 +9,7 @@ using System.Linq;
 using UglyToad.PdfPig;
 using UglyToad.PdfPig.Content;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Page = UglyToad.PdfPig.Content.Page;
 
 namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
