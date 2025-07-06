@@ -75,6 +75,7 @@
     <Compile Include="ViewModels\DetailViewModel.cs" />
     <Compile Include="ViewModels\ElementViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\SupportedPatternViewModel.cs" />
     <Compile Include="Views\ChooseVersionWindow.xaml.cs">
       <DependentUpon>ChooseVersionWindow.xaml</DependentUpon>
     </Compile>

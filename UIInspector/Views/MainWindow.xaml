@@ -654,7 +654,8 @@
                                 </ItemsControl>
                                 <Border Margin="10"/>
                             </StackPanel>
-                            <StackPanel Visibility="Collapsed"
+
+                            <StackPanel Visibility="Visible"
                                         Grid.Row="1"
                                         Background="{StaticResource AccentBrush}">
 
@@ -674,84 +675,48 @@
                                                HorizontalAlignment="Left"
                                                VerticalAlignment="Center"/>
                                 </Grid>
-                                <Border Margin="24 0 24 10"
-                                        Padding="10 8"
-                                        BorderThickness="2"
-                                        BorderBrush="{StaticResource BorderBrush}"
-                                        CornerRadius="6">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-                                        <TextBlock Grid.Row="0"
-                                                   Grid.Column="0"
-                                                   FontSize="13"
-                                                   FontWeight="Medium"
-                                                   Foreground="{StaticResource ForegroundBrush}"
-                                                   Text="Click/Press"/>
-                                        <TextBlock Grid.Row="1"
-                                                   Grid.Column="0"
-                                                   Margin="0 2 0 0"
-                                                   FontSize="13"
-                                                   FontWeight="Regular"
-                                                   Foreground="{StaticResource MutedForegroundBrush}"
-                                                   Text="You can invoke this button click or press simulation"/>
-                                        <Button Grid.Row="0"
-                                                Grid.RowSpan="2"
-                                                Grid.Column="1"
-                                                HorizontalAlignment="Right">
-                                            <TextBlock Text="Test"
-                                                       Margin="3 0 0 2"
-                                                       FontSize="13"
-                                                       Style="{StaticResource TextBlockStyle}"
-                                                       VerticalAlignment="Center"/>
-                                        </Button>
-                                    </Grid>
-                                </Border>
-                                <Border Margin="24 0 24 10"
-                                        Padding="10 8"
-                                        BorderThickness="2"
-                                        BorderBrush="{StaticResource BorderBrush}"
-                                        CornerRadius="6">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-                                        <TextBlock Grid.Row="0"
-                                                   Grid.Column="0"
-                                                   FontSize="13"
-                                                   FontWeight="Medium"
-                                                   Foreground="{StaticResource ForegroundBrush}"
-                                                   Text="Click/Press"/>
-                                        <TextBlock Grid.Row="1"
-                                                   Grid.Column="0"
-                                                   Margin="0 2 0 0"
-                                                   FontSize="13"
-                                                   FontWeight="Regular"
-                                                   Foreground="{StaticResource MutedForegroundBrush}"
-                                                   Text="You can invoke this button click or press simulation"/>
-                                        <Button Grid.Row="0"
-                                                Grid.RowSpan="2"
-                                                Grid.Column="1"
-                                                HorizontalAlignment="Right">
-                                            <TextBlock Text="Test"
-                                                       Margin="3 0 0 2"
-                                                       FontSize="13"
-                                                       Style="{StaticResource TextBlockStyle}"
-                                                       VerticalAlignment="Center"/>
-                                        </Button>
-                                    </Grid>
-                                </Border>
+                                <!-- Actions Section -->
+                                <ItemsControl ItemsSource="{Binding SupportedPatterns}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="24 0 24 10"
+                                                    Padding="10 4 4 5"
+                                                    BorderThickness="2"
+                                                    BorderBrush="{StaticResource BorderBrush}"
+                                                    CornerRadius="6">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                                        <TextBlock
+                                                            FontSize="12"
+                                                            FontWeight="Medium"
+                                                            VerticalAlignment="Center"
+                                                            Foreground="{StaticResource ForegroundBrush}"
+                                                            Text="{Binding ActionName}"/>
+                                                        <TextBox Text="{Binding ValueToSet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                 Width="100"
+                                                                 Margin="10 0 0 0"
+                                                                 Padding="0"
+                                                                 Visibility="{Binding ValueToSet, Converter={StaticResource StringNullOrEmptyToVisibilityConverter}}"/>
+                                                    </StackPanel>
+                                                    <Button
+                                                        Grid.Column="1"
+                                                        HorizontalAlignment="Right"
+                                                        Height="24"
+                                                        Padding="9 0"
+                                                        md:ButtonAssist.CornerRadius="4"
+                                                        Content="Test"
+                                                        FontSize="12"
+                                                        Command="{Binding TestCommand}"
+                                                        Style="{StaticResource MaterialDesignFlatLightButton}"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                                 <Border Margin="10"/>
                             </StackPanel>
                             <ItemsControl Grid.Row="2"

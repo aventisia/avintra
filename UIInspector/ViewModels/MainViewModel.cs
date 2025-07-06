@@ -14,6 +14,9 @@ using UIInspector.Core;
 using UIInspector.Models;
 using System.Text.Json;
 using System.Linq;
+using System.Windows;
+using FlaUI.Core.Definitions;
+using System.Threading;
 
 namespace UIInspector.ViewModels
 {
@@ -137,6 +140,8 @@ namespace UIInspector.ViewModels
         public ObservableCollection<DetailGroupViewModel> SelectedItemDetails => SelectedItemInTree?.ItemDetails;
 
         public ObservableCollection<IdentificationPathStep> IdentificationPath { get; } = new ObservableCollection<IdentificationPathStep>();
+
+        public ObservableCollection<SupportedPatternViewModel> SupportedPatterns { get; } = new ObservableCollection<SupportedPatternViewModel>();
 
         public ElementViewModel SelectedItemInTree
         {
@@ -310,6 +315,7 @@ namespace UIInspector.ViewModels
         private void DesktopViewModel_SelectionChanged(ElementViewModel obj)
         {
             SelectedItemInTree = obj;
+            UpdateSupportedPatterns();
             OnPropertyChanged(() => SelectedItemDetails);
         }
 
@@ -320,6 +326,236 @@ namespace UIInspector.ViewModels
             Initialize(SelectedAutomationType);
             IdentificationPath.Clear();
             RequestTreeScrollReset?.Invoke();
+        }
+
+        private void UpdateSupportedPatterns()
+        {
+            SupportedPatterns.Clear();
+            if (SelectedItemInTree?.AutomationElement == null)
+                return;
+
+            var element = SelectedItemInTree.AutomationElement;
+
+            // InvokePattern
+            if (element.Patterns.Invoke.IsSupported)
+            {
+                SupportedPatterns.Add(new SupportedPatternViewModel
+                {
+                    SupportedAction = SupportedActionType.Invoke,
+                    ActionName = "Click / Invoke Element",
+                    TestCommand = new RelayCommand(_ => TestPattern(SupportedActionType.Invoke, element))
+                });
+            }
+
+            // ValuePattern
+            if (element.Patterns.Value.IsSupported)
+            {
+                // SetValue
+                var patternVm = new SupportedPatternViewModel
+                {
+                    SupportedAction = SupportedActionType.SetValue,
+                    ActionName = "Set Value",
+                    ValueToSet = "Test Value",
+                };
+                patternVm.TestCommand = new RelayCommand(_ => TestPattern(SupportedActionType.SetValue, element, patternVm.ValueToSet));
+                SupportedPatterns.Add(patternVm);
+
+                // GetValue
+                SupportedPatterns.Add(new SupportedPatternViewModel
+                {
+                    SupportedAction = SupportedActionType.GetValue,
+                    ActionName = "Get Value",
+                    TestCommand = new RelayCommand(_ => TestPattern(SupportedActionType.GetValue, element))
+                });
+            }
+
+            // SelectionItemPattern
+            if (element.Patterns.SelectionItem.IsSupported)
+            {
+                SupportedPatterns.Add(new SupportedPatternViewModel
+                {
+                    SupportedAction = SupportedActionType.Select,
+                    ActionName = "Select item",
+                    TestCommand = new RelayCommand(_ => TestPattern(SupportedActionType.Select, element))
+                });
+            }
+
+            // TogglePattern
+            if (element.Patterns.Toggle.IsSupported)
+            {
+                SupportedPatterns.Add(new SupportedPatternViewModel
+                {
+                    SupportedAction = SupportedActionType.Toggle,
+                    ActionName = "Toggle state",
+                    TestCommand = new RelayCommand(_ => TestPattern(SupportedActionType.Toggle, element))
+                });
+            }
+
+            // ExpandCollapsePattern
+            if (element.Patterns.ExpandCollapse.IsSupported)
+            {
+                SupportedPatterns.Add(new SupportedPatternViewModel
+                {
+                    SupportedAction = SupportedActionType.ExpandOrCollapse,
+                    ActionName = "Expand or Collapse",
+                    TestCommand = new RelayCommand(_ => TestPattern(SupportedActionType.ExpandOrCollapse, element))
+                });
+            }
+
+            // ItemContainerPattern
+            if (element.Patterns.ItemContainer.IsSupported)
+            {
+                var patternVm = new SupportedPatternViewModel
+                {
+                    SupportedAction = SupportedActionType.ItemContainer,
+                    ActionName = "Select item in List",
+                    ValueToSet = "0",
+                };
+                patternVm.TestCommand = new RelayCommand(_ => TestPattern(SupportedActionType.ItemContainer, element, patternVm.ValueToSet));
+                SupportedPatterns.Add(patternVm);
+            }
+        }
+
+        private void TestPattern(SupportedActionType supportedAction, AutomationElement targetElement, string value = null)
+        {
+            // NOTE: We'll not check whether patterns are supported here, as this is already done.
+
+            // Validate the target element
+            if (targetElement == null)
+            {
+                MessageBox.Show("No element selected to perform action on.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (!targetElement.Properties.IsEnabled.ValueOrDefault && !targetElement.Properties.IsKeyboardFocusable.ValueOrDefault)
+            {
+                MessageBox.Show("Element is not enabled or focusable, cannot perform action.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // Take action based on the supported action type
+            switch (supportedAction)
+            {
+                case SupportedActionType.Invoke:
+                    targetElement.Patterns.Invoke.PatternOrDefault?.Invoke();
+                    break;
+                case SupportedActionType.Select:
+                    targetElement.Patterns.SelectionItem.PatternOrDefault?.Select();
+                    break;
+                case SupportedActionType.SetValue:
+                    targetElement.Patterns.Value.PatternOrDefault?.SetValue(value ?? "");
+                    break;
+                case SupportedActionType.GetValue:
+                    MessageBox.Show($"Current value: {targetElement.Patterns.Value.PatternOrDefault?.Value}", "Value", MessageBoxButton.OK, MessageBoxImage.Information);
+                    break;
+                case SupportedActionType.Toggle:
+                    targetElement.Patterns.Toggle.PatternOrDefault?.Toggle();
+                    break;
+                case SupportedActionType.ExpandOrCollapse:
+                    // Get current state
+                    var currentState = targetElement.Patterns.ExpandCollapse.PatternOrDefault?.ExpandCollapseState;
+
+                    // If already expanded, collapse
+                    if (currentState == FlaUI.Core.Definitions.ExpandCollapseState.Expanded)
+                        targetElement.Patterns.ExpandCollapse.PatternOrDefault?.Collapse();
+                    else
+                        targetElement.Patterns.ExpandCollapse.PatternOrDefault?.Expand();
+                    break;
+                case SupportedActionType.ItemContainer:
+                    SelectItemInList(targetElement, value ?? "0");
+                    break;
+                default:
+                    MessageBox.Show($"Unsupported action type: {supportedAction.ToString()}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    break;
+            }
+        }
+
+        private void SelectItemInList(AutomationElement listElement, string itemNameOrIndex)
+        {
+            string statusMessage = "";
+            for (int i = 1; i <= 5; i++)
+            {
+                try
+                {
+                    // Try to expand the element if it supports ExpandCollapsePattern
+                    var expandCollapsePattern = listElement.Patterns.ExpandCollapse.PatternOrDefault;
+                    if (expandCollapsePattern != null && expandCollapsePattern.ExpandCollapseState.Value != ExpandCollapseState.Expanded)
+                    {
+                        expandCollapsePattern.Expand();
+                        Thread.Sleep(200);
+                        continue;
+                    }
+
+                    // Find all list items (options)
+                    var listItems = listElement.FindAllDescendants(cf =>
+                                                                        cf.ByControlType(ControlType.ListItem)
+                                                                        .Or(cf.ByControlType(ControlType.DataItem))
+                                                                        .Or(cf.ByControlType(ControlType.TreeItem))
+                                                                        .Or(cf.ByControlType(ControlType.MenuItem))
+                                                                    );
+                    AutomationElement itemToSelect = null;
+
+                    // Try to parse as index
+                    if (int.TryParse(itemNameOrIndex, out int optionIndex))
+                    {
+                        if (optionIndex >= 0 && optionIndex < listItems.Length)
+                        {
+                            itemToSelect = listItems[optionIndex];
+                        }
+                        else
+                        {
+                            statusMessage = $"Index {optionIndex} is out of range for the drop-down options.";
+                        }
+                    }
+                    else
+                    {
+                        // Select by name (case-insensitive)
+                        foreach (var item in listItems)
+                        {
+                            if (item.Name.Equals(itemNameOrIndex, StringComparison.OrdinalIgnoreCase))
+                            {
+                                itemToSelect = item;
+                                break;
+                            }
+                        }
+                        if (itemToSelect == null)
+                        {
+                            statusMessage = $"Could not find an item named '{itemNameOrIndex}' in the list.";
+                        }
+                    }
+
+                    if (itemToSelect != null)
+                    {
+                        var selectionItemPattern = itemToSelect.Patterns.SelectionItem.PatternOrDefault;
+                        if (selectionItemPattern != null)
+                        {
+                            selectionItemPattern.Select();
+                            MessageBox.Show($"Selected item: {itemToSelect.Name}", "Item Selected", MessageBoxButton.OK, MessageBoxImage.Information);
+                            return;
+                        }
+                        else
+                        {
+                            statusMessage = "The selected item does not support selection.";
+                        }
+                    }
+                    else
+                    {
+                        statusMessage = string.IsNullOrEmpty(statusMessage) ? "No item selected." : statusMessage;
+                    }
+
+                    // Optionally collapse the drop-down after selection
+                    if (expandCollapsePattern != null && expandCollapsePattern.ExpandCollapseState.Value == ExpandCollapseState.Expanded)
+                    {
+                        expandCollapsePattern.Collapse();
+                    }
+                }
+                catch
+                {
+                    Thread.Sleep(400);
+                }
+
+                MessageBox.Show(statusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
