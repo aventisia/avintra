@@ -23,7 +23,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
         [Description("The path to save the resulting zip file.")]
         public InArgument<string> OutputZipPath { get; set; }
 
-
         protected override void Execute(CodeActivityContext context)
         {
             var sourcePaths = SourcePaths.Get(context);
@@ -31,37 +30,60 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 
             try
             {
+                // Open or create the zip file in Create mode (clears previous contents)
                 using (var zipArchive = ZipFile.Open(outputZipPath, ZipArchiveMode.Create))
                 {
                     foreach (var sourcePath in sourcePaths)
-                        if (Directory.Exists(sourcePath))
-                            AddDirectoryToZip(zipArchive, sourcePath, "");
-                        else if (File.Exists(sourcePath))
-                            zipArchive.CreateEntryFromFile(sourcePath, Path.GetFileName(sourcePath));
+                    {
+                        var normalizedPath = Path.GetFullPath(sourcePath);
+
+                        if (Directory.Exists(normalizedPath))
+                        {
+                            AddDirectoryToZip(zipArchive, normalizedPath, "");
+                        }
+                        else if (File.Exists(normalizedPath))
+                        {
+                            var entryName = Path.GetFileName(normalizedPath);
+                            zipArchive.CreateEntryFromFile(normalizedPath, entryName);
+                        }
                         else
+                        {
                             throw new FileNotFoundException($"Source path not found: {sourcePath}");
+                        }
+                    }
                 }
 
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $"Files zipped successfully to '{outputZipPath}'.");
+                // Success status
+                IsSuccess?.Set(context, true);
+                StatusMessage?.Set(context, $"Files zipped successfully to '{outputZipPath}'.");
             }
             catch (Exception ex)
             {
-                IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error zipping files: {ex.Message}");
+                // Error status
+                IsSuccess?.Set(context, false);
+                StatusMessage?.Set(context, $"Error zipping files: {ex.Message}");
             }
         }
 
+        /// <summary>
+        /// Recursively adds the directory and its contents to the zip archive.
+        /// </summary>
         private static void AddDirectoryToZip(ZipArchive zipArchive, string sourceDir, string destinationDir)
         {
             foreach (var filePath in Directory.GetFiles(sourceDir))
-                zipArchive.CreateEntryFromFile(filePath, Path.Combine(destinationDir, Path.GetFileName(filePath)));
+            {
+                var entryName = string.IsNullOrEmpty(destinationDir)
+                    ? Path.GetFileName(filePath)
+                    : destinationDir + "/" + Path.GetFileName(filePath);
+
+                zipArchive.CreateEntryFromFile(filePath, entryName);
+            }
 
             foreach (var dirPath in Directory.GetDirectories(sourceDir))
             {
                 var newDestinationDir = string.IsNullOrEmpty(destinationDir)
                     ? Path.GetFileName(dirPath)
-                    : Path.Combine(destinationDir, Path.GetFileName(dirPath));
+                    : destinationDir + "/" + Path.GetFileName(dirPath);
 
                 AddDirectoryToZip(zipArchive, dirPath, newDestinationDir);
             }
