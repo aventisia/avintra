@@ -25,7 +25,7 @@ namespace CodeActivityToJSON.Utils
                 var activityDisplayName = activity.GetCustomAttributes(typeof(DisplayNameAttribute), false).FirstOrDefault() as DisplayNameAttribute;
                 if (activityDisplayName == null || string.IsNullOrEmpty(activityDisplayName.DisplayName))
                 {
-                    Console.WriteLine($"Skipping {activity.Name} as it has no display name.");
+                    // Console.WriteLine($"Skipping {activity.Name} as it has no display name.");
                     continue;
                 }
 

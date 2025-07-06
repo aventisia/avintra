@@ -12,6 +12,18 @@ namespace CodeActivityToJSON.Utils
 {
     public static class CreateActivitiesMappingJsonUtil
     {
+        private static List<string> _excludedCategories = new List<string>
+        {
+            "CodeActivitiesLibrary.AppIntegrations.SendGridActivities",
+            "CodeActivitiesLibrary.DataTransformations.JSONActivities",
+            "CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActivities"
+        };
+
+        private static List<string> _excludedActivities = new List<string>
+        {
+            "ConditionalBranchActivity",
+        };
+
         public static void CreateActivitiesMappingJson(string outputDir, List<Type> categoryMetadataTypes, List<Type> activities)
         {
             // Get primary json file path
@@ -37,7 +49,7 @@ namespace CodeActivityToJSON.Utils
             // Loop through each primary category and find all sub categories and their activities
             foreach (var category in primaryCategories)
             {
-                if (category.Label == null || category.Label == "AI Integrations") continue;
+                if (category.Label == null) continue;
 
                 // Initialize ActionCategories list if it is null
                 category.ActionCategories = new List<ActionCategory>();
@@ -48,6 +60,13 @@ namespace CodeActivityToJSON.Utils
                     // Get ActivityCategoryMetadata attribute from the type
                     var attribute = categoryMetadataType.GetCustomAttributes(typeof(ActivityCategoryMetadataAttribute), false).FirstOrDefault() as ActivityCategoryMetadataAttribute;
                     if (attribute == null) continue;
+
+                    // Skip excluded categories
+                    if (_excludedCategories.Contains(categoryMetadataType.Namespace))
+                    {
+                        Console.WriteLine($"Skipping category {categoryMetadataType.Namespace} for prod mapping file");
+                        continue;
+                    }
 
                     // Check if the attribute is not null and matches the primary category
                     if (attribute != null && attribute.PrimaryCategory == category.Label)
@@ -69,9 +88,10 @@ namespace CodeActivityToJSON.Utils
                             // Not the same namespace as the category metadata type
                             if (categoryMetadataType.Namespace != activity.Namespace) continue;
 
-                            if (activity.Name == "ConditionalBranchActivity")
+                            // Skip excluded activities
+                            if (_excludedActivities.Contains(activity.Name))
                             {
-                                Console.WriteLine($"Skipping {activity.Name}");
+                                Console.WriteLine($"Skipping activity {activity.Name} for Prod mapping file");
                                 continue;
                             }
 

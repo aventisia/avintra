@@ -50,6 +50,9 @@ namespace CodeActivityToJSON
             // Create the activities mapping JSON file
             CreateActivitiesMappingJsonUtil.CreateActivitiesMappingJson(outputDir, categoryMetadataTypes, activities);
 
+            // Create the activities mapping JSON file for DEV and UAT
+            CreateDevActivitiesMappingJsonUtil.CreateDevActivitiesMappingJson(outputDir, categoryMetadataTypes, activities);
+
             // Create the activities CSV file
             ExportActivitiesToCsvUtil.ExportActivitiesToCsv(activities);
 
@@ -63,7 +66,7 @@ namespace CodeActivityToJSON
                 // TODO: Find a better way to skip ConditionalActivity or generate json from it 
                 if (activity.Name == "ConditionalActivity" || activity.Name == "ConditionalBranchActivity" || activity.Name == "LoopActivity")
                 {
-                    Console.WriteLine($"Skipping {activity.Name}");
+                    // Console.WriteLine($"Skipping {activity.Name}");
                     continue;
                 }
 
@@ -71,7 +74,7 @@ namespace CodeActivityToJSON
                 var activityDisplayName = activity.GetCustomAttributes(typeof(DisplayNameAttribute), false).FirstOrDefault() as DisplayNameAttribute;
                 if (activityDisplayName == null || string.IsNullOrEmpty(activityDisplayName.DisplayName))
                 {
-                    Console.WriteLine($"Skipping {activity.Name} as it has no display name.");
+                    // Console.WriteLine($"Skipping {activity.Name} as it has no display name.");
                     continue;
                 }
 
