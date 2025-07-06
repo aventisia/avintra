@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CodeActivitiesLibrary.Extensions;
 
-namespace CodeActivitiesLibrary.Activities.AppIntegrations.SendGridActivities
+namespace CodeActivitiesLibrary.AppIntegrations.SendGridActivities
 {
     [ActivityCategoryMetadata(
         primaryCategory: "App Integrations",

@@ -265,6 +265,7 @@
     <Compile Include="Activities\DataTransformations\JSONActivities\InsertOrUpdateJSONNodeWithPrimaryKeyActivity.cs" />
     <Compile Include="Activities\DataTransformations\JSONActivities\ReadJSONFileActivity.cs" />
     <Compile Include="Activities\DataTransformations\JSONActivities\WriteTextToJSONFileActivity.cs" />
+    <Compile Include="Activities\DataTransformations\JSONActivities\_JSONCategoryMetaData.cs" />
     <Compile Include="Activities\DataTransformations\OCRActivities\ExtractTextWithOcrActivity.cs" />
     <Compile Include="Activities\DataTransformations\OCRActivities\_OCRCategoryMetaData.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\AppendLineToTextActivity.cs" />
@@ -379,6 +380,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\CredentialManagerActivities\RemoveCredentialsActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\CredentialManagerActivities\SetCredentialsActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\CredentialManagerActivities\UpdateAccountPasswordActivity.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\CredentialManagerActivities\_CredentialManagerCategoryMetaData.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\ConvertBase64ToTextActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\ConvertBinaryDataToFileActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FileActivities\ConvertFileToBinaryDataActivity.cs" />

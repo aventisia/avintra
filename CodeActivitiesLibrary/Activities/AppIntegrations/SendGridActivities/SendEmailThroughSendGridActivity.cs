@@ -7,7 +7,7 @@ using CodeActivitiesLibrary.Extensions;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
+namespace CodeActivitiesLibrary.AppIntegrations.SendGridActivities
 {
     [DisplayName("Send Email with SendGrid")]
     [Description("Sends an email using SendGrid's API.")]
@@ -213,6 +213,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
                 .Where(e => !string.IsNullOrWhiteSpace(e))
                 .Select(e => new EmailAddress(e))
                 .ToArray();
+        }
+
+        public enum EmailBodyFormatEnum
+        {
+            [Display(Name = "Plain", Description = "Plain text format")]
+            Text,
+
+            [Display(Name = "Html", Description = "HTML format")]
+            Html
         }
     }
 }
