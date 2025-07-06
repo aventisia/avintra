@@ -3,8 +3,8 @@
     "direction": "Input",
     "type": "text",
     "name": "IdentificationObjectPath",
-    "label": "UI Element",
-    "description": "The drop-down list element you would like to set the value for.",
+    "label": "Drop-Down or List UI Element",
+    "description": "The UI element representing the drop-down or list from which you want to select an option.",
     "defaultValue": "",
     "required": true
   },
@@ -12,8 +12,8 @@
     "direction": "Input",
     "type": "text",
     "name": "OptionToSelect",
-    "label": "Option to Select",
-    "description": "The value or text of the option to select in the drop-down list.",
+    "label": "Option to Select (Name or Index)",
+    "description": "Specify the option to select by its visible name or by its zero-based index (e.g., 0 for the first item).",
     "defaultValue": "",
     "required": true
   },
@@ -21,8 +21,8 @@
     "direction": "Input",
     "type": "text",
     "name": "MaxWaitTime",
-    "label": "Max Wait Time (seconds)",
-    "description": "Maximum time to wait to find the UI element (in seconds).",
+    "label": "Maximum Wait Time (seconds)",
+    "description": "The maximum number of seconds to wait for the drop-down or list element to appear.",
     "defaultValue": 5,
     "required": false
   },
@@ -30,8 +30,8 @@
     "direction": "Output",
     "type": "config-panel-output",
     "name": "IsOptionSelected",
-    "label": "Is Option Selected Successfully",
-    "description": "True if the option was selected successfully, otherwise false.",
+    "label": "Was Option Selected?",
+    "description": "Outputs true if the option was selected successfully, otherwise false.",
     "defaultValue": {
       "value": "IsOptionSelected",
       "enabled": true

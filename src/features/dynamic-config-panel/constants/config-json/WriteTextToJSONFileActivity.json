@@ -1,0 +1,32 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "JsonContent",
+    "label": "JSON Content",
+    "description": "The JSON string to write to the file.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "File Path",
+    "description": "The full path to the file where the JSON content will be written.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "WrittenContent",
+    "label": "Written Content",
+    "description": "The JSON content that was successfully written to the file.",
+    "defaultValue": {
+      "value": "WrittenContent",
+      "enabled": true
+    },
+    "required": false
+  }
+]

@@ -35,7 +35,7 @@
     "type": "switch",
     "name": "LaunchWithUrl",
     "label": "Launch with Url",
-    "description": "If true, launches the browser with a specific url. If false, opens to the default homepage.",
+    "description": "If true, launches the browser with a specific URL.",
     "defaultValue": "",
     "required": false
   },
@@ -44,24 +44,16 @@
     "type": "text",
     "name": "LaunchUrl",
     "label": "Launch Url",
-    "description": "Launches the browser with a specific url. If not specified, the browser will open to its default homepage.",
+    "description": "The URL to launch if Launch with Url is true.",
     "defaultValue": "",
-    "required": false,
-    "renderIf": {
-      "conditions": [
-        {
-          "field": "LaunchWithUrl",
-          "equals": true
-        }
-      ]
-    }
+    "required": false
   },
   {
     "direction": "Input",
     "type": "select",
     "name": "BrowsingMode",
     "label": "Browsing Mode",
-    "description": "Specifies whether to open in normal or private browsing mode.",
+    "description": "Specifies whether to open in normal or private mode.",
     "defaultValue": "Normal",
     "required": false,
     "selectOptions": [
@@ -125,7 +117,7 @@
     "type": "text",
     "name": "BrowserExecutablePath",
     "label": "Browser Executable Path",
-    "description": "The path to the browser executable (e.g., firefox.exe, chrome.exe). Required if \u0027Browser Type\u0027 is \u0027Custom\u0027.",
+    "description": "Path to the  browser executable (for Custom type).",
     "defaultValue": "",
     "required": false,
     "renderIf": {
@@ -142,7 +134,7 @@
     "type": "text",
     "name": "DriverExecutablePath",
     "label": "Driver Executable Path",
-    "description": "The path to the driver executable (e.g., geckodriver.exe for Firefox). Required if \u0027Browser Type\u0027 is \u0027Custom\u0027.",
+    "description": "Path to driver executable (for Custom type).",
     "defaultValue": "",
     "required": false,
     "renderIf": {
@@ -181,11 +173,32 @@
     ]
   },
   {
+    "direction": "Input",
+    "type": "select",
+    "name": "KillExistingBrowserInstancesMode",
+    "label": "Kill Existing Browser Instances",
+    "description": "Enable or disable killing existing Selenium RPA-launched browsers before starting a new one.",
+    "defaultValue": "Enabled",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Enabled",
+        "value": "Enabled",
+        "description": "Kill existing Selenium RPA browser instances before launching a new one."
+      },
+      {
+        "label": "Disabled",
+        "value": "Disabled",
+        "description": "Do not kill existing Selenium RPA browser instances before launching a new one."
+      }
+    ]
+  },
+  {
     "direction": "Output",
     "type": "config-panel-output",
     "name": "WebBrowser",
     "label": "Web Browser",
-    "description": "Returns the WebDriver (WebBrowser) object for further automation steps.",
+    "description": "Returns the WebDriver object for further automation steps.",
     "defaultValue": {
       "value": "WebBrowser",
       "enabled": true

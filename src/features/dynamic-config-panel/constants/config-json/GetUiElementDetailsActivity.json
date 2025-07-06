@@ -61,13 +61,121 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "ElementDetails",
-    "label": "Element Details",
-    "description": "Returns the requested details of the UI element (for example, position, text, or state).",
+    "name": "BoundingRectangle",
+    "label": "Bounding Rectangle",
+    "description": "The bounding rectangle of the UI element, if applicable.",
     "defaultValue": {
-      "value": "ElementDetails",
+      "value": "BoundingRectangle",
       "enabled": true
     },
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "DetailType",
+          "equals": "BoundingRectangle"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ClickablePoint",
+    "label": "Clickable Point",
+    "description": "The clickable point of the UI element, if applicable.",
+    "defaultValue": {
+      "value": "ClickablePoint",
+      "enabled": true
+    },
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "DetailType",
+          "equals": "ClickablePoint"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "LabelText",
+    "label": "Label Text",
+    "description": "The text of the label or element, if applicable.",
+    "defaultValue": {
+      "value": "LabelText",
+      "enabled": true
+    },
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "DetailType",
+          "equals": "LabelText"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "IsEnabled",
+    "label": "Is Enabled",
+    "description": "True if the UI element is enabled, otherwise false.",
+    "defaultValue": {
+      "value": "IsEnabled",
+      "enabled": true
+    },
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "DetailType",
+          "equals": "IsEnabled"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "IsOffscreen",
+    "label": "Is Offscreen",
+    "description": "True if the UI element is offscreen, otherwise false.",
+    "defaultValue": {
+      "value": "IsOffscreen",
+      "enabled": true
+    },
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "DetailType",
+          "equals": "IsOffscreen"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "IsPassword",
+    "label": "Is Password",
+    "description": "True if the UI element is a password field, otherwise false.",
+    "defaultValue": {
+      "value": "IsPassword",
+      "enabled": true
+    },
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "DetailType",
+          "equals": "IsPassword"
+        }
+      ]
+    }
   }
 ]

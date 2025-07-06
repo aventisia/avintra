@@ -13,7 +13,7 @@
     "type": "text",
     "name": "Message",
     "label": "Message to Display",
-    "description": "The main text content of the message box.",
+    "description": "The main content of the message box (supports string, DataTable, or any object).",
     "defaultValue": "",
     "required": false
   },

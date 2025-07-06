@@ -1,0 +1,32 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "JsonToken",
+    "label": "JSON Token",
+    "description": "The root JSON token to begin searching. This can be a JObject, JArray, or any valid JToken type.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "KeyToFind",
+    "label": "Key to Find",
+    "description": "The name of the JSON key to locate in the structure. Search is recursive and case-sensitive.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ResultNode",
+    "label": "Result Node",
+    "description": "The first matching JToken found under the specified key. Returns null if no match is found or an error occurs.",
+    "defaultValue": {
+      "value": "ResultNode",
+      "enabled": true
+    },
+    "required": false
+  }
+]

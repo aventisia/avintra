@@ -1,0 +1,23 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "JsonText",
+    "label": "JSON Text",
+    "description": "The JSON string to parse into a JToken structure.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "DeserializedToken",
+    "label": "Deserialized Token",
+    "description": "The resulting JToken from the deserialization. Returns null if parsing failed.",
+    "defaultValue": {
+      "value": "DeserializedToken",
+      "enabled": true
+    },
+    "required": false
+  }
+]

@@ -11,9 +11,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "CheckboxName",
-    "label": "Checkbox Name",
-    "description": "The name of the checkbox to set.",
+    "name": "CheckboxNameOrIndex",
+    "label": "Checkbox Name or Index",
+    "description": "The name or zero-based index of the checkbox to set.",
     "defaultValue": "",
     "required": true
   },

@@ -13,7 +13,7 @@
     "type": "text",
     "name": "ColumnIndex",
     "label": "Column Index",
-    "description": "The 1-based index of the column to convert to a letter (e.g., 1 \u2192 A).",
+    "description": "The 1-based index of the column to retrieve the name from (e.g., 1 \u2192 first column).",
     "defaultValue": "",
     "required": true
   },
@@ -22,7 +22,7 @@
     "type": "config-panel-output",
     "name": "ColumnName",
     "label": "Column Name",
-    "description": "Returns the column letter corresponding to the given index (e.g., \u0027A\u0027, \u0027B\u0027).",
+    "description": "Returns the name of the column found in the first non-empty cell of the specified column.",
     "defaultValue": {
       "value": "ColumnName",
       "enabled": true

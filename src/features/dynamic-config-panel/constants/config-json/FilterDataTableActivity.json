@@ -23,7 +23,7 @@
     "name": "MatchCase",
     "label": "Match Case",
     "description": "If true, performs a case-sensitive filter.",
-    "defaultValue": "",
+    "defaultValue": false,
     "required": false
   },
   {

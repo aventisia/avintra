@@ -4,7 +4,7 @@
     "type": "text",
     "name": "ImagePath",
     "label": "Image Path",
-    "description": "The path to the image file.",
+    "description": "The path to the image file (e.g., .png, .jpg).",
     "defaultValue": "",
     "required": true
   },
@@ -13,7 +13,7 @@
     "type": "text",
     "name": "LanguageCode",
     "label": "Language Code",
-    "description": "The language code used by Tesseract (e.g., \u0027eng\u0027, \u0027deu\u0027, \u0027fra\u0027).",
+    "description": "The language code used by Tesseract (e.g., eng for English, deu for German).",
     "defaultValue": "eng",
     "required": false
   },
@@ -22,8 +22,8 @@
     "type": "text",
     "name": "TessDataPath",
     "label": "TessData Path",
-    "description": "The directory containing Tesseract language data files (tessdata).",
-    "defaultValue": "C:\\Program Files\\Tesseract-OCR\\tessdata",
+    "description": "The directory containing Tesseract language data files (tessdata folder). Leave empty to auto-detect.",
+    "defaultValue": "",
     "required": false
   },
   {
@@ -31,7 +31,7 @@
     "type": "config-panel-output",
     "name": "ExtractedText",
     "label": "Extracted Text",
-    "description": "Returns the extracted text.",
+    "description": "Output extracted text from the image.",
     "defaultValue": {
       "value": "ExtractedText",
       "enabled": true

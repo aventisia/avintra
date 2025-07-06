@@ -1,0 +1,23 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "File Path",
+    "description": "The full path to the JSON file to be read.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "JsonContent",
+    "label": "JSON Content",
+    "description": "The content of the JSON file. Returns \u0022null\u0022 if an error occurred while reading the file.",
+    "defaultValue": {
+      "value": "JsonContent",
+      "enabled": true
+    },
+    "required": false
+  }
+]

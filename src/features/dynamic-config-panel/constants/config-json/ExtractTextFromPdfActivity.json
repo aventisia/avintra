@@ -45,12 +45,12 @@
     "selectOptions": [
       {
         "label": "Text",
-        "value": "Images",
+        "value": "Text",
         "description": "Extract only text from the PDF."
       },
       {
         "label": "Images",
-        "value": "Text",
+        "value": "Images",
         "description": "Extract only images from the PDF."
       },
       {

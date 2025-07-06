@@ -22,7 +22,7 @@
     "type": "text",
     "name": "DataType",
     "label": "Data Type",
-    "description": "The data type of the new column.",
+    "description": "The data type of the new column (e.g., string, int).",
     "defaultValue": "",
     "required": true
   },
@@ -31,8 +31,8 @@
     "type": "select",
     "name": "InsertLocation",
     "label": "Insert Location",
-    "description": "Specifies where to insert the new column.",
-    "defaultValue": "BeforeColumnIndex",
+    "description": "Specifies whether to insert the column at the end or before a specific column index.",
+    "defaultValue": "EndOfDataTable",
     "required": false,
     "selectOptions": [
       {
@@ -52,7 +52,7 @@
     "type": "text",
     "name": "ColumnIndex",
     "label": "Column Index",
-    "description": "The zero-based index at which to insert the column (used if \u0027Insert Location\u0027 is \u0027Before Column Index\u0027).",
+    "description": "Zero-based index where the column should be inserted (used only when location is \u0027Before Column Index\u0027).",
     "defaultValue": "",
     "required": false,
     "renderIf": {
@@ -63,5 +63,17 @@
         }
       ]
     }
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ModifiedDataTable",
+    "label": "Modified Data Table",
+    "description": "The updated data table with the new column inserted.",
+    "defaultValue": {
+      "value": "ModifiedDataTable",
+      "enabled": true
+    },
+    "required": false
   }
 ]

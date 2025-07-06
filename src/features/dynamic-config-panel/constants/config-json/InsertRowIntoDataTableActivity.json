@@ -4,7 +4,7 @@
     "type": "text",
     "name": "DataTable",
     "label": "Data Table",
-    "description": "The data table to which the row will be inserted.",
+    "description": "The data table to which the new row will be added.",
     "defaultValue": "",
     "required": true
   },
@@ -13,7 +13,7 @@
     "type": "text",
     "name": "RowValues",
     "label": "Row Values",
-    "description": "An array of values to insert into the row.",
+    "description": "An array of values to insert into the new row. Must match column count and types.",
     "defaultValue": "",
     "required": true
   },
@@ -22,8 +22,8 @@
     "type": "select",
     "name": "InsertLocation",
     "label": "Insert Location",
-    "description": "Specifies where to insert the new row.",
-    "defaultValue": "BeforeRowIndex",
+    "description": "Specifies whether to insert the row at the end or before a specific index.",
+    "defaultValue": "EndOfDataTable",
     "required": false,
     "selectOptions": [
       {
@@ -43,7 +43,7 @@
     "type": "text",
     "name": "RowIndex",
     "label": "Row Index",
-    "description": "The zero-based index before which to insert the row (required if \u0027Insert Location\u0027 is \u0027Before Row Index\u0027).",
+    "description": "Zero-based index before which to insert the row (used only when location is \u0027Before Row Index\u0027).",
     "defaultValue": "",
     "required": false,
     "renderIf": {
@@ -54,5 +54,17 @@
         }
       ]
     }
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ModifiedDataTable",
+    "label": "Modified Data Table",
+    "description": "The updated data table with the new row inserted.",
+    "defaultValue": {
+      "value": "ModifiedDataTable",
+      "enabled": true
+    },
+    "required": false
   }
 ]

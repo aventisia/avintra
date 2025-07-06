@@ -16,5 +16,17 @@
     "description": "The value (text, number, list, or object) to assign to the variable.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "OutVariableValue",
+    "label": "OutVariableValue",
+    "description": "",
+    "defaultValue": {
+      "value": "OutVariableValue",
+      "enabled": true
+    },
+    "required": false
   }
 ]

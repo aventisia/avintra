@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "DocumentName",
-    "label": "Document Name",
-    "description": "The name or full path of the Word document to attach to.",
+    "name": "DocumentPath",
+    "label": "Document Path",
+    "description": "The full path or file name of the Word document to attach to.",
     "defaultValue": "",
     "required": true
   },
@@ -13,7 +13,7 @@
     "type": "config-panel-output",
     "name": "WordInstance",
     "label": "Word Instance",
-    "description": "The specific Word instance for use with later Word actions.",
+    "description": "The Word instance for later Word activities.",
     "defaultValue": {
       "value": "WordInstance",
       "enabled": true
