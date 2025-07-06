@@ -2,7 +2,7 @@ import { PrimaryCategoryType } from "../features/action-selector/types/primary-c
 
 // Glob all JSON files in the constants folder
 const modules = import.meta.glob(
-  "../features/action-selector/constants/_ActionSelectorData.json",
+  "../features/action-selector/constants/*.json",
 );
 
 /**
