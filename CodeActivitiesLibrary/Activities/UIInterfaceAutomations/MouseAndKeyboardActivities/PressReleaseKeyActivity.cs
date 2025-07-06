@@ -14,7 +14,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
     [Description("Presses (and holds) or releases one or more modifier keys (Alt, Control, Shift, Win). Supports combinations like Ctrl+Alt.")]
     public class PressReleaseKeyActivity : BaseCodeActivity
     {
-         // ----------------------
+        // ----------------------
         // Input Arguments
         // ----------------------
         [RequiredArgument]
@@ -55,17 +55,14 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
             var status = "Operation completed successfully.";
             try
             {
+                // Retrieve input arguments
                 var action = ActionToPerform.Get(context);
                 var useControl = UseControl.Get(context);
                 var useAlt = UseAlt.Get(context);
                 var useShift = UseShift.Get(context);
                 var useWin = UseWin.Get(context);
                 var key = KeyToPress.Get(context);
-                var waitTime = WaitBeforeReleasing.Get(context);
-
-                if (action == default(ActionTypeEnum))
-                    throw new ArgumentException("Action value must be specified.");
-
+                var waitTime = WaitBeforeReleasing.Get(context);             
                 var keys = GetSelectedKeys(useControl, useAlt, useShift, useWin, key);
 
                 if (keys == null || keys.Length == 0)
