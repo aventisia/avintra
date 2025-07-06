@@ -60,11 +60,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<bool> PopulateEntireRange { get; set; }
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
-        // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
@@ -129,28 +124,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                                 if (dataTable.Rows.Count == 0 || dataTable.Columns.Count == 0)
                                     throw new ArgumentException("DataTable is empty.");
 
-                                int rowCount = dataTable.Rows.Count;
-                                int colCount = dataTable.Columns.Count;
-
-                                Excel.Range targetRange = namedRange.Resize[rowCount, colCount];
-                                object[,] values = new object[rowCount, colCount];
-
-                                for (int r = 0; r < rowCount; r++)
-                                {
-                                    for (int c = 0; c < colCount; c++)
-                                    {
-                                        values[r, c] = dataTable.Rows[r][c];
-                                    }
-                                }
-
-                                targetRange.Value = values;
+                                WriteDataTableToRange(namedRange, dataTable, populateEntireRange);
                             }
                             else
                             {
+                                string value = rawValue?.ToString();
+                                if (string.IsNullOrEmpty(value))
+                                    throw new ArgumentException("Value to write cannot be null or empty.");
+
                                 if (populateEntireRange)
-                                    namedRange.Value = rawValue?.ToString();
+                                    namedRange.Value = value;
                                 else
-                                    namedRange.Cells[1, 1].Value = rawValue?.ToString();
+                                    namedRange.Cells[1, 1].Value = value;
                             }
 
                             break;
@@ -172,7 +157,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         {
             if (value is DataTable dataTable)
             {
-                WriteDataTableToRange(range, dataTable);
+                WriteDataTableToRange(range, dataTable, false);
             }
             else
             {
@@ -180,7 +165,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             }
         }
 
-        private void WriteDataTableToRange(Excel.Range startCell, DataTable dataTable)
+        private void WriteDataTableToRange(Excel.Range startCell, DataTable dataTable, bool populateEntireRange)
         {
             if (dataTable.Rows.Count == 0 || dataTable.Columns.Count == 0)
                 return;

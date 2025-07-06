@@ -7,7 +7,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Column Name on Excel Worksheet")]
-    [Description("Gets the name of a column (e.g., 'A', 'B') based on its index in the active worksheet.")]
+    [Description("Gets the name of a column by reading the first non-empty cell in the specified column.")]
     public class GetColumnNameOnExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
@@ -21,16 +21,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [RequiredArgument]
         [DisplayName("Column Index")]
-        [Description("The 1-based index of the column to convert to a letter (e.g., 1 → A).")]
+        [Description("The 1-based index of the column to retrieve the name from (e.g., 1 → first column).")]
         public InArgument<int> ColumnIndex { get; set; }
 
         // ----------------------
         // Output Arguments
         // ----------------------
 
-
         [DisplayName("Column Name")]
-        [Description("Returns the column letter corresponding to the given index (e.g., 'A', 'B').")]
+        [Description("Returns the name of the column found in the first non-empty cell of the specified column.")]
         public OutArgument<string> ColumnName { get; set; }
 
         // ----------------------
@@ -38,8 +37,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var columnName = "";
-
             try
             {
                 var excelApp = ExcelApplication.Get(context);
@@ -51,12 +48,31 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 if (columnIndex < 1)
                     throw new ArgumentException("Column index must be a positive value.", nameof(ColumnIndex));
 
-                // Convert column index to Excel column name
-                columnName = GetExcelColumnName(columnIndex);
+                Excel.Worksheet activeSheet = excelApp.ActiveSheet;
+
+                string columnName = null;
+                int maxRowsToCheck = 100; // You can adjust this limit if needed
+
+                for (int row = 1; row <= maxRowsToCheck; row++)
+                {
+                    Excel.Range cell = activeSheet.Cells[row, columnIndex] as Excel.Range;
+                    var value = cell?.Value2?.ToString().Trim();
+
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        columnName = value;
+                        break;
+                    }
+                }
+
+                if (columnName == null)
+                {
+                    StatusMessage.Set(context, "No non-empty cell found in the column.");
+                }
 
                 ColumnName.Set(context, columnName);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $"Retrieved column name: {columnName}");
+                StatusMessage.Set(context, $"Retrieved column name: {columnName ?? "[None found]"}");
             }
             catch (Exception ex)
             {
@@ -64,23 +80,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error getting column name: {ex.Message}");
             }
-        }
-
-        private static string GetExcelColumnName(int columnIndex)
-        {
-            if (columnIndex <= 0)
-                throw new ArgumentException("Column index must be greater than zero.", nameof(columnIndex));
-
-            string columnName = string.Empty;
-
-            while (columnIndex > 0)
-            {
-                int remainder = (columnIndex - 1) % 26;
-                columnName = (char)('A' + remainder) + columnName;
-                columnIndex = (columnIndex - 1) / 26;
-            }
-
-            return columnName;
         }
     }
 }

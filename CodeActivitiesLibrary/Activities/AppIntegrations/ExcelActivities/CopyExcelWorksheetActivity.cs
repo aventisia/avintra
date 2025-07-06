@@ -8,7 +8,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Copy Excel Worksheet")]
-    [Description("Copies a worksheet from one Excel instance to another.")]
+    [Description("Copies a worksheet from one Excel instance to another by duplicating its content.")]
     public class CopyExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
@@ -55,16 +55,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
             try
             {
-                var sourceWorkbook = SourceExcelApplication.Get(context);
+                var sourceApp = SourceExcelApplication.Get(context);
+                var targetApp = TargetExcelApplication.Get(context);
                 var copyMode = CopyMode.Get(context);
-                var targetWorkbook = TargetExcelApplication.Get(context);
                 var pastePosition = PastePosition.Get(context);
 
-                if (sourceWorkbook == null)
-                    throw new ArgumentNullException(nameof(SourceExcelApplication), "Source workbook cannot be null.");
+                if (sourceApp == null || sourceApp.ActiveWorkbook == null)
+                    throw new ArgumentNullException(nameof(SourceExcelApplication), "Source Excel application or workbook is null.");
 
-                if (targetWorkbook == null)
-                    throw new ArgumentNullException(nameof(TargetExcelApplication), "Target workbook cannot be null.");
+                if (targetApp == null || targetApp.ActiveWorkbook == null)
+                    throw new ArgumentNullException(nameof(TargetExcelApplication), "Target Excel application or workbook is null.");
 
                 Excel.Worksheet sourceSheet = null;
 
@@ -72,17 +72,12 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 {
                     case WorksheetCopyModeEnum.Name:
                         var worksheetName = WorksheetName.Get(context);
-                        if (string.IsNullOrWhiteSpace(worksheetName))
-                            throw new ArgumentException("Worksheet Name cannot be empty when using 'Name' mode.");
-                        sourceSheet = sourceWorkbook.Worksheets[worksheetName] as Excel.Worksheet;
+                        sourceSheet = sourceApp.ActiveWorkbook.Worksheets[worksheetName] as Excel.Worksheet;
                         break;
 
                     case WorksheetCopyModeEnum.Index:
                         var worksheetIndex = WorksheetIndex.Get(context);
-                        if (worksheetIndex < 1 || worksheetIndex > sourceWorkbook.Worksheets.Count)
-                            throw new ArgumentOutOfRangeException(nameof(WorksheetIndex),
-                                $"Invalid worksheet index. Must be between 1 and {sourceWorkbook.Worksheets.Count}.");
-                        sourceSheet = sourceWorkbook.Worksheets[worksheetIndex] as Excel.Worksheet;
+                        sourceSheet = sourceApp.ActiveWorkbook.Worksheets[worksheetIndex] as Excel.Worksheet;
                         break;
 
                     default:
@@ -92,15 +87,56 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 if (sourceSheet == null)
                     throw new InvalidOperationException("Source worksheet not found.");
 
-                //  Copy the worksheet to the target workbook
-                sourceSheet.Copy(
-                    Before: pastePosition == WorksheetPastePositionEnum.FirstWorksheet
-                        ? targetWorkbook.Worksheets[1] as object
-                        : Type.Missing,
-                    After: pastePosition == WorksheetPastePositionEnum.LastWorksheet
-                        ? targetWorkbook.Worksheets[targetWorkbook.Worksheets.Count] as object
-                        : Type.Missing
-                );
+                // Create new worksheet in target workbook
+                Excel.Workbook targetWb = targetApp.ActiveWorkbook;
+                Excel.Worksheet targetSheet = targetWb.Worksheets.Add();
+
+                // Set worksheet name (ensure uniqueness)
+                string newName = sourceSheet.Name;
+                int counter = 1;
+                while (SheetExists(targetWb, newName))
+                {
+                    newName = $"{sourceSheet.Name} ({counter++})";
+                }
+                targetSheet.Name = newName;
+
+                // Copy all used range values
+                Excel.Range sourceRange = sourceSheet.UsedRange;
+                Excel.Range targetRange = targetSheet.Range["A1"].Resize[sourceRange.Rows.Count, sourceRange.Columns.Count];
+                targetRange.Value2 = sourceRange.Value2;
+
+                // Optional: Copy column widths
+                for (int i = 1; i <= sourceRange.Columns.Count; i++)
+                {
+                    targetSheet.Columns[i].ColumnWidth = sourceSheet.Columns[i].ColumnWidth;
+                }
+
+                // Optional: Copy row heights
+                for (int i = 1; i <= sourceRange.Rows.Count; i++)
+                {
+                    targetSheet.Rows[i].RowHeight = sourceSheet.Rows[i].RowHeight;
+                }
+
+                // Optional: Copy formatting
+                sourceRange.Copy();
+                targetRange.PasteSpecial(Excel.XlPasteType.xlPasteFormats);
+
+                // Optional: Delete empty default sheet
+                Excel.Worksheet firstSheet = targetWb.Worksheets[1];
+                if (firstSheet.Name != targetSheet.Name)
+                {
+                    ((Excel._Worksheet)firstSheet).Delete();
+                }
+
+                // Move worksheet to desired position
+                if (pastePosition == WorksheetPastePositionEnum.FirstWorksheet)
+                {
+                    targetSheet.Move(Before: targetWb.Worksheets[1]);
+                }
+                else if (pastePosition == WorksheetPastePositionEnum.LastWorksheet)
+                {
+                    targetSheet.Move(After: targetWb.Worksheets[targetWb.Worksheets.Count]);
+                }
 
                 status = $"Successfully copied worksheet '{sourceSheet.Name}' to target workbook.";
                 IsSuccess.Set(context, true);
@@ -114,6 +150,19 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             }
 
             StatusMessage.Set(context, status);
+        }
+
+        // Helper method to check if a worksheet exists
+        private bool SheetExists(Excel.Workbook workbook, string sheetName)
+        {
+            foreach (Excel.Worksheet sheet in workbook.Worksheets)
+            {
+                if (sheet.Name == sheetName)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
