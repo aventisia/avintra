@@ -9,7 +9,12 @@ const modules = import.meta.glob(
  * Loads the action selector data from the JSON file in src.
  */
 export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
-  const path = "../features/action-selector/constants/_ActionSelectorData.json";
+  let path = "../features/action-selector/constants/_ActionSelectorData.json";
+
+  // Use dev data in non-production environments
+  if (import.meta.env.MODE !== "production") {
+    path = "../features/action-selector/constants/_DevActionSelectorData.json";
+  }
 
   const loader = modules[path];
 
@@ -21,7 +26,7 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
   if (import.meta.env.MODE !== "production") {
     // Explicit import of dev data
     const devModule = (await import(
-      "../features/action-selector/constants/_DevActionSelectorData.json"
+      "../features/action-selector/constants/_AIIntegrationsActionSelectorData.json"
     )) as unknown as { default: PrimaryCategoryType[] };
 
     data = [...data, ...devModule.default];
