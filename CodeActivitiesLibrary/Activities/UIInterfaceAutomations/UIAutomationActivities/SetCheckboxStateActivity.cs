@@ -19,10 +19,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
         public InArgument<string> IdentificationObjectPath { get; set; }
 
         [RequiredArgument]
-        [DisplayName("Checkbox Name")]
-        [Description("The name of the checkbox to set.")]
-        [DefaultValue("")]
-        public InArgument<string> CheckboxName { get; set; }
+        [DisplayName("Checkbox Name or Index")]
+        [Description("The name or zero-based index of the checkbox to set.")]
+        public InArgument<string> CheckboxNameOrIndex { get; set; }
 
         [RequiredArgument]
         [DisplayName("Desired State")]
@@ -44,7 +43,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
         {
             var identificationObjectPath = UIAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
             var maxWaitTime = MaxWaitTime.Get(context);
-            var checkboxName = CheckboxName.Get(context);
+            var checkboxNameOrIndex = CheckboxNameOrIndex.Get(context);
             var shouldBeChecked = Checked.Get(context);
 
             bool stateChanged = false;
@@ -61,29 +60,55 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
                 }
                 else
                 {
-                    // Get all child elements that are checkboxes
-                    var checkboxesCollection = parentElement.FindAllChildren(cf => cf.ByControlType(ControlType.CheckBox));
+                    // Get the collection of checkboxes within the parent element
+                    var checkboxesCollection = parentElement.FindAllDescendants(cf => cf.ByControlType(ControlType.CheckBox));
+                    AutomationElement targetCheckbox = null;
 
-                    foreach (var element in checkboxesCollection)
+                    // Try index first
+                    if (int.TryParse(checkboxNameOrIndex, out int idx))
                     {
-                        if (checkboxName.Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+                        if (idx >= 0 && idx < checkboxesCollection.Length)
                         {
-                            var togglePattern = element.Patterns.Toggle.PatternOrDefault;
-                            if (togglePattern != null)
+                            targetCheckbox = checkboxesCollection[idx];
+                        }
+                        else
+                        {
+                            statusMessage = $"Checkbox index {idx} is out of range.";
+                        }
+                    }
+                    else
+                    {
+                        // Fallback to name
+                        foreach (var element in checkboxesCollection)
+                        {
+                            if (checkboxNameOrIndex.Equals(element.Name, StringComparison.OrdinalIgnoreCase))
                             {
-                                bool isCurrentlyChecked = togglePattern.ToggleState.Value == ToggleState.On;
-                                if (isCurrentlyChecked != shouldBeChecked)
-                                {
-                                    togglePattern.Toggle();
-                                }
-                                stateChanged = true;
-                                statusMessage = "Checkbox state updated successfully.";
+                                targetCheckbox = element;
+                                break;
                             }
-                            else
+                        }
+                        if (targetCheckbox == null)
+                        {
+                            statusMessage = $"Checkbox named '{checkboxNameOrIndex}' not found.";
+                        }
+                    }
+
+                    if (targetCheckbox != null)
+                    {
+                        var togglePattern = targetCheckbox.Patterns.Toggle.PatternOrDefault;
+                        if (togglePattern != null)
+                        {
+                            bool isCurrentlyChecked = togglePattern.ToggleState.Value == ToggleState.On;
+                            if (isCurrentlyChecked != shouldBeChecked)
                             {
-                                statusMessage = "Toggle pattern not supported on the element.";
+                                togglePattern.Toggle();
                             }
-                            break;
+                            stateChanged = true;
+                            statusMessage = "Checkbox state updated successfully.";
+                        }
+                        else
+                        {
+                            statusMessage = "Toggle pattern not supported on the element.";
                         }
                     }
                 }

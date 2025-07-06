@@ -1,5 +1,6 @@
 using CodeActivitiesLibrary.Extensions;
 using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
+using FlaUI.Core.Definitions;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -26,16 +27,14 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            // Convert IdentificationObjectPath string to list of IdentificationObject
             var identificationObjectPath = UIAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
-
             var maxWaitTime = MaxWaitTime.Get(context);
             string dropdownContent = "";
             string statusMessage = "";
+            bool isSuccess = false;
 
             try
             {
-                // Get the automation element for the UI element
                 var dropdownElement = UIAutomationElementHelper.GetElementByPath(identificationObjectPath, maxWaitTime);
 
                 if (dropdownElement != null)
@@ -48,27 +47,49 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
                         {
                             dropdownContent = itemsSelected[0].Name;
                             statusMessage = "Selected item retrieved successfully.";
+                            isSuccess = true;
                         }
                         else
                         {
-                            dropdownContent = "Error: No item is selected in the drop-down list.";
-                            statusMessage = "No item is selected in the drop-down list.";
+                            // Fallback: Try to find selected item manually
+                            var listItems = dropdownElement.FindAllDescendants(cf =>
+                                cf.ByControlType(ControlType.ListItem)
+                                .Or(cf.ByControlType(ControlType.DataItem))
+                                .Or(cf.ByControlType(ControlType.TreeItem))
+                                .Or(cf.ByControlType(ControlType.MenuItem))
+                            );
+                            foreach (var item in listItems)
+                            {
+                                var selectionItemPattern = item.Patterns.SelectionItem.PatternOrDefault;
+                                if (selectionItemPattern != null && selectionItemPattern.IsSelected.ValueOrDefault)
+                                {
+                                    dropdownContent = item.Name;
+                                    statusMessage = "Selected item retrieved successfully (manual fallback).";
+                                    isSuccess = true;
+                                    break;
+                                }
+                            }
+                            if (!isSuccess)
+                            {
+                                dropdownContent = "";
+                                statusMessage = "No item is selected in the drop-down list.";
+                            }
                         }
                     }
                     else
                     {
-                        dropdownContent = "Error: Drop-down list does not support selection pattern.";
+                        dropdownContent = "";
                         statusMessage = "Drop-down list does not support selection pattern.";
                     }
                 }
                 else
                 {
-                    dropdownContent = "Error: Not able to extract selected item";
+                    dropdownContent = "";
                     statusMessage = "Could not find the drop-down list.";
                 }
 
                 SelectedItem.Set(context, dropdownContent);
-                IsSuccess.Set(context, true);
+                IsSuccess.Set(context, isSuccess);
                 StatusMessage.Set(context, statusMessage);
             }
             catch (Exception ex)

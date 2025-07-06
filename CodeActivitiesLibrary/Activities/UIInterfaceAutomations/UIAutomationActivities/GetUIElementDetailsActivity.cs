@@ -1,5 +1,6 @@
 ﻿using CodeActivitiesLibrary.Extensions;
 using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Activities;
 using System.ComponentModel;
@@ -27,29 +28,61 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
 
-        [DisplayName("Element Details")]
-        [Description("Returns the requested details of the UI element (for example, position, text, or state).")]
-        public OutArgument<string> ElementDetails { get; set; }
+        [DisplayName("Bounding Rectangle")]
+        [Description("The bounding rectangle of the UI element, if applicable.")]
+        [RenderIfCondition(nameof(DetailType), UIElementDetailTypeEnum.BoundingRectangle)]
+        public OutArgument<JObject> BoundingRectangle { get; set; }
+
+        [DisplayName("Clickable Point")]
+        [Description("The clickable point of the UI element, if applicable.")]
+        [RenderIfCondition(nameof(DetailType), UIElementDetailTypeEnum.ClickablePoint)]
+        public OutArgument<JObject> ClickablePoint { get; set; }
+
+        [DisplayName("Label Text")]
+        [Description("The text of the label or element, if applicable.")]
+        [RenderIfCondition(nameof(DetailType), UIElementDetailTypeEnum.LabelText)]
+        public OutArgument<string> LabelText { get; set; }
+
+        [DisplayName("Is Enabled")]
+        [Description("True if the UI element is enabled, otherwise false.")]
+        [RenderIfCondition(nameof(DetailType), UIElementDetailTypeEnum.IsEnabled)]
+        public OutArgument<bool> IsEnabled { get; set; }
+
+        [DisplayName("Is Offscreen")]
+        [Description("True if the UI element is offscreen, otherwise false.")]
+        [RenderIfCondition(nameof(DetailType), UIElementDetailTypeEnum.IsOffscreen)]
+        public OutArgument<bool> IsOffscreen { get; set; }
+
+        [DisplayName("Is Password")]
+        [Description("True if the UI element is a password field, otherwise false.")]
+        [RenderIfCondition(nameof(DetailType), UIElementDetailTypeEnum.IsPassword)]
+        public OutArgument<bool> IsPassword { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
             var identificationObjectPath = UIAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
             var maxWaitTime = MaxWaitTime.Get(context);
             var detailType = DetailType.Get(context);
-            string elementDetails = string.Empty;
             string statusMessage = "";
+            bool isSuccess = false;
+
+            // Clear all outputs first
+            BoundingRectangle.Set(context, null);
+            ClickablePoint.Set(context, null);
+            LabelText.Set(context, null);
+            IsEnabled.Set(context, false);
+            IsOffscreen.Set(context, false);
+            IsPassword.Set(context, false);
 
             try
             {
-                // Get the UI element instance using the provided identification path
                 var elementInstance = UIAutomationElementHelper.GetElementByPath(identificationObjectPath, maxWaitTime);
 
-                // If the element is not found, set the status and exit
                 if (elementInstance == null)
                 {
-                    ElementDetails.Set(context, elementDetails);
+                    statusMessage = "UI element not found. Please check the identification path.";
                     IsSuccess.Set(context, false);
-                    StatusMessage.Set(context, "UI element not found. Please check the identification path.");
+                    StatusMessage.Set(context, statusMessage);
                     return;
                 }
 
@@ -59,66 +92,89 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
                         var rect = elementInstance.Properties.BoundingRectangle.ValueOrDefault;
                         if (rect != null)
                         {
-                            elementDetails = $"{{\"Left\": {rect.Left}, \"Top\": {rect.Top}, \"Width\": {rect.Width}, \"Height\": {rect.Height}}}";
+                            var rectObj = new JObject
+                            {
+                                ["Left"] = rect.Left,
+                                ["Top"] = rect.Top,
+                                ["Width"] = rect.Width,
+                                ["Height"] = rect.Height
+                            };
+                            BoundingRectangle.Set(context, rectObj);
                             statusMessage = "Bounding rectangle retrieved successfully.";
+                            isSuccess = true;
                         }
                         else
                         {
                             statusMessage = "Error: Not able to retrieve bounding rectangle.";
                         }
                         break;
+
                     case UIElementDetailTypeEnum.ClickablePoint:
                         var clickablePoint = elementInstance.Properties.ClickablePoint.ValueOrDefault;
                         if (clickablePoint != null)
                         {
-                            elementDetails = $"{{\"X\": {clickablePoint.X}, \"Y\": {clickablePoint.Y}}}";
+                            var pointObj = new JObject
+                            {
+                                ["X"] = clickablePoint.X,
+                                ["Y"] = clickablePoint.Y
+                            };
+                            ClickablePoint.Set(context, pointObj);
                             statusMessage = "Clickable point retrieved successfully.";
+                            isSuccess = true;
                         }
                         else
                         {
                             statusMessage = "Error: Not able to retrieve clickable point.";
                         }
                         break;
+
                     case UIElementDetailTypeEnum.LabelText:
-                        elementDetails = elementInstance.Properties.Name.ValueOrDefault?.Trim();
-                        statusMessage = !string.IsNullOrEmpty(elementDetails) ? "Label text retrieved successfully." : "Error: Not able to copy text from Label";
+                        var label = elementInstance.Properties.Name.ValueOrDefault?.Trim();
+                        if (!string.IsNullOrEmpty(label))
+                        {
+                            LabelText.Set(context, label);
+                            statusMessage = "Label text retrieved successfully.";
+                            isSuccess = true;
+                        }
+                        else
+                        {
+                            statusMessage = "Error: Not able to copy text from Label.";
+                        }
                         break;
 
                     case UIElementDetailTypeEnum.IsEnabled:
-                        elementDetails = elementInstance.Properties.IsEnabled.ValueOrDefault.ToString();
-                        statusMessage = !string.IsNullOrEmpty(elementDetails) ? "IsEnabled state retrieved successfully." : "Error: Not able to retrieve IsEnabled state.";
+                        var isEnabled = elementInstance.Properties.IsEnabled.ValueOrDefault;
+                        IsEnabled.Set(context, isEnabled);
+                        statusMessage = "IsEnabled state retrieved successfully.";
+                        isSuccess = true;
                         break;
 
                     case UIElementDetailTypeEnum.IsOffscreen:
-                        elementDetails = elementInstance.Properties.IsOffscreen.ValueOrDefault.ToString();
-                        statusMessage = !string.IsNullOrEmpty(elementDetails) ? "IsOffscreen state retrieved successfully." : "Error: Not able to retrieve IsOffscreen state.";
+                        var isOffscreen = elementInstance.Properties.IsOffscreen.ValueOrDefault;
+                        IsOffscreen.Set(context, isOffscreen);
+                        statusMessage = "IsOffscreen state retrieved successfully.";
+                        isSuccess = true;
                         break;
 
                     case UIElementDetailTypeEnum.IsPassword:
-                        elementDetails = elementInstance.Properties.IsPassword.ValueOrDefault.ToString();
-                        statusMessage = !string.IsNullOrEmpty(elementDetails) ? "IsPassword state retrieved successfully." : "Error: Not able to retrieve IsPassword state.";
+                        var isPassword = elementInstance.Properties.IsPassword.ValueOrDefault;
+                        IsPassword.Set(context, isPassword);
+                        statusMessage = "IsPassword state retrieved successfully.";
+                        isSuccess = true;
                         break;
+
                     default:
                         statusMessage = "Unknown detail type selected.";
                         break;
                 }
 
-                // Check if the elementDetails is empty or null
-                if (string.IsNullOrEmpty(elementDetails))
-                    statusMessage = "Could not retrieve the requested detail from the UI element.";
-
-                // Set the success status
-                IsSuccess.Set(context, true);
+                IsSuccess.Set(context, isSuccess);
+                StatusMessage.Set(context, statusMessage);
             }
             catch (Exception ex)
             {
-                statusMessage = $"Error retrieving UI element details: {ex.Message}";
+                StatusMessage.Set(context, $"Error retrieving UI element details: {ex.Message}");
                 IsSuccess.Set(context, false);
-            }
-            finally
-            {
-                ElementDetails.Set(context, elementDetails);
-                StatusMessage.Set(context, statusMessage);
             }
         }
     }

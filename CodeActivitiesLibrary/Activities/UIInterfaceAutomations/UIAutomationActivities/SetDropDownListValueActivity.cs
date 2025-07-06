@@ -9,27 +9,27 @@ using System.Threading;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
-    [DisplayName("Set Drop-Down List Value in Window")]
-    [Description("Selects an option in a drop-down list in a window form using the property you choose.")]
+    [DisplayName("Select Option from Drop-Down or List")]
+    [Description("Selects an option from a drop-down or list UI element by specifying the option's visible name or its zero-based index.")]
     public class SetDropDownListValueActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("UI Element")]
-        [Description("The drop-down list element you would like to set the value for.")]
+        [DisplayName("Drop-Down or List UI Element")]
+        [Description("The UI element representing the drop-down or list from which you want to select an option.")]
         public InArgument<string> IdentificationObjectPath { get; set; }
 
         [RequiredArgument]
-        [DisplayName("Option to Select")]
-        [Description("The value or text of the option to select in the drop-down list.")]
+        [DisplayName("Option to Select (Name or Index)")]
+        [Description("Specify the option to select by its visible name or by its zero-based index (e.g., 0 for the first item).")]
         public InArgument<string> OptionToSelect { get; set; }
 
-        [DisplayName("Max Wait Time (seconds)")]
-        [Description("Maximum time to wait to find the UI element (in seconds).")]
+        [DisplayName("Maximum Wait Time (seconds)")]
+        [Description("The maximum number of seconds to wait for the drop-down or list element to appear.")]
         [DefaultValue(5)]
         public InArgument<int> MaxWaitTime { get; set; } = 5;
 
-        [DisplayName("Is Option Selected Successfully")]
-        [Description("True if the option was selected successfully, otherwise false.")]
+        [DisplayName("Was Option Selected?")]
+        [Description("Outputs true if the option was selected successfully, otherwise false.")]
         [DefaultValue(false)]
         public OutArgument<bool> IsOptionSelected { get; set; }
 
@@ -66,17 +66,44 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
                         {
                             expandCollapsePattern.Expand();
                             Thread.Sleep(200);
+                            continue;
                         }
 
                         // Find all list items (options)
-                        var listItems = dropdownElement.FindAllDescendants(cf => cf.ByControlType(ControlType.ListItem));
+                        var listItems = dropdownElement.FindAllDescendants(cf =>
+                                                                            cf.ByControlType(ControlType.ListItem)
+                                                                            .Or(cf.ByControlType(ControlType.DataItem))
+                                                                            .Or(cf.ByControlType(ControlType.TreeItem))
+                                                                            .Or(cf.ByControlType(ControlType.MenuItem))
+                                                                        );
                         AutomationElement itemToSelect = null;
-                        foreach (var item in listItems)
+
+                        // Try to parse as index
+                        if (int.TryParse(optionToSelect, out int optionIndex))
                         {
-                            if (item.Name.Equals(optionToSelect, StringComparison.OrdinalIgnoreCase))
+                            if (optionIndex >= 0 && optionIndex < listItems.Length)
                             {
-                                itemToSelect = item;
-                                break;
+                                itemToSelect = listItems[optionIndex];
+                            }
+                            else
+                            {
+                                statusMessage = $"Index {optionIndex} is out of range for the drop-down options.";
+                            }
+                        }
+                        else
+                        {
+                            // Select by name (case-insensitive)
+                            foreach (var item in listItems)
+                            {
+                                if (item.Name.Equals(optionToSelect, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    itemToSelect = item;
+                                    break;
+                                }
+                            }
+                            if (itemToSelect == null)
+                            {
+                                statusMessage = $"Could not find an option named '{optionToSelect}' in the drop-down list.";
                             }
                         }
 
