@@ -3,82 +3,123 @@ using Microsoft.Office.Interop.Word;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Xml.Linq;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
-
     [DisplayName("Attach to Running Word")]
-    [Description("Attaches to a Word document that's already open.")]
+    [Description("Attaches to a Word document that's already open, or opens it if needed.")]
     public class AttachToRunningWordActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("Document Name")]
-        [Description("The name or full path of the Word document to attach to.")]
-        public InArgument<string> DocumentName { get; set; }
+        [DisplayName("Document Path")]
+        [Description("The full path or file name of the Word document to attach to.")]
+        public InArgument<string> DocumentPath { get; set; }
 
         [DisplayName("Word Instance")]
-        [Description("The specific Word instance for use with later Word actions.")]
+        [Description("The Word instance for later Word activities.")]
         public OutArgument<Word.Application> WordInstance { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            Word.Application wordApp = null;
+            string documentPath = DocumentPath.Get(context);
+            Application wordApp = null;
             _Document targetDocument = null;
 
             try
             {
-                // Retrieve input values
-                var documentName = DocumentName.Get(context);
+                if (string.IsNullOrWhiteSpace(documentPath))
+                {
+                    IsSuccess.Set(context, false);
+                    StatusMessage.Set(context, "Document Path cannot be null or empty.");
+                    WordInstance.Set(context, null);
+                    return;
+                }
 
-                if (string.IsNullOrWhiteSpace(documentName))
-                    throw new ArgumentException("Document Name cannot be null or empty.");
+                // normalize to full path
+                string fullPath = documentPath;
+                if (!Path.IsPathFullyQualified(documentPath) && File.Exists(documentPath))
+                {
+                    fullPath = Path.GetFullPath(documentPath);
+                }
 
-                // Try to get the running instance of Word
+                // get running Word
                 try
                 {
-                    wordApp = (Word.Application)Marshal.GetActiveObject("Word.Application");
+                    wordApp = (Application)Marshal.GetActiveObject("Word.Application");
                 }
-                catch (Exception ex)
+                catch
                 {
-                    throw new Exception("Could not find a running instance of Word.", ex);
+                    // no running Word found, will create one
                 }
 
-                // Ensure Word has at least one document open
-                if (wordApp.Documents.Count == 0)
-                    throw new InvalidOperationException("No documents are open in Word.");
+                bool isNewInstance = false;
+                if (wordApp == null)
+                {
+                    wordApp = new Application();
+                    isNewInstance = true;
+                }
 
-                // Find the specified document by name or full path
-                targetDocument = wordApp.Documents.Cast<_Document>()
-                    .FirstOrDefault(doc => doc.Name.Equals(documentName, StringComparison.OrdinalIgnoreCase) ||
-                                           doc.FullName.Equals(documentName, StringComparison.OrdinalIgnoreCase));
+                // check if document is already open
+                targetDocument = wordApp.Documents
+                    .Cast<_Document>()
+                    .FirstOrDefault(doc =>
+                        doc.FullName.Equals(fullPath, StringComparison.OrdinalIgnoreCase));
 
-                // If the document is not found, throw an exception
                 if (targetDocument == null)
-                    throw new ArgumentException($"Document '{documentName}' not found in the running Word instance.");
+                {
+                    if (File.Exists(fullPath))
+                    {
+                        targetDocument = wordApp.Documents.Open(fullPath);
+                    }
+                    else
+                    {
+                        IsSuccess.Set(context, false);
+                        StatusMessage.Set(context, $"Document does not exist at path: {fullPath}");
+                        WordInstance.Set(context, null);
 
-                // Set the active document
+                        if (isNewInstance)
+                        {
+                            wordApp.Quit();
+                        }
+                        return;
+                    }
+                }
+
                 targetDocument.Activate();
 
-                // Set the output WordInstance
                 WordInstance.Set(context, wordApp);
-
-                StatusMessage.Set(context, $"Attached to Word document: {documentName}");
                 IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"Successfully attached to document: {fullPath}");
             }
             catch (Exception ex)
             {
-                StatusMessage.Set(context, $"Error attaching to running Word: {ex.Message}");
+                Console.WriteLine($"Error attaching to Word document: {ex.Message}");
+
+                if (wordApp != null && !IsWordVisible(wordApp))
+                {
+                    wordApp.Quit();
+                }
+
+                WordInstance.Set(context, null);
                 IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error attaching to Word document: {ex.Message}");
             }
-            finally
+        }
+
+        private static bool IsWordVisible(Application wordApp)
+        {
+            try
             {
-                // Release COM objects to avoid memory leaks
-                if (targetDocument != null) Marshal.ReleaseComObject(targetDocument);
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
+                return wordApp.Visible;
+            }
+            catch
+            {
+                return false;
             }
         }
     }
