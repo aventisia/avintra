@@ -32,11 +32,21 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
                     throw new ArgumentException("JavaScript code cannot be null or empty.");
                 }
 
-                // Set up process to run cscript.exe with inline JavaScript
+                // Ensure we're only running valid JScript code, not JSON wrappers
+                if (scriptCode.TrimStart().StartsWith("{") && scriptCode.Contains("JavaScript Code"))
+                {
+                    throw new FormatException("Input appears to be wrapped in JSON. Please provide raw JavaScript code only.");
+                }
+
+                // Create a temporary JS file to avoid cscript limitations with inline execution
+                string tempJsFile = System.IO.Path.Combine(System.IO.Path.GetTempPath(), Guid.NewGuid() + ".js");
+                System.IO.File.WriteAllText(tempJsFile, scriptCode);
+
+                // Set up process to run cscript.exe with the temp file
                 using (Process process = new Process())
                 {
                     process.StartInfo.FileName = "cscript.exe";
-                    process.StartInfo.Arguments = $"/nologo /E:jscript - \"{scriptCode.Replace("\"", "\"\"")}\"";
+                    process.StartInfo.Arguments = $"/nologo \"{tempJsFile}\"";
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.RedirectStandardOutput = true;
                     process.StartInfo.RedirectStandardError = true;
@@ -61,6 +71,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
                     // Trim and clean the output
                     output = output.Trim();
                 }
+
+                // Clean up the temp file
+                if (System.IO.File.Exists(tempJsFile)) System.IO.File.Delete(tempJsFile);
 
                 // Set output and success status
                 ScriptOutput.Set(context, output);

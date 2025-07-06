@@ -32,15 +32,19 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
                     throw new ArgumentException("VBScript code cannot be null or empty.");
                 }
 
+                // Escape double quotes in the script code
+                scriptCode = scriptCode.Replace("\"", "\"\"");
+
                 // Set up process to run cscript.exe with inline VBScript
                 using (Process process = new Process())
                 {
                     process.StartInfo.FileName = "cscript.exe";
-                    process.StartInfo.Arguments = $"/nologo /E:vbscript - \"{scriptCode.Replace("\"", "\"\"")}\"";
+                    process.StartInfo.Arguments = $"/nologo /E:vbscript \"//\" \"{scriptCode}\"";
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.RedirectStandardOutput = true;
                     process.StartInfo.RedirectStandardError = true;
                     process.StartInfo.CreateNoWindow = true;
+                    process.StartInfo.WorkingDirectory = Environment.SystemDirectory; // Set a valid working directory
 
                     // Start the process
                     process.Start();
@@ -68,7 +72,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
                 IsSuccess.Set(context, true);
             }
             catch (Exception ex)
-            {               
+            {
                 StatusMessage.Set(context, $"Error executing VBScript: {ex.Message}");
                 IsSuccess.Set(context, false);
             }

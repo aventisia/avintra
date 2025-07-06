@@ -35,24 +35,17 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
                     throw new ArgumentException(".NET Script code cannot be null or empty.");
                 }
 
-                // Create a StringWriter to capture script output
-                using (var writer = new StringWriter())
-                {
-                    // Configure script options
-                    var options = ScriptOptions.Default
-                        .AddReferences(typeof(object).Assembly, typeof(Console).Assembly)
-                        .AddImports("System");
+                // Configure script options
+                var options = ScriptOptions.Default
+                    .AddReferences(typeof(object).Assembly, typeof(Console).Assembly)
+                    .AddImports("System")
+                    .WithGlobalObjects(new { Console });
 
-                    // Create the script with the text writer
-                    var script = CSharpScript.Create(scriptCode, options);
+                // Create and run the script
+                var result = CSharpScript.RunAsync(scriptCode, options).Result;
 
-                    // Run the script with the custom output writer
-                    var runner = script.CreateDelegate();
-                    var result = Task.Run(() => runner(writer)).Result;
-
-                    // Get the captured output
-                    output = writer.ToString().Trim();
-                }
+                // Capture the output from Console.WriteLine
+                output = result.ToString();
 
                 // Set the output and success status
                 ScriptOutput.Set(context, output);
