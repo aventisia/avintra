@@ -474,7 +474,7 @@
             "type": "activityNode",
             "name": "WriteTextToJSONFileActivity",
             "label": "Write Text to JSON File",
-            "description": "Writes the provided JSON string to the specified file path.",
+            "description": "Writes the provided content as JSON to the specified file path.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"

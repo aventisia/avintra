@@ -4,7 +4,7 @@
     "type": "text",
     "name": "JsonContent",
     "label": "JSON Content",
-    "description": "The JSON string to write to the file.",
+    "description": "The content to write as JSON. Can be a string, object, array, JObject, JArray, List, Dictionary, etc.",
     "defaultValue": "",
     "required": true
   },
@@ -16,17 +16,5 @@
     "description": "The full path to the file where the JSON content will be written.",
     "defaultValue": "",
     "required": true
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "WrittenContent",
-    "label": "Written Content",
-    "description": "The JSON content that was successfully written to the file.",
-    "defaultValue": {
-      "value": "WrittenContent",
-      "enabled": true
-    },
-    "required": false
   }
 ]
