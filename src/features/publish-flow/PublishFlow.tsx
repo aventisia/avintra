@@ -32,12 +32,14 @@ const PublishFlow = () => {
   const handlePublish = () => {
     if (flowsData?.data) {
       mutatePublish({
-        id: flowsData?.data.id,
+        flowId: flowsData?.data.id,
         isPublished: true,
         reactFlowObject: JSON.stringify(
           deepParse(flowsData?.data.reactFlowObject),
         ),
-        versionId: flowsData?.data.versionId || "",
+        id: flowsData?.data.versionId || "",
+        accessType: "TenantLevel",
+        type: "Agent",
       });
     }
   };

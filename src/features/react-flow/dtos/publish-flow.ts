@@ -1,12 +1,16 @@
 /** To update flow's isPublished */
 export interface PublishFlowDto {
   /** Flow record's primary key (Guid) */
-  id: string;
+  flowId: string;
 
   /** Flow's nodes, edges, and viewport JSON data in string format */
   reactFlowObject: string;
 
-  versionId: string;
+  id: string;
 
   isPublished: boolean;
+
+  accessType: string;
+
+  type: string;
 }
