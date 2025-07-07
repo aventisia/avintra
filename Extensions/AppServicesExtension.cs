@@ -30,6 +30,7 @@ public static class AppServicesExtension
         config.Apply(new AIPersonaMappingProfile());
         config.Apply(new ModelAPIKeyMappingProfile());
         config.Apply(new AIModelMappingProfile());
+        config.Apply(new InferencingModelMappingProfile());
 
         services.AddSingleton(config);
     }
