@@ -418,143 +418,177 @@ namespace UIInspector.ViewModels
 
         private void TestPattern(SupportedActionType supportedAction, AutomationElement targetElement, string value = null)
         {
-            // NOTE: We'll not check whether patterns are supported here, as this is already done.
-
-            // Validate the target element
-            if (targetElement == null)
+            try
             {
-                MessageBox.Show("No element selected to perform action on.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+
+
+                // NOTE: We'll not check whether patterns are supported here, as this is already done.
+
+                // Validate the target element
+                if (targetElement == null)
+                {
+                    MessageBox.Show("No element selected to perform action on.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (!targetElement.Properties.IsEnabled.ValueOrDefault && !targetElement.Properties.IsKeyboardFocusable.ValueOrDefault)
+                {
+                    MessageBox.Show("Element is not enabled or focusable, cannot perform action.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // Take action based on the supported action type
+                switch (supportedAction)
+                {
+                    case SupportedActionType.Invoke:
+                        targetElement.Patterns.Invoke.PatternOrDefault?.Invoke();
+                        break;
+                    case SupportedActionType.Select:
+                        var selectionItemPattern = targetElement.Patterns.SelectionItem.PatternOrDefault;
+                        if (selectionItemPattern != null)
+                        {
+                            selectionItemPattern.Select();
+                            // Try to invoke the element after selection
+                            var invokePattern = targetElement.Patterns.Invoke.PatternOrDefault;
+                            if (invokePattern != null)
+                                invokePattern.Invoke();
+                            else
+                            {
+                                // Mouse click if invoke pattern is not available
+                                targetElement.Focus();
+                                Thread.Sleep(500);
+                                // FlaUI: Click() will move the mouse and click the element's clickable point
+                                targetElement.Click();
+                            }
+                        }
+                        break;
+                    case SupportedActionType.SetValue:
+                        targetElement.Patterns.Value.PatternOrDefault?.SetValue(value ?? "");
+                        break;
+                    case SupportedActionType.GetValue:
+                        MessageBox.Show($"Current value: {targetElement.Patterns.Value.PatternOrDefault?.Value}", "Value", MessageBoxButton.OK, MessageBoxImage.Information);
+                        break;
+                    case SupportedActionType.Toggle:
+                        targetElement.Patterns.Toggle.PatternOrDefault?.Toggle();
+                        break;
+                    case SupportedActionType.ExpandOrCollapse:
+                        // Get current state
+                        var currentState = targetElement.Patterns.ExpandCollapse.PatternOrDefault?.ExpandCollapseState;
+
+                        // If already expanded, collapse
+                        if (currentState == FlaUI.Core.Definitions.ExpandCollapseState.Expanded)
+                            targetElement.Patterns.ExpandCollapse.PatternOrDefault?.Collapse();
+                        else
+                            targetElement.Patterns.ExpandCollapse.PatternOrDefault?.Expand();
+                        break;
+                    case SupportedActionType.ItemContainer:
+                        SelectItemInList(targetElement, value ?? "0");
+                        break;
+                    default:
+                        MessageBox.Show($"Unsupported action type: {supportedAction.ToString()}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        break;
+                }
             }
-
-            if (!targetElement.Properties.IsEnabled.ValueOrDefault && !targetElement.Properties.IsKeyboardFocusable.ValueOrDefault)
+            catch (Exception ex)
             {
-                MessageBox.Show("Element is not enabled or focusable, cannot perform action.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error while testing pattern: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
-            }
-
-            // Take action based on the supported action type
-            switch (supportedAction)
-            {
-                case SupportedActionType.Invoke:
-                    targetElement.Patterns.Invoke.PatternOrDefault?.Invoke();
-                    break;
-                case SupportedActionType.Select:
-                    targetElement.Patterns.SelectionItem.PatternOrDefault?.Select();
-                    break;
-                case SupportedActionType.SetValue:
-                    targetElement.Patterns.Value.PatternOrDefault?.SetValue(value ?? "");
-                    break;
-                case SupportedActionType.GetValue:
-                    MessageBox.Show($"Current value: {targetElement.Patterns.Value.PatternOrDefault?.Value}", "Value", MessageBoxButton.OK, MessageBoxImage.Information);
-                    break;
-                case SupportedActionType.Toggle:
-                    targetElement.Patterns.Toggle.PatternOrDefault?.Toggle();
-                    break;
-                case SupportedActionType.ExpandOrCollapse:
-                    // Get current state
-                    var currentState = targetElement.Patterns.ExpandCollapse.PatternOrDefault?.ExpandCollapseState;
-
-                    // If already expanded, collapse
-                    if (currentState == FlaUI.Core.Definitions.ExpandCollapseState.Expanded)
-                        targetElement.Patterns.ExpandCollapse.PatternOrDefault?.Collapse();
-                    else
-                        targetElement.Patterns.ExpandCollapse.PatternOrDefault?.Expand();
-                    break;
-                case SupportedActionType.ItemContainer:
-                    SelectItemInList(targetElement, value ?? "0");
-                    break;
-                default:
-                    MessageBox.Show($"Unsupported action type: {supportedAction.ToString()}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    break;
             }
         }
 
         private void SelectItemInList(AutomationElement listElement, string itemNameOrIndex)
         {
-            string statusMessage = "";
-            for (int i = 1; i <= 5; i++)
+            try
             {
-                try
+                string statusMessage = "";
+                for (int i = 1; i <= 5; i++)
                 {
-                    // Try to expand the element if it supports ExpandCollapsePattern
-                    var expandCollapsePattern = listElement.Patterns.ExpandCollapse.PatternOrDefault;
-                    if (expandCollapsePattern != null && expandCollapsePattern.ExpandCollapseState.Value != ExpandCollapseState.Expanded)
+                    try
                     {
-                        expandCollapsePattern.Expand();
-                        Thread.Sleep(200);
-                        continue;
-                    }
-
-                    // Find all list items (options)
-                    var listItems = listElement.FindAllDescendants(cf =>
-                                                                        cf.ByControlType(ControlType.ListItem)
-                                                                        .Or(cf.ByControlType(ControlType.DataItem))
-                                                                        .Or(cf.ByControlType(ControlType.TreeItem))
-                                                                        .Or(cf.ByControlType(ControlType.MenuItem))
-                                                                    );
-                    AutomationElement itemToSelect = null;
-
-                    // Try to parse as index
-                    if (int.TryParse(itemNameOrIndex, out int optionIndex))
-                    {
-                        if (optionIndex >= 0 && optionIndex < listItems.Length)
+                        // Try to expand the element if it supports ExpandCollapsePattern
+                        var expandCollapsePattern = listElement.Patterns.ExpandCollapse.PatternOrDefault;
+                        if (expandCollapsePattern != null && expandCollapsePattern.ExpandCollapseState.Value != ExpandCollapseState.Expanded)
                         {
-                            itemToSelect = listItems[optionIndex];
+                            expandCollapsePattern.Expand();
+                            Thread.Sleep(200);
+                            continue;
                         }
-                        else
+
+                        // Find all list items (options)
+                        var listItems = listElement.FindAllDescendants(cf =>
+                                                                            cf.ByControlType(ControlType.ListItem)
+                                                                            .Or(cf.ByControlType(ControlType.DataItem))
+                                                                            .Or(cf.ByControlType(ControlType.TreeItem))
+                                                                            .Or(cf.ByControlType(ControlType.MenuItem))
+                                                                        );
+                        AutomationElement itemToSelect = null;
+
+                        // Try to parse as index
+                        if (int.TryParse(itemNameOrIndex, out int optionIndex))
                         {
-                            statusMessage = $"Index {optionIndex} is out of range for the drop-down options.";
-                        }
-                    }
-                    else
-                    {
-                        // Select by name (case-insensitive)
-                        foreach (var item in listItems)
-                        {
-                            if (item.Name.Equals(itemNameOrIndex, StringComparison.OrdinalIgnoreCase))
+                            if (optionIndex >= 0 && optionIndex < listItems.Length)
                             {
-                                itemToSelect = item;
-                                break;
+                                itemToSelect = listItems[optionIndex];
+                            }
+                            else
+                            {
+                                statusMessage = $"Index {optionIndex} is out of range for the drop-down options.";
                             }
                         }
-                        if (itemToSelect == null)
+                        else
                         {
-                            statusMessage = $"Could not find an item named '{itemNameOrIndex}' in the list.";
+                            // Select by name (case-insensitive)
+                            foreach (var item in listItems)
+                            {
+                                if (item.Name.Equals(itemNameOrIndex, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    itemToSelect = item;
+                                    break;
+                                }
+                            }
+                            if (itemToSelect == null)
+                            {
+                                statusMessage = $"Could not find an item named '{itemNameOrIndex}' in the list.";
+                            }
                         }
-                    }
 
-                    if (itemToSelect != null)
-                    {
-                        var selectionItemPattern = itemToSelect.Patterns.SelectionItem.PatternOrDefault;
-                        if (selectionItemPattern != null)
+                        if (itemToSelect != null)
                         {
-                            selectionItemPattern.Select();
-                            MessageBox.Show($"Selected item: {itemToSelect.Name}", "Item Selected", MessageBoxButton.OK, MessageBoxImage.Information);
-                            return;
+                            var selectionItemPattern = itemToSelect.Patterns.SelectionItem.PatternOrDefault;
+                            if (selectionItemPattern != null)
+                            {
+                                selectionItemPattern.Select();
+                                MessageBox.Show($"Selected item: {itemToSelect.Name}", "Item Selected", MessageBoxButton.OK, MessageBoxImage.Information);
+                                return;
+                            }
+                            else
+                            {
+                                statusMessage = "The selected item does not support selection.";
+                            }
                         }
                         else
                         {
-                            statusMessage = "The selected item does not support selection.";
+                            statusMessage = string.IsNullOrEmpty(statusMessage) ? "No item selected." : statusMessage;
+                        }
+
+                        // Optionally collapse the drop-down after selection
+                        if (expandCollapsePattern != null && expandCollapsePattern.ExpandCollapseState.Value == ExpandCollapseState.Expanded)
+                        {
+                            expandCollapsePattern.Collapse();
                         }
                     }
-                    else
+                    catch
                     {
-                        statusMessage = string.IsNullOrEmpty(statusMessage) ? "No item selected." : statusMessage;
+                        Thread.Sleep(400);
                     }
 
-                    // Optionally collapse the drop-down after selection
-                    if (expandCollapsePattern != null && expandCollapsePattern.ExpandCollapseState.Value == ExpandCollapseState.Expanded)
-                    {
-                        expandCollapsePattern.Collapse();
-                    }
+                    MessageBox.Show(statusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                catch
-                {
-                    Thread.Sleep(400);
-                }
-
-                MessageBox.Show(statusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error while selecting item in list: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
         }
     }
