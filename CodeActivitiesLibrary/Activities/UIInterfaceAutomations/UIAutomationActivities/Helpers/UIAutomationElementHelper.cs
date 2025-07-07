@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers
 {
@@ -12,6 +13,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.He
     {
         public string Index { get; set; }
         public string Name { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public NameMatchModeEnum NameMatchMode { get; set; } = NameMatchModeEnum.Equals;
         public string ClassName { get; set; }
         public string ControlType { get; set; }
