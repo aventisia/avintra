@@ -1083,18 +1083,9 @@
           },
           {
             "type": "activityNode",
-            "name": "SelectTabActivity",
-            "label": "Select Tab",
-            "description": "Selects a tab from a group of tabs in a window.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "SelectUIElementActivity",
             "label": "Select UI Element",
-            "description": "Selects the provided UI element, such as a list item or combo box option, using UI Automation.",
+            "description": "Selects the provided UI element, such as a list item, tab item or combo box option, using UI Automation.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
