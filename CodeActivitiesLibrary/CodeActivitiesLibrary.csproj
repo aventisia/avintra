@@ -191,6 +191,8 @@
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\SetTextOnTerminalSessionActivity.cs" />
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\WaitForTextOnTerminalSessionActivity.cs" />
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\_TerminalEmulationCategoryMetaData.cs" />
+    <Compile Include="Activities\AppIntegrations\UltraTaxCSActivities\InspectUltraTaxFormActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\UltraTaxCSActivities\_UltraTaxCSCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\WindowsServiceActivities\Enums\ServiceNameEnum.cs" />
     <Compile Include="Activities\AppIntegrations\WindowsServiceActivities\Helpers\WindowServiceHelper.cs" />
     <Compile Include="Activities\AppIntegrations\WindowsServiceActivities\IfServiceActivity.cs" />
