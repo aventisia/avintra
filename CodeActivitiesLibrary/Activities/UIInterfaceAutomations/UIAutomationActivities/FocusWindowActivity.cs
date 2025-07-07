@@ -3,6 +3,7 @@ using FlaUI.Core.AutomationElements;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
@@ -10,6 +11,12 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
     [Description("Brings the selected window to the front and makes it active.")]
     public class FocusWindowActivity : BaseCodeActivity
     {
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
         [RequiredArgument]
         [DisplayName("Window")]
         [Description("Select the window you want to focus.")]
@@ -48,22 +55,11 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
                     window.Focus();
 
                     // Check if the window is now focused
-                    bool isFocused = false;
-                    try
-                    {
-                        var automation = window.Automation;
-                        var focusedElement = automation.FocusedElement();
-                        // Compare by native window handle or automation element equality
-                        isFocused = focusedElement != null &&
-                                    focusedElement.Properties.NativeWindowHandle.ValueOrDefault == window.Properties.NativeWindowHandle.ValueOrDefault;
-                    }
-                    catch
-                    {
-                        // fallback: cannot determine focus, assume false
-                        isFocused = false;
-                    }
-                    IsWindowFocused.Set(context, isFocused);
+                    IntPtr foregroundHandle = GetForegroundWindow();
+                    int windowHandle = window.Properties.NativeWindowHandle.ValueOrDefault.ToInt32();
+                    bool isFocused = foregroundHandle != IntPtr.Zero && foregroundHandle.ToInt32() == windowHandle;
 
+                    IsWindowFocused.Set(context, isFocused);
                     statusMessage = isFocused
                         ? "Window focused successfully."
                         : "Tried to focus the window, but it is not the active window.";
