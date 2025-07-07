@@ -2190,6 +2190,24 @@
         ]
       },
       {
+        "label": "UltraTax CS (Thomson Reuters)",
+        "description": "Activities for integrating with UltraTax CS by Thomson Reuters.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "InspectUltraTaxFormActivity",
+            "label": "Inspect UltraTax Form",
+            "description": "Get inspection details of a UI element in an UltraTax CS form, such as name, position etc.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
         "label": "Terminal Emulation",
         "description": "Automate terminal and mainframe interactions.",
         "icon": null,
