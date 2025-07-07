@@ -278,7 +278,7 @@ namespace UIInspector.ViewModels
                 {
                     PathHeading = pathHeading,
                     Index = i == 0 ? null : identificationPathVm[i].Index.ToString(),
-                    IsIndexSelected = i == 0 ? false : true, // index is not selected for the root element
+                    IsIndexSelected = i == 0 ? false : elementName == null, // index is not selected for the root element and if the name is not set
                     Name = elementName,
                     OriginalName = elementName,
                     NameMatchMode = NameMatchModeEnum.Equals, // Default to Equals, can be changed later

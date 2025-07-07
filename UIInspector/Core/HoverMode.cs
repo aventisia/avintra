@@ -38,39 +38,46 @@ namespace UIInspector.Core
 
         private void DispatcherTimerTick(object sender, EventArgs e)
         {
-            if (System.Windows.Input.Keyboard.Modifiers.HasFlag(System.Windows.Input.ModifierKeys.Control))
+            try
             {
-                var screenPos = Mouse.Position;
-                try
+                if (System.Windows.Input.Keyboard.Modifiers.HasFlag(System.Windows.Input.ModifierKeys.Control))
                 {
-                    var hoveredElement = _automation.FromPoint(screenPos);
-                    // Skip items in the current process
-                    // Like Inspect itself or the overlay window
-                    if (hoveredElement.Properties.ProcessId == Process.GetCurrentProcess().Id)
+                    var screenPos = Mouse.Position;
+                    try
                     {
-                        return;
+                        var hoveredElement = _automation.FromPoint(screenPos);
+                        // Skip items in the current process
+                        // Like Inspect itself or the overlay window
+                        if (hoveredElement.Properties.ProcessId == Process.GetCurrentProcess().Id)
+                        {
+                            return;
+                        }
+                        if (!Equals(_currentHoveredElement, hoveredElement))
+                        {
+                            _currentHoveredElement = hoveredElement;
+                            ElementHovered?.Invoke(hoveredElement);
+                        }
+                        else
+                        {
+                            ElementHighlighter.HighlightElement(hoveredElement);
+                        }
                     }
-                    if (!Equals(_currentHoveredElement, hoveredElement))
+                    catch (UnauthorizedAccessException)
                     {
-                        _currentHoveredElement = hoveredElement;
-                        ElementHovered?.Invoke(hoveredElement);
+                        string caption = "UIInspector - Unauthorized access exception";
+                        string message = "You are accessing a protected UI element in hover mode.\nTry to start UIInspector as administrator.";
+                        MessageBox.Show(message, caption, MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
-                    else
+                    catch (System.IO.FileNotFoundException ex)
                     {
-                        ElementHighlighter.HighlightElement(hoveredElement);
+                        Console.WriteLine($"Exception: {ex.Message}");
                     }
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    string caption = "UIInspector - Unauthorized access exception";
-                    string message = "You are accessing a protected UI element in hover mode.\nTry to start UIInspector as administrator.";
-                    MessageBox.Show(message, caption, MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                catch (System.IO.FileNotFoundException ex)
-                {
-                    Console.WriteLine($"Exception: {ex.Message}");
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception in HoverMode: {ex.Message}");
+            }  
         }
     }
 }
