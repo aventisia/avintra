@@ -54,6 +54,7 @@ public static class AppServicesExtension
         services.AddScoped<IAIPersonaService, AIPersonaService>();
         services.AddScoped<IModelAPIKeyService, ModelAPIKeyService>();
         services.AddScoped<IAIModelService, AIModelService>();
+        services.AddScoped<IInferencingModelService, InferencingModelService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
