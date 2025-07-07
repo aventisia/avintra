@@ -19,41 +19,12 @@
   },
   {
     "direction": "Input",
-    "type": "select",
-    "name": "InspectionType",
-    "label": "Fields Inspection Type",
-    "description": "Choose how to determine the number of fields to inspect: \u0027Automatic\u0027 lets the system decide, \u0027Manual\u0027 allows you to specify.",
-    "defaultValue": "Auto",
-    "required": true,
-    "selectOptions": [
-      {
-        "label": "Automatic",
-        "value": "Auto",
-        "description": "Automatically determine number of fields to inspect."
-      },
-      {
-        "label": "Manual",
-        "value": "Manual",
-        "description": "Manually specify number of fields to inspect."
-      }
-    ]
-  },
-  {
-    "direction": "Input",
     "type": "text",
     "name": "NoOfFieldsToInspect",
     "label": "Number of Fields to Inspect",
     "description": "Specify the number of fields to inspect",
-    "defaultValue": "3",
-    "required": false,
-    "renderIf": {
-      "conditions": [
-        {
-          "field": "InspectionType",
-          "equals": "Manual"
-        }
-      ]
-    }
+    "defaultValue": "",
+    "required": true
   },
   {
     "direction": "Output",
