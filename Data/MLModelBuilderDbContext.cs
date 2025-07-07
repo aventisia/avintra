@@ -29,6 +29,7 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<ScheduledModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FineTuningLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ModelAPIKey>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<ModelTask>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         modelBuilder.Entity<MLModel>().HasIndex(index => new { index.Name, index.CreatedByUserId }).IsUnique();
@@ -59,6 +60,7 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<MLModel>().HasMany(many => many.ExtractedData).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
         modelBuilder.Entity<MLModel>().HasMany(many => many.UploadedDocs).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
         modelBuilder.Entity<MLModel>().HasMany(many => many.ScheduledModels).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
+        modelBuilder.Entity<MLModel>().HasMany(many => many.Tasks).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
 
         // Configure One-to-One relationship between Uploaded doc and extracted data
         modelBuilder.Entity<UploadedDoc>().HasOne(one => one.ExtractedData).WithOne(one => one.UploadedDoc).HasForeignKey<ExtractedData>(fKey => fKey.DocId).OnDelete(DeleteBehavior.Restrict);
@@ -113,4 +115,5 @@ public class MLModelBuilderDbContext : DbContext
     public DbSet<ScheduledModel> ScheduledModels { get; set; }
     public DbSet<FineTuningLog> FineTuningLogs { get; set; }
     public DbSet<ModelAPIKey> ModelAPIKeys { get; set; }
+    public DbSet<ModelTask> ModelTasks { get; set; }
 }

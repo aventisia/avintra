@@ -83,4 +83,9 @@ public class MLModel : BaseEntity, IMustHaveTenant
     /// Gets or sets the API keys associated with this ML model.
     /// </summary>
     public virtual ICollection<ModelAPIKey>? ModelAPIKeys { get; set; }
+
+    /// <summary>
+    /// Gets or sets the model tasks associated with this ML model.
+    /// </summary>
+    public virtual ICollection<ModelTask>? Tasks { get; set; }
 }
