@@ -7,6 +7,8 @@ import { getFlowToLoad } from "../react-flow/apis/react-flow-apis";
 import { Loader2 } from "lucide-react";
 import { deepParse } from "../react-flow/utils/deepParse";
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import { AccessTypeEnum } from "../flow-block/constants/access-type-enum";
+import { PublishTypeEnum } from "../flow-block/constants/publish-type-enum";
 
 const PublishFlow = () => {
   const location = useLocation();
@@ -38,8 +40,8 @@ const PublishFlow = () => {
           deepParse(flowsData?.data.reactFlowObject),
         ),
         id: flowsData?.data.versionId || "",
-        accessType: "TenantLevel",
-        type: "Agent",
+        accessType: AccessTypeEnum.TenantLevel,
+        type: PublishTypeEnum.Agent,
       });
     }
   };
