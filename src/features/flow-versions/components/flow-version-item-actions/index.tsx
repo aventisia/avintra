@@ -4,6 +4,7 @@ import { FVIViewAction } from "./FVIViewAction";
 import { FVIActionsTrigger } from "./FVIActionsTrigger";
 import { FVIDraftAction } from "./FVIDraftAction";
 import { FVIDeleteAction } from "./FVIDeleteAction";
+import { useSearchParams } from "react-router-dom";
 
 interface FlowVersionItemActionsProps {
   flowId: string;
@@ -21,6 +22,10 @@ export const FlowVersionItemActions = ({
   versionId,
   versionNumber,
 }: FlowVersionItemActionsProps) => {
+  const [searchParams] = useSearchParams();
+
+  const currVersionId = searchParams.get("v") || undefined;
+
   return (
     <DropdownMenu>
       <FVIActionsTrigger />
@@ -30,8 +35,12 @@ export const FlowVersionItemActions = ({
           versionId={versionId}
           versionNumber={versionNumber}
         />
-        {isPublished && <FVIDraftAction flowId={flowId} />}
-        {!isPublished && <FVIDeleteAction versionId={versionId} />}
+        {isPublished && (
+          <FVIDraftAction flowId={flowId} versionId={versionId} />
+        )}
+        {currVersionId == versionId
+          ? null
+          : !isPublished && <FVIDeleteAction versionId={versionId} />}
       </DropdownMenuContent>
     </DropdownMenu>
   );

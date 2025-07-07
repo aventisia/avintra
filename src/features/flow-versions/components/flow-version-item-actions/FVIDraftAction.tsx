@@ -6,13 +6,17 @@ import { useInsertFlowVersionMutation } from "../../hooks/useInsertFlowVersion";
 
 interface FVIDraftActionProps {
   flowId: string;
+  versionId: string;
 }
 
 /**
  * Renders a dropdown menu item for opening a flow.
  */
-export const FVIDraftAction = ({ flowId }: FVIDraftActionProps) => {
-  const { mutate: insertVersion } = useInsertFlowVersionMutation();
+export const FVIDraftAction = ({ flowId, versionId }: FVIDraftActionProps) => {
+  const { mutate: insertVersion } = useInsertFlowVersionMutation({
+    flowId,
+    versionId,
+  });
 
   // Return the component
   return (
