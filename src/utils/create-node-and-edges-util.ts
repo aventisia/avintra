@@ -9,6 +9,7 @@ import { createForLoopNode } from "./create-nodes/create-for-loop-node";
 import { createIfElseNode } from "./create-nodes/create-if-else-node";
 import { createConditionalNode } from "./create-nodes/create-conditional-node";
 import { createAINode } from "./create-nodes/create-ai-node";
+import { createBlockNode } from "./create-nodes/create-block-node";
 
 /**
  * Creates nodes and edges based on the provided node data and source node ID.
@@ -51,7 +52,7 @@ const createNodesAndEdgesUtil = (
       nodesAndEdgesObj = createAINode(newNodeData, sourceNode);
       break;
     case "blockNode":
-      nodesAndEdgesObj = createAINode(newNodeData, sourceNode);
+      nodesAndEdgesObj = createBlockNode(newNodeData, sourceNode);
       break;
     default:
       return nodesAndEdgesObj;
