@@ -19,6 +19,7 @@ public class UnitOfWork : IUnitOfWork
     public IScheduledModelRepo ScheduledModelRepo => new ScheduledModelRepo(_mlModelBuilderDbContext);
     public IFineTuningLogRepo FineTuningLogRepo => new FineTuningLogRepo(_mlModelBuilderDbContext);
     public IModelAPIKeyRepo ModelAPIKeyRepo => new ModelAPIKeyRepo(_mlModelBuilderDbContext);
+    public IModelTaskRepo ModelTaskRepo => new ModelTaskRepo(_mlModelBuilderDbContext);
 
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
