@@ -3,6 +3,7 @@ using Newtonsoft.Json.Serialization;
 using NodeExecutor.Models;
 using NodeExecutor.Services;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -239,27 +240,37 @@ namespace NodeExecutor
             }
 
             // Set the node name
-            lbl_NodeName.Text = nodeData.NodeName.Length > 0 ? nodeData.NodeName : "Node name not found";
-
-            // Execute single node
-            var (isSuccess, nodeExecutionLog) = ActivityExecutorService.ExecuteNode(nodeData, _executionContext, startTime);
-
-            // Send the execution log back to the server
-            await _webSocket.SendCommandAsync("save-execution-log", JsonConvert.SerializeObject(nodeExecutionLog, new JsonSerializerSettings
+            Dispatcher.Invoke(() =>
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            }));
+                lbl_NodeName.Text = nodeData.NodeName.Length > 0 ? nodeData.NodeName : "Node name not found";
+            });
 
-            // Check if the node execution was successful
-            if (!isSuccess)
+            // Run node execution in a background task
+            await Task.Run(async () =>
             {
-                await _webSocket.SendCommandAsync("error");
-                DoAbort();
-                return;
-            }
+                // Execute single node
+                var (isSuccess, nodeExecutionLog) = ActivityExecutorService.ExecuteNode(nodeData, _executionContext, startTime);
 
-            // Send next node command to the server
-            await _webSocket.SendCommandAsync("next-node", nodeData.NextNodeId);
+                // Send the execution log back to the server (must be awaited on UI thread)
+                await Dispatcher.InvokeAsync(async () =>
+                {
+                    await _webSocket.SendCommandAsync("save-execution-log", JsonConvert.SerializeObject(nodeExecutionLog, new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    }));
+
+                    // Check if the node execution was successful
+                    if (!isSuccess)
+                    {
+                        await _webSocket.SendCommandAsync("error");
+                        DoAbort();
+                        return;
+                    }
+
+                    // Send next node command to the server
+                    await _webSocket.SendCommandAsync("next-node", nodeData.NextNodeId);
+                });
+            });
         }
     }
 }
