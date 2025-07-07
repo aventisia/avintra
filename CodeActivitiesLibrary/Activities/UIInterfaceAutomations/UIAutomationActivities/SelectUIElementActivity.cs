@@ -3,6 +3,7 @@ using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helper
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Threading;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
@@ -53,6 +54,22 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
                     else
                     {
                         statusMessage = "The provided UI element does not support selection.";
+                    }
+
+                    // If selected, invoke the element if applicable
+                    if (elementSelected)
+                    {
+                        var invokePattern = elementInstance.Patterns.Invoke.PatternOrDefault;
+                        if (invokePattern != null)
+                            invokePattern.Invoke();
+                        else
+                        {
+                            // Mouse click if invoke pattern is not available
+                            elementInstance.Focus();
+                            Thread.Sleep(500);
+                            // FlaUI: Click() will move the mouse and click the element's clickable point
+                            elementInstance.Click();
+                        }
                     }
                 }
 

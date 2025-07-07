@@ -66,6 +66,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
                             }
                             else if (clickType == ClickTypeEnum.MouseClick)
                             {
+                                // Focus the element to ensure it is ready for interaction
+                                elementInstance.Focus();
                                 Thread.Sleep(200);
                                 // FlaUI: Click() will move the mouse and click the element's clickable point
                                 elementInstance.Click();
@@ -82,12 +84,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
                     }
                 }
 
-                if (!elementClicked)
-                {
-                    statusMessage = "Failed to click the UI element within the specified time.";
-                }
                 IsClicked.Set(context, elementClicked);
-                IsSuccess.Set(context, true);
+                IsSuccess.Set(context, elementClicked);
                 StatusMessage.Set(context, statusMessage);
             }
             catch (Exception ex)
