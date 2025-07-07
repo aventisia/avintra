@@ -496,7 +496,6 @@
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\PopulateTextFieldInWindowActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\ResizeWindowActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\SelectRadioButtonActivity.cs" />
-    <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\SelectTabActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\SelectUIElementActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\SetCheckboxStateActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\UIAutomationActivities\SetDropDownListValueActivity.cs" />
