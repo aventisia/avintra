@@ -33,13 +33,12 @@ public class FlowBuilderService : IFlowBuilderService
             // Attempt to retrieve the latest flow version based on provided conditions
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
+                    (!versionId.HasValue || w.Id == versionId) &&
                     w.FlowId == flowId &&
                     w.CreatedByUserId == _userId ||
                     (
                         w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
-                    ) &&
-                    (versionId == null || w.Id == versionId)
-
+                    )
                 )
                 .Include(u => u.CreatedByUser)
                 .Include(lm => lm.LastModifiedByUser)
@@ -51,7 +50,7 @@ public class FlowBuilderService : IFlowBuilderService
             // No flow version found, log and return response
             if (flowVersion == null)
             {
-                _logger.LogInformation($"No unpublished flow version found for FlowId {flowId}. VersionId: {versionId?.ToString() ?? "N/A"}.");
+                _logger.LogInformation($"No unpublished flow version found for FlowId {flowId}. VersionId: {versionId}.");
                 serviceResponse.Message = "Flow version does not exist.";
                 return serviceResponse;
             }
@@ -247,7 +246,7 @@ public class FlowBuilderService : IFlowBuilderService
             // Validate that the flow version exists and is owned by the current user
             var flowVersion = await _unitOfWork.FlowVersionRepo
                                         .GetByConditionAsync(w =>
-                                            (flowSilentUpdateDto.VersionId == null || w.Id == flowSilentUpdateDto.VersionId) &&
+                                            w.Id == flowSilentUpdateDto.VersionId &&
                                             w.FlowId == flowSilentUpdateDto.Id &&
                                             w.CreatedByUserId == _userId ||
                                             (

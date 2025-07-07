@@ -9,7 +9,7 @@ public interface IFlowBuilderService
     /// Retrieves the flow record to load when the user opens it in the studio.
     /// </summary>
     /// <param name="flowId">The unique identifier of the flow record (Primary Key).</param>
-    /// <param name="versionId">The optional identifier for the flow version to load. If not provided, the latest version will be used.</param>
+    /// <param name="versionId">The optional identifier for the flow version to load.</param>
     /// <returns>The task result contains the service response with the flow properties required for the studio on load.</returns>
     Task<ServiceResponse<LoadFlowDto>> GetFlowToLoadAsync(Guid flowId, Guid? versionId);
 
