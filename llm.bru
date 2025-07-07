@@ -1,0 +1,19 @@
+meta {
+  name: llm
+  type: http
+  seq: 2
+}
+
+post {
+  url: https://llm.aventisia.com:8443/api/generate
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "stream": false,
+    "model": "gemma:7b",
+    "prompt": "Write a 500 words short story about a dragon and a knight."
+  }
+}
