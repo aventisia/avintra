@@ -2,9 +2,9 @@
 
 from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
-import os
 from fastapi import HTTPException
 from app.core.logger import logger
+from app.core.config import settings
 
 # Constants
 COLLECTION_NAME = "chats"  # Define collection name here as it's used in services
@@ -15,9 +15,9 @@ def initialize_qdrant_and_embedder():
     Initializes and returns the Qdrant client and SentenceTransformer embedder.
     Raises ValueError or HTTPException if environment variables are not set or initialization fails.
     """
-    # Load Qdrant URL and API Key from environment variables
-    QDRANT_URL = os.getenv("QDRANT_URL")
-    QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+   # Retrieve Qdrant URL and API Key from settings
+    QDRANT_URL = settings.qdrant_url
+    QDRANT_API_KEY = settings.qdrant_api_key
 
     # Check if QDRANT_URL is set in environment variables
     if not QDRANT_URL:
@@ -52,4 +52,4 @@ try:
 except (ValueError, HTTPException) as e:
     # Critical error, log and re-raise to stop application startup
     logger.critical(f"Critical error during Qdrant/Embedder setup: {e}. Exiting application.")
-    raise  # In a real application, a graceful shutdown or retry logic might be implemented
+    raise 
