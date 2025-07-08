@@ -6,7 +6,7 @@ from app.core.security import get_user_from_token
 from app.core.llm_service import LLMService
 from app.core.logger import logger
 from app.models.chat_message import ChatMessage
-# from app.qdrant.service import add_document_to_collection
+from app.qdrant.service import add_document_to_collection
 
 # Create FastAPI router and initialize services
 router = APIRouter()
@@ -71,7 +71,7 @@ async def websocket_chat_handler(websocket: WebSocket):
 
             # Step 6: Echo the user message back
             await connection_manager.send_personal_message(user_message.dict(), connection_id)
-
+            add_document_to_collection(user_message)
             # Step 7: Store user message in Qdrant
             try:
                 # add_document_to_collection(user_message)
@@ -107,6 +107,7 @@ async def websocket_chat_handler(websocket: WebSocket):
 
             # Step 11: Send bot response to the client
             await connection_manager.send_personal_message(bot_message.dict(), connection_id)
+            add_document_to_collection(bot_message)
 
             # Step 12: Store bot response in Qdrant
             try:
