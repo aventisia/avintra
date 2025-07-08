@@ -1,10 +1,10 @@
 # app/qdrant/service.py
 
-from app.models import ChatMessage
+from app.models.chat_message import ChatMessage
 from qdrant_client.models import PointStruct, VectorParams, Distance, FieldCondition, MatchValue
 from uuid import uuid4
 from fastapi import HTTPException
-from setup import client, embedder, COLLECTION_NAME
+from app.qdrant.setup import client, embedder, COLLECTION_NAME
 from app.core.logger import logger
 
 

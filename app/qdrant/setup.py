@@ -27,17 +27,12 @@ def initialize_qdrant_and_embedder():
     qdrant_client_instance = None
     embedder_instance = None
 
-    try:
-        # Initialize Qdrant client
-        qdrant_client_instance = QdrantClient(
-            url=QDRANT_URL,
-            api_key=QDRANT_API_KEY if QDRANT_API_KEY else None  # Use API key if provided
-        )
-        logger.info(f"Qdrant client initialized successfully for URL: {QDRANT_URL}")
-    except Exception as e:
-        # Log and raise an HTTPException if Qdrant client initialization fails
-        logger.error(f"Failed to initialize Qdrant client: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to initialize Qdrant client: {e}")
+    # Initialize Qdrant client
+    qdrant_client_instance = QdrantClient(
+        port=None,
+        url=QDRANT_URL,
+        api_key=QDRANT_API_KEY if QDRANT_API_KEY else None  # Use API key if provided
+    )
 
     try:
         # Initialize SentenceTransformer embedder
