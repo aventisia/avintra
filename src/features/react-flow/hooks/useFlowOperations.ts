@@ -1,7 +1,7 @@
 import { useClipboard } from "@/features/react-flow/hooks/useClipboard";
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { Edge } from "@xyflow/react";
+import { Edge, Node } from "@xyflow/react";
 import { useCallback } from "react";
 import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
@@ -9,6 +9,7 @@ import { getNodesAndEdgesAfterDeletion } from "../utils/getNodesAndEdgesAfterDel
 import { toast } from "@aventisia/ui/sonner";
 import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { useShallow } from "zustand/react/shallow";
+import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 
 /* Hook to perform cut copy paste and delete operations on nodes */
 export const useFlowOperations = () => {
@@ -21,6 +22,11 @@ export const useFlowOperations = () => {
     setNodes,
     setEdges,
   } = useReactFlowExtStore();
+
+  // Get selected nodes/edges
+  const { selectedNode } = useContextMenuActionsStore(
+    useShallow((state) => ({ selectedNode: state.selectedNode })),
+  );
 
   // Get Studio Preferences store state
   const { deleteAlert } = useStudioPreferencesStore(
@@ -232,10 +238,30 @@ export const useFlowOperations = () => {
     [nodes, edges, flowVariablesObject, showDefaultAlertDialog, autoLayout],
   );
 
+  const disableNode = (isDisabled: boolean) => {
+    // Find the node by id and update its inputs and outputs
+    const updatedNodes = nodes.map((node: Node) => {
+      if (node.id === selectedNode?.id) {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            isDisabled,
+          },
+        };
+      }
+      return node;
+    });
+
+    // Update the nodes in the store
+    setNodes(updatedNodes);
+  };
+
   return {
     copyNode,
     cutNode,
     pasteNode,
     deleteNode,
+    disableNode,
   };
 };

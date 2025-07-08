@@ -9,7 +9,13 @@ import {
 import { DeleteCMItem } from "@aventisia/ui/context-menu";
 import { SimpleCMItem } from "@aventisia/ui/context-menu";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
-import { Library, GroupIcon, UngroupIcon } from "lucide-react";
+import {
+  Library,
+  GroupIcon,
+  UngroupIcon,
+  CircleCheckIcon,
+  BanIcon,
+} from "lucide-react";
 import { useNodeGrouping } from "../../hooks/useNodeGrouping";
 import { FBCreateButton } from "@/features/flow-block/components/flow-block-crud-dialog/FBCreateButton";
 
@@ -23,9 +29,13 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
 
   const { groupNodes, ungroupNodes } = useNodeGrouping();
 
-  const { deleteNode } = useFlowOperations();
+  const { deleteNode, disableNode } = useFlowOperations();
 
   const isGroupHead = selectedNode?.data.isGroupHead;
+
+  const isGroupMember = selectedNode?.data.groupId;
+
+  const isDisabled = selectedNode?.data.isDisabled;
 
   return (
     <ContextMenu
@@ -84,14 +94,16 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
               onClick={() => ungroupNodes()}
             />
 
-            {import.meta.env.MODE !== "production" && (
-              <>
-                <ContextMenuSeparator className="h-[0.5px]" />
-                <FBCreateButton />
-              </>
-            )}
+            {import.meta.env.MODE !== "production" &&
+              selectedNode?.type !== "blockNode" &&
+              !selectedNode?.data?.hasBlock && (
+                <>
+                  <ContextMenuSeparator className="h-[0.5px]" />
+                  <FBCreateButton />
+                </>
+              )}
           </>
-        ) : (
+        ) : isGroupMember ? null : (
           <SimpleCMItem
             size="sm"
             content="Group up"
@@ -109,6 +121,24 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
           onClick={() => autoLayout()}
         />
 
+        <ContextMenuSeparator className="h-[0.5px]" />
+        {isDisabled ? (
+          <>
+            <SimpleCMItem
+              size="sm"
+              content="Enable"
+              Icon={CircleCheckIcon}
+              onClick={() => disableNode(false)}
+            />
+          </>
+        ) : (
+          <SimpleCMItem
+            size="sm"
+            content="Disable"
+            Icon={BanIcon}
+            onClick={() => disableNode(true)}
+          />
+        )}
         <ContextMenuSeparator className="h-[0.5px]" />
 
         {/* Delete selected items */}

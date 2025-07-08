@@ -64,6 +64,8 @@ export function useNodeGrouping() {
       (node) => !!node.data?.groupId,
     );
 
+    const hasBlock = fullSelectedNodes.some((node) => node.type == "blockNode");
+
     if (alreadyGrouped) {
       toast.warning(
         "One or more selected nodes are already part of another group.",
@@ -121,6 +123,7 @@ export function useNodeGrouping() {
           data: {
             ...node.data,
             groupId,
+            hasBlock,
             count: selectedNodes.length,
             color,
             isGroupHead: true,
