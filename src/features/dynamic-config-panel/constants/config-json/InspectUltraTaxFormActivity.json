@@ -27,15 +27,12 @@
     "required": true
   },
   {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "InspectionOutput",
+    "direction": "Input",
+    "type": "text",
+    "name": "InspectionOutputFilePath",
     "label": "Inspection Output",
-    "description": "The output object containing inspection details of the form fields.",
-    "defaultValue": {
-      "value": "InspectionOutput",
-      "enabled": true
-    },
-    "required": false
+    "description": "The full path to the json file where the JSON content will be written.",
+    "defaultValue": "",
+    "required": true
   }
 ]
