@@ -1,7 +1,5 @@
 ﻿using CodeActivitiesLibrary.Extensions;
 using CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities.Helpers;
-using FlaUI.Core.AutomationElements;
-using FlaUI.Core.Definitions;
 using FlaUI.Core.Input;
 using FlaUI.Core.WindowsAPI;
 using Newtonsoft.Json.Linq;
@@ -10,6 +8,8 @@ using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.IO;
+using CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities.Helpers;
 
 namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
 {
@@ -33,19 +33,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
         [Description("Specify the number of fields to inspect")]
         public InArgument<string> NoOfFieldsToInspect { get; set; }
 
+        [RequiredArgument]
         [DisplayName("Inspection Output")]
-        [Description("The output object containing inspection details of the form fields.")]
-        public OutArgument<JArray> InspectionOutput { get; set; }
+        [Description("The full path to the json file where the JSON content will be written.")]
+        public InArgument<string> InspectionOutputFilePath { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
             var identificationObjectPath = UIAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
             var maxWaitTime = MaxWaitTime.Get(context);
             var noOfFieldsToInspect = NoOfFieldsToInspect.Get(context);
-            string statusMessage = "";
-
-            // Clear output
-            InspectionOutput.Set(context, null);
+            var outputFilePath = InspectionOutputFilePath.Get(context);
 
             try
             {
@@ -55,9 +53,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
                 // Form element not found
                 if (formElement == null)
                 {
-                    statusMessage = "Form element not found. Please check the identification path.";
                     IsSuccess.Set(context, false);
-                    StatusMessage.Set(context, statusMessage);
+                    StatusMessage.Set(context, "Form element not found. Please check the identification path.");
                     return;
                 }
 
@@ -100,7 +97,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
                         var formElementDetails = new FormElementDetails
                         {
                             Index = fieldIndex,
-                            UniqueId = GetUniqueId(fieldIndex, field),
+                            TabIndex = tabCounter,
+                            UniqueId = UltraTaxFormHelper.GetUniqueId(fieldIndex, field),
                             Name = field.Properties.Name.ValueOrDefault?.Trim() ?? "Not Available",
                             ClassName = field.Properties.ClassName.ValueOrDefault ?? "Not Available",
                             ControlType = field.ControlType.ToString() ?? "Not Available",
@@ -109,9 +107,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
                             IsEnabled = field.Properties.IsEnabled.ValueOrDefault,
                             IsOffscreen = field.Properties.IsOffscreen.ValueOrDefault,
                             IsPassword = field.Properties.IsPassword.ValueOrDefault,
-                            BoundingRectangle = GetBoundingRectangle(field),
+                            BoundingRectangle = UltraTaxFormHelper.GetBoundingRectangle(field),
                             LabelText = field.Properties.Name.ValueOrDefault?.Trim() ?? "Not Available",
-                            SupportedPatterns = GetSupportedPatterns(field)
+                            SupportedPatterns = UltraTaxFormHelper.GetSupportedPatterns(field)
                         };
 
                         // If the field doesn't exist in the final list, add it
@@ -140,10 +138,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
 
                 } while (true);
 
+                // Save the output to a JSON file instead of setting InspectionOutput
+                var outputJson = JArray.FromObject(formFieldFinalList).ToString();
+                File.WriteAllText(outputFilePath, outputJson);
+
                 // Set the output
-                InspectionOutput.Set(context, JArray.FromObject(formFieldFinalList));
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, statusMessage);
+                StatusMessage.Set(context, "Inspection completed successfully. Output saved to " + outputFilePath);
             }
             catch (Exception ex)
             {
@@ -151,82 +152,5 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
                 IsSuccess.Set(context, false);
             }
         }
-
-        private string GetUniqueId(int fieldIndex, AutomationElement element)
-        {
-            string uniqueId = $"{fieldIndex}";
-
-            if (element.Properties.Name.ValueOrDefault != null)
-            {
-                var name = element.Properties.Name.ValueOrDefault.Trim();
-                // Replace spaces and newlines in the name to create a unique identifier
-                name = name.Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\t", "").Replace("  ", "");
-                name = name.Replace(":", "").Replace(";", "").Replace(",", "").Replace(".", "");
-                name = name.Replace("-", "").Replace("(", "").Replace(")", "").Replace("+", "");
-                name = name.Replace("'", "").Replace("\"", "").Replace("/", "").Replace("\\", "");
-                name = name.Replace("?", "").Replace("!", "").Replace("&", "").Replace("#", "").Replace("$", "");
-                name = name.Replace("@", "").Replace("*", "").Replace("=", "").Replace("<", "").Replace(">", "");
-                name = name.Replace("`", "").Replace("~", "").Replace("|", "").Replace("{", "").Replace("}", "");
-                name = name.Replace("+", "").Replace("*", "");
-                uniqueId += $"_{name}";
-            }
-            else
-            {
-                uniqueId += "_NO_NAME";
-            }
-            // Generate a unique ID based on the element's properties
-            return $"{uniqueId}_{element.Properties.ClassName.ValueOrDefault}_{element.Properties.ControlType.ToString()}_{element.Properties.FrameworkId.ValueOrDefault}";
-        }
-
-        private JArray GetSupportedPatterns(AutomationElement element)
-        {
-            var patternNames = element.GetSupportedPatterns()
-                    .Select(pattern => pattern.ToString().Split('[')[0].Trim())
-                    .Where(name => !string.Equals(name, "LegacyIAccessible", StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-
-            // Replace "Text2" and "Text" with "GetValue", and "Value" with "SetValue"
-            for (int i = 0; i < patternNames.Count; i++)
-            {
-                if (patternNames[i] == "Text2" || patternNames[i] == "Text")
-                    patternNames[i] = "GetValue";
-                else if (patternNames[i] == "Value")
-                    patternNames[i] = "SetValue";
-                else if (patternNames[i] == "Invoke")
-                    patternNames[i] = "Click";
-            }
-
-            // Ensure distinct after replacements
-            return JArray.FromObject(patternNames.Distinct().ToList());
-        }
-
-        private JObject GetBoundingRectangle(AutomationElement element)
-        {
-            var rect = element.Properties.BoundingRectangle.ValueOrDefault;
-            return JObject.FromObject(new
-            {
-                X = rect.X,
-                Y = rect.Y,
-                Width = rect.Width,
-                Height = rect.Height
-            });
-        }
-    }
-
-    public class FormElementDetails
-    {
-        public int Index { get; set; }
-        public string UniqueId { get; set; }
-        public string Name { get; set; }
-        public string ClassName { get; set; }
-        public string ControlType { get; set; }
-        public string FrameworkId { get; set; }
-        public string AutomationId { get; set; }
-        public bool IsEnabled { get; set; }
-        public bool IsOffscreen { get; set; }
-        public bool IsPassword { get; set; }
-        public JObject BoundingRectangle { get; set; }
-        public string LabelText { get; set; }
-        public JArray SupportedPatterns { get; set; }
     }
 }
