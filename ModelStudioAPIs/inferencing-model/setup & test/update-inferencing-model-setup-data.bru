@@ -1,0 +1,47 @@
+meta {
+  name: Update inferencing model setup data
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/inferencing-model/setup
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("MLMODEL_ID"),
+    businessContext:"test",
+    modelTasks:[
+      {
+        //id: bru.getGlobalEnvVar("MLMODEL_TASK_ID"),
+        name: "Extraction",
+        configurationType: "OnPrem",
+        llm: "gemma",
+        nodePrompt: "",
+        temperature: 0.3,
+        extraction: {
+          tables: [],
+          fields: [],
+        }
+      },
+      {
+        //id: bru.getGlobalEnvVar("MLMODEL_TASK_ID"),
+        name: "Summarization",
+        configurationType: "OnPrem",
+        llm: "gemma",
+        nodePrompt: "",
+        temperature: 0.3,
+        summarization: {
+          totalMinimumWords: 100,
+          totalMaximumWords: 200,
+        }
+      }
+    ]
+  });
+  
+}
