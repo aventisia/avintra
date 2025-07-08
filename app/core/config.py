@@ -1,23 +1,38 @@
-# app/core/config.py
 import os
-from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Get ENVIRONMENT value from the system or default to 'development'
+env = os.getenv("ENVIRONMENT", "development").lower()
+
+# Set the correct .env file based on the environment
+env_file = f".env.{env}" 
+
+# Load environment variables from .env file
+load_dotenv(env_file)
 
 class Settings(BaseSettings):
-    # JWT settings
-    secret_key: str = os.getenv("SECRET_KEY", "some_random_secret_key_some_random_secret_key_some_random_secret_key_some_random_secret_key_some_random_secret_key_some_random_secret_key_some_random_secret_key")  # Can be loaded from environment variable
+    # JWT settings from environment variables
+    secret_key: str = os.getenv("SecretKey")
     algorithm: str = "HS512"
-    issuer: str = os.getenv("JWT_ISSUER", "localhost")
-    audience: str = os.getenv("JWT_AUDIENCE", "localhost")
-    
-    # Cookie settings
-    # cookie_name: str = "access_token"
-    # cookie_max_age: int = 3600  # 1 hour
-    # cookie_secure: bool = False  # Set to True if using HTTPS
-    # cookie_samesite: str = "Strict"  # SameSite settings can be "Strict", "Lax", or "None"
-    # cookie_domain: str = ".aventisia.com"  # Domain for the cookie
+    issuer: str = os.getenv("Issuer", "localhost")
+    audience: str = os.getenv("Audience", "localhost")
 
-    class Config:
-        env_file = ".env"  # Optional: Load environment variables from .env file
-        extra = 'allow' # Allow extra fields
+    # Qdrant settings from environment variables
+    qdrant_api_key: str | None = os.getenv("QDRANT_API_KEY", None) 
+    qdrant_url: str | None = os.getenv("QDRANT_URL", None)
 
+    # Ollama settings from environment variables
+    ollama_api_url: str = os.getenv("OllamaAPI", None)
+    ollama_api_key: str = os.getenv("OllamaAPIKey", None)
+
+    # Dynamically load the .env file based on the environment
+    model_config = SettingsConfigDict(
+        # This tells Pydantic to load the correct .env file
+        env_file=env_file,  
+         # Allow extra fields not explicitly defined
+        extra="allow" 
+    )
+
+# Initialize the settings class, loading the environment variables
 settings = Settings()
