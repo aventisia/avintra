@@ -31,11 +31,11 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
 
   const { deleteNode, disableNode } = useFlowOperations();
 
-  const isGroupHead = selectedNode?.data.isGroupHead;
+  const isGroupHead = selectedNode?.data?.isGroupHead;
 
-  const isGroupMember = selectedNode?.data.groupId;
+  const isGroupMember = selectedNode?.data?.groupId;
 
-  const isDisabled = selectedNode?.data.isDisabled;
+  const isDisabled = selectedNode?.data?.isDisabled;
 
   return (
     <ContextMenu
