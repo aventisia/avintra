@@ -70,7 +70,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 builder.Services.AddStringEncryptionService();
 builder.Services.AddUploadFileService();
-
+builder.Services.AddHttpClientService(config);
 /*--Configure the HTTP request pipeline.--*/
 
 var app = builder.Build();
