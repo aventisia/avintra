@@ -1,12 +1,13 @@
 
+
+
 namespace MLModelBuilderAPIs.MappingProfiles;
 
 public class InferencingModelMappingProfile : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        // Mapping of DTO to get list of model setup to show on the UI.
-        config.NewConfig<MLModel, InferencingModelSetupDto>()
+        config.NewConfig<MLModel, InferencingModelDto>()
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                 ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
@@ -15,8 +16,12 @@ public class InferencingModelMappingProfile : IRegister
                 ? src.CreatedByUser.UserName
                 : null);
 
+        config.NewConfig<ModelTask, InferencingModelTaskDto>();
+        
+        config.NewConfig<InferencingModelTaskDto, ModelTask>();
+
         // Mapping DTO to Entity for insert or update
-        config.NewConfig<InferencingModelSetupDto, MLModel>()
+        config.NewConfig<InferencingModelDto, MLModel>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.Name)
             .Ignore(dest => dest.CreatedByUserId)
