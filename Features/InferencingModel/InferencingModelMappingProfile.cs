@@ -17,8 +17,15 @@ public class InferencingModelMappingProfile : IRegister
                 : null);
 
         config.NewConfig<ModelTask, InferencingModelTaskDto>();
-        
-        config.NewConfig<InferencingModelTaskDto, ModelTask>();
+
+        config.NewConfig<InferencingModelTaskDto, ModelTask>()
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.CreatedByUserId)
+            .Ignore(dest => dest.LastModifiedByUserId)
+            .Ignore(dest => dest.CreatedOn)
+            .Ignore(dest => dest.LastModifiedOn)
+            .IgnoreNullValues(true);
+
 
         // Mapping DTO to Entity for insert or update
         config.NewConfig<InferencingModelDto, MLModel>()

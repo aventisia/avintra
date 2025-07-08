@@ -43,25 +43,25 @@ public class InferencingModelTaskDto
     /// <summary>
     /// Gets or sets the extraction task details.
     /// </summary>
-    public ExtractionTaskDto? ExtractionTask { get; set; }
+    public ExtractionTaskDto? Extraction { get; set; }
 
     /// <summary>
     /// Gets or sets the classification task details.
     /// </summary>
-    public ClassificationTaskDto? ClassificationTask { get; set; }
+    public ClassificationTaskDto? Classification { get; set; }
 
     /// <summary>
     /// Gets or sets the summarization task details.
     /// </summary>
-    public SummarizationTaskDto? SummarizationTask { get; set; }
+    public SummarizationTaskDto? Summarization { get; set; }
 
     /// <summary>
     /// Gets or sets the sentiment analytics task details.
     /// </summary>
-    public SentimentAnalyticTaskDto? SentimentAnalyticsTask { get; set; }
+    public SentimentAnalyticTaskDto? SentimentAnalytics{ get; set; }
 
     /// <summary>
     /// Gets or sets the question-answering task details.
     /// </summary>
-    public QuestionAnswerTaskDto? QuestionAnswerTask { get; set; }
+    public QuestionAnswerTaskDto? QuestionAnswer { get; set; }
 }

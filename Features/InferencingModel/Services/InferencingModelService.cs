@@ -1433,33 +1433,32 @@ public class InferencingModelService : IInferencingModelService
             // Determine task type and deserialize the SetupObject into the corresponding DTO
             switch (taskDto.Name)
             {
-                case var taskType when taskType == InferencingModelTypesEnum.Extraction.ToString():
-                    taskDto.ExtractionTask = JsonSerializer.Deserialize<ExtractionTaskDto>(modelTask.SetupObject, jsonOptions);
+                case nameof(InferencingModelTypesEnum.Extraction):
+                    taskDto.Extraction = JsonSerializer.Deserialize<ExtractionTaskDto>(modelTask.SetupObject, jsonOptions);
                     _logger.LogDebug("Deserialized ExtractionTaskDto for task '{TaskName}'.", modelTask.Name);
                     break;
 
-                case var taskType when taskType == InferencingModelTypesEnum.QuestionAnswer.ToString():
-                    taskDto.QuestionAnswerTask = JsonSerializer.Deserialize<QuestionAnswerTaskDto>(modelTask.SetupObject, jsonOptions);
+                case nameof(InferencingModelTypesEnum.QuestionAnswer):
+                    taskDto.QuestionAnswer = JsonSerializer.Deserialize<QuestionAnswerTaskDto>(modelTask.SetupObject, jsonOptions);
                     _logger.LogDebug("Deserialized QuestionAnswerTaskDto for task '{TaskName}'.", modelTask.Name);
                     break;
 
-                case var taskType when taskType == InferencingModelTypesEnum.SentimentAnalysis.ToString():
-                    taskDto.SentimentAnalyticsTask = JsonSerializer.Deserialize<SentimentAnalyticTaskDto>(modelTask.SetupObject, jsonOptions);
+                case nameof(InferencingModelTypesEnum.SentimentAnalysis):
+                    taskDto.SentimentAnalytics = JsonSerializer.Deserialize<SentimentAnalyticTaskDto>(modelTask.SetupObject, jsonOptions);
                     _logger.LogDebug("Deserialized SentimentAnalysisTaskDto for task '{TaskName}'.", modelTask.Name);
                     break;
 
-                case var taskType when taskType == InferencingModelTypesEnum.Classification.ToString():
-                    taskDto.ClassificationTask = JsonSerializer.Deserialize<ClassificationTaskDto>(modelTask.SetupObject, jsonOptions);
+                case nameof(InferencingModelTypesEnum.Classification):
+                    taskDto.Classification = JsonSerializer.Deserialize<ClassificationTaskDto>(modelTask.SetupObject, jsonOptions);
                     _logger.LogDebug("Deserialized ClassificationTaskDto for task '{TaskName}'.", modelTask.Name);
                     break;
 
-                case var taskType when taskType == InferencingModelTypesEnum.Summarization.ToString():
-                    taskDto.SummarizationTask = JsonSerializer.Deserialize<SummarizationTaskDto>(modelTask.SetupObject, jsonOptions);
+                case nameof(InferencingModelTypesEnum.Summarization):
+                    taskDto.Summarization = JsonSerializer.Deserialize<SummarizationTaskDto>(modelTask.SetupObject, jsonOptions);
                     _logger.LogDebug("Deserialized SummarizationTaskDto for task '{TaskName}'.", modelTask.Name);
                     break;
 
                 default:
-                    // If task type is unrecognized, log a warning
                     _logger.LogWarning("Unknown task type '{TaskType}' for task '{TaskName}'. No deserialization performed.", taskDto.Name, modelTask.Name);
                     break;
             }
@@ -1490,23 +1489,23 @@ public class InferencingModelService : IInferencingModelService
         switch (modelSetupTask.Name)
         {
             case nameof(InferencingModelTypesEnum.Extraction):
-                setupObject = modelSetupTask.ExtractionTask;
+                setupObject = modelSetupTask.Extraction;
                 break;
 
             case nameof(InferencingModelTypesEnum.Summarization):
-                setupObject = modelSetupTask.SummarizationTask;
+                setupObject = modelSetupTask.Summarization;
                 break;
 
             case nameof(InferencingModelTypesEnum.Classification):
-                setupObject = modelSetupTask.ClassificationTask;
+                setupObject = modelSetupTask.Classification;
                 break;
 
             case nameof(InferencingModelTypesEnum.SentimentAnalysis):
-                setupObject = modelSetupTask.SentimentAnalyticsTask;
+                setupObject = modelSetupTask.SentimentAnalytics;
                 break;
 
             case nameof(InferencingModelTypesEnum.QuestionAnswer):
-                setupObject = modelSetupTask.QuestionAnswerTask;
+                setupObject = modelSetupTask.QuestionAnswer;
                 break;
 
             default:
