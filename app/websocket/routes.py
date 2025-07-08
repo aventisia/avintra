@@ -13,7 +13,7 @@ router = APIRouter()
 connection_manager = ConnectionManager()
 llm_service = LLMService()
 
-@router.websocket("/ws/chat")
+@router.websocket("/chat")
 async def websocket_chat_handler(websocket: WebSocket):
     """
     WebSocket handler for real-time chat between authenticated users and the bot.
@@ -79,42 +79,37 @@ async def websocket_chat_handler(websocket: WebSocket):
             except Exception as e:
                 logger.warning(f"Failed to store user message in Qdrant: {e}")
 
-            # Step 8: Compose prompt for the language model
-            llm_prompt = f"You are a helpful assistant. Answer this: {user_message.message}"
+            # Step 8: Compose prompt for the language model with AI persona
+            llm_prompt = f"You are an advanced AI assistant. Your responses are logical, concise, and fact-based. Answer this: {user_message.message}"
             logger.info(f"Prompt sent to LLM: {llm_prompt}")
 
-            try:
-                # Step 9: Get a response from the LLM
-                llm_response = await llm_service.extract_data(
-                    prompt=llm_prompt,
-                    model="gemma",
-                    temperature=0.7
-                )
-                bot_reply_text = llm_response.get("Data", "Sorry, I couldn't understand that.")
-            except Exception as llm_error:
-                logger.error(f"Error while querying LLM: {llm_error}")
-                bot_reply_text = "Sorry, I had trouble processing your request."
+            # Step 9: Get a response from the LLM
+            llm_response = await llm_service.generate_response(
+                prompt=llm_prompt,
+                model="gemma",
+                temperature=0.7,
+            )
+            ai_reply_text = llm_response.get("response", "I'm sorry, I couldn't process your request. Please try again.").strip()
 
-            # Step 10: Create bot's ChatMessage
-            bot_message = ChatMessage(
+            # Step 10: Create AI response message with updated variable names
+            ai_response_message = ChatMessage(
                 model_id=user_message.model_id,
                 user_id=user_info.id,
-                username="Bot",
-                message=bot_reply_text,
+                username="AIPersona",
+                message=ai_reply_text,
                 timestamp=str(datetime.datetime.utcnow()),
                 file=None
             )
 
-            # Step 11: Send bot response to the client
-            await connection_manager.send_personal_message(bot_message.dict(), connection_id)
-            add_document_to_collection(bot_message)
+            # Step 11: Send AI response message to the client
+            await connection_manager.send_personal_message(ai_response_message.dict(), connection_id)
+            add_document_to_collection(ai_response_message)
 
-            # Step 12: Store bot response in Qdrant
+            # Step 12: Store AI response message in Qdrant
             try:
-                # add_document_to_collection(bot_message)
-                logger.info("Bot message stored in Qdrant.")
+                logger.info("AI response message stored in Qdrant.")
             except Exception as e:
-                logger.warning(f"Failed to store bot message in Qdrant: {e}")
+                logger.warning(f"Failed to store AI response message in Qdrant: {e}")
 
     except WebSocketDisconnect:
         # Graceful disconnection
