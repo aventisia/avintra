@@ -5,6 +5,6 @@
  */
 export enum AccessTypeEnum {
   AgentLevel = "Agent Level",
-  TenantLevel = "Tenant Level",
+  // TenantLevel = "Tenant Level",
   Public = "Public",
 }

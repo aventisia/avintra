@@ -43,19 +43,38 @@ const sendNextNodeToProcess = (
   sendCommand: (command: WebSocketCommandType, data?: string) => void,
   currentNodeId?: string,
 ) => {
+  const nodes = getNodesFromLS();
+  const edges = getEdgesFromLS();
+
   // TODO: need to change triggerNode to flowStartNode (FE and BE)
   // Decide on previous node id or find the start node id
   const nodeId =
-    currentNodeId ||
-    getNodesFromLS().find((node) => node.type === "triggerNode")?.id;
+    currentNodeId || nodes.find((node) => node.type === "triggerNode")?.id;
 
-  // Find node edge -> then get target node id
-  const targetNodeId = getEdgesFromLS().find(
+  let targetNodeId = edges.find(
     (edge) =>
       edge.source === nodeId &&
       (edge.sourceHandle === undefined ||
         edge.sourceHandle !== "branch-return"),
   )?.target;
+
+  // Loop through disabled nodes until we find an enabled one or no more nodes
+  while (targetNodeId) {
+    const isNodeDisabled = nodes.find((node) => node.id === targetNodeId)?.data
+      ?.isDisabled;
+
+    if (!isNodeDisabled) {
+      break;
+    }
+
+    // If disabled, try to get next target
+    targetNodeId = edges.find(
+      (edge) =>
+        edge.source === targetNodeId &&
+        (edge.sourceHandle === undefined ||
+          edge.sourceHandle !== "branch-return"),
+    )?.target;
+  }
 
   // Send node to process
   sendNodeToProcess(targetNodeId || "nodeId", sendCommand);

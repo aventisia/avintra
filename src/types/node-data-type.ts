@@ -42,6 +42,7 @@ type NodeDataType = {
   count?: number;
   color?: string;
   isBlock?: boolean;
+  isDisabled?: boolean;
 };
 
 export type {
