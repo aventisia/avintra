@@ -36,6 +36,14 @@ const AppHeader: React.FC = () => {
 
   const isAssist = useIsAgentsAssist();
 
+  const goBack = () => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.href = `${import.meta.env.VITE_WORKSPACE_URL}/agents`;
+    }
+  };
+
   return (
     <HeaderContainer className="bg-slate-200">
       <Header>
@@ -47,7 +55,7 @@ const AppHeader: React.FC = () => {
                 size="icon8"
                 variant="ghost"
                 className="hover:bg-white/10"
-                onClick={() => window.history.back()}
+                onClick={() => goBack()}
               >
                 <ArrowLeftIcon className="h-4 w-4 text-white/80" />
               </Button>
