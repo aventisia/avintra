@@ -22,10 +22,10 @@ public class InferencingModelService : IInferencingModelService
     }
 
     // Gets the model setup for a specific inferencing model using its unique ML model ID.
-    public async Task<ServiceResponse<InferencingModelSetupDto>> GetSetupByMLModelIdAsync(Guid mlModelId)
+    public async Task<ServiceResponse<InferencingModelDto>> GetSetupByMLModelIdAsync(Guid mlModelId)
     {
-        // Initialize the response with a default failure message and null data
-        var serviceResponse = new ServiceResponse<InferencingModelSetupDto>
+        // Initialize the response with a failure state and default message
+        var serviceResponse = new ServiceResponse<InferencingModelDto>
         {
             Data = null,
             Message = "Failed to retrieve the model setup. Please try again later."
@@ -33,44 +33,56 @@ public class InferencingModelService : IInferencingModelService
 
         try
         {
-            // Log the beginning of the retrieval process
+            // Log the beginning of the retrieval process with the ML model ID
             _logger.LogInformation("Attempting to retrieve model setup for ML model with ID: {MLModelId}", mlModelId);
 
-            // Fetch the model setup based on the provided ML model ID and map it to the DTO
-            var mLModel = await _unitOfWork.MLModelRepo
+            // Fetch the model setup from the database by its ML model ID, including related user and task data
+            var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w => w.Id == mlModelId)
                 .Include(i => i.CreatedByUser)
+                .Include(i => i.Tasks)
                 .SingleOrDefaultAsync();
 
-            // If no setup is found, log a warning and return a message
-            if (mLModel == null)
+            // If no model setup is found, log a warning and return an appropriate message
+            if (mlModel == null)
             {
                 _logger.LogWarning("No model setup found for ML model with ID: {MLModelId}", mlModelId);
                 serviceResponse.Message = "No model setup exists for the provided ML model ID.";
                 return serviceResponse;
             }
 
-            // Log the successful retrieval of the setup
+            // Log the successful retrieval of the model setup
             _logger.LogInformation("Successfully retrieved model setup for ML model with ID: {MLModelId}", mlModelId);
 
-            // Set the successful response data
-            serviceResponse.Data = mLModel.Adapt<InferencingModelSetupDto>();
+            // Adapt the retrieved ML model to the corresponding DTO (Data Transfer Object)
+            var inferencingModelDto = mlModel.Adapt<InferencingModelDto>();
+
+            // Retrieve the list of inferencing tasks and add it to the model DTO 
+            // This will populate the ModelTasks property with specific task details
+            inferencingModelDto.ModelTasks = GetInferencingModelTask(mlModel);
+
+            // Map the adapted model setup (including tasks) to the response DTO
+            serviceResponse.Data = inferencingModelDto;
+
+            // Set the success response status and message
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Extraction setup retrieved successfully.";
+            serviceResponse.Message = "Model setup retrieved successfully.";
         }
         catch (Exception ex)
         {
+            // Log the exception details if an error occurs during the process
             _logger.LogError("Error occurred while retrieving model setup for ML model with ID: {MLModelId}. Exception: {ExceptionMessage}", mlModelId, ex.Message);
         }
 
+        // Return the service response (either successful or failure)
         return serviceResponse;
     }
 
     // Updates the configuration for an inferencing model setup.
-    public async Task<ServiceResponse<InferencingModelSetupDto>> UpdateSetupAsync(InferencingModelSetupDto modelSetupDto)
+    public async Task<ServiceResponse<InferencingModelDto>> UpdateSetupAsync(InferencingModelDto modelSetupDto)
     {
-        // Initialize the service response with a failure state and default message
-        var serviceResponse = new ServiceResponse<InferencingModelSetupDto>
+        // Prepare default failure response
+        var serviceResponse = new ServiceResponse<InferencingModelDto>
         {
             Data = null,
             Message = "Failed to update model setup. Please try again later."
@@ -78,70 +90,130 @@ public class InferencingModelService : IInferencingModelService
 
         try
         {
-            // Log the start of the update operation, including the relevant identifiers
-            _logger.LogInformation("Update process initiated | ML Model Setup ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+            // Validate input DTO
+            if (!ValidateModelSetupDto(modelSetupDto, out string? validationMessage))
+            {
+                _logger.LogWarning("Model setup validation failed: {ValidationMessage}", validationMessage);
+                serviceResponse.Message = validationMessage;
+                return serviceResponse;
+            }
 
-            // Retrieve the existing model from the database by ID
+            _logger.LogInformation("Starting update for model setup | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+
+            // Fetch the model including associated tasks
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w => w.Id == modelSetupDto.Id)
+                .Include(i => i.Tasks)
                 .SingleOrDefaultAsync();
 
-            // Check if the setup was not found and return an appropriate message
+            // If model not found
             if (mlModel == null)
             {
-                _logger.LogWarning("Model not found | ML Model Setup ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
-                serviceResponse.Message = "Model not found. The provided setup ID does not exist.";
+                _logger.LogWarning("Model not found | ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+                serviceResponse.Message = "Model not found.";
                 return serviceResponse;
             }
 
-            // Check if the setup is already published and prevent modifications
+            // Prevent updates to published models
             if (mlModel.IsPublished)
             {
-                // Do not allow updates to a published extraction setup.
-                // Published setups are locked to ensure consistency and prevent unauthorized modifications.
-                _logger.LogWarning("Attempt to update a published model setup | Setup ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
-
-                serviceResponse.Message = "This model has already been published and cannot be modified.";
+                _logger.LogWarning("Attempt to modify a published model | ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+                serviceResponse.Message = "This model is published and cannot be modified.";
                 return serviceResponse;
             }
 
-            // Trim any unnecessary spaces or formatting from string fields in the DTO
+            // Clean up string fields in DTO
             modelSetupDto = TrimDtoStringPropsUtil.TrimDtoStringProps(modelSetupDto);
 
-            // Log the mapping process from DTO to entity
-            mlModel.Adapt(mlModel);
+            _logger.LogInformation("Applying DTO changes to model entity | Model ID: {Id}", modelSetupDto.Id);
+            mlModel.Adapt(modelSetupDto);
             mlModel.SetupStatus = SetupStatusTypesEnum.Completed;
             mlModel.LastModifiedByUserId = _userId;
 
-            // Log the action of saving changes to the database
-            _logger.LogInformation("Saving the updated model setup to the database | ML Model Setup ID: {Id}", modelSetupDto.Id);
+            _logger.LogInformation("Saving model changes to database | Model ID: {Id}", modelSetupDto.Id);
             _unitOfWork.MLModelRepo.Update(mlModel);
 
-            // Attempt to persist the changes and check for success
             if (!await _unitOfWork.SaveAsync())
             {
-                // Log an error if the database save operation fails
-                _logger.LogError("Failed to save changes to the database | ML Model Setup ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+                _logger.LogError("Failed to save model changes | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
                 return serviceResponse;
             }
 
-            // Log success upon successful update
-            _logger.LogInformation("Extraction setup update completed successfully | ML Model Setup ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+            // Track new and existing tasks
+            var tasksToBeAdded = new List<ModelTask>();
+            var tasksToBeUpdated = new List<ModelTask>();
 
-            // Set the response data with the updated DTO and indicate successful completion
-            serviceResponse.Data = mlModel.Adapt<InferencingModelSetupDto>();
+            if (modelSetupDto.ModelTasks?.Count > 0)
+            {
+                // Iterate over each task DTO to determine if it should be added or updated
+                foreach (var taskDto in modelSetupDto.ModelTasks)
+                {
+                    // Attempt to find an existing task in the model with the same name
+                    var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == taskDto.Name);
+
+                    if (existingTask == null)
+                    {
+                        // Task does not exist — create a new task entity from the DTO
+                        var newTask = taskDto.Adapt<ModelTask>();
+                        newTask.MLModelId = mlModel.Id;
+                        newTask.SetupObject = SerializeSetupObject(taskDto);
+                        newTask.CreatedByUserId = _userId;
+                        newTask.LastModifiedByUserId = _userId;
+
+                        tasksToBeAdded.Add(newTask);
+                    }
+                    else
+                    {
+                        // Task already exists — update its properties from the DTO
+                        taskDto.Adapt(existingTask);
+                        existingTask.SetupObject = SerializeSetupObject(taskDto);
+                        existingTask.LastModifiedByUserId = _userId;
+
+                        tasksToBeUpdated.Add(existingTask);
+                    }
+                }
+            }
+
+            // Insert new tasks if any
+            if (tasksToBeAdded.Any())
+            {
+                _logger.LogInformation("Adding new tasks | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+                await _unitOfWork.ModelTaskRepo.InsertAsync(tasksToBeAdded);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save new tasks | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+                    return serviceResponse;
+                }
+            }
+
+            // Update existing tasks if any
+            if (tasksToBeUpdated.Any())
+            {
+                _logger.LogInformation("Updating existing tasks | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+                _unitOfWork.ModelTaskRepo.Update(tasksToBeUpdated);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save updated tasks | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+                    return serviceResponse;
+                }
+            }
+
+            _logger.LogInformation("Model setup update completed successfully | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+
+            // Return success response with updated model data
+            serviceResponse.Data = mlModel.Adapt<InferencingModelDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Model setup updated successfully.";
         }
         catch (Exception ex)
         {
-            // Log any exception that occurs during the process
-            _logger.LogError(ex, "Exception occurred during extraction setup update | ML Model Setup ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+            _logger.LogError(ex, "An error occurred while updating model setup | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
         }
 
         return serviceResponse;
     }
-
 
     // // Extracts data using a Language Learning Model (LLM).
     // public async Task<ServiceResponse<ExtractionResponseDto>> ExtractViaLLMAsync(ExtractRequestDto extractRequestDto)
@@ -1309,6 +1381,221 @@ public class InferencingModelService : IInferencingModelService
 
         // Return the final generated prompt after replacing newline characters and returning the string
         return generatedPrompt.Replace("\n", "").ToString();
+    }
+
+
+    // Converts machine learning model tasks into a list of <see cref="InferencingModelTaskDto"/>, including deserialization of task-specific configuration (SetupObject) based on task type.
+    private List<InferencingModelTaskDto> GetInferencingModelTask(MLModel mlModel)
+    {
+        var inferencingModelDtos = new List<InferencingModelTaskDto>();
+
+        // Check for null or empty task list
+        if (mlModel?.Tasks == null || !mlModel.Tasks.Any())
+        {
+            _logger.LogInformation("No tasks found in the ML model with ID: {ModelId}. Returning empty result.", mlModel?.Id);
+            return inferencingModelDtos;
+        }
+
+        // Process each task in the ML model
+        foreach (var modelTask in mlModel.Tasks)
+        {
+            try
+            {
+                // Adapt task to base DTO
+                var inferencingTaskDto = modelTask.Adapt<InferencingModelTaskDto>();
+                _logger.LogDebug("Adapting task '{TaskName}' to InferencingModelTaskDto.", modelTask.Name);
+
+                // Deserialize task-specific setup object
+                PopulateTaskSpecificDto(inferencingTaskDto, modelTask);
+
+                inferencingModelDtos.Add(inferencingTaskDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while processing task '{TaskName}' from ML model ID: {ModelId}. Skipping this task.", modelTask?.Name, mlModel?.Id);
+            }
+        }
+
+        return inferencingModelDtos;
+    }
+
+    // Deserializes the SetupObject JSON from the ML task into the appropriate task-specific DTO, based on the task type.
+    private void PopulateTaskSpecificDto(InferencingModelTaskDto taskDto, ModelTask modelTask)
+    {
+        // Configure JSON deserialization to be case-insensitive
+        var jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        try
+        {
+            // Determine task type and deserialize the SetupObject into the corresponding DTO
+            switch (taskDto.Name)
+            {
+                case var taskType when taskType == InferencingModelTypesEnum.Extraction.ToString():
+                    taskDto.ExtractionTask = JsonSerializer.Deserialize<ExtractionTaskDto>(modelTask.SetupObject, jsonOptions);
+                    _logger.LogDebug("Deserialized ExtractionTaskDto for task '{TaskName}'.", modelTask.Name);
+                    break;
+
+                case var taskType when taskType == InferencingModelTypesEnum.QuestionAnswer.ToString():
+                    taskDto.QuestionAnswerTask = JsonSerializer.Deserialize<QuestionAnswerTaskDto>(modelTask.SetupObject, jsonOptions);
+                    _logger.LogDebug("Deserialized QuestionAnswerTaskDto for task '{TaskName}'.", modelTask.Name);
+                    break;
+
+                case var taskType when taskType == InferencingModelTypesEnum.SentimentAnalysis.ToString():
+                    taskDto.SentimentAnalyticsTask = JsonSerializer.Deserialize<SentimentAnalyticTaskDto>(modelTask.SetupObject, jsonOptions);
+                    _logger.LogDebug("Deserialized SentimentAnalysisTaskDto for task '{TaskName}'.", modelTask.Name);
+                    break;
+
+                case var taskType when taskType == InferencingModelTypesEnum.Classification.ToString():
+                    taskDto.ClassificationTask = JsonSerializer.Deserialize<ClassificationTaskDto>(modelTask.SetupObject, jsonOptions);
+                    _logger.LogDebug("Deserialized ClassificationTaskDto for task '{TaskName}'.", modelTask.Name);
+                    break;
+
+                case var taskType when taskType == InferencingModelTypesEnum.Summarization.ToString():
+                    taskDto.SummarizationTask = JsonSerializer.Deserialize<SummarizationTaskDto>(modelTask.SetupObject, jsonOptions);
+                    _logger.LogDebug("Deserialized SummarizationTaskDto for task '{TaskName}'.", modelTask.Name);
+                    break;
+
+                default:
+                    // If task type is unrecognized, log a warning
+                    _logger.LogWarning("Unknown task type '{TaskType}' for task '{TaskName}'. No deserialization performed.", taskDto.Name, modelTask.Name);
+                    break;
+            }
+        }
+        catch (JsonException jsonEx)
+        {
+            // Log JSON deserialization-specific errors
+            _logger.LogError(jsonEx, "Failed to deserialize SetupObject for task '{TaskName}'. JSON content: {SetupObject}", modelTask.Name, modelTask.SetupObject);
+        }
+        catch (Exception ex)
+        {
+            // Log any other unexpected errors
+            _logger.LogError(ex, "Unexpected error while deserializing SetupObject for task '{TaskName}'.", modelTask.Name);
+        }
+    }
+    // Serializes the setup object from the task DTO into a JSON string based on the task type.
+    private string? SerializeSetupObject(InferencingModelTaskDto modelSetupTask)
+    {
+        // Configure JSON serialization options
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        object? setupObject = null;
+
+        // Determine the correct setup object based on the task name (model type)
+        switch (modelSetupTask.Name)
+        {
+            case nameof(InferencingModelTypesEnum.Extraction):
+                setupObject = modelSetupTask.ExtractionTask;
+                break;
+
+            case nameof(InferencingModelTypesEnum.Summarization):
+                setupObject = modelSetupTask.SummarizationTask;
+                break;
+
+            case nameof(InferencingModelTypesEnum.Classification):
+                setupObject = modelSetupTask.ClassificationTask;
+                break;
+
+            case nameof(InferencingModelTypesEnum.SentimentAnalysis):
+                setupObject = modelSetupTask.SentimentAnalyticsTask;
+                break;
+
+            case nameof(InferencingModelTypesEnum.QuestionAnswer):
+                setupObject = modelSetupTask.QuestionAnswerTask;
+                break;
+
+            default:
+                _logger.LogInformation("No matching setup object found for task type '{TaskName}'. Defaulting to null.", modelSetupTask.Name);
+                break;
+        }
+
+        // Return the serialized JSON string or null if no object matched
+        return JsonSerializer.Serialize(setupObject, options);
+    }
+
+    // Validates the input model setup DTO and its associated tasks.
+    private bool ValidateModelSetupDto(InferencingModelDto modelSetupDto, out string? validationMessage)
+    {
+        validationMessage = null;
+        string? detailedMessage = null;
+
+        _logger.LogInformation("Starting validation for InferencingModelDto.");
+
+        // Ensure the required top-level field is present
+        if (string.IsNullOrWhiteSpace(modelSetupDto.BusinessContext))
+        {
+            detailedMessage = "BusinessContext is required.";
+        }
+        // Proceed only if there are tasks to validate
+        else if (modelSetupDto.ModelTasks != null && modelSetupDto.ModelTasks.Any())
+        {
+            var validModelTypeNames = Enum.GetNames(typeof(InferencingModelTypesEnum)).ToList();
+
+            foreach (var task in modelSetupDto.ModelTasks)
+            {
+                // Ensure task name is provided
+                if (string.IsNullOrWhiteSpace(task.Name))
+                {
+                    detailedMessage = "Each task must have a Name.";
+                    break;
+                }
+
+                // Validate that the task name corresponds to a known model type
+                if (!validModelTypeNames.Contains(task.Name))
+                {
+                    detailedMessage = $"Task name '{task.Name}' is not a recognized inferencing model type.";
+                    break;
+                }
+
+                // If using Cloud configuration, SecretKey is mandatory
+                if (task.ConfigurationType == LLMConfigurationTypesEnum.Cloud && string.IsNullOrEmpty(task.SecretKey))
+                {
+                    detailedMessage = $"Task '{task.Name}' is configured for Cloud but missing a required SecretKey.";
+                    break;
+                }
+
+                // Attempt to parse the task name into an enum value
+                if (!Enum.TryParse(task.Name, out InferencingModelTypesEnum modelType))
+                {
+                    detailedMessage = $"Unable to parse task name '{task.Name}' into a valid model type.";
+                    break;
+                }
+
+                // TODO: Add model-type-specific validations here as needed
+                /*
+                switch (modelType)
+                {
+                    case InferencingModelTypesEnum.Extraction:
+                        if (task.ExtractionTask?.Fields == null || !task.ExtractionTask.Fields.Any())
+                        {
+                            detailedMessage = $"Extraction task '{task.Name}' requires at least one field.";
+                            break;
+                        }
+                        break;
+
+                    // Additional case validations...
+                }
+                */
+
+                if (detailedMessage != null)
+                    break;
+            }
+        }
+
+        if (detailedMessage != null)
+        {
+            _logger.LogWarning("Validation failed for InferencingModelDto: {ErrorDetail}", detailedMessage);
+            validationMessage = detailedMessage;
+            return false;
+        }
+
+        _logger.LogInformation("InferencingModelDto passed validation.");
+        return true;
     }
 }
 

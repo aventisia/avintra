@@ -15,15 +15,15 @@ public class InferencingModelController : BaseApiController
     // -------------------- Setup & Test Endpoints --------------------
 
     // Retrieves a specific model setup by ml model ID
-    [HttpGet("setup-by-model/{mlModelId}")]
-    public async Task<ActionResult<ServiceResponse<InferencingModelSetupDto>>> GetSetupByMLModelId(Guid mlModelId)
+    [HttpGet("setup/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<InferencingModelDto>>> GetSetupByMLModelId(Guid mlModelId)
     {
         return ResultHelper(await _inferencingModelService.GetSetupByMLModelIdAsync(mlModelId));
     }
 
     // Updates an existing model setup
     [HttpPut("setup")]
-    public async Task<ActionResult<ServiceResponse<InferencingModelSetupDto>>> UpdateSetup([FromBody] InferencingModelSetupDto modelSetupDto)
+    public async Task<ActionResult<ServiceResponse<InferencingModelDto>>> UpdateSetup([FromBody] InferencingModelDto modelSetupDto)
     {
         return ResultHelper(await _inferencingModelService.UpdateSetupAsync(modelSetupDto));
     }
