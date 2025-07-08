@@ -1,6 +1,3 @@
-import { AccessTypeEnum } from "@/features/flow-block/constants/access-type-enum";
-import { PublishTypeEnum } from "@/features/flow-block/constants/publish-type-enum";
-
 /** To update flow's isPublished */
 export interface PublishFlowDto {
   /** Flow record's primary key (Guid) */
@@ -13,7 +10,7 @@ export interface PublishFlowDto {
 
   isPublished: boolean;
 
-  accessType: AccessTypeEnum;
+  accessType: string;
 
-  type: PublishTypeEnum;
+  type: string;
 }
