@@ -19,7 +19,7 @@ export const EdgeLabelContainer = ({
       <div
         style={{
           position: "absolute",
-          transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+          transform: `translate(-50%, -65%) translate(${labelX}px, ${labelY}px)`, //translate y more considering marker-end
           pointerEvents: "all",
         }}
       >
