@@ -2324,6 +2324,15 @@
         "actions": [
           {
             "type": "activityNode",
+            "name": "FillUltraTaxFormActivity",
+            "label": "Fill UltraTax Form",
+            "description": "Fill an UltraTax CS form by inspecting UI elements and mapping them to a JSON content",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
             "name": "InspectUltraTaxFormActivity",
             "label": "Inspect UltraTax Form",
             "description": "Get inspection details of a UI element in an UltraTax CS form, such as name, position etc.",

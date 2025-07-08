@@ -30,7 +30,7 @@
     "direction": "Input",
     "type": "text",
     "name": "InspectionOutputFilePath",
-    "label": "Inspection Output",
+    "label": "Inspection Output File Path",
     "description": "The full path to the json file where the JSON content will be written.",
     "defaultValue": "",
     "required": true
