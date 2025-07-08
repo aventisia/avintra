@@ -187,8 +187,11 @@ public class FlowsTableService : IFlowsTableService
             var flow = await _unitOfWork.FlowRepo
                                         .GetByConditionAsync(w =>
                                             w.Id == flowsTableDto.Id &&
-                                            w.CreatedByUserId == _userId)
-                                        .SingleOrDefaultAsync();
+                                            w.CreatedByUserId == _userId ||
+                                            (
+                                                w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
+                                            )
+                                        ).SingleOrDefaultAsync();
 
             // Flow does not exist
             if (flow == null)
@@ -198,22 +201,23 @@ public class FlowsTableService : IFlowsTableService
                 return serviceResponse;
             }
 
-            // Validate flow name uniqueness
-            var flowAlreadyExists = await _unitOfWork.FlowRepo
-                                                     .GetByConditionAsync(w =>
-                                                        w.Name.ToLower() == flowsTableDto.Name.ToLower() &&
-                                                        w.CreatedByUserId == _userId &&
-                                                        w.Id != flowsTableDto.Id)
-                                                     .FirstOrDefaultAsync();
+            // TODO: Uncomment and implement flow name uniqueness check when needed
+            // // Validate flow name uniqueness
+            // var flowAlreadyExists = await _unitOfWork.FlowRepo
+            //                                          .GetByConditionAsync(w =>
+            //                                             w.Name.ToLower() == flowsTableDto.Name.ToLower() &&
+            //                                             w.CreatedByUserId == _userId &&
+            //                                             w.Id != flowsTableDto.Id)
+            //                                          .FirstOrDefaultAsync();
 
-            // Flow already exists
-            if (flowAlreadyExists != null)
-            {
-                _logger.LogInformation($"Flow name already exists");
-                serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A flow with same Name already exists. Please enter a unique name";
-                return serviceResponse;
-            }
+            // // Flow already exists
+            // if (flowAlreadyExists != null)
+            // {
+            //     _logger.LogInformation($"Flow name already exists");
+            //     serviceResponse.StatusCode = 409;
+            //     serviceResponse.Message = "A flow with same Name already exists. Please enter a unique name";
+            //     return serviceResponse;
+            // }
 
             // Trim dto' string props
             flowsTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(flowsTableDto);
