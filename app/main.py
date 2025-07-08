@@ -8,13 +8,13 @@ from app.api.SpeechToText import router as speech_to_text_router
 from app.api.KokoroTTS import router as kokoro_text_to_speech_router
 from app.dependencies.auth import authenticate_current_user
 from app.websocket import routes as websocket_routes
-# from app.qdrant.setup import initialize_qdrant_and_embedder
+from app.qdrant.service import initialize_qdrant_collection
 from app.models.user import User
 
 # Initialize the FastAPI application
 app = FastAPI(root_path="/api")
 
-# initialize_qdrant_and_embedder()
+initialize_qdrant_collection()
 
 # Register API routes with tags for automatic documentation
 app.include_router(pdf_extraction_router, tags=["PDF Extraction"])
