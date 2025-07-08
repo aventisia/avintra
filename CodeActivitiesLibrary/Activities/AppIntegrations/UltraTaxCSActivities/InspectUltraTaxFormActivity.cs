@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.IO;
 using CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities.Helpers;
+using System.Threading;
 
 namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
 {
@@ -34,7 +35,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
         public InArgument<string> NoOfFieldsToInspect { get; set; }
 
         [RequiredArgument]
-        [DisplayName("Inspection Output")]
+        [DisplayName("Inspection Output File Path")]
         [Description("The full path to the json file where the JSON content will be written.")]
         public InArgument<string> InspectionOutputFilePath { get; set; }
 
@@ -60,7 +61,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
 
                 // Initialize index and list for form element details
                 int tabCounter = 0;
-                int fieldIndex = 0;
                 var formFieldFinalList = new List<FormElementDetails>();
                 var excludedAutomationIds = new HashSet<string>
                 {
@@ -77,6 +77,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
 
                 do
                 {
+                    Thread.Sleep(200);
                     // Get all descendants of the form element (assuming the focus is on the first form field)
                     var allDescendants = formElement.FindAllDescendants();
                     var formFields = allDescendants
@@ -96,9 +97,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
                         // Create a new FormElementDetails object
                         var formElementDetails = new FormElementDetails
                         {
-                            Index = fieldIndex,
                             TabIndex = tabCounter,
-                            UniqueId = UltraTaxFormHelper.GetUniqueId(fieldIndex, field),
+                            UniqueId = UltraTaxFormHelper.GetUniqueId(tabCounter, field),
                             Name = field.Properties.Name.ValueOrDefault?.Trim() ?? "Not Available",
                             ClassName = field.Properties.ClassName.ValueOrDefault ?? "Not Available",
                             ControlType = field.ControlType.ToString() ?? "Not Available",
@@ -119,10 +119,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
                                     x.ControlType == formElementDetails.ControlType &&
                                     x.FrameworkId == formElementDetails.FrameworkId &&
                                     x.AutomationId == formElementDetails.AutomationId &&
-                                    x.BoundingRectangle.ToString() == formElementDetails.BoundingRectangle.ToString()))
+                                    UltraTaxFormHelper.AreJObjectsEqual(x.BoundingRectangle, formElementDetails.BoundingRectangle)))
                         {
                             formFieldFinalList.Add(formElementDetails);
-                            fieldIndex++;
                         }
                     }
 

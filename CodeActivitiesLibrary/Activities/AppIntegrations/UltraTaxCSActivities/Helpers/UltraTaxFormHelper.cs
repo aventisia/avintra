@@ -1,13 +1,14 @@
 using FlaUI.Core.AutomationElements;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System;
 
 namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities.Helpers
 {
     public class FormElementDetails
     {
-        public int Index { get; set; }
         public int TabIndex { get; set; }
         public string UniqueId { get; set; }
         public string Name { get; set; }
@@ -22,7 +23,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities.Helpers
         public string LabelText { get; set; }
         public JArray SupportedPatterns { get; set; }
     }
-    
+
     public static class UltraTaxFormHelper
     {
         public static string GetUniqueId(int fieldIndex, AutomationElement element)
@@ -83,6 +84,35 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities.Helpers
                 Width = rect.Width,
                 Height = rect.Height
             });
+        }
+
+        // Compare the two JObject instances for equality
+        public static bool AreJObjectsEqual(JObject jObject1, JObject jObject2)
+        {
+            return JToken.DeepEquals(jObject1, jObject2);
+        }
+
+        // Returns a dictionary mapping UniqueId to the value from the JSON data
+        public static Dictionary<string, string> GetFormFieldValuesFromMapping(JArray mappingArray, JObject jsonData)
+        {
+            var result = new Dictionary<string, string>();
+
+            foreach (var mapping in mappingArray)
+            {
+                var uniqueId = mapping["UniqueId"]?.ToString();
+                var apiFieldKey = mapping["ApiFieldKey"]?.ToString();
+
+                if (!string.IsNullOrEmpty(uniqueId) && !string.IsNullOrEmpty(apiFieldKey))
+                {
+                    var value = jsonData[apiFieldKey]?.ToString();
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        result[uniqueId] = value;
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }
