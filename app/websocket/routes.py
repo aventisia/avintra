@@ -7,6 +7,7 @@ from app.core.llm_service import LLMService
 from app.core.logger import logger
 from app.models.chat_message import ChatMessage
 from app.qdrant.service import add_document_to_collection
+from app.core.llm_service import generate_prompt_for_ai_persona
 
 # Create FastAPI router and initialize services
 router = APIRouter()
@@ -72,6 +73,7 @@ async def websocket_chat_handler(websocket: WebSocket):
             # Step 6: Echo the user message back
             await connection_manager.send_personal_message(user_message.dict(), connection_id)
             add_document_to_collection(user_message)
+
             # Step 7: Store user message in Qdrant
             try:
                 # add_document_to_collection(user_message)
@@ -80,7 +82,7 @@ async def websocket_chat_handler(websocket: WebSocket):
                 logger.warning(f"Failed to store user message in Qdrant: {e}")
 
             # Step 8: Compose prompt for the language model with AI persona
-            llm_prompt = f"You are an advanced AI assistant. Your responses are logical, concise, and fact-based. Answer this: {user_message.message}"
+            llm_prompt = generate_prompt_for_ai_persona(model_id=user_message.model_id, user_query= user_message.message)
             logger.info(f"Prompt sent to LLM: {llm_prompt}")
 
             # Step 9: Get a response from the LLM
