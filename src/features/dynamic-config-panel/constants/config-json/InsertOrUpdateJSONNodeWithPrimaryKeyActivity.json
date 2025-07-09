@@ -43,5 +43,17 @@
     "description": "The value to assign to the target key in the matched object.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "UpdatedJsonContent",
+    "label": "Updated JSON Content",
+    "description": "The updated JSON content after inserting or updating the node.",
+    "defaultValue": {
+      "value": "UpdatedJsonContent",
+      "enabled": true
+    },
+    "required": false
   }
 ]

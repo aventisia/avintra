@@ -172,9 +172,21 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
+    "name": "FtpsConnection",
+    "label": "FTPS Connection",
+    "description": "Returns the FTPS connection (FluentFTP).",
+    "defaultValue": {
+      "value": "FtpsConnection",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
     "name": "SftpConnection",
     "label": "SFTP Connection",
-    "description": "Returns the connection ID for the opened SFTP connection.",
+    "description": "Returns the SFTP connection (Renci.SshNet).",
     "defaultValue": {
       "value": "SftpConnection",
       "enabled": true
