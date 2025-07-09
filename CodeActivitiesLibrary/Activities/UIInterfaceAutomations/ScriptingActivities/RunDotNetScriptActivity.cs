@@ -29,7 +29,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 
             try
             {
-                // Validate input
+                 // Validate input
                 if (string.IsNullOrWhiteSpace(scriptCode))
                 {
                     throw new ArgumentException(".NET Script code cannot be null or empty.");
@@ -40,13 +40,29 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
                         .AddReferences(typeof(object).Assembly, typeof(Console).Assembly)
                         .AddImports("System");
 
-                // Create and run the script
-                var result = CSharpScript.RunAsync(scriptCode, options).Result;
+                // Redirect console output
+                var stringWriter = new StringWriter();
+                var originalOut = Console.Out;
+                Console.SetOut(stringWriter);
 
-                // Capture the output from the script result
-                output = result.ReturnValue?.ToString() ?? string.Empty;
+                try
+                {
+                    var result = CSharpScript.RunAsync(scriptCode, options).Result;
 
-                // Set the output and success status
+                    // Get console output
+                    output = stringWriter.ToString();
+
+                    // Optionally add the ReturnValue as well, if useful
+                    if (result.ReturnValue != null)
+                    {
+                        output += result.ReturnValue.ToString();
+                    }
+                }
+                finally
+                {
+                    Console.SetOut(originalOut); // restore original console output
+                }
+
                 ScriptOutput.Set(context, output);
                 StatusMessage.Set(context, "Script executed successfully.");
                 IsSuccess.Set(context, true);
