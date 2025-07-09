@@ -26,6 +26,7 @@ export const NodeContainer = ({
         nodeData.type == "blockNode" && "border-purple-300",
         className,
         selected && "border-primary ring ring-ring",
+        nodeData?.isDisabled && "opacity-50",
       )}
       {...props}
     >

@@ -19,7 +19,7 @@ export const useGetBlockActions = () => {
   const { data } = useQuery({
     queryKey: [FLOW_BLOCK_QUERY_KEY],
     queryFn: () => getFlowBlocks(versionId),
-    enabled: !!versionId,
+    enabled: !!versionId && import.meta.env.MODE !== "production",
   });
 
   // Get setActionSelectorData function from the store

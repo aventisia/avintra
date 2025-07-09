@@ -15,8 +15,8 @@ const getEdgeMinlen = (
   sourceNodeType?: CustomNodeType,
   targetNodeType?: CustomNodeType,
 ) => {
-  if (sourceNodeType === "branchNode1") return 4;
-  if (targetNodeType === "branchEndNode") return 4;
+  if (targetNodeType === "branchNode1") return 18;
+  if (targetNodeType === "branchEndNode") return 7;
   if (sourceNodeType === "mergeBranchesNode") return 6;
   return 8;
 };
@@ -37,7 +37,7 @@ const getLayoutedElements = (
   dagreGraph.setGraph({
     rankdir: direction, // Direction for rank nodes. Can be TB, BT, LR, or RL, where T = top, B = bottom, L = left, and R = right.
     nodesep: 200, // Number of pixels that separate nodes horizontally in the layout.
-    ranksep: 12, // Number of pixels between each rank in the layout.
+    ranksep: 5, // Number of pixels between each rank in the layout.
   });
 
   // Set nodes to the dagre graph
