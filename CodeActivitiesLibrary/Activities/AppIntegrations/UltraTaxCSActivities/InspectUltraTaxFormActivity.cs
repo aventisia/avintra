@@ -62,22 +62,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
                 // Initialize index and list for form element details
                 int tabCounter = 0;
                 var formFieldFinalList = new List<FormElementDetails>();
-                var excludedAutomationIds = new HashSet<string>
+                
+                // Press Ctrl + Home to focus on the first form field
+                for (int i = 0; i < 3; i++)
                 {
-                    "NonClientVerticalScrollBar", "UpButton", "DownButton", "UpPageButton", "DownPageButton", "ScrollbarThumb", "DropDown"
-                };
-                var excludedNames = new HashSet<string>
-                {
-                    "Vertical", "Line up", "Line down", "Page up", "Page down", "Position", "Open"
-                };
-                var excludedControlTypes = new HashSet<string>
-                {
-                    "ScrollBar", "Thumb", "Button"
-                };
+                    Keyboard.TypeSimultaneously(VirtualKeyShort.CONTROL, VirtualKeyShort.HOME);
+                    Thread.Sleep(100);
+                }
+
+                Thread.Sleep(500);
 
                 do
                 {
-                    Thread.Sleep(200);
                     // Get all descendants of the form element (assuming the focus is on the first form field)
                     var allDescendants = formElement.FindAllDescendants();
                     var formFields = allDescendants
@@ -85,9 +81,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
                                             // Exclude if it's a ScrollBar
                                             field.ControlType.ToString() != "ScrollBar" &&
                                             // Exclude if it's a Thumb or Button with excluded AutomationId or Name
-                                            !(excludedControlTypes.Contains(field.ControlType.ToString()) &&
-                                            excludedAutomationIds.Contains(field.Properties.AutomationId.ValueOrDefault) &&
-                                            excludedNames.Contains(field.Properties.Name.ValueOrDefault))
+                                            !(UltraTaxFormHelper.excludedControlTypes.Contains(field.ControlType.ToString()) &&
+                                            UltraTaxFormHelper.excludedAutomationIds.Contains(field.Properties.AutomationId.ValueOrDefault) &&
+                                            UltraTaxFormHelper.excludedNames.Contains(field.Properties.Name.ValueOrDefault))
                                         )
                                         .ToArray();
 
@@ -131,6 +127,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
 
                     // Press TAB to move to the next field
                     Keyboard.Press(VirtualKeyShort.TAB);
+                    Thread.Sleep(100);
 
                     // Increment tab counter
                     tabCounter++;

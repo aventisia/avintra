@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities.Helpers
     public class FormElementDetails
     {
         public int TabIndex { get; set; }
-        public string UniqueId { get; set; }
+        public List<string> UniqueId { get; set; }
         public string Name { get; set; }
         public string ClassName { get; set; }
         public string ControlType { get; set; }
@@ -26,30 +26,51 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities.Helpers
 
     public static class UltraTaxFormHelper
     {
-        public static string GetUniqueId(int fieldIndex, AutomationElement element)
+        public static HashSet<string> excludedAutomationIds = new HashSet<string>
+        {
+            "NonClientVerticalScrollBar", "UpButton", "DownButton", "UpPageButton", "DownPageButton", "ScrollbarThumb", "DropDown"
+        };
+
+        public static HashSet<string> excludedNames = new HashSet<string>
+        {
+            "Vertical", "Line up", "Line down", "Page up", "Page down", "Position", "Open"
+        };
+
+        public static HashSet<string> excludedControlTypes = new HashSet<string>
+        {
+            "ScrollBar", "Thumb", "Button"
+        };
+
+        public static List<string> GetUniqueId(int fieldIndex, AutomationElement element)
         {
             string uniqueId = $"{fieldIndex}";
+            string fieldName = "";
 
             if (element.Properties.Name.ValueOrDefault != null)
             {
-                var name = element.Properties.Name.ValueOrDefault.Trim();
+                fieldName = element.Properties.Name.ValueOrDefault.Trim();
                 // Replace spaces and newlines in the name to create a unique identifier
-                name = name.Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\t", "").Replace("  ", "");
-                name = name.Replace(":", "").Replace(";", "").Replace(",", "").Replace(".", "");
-                name = name.Replace("-", "").Replace("(", "").Replace(")", "").Replace("+", "");
-                name = name.Replace("'", "").Replace("\"", "").Replace("/", "").Replace("\\", "");
-                name = name.Replace("?", "").Replace("!", "").Replace("&", "").Replace("#", "").Replace("$", "");
-                name = name.Replace("@", "").Replace("*", "").Replace("=", "").Replace("<", "").Replace(">", "");
-                name = name.Replace("`", "").Replace("~", "").Replace("|", "").Replace("{", "").Replace("}", "");
-                name = name.Replace("+", "").Replace("*", "");
-                uniqueId += $"_{name}";
+                fieldName = fieldName.Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\t", "").Replace("  ", "");
+                fieldName = fieldName.Replace(":", "").Replace(";", "").Replace(",", "").Replace(".", "");
+                fieldName = fieldName.Replace("-", "").Replace("(", "").Replace(")", "").Replace("+", "");
+                fieldName = fieldName.Replace("'", "").Replace("\"", "").Replace("/", "").Replace("\\", "");
+                fieldName = fieldName.Replace("?", "").Replace("!", "").Replace("&", "").Replace("#", "").Replace("$", "");
+                fieldName = fieldName.Replace("@", "").Replace("*", "").Replace("=", "").Replace("<", "").Replace(">", "");
+                fieldName = fieldName.Replace("`", "").Replace("~", "").Replace("|", "").Replace("{", "").Replace("}", "");
+                fieldName = fieldName.Replace("+", "").Replace("*", "");
             }
             else
             {
-                uniqueId += "_NO_NAME";
+                fieldName = "_NO_NAME";
             }
-            // Generate a unique ID based on the element's properties
-            return $"{uniqueId}_{element.Properties.ClassName.ValueOrDefault}_{element.Properties.ControlType.ToString()}_{element.Properties.FrameworkId.ValueOrDefault}";
+            // Generate a unique ID List based on the element's properties
+            var uniqueIdList = new List<string>
+            {
+                $"{uniqueId}_{fieldName}_{element.Properties.ClassName.ValueOrDefault}_{element.Properties.ControlType.ToString()}_{element.Properties.FrameworkId.ValueOrDefault}",
+                $"{uniqueId}_{element.Properties.ClassName.ValueOrDefault}_{element.Properties.ControlType.ToString()}_{element.Properties.FrameworkId.ValueOrDefault}",
+            };
+
+            return uniqueIdList;
         }
 
         public static JArray GetSupportedPatterns(AutomationElement element)
@@ -99,15 +120,22 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities.Helpers
 
             foreach (var mapping in mappingArray)
             {
-                var uniqueId = mapping["UniqueId"]?.ToString();
+                var uniqueIdsToken = mapping["UniqueId"];
                 var apiFieldKey = mapping["ApiFieldKey"]?.ToString();
 
-                if (!string.IsNullOrEmpty(uniqueId) && !string.IsNullOrEmpty(apiFieldKey))
+                if (uniqueIdsToken != null && uniqueIdsToken.Type == JTokenType.Array && !string.IsNullOrEmpty(apiFieldKey))
                 {
                     var value = jsonData[apiFieldKey]?.ToString();
                     if (!string.IsNullOrEmpty(value))
                     {
-                        result[uniqueId] = value;
+                        foreach (var uniqueId in uniqueIdsToken)
+                        {
+                            var uniqueIdStr = uniqueId?.ToString();
+                            if (!string.IsNullOrEmpty(uniqueIdStr))
+                            {
+                                result[uniqueIdStr] = value;
+                            }
+                        }
                     }
                 }
             }
