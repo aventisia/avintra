@@ -57,20 +57,15 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
                         throw new InvalidOperationException(
                             "CMD session was not started with RedirectStandardInput = true.");
 
-                    // Write the command
-                    if (sendEnter)
-                    {
-                        cmdSession.StandardInput.WriteLine(command);
-                    }
-                    else
-                    {
-                        cmdSession.StandardInput.Write(command + "\r\n");
-                    }
-
-                    // Optional: flush to ensure data is sent immediately
+                    cmdSession.StandardInput.WriteLine(command);
                     cmdSession.StandardInput.Flush();
 
-                    Console.WriteLine($"Command written to CMD: {command}");
+                    if (sendEnter)
+                    {
+                        cmdSession.StandardInput.WriteLine();
+                        cmdSession.StandardInput.Flush();
+                    }
+
                     status += $": '{command}'";
                 }
                 else

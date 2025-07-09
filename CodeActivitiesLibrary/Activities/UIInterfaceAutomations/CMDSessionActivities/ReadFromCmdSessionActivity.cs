@@ -42,10 +42,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
         // Execution Logic
         // ----------------------
 
-        protected override void Execute(CodeActivityContext context)
-        {
-
-            try
+    protected override void Execute(CodeActivityContext context)
+    {
+        
+        try
             {
                 var cmdSession = CmdSession.Get(context);
                 var separateOutputFromError = SeparateOutputFromError.Get(context);
@@ -53,20 +53,19 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
                 if (cmdSession == null)
                     throw new ArgumentException("CMD session cannot be null.");
 
-                // Ensure the process has started
-                if (!cmdSession.HasExited)
+                string stdout = "";
+                string stderr = "";
+
+                // Try reading available output immediately
+                using (var stdOutReader = cmdSession.StandardOutput)
+                using (var stdErrReader = cmdSession.StandardError)
                 {
-                    // Wait for the process to exit
-                    cmdSession.WaitForExit();
+                    stdout = stdOutReader.ReadToEnd();
+                    stderr = stdErrReader.ReadToEnd();
                 }
 
-                // Read standard output and standard error
-                string stdout = cmdSession.StandardOutput.ReadToEnd();
-                string stderr = cmdSession.StandardError.ReadToEnd();
-
-                // Set outputs
                 CmdOutput.Set(context, stdout);
-
+                
                 if (separateOutputFromError)
                 {
                     CmdError.Set(context, stderr);
@@ -77,14 +76,14 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
                     CmdOutput.Set(context, $"{stdout}{stderr}");
                 }
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $" Successfully read output from CMD session.");
+                StatusMessage.Set(context, "Successfully read output from CMD session.");
             }
             catch (Exception ex)
             {
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error reading CMD session: {ex.Message}");
             }
-        }
+    }
     }
 
 }

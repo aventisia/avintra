@@ -42,10 +42,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
         public InArgument<int> Timeout { get; set; } = new InArgument<int>(10); // Default timeout
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-        // ----------------------
         // Execution Logic
         // ----------------------
 
@@ -67,90 +63,56 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
                 if (string.IsNullOrWhiteSpace(textToWaitFor))
                     throw new ArgumentException("Text to wait for cannot be empty.");
 
-                // Give the process a small grace period before checking if it's still alive
-                if (cmdSession.HasExited)
-                {
-                    // Try to wait a bit more just in case
-                    if (!cmdSession.WaitForExit(1000)) // Wait up to 1 second
-                    {
-                        throw new InvalidOperationException("CMD session has already exited.");
-                    }
-                }
+                // Gracefully wait for process start
+                if (!cmdSession.HasExited && !cmdSession.Responding)
+                    Thread.Sleep(500);
 
-                // Configure regex options based on input arguments
                 RegexOptions regexOptions = ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None;
-
-                // Initialize output and flag
                 string output = string.Empty;
                 bool textFound = false;
-
-                // Lock object for thread-safe access
-                object lockObj = new object();
-
-                // Start reading output asynchronously
+                DateTime startTime = DateTime.Now;
                 using (var reader = cmdSession.StandardOutput)
                 {
-                    Thread readThread = new Thread(() =>
+                    while (!textFound && !cmdSession.HasExited &&
+                           (timeoutSeconds == 0 || output.Length < 1024 * 1024)) // limit buffer size
                     {
-                        while (!textFound && !cmdSession.HasExited)
+                        string line = reader.ReadLine();
+                        if (line != null)
                         {
-                            string line = reader.ReadLine();
-                            if (line != null)
-                            {
-                                lock (lockObj)
-                                {
-                                    output += line + Environment.NewLine;
+                            output += line + Environment.NewLine;
 
-                                    if (isRegularExpression)
-                                    {
-                                        textFound = Regex.IsMatch(output, textToWaitFor, regexOptions);
-                                    }
-                                    else
-                                    {
-                                        textFound = output.Contains(textToWaitFor);
-                                        textFound = true;
-                                    }
-                                }
-                            }
-                        }
-                    });
+                            if (isRegularExpression)
+                                textFound = Regex.IsMatch(output, textToWaitFor, regexOptions);
+                            else
+                                textFound = output.Contains(textToWaitFor);
 
-                    readThread.Start();
+                            if (textFound) break;
+                        }
 
-                    // Wait for match or timeout
-                    if (timeoutSeconds > 0)
-                    {
-                        if (!readThread.Join(TimeSpan.FromSeconds(timeoutSeconds)))
-                        {
-                            status = $"Timeout occurred after {timeoutSeconds} seconds.";
-                        }
-                    }
-                    else
-                    {
-                        readThread.Join(); // No timeout
-                    }
+                        if (timeoutSeconds > 0 && timeoutSeconds <= (DateTime.Now - startTime).TotalSeconds)
+                            break;
 
-                    // Final check
-                    lock (lockObj)
-                    {
-                        if (textFound)
-                        {
-                            status += $" Successfully found text: '{textToWaitFor}'";
-                        }
-                        else
-                        {
-                            status = $"Text not found: '{textToWaitFor}'";
-                        }
+                        Thread.Sleep(100); // Avoid CPU overuse
                     }
                 }
-                IsSuccess.Set(context, true);
+
+                if (textFound)
+                {
+                    status += $" Successfully found text: '{textToWaitFor}'";
+                    IsSuccess.Set(context, true);
+                }
+                else
+                {
+                    status = $"Text not found: '{textToWaitFor}'";
+                    IsSuccess.Set(context, false);
+                }
+
                 StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
-                status = $"Error waiting for text: {ex.Message}";
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error waiting for text: {ex.Message}");
             }
         }
     }

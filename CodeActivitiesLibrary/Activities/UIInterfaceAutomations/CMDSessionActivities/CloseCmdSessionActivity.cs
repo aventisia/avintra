@@ -19,7 +19,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
         [Description("The process representing the open CMD session.")]
         public InArgument<Process> CmdSession { get; set; }
 
-         
+
         // ----------------------
         // Execution Logic
         // ----------------------
@@ -35,16 +35,28 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
                 if (cmdSession == null)
                     throw new ArgumentException("CMD session cannot be null.");
 
-                // Ensure the process has started and is running
                 if (!cmdSession.HasExited)
                 {
-                    // Close the CMD session
-                    cmdSession.Close();
-                    Console.WriteLine("CMD session closed successfully.");
+                    try
+                    {
+                        cmdSession.StandardInput.WriteLine("exit");
+                        cmdSession.StandardInput.Flush();
+                        if (!cmdSession.WaitForExit(2000)) // Wait up to 2 seconds
+                        {
+                            cmdSession.Kill(); // Force close if not responding
+                        }
+
+                        status += ": CMD session closed gracefully.";
+                    }
+                    catch
+                    {
+                        cmdSession.Kill();
+                        status += ": CMD session forcibly killed.";
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("CMD session has already exited.");
+                    status += ": CMD session already exited.";
                 }
 
                 status += $" Successfully closed CMD session.";
@@ -59,5 +71,5 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
             }
         }
     }
-
+    
 }

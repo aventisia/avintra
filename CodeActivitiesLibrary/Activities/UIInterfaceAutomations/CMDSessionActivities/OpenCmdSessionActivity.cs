@@ -82,7 +82,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
 
                     process.StartInfo = processStartInfo;
                     process.Start();
-                    process.WaitForExit();
 
                     // Store the CMD session details (e.g., PID or command used)
                     var cmdSessionDetails = $"CMD Session started in {workingFolder}";
@@ -91,8 +90,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
                         cmdSessionDetails += $" with encoding: {GetEncodingDescription(encoding)}";
                     }
 
-                    CmdSession.Set(context, cmdSessionDetails);
-                    status += $" Successfully opened CMD session in '{workingFolder}'.";
+                    CmdSession.Set(context, process);
+                    status += $" Successfully opened CMD session in '{workingFolder}'. {cmdSessionDetails}";
                     IsSuccess.Set(context, true);
                     StatusMessage.Set(context, status);
                 }
@@ -100,6 +99,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
             catch (Exception ex)
             {
                 status = $"Error opening CMD session: {ex.Message}";
+                CmdSession.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
             }
