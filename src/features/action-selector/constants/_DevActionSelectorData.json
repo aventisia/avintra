@@ -247,15 +247,6 @@
           },
           {
             "type": "activityNode",
-            "name": "ConvertDatetimeToTextActivity",
-            "label": "Convert Datetime to Text",
-            "description": "Converts a datetime value into text using either a standard or custom format.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "ConvertNumberToTextActivity",
             "label": "Convert Number to Text",
             "description": "Converts a numeric value into text with specified formatting options.",
@@ -493,6 +484,15 @@
             "name": "AddToDateTimeActivity",
             "label": "Add Time to DateTime",
             "description": "Adds a specified time value to the given DateTime based on the selected time unit.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "FormatDateTimeActivity",
+            "label": "Format DateTime",
+            "description": "Formats a DateTime value into a standard or custom string format.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"

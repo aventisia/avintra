@@ -3,8 +3,8 @@
     "direction": "Input",
     "type": "text",
     "name": "DatetimeToConvert",
-    "label": "Datetime to Convert",
-    "description": "The datetime value to convert to text.",
+    "label": "DateTime Value",
+    "description": "The DateTime value to format.",
     "defaultValue": "",
     "required": false
   },
@@ -12,8 +12,8 @@
     "direction": "Input",
     "type": "select",
     "name": "FormatToUse",
-    "label": "Format to Use",
-    "description": "Specifies whether to use a standard datetime format or create a custom one.",
+    "label": "Format Option",
+    "description": "Choose whether to use a standard or custom DateTime format.",
     "defaultValue": "Standard",
     "required": false,
     "selectOptions": [
@@ -34,7 +34,7 @@
     "type": "select",
     "name": "StandardFormat",
     "label": "Standard Format",
-    "description": "The standard datetime format to use when displaying the datetime value.",
+    "description": "The standard DateTime format to use.",
     "defaultValue": "ShortDate",
     "required": false,
     "selectOptions": [
@@ -97,8 +97,8 @@
     "direction": "Input",
     "type": "text",
     "name": "CustomFormat",
-    "label": "Custom Format",
-    "description": "A custom format string for formatting the datetime value (e.g., yyyyMMdd).",
+    "label": "Custom Format String",
+    "description": "A custom format string for the DateTime value (e.g., yyyyMMdd).",
     "defaultValue": "",
     "required": false,
     "renderIf": {
@@ -114,8 +114,8 @@
     "direction": "Output",
     "type": "config-panel-output",
     "name": "FormattedDateTime",
-    "label": "Formatted DateTime",
-    "description": "The formatted datetime as a text value.",
+    "label": "Formatted DateTime String",
+    "description": "The formatted DateTime as a string.",
     "defaultValue": {
       "value": "FormattedDateTime",
       "enabled": true
