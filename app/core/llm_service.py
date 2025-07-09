@@ -2,6 +2,7 @@ import httpx
 from typing import Any, Dict
 from app.core.config import settings
 from app.core.logger import logger
+from app.qdrant.service import get_last_chat_turn_by_model_id, get_document_context_by_model_id  
 
 if not settings.ollama_api_url:
     logger.warning("OLLAMA_API_URL is not set")
@@ -96,3 +97,35 @@ class LLMService:
         except Exception as e:
             logger.exception(f"Unexpected error: {str(e)}") 
             return {"error": f"Unexpected error: {str(e)}"}
+
+
+def generate_prompt_for_ai_persona(model_id: str, user_query: str) -> str:
+    """
+    Generates a prompt for the AIPersona that includes:
+    - Relevant document context
+    - The latest chat turn (user + AI)
+    - The current user query
+    """
+
+    # Step 1: Get document context
+    document_context = get_document_context_by_model_id(user_query=user_query, model_id=model_id)
+
+    # Step 2: Get last chat exchange (user + AI)
+    last_chat = get_last_chat_turn_by_model_id(model_id=model_id)
+    chat_history = ""
+    if last_chat:
+        # Rephrase to include user and AI conversation history as strings
+        chat_history = f"User: {last_chat['User']}\nAIPersona: {last_chat['AIPersona']}"
+
+    # Step 3: Combine into prompt with string response
+    prompt = f"""
+        You are AIPersona, an intelligent assistant with helpful insights.
+
+        # # Context from Documents: {document_context}
+
+        # Previous Chat (most recent): {chat_history}
+
+        # New User Question: {user_query}
+        """
+
+    return prompt.strip()
