@@ -47,7 +47,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [Description("The updated data table with the new column inserted.")]
         public OutArgument<DataTable> ModifiedDataTable { get; set; }
 
-         // ----------------------
+        // ----------------------
         // Execution Logic
         // ----------------------
 
@@ -61,18 +61,18 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 var insertLocation = InsertLocation.Get(context);
 
                 if (dataTable == null)
-                    throw new ArgumentException("Data table cannot be null.");
+                    throw new ArgumentException("DataTable cannot be null.");
 
                 if (string.IsNullOrWhiteSpace(columnName))
                     throw new ArgumentException("Column name cannot be empty.");
 
+                if (dataType == null)
+                    throw new ArgumentException("Data type cannot be null.");
+
                 if (dataTable.Columns.Contains(columnName))
-                    throw new ArgumentException($"A column named '{columnName}' already exists in the data table.");
+                    throw new ArgumentException($"Column '{columnName}' already exists.");
 
-                if (dataType == null || !typeof(ValueType).IsAssignableFrom(dataType) && dataType != typeof(string))
-                    throw new ArgumentException("Invalid data type specified.");
-
-                // Create new DataColumn
+                // Create new column
                 var newColumn = new DataColumn(columnName, dataType);
 
                 switch (insertLocation)
@@ -82,21 +82,15 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                         break;
 
                     case DataTableInsertLocationEnum.BeforeColumnIndex:
-                        {
-                            int columnIndex = ColumnIndex.Get(context);
-
-                            if (columnIndex < 0 || columnIndex > dataTable.Columns.Count)
-                                throw new ArgumentOutOfRangeException(nameof(columnIndex),
-                                    $"Column index must be between 0 and {dataTable.Columns.Count - 1}.");
-
-                            // Add and set ordinal
-                            dataTable.Columns.Add(newColumn);
-                            newColumn.SetOrdinal(columnIndex);
-                            break;
-                        }
+                        var index = ColumnIndex.Get(context);
+                        if (index < 0 || index > dataTable.Columns.Count)
+                            throw new ArgumentOutOfRangeException(nameof(index), $"Index must be between 0 and {dataTable.Columns.Count}");
+                        dataTable.Columns.Add(newColumn);
+                        newColumn.SetOrdinal(index);
+                        break;
 
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(insertLocation));
                 }
 
                 // Set outputs
@@ -107,7 +101,6 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             catch (Exception ex)
             {
                 // Log error and return failure
-                Console.WriteLine($"Error inserting column: {ex.Message}");
                 ModifiedDataTable.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error inserting column: {ex.Message}");

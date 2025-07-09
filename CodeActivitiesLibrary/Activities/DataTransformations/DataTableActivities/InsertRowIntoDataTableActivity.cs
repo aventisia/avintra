@@ -42,15 +42,8 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [Description("The updated data table with the new row inserted.")]
         public OutArgument<DataTable> ModifiedDataTable { get; set; }
 
-        [DisplayName("Is Success")]
-        [Description("Indicates whether the operation completed successfully.")]
-        public OutArgument<bool> IsSuccess { get; set; }
 
-        [DisplayName("Status Message")]
-        [Description("Provides additional information about the result, including any error messages.")]
-        public OutArgument<string> StatusMessage { get; set; }
-
-         // ----------------------
+        // ----------------------
         // Execution Logic
         // ----------------------
 
@@ -63,26 +56,24 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 var insertLocation = InsertLocation.Get(context);
 
                 if (dataTable == null)
-                    throw new ArgumentException("Data table cannot be null.");
+                    throw new ArgumentException("DataTable cannot be null.");
 
                 if (rowValues == null)
-                    throw new ArgumentException("Row values cannot be null.");
+                    throw new ArgumentException("RowValues cannot be null.");
 
                 if (rowValues.Length != dataTable.Columns.Count)
                     throw new ArgumentException(
-                        $"Number of row values ({rowValues.Length}) does not match the number of columns ({dataTable.Columns.Count}).");
+                        $"RowValues length ({rowValues.Length}) does not match the number of columns ({dataTable.Columns.Count}).");
 
-                // Clone the original table to prevent side-effects (optional but safe)
-                var modifiedTable = dataTable.Copy();
-
-                // Create a new row and assign values
-                var newRow = modifiedTable.NewRow();
+                // create new DataRow
+                var newRow = dataTable.NewRow();
                 for (int i = 0; i < rowValues.Length; i++)
                 {
-                    var value = rowValues[i];
-                    var columnType = modifiedTable.Columns[i].DataType;
+                    var columnType = dataTable.Columns[i].DataType;
 
-                    if (value == null || value is DBNull)
+                    object value = rowValues[i];
+
+                    if (value == null || value == DBNull.Value)
                     {
                         newRow[i] = DBNull.Value;
                     }
@@ -98,42 +89,36 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                         }
                         catch (Exception ex)
                         {
-                            throw new InvalidCastException($"Value at index {i} cannot be cast to {columnType.Name}.", ex);
+                            throw new InvalidCastException($"Value at index {i} cannot be converted to {columnType.Name}.", ex);
                         }
                     }
                 }
 
-                // Insert based on location
                 switch (insertLocation)
                 {
-                    case DataTableInsertRowLocationEnum.BeforeRowIndex:
-                        {
-                            var rowIndex = RowIndex.Get(context);
-
-                            if (rowIndex < 0 || rowIndex > modifiedTable.Rows.Count)
-                                throw new ArgumentOutOfRangeException(nameof(rowIndex),
-                                    $"Row index must be between 0 and {modifiedTable.Rows.Count}.");
-
-                            modifiedTable.Rows.InsertAt(newRow, rowIndex);
-                            break;
-                        }
-
                     case DataTableInsertRowLocationEnum.EndOfDataTable:
-                        modifiedTable.Rows.Add(newRow);
+                        dataTable.Rows.Add(newRow);
+                        break;
+
+                    case DataTableInsertRowLocationEnum.BeforeRowIndex:
+                        var rowIndex = RowIndex.Get(context);
+                        if (rowIndex < 0 || rowIndex > dataTable.Rows.Count)
+                            throw new ArgumentOutOfRangeException(nameof(rowIndex),
+                                $"Row index must be between 0 and {dataTable.Rows.Count}.");
+                        dataTable.Rows.InsertAt(newRow, rowIndex);
                         break;
 
                     default:
-                        throw new InvalidOperationException("Invalid insert location.");
+                        throw new InvalidOperationException("Unsupported insert location.");
                 }
 
                 // Set outputs
-                ModifiedDataTable.Set(context, modifiedTable);
+                ModifiedDataTable.Set(context, dataTable);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $"Successfully inserted row into the data table.");
+                StatusMessage.Set(context, $"Successfully inserted row at location {insertLocation}.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error inserting row: {ex.Message}");
                 ModifiedDataTable.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error inserting row: {ex.Message}");

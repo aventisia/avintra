@@ -43,41 +43,58 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             var mergeMode = context.GetValue(MergeMode);
 
             // Validate inputs
-            if (firstDataTable == null) throw new ArgumentException("First Data Table cannot be null.");
-
-            if (secondDataTable == null) throw new ArgumentException("Second Data Table cannot be null.");
+            if (firstDataTable == null)
+                throw new ArgumentException("First Data Table cannot be null.");
+            if (secondDataTable == null)
+                throw new ArgumentException("Second Data Table cannot be null.");
 
             try
             {
-                // Clone the first DataTable to avoid modifying the original
-                var mergedDataTable = firstDataTable.Clone();
+                // Create a new DataTable to hold the merged result
+                var mergedTable = new DataTable("MergedTable");
 
-                // Handle columns based on the merge mode
-                switch (mergeMode)
+                // Step 1: Add all unique columns from both tables
+                foreach (DataColumn column in firstDataTable.Columns)
+                    mergedTable.Columns.Add(column.ColumnName, column.DataType);
+
+                foreach (DataColumn column in secondDataTable.Columns)
                 {
-                    case DataTableMergeModeEnum.AddExtraColumns:
-                        AddExtraColumns(firstDataTable, secondDataTable, mergedDataTable);
-                        break;
-
-                    case DataTableMergeModeEnum.IgnoreExtraColumns:
-                        IgnoreExtraColumns(firstDataTable, secondDataTable, mergedDataTable);
-                        break;
-
-                    case DataTableMergeModeEnum.ErrorOnExtraColumns:
-                        ErrorOnExtraColumns(firstDataTable, secondDataTable);
-                        break;
-
-                    default:
-                        throw new ArgumentException($"Unsupported merge mode: {mergeMode}");
+                    if (!mergedTable.Columns.Contains(column.ColumnName))
+                        mergedTable.Columns.Add(column.ColumnName, column.DataType);
                 }
 
-                // Copy rows from the second DataTable
-                foreach (DataRow row in secondDataTable.Rows) mergedDataTable.ImportRow(row);
+                // Step 2: Import rows from first table
+                foreach (DataRow row in firstDataTable.Rows)
+                {
+                    var newRow = mergedTable.NewRow();
+                    foreach (DataColumn column in firstDataTable.Columns)
+                        newRow[column.ColumnName] = row[column];
+
+                    mergedTable.Rows.Add(newRow);
+                }
+
+                // Step 3: Import rows from second table
+                foreach (DataRow row in secondDataTable.Rows)
+                {
+                    var newRow = mergedTable.NewRow();
+
+                    foreach (DataColumn column in secondDataTable.Columns)
+                        newRow[column.ColumnName] = row[column];
+
+                    // Fill in missing columns with default values
+                    foreach (DataColumn column in mergedTable.Columns)
+                    {
+                        if (!row.Table.Columns.Contains(column.ColumnName))
+                            newRow[column.ColumnName] = DBNull.Value;
+                    }
+
+                    mergedTable.Rows.Add(newRow);
+                }
 
                 // Set outputs
-                MergedDataTable.Set(context, mergedDataTable);
+                MergedDataTable.Set(context, mergedTable);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Successfully merged the data tables.");
+                StatusMessage.Set(context, "Successfully merged the data tables, including all columns from both.");
             }
             catch (Exception ex)
             {
