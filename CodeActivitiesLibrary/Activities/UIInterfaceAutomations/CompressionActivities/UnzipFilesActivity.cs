@@ -1,10 +1,13 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Zip;
+using SharpCompress.Common;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.IO;
-using System.IO.Compression;
 using System.Text.RegularExpressions;
+using SharpCompress.Readers;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 {
@@ -64,15 +67,12 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 
                 // Ensure destination exists
                 Directory.CreateDirectory(destinationFolder);
-
-                // Simulate unzipping process
+                // Extract files from the ZIP archive
                 var success = ExtractZipFile(archivePath, destinationFolder, password, includeMask, excludeMask);
-
                 if (success)
                     status = $"Successfully extracted files from '{archivePath}' to '{destinationFolder}'.";
                 else
                     status = "Failed to extract files from ZIP archive.";
-
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }
@@ -94,31 +94,25 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
         {
             try
             {
-                // TODO: Implement real extraction logic with password & filtering support
-                // Standard ZipArchive does not support password-protected archives
-                // For production use, consider:
-                // - Ionic.Zip (DotNetZip)
-                // - SharpCompress
-                // - 7-Zip SDK via CLI or interop
-
-                // Simulated behavior
-                using (var archive = ZipFile.OpenRead(archivePath))
+                using (var archive = ZipArchive.Open(archivePath, new ReaderOptions()
+                       {
+                           Password = password
+                       }))
                 {
                     foreach (var entry in archive.Entries)
                     {
-                        // Skip directories and apply include/exclude masks
-                        if (entry.FullName.EndsWith("/")) continue;
-
-                        var fileName = Path.GetFileName(entry.FullName);
-
+                        if (entry.IsDirectory) continue;
+                        var fileName = Path.GetFileName(entry.Key);
                         if (!string.IsNullOrEmpty(includeMask) && !MatchesMask(fileName, includeMask)) continue;
                         if (!string.IsNullOrEmpty(excludeMask) && MatchesMask(fileName, excludeMask)) continue;
-
-                        var destinationPath = Path.Combine(destinationFolder, entry.FullName);
+                        var destinationPath = Path.Combine(destinationFolder, entry.Key);
                         var destDir = Path.GetDirectoryName(destinationPath);
-
                         Directory.CreateDirectory(destDir);
-                        entry.ExtractToFile(destinationPath, true);
+                        entry.WriteToDirectory(destinationFolder, new ExtractionOptions
+                        {
+                            ExtractFullPath = true,
+                            Overwrite = true
+                        });
                     }
                 }
 
@@ -133,7 +127,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
         private bool MatchesMask(string fileName, string mask)
         {
             if (string.IsNullOrEmpty(mask)) return true;
-
             foreach (var pattern in mask.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var regexPattern = "^" + Regex.Escape(pattern).Replace("\\*", ".*").Replace("\\?", ".") + "$";
@@ -143,6 +136,5 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 
             return false;
         }
-
     }
 }
