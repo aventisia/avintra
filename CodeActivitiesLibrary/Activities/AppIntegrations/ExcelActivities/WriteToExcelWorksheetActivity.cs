@@ -64,8 +64,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
-
             try
             {
                 var excelApp = ExcelApplication.Get(context);
@@ -144,13 +142,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                     default:
                         throw new ArgumentOutOfRangeException(nameof(writeMode));
                 }
+
+                // Set outputs on success
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, "Successfully wrote to Excel.");
             }
             catch (Exception ex)
-            {
-                status = $"Error writing to Excel: {ex.Message}";
+            {              
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error writing to Excel: {ex.Message}");
             }
-
-            StatusMessage.Set(context, status);
         }
 
         private void WriteValueToRange(Excel.Range range, object value)

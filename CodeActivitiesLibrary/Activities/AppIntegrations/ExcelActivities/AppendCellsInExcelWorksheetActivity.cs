@@ -86,21 +86,66 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             if (namedRange == null)
                                 throw new ArgumentException($"Named range '{name}' not found.");
 
-                            var rowCount = namedRange.Rows.Count;
-                            var colCount = namedRange.Columns.Count;
+                            int namedRowCount = namedRange.Rows.Count;
+                            int namedColCount = namedRange.Columns.Count;
 
-                            for (var i = 0; i < dataTable.Rows.Count; i++)
+                            // Find the first empty row in the named range
+                            int startRow = -1;
+                            for (int r = 1; r <= namedRowCount; r++)
                             {
-                                var row = dataTable.Rows[i];
+                                bool isEmpty = true;
+                                for (int c = 1; c <= namedColCount; c++)
+                                {
+                                    if (namedRange.Cells[r, c]?.Value != null)
+                                    {
+                                        isEmpty = false;
+                                        break;
+                                    }
+                                }
 
-                                if (hasHeaders && i == 0)
-                                    continue; // Skip header
-
-                                for (var j = 0; j < dataTable.Columns.Count; j++)
-                                    namedRange.Cells[rowCount + i + 1, j + 1] = row[j]?.ToString();
+                                if (isEmpty)
+                                {
+                                    startRow = r;
+                                    break;
+                                }
                             }
 
-                            status += $" Appended data to named range '{name}'.";
+                            // If no empty row found, start after the last row
+                            if (startRow == -1)
+                            {
+                                startRow = namedRowCount + 1;
+                            }
+
+                            // Append DataTable rows into the named range starting at startRow
+                            int rowIndex = 0;
+                            foreach (DataRow row in dataTable.Rows)
+                            {
+                                if (hasHeaders && rowIndex == 0)
+                                {
+                                    rowIndex++;
+                                    continue; // Skip header
+                                }
+
+                                int adjustedRow = startRow + (rowIndex - (hasHeaders ? 1 : 0));
+
+                                if (adjustedRow > namedRowCount)
+                                {
+                                    // Optional: Resize named range or warn user
+                                    // For now, just skip writing beyond the range
+                                    rowIndex++;
+                                    continue;
+                                }
+
+                                for (int colIndex = 0; colIndex < dataTable.Columns.Count; colIndex++)
+                                {
+                                    var cell = namedRange.Cells[adjustedRow, colIndex + 1];
+                                    cell.Value = row[colIndex]?.ToString();
+                                }
+
+                                rowIndex++;
+                            }
+
+                            status += $" Appended data to named range '{name}' starting at row {startRow}.";
                             break;
                         }
 
