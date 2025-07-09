@@ -6,26 +6,26 @@ from app.api.Extraction import router as pdf_extraction_router
 from app.api.TextToSpeech import router as text_to_speech_router
 from app.api.SpeechToText import router as speech_to_text_router
 from app.api.KokoroTTS import router as kokoro_text_to_speech_router
+from app.websocket.routes import router as websocket_router
 from app.dependencies.auth import authenticate_current_user
-from app.websocket import routes as websocket_routes
-from app.qdrant.service import initialize_qdrant_collection
+from app.qdrant.service import initialize_qdrant_collections
 from app.models.user import User
 
 # Initialize the FastAPI application
 app = FastAPI(root_path="/api")
 
-initialize_qdrant_collection()
+initialize_qdrant_collections()
 
 # Register API routes with tags for automatic documentation
 app.include_router(pdf_extraction_router, tags=["PDF Extraction"])
 app.include_router(text_to_speech_router, tags=["Text-to-Speech"])
 app.include_router(speech_to_text_router, tags=["Speech-to-Text"])
 app.include_router(kokoro_text_to_speech_router, tags=["Kokoro TTS"])
-app.include_router(websocket_routes.router)
+app.include_router(websocket_router, tags=["WebSockets"])
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace * with specific domains if needed, e.g., ["https://your-frontend-domain.com"]
+    allow_origins=["*"],  # Replace * with specific domains if needed
     allow_credentials=True,
     allow_methods=["*"],  # Allow any method (GET, POST, etc.)
     allow_headers=["*"],  # Allow any header
