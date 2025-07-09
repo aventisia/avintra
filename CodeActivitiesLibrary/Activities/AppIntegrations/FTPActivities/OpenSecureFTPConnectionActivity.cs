@@ -174,16 +174,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                         if (authMethod != AuthenticationMethodEnum.UsernameAndPassword)
                             throw new NotSupportedException("FTPS only supports username/password authentication.");
 
-                        var ftpsClient = new FtpClient(host, port, new NetworkCredential(username, password))
+                        var ftpsClient = new FtpClient(host, port)
                         {
+                            Credentials = new System.Net.NetworkCredential(username, password),
                             Config =
                             {
                                 EncryptionMode = GetEncryptionMode(protocol),
                                 ValidateAnyCertificate = acceptUntrusted,
                                 DataConnectionType = activeMode ? FtpDataConnectionType.AutoActive : FtpDataConnectionType.AutoPassive,
-                                SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls
+                                SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls,
+                                ConnectTimeout = timeoutSeconds * 1000
                             },
-                            ConnectTimeout = timeoutSeconds * 1000
                         };
 
                         ftpsClient.Connect();
