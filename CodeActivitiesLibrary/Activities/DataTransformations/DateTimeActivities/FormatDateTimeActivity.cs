@@ -5,36 +5,33 @@ using System.Activities;
 using System.ComponentModel;
 using System.Globalization;
 
-namespace CodeActivitiesLibrary.DataTransformations.TextActivities
+namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 {
-    [DisplayName("Convert Datetime to Text")]
-    [Description("Converts a datetime value into text using either a standard or custom format.")]
-    public class ConvertDatetimeToTextActivity : BaseCodeActivity
+    [DisplayName("Format DateTime")]
+    [Description("Formats a DateTime value into a standard or custom string format.")]
+    public class FormatDateTimeActivity : BaseCodeActivity
     {
         #region Inputs
 
-        [DisplayName("Datetime to Convert")]
-        [Description("The datetime value to convert to text.")]
+        [DisplayName("DateTime Value")]
+        [Description("The DateTime value to format.")]
         public InArgument<object> DatetimeToConvert { get; set; }
 
-
-        [DisplayName("Format to Use")]
-        [Description("Specifies whether to use a standard datetime format or create a custom one.")]
+        [DisplayName("Format Option")]
+        [Description("Choose whether to use a standard or custom DateTime format.")]
         [DefaultValue(FormatOptionEnum.Standard)]
         public InArgument<FormatOptionEnum> FormatToUse { get; set; } =
             new InArgument<FormatOptionEnum>(FormatOptionEnum.Standard);
 
-
         [DisplayName("Standard Format")]
-        [Description("The standard datetime format to use when displaying the datetime value.")]
+        [Description("The standard DateTime format to use.")]
         [RenderIfCondition(nameof(FormatToUse), FormatOptionEnum.Standard)]
         public InArgument<StandardFormatOptionEnum> StandardFormat { get; set; } =
             new InArgument<StandardFormatOptionEnum>(
                 StandardFormatOptionEnum.ShortDate);
 
-
-        [DisplayName("Custom Format")]
-        [Description("A custom format string for formatting the datetime value (e.g., yyyyMMdd).")]
+        [DisplayName("Custom Format String")]
+        [Description("A custom format string for the DateTime value (e.g., yyyyMMdd).")]
         [RenderIfCondition(nameof(FormatToUse), FormatOptionEnum.Custom)]
         public InArgument<string> CustomFormat { get; set; }
 
@@ -42,8 +39,8 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         #region Outputs
 
-        [DisplayName("Formatted DateTime")]
-        [Description("The formatted datetime as a text value.")]
+        [DisplayName("Formatted DateTime String")]
+        [Description("The formatted DateTime as a string.")]
         public OutArgument<string> FormattedDateTime { get; set; }
 
         #endregion
@@ -60,7 +57,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 var customFormat = CustomFormat.Get(context);
 
                 if (datetimeGivenToConvert == null)
-                    throw new ArgumentException("Datetime to Convert cannot be null.");
+                    throw new ArgumentException("DateTime value cannot be null.");
 
                 DateTime datetimeToConvert;
 
@@ -69,13 +66,13 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                     case string s:
                         datetimeToConvert = DateTime.TryParse(s, out var parsedDateTime)
                             ? parsedDateTime
-                            : throw new ArgumentException("Invalid datetime string format.");
+                            : throw new ArgumentException("Invalid DateTime string format.");
                         break;
                     case DateTime dt:
                         datetimeToConvert = dt;
                         break;
                     default:
-                        throw new ArgumentException("Invalid datetime string format or datetime object.");
+                        throw new ArgumentException("Invalid DateTime string format or DateTime object.");
                 }
 
                 // Format
@@ -95,13 +92,13 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
                 // Set success outputs
                 FormattedDateTime.Set(context, result);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Datetime converted successfully.");
+                StatusMessage.Set(context, "DateTime formatted successfully.");
             }
             catch (Exception ex)
             {
                 FormattedDateTime.Set(context, null);
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error converting datetime: {ex.Message}");
+                StatusMessage.Set(context, $"Error formatting DateTime: {ex.Message}");
             }
         }
 
@@ -135,7 +132,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         public static string FormatCustom(DateTime dateTime, string customFormat)
         {
             if (string.IsNullOrWhiteSpace(customFormat))
-                throw new ArgumentException("Custom format cannot be empty or whitespace.", nameof(customFormat));
+                throw new ArgumentException("Custom format string cannot be empty or whitespace.", nameof(customFormat));
 
             return dateTime.ToString(customFormat);
         }

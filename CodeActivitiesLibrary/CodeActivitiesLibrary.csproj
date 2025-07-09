@@ -258,6 +258,7 @@
     <Compile Include="Activities\DataTransformations\DatabaseActivities\OpenSqlConnectionActivity.cs" />
     <Compile Include="Activities\DataTransformations\DatabaseActivities\_DatabaseCategoryMetaData.cs" />
     <Compile Include="Activities\DataTransformations\DateTimeActivities\AddToDateTimeActivity.cs" />
+    <Compile Include="Activities\DataTransformations\DateTimeActivities\FormatDateTimeActivity.cs" />
     <Compile Include="Activities\DataTransformations\DateTimeActivities\GetCurrentDateTimeActivity.cs" />
     <Compile Include="Activities\DataTransformations\DateTimeActivities\IsCorrectDateTimeFormatActivity.cs" />
     <Compile Include="Activities\DataTransformations\DateTimeActivities\SubtractDatesActivity.cs" />
@@ -274,7 +275,6 @@
     <Compile Include="Activities\DataTransformations\OCRActivities\_OCRCategoryMetaData.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\AppendLineToTextActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\ChangeTextCaseActivity.cs" />
-    <Compile Include="Activities\DataTransformations\TextActivities\ConvertDatetimeToTextActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\ConvertNumberToTextActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\ConvertTextToDateTimeActivity.cs" />
     <Compile Include="Activities\DataTransformations\TextActivities\ConvertTextToNumberActivity.cs" />
