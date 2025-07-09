@@ -1,43 +1,58 @@
 # app/qdrant/service.py
 
+import datetime
 from app.models.chat_message import ChatMessage
-from qdrant_client.models import PointStruct, VectorParams, Distance, FieldCondition, MatchValue
-from uuid import uuid4
+from qdrant_client.models import PointStruct, VectorParams, Distance, MatchValue, Filter, FieldCondition, OrderBy
+from uuid import uuid4, UUID
 from fastapi import HTTPException
-from app.qdrant.setup import client, embedder, COLLECTION_NAME
+from app.qdrant.setup import client, embedder
 from app.core.logger import logger
 
+# Constants
+CHAT_COLLECTION_NAME = "chats"
+DOCUMENT_COLLECTION_NAME = "documents"
 
-def initialize_qdrant_collection():
+def initialize_qdrant_collections():
     """
-    Checks if the Qdrant collection exists. If not, it creates a new one. 
-    This should be called once during the application startup.
+    Verifies the existence of Qdrant collections for chats and documents. 
+    If they do not exist, it creates the necessary collections.
+    This function should be called once during the application startup.
     """
     try:
-        # Fetch the list of existing collections from Qdrant
+        # Get the list of existing collections in Qdrant
         collections = client.get_collections().collections
-        collection_names = [col.name for col in collections]
+        existing_collections = {col.name for col in collections}
         
-        # If the target collection does not exist, create it
-        if COLLECTION_NAME not in collection_names:
-            logger.info(f"Collection '{COLLECTION_NAME}' not found. Creating a new collection...")
-            
-            # Ensure the embedder is initialized before trying to get its dimension
-            if embedder is None:
-                raise ValueError("Embedder is not initialized. Cannot create collection.")
-            
-            # Create the collection with appropriate vector parameters
-            client.recreate_collection(
-                collection_name=COLLECTION_NAME,
-                vectors_config=VectorParams(size=embedder.get_sentence_embedding_dimension(), distance=Distance.COSINE),
-            )
-            logger.info(f"Collection '{COLLECTION_NAME}' created successfully.")
-        else:
-            logger.info(f"Collection '{COLLECTION_NAME}' already exists.")
+        # Define collections to initialize
+        collections_to_initialize = [
+            (CHAT_COLLECTION_NAME, "Chat"),
+            (DOCUMENT_COLLECTION_NAME, "Document")
+        ]
+        
+        # Loop through each collection and check if it exists
+        for collection_name, collection_type in collections_to_initialize:
+            if collection_name not in existing_collections:
+                logger.info(f"{collection_type} collection '{collection_name}' not found. Creating a new collection...")
+
+                # Ensure the embedder is initialized before creating the collection
+                if embedder is None:
+                    raise ValueError("Embedder is not initialized. Cannot create collection.")
+                
+                # Create the collection with the appropriate vector configuration
+                client.recreate_collection(
+                    collection_name=collection_name,
+                    vectors_config=VectorParams(
+                        size=embedder.get_sentence_embedding_dimension(),
+                        distance=Distance.COSINE
+                    ),
+                )
+                logger.info(f"{collection_type} collection '{collection_name}' created successfully.")
+            else:
+                logger.info(f"{collection_type} collection '{collection_name}' already exists.")
+    
     except Exception as e:
-        logger.error(f"Error occurred while initializing collection: {e}")
-        # Raise an HTTPException to propagate error response to FastAPI
-        raise HTTPException(status_code=500, detail=f"Failed to initialize collection: {e}")
+        logger.error(f"Error occurred while initializing collections: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to initialize collections: {e}")
 
 def add_document_to_collection(chat_message: ChatMessage):
     """
@@ -79,7 +94,7 @@ def add_document_to_collection(chat_message: ChatMessage):
 
         # Create and upsert the point
         point = PointStruct(id=point_id, vector=message_vector, payload=payload)
-        client.upsert(collection_name=COLLECTION_NAME, points=[point], wait=True)
+        client.upsert(collection_name=CHAT_COLLECTION_NAME, points=[point], wait=True)
 
         logger.info(f"ChatMessage with ID '{point_id}' added successfully.")
         return point_id
@@ -88,59 +103,138 @@ def add_document_to_collection(chat_message: ChatMessage):
         logger.error(f"Failed to add ChatMessage: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to add document: {e}")
 
-
-def search_documents_in_collection(query: str, user_id: str = None, model_id: str = None, top_k: int = 5):
+def get_last_chat_turn_by_model_id(model_id: str, top_k: int = 5):
     """
-    Searches for relevant chat messages using semantic similarity, optionally filtered by user_id.
+    Retrieves the most recent exchange between the user and AI, considering the latest 5 messages, sorted by timestamp.
 
     Args:
-        query (str): The search query text.
-        user_id (str, optional): The user_id to filter the search results by. Defaults to None (no filtering).
-        top_k (int, optional): Number of top results to return. Defaults to 5.
+        model_id (str): The identifier for the model whose messages need to be fetched.
+        top_k (int): The number of messages to retrieve (default is 5).
 
     Returns:
-        list: A list of search result dicts including message, score, and metadata.
+        dict: A dictionary containing the last user message and AI response, or an empty dictionary if no messages are found.
     """
+    logger.info(f"Fetching the last {top_k} chat turns for model: {model_id}")
+
     try:
-        if embedder is None:
-            raise ValueError("Embedder is not initialized. Cannot search documents.")
-        
-        # Build filter conditions dynamically
-        conditions = []
-        if user_id:
-            conditions.append(FieldCondition(key="user_id", match=MatchValue(value=str(user_id))))
-        if model_id:
-            conditions.append(FieldCondition(key="model_id", match=MatchValue(value=str(model_id))))
+        model_id = UUID("da4c7baf-4557-4977-af54-c9745fc84dee")
 
-        # Combine conditions with AND if any exist
-        filter_condition = Filter(must=conditions) if conditions else None
-
-
-        # Perform the search with or without user_id filter
-        search_results = client.search(
-            collection_name=COLLECTION_NAME,
-            query_vector=query_vector,
+        # Fetch the last 'top_k' user messages, sorted by timestamp
+        user_response = client.scroll(
+            collection_name=CHAT_COLLECTION_NAME,
+            scroll_filter=Filter(must=[
+                FieldCondition(key="user_id", match=MatchValue(value=str(model_id))),
+                FieldCondition(key="username", match=MatchValue(value="User"))
+            ]),
             limit=top_k,
-            filter=filter_condition,  # Apply the filter if provided
+            with_payload=True,
+            with_vectors=False,
+            # order_by=OrderBy(
+            #     key="timestamp",
+            #     direction="desc",
+            #     start_from=str(datetime.datetime.utcnow()),
+            # )
         )
 
-        logger.info(f"Search executed for query '{query}', found {len(search_results)} results.")
+        # Extract user messages if available
+        user_msgs = []
+        if user_response:
+            for record in user_response[0]:
+                if record:
+                    user_msgs.append(record.payload.get("message", "No message found"))
+        else:
+            logger.warning(f"No user messages found for model: {model_id}")
 
-        # Return the search results with relevant metadata
-        return [
-            {
-                "id": result.id,
-                "score": result.score,
-                "message": result.payload.get("message"),
-                "username": result.payload.get("username"),
-                "timestamp": result.payload.get("timestamp"),
-                "user_id": result.payload.get("user_id"),
-                "model_id": result.payload.get("model_id"),
-                "file": result.payload.get("file")
-            }
-            for result in search_results
-        ]
+        # Fetch the last 'top_k' AI messages, sorted by timestamp
+        ai_response = client.scroll(
+            collection_name=CHAT_COLLECTION_NAME,
+            scroll_filter=Filter(must=[
+                FieldCondition(key="user_id", match=MatchValue(value=str(model_id))),
+                FieldCondition(key="username", match=MatchValue(value="AIPersona"))
+            ]),
+            limit=top_k,
+            with_payload=True,
+            with_vectors=False,
+            # order_by=OrderBy(
+            #     key="timestamp",
+            #     direction="desc",
+            #     start_from=str(datetime.datetime.utcnow()),
+            # )
+        )
+
+        # Extract AI messages if available
+        ai_msgs = []
+        if ai_response:
+            for record in ai_response[0]:
+                if record:
+                    ai_msgs.append(record.payload.get("message", "No message found"))
+        else:
+            logger.warning(f"No AI messages found for model: {model_id}")
+
+        return {
+            "User": user_msgs,
+            "AIPersona": ai_msgs
+        }
 
     except Exception as e:
-        logger.error(f"Failed to search documents: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to search documents: {e}")
+        logger.error(f"Error fetching chat turns for model {model_id}: {e}")
+        return {}
+        
+
+def get_document_context_by_model_id(user_query: str, model_id: str, top_k: int = 5) -> str:
+    """
+    Retrieves the top-k document chunks relevant to the user query and filtered by the model_id.
+
+    Args:
+        user_query (str): The query from the user to search for relevant documents.
+        model_id (str): The model identifier to filter the documents.
+        top_k (int): The number of top results to return (default is 5).
+
+    Returns:
+        str: A string containing the text from the top-k relevant document chunks.
+    """
+
+    # Step 1: Generate a query vector from the user query
+    logger.info("Generating query vector for the user query.")
+    query_vector = embedder.encode(user_query).tolist()
+
+    # Step 2: Define the filter to search for documents by model_id
+    logger.info(f"Creating search filter for model_id: {model_id}")
+    search_filter = Filter(
+        must=[
+            FieldCondition(key="model_id", match=MatchValue(value=str(model_id)))
+        ]
+    )
+
+    try:
+        # Step 3: Perform the search in the document collection using the query vector and filter
+        logger.info(f"Performing search in collection: {DOCUMENT_COLLECTION_NAME} for top-{top_k} results.")
+        search_results = client.search(
+            collection_name=DOCUMENT_COLLECTION_NAME,
+            query_vector=query_vector,
+            query_filter=search_filter,
+            limit=top_k,
+            with_payload=True
+        )
+
+        # Step 4: Extract and concatenate the document texts from the search results
+        logger.info(f"Retrieved {len(search_results)} search results.")
+        document_texts = [
+            hit.payload["text"] for hit in search_results if "text" in hit.payload
+        ]
+
+        # Check if no valid documents are found
+        if not document_texts:
+            logger.warning(f"No document texts found for model_id: {model_id}. Returning empty context.")
+            return ""
+
+        # Join the document texts with a newline separator
+        document_context = "\n".join(document_texts)
+        logger.info(f"Successfully retrieved document context for model_id: {model_id}.")
+        
+        return document_context
+
+    except Exception as e:
+        logger.error(f"Error occurred while fetching document context for model_id {model_id}: {e}")
+        return ""
+

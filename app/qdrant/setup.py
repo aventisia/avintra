@@ -6,9 +6,6 @@ from fastapi import HTTPException
 from app.core.logger import logger
 from app.core.config import settings
 
-# Constants
-COLLECTION_NAME = "chats"  # Define collection name here as it's used in services
-
 # --- Initialize Qdrant client and embedder ---
 def initialize_qdrant_and_embedder():
     """
