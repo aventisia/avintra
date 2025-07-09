@@ -78,11 +78,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         // Output Arguments
         // ----------------------
 
+        [DisplayName("FTPS Connection")]
+        [Description("Returns the FTPS connection (FluentFTP).")]
+        public OutArgument<FtpClient> FtpsConnection { get; set; }
 
         [DisplayName("SFTP Connection")]
-        [Description("Returns the connection ID for the opened SFTP connection.")]
-        public OutArgument<FtpClient> SftpConnection { get; set; }
-
+        [Description("Returns the SFTP connection (Renci.SshNet).")]
+        public OutArgument<SftpClient> SftpConnection { get; set; }
         // ----------------------
         // Execution Logic
         // ----------------------
@@ -92,7 +94,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
             {
                 var host = Host.Get(context);
                 var port = Port.Get(context);
-                var secureFtpProtocol = SecureFtpProtocol.Get(context);
+                var protocol = SecureFtpProtocol.Get(context);
                 var authMethod = AuthenticationMethod.Get(context);
                 var username = Username.Get(context);
                 var password = Password.Get(context);
@@ -103,11 +105,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                 var timeoutSeconds = Timeout.Get(context);
 
                 if (string.IsNullOrWhiteSpace(host))
-                    throw new ArgumentException("Host cannot be empty.");
-
+                    throw new ArgumentException("Host is required.");
                 if (port <= 0)
                     throw new ArgumentException("Port must be greater than 0.");
 
+                // Centralized validation
                 switch (authMethod)
                 {
                     case AuthenticationMethodEnum.UsernameAndPassword:
@@ -121,8 +123,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                         break;
 
                     case AuthenticationMethodEnum.PrivateKeyAndPassphrase:
-                        if (string.IsNullOrWhiteSpace(privateKeyPath) ||
-                            string.IsNullOrWhiteSpace(privateKeyPassphrase))
+                        if (string.IsNullOrWhiteSpace(privateKeyPath) || string.IsNullOrWhiteSpace(privateKeyPassphrase))
                             throw new ArgumentException("Path to private key and passphrase are required.");
                         break;
 
@@ -130,98 +131,81 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
                         throw new ArgumentOutOfRangeException(nameof(authMethod));
                 }
 
-                // Create appropriate client based on protocol
-                object ftpClient = null;
-                string connectionId = null;
-
-                switch (secureFtpProtocol)
+                switch (protocol)
                 {
                     case SecureFtpProtocolEnum.SFTP:
-                        {
-                            // Use Renci.SshNet for SFTP
-                            if (authMethod == AuthenticationMethodEnum.UsernameAndPassword)
-                            {
-                                var connectionInfo = new ConnectionInfo(
-                                    host,
-                                    username,
-                                    new PasswordAuthenticationMethod(username, password)
-                                );
-                                ftpClient = new SftpClient(connectionInfo);
-                            }
-                            else if (authMethod == AuthenticationMethodEnum.PrivateKey ||
-                                     authMethod == AuthenticationMethodEnum.PrivateKeyAndPassphrase)
-                            {
-                                var privateKeyFile = new PrivateKeyFile(privateKeyPath, privateKeyPassphrase);
-                                var connectionInfo = new ConnectionInfo(
-                                    host,
-                                    username,
-                                    new PrivateKeyAuthenticationMethod(username, privateKeyFile)
-                                );
-                                ftpClient = new SftpClient(connectionInfo);
-                            }
+                        SftpClient sftpClient = null;
 
-                        ((SftpClient)ftpClient)?.Connect();
-                            connectionId = $"sftp_{host}_{port}";
-                            break;
+                        if (authMethod == AuthenticationMethodEnum.UsernameAndPassword)
+                        {
+                            var connectionInfo = new ConnectionInfo(
+                                host, port, username,
+                                new PasswordAuthenticationMethod(username, password))
+                            {
+                                Timeout = TimeSpan.FromSeconds(timeoutSeconds)
+                            };
+                            sftpClient = new SftpClient(connectionInfo);
                         }
+                        else
+                        {
+                            var pkFile = string.IsNullOrWhiteSpace(privateKeyPassphrase)
+                                ? new PrivateKeyFile(privateKeyPath)
+                                : new PrivateKeyFile(privateKeyPath, privateKeyPassphrase);
+
+                            var connectionInfo = new ConnectionInfo(
+                                host, port, username,
+                                new PrivateKeyAuthenticationMethod(username, pkFile))
+                            {
+                                Timeout = TimeSpan.FromSeconds(timeoutSeconds)
+                            };
+                            sftpClient = new SftpClient(connectionInfo);
+                        }
+
+                        sftpClient.Connect();
+                        if (!sftpClient.IsConnected)
+                            throw new InvalidOperationException("Failed to connect via SFTP.");
+
+                        SftpConnection.Set(context, sftpClient);
+                        FtpsConnection.Set(context, null);
+                        break;
 
                     case SecureFtpProtocolEnum.FTPSExplicit:
                     case SecureFtpProtocolEnum.FTPSImplicit:
+                        if (authMethod != AuthenticationMethodEnum.UsernameAndPassword)
+                            throw new NotSupportedException("FTPS only supports username/password authentication.");
+
+                        var ftpsClient = new FtpClient(host, port, new NetworkCredential(username, password))
                         {
-                            // Use FluentFTP for FTPS
-                            var client = new FtpClient();
-                            client.Host = host;
-                            client.Port = port;
-                            client.Config.EncryptionMode = GetEncryptionMode(secureFtpProtocol);
-                            client.Config.ValidateAnyCertificate = acceptUntrusted;
-                            client.Config.DataConnectionType = activeMode
-                                ? FtpDataConnectionType.AutoActive
-                                : FtpDataConnectionType.AutoPassive;
-                            client.Config.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls;
-
-                            switch (authMethod)
+                            Config =
                             {
-                                case AuthenticationMethodEnum.UsernameAndPassword:
-                                    client.Credentials = new System.Net.NetworkCredential(username, password);
-                                    break;
+                                EncryptionMode = GetEncryptionMode(protocol),
+                                ValidateAnyCertificate = acceptUntrusted,
+                                DataConnectionType = activeMode ? FtpDataConnectionType.AutoActive : FtpDataConnectionType.AutoPassive,
+                                SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls
+                            },
+                            ConnectTimeout = timeoutSeconds * 1000
+                        };
 
-                                default:
-                                    throw new NotSupportedException(
-                                        $"FTPS does not support '{authMethod}' authentication.");
-                            }
+                        ftpsClient.Connect();
+                        if (!ftpsClient.IsConnected)
+                            throw new InvalidOperationException("Failed to connect via FTPS.");
 
-                            var isConnected = false;
-                            try
-                            {
-                                client.Connect();
-                                isConnected = client.IsConnected;
-                            }
-                            catch (Exception ex)
-                            {
-                                throw new InvalidOperationException($"Failed to connect via FTPS: {ex.Message}");
-                            }
-
-                            if (!isConnected)
-                                throw new InvalidOperationException("Could not establish secure FTPS connection.");
-
-                            ftpClient = client;
-                            connectionId = $"ftps_{host}_{port}";
-                            break;
-                        }
+                        FtpsConnection.Set(context, ftpsClient);
+                        SftpConnection.Set(context, null);
+                        break;
 
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(secureFtpProtocol));
+                        throw new NotSupportedException("Unsupported secure FTP protocol.");
                 }
 
-                // Save connection reference
-                SftpConnection.Set(context, ftpClient);
+                StatusMessage.Set(context, $"Successfully connected to '{host}:{port}' via {protocol}");
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $"Successfully connected to '{host}:{port}' via {secureFtpProtocol}");
             }
             catch (Exception ex)
             {
                 StatusMessage.Set(context, $"Error connecting to secure FTP: {ex.Message}");
                 IsSuccess.Set(context, false);
+                FtpsConnection.Set(context, null);
                 SftpConnection.Set(context, null);
             }
         }

@@ -21,27 +21,48 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         [Description("The list of file names to delete.")]
         public InArgument<IEnumerable<string>> FileNames { get; set; }
 
+        // Output Arguments
+       
+        [DisplayName("Deleted Files")]
+        [Description("List of files that were successfully deleted.")]
+        public OutArgument<IEnumerable<string>> DeletedFiles { get; set; }
+
         protected override void Execute(CodeActivityContext context)
         {
             var connection = FtpConnection.Get(context);
             var fileNames = FileNames.Get(context);
-            var status = "";
+
+            var deletedFiles = new List<string>();
+
             try
             {
                 foreach (var fileName in fileNames)
                 {
-                    connection.DeleteFile(fileName);
+                    try
+                    {
+                        connection.DeleteFile(fileName);
+                        deletedFiles.Add(fileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log error but continue with next file
+                        Console.WriteLine($"Failed to delete {fileName}: {ex.Message}");
+                    }
                 }
 
-                status = "Files deleted successfully.";
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                // Set output arguments
+                DeletedFiles.Set(context, deletedFiles);
+
+                // Determine overall success
+                IsSuccess.Set(context, deletedFiles.Count > 0);
+                StatusMessage.Set(context, deletedFiles.Count > 0
+                    ? $"{deletedFiles.Count} file(s) deleted successfully."
+                    : "No files were deleted.");
             }
             catch (Exception ex)
             {
-                status = $"Error deleting files: {ex.Message}";
+                StatusMessage.Set(context, $"Error during FTP operation: {ex.Message}");
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
             }
         }
     }
