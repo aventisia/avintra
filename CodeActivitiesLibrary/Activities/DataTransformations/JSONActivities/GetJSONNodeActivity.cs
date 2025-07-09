@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
     public class GetJSONNodeActivity : BaseCodeActivity
     {
         // Input Arguments
-
+          
         [RequiredArgument]
         [DisplayName("JSON Token")]
         [Description("The root JSON token to begin searching. This can be a JObject, JArray, or any valid JToken type.")]
@@ -21,7 +21,7 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
         [DisplayName("Key to Find")]
         [Description("The name of the JSON key to locate in the structure. Search is recursive and case-sensitive.")]
         public InArgument<string> KeyToFind { get; set; }
-        
+
         // Output Arguments
         [DisplayName("Result Node")]
         [Description("The first matching JToken found under the specified key. Returns null if no match is found or an error occurs.")]
@@ -39,16 +39,16 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
                 // Validate inputs
                 if (jToken == null || string.IsNullOrWhiteSpace(keyToFind))
                 {
+                    ResultNode.Set(context, null);
                     IsSuccess.Set(context, false);
                     StatusMessage.Set(context, "Invalid input: JsonToken or KeyToFind is null/empty.");
-                    ResultNode.Set(context, null);
                     return;
                 }
 
-                // Perform recursive search
+                // Perform the recursive search
                 JToken result = FindValueHelper(jToken, keyToFind);
 
-                // Set outputs
+                // Set output values
                 ResultNode.Set(context, result);
                 IsSuccess.Set(context, result != null);
                 StatusMessage.Set(context, result != null
@@ -57,14 +57,13 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error finding JSON node: {ex.Message}");
                 ResultNode.Set(context, null);
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error: {ex.Message}");
+                StatusMessage.Set(context, $"Error finding JSON node: {ex.Message}");
             }
         }
 
-        /// Recursively searches through the JToken for the first occurrence of the given key.
+          /// Recursively searches through the JToken for the first occurrence of the given key.
         private static JToken FindValueHelper(JToken token, string keyToFind)
         {
             if (token.Type == JTokenType.Object)
@@ -73,8 +72,7 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
                 {
                     if (property.Name == keyToFind)
                         return property.Value;
-
-                    var result = FindValueHelper(property.Value, keyToFind);
+                    JToken result = FindValueHelper(property.Value, keyToFind);
                     if (result != null)
                         return result;
                 }
@@ -83,7 +81,7 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
             {
                 foreach (JToken element in token.Children())
                 {
-                    var result = FindValueHelper(element, keyToFind);
+                    JToken result = FindValueHelper(element, keyToFind);
                     if (result != null)
                         return result;
                 }
