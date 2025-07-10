@@ -125,11 +125,11 @@ public class FlowBuilderService : IFlowBuilderService
                 return serviceResponse;
             }
 
-            // Check if the user is the creator or has the required access (Owner/Editor)
+            // Check if the user is the creator or has the required access (Owner/Edit)
             var flowUserAccess = flowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
                 w.FlowId == flowVersion.Flow.Id &&
                 w.UserId == _userId &&
-                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Editor)
+                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Edit)
             );
 
             // Allow access if the user is the creator, else check if they have access
@@ -283,11 +283,11 @@ public class FlowBuilderService : IFlowBuilderService
                 return serviceResponse;
             }
 
-            // Check if the user is the creator or has the required access (Owner/Editor)
+            // Check if the user is the creator or has the required access (Owner/Edit)
             var flowUserAccess = flowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
                 w.FlowId == flowVersion.Flow.Id &&
                 w.UserId == _userId &&
-                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Editor)
+                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Edit)
             );
 
             // Allow access if the user is the creator, else check if they have access

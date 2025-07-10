@@ -202,11 +202,11 @@ public class FlowsTableService : IFlowsTableService
                 return serviceResponse;
             }
 
-            // Check if the user is the creator or has the required access (Owner/Editor)
+            // Check if the user is the creator or has the required access (Owner/Edit)
             var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
                 w.FlowId == flow.Id &&
                 w.UserId == _userId &&
-                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Editor)
+                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Edit)
             );
 
             // Allow access if the user is the creator, else check if they have access
@@ -358,13 +358,13 @@ public class FlowsTableService : IFlowsTableService
                 return serviceResponse;
             }
 
-            // Check if the user is the creator or has required access (Owner/Editor)
+            // Check if the user is the creator or has required access (Owner/Edit)
             foreach (var flow in flows)
             {
                 var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
                     w.FlowId == flow.Id &&
                     w.UserId == _userId &&
-                    (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Editor)
+                    (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Edit)
                 );
 
                 // Allow access if the user is the creator, else check if they have access

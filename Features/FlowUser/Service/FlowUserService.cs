@@ -183,7 +183,7 @@ public class FlowUserService : IFlowUserService
                 .GetByConditionAsync(w =>
                     w.Id == flowUserDto.Id &&
                     w.UserId != _userId &&
-                    (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Editor)
+                    (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Edit)
                 )
                 .SingleOrDefaultAsync();
 
