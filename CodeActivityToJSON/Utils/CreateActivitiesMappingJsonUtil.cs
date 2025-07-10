@@ -21,6 +21,7 @@ namespace CodeActivityToJSON.Utils
 
         private static List<string> _excludedActivities = new List<string>
         {
+            "InvokeSoapWebServiceActivity",
             "ConditionalBranchActivity",
         };
 
