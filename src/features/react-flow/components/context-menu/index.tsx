@@ -59,7 +59,6 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
           disabled={!selectedNode}
           onClick={() => selectedNode && cutNode(selectedNode.id)}
         /> */}
-
         {/* Copy selection */}
         {/* <SimpleCMItem
           size="sm"
@@ -69,7 +68,6 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
           disabled={!selectedNode}
           onClick={() => selectedNode && copyNode(selectedNode.id)}
         /> */}
-
         {/* Paste cut or copied items */}
         {/* <SimpleCMItem
           size="sm"
@@ -81,9 +79,7 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
             selectedEdge && pasteNode(selectedEdge.source, selectedEdge.target)
           }
         /> */}
-
         {/* <ContextMenuSeparator className="h-[0.5px]" /> */}
-
         {/* Group items. */}
         {isGroupHead ? (
           <>
@@ -112,7 +108,6 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
           />
         )}
         <ContextMenuSeparator className="h-[0.5px]" />
-
         {/* Organize items. Apply auto layout */}
         <SimpleCMItem
           size="sm"
@@ -120,27 +115,30 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
           Icon={Library}
           onClick={() => autoLayout()}
         />
-
         <ContextMenuSeparator className="h-[0.5px]" />
-        {isDisabled ? (
+        {import.meta.env.MODE !== "production" ? (
           <>
-            <SimpleCMItem
-              size="sm"
-              content="Enable"
-              Icon={CircleCheckIcon}
-              onClick={() => disableNode(false)}
-            />
+            {" "}
+            {isDisabled ? (
+              <>
+                <SimpleCMItem
+                  size="sm"
+                  content="Enable"
+                  Icon={CircleCheckIcon}
+                  onClick={() => disableNode(false)}
+                />
+              </>
+            ) : (
+              <SimpleCMItem
+                size="sm"
+                content="Disable"
+                Icon={BanIcon}
+                onClick={() => disableNode(true)}
+              />
+            )}
+            <ContextMenuSeparator className="h-[0.5px]" />
           </>
-        ) : (
-          <SimpleCMItem
-            size="sm"
-            content="Disable"
-            Icon={BanIcon}
-            onClick={() => disableNode(true)}
-          />
-        )}
-        <ContextMenuSeparator className="h-[0.5px]" />
-
+        ) : null}{" "}
         {/* Delete selected items */}
         <DeleteCMItem
           size="sm"
