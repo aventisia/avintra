@@ -4,7 +4,7 @@ namespace CodeActivitiesLibrary.Extensions
 {
     public abstract class BaseAsyncCodeActivity : AsyncCodeActivity
     {
-        public InArgument<string> StatusMessage { get; set; }
-        public InArgument<string> IsSuccess { get; set; }
+        public OutArgument<bool> IsSuccess { get; set; }
+        public OutArgument<string> StatusMessage { get; set; }
     }
 }
