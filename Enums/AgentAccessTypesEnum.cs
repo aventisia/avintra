@@ -13,10 +13,10 @@ public enum AgentAccessTypesEnum
     /// <summary>
     /// Provides read-only access to the agent, allowing the user to view but not make changes.
     /// </summary>
-    Viewer,
+    View,
 
     /// <summary>
     /// Allows the user to edit or update the agent, but not to manage ownership or delete it.
     /// </summary>
-    Editor,
+    Edit,
 }
