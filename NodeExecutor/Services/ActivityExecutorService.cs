@@ -197,7 +197,7 @@ namespace NodeExecutor.Services
         public static (bool, string) ExecuteCondition(List<List<ConditionGroup>> conditions, ExecutionContext executionContext)
         {
             // If conditions null or empty return false
-            if (conditions != null || conditions.Count == 0)
+            if (conditions == null || conditions.Count == 0)
                 return (false, "");
 
             //// Initiaze the return object
