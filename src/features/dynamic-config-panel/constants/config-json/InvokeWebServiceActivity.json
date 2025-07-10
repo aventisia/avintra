@@ -1,0 +1,218 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EndpointUrl",
+    "label": "Endpoint URL",
+    "description": "The URL of the web service endpoint (e.g., https://api.example.com/data).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "HttpMethod",
+    "label": "HTTP Method",
+    "description": "The HTTP method to use: GET, POST, PUT, DELETE, etc.",
+    "defaultValue": "GET",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "GET",
+        "value": "GET",
+        "description": "Retrieves data from the specified resource."
+      },
+      {
+        "label": "POST",
+        "value": "POST",
+        "description": "Submits data to be processed to the specified resource."
+      },
+      {
+        "label": "PUT",
+        "value": "PUT",
+        "description": "Updates a current resource with new data."
+      },
+      {
+        "label": "DELETE",
+        "value": "DELETE",
+        "description": "Deletes the specified resource."
+      },
+      {
+        "label": "PATCH",
+        "value": "PATCH",
+        "description": "Applies partial modifications to a resource."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "RequestBody",
+    "label": "Request Body",
+    "description": "The request body to send in POST, PUT, etc. Leave empty for GET requests.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ContentType",
+    "label": "Content Type",
+    "description": "Specifies the content type for the request body (e.g., application/json, text/xml).",
+    "defaultValue": "application/json",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "AcceptHeader",
+    "label": "Accept Header",
+    "description": "Specifies the content type expected in the response (e.g., application/json, text/xml).",
+    "defaultValue": "application/json",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "AuthenticationType",
+    "label": "Authentication Type",
+    "description": "Type of authentication to use: None, Basic, Bearer, etc.",
+    "defaultValue": "",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Basic",
+        "value": "Basic",
+        "description": "Uses Basic authentication with username and password."
+      },
+      {
+        "label": "Bearer",
+        "value": "Bearer",
+        "description": "Uses Bearer token authentication for OAuth 2.0."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Username",
+    "label": "Username",
+    "description": "Username for basic authentication.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "AuthenticationType",
+          "equals": "Basic"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Password",
+    "label": "Password",
+    "description": "Password for basic authentication.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "AuthenticationType",
+          "equals": "Basic"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "BearerToken",
+    "label": "Bearer Token",
+    "description": "Bearer token for OAuth authentication.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "AuthenticationType",
+          "equals": "Bearer"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TimeoutSeconds",
+    "label": "Timeout Seconds",
+    "description": "Maximum time in seconds to wait for the service to respond.",
+    "defaultValue": 60,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "UseDefaultCredentials",
+    "label": "Use Default Credentials",
+    "description": "If true, sends credentials of the current user with the request.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "IgnoreSslErrors",
+    "label": "Ignore SSL Errors",
+    "description": "If true, ignores SSL certificate validation errors.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Headers",
+    "label": "Headers",
+    "description": "Custom HTTP headers to include in the request.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "Returns the raw response from the web service as a string.",
+    "defaultValue": {
+      "value": "Result",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ResponseCode",
+    "label": "Response Code",
+    "description": "Returns the HTTP status code from the web service.",
+    "defaultValue": {
+      "value": "ResponseCode",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ResponseHeaders",
+    "label": "Response Headers",
+    "description": "Returns the response headers from the web service.",
+    "defaultValue": {
+      "value": "ResponseHeaders",
+      "enabled": true
+    },
+    "required": false
+  }
+]

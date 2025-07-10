@@ -1641,6 +1641,15 @@
           },
           {
             "type": "activityNode",
+            "name": "WaitForFileActivity",
+            "label": "Wait For File",
+            "description": "Suspends running the flow until a file is created or deleted.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
             "name": "WriteTextToFileActivity",
             "label": "Write Text to File",
             "description": "Writes the given text to the specified file using either Replace or Append mode.",
@@ -1653,15 +1662,6 @@
             "name": "WriteToCsvFileActivity",
             "label": "Write to CSV File",
             "description": "Writes a data table, data row, or list to a CSV file.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
-            "name": "WaitForFileActivity",
-            "label": "Wait For File",
-            "description": "Suspends running the flow until a file is created or deleted.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2390,6 +2390,15 @@
             "name": "InvokeSoapWebServiceActivity",
             "label": "Invoke SOAP Web Service",
             "description": "Invokes a specified method from a SOAP web service and returns the response.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "InvokeWebServiceActivity",
+            "label": "Invoke Web Service",
+            "description": "Invokes a web service (REST or SOAP) and returns the response text.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
