@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "JsonToken",
-    "label": "JSON Token",
-    "description": "The root JSON token to begin searching. This can be a JObject, JArray, or any valid JToken type.",
+    "name": "JsonContent",
+    "label": "JSON Content",
+    "description": "The JSON content to begin searching. This can be a JSON string or a JToken.",
     "defaultValue": "",
     "required": true
   },

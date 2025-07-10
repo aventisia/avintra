@@ -22,7 +22,7 @@
     "type": "text",
     "name": "DataType",
     "label": "Data Type",
-    "description": "The data type of the new column (e.g., string, int).",
+    "description": "The data type of the new column (e.g., string, int, DateTime).",
     "defaultValue": "",
     "required": true
   },
