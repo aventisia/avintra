@@ -27,7 +27,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
         [RequiredArgument]
         [DisplayName("Data Type")]
-        [Description("The data type of the new column (e.g., string, int).")]
+        [Description("The data type of the new column (e.g., string, int, DateTime).")]
         public InArgument<Type> DataType { get; set; }
 
         [DisplayName("Insert Location")]
@@ -43,6 +43,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         // ----------------------
         // Output Arguments
         // ----------------------
+
         [DisplayName("Modified Data Table")]
         [Description("The updated data table with the new column inserted.")]
         public OutArgument<DataTable> ModifiedDataTable { get; set; }
@@ -58,49 +59,44 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 var dataTable = DataTable.Get(context);
                 var columnName = ColumnName.Get(context);
                 var dataType = DataType.Get(context);
-                var insertLocation = InsertLocation.Get(context);
+                var insertLocation = InsertLocation.Expression != null
+                    ? InsertLocation.Get(context)
+                    : DataTableInsertLocationEnum.EndOfDataTable;
 
                 if (dataTable == null)
-                    throw new ArgumentException("DataTable cannot be null.");
+                    throw new ArgumentException("Input DataTable cannot be null.");
 
                 if (string.IsNullOrWhiteSpace(columnName))
-                    throw new ArgumentException("Column name cannot be empty.");
+                    throw new ArgumentException("Column name cannot be empty or whitespace.");
 
                 if (dataType == null)
-                    throw new ArgumentException("Data type cannot be null.");
+                    throw new ArgumentException("Data type for new column must be provided.");
 
                 if (dataTable.Columns.Contains(columnName))
-                    throw new ArgumentException($"Column '{columnName}' already exists.");
+                    throw new ArgumentException($"A column with name '{columnName}' already exists.");
 
-                // Create new column
                 var newColumn = new DataColumn(columnName, dataType);
 
-                switch (insertLocation)
+                if (insertLocation == DataTableInsertLocationEnum.EndOfDataTable)
                 {
-                    case DataTableInsertLocationEnum.EndOfDataTable:
-                        dataTable.Columns.Add(newColumn);
-                        break;
+                    dataTable.Columns.Add(newColumn);
+                }
+                else if (insertLocation == DataTableInsertLocationEnum.BeforeColumnIndex)
+                {
+                    var index = ColumnIndex.Get(context);
+                    if (index < 0 || index > dataTable.Columns.Count)
+                        throw new ArgumentOutOfRangeException(nameof(index), $"Column index must be between 0 and {dataTable.Columns.Count}.");
 
-                    case DataTableInsertLocationEnum.BeforeColumnIndex:
-                        var index = ColumnIndex.Get(context);
-                        if (index < 0 || index > dataTable.Columns.Count)
-                            throw new ArgumentOutOfRangeException(nameof(index), $"Index must be between 0 and {dataTable.Columns.Count}");
-                        dataTable.Columns.Add(newColumn);
-                        newColumn.SetOrdinal(index);
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(insertLocation));
+                    dataTable.Columns.Add(newColumn);
+                    newColumn.SetOrdinal(index);
                 }
 
-                // Set outputs
                 ModifiedDataTable.Set(context, dataTable);
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, $"Successfully inserted column '{columnName}'.");
             }
             catch (Exception ex)
             {
-                // Log error and return failure
                 ModifiedDataTable.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error inserting column: {ex.Message}");
