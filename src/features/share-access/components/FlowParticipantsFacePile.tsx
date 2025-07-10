@@ -22,58 +22,54 @@ const FlowParticipantsFacePile = () => {
     })),
   );
   return (
-    <>
-      {data?.data.length ? (
-        <div className={cn("flex items-center -space-x-3")}>
-          {data?.data
-            ?.slice(0, maxFacesCount)
-            ?.map(
-              (
-                { initials = "", avatarSrc, userFullName, type, userName },
-                index,
-              ) => (
-                <Tooltip
-                  key={index}
-                  content={
-                    <div className="flex items-center gap-3 p-1">
-                      <Avatar className="h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
-                        <AvatarImage src={avatarSrc} alt={initials} />
-                        <AvatarFallback className="bg-[#aba7e7] capitalize">
-                          {initials}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="-mt-1 flex flex-col">
-                        <h3 className="font-medium">{userFullName}</h3>
-                        <span className="text-2xs text-muted-foreground">
-                          {userName}
-                        </span>
-                        <span className="mt-0.5 text-2xs">{type}</span>
-                      </div>
-                    </div>
-                  }
-                >
+    <div className={cn("flex items-center -space-x-3")}>
+      {data?.data
+        ?.slice(0, maxFacesCount)
+        ?.map(
+          (
+            { initials = "", avatarSrc, userFullName, type, userName },
+            index,
+          ) => (
+            <Tooltip
+              key={index}
+              content={
+                <div className="flex items-center gap-3 p-1">
                   <Avatar className="h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
                     <AvatarImage src={avatarSrc} alt={initials} />
                     <AvatarFallback className="bg-[#aba7e7] capitalize">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
-                </Tooltip>
-              ),
-            )}
-          <Tooltip content="Share Access">
-            <Avatar
-              onClick={() => setOpen(true)}
-              className="h-8 w-8 cursor-pointer border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200"
+                  <div className="-mt-1 flex flex-col">
+                    <h3 className="font-medium">{userFullName}</h3>
+                    <span className="text-2xs text-muted-foreground">
+                      {userName}
+                    </span>
+                    <span className="mt-0.5 text-2xs">{type}</span>
+                  </div>
+                </div>
+              }
             >
-              <AvatarFallback className="bg-[#aba7e7]">
-                <PlusIcon className="h-4 w-4" />
-              </AvatarFallback>
-            </Avatar>
-          </Tooltip>
-        </div>
-      ) : null}
-    </>
+              <Avatar className="h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
+                <AvatarImage src={avatarSrc} alt={initials} />
+                <AvatarFallback className="bg-[#aba7e7] capitalize">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+            </Tooltip>
+          ),
+        )}
+      <Tooltip content="Share Access">
+        <Avatar
+          onClick={() => setOpen(true)}
+          className="h-8 w-8 cursor-pointer border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200"
+        >
+          <AvatarFallback className="bg-[#aba7e7]">
+            <PlusIcon className="h-4 w-4" />
+          </AvatarFallback>
+        </Avatar>
+      </Tooltip>
+    </div>
   );
 };
 
