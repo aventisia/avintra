@@ -32,7 +32,14 @@ public class FlowVersionService : IFlowVersionService
         {
             //Try to get flow versions
             var flowVersions = await _unitOfWork.FlowVersionRepo
-            .GetByConditionAsync(v => v.FlowId == flowId)
+            .GetByConditionAsync(w =>
+                w.FlowId == flowId && w.CreatedByUserId == _userId ||
+                (
+                    w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                )
+            )
+            .Include(i => i.Flow)
+            .ThenInclude(i2 => i2.FlowUsers)
             .Include(c => c.CreatedByUser)
             .OrderByDescending(o => o.VersionNumber)
             .ToListAsync();
@@ -63,6 +70,33 @@ public class FlowVersionService : IFlowVersionService
 
         try
         {
+            //Try to get flow
+            var flow = await _unitOfWork.FlowRepo
+                .GetByConditionAsync(w =>
+                    w.Id == flowVersionDto.FlowId && w.CreatedByUserId == _userId ||
+                    (
+                        w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
+                    )
+                )
+                .Include(i => i.FlowUsers)
+                .Include(c => c.CreatedByUser)
+                .SingleOrDefaultAsync();
+
+            // Check if the user is the creator or has the required access (Owner/Editor)
+            var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
+                w.FlowId == flow.Id &&
+                w.UserId == _userId &&
+                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Editor)
+            );
+
+            // Allow access if the user is the creator, else check if they have access
+            if (flow.CreatedByUserId != _userId && flowUserAccess == null)
+            {
+                _logger.LogWarning($"User {_userId} is not authorized to create new flow version.");
+                serviceResponse.Message = "You don't have access to create new flow version.";
+                return serviceResponse;
+            }
+
             //Get count of versions of a related flow
             var versionCount = await _unitOfWork.FlowVersionRepo.GetFlowVersionCountAsync(flowVersionDto.FlowId);
 
@@ -76,7 +110,6 @@ public class FlowVersionService : IFlowVersionService
 
             // Add initial nodes and edges
             newFlowVersion.ReactFlowObject = Features.FlowVersion.Utils.InitialNodesAndEdgesUtil.GetInitialNodesAndEdges();
-
 
             //Insert a flow version
             await _unitOfWork.FlowVersionRepo.InsertAsync(newFlowVersion);
@@ -118,7 +151,15 @@ public class FlowVersionService : IFlowVersionService
         {
             // Validate flow version existence
             var existingFlowVersion = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(v => v.Id == flowVersionDto.Id)
+                .GetByConditionAsync(w =>
+                    w.Id == flowVersionDto.Id &&
+                    w.CreatedByUserId == _userId ||
+                    (
+                        w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                    )
+                )
+                .Include(i => i.Flow)
+                .ThenInclude(i2 => i2.FlowUsers)
                 .SingleOrDefaultAsync();
 
             // Flow version does not exist
@@ -129,12 +170,27 @@ public class FlowVersionService : IFlowVersionService
                 return serviceResponse;
             }
 
+            // Check if the user is the creator or has the required access (Owner/Editor)
+            var flowUserAccess = existingFlowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
+                w.FlowId == existingFlowVersion.Flow.Id &&
+                w.UserId == _userId &&
+                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Editor)
+            );
+
+            // Allow access if the user is the creator, else check if they have access
+            if (existingFlowVersion.Flow.CreatedByUserId != _userId && flowUserAccess == null)
+            {
+                _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
+                serviceResponse.Message = "You don't have access to modify this flow.";
+                return serviceResponse;
+            }
+
             // Get count of versions of a related flow
             var relatedFlowVersionCount = await _unitOfWork.FlowVersionRepo.GetFlowVersionCountAsync(existingFlowVersion.FlowId);
 
             // Map the other properties from the DTO
             existingFlowVersion = flowVersionDto.Adapt(existingFlowVersion);
-            
+
             // Map the updated properties
             existingFlowVersion.IsLocked = false;
             existingFlowVersion.IsDraft = false;
@@ -180,7 +236,15 @@ public class FlowVersionService : IFlowVersionService
         {
             //Try to get version using identifier
             var flowVersion = await _unitOfWork.FlowVersionRepo
-            .GetByConditionAsync(v => v.Id == id)
+            .GetByConditionAsync(w =>
+                w.Id == id &&
+                w.CreatedByUserId == _userId ||
+                (
+                    w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                )
+            )
+            .Include(i => i.Flow)
+            .ThenInclude(i2 => i2.FlowUsers)
             .SingleOrDefaultAsync();
 
             //Check if version not exists
@@ -188,6 +252,21 @@ public class FlowVersionService : IFlowVersionService
             {
                 _logger.LogInformation($"Flow version does not exist");
                 serviceResponse.Message = "Version does not exist";
+                return serviceResponse;
+            }
+
+            // Check if the user is the creator or has the required access (Owner/Editor)
+            var flowUserAccess = flowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
+                w.FlowId == flowVersion.Flow.Id &&
+                w.UserId == _userId &&
+                (w.Type == AgentAccessTypesEnum.Owner)
+            );
+
+            // Allow access if the user is the creator, else check if they have access
+            if (flowVersion.Flow.CreatedByUserId != _userId && flowUserAccess == null)
+            {
+                _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
+                serviceResponse.Message = "You don't have access to modify this flow.";
                 return serviceResponse;
             }
 
