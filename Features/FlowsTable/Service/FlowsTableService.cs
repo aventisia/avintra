@@ -191,13 +191,29 @@ public class FlowsTableService : IFlowsTableService
                                             (
                                                 w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
                                             )
-                                        ).SingleOrDefaultAsync();
+                                        ).Include(i => i.FlowUsers)
+                                        .SingleOrDefaultAsync();
 
             // Flow does not exist
             if (flow == null)
             {
                 _logger.LogInformation($"Flow does not exist");
                 serviceResponse.Message = "Flow does not exist";
+                return serviceResponse;
+            }
+
+            // Check if the user is the creator or has the required access (Owner/Editor)
+            var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
+                w.FlowId == flow.Id &&
+                w.UserId == _userId &&
+                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Editor)
+            );
+
+            // Allow access if the user is the creator, else check if they have access
+            if (flow.CreatedByUserId != _userId && flowUserAccess == null)
+            {
+                _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
+                serviceResponse.Message = "You don't have access to modify this flow.";
                 return serviceResponse;
             }
 
@@ -268,9 +284,11 @@ public class FlowsTableService : IFlowsTableService
                                         .GetByConditionAsync(w =>
                                             w.Id == id &&
                                             w.CreatedByUserId == _userId ||
-                                            (
-                                                w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
+                                            (w.FlowUsers != null && w.FlowUsers.Any(a =>
+                                                a.UserId == _userId &&
+                                                 a.Type == AgentAccessTypesEnum.Owner
                                             ))
+                                        )
                                         .Include(i => i.FlowUsers)
                                         .SingleOrDefaultAsync();
 
@@ -338,6 +356,24 @@ public class FlowsTableService : IFlowsTableService
                 _logger.LogInformation($"Flows do not exist");
                 serviceResponse.Message = "Flows do not exist";
                 return serviceResponse;
+            }
+
+            // Check if the user is the creator or has required access (Owner/Editor)
+            foreach (var flow in flows)
+            {
+                var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
+                    w.FlowId == flow.Id &&
+                    w.UserId == _userId &&
+                    (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Editor)
+                );
+
+                // Allow access if the user is the creator, else check if they have access
+                if (flow.CreatedByUserId != _userId && flowUserAccess == null)
+                {
+                    _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
+                    serviceResponse.Message = "You don't have access to modify this flow.";
+                    return serviceResponse;
+                }
             }
 
             // TODO: Check flow relationship with other entities
