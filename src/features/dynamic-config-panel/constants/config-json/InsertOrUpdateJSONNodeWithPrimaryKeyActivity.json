@@ -4,7 +4,7 @@
     "type": "text",
     "name": "JsonContent",
     "label": "JSON Content",
-    "description": "The root JSON token to begin searching. This can be a JObject, JArray, or any valid JToken type.",
+    "description": "The root JSON token to begin searching. This can be a JSON string or a JToken.",
     "defaultValue": "",
     "required": true
   },

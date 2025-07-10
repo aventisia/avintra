@@ -157,5 +157,17 @@
     "description": "The path to save the resulting zip file.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "OutputZipFullPath",
+    "label": "Output Zip Full Path",
+    "description": "The full path of the resulting zip file.",
+    "defaultValue": {
+      "value": "OutputZipFullPath",
+      "enabled": true
+    },
+    "required": false
   }
 ]

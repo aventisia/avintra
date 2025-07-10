@@ -36,7 +36,15 @@
     "label": "Start Index",
     "description": "The zero-based starting position of the substring. Only used if \u0027Start Index Type\u0027 is \u0027Character Position\u0027.",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "StartIndexType",
+          "equals": "CharacterPosition"
+        }
+      ]
+    }
   },
   {
     "direction": "Input",
