@@ -29,6 +29,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         [DisplayName("Start Index")]
         [Description(
             "The zero-based starting position of the substring. Only used if 'Start Index Type' is 'Character Position'.")]
+        [RenderIfCondition(nameof(StartIndexType), StartIndexTypeEnum.CharacterPosition)]
         public InArgument<int> StartIndex { get; set; }
 
 
