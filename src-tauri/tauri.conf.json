@@ -8,12 +8,12 @@
     "frontendDist": "../dist",
     "devUrl": "http://localhost:3002",
     "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build -- --mode testing"
+    "beforeBuildCommand": "npm run build"
   },
   "app": {
     "windows": [
       {
-        "title": "Worc Desktop App DEV",
+        "title": "Worc Desktop App",
         "resizable": true,
         "fullscreen": false
       }
@@ -42,7 +42,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVGMjkwM0I1OEFFMzU5NTcKUldSWFdlT0t0UU1wN3o5TjMzTjNtdzFEWTdhUGJGdnV0ZFVaWWE2cDcwK2s5ZXNTYjBoVWFHeWwK",
       "endpoints": [
-        "https://dev-accounts.aventisia.com/api/desktop-app/update/{{target}}/{{arch}}/{{current_version}}"
+        "https://accounts.aventisia.com/api/desktop-app/update/{{target}}/{{arch}}/{{current_version}}"
       ],
       "dialog": false,
       "windows": {
