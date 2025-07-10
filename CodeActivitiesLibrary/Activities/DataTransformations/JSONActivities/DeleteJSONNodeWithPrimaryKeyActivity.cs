@@ -4,6 +4,7 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
 {
@@ -68,21 +69,28 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
             if (token.Type == JTokenType.Object)
             {
                 JObject obj = (JObject)token;
-                if (obj.TryGetValue(primaryKey, out JToken pkToken) && pkToken.ToString() == primaryValue)
+                if (obj.TryGetValue(primaryKey, out JToken pkToken))
                 {
-                    if (obj.Parent is JArray array)
+                    // Extract the raw string value of the token
+                    string pkStringValue = pkToken.Value<string>();
+
+                    // Compare the extracted value with the primary key value
+                    if (pkStringValue != null && pkStringValue.Equals(primaryValue, StringComparison.OrdinalIgnoreCase))
                     {
-                        array.Remove(obj);
-                        return true;
-                    }
-                    else if (obj.Parent is JObject parentObj)
-                    {
-                        parentObj.Remove(obj.Path);
-                        return true;
+                        if (obj.Parent is JArray array)
+                        {
+                            array.Remove(obj);
+                            return true;
+                        }
+                        else if (obj.Parent is JObject parentObj)
+                        {
+                            parentObj.Remove(obj.Path);
+                            return true;
+                        }
                     }
                 }
 
-                // Search child properties
+                // Recursively search child properties
                 foreach (var prop in obj.Properties().ToList())
                 {
                     if (prop.Value != null && DeleteNodeHelper(prop.Value, primaryKey, primaryValue))
