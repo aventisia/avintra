@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
@@ -63,7 +64,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            var status = "Operation completed.";
             string result = null;
 
             try
@@ -75,6 +76,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
                 var useCustomNs = UseCustomActionNamespace.Get(context);
                 var actionNamespace = ActionNamespace.Get(context);
 
+                // Validate inputs
                 if (string.IsNullOrWhiteSpace(url))
                     throw new ArgumentException("Endpoint URL must be provided.");
 
@@ -100,31 +102,34 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
 
                 var requestBody = envelope.ToString();
 
+                // Log request body for debugging
+                Console.WriteLine($"SOAP Request Body:\n{requestBody}");
+
                 // Configure HTTP Client
                 using (var handler = new HttpClientHandler())
                 {
                     // Optional: handle insecure certificates during development
-                    // handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+                    // handler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
 
-                    using (var client = new HttpClient(handler))
+                    using (var client = new HttpClient(handler) { Timeout = timeout })
                     {
-                        client.Timeout = timeout;
-
                         var request = new StringContent(requestBody, System.Text.Encoding.UTF8, "text/xml");
-                        request.Headers.Add("SOAPAction", $"\"{actionNs}{method}\"");
 
-                        // Send request synchronously (safe only in non-UI contexts)
-                        var response = client.PostAsync(url, request).Result;
+                        string soapAction = $"\"{actionNs}{method}\"";
+                        request.Headers.TryAddWithoutValidation("SOAPAction", soapAction);
+
+                        // Avoid deadlock by wrapping in Task.Run
+                        var response = Task.Run(() => client.PostAsync(url, request)).Result;
+
+                        result = response.Content.ReadAsStringAsync().Result;
 
                         if (response.IsSuccessStatusCode)
                         {
-                            result = response.Content.ReadAsStringAsync().Result;
                             status = $"Successfully invoked '{method}' on '{url}'.";
                         }
                         else
                         {
-                            result = "";
-                            status = $"Failed to invoke '{method}': {response.ReasonPhrase}";
+                            status = $"Failed to invoke '{method}': {response.ReasonPhrase}. Response: {result}";
                         }
                     }
                 }
@@ -135,7 +140,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
             catch (Exception ex)
             {
                 status = $"Error invoking SOAP web service: {ex.Message}";
-                Result.Set(context, result ?? "");
+                Result.Set(context, result ?? "<empty>");
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
             }
