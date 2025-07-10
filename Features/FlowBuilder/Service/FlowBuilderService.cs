@@ -108,7 +108,9 @@ public class FlowBuilderService : IFlowBuilderService
                     w.FlowId == publishFlowVersionDto.FlowId &&
                     (
                         w.CreatedByUserId == _userId ||
-                        (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId))
+                        (
+                            w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                        )
                     ))
                 .Include(fv => fv.Flow)
                 .ThenInclude(flow => flow.FlowUsers)
@@ -119,7 +121,22 @@ public class FlowBuilderService : IFlowBuilderService
             if (flowVersion == null)
             {
                 _logger.LogInformation($"No flow version found for FlowId {publishFlowVersionDto.FlowId} with VersionId {publishFlowVersionDto.Id}.");
-                serviceResponse.Message = "Flow version does not exist or user has no access to it.";
+                serviceResponse.Message = "Flow version does not exist.";
+                return serviceResponse;
+            }
+
+            // Check if the user is the creator or has the required access (Owner/Editor)
+            var flowUserAccess = flowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
+                w.FlowId == flowVersion.Flow.Id &&
+                w.UserId == _userId &&
+                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Editor)
+            );
+
+            // Allow access if the user is the creator, else check if they have access
+            if (flowVersion.Flow.CreatedByUserId != _userId && flowUserAccess == null)
+            {
+                _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
+                serviceResponse.Message = "You don't have access to modify this flow.";
                 return serviceResponse;
             }
 
@@ -263,6 +280,21 @@ public class FlowBuilderService : IFlowBuilderService
             {
                 _logger.LogInformation($"No flow version found for Id {flowSilentUpdateDto.Id}. The flow version could not be updated.");
                 serviceResponse.Message = "Flow version does not exist.";
+                return serviceResponse;
+            }
+
+            // Check if the user is the creator or has the required access (Owner/Editor)
+            var flowUserAccess = flowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
+                w.FlowId == flowVersion.Flow.Id &&
+                w.UserId == _userId &&
+                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Editor)
+            );
+
+            // Allow access if the user is the creator, else check if they have access
+            if (flowVersion.Flow.CreatedByUserId != _userId && flowUserAccess == null)
+            {
+                _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
+                serviceResponse.Message = "You don't have access to modify this flow.";
                 return serviceResponse;
             }
 
