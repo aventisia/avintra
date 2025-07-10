@@ -51,6 +51,9 @@ const FELInputOutput = ({ jsonData, title }: FELInputOutputProps) => {
             padding: "0.5rem",
             fontSize: "0.7rem",
           }}
+          onEdit={() => {
+            // No need to handle edit
+          }}
           enableClipboard={false}
           groupArraysAfterLength={20}
           displayDataTypes={false}
