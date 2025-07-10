@@ -2387,15 +2387,6 @@
           },
           {
             "type": "activityNode",
-            "name": "InvokeSoapWebServiceActivity",
-            "label": "Invoke SOAP Web Service",
-            "description": "Invokes a specified method from a SOAP web service and returns the response.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/function.png"
-          },
-          {
-            "type": "activityNode",
             "name": "InvokeWebServiceActivity",
             "label": "Invoke Web Service",
             "description": "Invokes a web service (REST or SOAP) and returns the response text.",
