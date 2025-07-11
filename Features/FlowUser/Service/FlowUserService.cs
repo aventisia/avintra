@@ -124,9 +124,13 @@ public class FlowUserService : IFlowUserService
                 serviceResponse.Message = "Access denied: You cannot add users to agent.";
                 return serviceResponse;
             }
+
             var flowUser = await _unitOfWork.FlowUserRepo
-            .GetByConditionAsync(w => w.UserId == flowUserDto.UserId && w.FlowId == flowUserDto.FlowId)
-            .SingleOrDefaultAsync();
+                .GetByConditionAsync(w => 
+                    w.UserId == flowUserDto.UserId && 
+                    w.FlowId == flowUserDto.FlowId
+                )
+                .SingleOrDefaultAsync();
 
             // Check if the flow user already exists based on UserId and FlowId
             if (flowUser != null)
@@ -190,21 +194,41 @@ public class FlowUserService : IFlowUserService
 
         try
         {
-            // Retrieve existing flow user entity by Id
+            // First DB call: Retrieve the flow user entity and its related flow (without including FlowUsers)
             var flowUser = await _unitOfWork.FlowUserRepo
                 .GetByConditionAsync(w =>
                     w.Id == flowUserDto.Id &&
-                    w.UserId != _userId &&
-                    (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Edit)
+                    w.UserId != _userId
                 )
                 .SingleOrDefaultAsync();
-
 
             // Check if the flow user exists
             if (flowUser == null)
             {
                 _logger.LogInformation($"Flow user with Id {flowUserDto.Id} not found for update.");
                 serviceResponse.Message = "User not found.";
+                return serviceResponse;
+            }
+
+            // Retrieve FlowUsers for the Flow of the retrieved flowUser
+            var flow = await _unitOfWork.FlowRepo.GetByConditionAsync(w =>
+                w.Id == flowUser.FlowId
+            )
+            .Include(i => i.FlowUsers)
+            .AsNoTracking()
+            .SingleOrDefaultAsync();
+
+            var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
+                w.FlowId == flowUser.FlowId &&
+                w.UserId == _userId &&
+                w.Type == AgentAccessTypesEnum.Owner
+            );
+
+            // Check if the user has the required access (Owner/Edit)
+            if (flow.CreatedByUserId != _userId && flowUserAccess == null)
+            {
+                _logger.LogWarning($"User {_userId} is not authorized to update the access.");
+                serviceResponse.Message = "You don't have access to update the access.";
                 return serviceResponse;
             }
 
@@ -259,10 +283,10 @@ public class FlowUserService : IFlowUserService
         {
             // Retrieve the flow user entity by Id
             var flowUser = await _unitOfWork.FlowUserRepo
-            .GetByConditionAsync(w =>
-                w.Id == flowUserId && w.UserId != _userId
-            )
-            .SingleOrDefaultAsync();
+                .GetByConditionAsync(w =>
+                    w.Id == flowUserId && w.UserId != _userId
+                )
+                .SingleOrDefaultAsync();
 
             // If flow user does not exist, return error response
             if (flowUser == null)
@@ -272,23 +296,25 @@ public class FlowUserService : IFlowUserService
                 return serviceResponse;
             }
 
-            // Check access for the flow user
-            var flowUserAccess = await _unitOfWork.FlowRepo
-                .GetByConditionAsync(w =>
-                    w.Id == flowUser.FlowId &&
-                    (
-                        w.CreatedByUserId == _userId ||
-                        (w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId && a.Type == AgentAccessTypesEnum.Owner))
-                    )
-                )
-                .Include(i => i.FlowUsers)
-                .SingleOrDefaultAsync();
+            // Retrieve FlowUsers for the Flow of the retrieved flowUser
+            var flow = await _unitOfWork.FlowRepo.GetByConditionAsync(w =>
+                w.Id == flowUser.FlowId
+            )
+            .Include(i => i.FlowUsers)
+            .AsNoTracking()
+            .SingleOrDefaultAsync();
 
-            // If access to the flow is not found, log and return a message
-            if (flowUserAccess == null)
+            var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
+                w.FlowId == flowUser.FlowId &&
+                w.UserId == _userId &&
+                w.Type == AgentAccessTypesEnum.Owner
+            );
+
+            // Check if the user has the required access (Owner/Edit)
+            if (flow.CreatedByUserId != _userId && flowUserAccess == null)
             {
-                _logger.LogWarning($"User {_userId} does not have access to the flow with Id {flowUser.FlowId}.");
-                serviceResponse.Message = "Access to the flow is denied.";
+                _logger.LogWarning($"User {_userId} is not authorized to delete the access.");
+                serviceResponse.Message = "You don't have access to delete the access.";
                 return serviceResponse;
             }
 
