@@ -2,7 +2,7 @@
  * Represents a data transfer object (DTO) for Flow User.
  */
 
-export type UserType = "Viewer" | "Editor" | "Owner";
+export type UserType = "View" | "Edit" | "Owner";
 
 export interface FlowUserDto {
   id?: string;

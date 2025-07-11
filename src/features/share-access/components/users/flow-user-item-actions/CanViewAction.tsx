@@ -13,7 +13,7 @@ interface CanViewActionProps {
 export const CanViewAction = ({ item }: CanViewActionProps) => {
   const { mutate } = useUpdateUserTypeMutation();
   const handleClick = () => {
-    mutate({ ...item, type: "Viewer" });
+    mutate({ ...item, type: "View" });
   };
   // Return the component
   return (
