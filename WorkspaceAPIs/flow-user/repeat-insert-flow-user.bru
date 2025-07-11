@@ -21,8 +21,8 @@ script:pre-request {
   
   req.setBody({
     flowId: bru.getGlobalEnvVar("FLOW_ID"),
-    userId: "da4c7baf-4557-4977-af54-c9745fc84dee",//bru.getGlobalEnvVar("USER_ID"),
-    type: "Editor"
+    userId: bru.getGlobalEnvVar("USER_ID"),
+    type: "Edit"
   })
 }
 
