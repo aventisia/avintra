@@ -20,6 +20,8 @@ import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { useEffect } from "react";
 import { enumToArray } from "@aventisia/ui/utils";
 import { AccessTypeEnum } from "../../constants/access-type-enum";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 
 export const FlowBlockCrudForm = () => {
   // Define flow form
@@ -100,6 +102,23 @@ export const FlowBlockCrudForm = () => {
       } as unknown as FlowBlockDto);
   };
 
+  // Get user session state and actions
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
+  const isIndividualUser =
+    userSession?.tenantName === DefaultTenantsEnum.IndividualUsers;
+
+  const selectOptions = enumToArray(AccessTypeEnum).filter(
+    (item: { label: string; value: string }) => {
+      if (isIndividualUser && item.value == "TenantLevel") return false;
+      else return true;
+    },
+  );
+
   // Return the form
   return (
     <Form
@@ -129,7 +148,7 @@ export const FlowBlockCrudForm = () => {
               label="Access Type"
               description="Select the access type"
               size="xs"
-              selectOptions={enumToArray(AccessTypeEnum)}
+              selectOptions={selectOptions}
             />
           )}
         />
