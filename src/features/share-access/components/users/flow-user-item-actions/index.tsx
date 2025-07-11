@@ -22,8 +22,8 @@ export const FlowUserItemActions = ({ item }: FlowUserItemActionsProps) => {
 
       {/* Dropdown menu content */}
       <DropdownMenuContent align="end" className="w-[8rem] min-w-[8rem]">
-        {item.type !== "Editor" ? <CanEditAction item={item} /> : null}{" "}
-        {item.type !== "Viewer" ? <CanViewAction item={item} /> : null}{" "}
+        {item.type !== "Edit" ? <CanEditAction item={item} /> : null}{" "}
+        {item.type !== "View" ? <CanViewAction item={item} /> : null}{" "}
         {item.type !== "Owner" ? <MarkAsOwnerAction item={item} /> : null}{" "}
         <RemoveUserAction id={item.id || ""} />
       </DropdownMenuContent>

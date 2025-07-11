@@ -13,7 +13,7 @@ interface CanEditActionProps {
 export const CanEditAction = ({ item }: CanEditActionProps) => {
   const { mutate } = useUpdateUserTypeMutation();
   const handleClick = () => {
-    mutate({ ...item, type: "Editor" });
+    mutate({ ...item, type: "Edit" });
   };
   // Return the component
   return (

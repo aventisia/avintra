@@ -11,7 +11,7 @@ import { toast } from "@aventisia/ui/sonner";
 export const useSearchMultiSelect = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItems, setSelectedItems] = useState<WorkspaceUserDto[]>([]);
-  const [selectedValue, setSelectedValue] = useState("Viewer");
+  const [selectedValue, setSelectedValue] = useState("View");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
