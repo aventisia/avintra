@@ -35,16 +35,16 @@ public class FlowBuilderService : IFlowBuilderService
                 .GetByConditionAsync(w =>
                     (!versionId.HasValue || w.Id == versionId) &&
                     w.FlowId == flowId &&
-                    w.CreatedByUserId == _userId ||
                     (
-                        w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                        w.CreatedByUserId == _userId ||
+                        (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId))
                     )
                 )
                 .Include(u => u.CreatedByUser)
                 .Include(lm => lm.LastModifiedByUser)
                 .Include(f => f.Flow)
-                .ThenInclude(i2 => i2.FlowUsers)
-                .OrderByDescending(a => a.CreatedOn) // Ensure the latest version is retrieved
+                    .ThenInclude(i2 => i2.FlowUsers)
+                .OrderByDescending(o =>o.CreatedOn) // Ensure the latest version is retrieved
                 .FirstOrDefaultAsync();
 
             // No flow version found, log and return response
@@ -265,9 +265,9 @@ public class FlowBuilderService : IFlowBuilderService
                                         .GetByConditionAsync(w =>
                                             w.Id == flowSilentUpdateDto.VersionId &&
                                             w.FlowId == flowSilentUpdateDto.Id &&
-                                            w.CreatedByUserId == _userId ||
                                             (
-                                                w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                                                w.CreatedByUserId == _userId ||
+                                                (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId))
                                             )
                                         )
                                         .Include(i => i.Flow)

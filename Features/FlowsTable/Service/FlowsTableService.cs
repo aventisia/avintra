@@ -36,10 +36,11 @@ public class FlowsTableService : IFlowsTableService
             // Get flows
             var flows = await _unitOfWork.FlowRepo
             .GetByConditionAsync(w =>
-                w.CreatedByUserId == _userId ||
-                (
-                    w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
-                )) // TODO: Update condition
+                    w.CreatedByUserId == _userId ||
+                    (
+                        w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
+                    )
+                ) // TODO: Update condition
                 .OrderByDescending(w => w.CreatedOn)
                 .Include(w => w.FlowUsers)
                 .ProjectToType<FlowsTableDto>()
@@ -187,9 +188,11 @@ public class FlowsTableService : IFlowsTableService
             var flow = await _unitOfWork.FlowRepo
                                         .GetByConditionAsync(w =>
                                             w.Id == flowsTableDto.Id &&
-                                            w.CreatedByUserId == _userId ||
                                             (
-                                                w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
+                                                w.CreatedByUserId == _userId ||
+                                                (
+                                                    w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
+                                                )
                                             )
                                         ).Include(i => i.FlowUsers)
                                         .SingleOrDefaultAsync();
@@ -283,13 +286,13 @@ public class FlowsTableService : IFlowsTableService
             var flow = await _unitOfWork.FlowRepo
                                         .GetByConditionAsync(w =>
                                             w.Id == id &&
-                                            w.CreatedByUserId == _userId ||
-                                            (w.FlowUsers != null && w.FlowUsers.Any(a =>
-                                                a.UserId == _userId &&
-                                                 a.Type == AgentAccessTypesEnum.Owner
-                                            ))
-                                        )
-                                        .Include(i => i.FlowUsers)
+                                            (
+                                                w.CreatedByUserId == _userId ||
+                                                (
+                                                    w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
+                                                )
+                                            )
+                                        ).Include(i => i.FlowUsers)
                                         .SingleOrDefaultAsync();
 
             // Flow does not exist
@@ -297,6 +300,21 @@ public class FlowsTableService : IFlowsTableService
             {
                 _logger.LogInformation($"Flow does not exist");
                 serviceResponse.Message = "Flow does not exist";
+                return serviceResponse;
+            }
+
+            // Check if the user is the creator or has the required access (Owner/Edit)
+            var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
+                w.FlowId == flow.Id &&
+                w.UserId == _userId &&
+                w.Type == AgentAccessTypesEnum.Owner
+            );
+
+            // Allow access if the user is the creator, else check if they have access
+            if (flow.CreatedByUserId != _userId && flowUserAccess == null)
+            {
+                _logger.LogWarning($"User {_userId} is not authorized to delete this flow.");
+                serviceResponse.Message = "You don't have access to delete this flow.";
                 return serviceResponse;
             }
 
@@ -342,9 +360,11 @@ public class FlowsTableService : IFlowsTableService
             var flows = await _unitOfWork.FlowRepo
                                             .GetByConditionAsync(w =>
                                                 ids.Contains(w.Id) &&
-                                                w.CreatedByUserId == _userId ||
                                                 (
-                                                    w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
+                                                    w.CreatedByUserId == _userId ||
+                                                    (
+                                                        w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
+                                                    )
                                                 )
                                             )
                                             .Include(i => i.FlowUsers)

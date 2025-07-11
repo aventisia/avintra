@@ -33,9 +33,12 @@ public class FlowVersionService : IFlowVersionService
             //Try to get flow versions
             var flowVersions = await _unitOfWork.FlowVersionRepo
             .GetByConditionAsync(w =>
-                w.FlowId == flowId && w.CreatedByUserId == _userId ||
+                w.FlowId == flowId &&
                 (
-                    w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                     w.CreatedByUserId == _userId ||
+                    (
+                        w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                    )
                 )
             )
             .Include(i => i.Flow)
@@ -73,9 +76,12 @@ public class FlowVersionService : IFlowVersionService
             //Try to get flow
             var flow = await _unitOfWork.FlowRepo
                 .GetByConditionAsync(w =>
-                    w.Id == flowVersionDto.FlowId && w.CreatedByUserId == _userId ||
+                    w.Id == flowVersionDto.FlowId && 
                     (
-                        w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
+                        w.CreatedByUserId == _userId ||
+                        (
+                            w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
+                        )
                     )
                 )
                 .Include(i => i.FlowUsers)
@@ -153,9 +159,11 @@ public class FlowVersionService : IFlowVersionService
             var existingFlowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Id == flowVersionDto.Id &&
-                    w.CreatedByUserId == _userId ||
                     (
-                        w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                        w.CreatedByUserId == _userId ||
+                        (
+                            w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                        )
                     )
                 )
                 .Include(i => i.Flow)
@@ -238,9 +246,11 @@ public class FlowVersionService : IFlowVersionService
             var flowVersion = await _unitOfWork.FlowVersionRepo
             .GetByConditionAsync(w =>
                 w.Id == id &&
-                w.CreatedByUserId == _userId ||
                 (
-                    w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                    w.CreatedByUserId == _userId ||
+                    (
+                        w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                    )
                 )
             )
             .Include(i => i.Flow)
