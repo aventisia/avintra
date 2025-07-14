@@ -16,32 +16,36 @@ script:pre-request {
   req.setBody({
     id: bru.getGlobalEnvVar("MLMODEL_ID"),
     businessContext:"test",
-    modelTasks:[
-      {
-        //id: bru.getGlobalEnvVar("MLMODEL_TASK_ID"),
-        name: "Extraction",
-        configurationType: "OnPrem",
-        llm: "gemma",
-        nodePrompt: "",
-        temperature: 0.3,
-        extraction: {
-          tables: [],
-          fields: [],
-        }
-      },
-      {
+    summarization: {
         //id: bru.getGlobalEnvVar("MLMODEL_TASK_ID"),
         name: "Summarization",
         configurationType: "OnPrem",
         llm: "gemma",
         nodePrompt: "",
         temperature: 0.3,
-        summarization: {
+        setupObject: {
           totalMinimumWords: 100,
           totalMaximumWords: 200,
         }
+      },
+    extraction: {
+        //id: bru.getGlobalEnvVar("MLMODEL_TASK_ID"),
+        name: "Extraction",
+        configurationType: "OnPrem",
+        llm: "gemma",
+        nodePrompt: "",
+        temperature: 0.3,
+        setupObject: {
+          tables: [],
+          fields: [
+            {
+              name: "test",
+              type: "Text",
+              instruction:""
+            }
+          ]
+        }
       }
-    ]
   });
   
 }
