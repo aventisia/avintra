@@ -1,57 +1,48 @@
 ﻿using CodeActivitiesLibrary.Extensions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Linq;
-using System.Xml.Linq;
-
-namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
+namespace CodeActaivitiesLibrary.DataTransformations.JSONActivities
 {
     [DisplayName("Delete JSON Node by Primary Key")]
     [Description("Recursively searches for an object with a matching primary key-value pair and deletes it from the structure.")]
 
     public class DeleteJSONNodeWithPrimaryKeyActivity : BaseCodeActivity
     {
-        // Input Arguments
-         
         [RequiredArgument]
-        [DisplayName("JSON Token")]
-        [Description("The root JSON token to begin searching. This can be a JObject, JArray, or any valid JToken type.")]
-        public InArgument<JToken> JsonToken { get; set; }
-
+        [DisplayName("JSON Content")]
+        [Description("The root JSON token to begin searching. This can be a JSON string or a JToken.")]
+        public InArgument<object> JsonContent { get; set; }
         [RequiredArgument]
         [DisplayName("Primary Key Name")]
         [Description("The name of the property used to identify the target object (e.g., 'id', 'name').")]
         public InArgument<string> PrimaryKeyName { get; set; }
-
         [RequiredArgument]
         [DisplayName("Primary Key Value")]
         [Description("The value of the primary key used to locate the target object.")]
         public InArgument<string> PrimaryKeyValue { get; set; }
-
         protected override void Execute(CodeActivityContext context)
         {
             try
             {
-                // Retrieve inputs
-                JToken jsonToken = JsonToken.Get(context);
+                object jsonContent = JsonContent.Get(context);
                 string primaryKey = PrimaryKeyName.Get(context);
                 string primaryValue = PrimaryKeyValue.Get(context);
-
-                // Validate inputs
-                if (jsonToken == null || string.IsNullOrWhiteSpace(primaryKey) ||
-                    string.IsNullOrWhiteSpace(primaryValue))
+                if (jsonContent == null || string.IsNullOrWhiteSpace(primaryKey) || string.IsNullOrWhiteSpace(primaryValue))
                 {
                     IsSuccess.Set(context, false);
-                    StatusMessage.Set(context,"Invalid input: JSON Token, Primary Key Name, or Primary Key Value is missing.");
+                    StatusMessage.Set(context, "Invalid input: JSON Content, Primary Key Name, or Primary Key Value is missing.");
                     return;
                 }
+                JToken jToken = jsonContent is string
+                    ? JToken.Parse((string)jsonContent)
+                    : (JToken)jsonContent;
+                bool success = DeleteNodeHelper(jToken, primaryKey, primaryValue);
 
-                // Perform deletion
-                bool success = DeleteNodeHelper(jsonToken, primaryKey, primaryValue);
-
-                 // Set outputs
+                // Set outputs
                 IsSuccess.Set(context, success);
                 StatusMessage.Set(context, success
                     ? $"Successfully deleted object with '{primaryKey}={primaryValue}'."
@@ -63,7 +54,7 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
                 StatusMessage.Set(context, $"Error deleting JSON node: {ex.Message}");
             }
         }
-
+        
         private static bool DeleteNodeHelper(JToken token, string primaryKey, string primaryValue)
         {
             if (token.Type == JTokenType.Object)
