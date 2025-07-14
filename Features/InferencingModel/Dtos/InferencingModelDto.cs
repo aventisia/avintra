@@ -28,9 +28,29 @@ public class InferencingModelDto
     public required string BusinessContext { get; set; }
 
     /// <summary>
-    /// Gets or sets the list of model tasks associated with this inferencing model.
+    /// Gets or sets the extraction task setup for the inferencing model.
     /// </summary>
-    public List<InferencingModelTaskDto>? ModelTasks { get; set; }
+    public ExtractionTaskDto? Extraction { get; set; }
+
+    /// <summary>
+    /// Gets or sets the classification task setup for the inferencing model.
+    /// </summary>
+    public ClassificationTaskDto? Classification { get; set; }
+
+    /// <summary>
+    /// Gets or sets the summarization task setup for the inferencing model.
+    /// </summary>
+    public SummarizationTaskDto? Summarization { get; set; }
+
+    /// <summary>
+    /// Gets or sets the sentiment analytics task setup for the inferencing model.
+    /// </summary>
+    public SentimentAnalyticsTaskSDto? SentimentAnalytics { get; set; }
+
+    /// <summary>
+    /// Gets or sets the question answering task setup for the inferencing model.
+    /// </summary>
+    public QuestionAnswerTaskDto? QuestionAnswer { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the inferencing model was created.
