@@ -173,7 +173,7 @@ public class InferencingModelService : IInferencingModelService
                 }
             }
 
-            else if (modelSetupDto.Classification != null)
+            if (modelSetupDto.Classification != null)
             {
                 var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.Classification.Name);
                 if (existingTask == null)
@@ -198,7 +198,7 @@ public class InferencingModelService : IInferencingModelService
                 }
             }
 
-            else if (modelSetupDto.SentimentAnalytics != null)
+            if (modelSetupDto.SentimentAnalytics != null)
             {
                 var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.SentimentAnalytics.Name);
                 if (existingTask == null)
@@ -223,7 +223,7 @@ public class InferencingModelService : IInferencingModelService
                 }
             }
 
-            else if (modelSetupDto.QuestionAnswer != null)
+            if (modelSetupDto.QuestionAnswer != null)
             {
                 var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.QuestionAnswer.Name);
                 if (existingTask == null)
@@ -248,7 +248,7 @@ public class InferencingModelService : IInferencingModelService
                 }
             }
 
-            else if (modelSetupDto.Summarization != null)
+            if (modelSetupDto.Summarization != null)
             {
                 var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.Summarization.Name);
                 if (existingTask == null)

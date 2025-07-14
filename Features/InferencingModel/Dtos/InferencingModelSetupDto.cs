@@ -145,7 +145,7 @@ public class QuestionAnswerTaskSetupDto
     /// Gets or sets the list of categorized question-and-answer entries that define the structure of the task.
     /// Each category represents a different set of related question-answer pairs.
     /// </summary>
-    public List<QuestionAnswerCategoryDto>? Categories { get; set; }
+    public List<QuestionAnswerCategoryDto>? QuestionAnswers { get; set; }
 }
 
 //------------------------------- Task Category Setup -------------------------------
