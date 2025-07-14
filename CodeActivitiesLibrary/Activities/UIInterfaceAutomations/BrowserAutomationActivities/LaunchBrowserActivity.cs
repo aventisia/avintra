@@ -37,6 +37,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 
         [DisplayName("Launch Url")]
         [Description("The URL to launch if Launch with Url is true.")]
+        [RenderIfCondition(nameof(LaunchWithUrl), true)]
         public InArgument<string> LaunchUrl { get; set; }
 
         [DisplayName("Browsing Mode")]

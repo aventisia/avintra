@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities
 {
-    [DisplayName("Click Link on Web Page")]
+    [DisplayName("Click on Web Page")]
     [Description("Simulates clicking a UI element (e.g., link, button) on a web page.")]
     public class ClickLinkOnWebPageActivity : BaseCodeActivity
     {
