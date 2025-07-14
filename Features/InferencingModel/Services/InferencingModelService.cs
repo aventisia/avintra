@@ -59,7 +59,7 @@ public class InferencingModelService : IInferencingModelService
 
             // Retrieve the list of inferencing tasks and add it to the model DTO 
             // This will populate the ModelTasks property with specific task details
-            inferencingModelDto.ModelTasks = GetInferencingModelTask(mlModel);
+            GetInferencingModelSetup(mlModel, inferencingModelDto);
 
             // Map the adapted model setup (including tasks) to the response DTO
             serviceResponse.Data = inferencingModelDto;
@@ -90,13 +90,13 @@ public class InferencingModelService : IInferencingModelService
 
         try
         {
-            // Validate input DTO
-            if (!ValidateModelSetupDto(modelSetupDto, out string? validationMessage))
-            {
-                _logger.LogWarning("Model setup validation failed: {ValidationMessage}", validationMessage);
-                serviceResponse.Message = validationMessage;
-                return serviceResponse;
-            }
+            // // Validate input DTO
+            // if (!ValidateModelSetupDto(modelSetupDto, out string? validationMessage))
+            // {
+            //     _logger.LogWarning("Model setup validation failed: {ValidationMessage}", validationMessage);
+            //     serviceResponse.Message = validationMessage;
+            //     return serviceResponse;
+            // }
 
             _logger.LogInformation("Starting update for model setup | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
 
@@ -143,34 +143,133 @@ public class InferencingModelService : IInferencingModelService
             var tasksToBeAdded = new List<ModelTask>();
             var tasksToBeUpdated = new List<ModelTask>();
 
-            if (modelSetupDto.ModelTasks?.Count > 0)
+            var options = new JsonSerializerOptions
             {
-                // Iterate over each task DTO to determine if it should be added or updated
-                foreach (var taskDto in modelSetupDto.ModelTasks)
+                PropertyNameCaseInsensitive = true
+            };
+
+            if (modelSetupDto.Extraction != null)
+            {
+                var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.Extraction.Name);
+                if (existingTask == null)
                 {
-                    // Attempt to find an existing task in the model with the same name
-                    var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == taskDto.Name);
+                    // Task does not exist — create a new task entity from the DTO
+                    var newTask = modelSetupDto.Extraction.Adapt<ModelTask>();
+                    newTask.MLModelId = mlModel.Id;
+                    newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Extraction.SetupObject, options);
+                    newTask.CreatedByUserId = _userId;
+                    newTask.LastModifiedByUserId = _userId;
 
-                    if (existingTask == null)
-                    {
-                        // Task does not exist — create a new task entity from the DTO
-                        var newTask = taskDto.Adapt<ModelTask>();
-                        newTask.MLModelId = mlModel.Id;
-                        newTask.SetupObject = SerializeSetupObject(taskDto);
-                        newTask.CreatedByUserId = _userId;
-                        newTask.LastModifiedByUserId = _userId;
+                    tasksToBeAdded.Add(newTask);
+                }
+                else
+                {
+                    // Task already exists — update its properties from the DTO
+                    modelSetupDto.Extraction.Adapt(existingTask);
+                    existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Extraction.SetupObject, options);
+                    existingTask.LastModifiedByUserId = _userId;
 
-                        tasksToBeAdded.Add(newTask);
-                    }
-                    else
-                    {
-                        // Task already exists — update its properties from the DTO
-                        taskDto.Adapt(existingTask);
-                        existingTask.SetupObject = SerializeSetupObject(taskDto);
-                        existingTask.LastModifiedByUserId = _userId;
+                    tasksToBeUpdated.Add(existingTask);
+                }
+            }
 
-                        tasksToBeUpdated.Add(existingTask);
-                    }
+            else if (modelSetupDto.Classification != null)
+            {
+                var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.Classification.Name);
+                if (existingTask == null)
+                {
+                    // Task does not exist — create a new task entity from the DTO
+                    var newTask = modelSetupDto.Classification.Adapt<ModelTask>();
+                    newTask.MLModelId = mlModel.Id;
+                    newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Classification.SetupObject, options);
+                    newTask.CreatedByUserId = _userId;
+                    newTask.LastModifiedByUserId = _userId;
+
+                    tasksToBeAdded.Add(newTask);
+                }
+                else
+                {
+                    // Task already exists — update its properties from the DTO
+                    modelSetupDto.Classification.Adapt(existingTask);
+                    existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Classification.SetupObject, options);
+                    existingTask.LastModifiedByUserId = _userId;
+
+                    tasksToBeUpdated.Add(existingTask);
+                }
+            }
+
+            else if (modelSetupDto.SentimentAnalytics != null)
+            {
+                var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.SentimentAnalytics.Name);
+                if (existingTask == null)
+                {
+                    // Task does not exist — create a new task entity from the DTO
+                    var newTask = modelSetupDto.SentimentAnalytics.Adapt<ModelTask>();
+                    newTask.MLModelId = mlModel.Id;
+                    newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.SentimentAnalytics.SetupObject, options);
+                    newTask.CreatedByUserId = _userId;
+                    newTask.LastModifiedByUserId = _userId;
+
+                    tasksToBeAdded.Add(newTask);
+                }
+                else
+                {
+                    // Task already exists — update its properties from the DTO
+                    modelSetupDto.SentimentAnalytics.Adapt(existingTask);
+                    existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.SentimentAnalytics.SetupObject, options);
+                    existingTask.LastModifiedByUserId = _userId;
+
+                    tasksToBeUpdated.Add(existingTask);
+                }
+            }
+
+            else if (modelSetupDto.QuestionAnswer != null)
+            {
+                var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.QuestionAnswer.Name);
+                if (existingTask == null)
+                {
+                    // Task does not exist — create a new task entity from the DTO
+                    var newTask = modelSetupDto.QuestionAnswer.Adapt<ModelTask>();
+                    newTask.MLModelId = mlModel.Id;
+                    newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.QuestionAnswer.SetupObject, options);
+                    newTask.CreatedByUserId = _userId;
+                    newTask.LastModifiedByUserId = _userId;
+
+                    tasksToBeAdded.Add(newTask);
+                }
+                else
+                {
+                    // Task already exists — update its properties from the DTO
+                    modelSetupDto.QuestionAnswer.Adapt(existingTask);
+                    existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.QuestionAnswer.SetupObject, options);
+                    existingTask.LastModifiedByUserId = _userId;
+
+                    tasksToBeUpdated.Add(existingTask);
+                }
+            }
+
+            else if (modelSetupDto.Summarization != null)
+            {
+                var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.Summarization.Name);
+                if (existingTask == null)
+                {
+                    // Task does not exist — create a new task entity from the DTO
+                    var newTask = modelSetupDto.Summarization.Adapt<ModelTask>();
+                    newTask.MLModelId = mlModel.Id;
+                    newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Summarization.SetupObject, options);
+                    newTask.CreatedByUserId = _userId;
+                    newTask.LastModifiedByUserId = _userId;
+
+                    tasksToBeAdded.Add(newTask);
+                }
+                else
+                {
+                    // Task already exists — update its properties from the DTO
+                    modelSetupDto.Summarization.Adapt(existingTask);
+                    existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Summarization.SetupObject, options);
+                    existingTask.LastModifiedByUserId = _userId;
+
+                    tasksToBeUpdated.Add(existingTask);
                 }
             }
 
@@ -1383,218 +1482,315 @@ public class InferencingModelService : IInferencingModelService
         return generatedPrompt.Replace("\n", "").ToString();
     }
 
-
-    // Converts machine learning model tasks into a list of <see cref="InferencingModelTaskDto"/>, including deserialization of task-specific configuration (SetupObject) based on task type.
-    private List<InferencingModelTaskDto> GetInferencingModelTask(MLModel mlModel)
+    // Maps tasks from an ML model to the appropriate properties in the InferencingModelDto. Each task is deserialized based on its type into a strongly-typed DTO.
+    private void GetInferencingModelSetup(MLModel mlModel, InferencingModelDto inferencingModelDto)
     {
-        var inferencingModelDtos = new List<InferencingModelTaskDto>();
-
-        // Check for null or empty task list
+        // Exit early if the ML model or its tasks list is null or empty
         if (mlModel?.Tasks == null || !mlModel.Tasks.Any())
-        {
-            _logger.LogInformation("No tasks found in the ML model with ID: {ModelId}. Returning empty result.", mlModel?.Id);
-            return inferencingModelDtos;
-        }
+            return;
 
-        // Process each task in the ML model
-        foreach (var modelTask in mlModel.Tasks)
-        {
-            try
-            {
-                // Adapt task to base DTO
-                var inferencingTaskDto = modelTask.Adapt<InferencingModelTaskDto>();
-                _logger.LogDebug("Adapting task '{TaskName}' to InferencingModelTaskDto.", modelTask.Name);
-
-                // Deserialize task-specific setup object
-                PopulateTaskSpecificDto(inferencingTaskDto, modelTask);
-
-                inferencingModelDtos.Add(inferencingTaskDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while processing task '{TaskName}' from ML model ID: {ModelId}. Skipping this task.", modelTask?.Name, mlModel?.Id);
-            }
-        }
-
-        return inferencingModelDtos;
-    }
-
-    // Deserializes the SetupObject JSON from the ML task into the appropriate task-specific DTO, based on the task type.
-    private void PopulateTaskSpecificDto(InferencingModelTaskDto taskDto, ModelTask modelTask)
-    {
-        // Configure JSON deserialization to be case-insensitive
+        // Configure JSON deserialization to ignore case sensitivity in property names
         var jsonOptions = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         };
 
-        try
+        // Iterate over each task in the ML model
+        foreach (var mlTask in mlModel.Tasks)
         {
-            // Determine task type and deserialize the SetupObject into the corresponding DTO
-            switch (taskDto.Name)
+            // Determine the type of task and deserialize accordingly
+            switch (mlTask.Name)
             {
                 case nameof(InferencingModelTypesEnum.Extraction):
-                    taskDto.Extraction = JsonSerializer.Deserialize<ExtractionTaskDto>(modelTask.SetupObject, jsonOptions);
-                    _logger.LogDebug("Deserialized ExtractionTaskDto for task '{TaskName}'.", modelTask.Name);
-                    break;
-
-                case nameof(InferencingModelTypesEnum.QuestionAnswer):
-                    taskDto.QuestionAnswer = JsonSerializer.Deserialize<QuestionAnswerTaskDto>(modelTask.SetupObject, jsonOptions);
-                    _logger.LogDebug("Deserialized QuestionAnswerTaskDto for task '{TaskName}'.", modelTask.Name);
-                    break;
-
-                case nameof(InferencingModelTypesEnum.SentimentAnalysis):
-                    taskDto.SentimentAnalytics = JsonSerializer.Deserialize<SentimentAnalyticTaskDto>(modelTask.SetupObject, jsonOptions);
-                    _logger.LogDebug("Deserialized SentimentAnalysisTaskDto for task '{TaskName}'.", modelTask.Name);
+                    var extractionDto = new ExtractionTaskDto
+                    {
+                        Id = mlTask.Id,
+                        Name = mlTask.Name,
+                        SetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
+                        LLM = mlTask.LLM,
+                        ConfigurationType = mlTask.ConfigurationType,
+                        NodePrompt = mlTask.NodePrompt,
+                        Temperature = mlTask.Temperature
+                    };
+                    inferencingModelDto.Extraction = extractionDto;
                     break;
 
                 case nameof(InferencingModelTypesEnum.Classification):
-                    taskDto.Classification = JsonSerializer.Deserialize<ClassificationTaskDto>(modelTask.SetupObject, jsonOptions);
-                    _logger.LogDebug("Deserialized ClassificationTaskDto for task '{TaskName}'.", modelTask.Name);
+                    var classificationDto = new ClassificationTaskDto
+                    {
+                        Id = mlTask.Id,
+                        Name = mlTask.Name,
+                        SetupObject = JsonSerializer.Deserialize<ClassificationTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
+                        LLM = mlTask.LLM,
+                        ConfigurationType = mlTask.ConfigurationType,
+                        NodePrompt = mlTask.NodePrompt,
+                        Temperature = mlTask.Temperature
+                    };
+                    inferencingModelDto.Classification = classificationDto;
+                    break;
+
+                case nameof(InferencingModelTypesEnum.SentimentAnalytics):
+                    var sentimentDto = new SentimentAnalyticsTaskSDto
+                    {
+                        Id = mlTask.Id,
+                        Name = mlTask.Name,
+                        SetupObject = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
+                        LLM = mlTask.LLM,
+                        ConfigurationType = mlTask.ConfigurationType,
+                        NodePrompt = mlTask.NodePrompt,
+                        Temperature = mlTask.Temperature
+                    };
+                    inferencingModelDto.SentimentAnalytics = sentimentDto;
+                    break;
+
+                case nameof(InferencingModelTypesEnum.QuestionAnswer):
+                    var qaDto = new QuestionAnswerTaskDto
+                    {
+                        Id = mlTask.Id,
+                        Name = mlTask.Name,
+                        SetupObject = JsonSerializer.Deserialize<QuestionAnswerTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
+                        LLM = mlTask.LLM,
+                        ConfigurationType = mlTask.ConfigurationType,
+                        NodePrompt = mlTask.NodePrompt,
+                        Temperature = mlTask.Temperature
+                    };
+                    inferencingModelDto.QuestionAnswer = qaDto;
                     break;
 
                 case nameof(InferencingModelTypesEnum.Summarization):
-                    taskDto.Summarization = JsonSerializer.Deserialize<SummarizationTaskDto>(modelTask.SetupObject, jsonOptions);
-                    _logger.LogDebug("Deserialized SummarizationTaskDto for task '{TaskName}'.", modelTask.Name);
+                    var summarizationDto = new SummarizationTaskDto
+                    {
+                        Id = mlTask.Id,
+                        Name = mlTask.Name,
+                        SetupObject = JsonSerializer.Deserialize<SummarizationTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
+                        LLM = mlTask.LLM,
+                        ConfigurationType = mlTask.ConfigurationType,
+                        NodePrompt = mlTask.NodePrompt,
+                        Temperature = mlTask.Temperature
+                    };
+                    inferencingModelDto.Summarization = summarizationDto;
                     break;
 
                 default:
-                    _logger.LogWarning("Unknown task type '{TaskType}' for task '{TaskName}'. No deserialization performed.", taskDto.Name, modelTask.Name);
+                    // Log a warning for unknown or unsupported task types
+                    _logger.LogWarning("Unknown task name encountered during deserialization: {TaskName}", mlTask.Name);
                     break;
             }
         }
-        catch (JsonException jsonEx)
-        {
-            // Log JSON deserialization-specific errors
-            _logger.LogError(jsonEx, "Failed to deserialize SetupObject for task '{TaskName}'. JSON content: {SetupObject}", modelTask.Name, modelTask.SetupObject);
-        }
-        catch (Exception ex)
-        {
-            // Log any other unexpected errors
-            _logger.LogError(ex, "Unexpected error while deserializing SetupObject for task '{TaskName}'.", modelTask.Name);
-        }
     }
+
+    // Converts machine learning model tasks into a list of <see cref="InferencingModelTaskDto"/>, including deserialization of task-specific configuration (SetupObject) based on task type.
+    // private List<InferencingModelTaskDto> GetInferencingModelTask(MLModel mlModel)
+    // {
+    //     var inferencingModelDtos = new List<InferencingModelTaskDto>();
+
+    //     // Check for null or empty task list
+    //     if (mlModel?.Tasks == null || !mlModel.Tasks.Any())
+    //     {
+    //         _logger.LogInformation("No tasks found in the ML model with ID: {ModelId}. Returning empty result.", mlModel?.Id);
+    //         return inferencingModelDtos;
+    //     }
+
+    //     // Process each task in the ML model
+    //     foreach (var modelTask in mlModel.Tasks)
+    //     {
+    //         try
+    //         {
+    //             // Adapt task to base DTO
+    //             var inferencingTaskDto = modelTask.Adapt<InferencingModelTaskDto>();
+    //             _logger.LogDebug("Adapting task '{TaskName}' to InferencingModelTaskDto.", modelTask.Name);
+
+    //             // Deserialize task-specific setup object
+    //             PopulateTaskSpecificDto(inferencingTaskDto, modelTask);
+
+    //             inferencingModelDtos.Add(inferencingTaskDto);
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             _logger.LogError(ex, "Error while processing task '{TaskName}' from ML model ID: {ModelId}. Skipping this task.", modelTask?.Name, mlModel?.Id);
+    //         }
+    //     }
+
+    //     return inferencingModelDtos;
+    // }
+
+    // Deserializes the SetupObject JSON from the ML task into the appropriate task-specific DTO, based on the task type.
+    // private void PopulateTaskSpecificDto(InferencingModelTaskDto taskDto, ModelTask modelTask)
+    // {
+    //     // Configure JSON deserialization to be case-insensitive
+    //     var jsonOptions = new JsonSerializerOptions
+    //     {
+    //         PropertyNameCaseInsensitive = true
+    //     };
+
+    //     try
+    //     {
+    //         // Determine task type and deserialize the SetupObject into the corresponding DTO
+    //         switch (taskDto.Name)
+    //         {
+    //             case nameof(InferencingModelTypesEnum.Extraction):
+    //                 taskDto.Extraction = JsonSerializer.Deserialize<ExtractionTaskDto>(modelTask.SetupObject, jsonOptions);
+    //                 _logger.LogDebug("Deserialized ExtractionTaskDto for task '{TaskName}'.", modelTask.Name);
+    //                 break;
+
+    //             case nameof(InferencingModelTypesEnum.QuestionAnswer):
+    //                 taskDto.QuestionAnswer = JsonSerializer.Deserialize<QuestionAnswerTaskDto>(modelTask.SetupObject, jsonOptions);
+    //                 _logger.LogDebug("Deserialized QuestionAnswerTaskDto for task '{TaskName}'.", modelTask.Name);
+    //                 break;
+
+    //             case nameof(InferencingModelTypesEnum.SentimentAnalysis):
+    //                 taskDto.SentimentAnalytics = JsonSerializer.Deserialize<SentimentAnalyticTaskDto>(modelTask.SetupObject, jsonOptions);
+    //                 _logger.LogDebug("Deserialized SentimentAnalysisTaskDto for task '{TaskName}'.", modelTask.Name);
+    //                 break;
+
+    //             case nameof(InferencingModelTypesEnum.Classification):
+    //                 taskDto.Classification = JsonSerializer.Deserialize<ClassificationTaskDto>(modelTask.SetupObject, jsonOptions);
+    //                 _logger.LogDebug("Deserialized ClassificationTaskDto for task '{TaskName}'.", modelTask.Name);
+    //                 break;
+
+    //             case nameof(InferencingModelTypesEnum.Summarization):
+    //                 taskDto.Summarization = JsonSerializer.Deserialize<SummarizationTaskDto>(modelTask.SetupObject, jsonOptions);
+    //                 _logger.LogDebug("Deserialized SummarizationTaskDto for task '{TaskName}'.", modelTask.Name);
+    //                 break;
+
+    //             default:
+    //                 _logger.LogWarning("Unknown task type '{TaskType}' for task '{TaskName}'. No deserialization performed.", taskDto.Name, modelTask.Name);
+    //                 break;
+    //         }
+    //     }
+    //     catch (JsonException jsonEx)
+    //     {
+    //         // Log JSON deserialization-specific errors
+    //         _logger.LogError(jsonEx, "Failed to deserialize SetupObject for task '{TaskName}'. JSON content: {SetupObject}", modelTask.Name, modelTask.SetupObject);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         // Log any other unexpected errors
+    //         _logger.LogError(ex, "Unexpected error while deserializing SetupObject for task '{TaskName}'.", modelTask.Name);
+    //     }
+    // }
+
     // Serializes the setup object from the task DTO into a JSON string based on the task type.
-    private string? SerializeSetupObject(InferencingModelTaskDto modelSetupTask)
-    {
-        // Configure JSON serialization options
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
+    // private string? SerializeSetupObject(InferencingModelTaskDto modelSetupTask)
+    // {
+    //     // Configure JSON serialization options
+    //     var options = new JsonSerializerOptions
+    //     {
+    //         PropertyNameCaseInsensitive = true
+    //     };
 
-        object? setupObject = null;
+    //     object? setupObject = null;
 
-        // Determine the correct setup object based on the task name (model type)
-        switch (modelSetupTask.Name)
-        {
-            case nameof(InferencingModelTypesEnum.Extraction):
-                setupObject = modelSetupTask.Extraction;
-                break;
+    //     // Determine the correct setup object based on the task name (model type)
+    //     switch (modelSetupTask.Name)
+    //     {
+    //         case nameof(InferencingModelTypesEnum.Extraction):
+    //             setupObject = modelSetupTask.Extraction;
+    //             break;
 
-            case nameof(InferencingModelTypesEnum.Summarization):
-                setupObject = modelSetupTask.Summarization;
-                break;
+    //         case nameof(InferencingModelTypesEnum.Summarization):
+    //             setupObject = modelSetupTask.Summarization;
+    //             break;
 
-            case nameof(InferencingModelTypesEnum.Classification):
-                setupObject = modelSetupTask.Classification;
-                break;
+    //         case nameof(InferencingModelTypesEnum.Classification):
+    //             setupObject = modelSetupTask.Classification;
+    //             break;
 
-            case nameof(InferencingModelTypesEnum.SentimentAnalysis):
-                setupObject = modelSetupTask.SentimentAnalytics;
-                break;
+    //         case nameof(InferencingModelTypesEnum.SentimentAnalysis):
+    //             setupObject = modelSetupTask.SentimentAnalytics;
+    //             break;
 
-            case nameof(InferencingModelTypesEnum.QuestionAnswer):
-                setupObject = modelSetupTask.QuestionAnswer;
-                break;
+    //         case nameof(InferencingModelTypesEnum.QuestionAnswer):
+    //             setupObject = modelSetupTask.QuestionAnswer;
+    //             break;
 
-            default:
-                _logger.LogInformation("No matching setup object found for task type '{TaskName}'. Defaulting to null.", modelSetupTask.Name);
-                break;
-        }
+    //         default:
+    //             _logger.LogInformation("No matching setup object found for task type '{TaskName}'. Defaulting to null.", modelSetupTask.Name);
+    //             break;
+    //     }
 
-        // Return the serialized JSON string or null if no object matched
-        return JsonSerializer.Serialize(setupObject, options);
-    }
+    //     // Return the serialized JSON string or null if no object matched
+    //     return JsonSerializer.Serialize(setupObject, options);
+    // }
 
     // Validates the input model setup DTO and its associated tasks.
-    private bool ValidateModelSetupDto(InferencingModelDto modelSetupDto, out string? validationMessage)
-    {
-        validationMessage = null;
-        string? detailedMessage = null;
+    // private bool ValidateModelSetupDto(InferencingModelDto modelSetupDto, out string? validationMessage)
+    // {
+    //     validationMessage = null;
+    //     string? detailedMessage = null;
 
-        _logger.LogInformation("Starting validation for InferencingModelDto.");
+    //     _logger.LogInformation("Starting validation for InferencingModelDto.");
 
-        // Ensure the required top-level field is present
-        if (string.IsNullOrWhiteSpace(modelSetupDto.BusinessContext))
-        {
-            detailedMessage = "BusinessContext is required.";
-        }
-        // Proceed only if there are tasks to validate
-        else if (modelSetupDto.ModelTasks != null && modelSetupDto.ModelTasks.Any())
-        {
-            var validModelTypeNames = Enum.GetNames(typeof(InferencingModelTypesEnum)).ToList();
+    //     // Ensure the required top-level field is present
+    //     if (string.IsNullOrWhiteSpace(modelSetupDto.BusinessContext))
+    //     {
+    //         detailedMessage = "BusinessContext is required.";
+    //     }
+    //     // Proceed only if there are tasks to validate
+    //     else if (modelSetupDto.ModelTasks != null && modelSetupDto.ModelTasks.Any())
+    //     {
+    //         var validModelTypeNames = Enum.GetNames(typeof(InferencingModelTypesEnum)).ToList();
 
-            foreach (var task in modelSetupDto.ModelTasks)
-            {
-                // Ensure task name is provided
-                if (string.IsNullOrWhiteSpace(task.Name))
-                {
-                    detailedMessage = "Each task must have a Name.";
-                    break;
-                }
+    //         foreach (var task in modelSetupDto.ModelTasks)
+    //         {
+    //             // Ensure task name is provided
+    //             if (string.IsNullOrWhiteSpace(task.Name))
+    //             {
+    //                 detailedMessage = "Each task must have a Name.";
+    //                 break;
+    //             }
 
-                // Validate that the task name corresponds to a known model type
-                if (!validModelTypeNames.Contains(task.Name))
-                {
-                    detailedMessage = $"Task name '{task.Name}' is not a recognized inferencing model type.";
-                    break;
-                }
+    //             // Validate that the task name corresponds to a known model type
+    //             if (!validModelTypeNames.Contains(task.Name))
+    //             {
+    //                 detailedMessage = $"Task name '{task.Name}' is not a recognized inferencing model type.";
+    //                 break;
+    //             }
 
-                // If using Cloud configuration, SecretKey is mandatory
-                if (task.ConfigurationType == LLMConfigurationTypesEnum.Cloud && string.IsNullOrEmpty(task.SecretKey))
-                {
-                    detailedMessage = $"Task '{task.Name}' is configured for Cloud but missing a required SecretKey.";
-                    break;
-                }
+    //             // If using Cloud configuration, SecretKey is mandatory
+    //             if (task.ConfigurationType == LLMConfigurationTypesEnum.Cloud && string.IsNullOrEmpty(task.SecretKey))
+    //             {
+    //                 detailedMessage = $"Task '{task.Name}' is configured for Cloud but missing a required SecretKey.";
+    //                 break;
+    //             }
 
-                // Attempt to parse the task name into an enum value
-                if (!Enum.TryParse(task.Name, out InferencingModelTypesEnum modelType))
-                {
-                    detailedMessage = $"Unable to parse task name '{task.Name}' into a valid model type.";
-                    break;
-                }
+    //             // Attempt to parse the task name into an enum value
+    //             if (!Enum.TryParse(task.Name, out InferencingModelTypesEnum modelType))
+    //             {
+    //                 detailedMessage = $"Unable to parse task name '{task.Name}' into a valid model type.";
+    //                 break;
+    //             }
 
-                // TODO: Add model-type-specific validations here as needed
-                /*
-                switch (modelType)
-                {
-                    case InferencingModelTypesEnum.Extraction:
-                        if (task.ExtractionTask?.Fields == null || !task.ExtractionTask.Fields.Any())
-                        {
-                            detailedMessage = $"Extraction task '{task.Name}' requires at least one field.";
-                            break;
-                        }
-                        break;
+    //             // TODO: Add model-type-specific validations here as needed
+    //             /*
+    //             switch (modelType)
+    //             {
+    //                 case InferencingModelTypesEnum.Extraction:
+    //                     if (task.ExtractionTask?.Fields == null || !task.ExtractionTask.Fields.Any())
+    //                     {
+    //                         detailedMessage = $"Extraction task '{task.Name}' requires at least one field.";
+    //                         break;
+    //                     }
+    //                     break;
 
-                    // Additional case validations...
-                }
-                */
+    //                 // Additional case validations...
+    //             }
+    //             */
 
-                if (detailedMessage != null)
-                    break;
-            }
-        }
+    //             if (detailedMessage != null)
+    //                 break;
+    //         }
+    //     }
 
-        if (detailedMessage != null)
-        {
-            _logger.LogWarning("Validation failed for InferencingModelDto: {ErrorDetail}", detailedMessage);
-            validationMessage = detailedMessage;
-            return false;
-        }
+    //     if (detailedMessage != null)
+    //     {
+    //         _logger.LogWarning("Validation failed for InferencingModelDto: {ErrorDetail}", detailedMessage);
+    //         validationMessage = detailedMessage;
+    //         return false;
+    //     }
 
-        _logger.LogInformation("InferencingModelDto passed validation.");
-        return true;
-    }
+    //     _logger.LogInformation("InferencingModelDto passed validation.");
+    //     return true;
+    // }
 }
 

@@ -16,9 +16,9 @@ public class InferencingModelMappingProfile : IRegister
                 ? src.CreatedByUser.UserName
                 : null);
 
-        config.NewConfig<ModelTask, InferencingModelTaskDto>();
+        config.NewConfig<ModelTask, DefaultModelSetupDto>();
 
-        config.NewConfig<InferencingModelTaskDto, ModelTask>()
+        config.NewConfig<DefaultModelSetupDto, ModelTask>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedByUserId)
             .Ignore(dest => dest.LastModifiedByUserId)
