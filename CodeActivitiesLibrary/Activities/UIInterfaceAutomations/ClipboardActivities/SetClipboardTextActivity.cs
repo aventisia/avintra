@@ -2,6 +2,8 @@
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.ClipboardActivities
 {
@@ -15,20 +17,30 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ClipboardActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var text = ClipboardText.Get(context);
+            string text = ClipboardText.Get(context);
 
-            try
+            Thread staThread = new Thread(() =>
             {
-                // Set the clipboard text
-                System.Windows.Forms.Clipboard.SetText(text);
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Clipboard text set successfully");
-            }
-            catch (Exception ex)
-            {
-                IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Failed to set clipboard text: {ex.Message}");
-            }
+                try
+                {
+                    Clipboard.SetText(text);
+                    IsSuccess.Set(context, true);
+                    StatusMessage.Set(context, "Successfully set clipboard text");
+                }
+                catch (Exception ex)
+                {
+                    IsSuccess.Set(context, false);
+                    StatusMessage.Set(context, $"Failed to set clipboard text: {ex.Message}");
+                }
+            });
+
+            staThread.SetApartmentState(ApartmentState.STA);
+            staThread.Start();
+            staThread.Join(); // Wait for thread to complete
+
+           
+            IsSuccess.Set(context, "Clipboard text set successfully");
+            StatusMessage.Set(context, $"Failed to set clipboard text");
         }
     }
 }
