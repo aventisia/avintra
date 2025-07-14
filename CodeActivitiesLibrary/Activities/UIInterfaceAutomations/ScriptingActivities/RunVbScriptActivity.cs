@@ -3,11 +3,12 @@ using System;
 using System.Activities;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run VBScript")]
-    [Description("Executes some custom VBScript code and retrieves its output into a variable.")]
+    [Description("Executes custom VBScript code and retrieves its output.")]
     public class RunVbScriptActivity : BaseCodeActivity
     {
         [RequiredArgument]
@@ -23,33 +24,31 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
         {
             string scriptCode = ScriptCode.Get(context);
             string output = string.Empty;
+            string tempFilePath = string.Empty;
 
             try
             {
-                // Validate input
                 if (string.IsNullOrWhiteSpace(scriptCode))
-                {
                     throw new ArgumentException("VBScript code cannot be null or empty.");
-                }
 
-                // Escape double quotes in the script code
-                scriptCode = scriptCode.Replace("\"", "\"\"");
+                // 1. Write the script to a temporary file
+                tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".vbs");
+                File.WriteAllText(tempFilePath, scriptCode);
 
-                // Set up process to run cscript.exe with inline VBScript
+                // 2. Run the script using cscript
                 using (Process process = new Process())
                 {
                     process.StartInfo.FileName = "cscript.exe";
-                    process.StartInfo.Arguments = $"/nologo /E:vbscript \"//\" \"{scriptCode}\"";
+                    process.StartInfo.Arguments = $"/nologo \"{tempFilePath}\"";
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.RedirectStandardOutput = true;
                     process.StartInfo.RedirectStandardError = true;
                     process.StartInfo.CreateNoWindow = true;
-                    process.StartInfo.WorkingDirectory = Environment.SystemDirectory; // Set a valid working directory
 
                     // Start the process
                     process.Start();
 
-                    // Read output and error streams
+                    // Read the output and error streams
                     output = process.StandardOutput.ReadToEnd();
                     string error = process.StandardError.ReadToEnd();
 
@@ -57,10 +56,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
                     process.WaitForExit();
 
                     // If there's an error, throw it
-                    if (!string.IsNullOrEmpty(error))
-                    {
+                    if (!string.IsNullOrWhiteSpace(error))
                         throw new Exception($"VBScript error: {error}");
-                    }
 
                     // Trim and clean the output
                     output = output.Trim();
@@ -73,8 +70,17 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
             }
             catch (Exception ex)
             {
-                StatusMessage.Set(context, $"Error executing VBScript: {ex.Message}");
+                ScriptOutput.Set(context, $"Error: {ex.Message}");
+                StatusMessage.Set(context, "Failed to execute VBScript.");
                 IsSuccess.Set(context, false);
+            }
+            finally
+            {
+                // Clean up temp script file
+                if (!string.IsNullOrEmpty(tempFilePath) && File.Exists(tempFilePath))
+                {
+                    try { File.Delete(tempFilePath); } catch { }
+                }
             }
         }
     }
