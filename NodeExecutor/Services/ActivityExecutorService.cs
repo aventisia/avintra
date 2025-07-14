@@ -70,9 +70,7 @@ namespace NodeExecutor.Services
 
             // Initialize input and output dictionaries
             var inputValues = new Dictionary<string, object>();
-            var outputValues = new Dictionary<string, object>(){
-                { "Status", "Node executed successfully" }
-            };
+            var outputValues = new Dictionary<string, object>();
 
             // Execute the node
             try
@@ -179,19 +177,18 @@ namespace NodeExecutor.Services
                 // Set status message to outputValues
                 if (outputs != null && outputs.ContainsKey("StatusMessage"))
                     outputValues["Status"] = outputs["StatusMessage"];
-
-                // Update duration and outputValues
-                nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
-                nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value) }).ToList();
-
-                // Return
-                return (nodeExecutionlog.IsSuccess, nodeExecutionlog);
             }
             catch (Exception ex)
             {
                 outputValues["Status"] = $"Node execution has failed: {ex.Message}";
-                return (false, nodeExecutionlog);
             }
+
+            // Update duration and outputValues
+            nodeExecutionlog.Duration = (DateTime.UtcNow - startTime).TotalSeconds;
+            nodeExecutionlog.Outputs = outputValues.Select(kv => new NodeLogKeyValue { Key = kv.Key, Value = ConvertLogValueForLogging(kv.Key, kv.Value) }).ToList();
+
+            // Return
+            return (nodeExecutionlog.IsSuccess, nodeExecutionlog);
         }
 
         public static (bool, string) ExecuteCondition(List<List<ConditionGroup>> conditions, ExecutionContext executionContext)
