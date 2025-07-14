@@ -13,18 +13,18 @@ load_dotenv(env_file)
 
 class Settings(BaseSettings):
     # JWT settings from environment variables
-    secret_key: str = os.environ.get("SecretKey")
+    secret_key: str = os.environ.get("SECRET_KEY")
     algorithm: str = "HS512"
-    issuer: str = os.getenv("Issuer", "localhost")
-    audience: str = os.getenv("Audience", "localhost")
+    issuer: str = os.getenv("ISSUER", "localhost")
+    audience: str = os.getenv("AUDIENCE", "localhost")
 
     # Qdrant settings from environment variables
     qdrant_api_key: str | None = os.getenv("QDRANT_API_KEY", None) 
     qdrant_url: str | None = os.environ.get("QDRANT_URL", None)
 
     # Ollama settings from environment variables
-    ollama_api_url: str = os.getenv("OllamaAPI", None)
-    ollama_api_key: str = os.environ.get("OllamaAPIKey", None)
+    ollama_api_url: str = os.getenv("OLLAMA_API_URL", None)
+    ollama_api_key: str = os.getenv("OLLAMA_API_KEY", None)
 
     # Dynamically load the .env file based on the environment
     model_config = SettingsConfigDict(
@@ -36,21 +36,3 @@ class Settings(BaseSettings):
 
 # Initialize the settings class, loading the environment variables
 settings = Settings()
-
-
-# Print all the loaded configurations and credentials
-print(f"Environment: {env}")
-
-print("\nJWT Settings:")
-print(f"Secret Key: {settings.secret_key}")
-print(f"Algorithm: {settings.algorithm}")
-print(f"Issuer: {settings.issuer}")
-print(f"Audience: {settings.audience}")
-
-print("\nQdrant Settings:")
-print(f"API Key: {settings.qdrant_api_key}")
-print(f"URL: {settings.qdrant_url}")
-
-print("\nOllama Settings:")
-print(f"API URL: {settings.ollama_api_url}")
-print(f"API Key: {settings.ollama_api_key}")
