@@ -90,7 +90,7 @@ async def websocket_chat_handler(websocket: WebSocket):
                 model="gemma",
                 temperature=0.7,
             )
-            ai_reply_text = llm_response.get("response", "I'm sorry, I couldn't process your request. Please try again.").strip()
+            ai_reply_text = llm_response
 
             # Step 10: Create AI response message with updated variable names
             ai_response_message = ChatMessage(

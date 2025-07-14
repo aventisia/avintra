@@ -73,7 +73,7 @@ class LLMService:
         logger.debug(f"Request payload: {request_payload}")
 
         try:
-            # Step 6: Send POST request to generate the data from the LLM
+           # Step 6: Send POST request to generate the data from the LLM
             async with httpx.AsyncClient() as client:
                 api_response = await client.post(
                     f"{self.api_url}/generate",
@@ -82,28 +82,29 @@ class LLMService:
                 )
 
                 # Step 7: Handle response from the API
-                api_response.raise_for_status()
+                api_response.raise_for_status()  # This raises an error if the status code is 4xx/5xx
                 logger.info(f"Received response from Ollama API: {api_response.status_code}")
 
-                # Parse the response body
-                ollama_response = await api_response.text()
+                # Step 8: Parse the response body
+                try:
+                    ollama_response = api_response.json() 
+                except Exception as e:
+                    logger.error(f"Error parsing JSON response: {e}")
+                    return {"error": "Failed to parse JSON response."}
 
-                # Step 8: Ensure the response contains the expected 'response' field
+                # Step 9: Ensure the response contains the expected 'response' field
                 if "response" not in ollama_response:
                     logger.warning("LLM response is missing the 'response' field.")
                     return {"error": "LLM response is missing the 'response' field."}
-
-                # Step 9: Extract the response from the JSON and clean the content
-                response_json = await api_response.json()
-                llm_response = response_json.get("response", "")
-                logger.info(f"Raw LLM response received: {llm_response}")
-
-                # Step 10: Clean known debug or formatting tags from the LLM response
-                cleaned_response = self._clean_llm_response(llm_response)
+                
+                # Step 10: Extract and clean the response content
+                response_content = ollama_response["response"]
+                cleaned_response = self._clean_llm_response(response_content)
 
                 logger.info(f"Final cleaned LLM response: {cleaned_response}")
 
-                return {"response": cleaned_response}
+                # Return the cleaned response in a structured format
+                return cleaned_response
 
         except httpx.RequestError as req_err:
             logger.error(f"Request error: {str(req_err)}")
