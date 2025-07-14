@@ -26,7 +26,7 @@ public enum InferencingModelTypesEnum
     /// <summary>
     /// A model used for performing sentiment analysis (positive, negative, or neutral) on text.
     /// </summary>
-    SentimentAnalysis,
+    SentimentAnalytics,
 
     /// <summary>
     /// A model that provides answers to questions based on the provided context or knowledge base.
