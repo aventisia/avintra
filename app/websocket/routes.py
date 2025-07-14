@@ -72,11 +72,10 @@ async def websocket_chat_handler(websocket: WebSocket):
 
             # Step 6: Echo the user message back
             await connection_manager.send_personal_message(user_message.dict(), connection_id)
-            add_document_to_collection(user_message)
 
             # Step 7: Store user message in Qdrant
             try:
-                # add_document_to_collection(user_message)
+                add_document_to_collection(user_message)
                 logger.info(f"User message stored in Qdrant.")
             except Exception as e:
                 logger.warning(f"Failed to store user message in Qdrant: {e}")
@@ -105,9 +104,9 @@ async def websocket_chat_handler(websocket: WebSocket):
 
             # Step 11: Send AI response message to the client
             await connection_manager.send_personal_message(ai_response_message.dict(), connection_id)
-            add_document_to_collection(ai_response_message)
 
             # Step 12: Store AI response message in Qdrant
+            add_document_to_collection(ai_response_message)
             try:
                 logger.info("AI response message stored in Qdrant.")
             except Exception as e:

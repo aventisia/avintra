@@ -1,9 +1,10 @@
 import httpx
+from app.qdrant.service import get_last_chat_turn_by_model_id, get_document_context_by_model_id 
 from typing import Any, Dict
 from app.core.config import settings
 from app.core.logger import logger
-from app.qdrant.service import get_last_chat_turn_by_model_id, get_document_context_by_model_id  
 
+# Warn if required environment variables are missing
 if not settings.ollama_api_url:
     logger.warning("OLLAMA_API_URL is not set")
 
@@ -12,11 +13,11 @@ if not settings.ollama_api_key:
 
 class LLMService:
     """
-    Service class to interact with the Ollama API for generating responses based on a provided prompt.
+    Service class to interact with the Ollama API for generating language model responses.
     """
 
-    # Mapping model identifiers to actual model versions
-    llm_model_mapper = {
+    # Mapping short model identifiers to their full version strings
+    model_version_map = {
         "deepseek-r1": "deepseek-r1:7b",
         "phi4": "phi4:14b",
         "llama3.1": "llama3.1:8b",
@@ -27,77 +28,117 @@ class LLMService:
 
     def __init__(self, api_url: str = settings.ollama_api_url, api_key: str = settings.ollama_api_key) -> None:
         """
-        Initialize the LLMService with API URL and Key.
-
-        :param api_url: The URL for the Ollama API.
-        :param api_key: The API key for authentication.
+        Initialize the LLMService with the Ollama API URL and API key.
         """
         self.api_url = api_url
         self.api_key = api_key
 
-    def resolve_model_version(self, model: str) -> str:
+    def resolve_model_version(self, model_identifier: str) -> str:
         """
-        Resolves the provided model identifier to the corresponding model version.
-
-        :param model: The model identifier (e.g., "gemma").
-        :return: The full model version (e.g., "gemma:7b").
+        Map a short model name to the actual model version.
+        
+        :param model_identifier: A simplified model name (e.g., "gemma").
+        :return: The full model version string (e.g., "gemma:7b").
         """
-        return self.llm_model_mapper.get(model, model)  # Returns the actual model version or the original if not found
+        return self.model_version_map.get(model_identifier, model_identifier)
 
     async def generate_response(self, prompt: str, model: str, temperature: float = 0.7) -> Dict[str, Any]:
         """
-        Send a request to the Ollama API to generate a response based on a prompt.
+        Generate a response from the Ollama LLM based on the user's prompt.
 
-        :param prompt: The prompt to send to the model.
-        :param model: The model name (e.g., "gemma").
-        :param temperature: Controls randomness in the model's response (default 0.7).
-        :return: A dictionary containing the response or error message.
+        :param prompt: The prompt/question from the user.
+        :param model: The simplified model name.
+        :param temperature: Controls randomness of the LLM output.
+        :return: A dictionary containing either the cleaned response or an error.
         """
-        # Get the full model version from the mapping
-        actual_model = self.resolve_model_version(model)
+        model_version = self.resolve_model_version(model)
 
-        payload = {
-            "model": actual_model,
+        # Step 5: Build request payload and headers
+        request_payload = {
+            "model": model_version,
             "prompt": prompt,
             "temperature": temperature,
-            "stream": False,  # Disable streaming for a one-time response
+            "stream": False,  # Use non-streaming response
         }
 
-        headers = {
+        request_headers = {
             "Content-Type": "application/json",
         }
 
         if self.api_key:
-            headers["Authorization"] = f"Bearer {self.api_key}"
+            request_headers["API-KEY"] = self.api_key
+
+        # Log details of the request being sent
+        logger.info(f"Sending request to LLM model: {model_version}")
+        logger.debug(f"Request payload: {request_payload}")
 
         try:
-            # Send asynchronous POST request to Ollama API
+            # Step 6: Send POST request to generate the data from the LLM
             async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    self.api_url,
-                    json=payload,
-                    headers=headers,
+                api_response = await client.post(
+                    f"{self.api_url}/generate",
+                    json=request_payload,
+                    headers=request_headers,
                 )
 
-                response.raise_for_status()  # Raise error for any non-2xx status code
+                # Step 7: Handle response from the API
+                api_response.raise_for_status()
+                logger.info(f"Received response from Ollama API: {api_response.status_code}")
 
-                logger.info(f"Request to {self.api_url} was successful: {response.status_code}")
+                # Parse the response body
+                ollama_response = await api_response.text()
 
-                return response.json() 
+                # Step 8: Ensure the response contains the expected 'response' field
+                if "response" not in ollama_response:
+                    logger.warning("LLM response is missing the 'response' field.")
+                    return {"error": "LLM response is missing the 'response' field."}
+
+                # Step 9: Extract the response from the JSON and clean the content
+                response_json = await api_response.json()
+                llm_response = response_json.get("response", "")
+                logger.info(f"Raw LLM response received: {llm_response}")
+
+                # Step 10: Clean known debug or formatting tags from the LLM response
+                cleaned_response = self._clean_llm_response(llm_response)
+
+                logger.info(f"Final cleaned LLM response: {cleaned_response}")
+
+                return {"response": cleaned_response}
 
         except httpx.RequestError as req_err:
-            logger.error(f"Request failed: {str(req_err)}")  # Log request errors
+            logger.error(f"Request error: {str(req_err)}")
             return {"error": f"Request failed: {str(req_err)}"}
 
         except httpx.HTTPStatusError as http_err:
-            status_code = http_err.response.status_code
-            logger.error(f"HTTP error {status_code}: {http_err.response.text}")
-            return {"error": f"HTTP error {status_code}: {http_err.response.text}"}
+            logger.error(f"HTTP error {http_err.response.status_code}: {http_err.response.text}")
+            return {"error": f"HTTP error {http_err.response.status_code}: {http_err.response.text}"}
 
         except Exception as e:
-            logger.exception(f"Unexpected error: {str(e)}") 
+            logger.exception(f"Unexpected error during LLM call: {str(e)}")
             return {"error": f"Unexpected error: {str(e)}"}
 
+    def _clean_llm_response(self, llm_response: str) -> str:
+        """
+        Clean known debug or formatting tags from the LLM response.
+
+        :param llm_response: The raw response string from the LLM.
+        :return: A cleaned version of the LLM response.
+        """
+        # Step 10: Clean up known formatting issues
+        if "<think>" in llm_response and "</think>" in llm_response:
+            llm_response = llm_response.replace("<think>", "").replace("</think>", "")
+            logger.info("Removed <think> tags from LLM response.")
+
+        if "```json" in llm_response:
+            llm_response = llm_response.replace("```json", "")
+            logger.info("Removed ```json tag from LLM response.")
+
+        if "```" in llm_response:
+            llm_response = llm_response.replace("```", "")
+            logger.info("Removed ``` tags from LLM response.")
+
+        llm_response = llm_response.strip()  # Remove any excess whitespace
+        return llm_response
 
 def generate_prompt_for_ai_persona(model_id: str, user_query: str) -> str:
     """
@@ -108,16 +149,25 @@ def generate_prompt_for_ai_persona(model_id: str, user_query: str) -> str:
     """
 
     # Step 1: Get document context
+    # Fetches the relevant context/document information that is associated with the model ID and user's query.
     document_context = get_document_context_by_model_id(user_query=user_query, model_id=model_id)
 
     # Step 2: Get last chat exchange (user + AI)
+    # Retrieves the latest conversation (most recent exchange between the user and the AIPersona).
     last_chat = get_last_chat_turn_by_model_id(model_id=model_id)
+    
+    # Initialize an empty string to store chat history
     chat_history = ""
+
     if last_chat:
-        # Rephrase to include user and AI conversation history as strings
+        # If there is a previous chat exchange, format it as a string combining both user and AI messages
         chat_history = f"User: {last_chat['User']}\nAIPersona: {last_chat['AIPersona']}"
 
-    # Step 3: Combine into prompt with string response
+    # Step 3: Combine context, chat history, and current query into a final prompt
+    # Constructs a well-structured prompt by combining:
+    # 1. The document context
+    # 2. The most recent chat history
+    # 3. The new user query.
     prompt = f"""
         You are AIPersona, an intelligent assistant with helpful insights.
 
@@ -128,4 +178,5 @@ def generate_prompt_for_ai_persona(model_id: str, user_query: str) -> str:
         # New User Question: {user_query}
         """
 
+    # Step 4: Return the final prompt after stripping any unnecessary whitespace
     return prompt.strip()
