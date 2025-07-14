@@ -83,8 +83,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 excelApp.Quit();
 
                 // Release COM objects
-                Marshal.ReleaseComObject(excelApp.ActiveWorkbook);
-                Marshal.ReleaseComObject(excelApp);
+                if (excelApp?.ActiveWorkbook != null)
+                {
+                    Marshal.ReleaseComObject(excelApp?.ActiveWorkbook);
+                }
+                Marshal.ReleaseComObject(excelApp);             
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }
