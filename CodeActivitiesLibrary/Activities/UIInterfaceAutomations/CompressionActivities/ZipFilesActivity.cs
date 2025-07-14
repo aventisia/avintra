@@ -7,6 +7,7 @@ using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 {
@@ -41,28 +42,61 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 
             try
             {
-                // Ensure output directory exists
-                var zipDir = Path.GetDirectoryName(outputZipPath);
-                if (!Directory.Exists(zipDir))
+                if (sourcePaths == null || !sourcePaths.Any())
                 {
-                    Directory.CreateDirectory(zipDir);
+                    IsSuccess.Set(context, false);
+                    StatusMessage.Set(context, "No source paths provided.");
+                    OutputZipFullPath.Set(context, null);
+                    return;
                 }
 
-                // Create the zip archive
+                // Ensure output directory exists
+                var zipDir = Path.GetDirectoryName(outputZipPath);
+                if (!string.IsNullOrWhiteSpace(zipDir) && !Directory.Exists(zipDir))
+                    Directory.CreateDirectory(zipDir);
+
+                // Delete existing ZIP file if it exists
+                if (File.Exists(outputZipPath))
+                    File.Delete(outputZipPath);
+
+                long totalSizeBytes = 0;
+
+                foreach (var path in sourcePaths)
+                {
+                    var fullPath = Path.GetFullPath(path);
+
+                    if (File.Exists(fullPath))
+                    {
+                        totalSizeBytes += new FileInfo(fullPath).Length;
+                    }
+                    else if (Directory.Exists(fullPath))
+                    {
+                        totalSizeBytes += Directory.GetFiles(fullPath, "*", SearchOption.AllDirectories)
+                                                   .Sum(file => new FileInfo(file).Length);
+                    }
+                }
+
+                // Skip zip if total size < 5MB
+                if (totalSizeBytes < 5 * 1024 * 1024)
+                {
+                    IsSuccess.Set(context, false);
+                    StatusMessage.Set(context, "Total size is less than 5MB, skipping zip.");
+                    OutputZipFullPath.Set(context, null);
+                    return;
+                }
+
                 using (var archive = ZipArchive.Create())
                 {
-                    foreach (var sourcePath in sourcePaths)
+                    foreach (var sourcePath in sourcePaths.Select(Path.GetFullPath))
                     {
-                        var normalizedPath = Path.GetFullPath(sourcePath);
-
-                        if (Directory.Exists(normalizedPath))
+                        if (Directory.Exists(sourcePath))
                         {
-                            AddDirectoryToZip(archive, normalizedPath, "");
+                            AddDirectoryToZip(archive, sourcePath, "");
                         }
-                        else if (File.Exists(normalizedPath))
+                        else if (File.Exists(sourcePath))
                         {
-                            var entryName = Path.GetFileName(normalizedPath);
-                            archive.AddEntry(entryName, normalizedPath);
+                            var entryName = Path.GetFileName(sourcePath);
+                            archive.AddEntry(entryName, sourcePath);
                         }
                         else
                         {
@@ -76,27 +110,25 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 
                 // Set results
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $"Files zipped successfully to '{outputZipPath}'.");
+                StatusMessage.Set(context, $"Successfully created ZIP at '{outputZipPath}'.");
                 OutputZipFullPath.Set(context, Path.GetFullPath(outputZipPath));
             }
             catch (Exception ex)
             {
-                StatusMessage.Set(context, $"Error zipping files: {ex.Message}");
                 IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error zipping files: {ex.Message}");
                 OutputZipFullPath.Set(context, null);
             }
         }
 
-        /// <summary>
-        /// Recursively adds the directory and its contents to the zip archive.
-        /// </summary>
         private static void AddDirectoryToZip(IWritableArchive archive, string sourceDir, string destinationDir)
         {
             foreach (var filePath in Directory.GetFiles(sourceDir))
             {
+                var relativePath = Path.GetFileName(filePath);
                 var entryName = string.IsNullOrEmpty(destinationDir)
-                    ? Path.GetFileName(filePath)
-                    : $"{destinationDir}/{Path.GetFileName(filePath)}";
+                    ? relativePath
+                    : $"{destinationDir}/{relativePath}";
                 archive.AddEntry(entryName, filePath);
             }
 
