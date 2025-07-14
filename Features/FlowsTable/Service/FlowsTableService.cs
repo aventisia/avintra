@@ -43,11 +43,34 @@ public class FlowsTableService : IFlowsTableService
                 ) // TODO: Update condition
                 .OrderByDescending(w => w.CreatedOn)
                 .Include(w => w.FlowUsers)
-                .ProjectToType<FlowsTableDto>()
                 .ToListAsync();
 
+            // Map the list of flows to a list of FlowsTableDto using the Adapt method
+            var flowDtoList = flows.Adapt<List<FlowsTableDto>>();
+
+            foreach (var flowDto in flowDtoList)
+            {
+                // Find the corresponding original flow by ID
+                var originalFlow = flows.FirstOrDefault(f => f.Id == flowDto.Id);
+
+                if (originalFlow?.FlowUsers != null)
+                {
+                    // Get the user's access information for this flow
+                    var userAccess = originalFlow.FlowUsers.FirstOrDefault(fu => fu.UserId == _userId);
+
+                    // Set the AccessType on the DTO
+                    // If the current user is the creator, assign 'Owner'; otherwise, use the user's assigned access type
+                    if (userAccess != null)
+                    {
+                        flowDto.AccessType = originalFlow.CreatedByUserId == _userId
+                            ? AgentAccessTypesEnum.Owner
+                            : userAccess.Type;
+                    }
+                }
+            }
+
             // Task successful
-            serviceResponse.Data = flows.Adapt<IEnumerable<FlowsTableDto>>();
+            serviceResponse.Data = flowDtoList;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Flows retrieved successfully";
         }

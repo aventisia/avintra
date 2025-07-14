@@ -70,4 +70,9 @@ public class LoadFlowDto
     /// Gets or sets the description of the flow
     /// </summary>
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the access type of the user within the flow.
+    /// </summary>
+    public AgentAccessTypesEnum? AccessType { get; set; }
 }

@@ -44,7 +44,7 @@ public class FlowBuilderService : IFlowBuilderService
                 .Include(lm => lm.LastModifiedByUser)
                 .Include(f => f.Flow)
                     .ThenInclude(i2 => i2.FlowUsers)
-                .OrderByDescending(o =>o.CreatedOn) // Ensure the latest version is retrieved
+                .OrderByDescending(o => o.CreatedOn) // Ensure the latest version is retrieved
                 .FirstOrDefaultAsync();
 
             // No flow version found, log and return response
@@ -54,6 +54,17 @@ public class FlowBuilderService : IFlowBuilderService
                 serviceResponse.Message = "Flow version does not exist.";
                 return serviceResponse;
             }
+
+            // Convert the flow version to a LoadFlowDto instance using the Adapt method
+            var loadFlowDto = flowVersion.Adapt<LoadFlowDto>();
+
+            // Retrieve the user's access information for the flow, if available
+            var userAccess = flowVersion.Flow?.FlowUsers?.FirstOrDefault(u => u.UserId == _userId);
+
+            // Set the user's access type in the LoadFlowDto
+            // If the user is the creator of the flow, assign 'Owner' access
+            // Otherwise, use the access type from FlowUsers or default to null if not found
+            loadFlowDto.AccessType = flowVersion.Flow.CreatedByUserId == _userId ? AgentAccessTypesEnum.Owner : userAccess?.Type;
 
             // Successfully retrieved the flow version, log and return response
             _logger.LogInformation($"Successfully retrieved flow version for FlowId {flowId}. VersionId: {flowVersion.Id}.");
