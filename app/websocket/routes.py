@@ -56,7 +56,7 @@ async def websocket_chat_handler(websocket: WebSocket):
                 user_message = ChatMessage(
                     model_id=message_data["model_id"],
                     user_id=user_info.id,
-                    username="User",
+                    user_type="User",
                     message=message_data["message"],
                     timestamp=str(datetime.datetime.utcnow()),
                     file=message_data.get("file")  # Optional file
@@ -96,7 +96,7 @@ async def websocket_chat_handler(websocket: WebSocket):
             ai_response_message = ChatMessage(
                 model_id=user_message.model_id,
                 user_id=user_info.id,
-                username="AIPersona",
+                user_type="AIPersona",
                 message=ai_reply_text,
                 timestamp=str(datetime.datetime.utcnow()),
                 file=None

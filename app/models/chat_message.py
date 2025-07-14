@@ -13,14 +13,7 @@ class FileDetail(BaseModel):
 class ChatMessage(BaseModel):
     model_id: UUID  # Unique identifier for the model
     user_id: UUID  # Unique identifier for the user
-    username: str  # User or Bot
+    user_type: str  # User or Bot
     message: str  # Text message
     timestamp: str  # ISO 8601 formatted datetime string
     file: Optional[FileDetail] = None  # Optional file attachment
-
-    # Response when a message is sent
-class ChatResponse(BaseModel):
-    status: str  # Indicates the status of the response (e.g., 'success', 'error')
-    username: str
-    message: str  # The text of the message being sent or returned
-    timestamp: str  # ISO 8601 formatted datetime string

@@ -78,7 +78,7 @@ def add_document_to_collection(chat_message: ChatMessage):
         payload = {
             "model_id": str(chat_message.model_id),
             "user_id": str(chat_message.user_id),
-            "username": chat_message.username,
+            "user_type": chat_message.user_type,
             "message": chat_message.message,
             "timestamp": chat_message.timestamp,
         }
@@ -117,14 +117,13 @@ def get_last_chat_turn_by_model_id(model_id: str, top_k: int = 5):
     logger.info(f"Fetching the last {top_k} chat turns for model: {model_id}")
 
     try:
-        model_id = UUID("da4c7baf-4557-4977-af54-c9745fc84dee")
-
+        
         # Fetch the last 'top_k' user messages, sorted by timestamp
         user_response = client.scroll(
             collection_name=CHAT_COLLECTION_NAME,
             scroll_filter=Filter(must=[
-                FieldCondition(key="user_id", match=MatchValue(value=str(model_id))),
-                FieldCondition(key="username", match=MatchValue(value="User"))
+                FieldCondition(key="model_id", match=MatchValue(value=str(model_id))),
+                FieldCondition(key="user_type", match=MatchValue(value="User"))
             ]),
             limit=top_k,
             with_payload=True,
@@ -149,8 +148,8 @@ def get_last_chat_turn_by_model_id(model_id: str, top_k: int = 5):
         ai_response = client.scroll(
             collection_name=CHAT_COLLECTION_NAME,
             scroll_filter=Filter(must=[
-                FieldCondition(key="user_id", match=MatchValue(value=str(model_id))),
-                FieldCondition(key="username", match=MatchValue(value="AIPersona"))
+                FieldCondition(key="model_id", match=MatchValue(value=str(model_id))),
+                FieldCondition(key="user_type", match=MatchValue(value="AIPersona"))
             ]),
             limit=top_k,
             with_payload=True,
