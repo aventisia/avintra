@@ -11,11 +11,23 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "JsonContent",
-    "label": "JSON Content",
-    "description": "The content of the JSON file. Returns \u0022null\u0022 if an error occurred while reading the file.",
+    "name": "JsonContentString",
+    "label": "JSON Content (String)",
+    "description": "The content of the JSON file as a string. Returns \u0022null\u0022 if an error occurred while reading the file.",
     "defaultValue": {
-      "value": "JsonContent",
+      "value": "JsonContentString",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "JsonContentToken",
+    "label": "JSON Content (JToken)",
+    "description": "The content of the JSON file as a JToken. Returns null if an error occurred while reading the file.",
+    "defaultValue": {
+      "value": "JsonContentToken",
       "enabled": true
     },
     "required": false

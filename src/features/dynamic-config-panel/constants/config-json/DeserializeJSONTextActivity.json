@@ -19,5 +19,17 @@
       "enabled": true
     },
     "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "DeserializedJson",
+    "label": "Deserialized JSON",
+    "description": "The resulting JSON string from the deserialization. Returns null if parsing failed.",
+    "defaultValue": {
+      "value": "DeserializedJson",
+      "enabled": true
+    },
+    "required": false
   }
 ]

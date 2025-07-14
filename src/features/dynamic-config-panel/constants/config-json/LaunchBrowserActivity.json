@@ -46,7 +46,15 @@
     "label": "Launch Url",
     "description": "The URL to launch if Launch with Url is true.",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "LaunchWithUrl",
+          "equals": true
+        }
+      ]
+    }
   },
   {
     "direction": "Input",

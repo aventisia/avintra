@@ -1265,7 +1265,7 @@
             "type": "activityNode",
             "name": "RunVbScriptActivity",
             "label": "Run VBScript",
-            "description": "Executes some custom VBScript code and retrieves its output into a variable.",
+            "description": "Executes custom VBScript code and retrieves its output.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1813,7 +1813,7 @@
           {
             "type": "activityNode",
             "name": "ClickLinkOnWebPageActivity",
-            "label": "Click Link on Web Page",
+            "label": "Click on Web Page",
             "description": "Simulates clicking a UI element (e.g., link, button) on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
