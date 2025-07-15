@@ -62,19 +62,6 @@ public class ConversationModelService : IConversationModelService
             if (aiPersona != null)
             {
                 conversationModelDto.AIPersona = aiPersona.Adapt<ConversationModelSetupTaskDto>();
-
-                // Deserialize the SetupObject for AIPersona task and assign it to the DTO
-                conversationModelDto.AIPersona.SetupObject = JsonSerializer.Deserialize<ConversationModelSetupDto>(
-                    aiPersona.SetupObject, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-
-                // Check if deserialization succeeded, you can add error handling here
-                if (conversationModelDto.AIPersona == null)
-                {
-                    _logger.LogWarning("Failed to deserialize AIPersona task setup object for Model ID: {Id}", mlModel.Id);
-                }
             }
 
             // Map the adapted model setup (including tasks) to the response DTO
@@ -171,7 +158,6 @@ public class ConversationModelService : IConversationModelService
                     // Task does not exist — create a new task entity from the DTO
                     var newTask = modelSetupDto.AIPersona.Adapt<ModelTask>();
                     newTask.MLModelId = mlModel.Id;
-                    newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.AIPersona.SetupObject, options);
                     newTask.CreatedByUserId = _userId;
                     newTask.LastModifiedByUserId = _userId;
 
@@ -187,7 +173,6 @@ public class ConversationModelService : IConversationModelService
                 {
                     // Task already exists — update its properties from the DTO
                     modelSetupDto.AIPersona.Adapt(existingTask);
-                    existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.AIPersona, options);
                     existingTask.LastModifiedByUserId = _userId;
 
                     _unitOfWork.ModelTaskRepo.Update(existingTask);
