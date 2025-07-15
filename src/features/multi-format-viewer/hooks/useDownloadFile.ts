@@ -1,11 +1,13 @@
-import { useMutation } from "@tanstack/react-query";
-import { useFileListStore } from "../store/file-list-store";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { useMutation } from "@tanstack/react-query";
+
+import { useFileListStore } from "../store/file-list-store";
 
 // Custom hook for downloading Files
 export const useDownloadFile = () => {
   const setFileUrl = useFileListStore((state) => state.setFileUrl);
-  const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/upload-doc`;
+  const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/upload-doc`;
 
   return useMutation({
     mutationFn: async (path: string) => {
