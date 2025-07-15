@@ -5,7 +5,7 @@ import { LoadFlowDto } from "../dtos/load-flow-dto";
 import { toast } from "@aventisia/ui/sonner";
 import { PublishFlowDto } from "../dtos/publish-flow";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/flow`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/flow`;
 
 /**
  * Gets flow record to load when user opens it in studio
