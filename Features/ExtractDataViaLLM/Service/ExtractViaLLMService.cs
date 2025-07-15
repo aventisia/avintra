@@ -209,7 +209,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
                         }
 
                         // Successfully extracted the data
-                        extractedData = CreateExtractedDataByModel(model.Type, llmResponse, fileId);
+                        extractedData = CreateExtractedDataByModel(model.Type ?? ModelTypesEnum.Extraction, llmResponse, fileId);
                     }
 
                     // Break the loop
@@ -266,14 +266,14 @@ public class ExtractViaLLMService : IExtractViaLLMService
             //     };
 
             case ModelTypesEnum.Classification:
-                // Deserialize LLM response into classification data (reuses ExtractionSetupData structure)
-                // var classificationData = JsonSerializer.Deserialize<ExtractionSetupData>(llmResponse, options);
-                // return new ExtractionSetupResult
-                // {
-                //     FileId = fileId,
-                //     ExtractedData = classificationData ?? new ExtractionSetupData(),
-                //     Remarks = ""
-                // };
+            // Deserialize LLM response into classification data (reuses ExtractionSetupData structure)
+            // var classificationData = JsonSerializer.Deserialize<ExtractionSetupData>(llmResponse, options);
+            // return new ExtractionSetupResult
+            // {
+            //     FileId = fileId,
+            //     ExtractedData = classificationData ?? new ExtractionSetupData(),
+            //     Remarks = ""
+            // };
 
             case ModelTypesEnum.Extraction:
                 // Deserialize LLM response into generic extraction data

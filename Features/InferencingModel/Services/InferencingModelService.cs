@@ -127,6 +127,7 @@ public class InferencingModelService : IInferencingModelService
 
             _logger.LogInformation("Applying DTO changes to model entity | Model ID: {Id}", modelSetupDto.Id);
             mlModel.Adapt(modelSetupDto);
+            mlModel.Type = ModelTypesEnum.Inferencing;
             mlModel.SetupStatus = SetupStatusTypesEnum.Completed;
             mlModel.LastModifiedByUserId = _userId;
 

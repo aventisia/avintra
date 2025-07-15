@@ -349,7 +349,7 @@ public class MLModelService : IMLModelService
     }
 
     // Initializes and serializes the default setup configuration based on the model type.
-    private string GetDefaultSerializedSetupByModel(MLModel newMLModel)
+    private string? GetDefaultSerializedSetupByModel(MLModel newMLModel)
     {
         // Set up configuration based on the model type in the provided newMLModel object.
         switch (newMLModel.Type)
@@ -480,7 +480,7 @@ public class MLModelService : IMLModelService
 
             // Default case: returns an empty string for any unrecognized model types.
             default:
-                return string.Empty;
+                return null;
         }
     }
 

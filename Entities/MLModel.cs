@@ -16,12 +16,17 @@ public class MLModel : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the type of ML model.
     /// </summary>
-    public ModelTypesEnum Type { get; set; }
+    public ModelTypesEnum? Type { get; set; }
 
     /// <summary>
     /// Gets or sets the description of ML model 
     /// </summary>
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the business context of the model
+    /// </summary>
+    public string? BusinessContext { get; set; }
 
     /// <summary>
     /// Gets or sets the date of training of ML model.
