@@ -39,4 +39,11 @@ public class FlowVersionController : BaseApiController
     {
         return ResultHelper(await _flowVersionService.DeleteFlowVersionAsync(id));
     }
+
+    // Retrieves a list of published flow versions, with an option to include unpublished versions.
+    [HttpGet("published")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowAgentTableDto>>>> GetPublishedFlowVersions(bool includeUnpublished = false)
+    {
+        return ResultHelper(await _flowVersionService.GetPublishedFlowVersionsAsync(includeUnpublished));
+    }
 }

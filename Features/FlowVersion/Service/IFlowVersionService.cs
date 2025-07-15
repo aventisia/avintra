@@ -28,4 +28,15 @@ public interface IFlowVersionService
     /// <param name="id">Version Id</param>
     /// <returns>True, if delete job successful, else false</returns>
     Task<ServiceResponse<bool>> DeleteFlowVersionAsync(Guid id);
+
+    /// <summary>
+    /// Retrieves a list of publish flow versions, optionally including unpublished agents.
+    /// </summary>
+    /// <param name="includeUnpublished">
+    /// A flag indicating whether to include unpublished agents in the result. Defaults to <c>false</c>.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, with a result of a <see cref="ServiceResponse{T}"/> containing a list of publish flow versions.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<FlowAgentTableDto>>> GetPublishedFlowVersionsAsync(bool includeUnpublished = false);
 }

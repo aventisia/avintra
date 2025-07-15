@@ -76,7 +76,7 @@ public class FlowVersionService : IFlowVersionService
             //Try to get flow
             var flow = await _unitOfWork.FlowRepo
                 .GetByConditionAsync(w =>
-                    w.Id == flowVersionDto.FlowId && 
+                    w.Id == flowVersionDto.FlowId &&
                     (
                         w.CreatedByUserId == _userId ||
                         (
@@ -302,6 +302,50 @@ public class FlowVersionService : IFlowVersionService
             return serviceResponse;
         }
 
+        return serviceResponse;
+    }
+
+    // Retrieves a list of published flow versions for a specific flow by its identifier.
+    public async Task<ServiceResponse<IEnumerable<FlowAgentTableDto>>> GetPublishedFlowVersionsAsync(bool includeUnpublished = false)
+    {
+        // Initialize ServiceResponse to indicate failure by default.
+        var serviceResponse = new ServiceResponse<IEnumerable<FlowAgentTableDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve published flow version. Please try again"
+        };
+
+        try
+        {
+            // Try to retrieve the flow versions from the repository.
+            var flowVersions = await _unitOfWork.FlowVersionRepo
+                       .GetByConditionAsync(w =>
+                           (includeUnpublished || w.IsPublished) &&
+                           (
+                                w.CreatedByUserId == _userId ||
+                               (
+                                   w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                               )
+                           )
+                       )
+                       .Include(i => i.Flow)
+                       .ThenInclude(i2 => i2.FlowUsers)
+                       .Include(c => c.CreatedByUser)
+                       .OrderByDescending(o => o.VersionNumber)
+                       .ToListAsync();
+
+            // If successful, map the retrieved flow versions to FlowAgentTableDto and set the response.
+            serviceResponse.Data = flowVersions.Adapt<IEnumerable<FlowAgentTableDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Versions retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            // Log any exception and return the default service response.
+            _logger.LogError(ex.ToString());
+        }
+
+        // Return the service response.
         return serviceResponse;
     }
 }
