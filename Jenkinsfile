@@ -81,8 +81,8 @@ pipeline {
                         echo "Deploying to ${targetServer}..."
                         
                         // Deploy and restart service
-                        sh "rsync -avz --delete ${WORKSPACE}/Published/* admin@${targetServer}:/var/www/aventisia.com/apis/workspace/"
-                        sh "ssh admin@${targetServer} 'sudo systemctl restart workspace_apis.service'"
+                        sh "rsync -avz --delete ${WORKSPACE}/Published/* admin@${targetServer}:/var/www/aventisia.com/apis/worc/"
+                        sh "ssh admin@${targetServer} 'sudo systemctl restart worc_apis.service'"
                     }
                 }
             }
