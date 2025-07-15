@@ -51,7 +51,7 @@ export const LoginMain = () => {
           <RightContainer
             heading="Your AI-Powered Journey Starts Here"
             subHeading="Enter your gateway to affordable, scalable, and practical automation."
-            imgSrc="flowbuilder.svg"
+            imgSrc="agentbuilder.svg"
           />
         </PageContainer>
       )}

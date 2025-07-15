@@ -52,7 +52,7 @@ export const CreateAccountMain = () => {
       <RightContainer
         heading="Discover Scalable AI-Powered Workflows"
         subHeading="Sign up to build intuitive, AI-powered workflows tailored to your needs."
-        imgSrc="flowbuilder.svg"
+        imgSrc="agentbuilder.svg"
       />
     </PageContainer>
   );
