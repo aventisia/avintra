@@ -28,12 +28,12 @@ public class InferencingModelController : BaseApiController
         return ResultHelper(await _inferencingModelService.UpdateSetupAsync(modelSetupDto));
     }
 
-    // // Extracts data via a Language Learning Model (LLM)
-    // [HttpPost("extract-via-llm")]
-    // public async Task<ActionResult<ServiceResponse<ExtractionResponseDto>>> ExtractViaLLM(ExtractRequestDto extractRequestDto)
-    // {
-    //     return ResultHelper(await _inferencingModelService.ExtractViaLLMAsync(extractRequestDto));
-    // }
+    // Execute data via a Language Learning Model (LLM)
+    [HttpPost("execute")]
+    public async Task<ActionResult<ServiceResponse<ExtractionResponseDto>>> ExtractViaLLM(ModelExecutionRequestDto modelExecutionRequestDto)
+    {
+        return ResultHelper(await _inferencingModelService.ExecuteLLMByFileIdsAsync(modelExecutionRequestDto));
+    }
 
     // // Retrieves a collection of extracted data records associated with a specific machine learning model.
     // [HttpGet("extracted-data/{mlModelId}")]
