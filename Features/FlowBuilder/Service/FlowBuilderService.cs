@@ -35,16 +35,16 @@ public class FlowBuilderService : IFlowBuilderService
                 .GetByConditionAsync(w =>
                     (!versionId.HasValue || w.Id == versionId) &&
                     w.FlowId == flowId &&
-                    w.CreatedByUserId == _userId ||
                     (
-                        w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                        w.CreatedByUserId == _userId ||
+                        (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId))
                     )
                 )
                 .Include(u => u.CreatedByUser)
                 .Include(lm => lm.LastModifiedByUser)
                 .Include(f => f.Flow)
-                .ThenInclude(i2 => i2.FlowUsers)
-                .OrderByDescending(a => a.CreatedOn) // Ensure the latest version is retrieved
+                    .ThenInclude(i2 => i2.FlowUsers)
+                .OrderByDescending(o => o.CreatedOn) // Ensure the latest version is retrieved
                 .FirstOrDefaultAsync();
 
             // No flow version found, log and return response
@@ -54,6 +54,17 @@ public class FlowBuilderService : IFlowBuilderService
                 serviceResponse.Message = "Flow version does not exist.";
                 return serviceResponse;
             }
+
+            // Convert the flow version to a LoadFlowDto instance using the Adapt method
+            var loadFlowDto = flowVersion.Adapt<LoadFlowDto>();
+
+            // Retrieve the user's access information for the flow, if available
+            var userAccess = flowVersion.Flow?.FlowUsers?.FirstOrDefault(u => u.UserId == _userId);
+
+            // Set the user's access type in the LoadFlowDto
+            // If the user is the creator of the flow, assign 'Owner' access
+            // Otherwise, use the access type from FlowUsers or default to null if not found
+            loadFlowDto.AccessType = flowVersion.Flow.CreatedByUserId == _userId ? AgentAccessTypesEnum.Owner : userAccess?.Type;
 
             // Successfully retrieved the flow version, log and return response
             _logger.LogInformation($"Successfully retrieved flow version for FlowId {flowId}. VersionId: {flowVersion.Id}.");
@@ -108,7 +119,9 @@ public class FlowBuilderService : IFlowBuilderService
                     w.FlowId == publishFlowVersionDto.FlowId &&
                     (
                         w.CreatedByUserId == _userId ||
-                        (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId))
+                        (
+                            w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                        )
                     ))
                 .Include(fv => fv.Flow)
                 .ThenInclude(flow => flow.FlowUsers)
@@ -119,7 +132,22 @@ public class FlowBuilderService : IFlowBuilderService
             if (flowVersion == null)
             {
                 _logger.LogInformation($"No flow version found for FlowId {publishFlowVersionDto.FlowId} with VersionId {publishFlowVersionDto.Id}.");
-                serviceResponse.Message = "Flow version does not exist or user has no access to it.";
+                serviceResponse.Message = "Flow version does not exist.";
+                return serviceResponse;
+            }
+
+            // Check if the user is the creator or has the required access (Owner/Edit)
+            var flowUserAccess = flowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
+                w.FlowId == flowVersion.Flow.Id &&
+                w.UserId == _userId &&
+                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Edit)
+            );
+
+            // Allow access if the user is the creator, else check if they have access
+            if (flowVersion.Flow.CreatedByUserId != _userId && flowUserAccess == null)
+            {
+                _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
+                serviceResponse.Message = "You don't have access to modify this flow.";
                 return serviceResponse;
             }
 
@@ -248,9 +276,9 @@ public class FlowBuilderService : IFlowBuilderService
                                         .GetByConditionAsync(w =>
                                             w.Id == flowSilentUpdateDto.VersionId &&
                                             w.FlowId == flowSilentUpdateDto.Id &&
-                                            w.CreatedByUserId == _userId ||
                                             (
-                                                w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
+                                                w.CreatedByUserId == _userId ||
+                                                (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId))
                                             )
                                         )
                                         .Include(i => i.Flow)
@@ -263,6 +291,21 @@ public class FlowBuilderService : IFlowBuilderService
             {
                 _logger.LogInformation($"No flow version found for Id {flowSilentUpdateDto.Id}. The flow version could not be updated.");
                 serviceResponse.Message = "Flow version does not exist.";
+                return serviceResponse;
+            }
+
+            // Check if the user is the creator or has the required access (Owner/Edit)
+            var flowUserAccess = flowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
+                w.FlowId == flowVersion.Flow.Id &&
+                w.UserId == _userId &&
+                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Edit)
+            );
+
+            // Allow access if the user is the creator, else check if they have access
+            if (flowVersion.Flow.CreatedByUserId != _userId && flowUserAccess == null)
+            {
+                _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
+                serviceResponse.Message = "You don't have access to modify this flow.";
                 return serviceResponse;
             }
 

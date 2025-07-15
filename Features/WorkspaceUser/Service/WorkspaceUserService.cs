@@ -5,22 +5,27 @@ public class WorkspaceUserService : IWorkspaceUserService
     private readonly ILogger<WorkspaceUserService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserManagementGuardService _userManagementGuardService;
+    private readonly DefaultTenantConfig _defaultTenantConfig;
     private readonly Guid _userId;
     private readonly string _userName;
+    private readonly Guid _tenantId;
 
     public WorkspaceUserService(
         ILogger<WorkspaceUserService> logger,
         IUnitOfWork unitOfWork,
         IUserManagementGuardService userManagementGuardService,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        DefaultTenantConfig defaultTenantConfig)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
+        _tenantId = Guid.TryParse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid"), out var tenantId) ? tenantId : Guid.Empty;
 
         _logger = logger;
         _unitOfWork = unitOfWork;
         _userManagementGuardService = userManagementGuardService;
+        _defaultTenantConfig = defaultTenantConfig;
     }
 
     // Retrieves a workspace user by its ID.
@@ -315,23 +320,35 @@ public class WorkspaceUserService : IWorkspaceUserService
 
             _logger.LogInformation("User '{User}' initiated a workspace user search with key: '{SearchKey}'", _userName, searchKey);
 
-            // Search workspace users by FirstName, LastName, or UserName
-            var users = await _unitOfWork.WorkspaceUserRepo
-                .GetByConditionAsync(w =>
-                    w.Id != _userId && 
-                    (
-                        w.FirstName.Contains(searchKey) ||
-                        w.LastName.Contains(searchKey) ||
-                        w.UserName.Contains(searchKey))
-                    )
-                .ProjectToType<WorkspaceUserDto>()
-                .ToListAsync();
+            List<WorkspaceUserDto>? workspaceUsers = new List<WorkspaceUserDto>();
+
+            // Check if the tenant ID matches and return if true
+            if (_defaultTenantConfig.TenantId == _tenantId)
+            {
+                // Tenant ID matches, so return with a message indicating access is not allowed
+                serviceResponse.Message = "Access denied: You cannot add users to agent.";
+                return serviceResponse;
+            }
+            else
+            {
+                // Search workspace users by FirstName, LastName, or UserName
+                workspaceUsers = await _unitOfWork.WorkspaceUserRepo
+                    .GetByConditionAsync(w =>
+                        w.Id != _userId &&
+                        (
+                            w.FirstName.Contains(searchKey) ||
+                            w.LastName.Contains(searchKey) ||
+                            w.UserName.Contains(searchKey))
+                        )
+                    .ProjectToType<WorkspaceUserDto>()
+                    .ToListAsync();
+            }
 
             // Update and return the successful response
-            serviceResponse.Data = users;
+            serviceResponse.Data = workspaceUsers;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = $"Search completed. {users.Count} user(s) found.";
-            _logger.LogInformation("Workspace user search succeeded for key '{SearchKey}'. Total matches: {Count}.", searchKey, users.Count);
+            serviceResponse.Message = $"Search completed. {workspaceUsers.Count} user(s) found.";
+            _logger.LogInformation("Workspace user search succeeded for key '{SearchKey}'. Total matches: {Count}.", searchKey, workspaceUsers.Count);
         }
         catch (Exception ex)
         {

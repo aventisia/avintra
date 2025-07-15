@@ -27,7 +27,7 @@ public class FlowsTableDto
     /// <summary>
     /// Gets or sets the thumbnail of the flow.
     /// </summary>
-   
+
     public string? Thumbnail { get; set; }
 
     /// <summary>
@@ -40,6 +40,11 @@ public class FlowsTableDto
     /// Gets or sets the flow comments count which are associated with the flow.
     /// </summary>
     public int? FlowCommentCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the access type of the user within the flow.
+    /// </summary>
+    public AgentAccessTypesEnum AccessType { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
