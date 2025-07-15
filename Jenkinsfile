@@ -81,8 +81,8 @@ pipeline {
                         echo "Deploying to ${targetServer}..."
                         
                         // Deploy and restart service
-                        sh "rsync -avz --delete ${WORKSPACE}/Published/* admin@${targetServer}:/var/www/aventisia.com/apis/mlmodelbuilder/"
-                        sh "ssh admin@${targetServer} 'sudo systemctl restart mlmodelbuilder_apis.service'"
+                        sh "rsync -avz --delete ${WORKSPACE}/Published/* admin@${targetServer}:/var/www/aventisia.com/apis/aistudio/"
+                        sh "ssh admin@${targetServer} 'sudo systemctl restart aistudio_apis.service'"
                     }
                 }
             }
