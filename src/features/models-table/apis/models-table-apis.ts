@@ -9,7 +9,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { ModelsTableDto } from "../dtos/models-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_MODEL_STUDIO_API_URL}/ml-model`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/ml-model`;
 
 /**
  * Retrieves all ai models created by user
