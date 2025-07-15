@@ -25,7 +25,7 @@ const AppLogo = ({
 }: AppLogoProps) => {
   // Logo file
   const logoFile = lightLogo ? "app_logo_light.svg" : "app_logo_dark.svg";
-  const workspaceModelURL = `${import.meta.env.VITE_WORKSPACE_URL}/ai-models`;
+  const workspaceModelURL = `${import.meta.env.VITE_WORC_URL}/ai-models`;
 
   // Logo path
   const logoSrc = showFullLogo
