@@ -30,7 +30,7 @@ public class InferencingModelController : BaseApiController
 
     // Execute data via a Language Learning Model (LLM)
     [HttpPost("execute")]
-    public async Task<ActionResult<ServiceResponse<ExtractionResponseDto>>> ExtractViaLLM(ModelExecutionRequestDto modelExecutionRequestDto)
+    public async Task<ActionResult<ServiceResponse<ExtractionResponseDto>>> ExtractViaLLM(ModelFileProcessingRequestDto modelExecutionRequestDto)
     {
         return ResultHelper(await _inferencingModelService.ExecuteLLMByFileIdsAsync(modelExecutionRequestDto));
     }

@@ -24,5 +24,17 @@ public interface IInferencingModelService
     /// A task that represents the asynchronous operation, containing a <see cref="ServiceResponse{ExtractionResponseDto}"/> 
     /// with the extraction result from the LLM.
     /// </returns>
-    Task<ServiceResponse<InferencingModelResponseDto>> ExecuteLLMByFileIdsAsync(ModelExecutionRequestDto modelExecutionRequestDto);
+    Task<ServiceResponse<InferencingModelResponseDto>> ExecuteLLMByFileIdsAsync(ModelFileProcessingRequestDto modelExecutionRequestDto);
+
+    /// <summary>
+    /// Executes a model using the provided file content for data extraction.
+    /// </summary>
+    /// <remarks>
+    /// This method processes the model tasks by sending the provided content to the model, 
+    /// extracts data, and returns the results along with any errors or status updates. 
+    /// It logs detailed information about the execution process, including success and failure scenarios.
+    /// </remarks>
+    /// <param name="modelExecutionRequestDto">The DTO containing the model ID, optional task ID, and content for extraction.</param>
+    /// <returns>A service response containing the extracted data and status of the execution.</returns>
+    Task<ServiceResponse<InferencingModelResponseDto>> ExecuteLLMByFileContentAsync(ModelContentProcessingRequestDto modelExecutionRequestDto);
 }
