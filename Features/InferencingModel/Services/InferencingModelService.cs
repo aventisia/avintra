@@ -104,6 +104,7 @@ public class InferencingModelService : IInferencingModelService
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w => w.Id == modelSetupDto.Id)
                 .Include(i => i.Tasks)
+                .AsNoTracking()
                 .SingleOrDefaultAsync();
 
             // If model not found
@@ -143,11 +144,31 @@ public class InferencingModelService : IInferencingModelService
             // Track new and existing tasks
             var tasksToBeAdded = new List<ModelTask>();
             var tasksToBeUpdated = new List<ModelTask>();
+            var tasksToBeDeleted = new List<ModelTask>();
 
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
+
+            foreach (var task in mlModel.Tasks.ToList())
+            {
+                // Use a dictionary to map task names to corresponding properties in modelSetupDto
+                var taskPropertyMappings = new Dictionary<string, object?>
+                {
+                    { nameof(InferencingModelTypesEnum.Extraction), modelSetupDto.Extraction },
+                    { nameof(InferencingModelTypesEnum.Classification), modelSetupDto.Classification },
+                    { nameof(InferencingModelTypesEnum.Summarization), modelSetupDto.Summarization },
+                    { nameof(InferencingModelTypesEnum.SentimentAnalytics), modelSetupDto.SentimentAnalytics },
+                    { nameof(InferencingModelTypesEnum.QuestionAnswer), modelSetupDto.QuestionAnswer }
+                };
+
+                // Check if the task should be deleted
+                if (taskPropertyMappings.ContainsKey(task.Name) && taskPropertyMappings[task.Name] == null)
+                {
+                    tasksToBeDeleted.Add(task);
+                }
+            }
 
             if (modelSetupDto.Extraction != null)
             {
