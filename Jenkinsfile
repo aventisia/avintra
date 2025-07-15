@@ -64,7 +64,7 @@ pipeline {
                         echo "Deploying to ${targetServer}..."
                         
                         // Deploy to target server  
-                        sh "rsync -avz --delete ${WORKSPACE}/dist/* admin@${targetServer}:/var/www/aventisia.com/clients/workspace/"
+                        sh "rsync -avz --delete ${WORKSPACE}/dist/* admin@${targetServer}:/var/www/aventisia.com/clients/worc/"
                     }
                 }
             }

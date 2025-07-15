@@ -9,7 +9,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { ExecutionsTableDto } from "../dtos/executions-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/job`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/job`;
 
 /**
  * Retrieves list of Executions.

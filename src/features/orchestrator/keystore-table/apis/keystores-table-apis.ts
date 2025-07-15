@@ -9,7 +9,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { KeystoresTableDto } from "../dtos/keystores-table-dto";
 
-export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/key-store`;
+export const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/key-store`;
 
 /**
  * Retrieves list of keystores.

@@ -10,7 +10,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 import { TriggersTableDto } from "../dtos/triggers-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/trigger`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/trigger`;
 
 /**
  * Retrieves list of triggers.
@@ -66,7 +66,7 @@ export const getNewTriggerAgents = () => {
   return axiosInstance
     .get<
       IHttpResponse<SelectAgentTableDto[]>
-    >(`${import.meta.env.VITE_WORKSPACE_API_URL}/agent/publish-flows`)
+    >(`${import.meta.env.VITE_WORC_API_URL}/agent/publish-flows`)
     .then((res) => res.data);
 };
 

@@ -7,7 +7,7 @@ import { AgentAssignMachineDto } from "../dtos/agent-assign-machine-dto";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
 import { AssignMachineDto } from "../dtos/assign-machine-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/agent`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/agent`;
 
 /**
  * Retrieves all published agents.
@@ -55,7 +55,7 @@ const deleteAgent = (id: string) => {
   return axiosInstance
     .delete<
       IHttpResponse<boolean>
-    >(`${import.meta.env.VITE_WORKSPACE_API_URL}/flow-version/delete/${id}`)
+    >(`${import.meta.env.VITE_WORC_API_URL}/flow-version/delete/${id}`)
     .then((res) => res.data);
 };
 

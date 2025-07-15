@@ -4,7 +4,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { SupportTicketRemarksDto } from "../dtos/SupportTicketRemarksDto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/supportticket-remarks`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/supportticket-remarks`;
 
 /**
  * Retrieves all remarks associated with a support ticket.

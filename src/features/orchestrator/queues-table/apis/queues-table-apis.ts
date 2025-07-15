@@ -13,7 +13,7 @@ import { QueueAgentsDto } from "../dtos/queue-agents-dto";
 import { QueueCreateUpdateDto } from "../dtos/queue-create-update-dto";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_URL}/queue`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/queue`;
 
 /**
  * Retrieves list of queues.
@@ -55,7 +55,7 @@ export const uploadWorkItem = (workitem: QueueWorkItemDto) => {
   return axiosInstance
     .post<
       IHttpResponse<QueueWorkItemDto>
-    >(`${import.meta.env.VITE_WORKSPACE_API_URL}/queue-transaction`, workitem)
+    >(`${import.meta.env.VITE_WORC_API_URL}/queue-transaction`, workitem)
     .then((res) => res.data);
 };
 

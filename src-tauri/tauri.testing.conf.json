@@ -3,7 +3,7 @@
   "mainBinaryName": "WorcDesktopApp",
   "productName": "WorcDesktopApp",
   "version": "0.1.11",
-  "identifier": "com.aventisia.workspace",
+  "identifier": "com.aventisia.worc",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:3002",
