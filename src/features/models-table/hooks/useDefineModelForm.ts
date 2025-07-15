@@ -50,7 +50,7 @@ export const useDefineModelForm = () => {
     resolver: zodResolver(modelZodSchema),
     defaultValues: {
       id: "",
-      type: "",
+      type: null,
       name: "",
       llm: "N/A",
       description: "",
@@ -82,7 +82,7 @@ export const useDefineModelForm = () => {
     // Set model data to form
     form.reset({
       id: rowId,
-      type: modelData?.type ?? "",
+      type: modelData?.type ?? null,
       name: modelData?.name ?? "",
       description: modelData?.description ?? "",
       // Read (view) only fields

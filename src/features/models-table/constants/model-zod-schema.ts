@@ -22,7 +22,7 @@ export const modelNameSchema = z
  */
 export const modelZodSchema = z.object({
   id: z.string(),
-  type: z.string().min(1, { message: reqError("Model type") }),
+  type: z.string().readonly().nullable(),
   name: modelNameSchema,
   llm: z.string().readonly(),
   description: z

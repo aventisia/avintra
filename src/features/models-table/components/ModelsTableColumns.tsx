@@ -63,7 +63,7 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
     cell: ({ row }) => {
       const typeValue =
         ModelTypesEnum[row.getValue("type") as keyof typeof ModelTypesEnum];
-      return <div className="w-auto font-medium">{typeValue}</div>;
+      return <div className="w-auto font-medium">{typeValue || "N/A"}</div>;
     },
   },
   {

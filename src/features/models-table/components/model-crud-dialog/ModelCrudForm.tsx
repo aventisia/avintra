@@ -2,7 +2,6 @@ import { Button } from "@aventisia/ui/buttons";
 import {
   Form,
   InputField,
-  SelectField,
   SwitchField,
   TextareaField,
 } from "@aventisia/ui/form";
@@ -17,7 +16,6 @@ import {
   idProps,
   isDisabledProps,
   nameProps,
-  typeProps,
 } from "../../constants/model-form-field-props";
 import { modelZodSchema } from "../../constants/model-zod-schema";
 import { ModelsTableDto } from "../../dtos/models-table-dto";
@@ -81,13 +79,6 @@ export const ModelCrudForm = () => {
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
       />
-
-      {/* Type. TODO: Select field doesn't update. Applied workaround for now */}
-      {crudAction === "create" ? (
-        <SelectField {...typeProps} />
-      ) : (
-        form.getValues("type") !== "" && <SelectField {...typeProps} />
-      )}
 
       {/* Description */}
       <TextareaField {...descriptionProps} />
