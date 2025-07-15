@@ -36,5 +36,19 @@ public enum ModelTypesEnum
     /// <summary>
     /// Represents an AI persona model designed to simulate human-like interaction or behavior.
     /// </summary>
-    AIPersona
+    AIPersona,
+    /// <summary>
+    /// Represents a model used for inferencing, often applied to predictive tasks.
+    /// </summary>
+    Inferencing,
+
+    /// <summary>
+    /// Represents a model used for conversation generation or dialogue systems.
+    /// </summary>
+    Conversation,
+
+    /// <summary>
+    /// Represents a generative model that produces content, like text or images, based on input data.
+    /// </summary>
+    Generative
 }
