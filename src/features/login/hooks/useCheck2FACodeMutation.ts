@@ -34,8 +34,8 @@ export const useCheck2FACodeMutation = () => {
         navigate(
           "/redirect?msg=Logging in...&url=" +
             (userSessionStoreObj.isAE
-              ? import.meta.env.VITE_WORKSPACE_URL
-              : import.meta.env.VITE_WORKSPACE_URL),
+              ? import.meta.env.VITE_WORC_URL
+              : import.meta.env.VITE_WORC_URL),
         );
       },
       onError: (error) => {

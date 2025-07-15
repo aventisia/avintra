@@ -30,8 +30,8 @@ export const useValidateUserSessionForLoginPage = () => {
       navigate(
         "/redirect?msg=Loading...&url=" +
           (userSessionStoreObj.isAE
-            ? import.meta.env.VITE_WORKSPACE_URL
-            : import.meta.env.VITE_WORKSPACE_URL),
+            ? import.meta.env.VITE_WORC_URL
+            : import.meta.env.VITE_WORC_URL),
       );
     },
     // onError is not required since axios instance handles 401 error and redirects to login page
