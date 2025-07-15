@@ -137,6 +137,9 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<decimal?>("Accuracy")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("BusinessContext")
+                        .HasColumnType("text");
+
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
 
@@ -186,7 +189,6 @@ namespace MLModelBuilderAPIs.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Type")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<uint>("Version")
