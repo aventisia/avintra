@@ -68,7 +68,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             // Successfully retrieved the flow version, log and return response
             _logger.LogInformation($"Successfully retrieved flow version for FlowId {flowId}. VersionId: {flowVersion.Id}.");
-            serviceResponse.Data = flowVersion.Adapt<LoadFlowDto>();
+            serviceResponse.Data = loadFlowDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Flow version retrieved successfully.";
         }
