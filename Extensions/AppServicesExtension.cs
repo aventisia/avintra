@@ -31,6 +31,7 @@ public static class AppServicesExtension
         config.Apply(new ModelAPIKeyMappingProfile());
         config.Apply(new AIModelMappingProfile());
         config.Apply(new InferencingModelMappingProfile());
+        config.Apply(new ConversationModelMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -56,6 +57,7 @@ public static class AppServicesExtension
         services.AddScoped<IModelAPIKeyService, ModelAPIKeyService>();
         services.AddScoped<IAIModelService, AIModelService>();
         services.AddScoped<IInferencingModelService, InferencingModelService>();
+        services.AddScoped<IConversationModelService, ConversationModelService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
