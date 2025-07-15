@@ -9,38 +9,58 @@ var configurationBuilder = new ConfigurationBuilder();
 configurationBuilder.Sources.Clear();
 configurationBuilder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 configurationBuilder.AddJsonFile("serilogsettings.json", optional: false, reloadOnChange: true);
-configurationBuilder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true);
+configurationBuilder.AddJsonFile(
+    $"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json",
+    optional: true,
+    reloadOnChange: true
+);
 var config = configurationBuilder.Build();
-
 
 var IsEnvironmentLocalhost = builder.Environment.IsEnvironment("Localhost");
 
 if (!IsEnvironmentLocalhost)
 {
     // Get sensitive data from environment variables
-    var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), message: "DB_HOST cannot be null");
-    var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), message: "DB_CREDENTIALS cannot be null");
-    var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), message: "JWT_SECRET_KEY cannot be null");
-    var SMTP_API_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("SMTP_API_KEY"), message: "SMTP_API_KEY cannot be null");
+    var DB_HOST = Guard.Against.Null(
+        Environment.GetEnvironmentVariable("DB_HOST"),
+        message: "DB_HOST cannot be null"
+    );
+    var DB_CREDENTIALS = Guard.Against.Null(
+        Environment.GetEnvironmentVariable("DB_CREDENTIALS"),
+        message: "DB_CREDENTIALS cannot be null"
+    );
+    var JWT_SECRET_KEY = Guard.Against.Null(
+        Environment.GetEnvironmentVariable("JWT_SECRET_KEY"),
+        message: "JWT_SECRET_KEY cannot be null"
+    );
+    var SMTP_API_KEY = Guard.Against.Null(
+        Environment.GetEnvironmentVariable("SMTP_API_KEY"),
+        message: "SMTP_API_KEY cannot be null"
+    );
 
     // Update sensitive data in configuration
-    config = new ConfigurationBuilder().AddConfiguration(config).AddInMemoryCollection(new Dictionary<string, string?>
-    {
-        { "ConnectionStringConfig:AppDb:Credentials", DB_CREDENTIALS },
-        { "ConnectionStringConfig:AppDb:Host", DB_HOST },
-        { "ConnectionStringConfig:TenantDb:Credentials", DB_CREDENTIALS },
-        { "ConnectionStringConfig:TenantDb:Host", DB_HOST },
-        { "JwtConfig:SecretKey", JWT_SECRET_KEY },
-        { "SmtpConfig:ApiKey", SMTP_API_KEY },
-    }).Build();
+    config = new ConfigurationBuilder()
+        .AddConfiguration(config)
+        .AddInMemoryCollection(
+            new Dictionary<string, string?>
+            {
+                { "ConnectionStringConfig:AppDb:Credentials", DB_CREDENTIALS },
+                { "ConnectionStringConfig:AppDb:Host", DB_HOST },
+                { "ConnectionStringConfig:TenantDb:Credentials", DB_CREDENTIALS },
+                { "ConnectionStringConfig:TenantDb:Host", DB_HOST },
+                { "JwtConfig:SecretKey", JWT_SECRET_KEY },
+                { "SmtpConfig:ApiKey", SMTP_API_KEY },
+            }
+        )
+        .Build();
 }
 
 /*---------Serilog Configuration---------*/
 
 Log.Logger = new LoggerConfiguration()
-                    .ReadFrom.Configuration(config)
-                    .Enrich.FromLogContext()
-                    .CreateLogger();
+    .ReadFrom.Configuration(config)
+    .Enrich.FromLogContext()
+    .CreateLogger();
 builder.Host.UseSerilog();
 
 /*-----Add services to the container-----*/
@@ -84,7 +104,8 @@ if (IsEnvironmentLocalhost)
 
 app.UseMiddleware<ExceptionMiddleware>();
 
-if (!IsEnvironmentLocalhost) app.UseHsts();
+if (!IsEnvironmentLocalhost)
+    app.UseHsts();
 
 // In a Nginx setup with SSL termination, Nginx handles the HTTPS connection and forwards the request to your backend ASP.NET Core application using HTTP (port 80 by default).
 // if (!IsEnvironmentLocalhost) app.UseHttpsRedirection();
@@ -109,6 +130,12 @@ app.UseMiddleware<TenantResolver>();
 
 app.MapControllers();
 
-await app.SeedInitialData();
+var parameters = Environment.GetCommandLineArgs();
+
+if (parameters.Length > 1 && parameters[1] == "seed")
+{
+    Console.WriteLine("Seeding data...");
+    await app.SeedInitialData();
+}
 
 await app.RunAsync();
