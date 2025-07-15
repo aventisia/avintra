@@ -18,6 +18,7 @@ import SearchCommandTrigger from "./Search";
 import { SettingsTrigger } from "@/features/flow-settings/components/SettingsTrigger";
 import { useIsAgentsAssist } from "@/features/agents-assist/hooks/useIsAgentsAssist";
 import { FlowParticipantsFacePile } from "@/features/share-access/components/FlowParticipantsFacePile";
+import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 
 const AppHeader: React.FC = () => {
   // Get global store state and actions
@@ -34,6 +35,9 @@ const AppHeader: React.FC = () => {
       userSession: state.userSession,
     })),
   );
+
+  const isIndividualUser =
+    userSession?.tenantName === DefaultTenantsEnum.IndividualUsers;
 
   const isAssist = useIsAgentsAssist();
 
@@ -70,7 +74,7 @@ const AppHeader: React.FC = () => {
           {!isAssist && <FlowVersions />}{" "}
         </div>
         <div>
-          {import.meta.env.MODE == "production" ? (
+          {isIndividualUser ? (
             <Avatar className={cn("flex h-7 w-7")}>
               <AvatarFallback className="bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary">
                 {userSession ? userSession?.userInitials : "--"}
@@ -80,7 +84,7 @@ const AppHeader: React.FC = () => {
         </div>
         {!isAssist && (
           <div className="mx-4 flex items-center gap-1 text-white">
-            {import.meta.env.MODE !== "production" ? (
+            {import.meta.env.MODE !== "production" && !isIndividualUser ? (
               <FlowParticipantsFacePile />
             ) : null}
 
