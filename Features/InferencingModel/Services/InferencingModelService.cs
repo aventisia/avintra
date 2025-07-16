@@ -335,6 +335,19 @@ public class InferencingModelService : IInferencingModelService
                 }
             }
 
+            // Delete existing tasks if any
+            if (tasksToBeDeleted.Any())
+            {
+                _logger.LogInformation("Deleting existing tasks | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+                _unitOfWork.ModelTaskRepo.Delete(tasksToBeDeleted);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save deleted tasks | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+                    return serviceResponse;
+                }
+            }
+
             _logger.LogInformation("Model setup update completed successfully | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
 
             // Return success response with updated model data
