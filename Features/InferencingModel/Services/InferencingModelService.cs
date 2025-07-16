@@ -127,7 +127,7 @@ public class InferencingModelService : IInferencingModelService
             modelSetupDto = TrimDtoStringPropsUtil.TrimDtoStringProps(modelSetupDto);
 
             _logger.LogInformation("Applying DTO changes to model entity | Model ID: {Id}", modelSetupDto.Id);
-            mlModel.Adapt(modelSetupDto);
+            modelSetupDto.Adapt(mlModel);
             mlModel.Type = ModelTypesEnum.Inferencing;
             mlModel.SetupStatus = SetupStatusTypesEnum.Completed;
             mlModel.LastModifiedByUserId = _userId;
@@ -178,6 +178,7 @@ public class InferencingModelService : IInferencingModelService
                     // Task does not exist — create a new task entity from the DTO
                     var newTask = modelSetupDto.Extraction.Adapt<ModelTask>();
                     newTask.MLModelId = mlModel.Id;
+                    newTask.GeneratedPrompt = GenerateModelPrompt(newTask.Name, modelSetupDto);
                     newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Extraction.SetupObject, options);
                     newTask.CreatedByUserId = _userId;
                     newTask.LastModifiedByUserId = _userId;
@@ -188,6 +189,7 @@ public class InferencingModelService : IInferencingModelService
                 {
                     // Task already exists — update its properties from the DTO
                     modelSetupDto.Extraction.Adapt(existingTask);
+                    existingTask.GeneratedPrompt = GenerateModelPrompt(existingTask.Name, modelSetupDto);
                     existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Extraction.SetupObject, options);
                     existingTask.LastModifiedByUserId = _userId;
 
@@ -203,6 +205,7 @@ public class InferencingModelService : IInferencingModelService
                     // Task does not exist — create a new task entity from the DTO
                     var newTask = modelSetupDto.Classification.Adapt<ModelTask>();
                     newTask.MLModelId = mlModel.Id;
+                    newTask.GeneratedPrompt = GenerateModelPrompt(newTask.Name, modelSetupDto);
                     newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Classification.SetupObject, options);
                     newTask.CreatedByUserId = _userId;
                     newTask.LastModifiedByUserId = _userId;
@@ -213,6 +216,8 @@ public class InferencingModelService : IInferencingModelService
                 {
                     // Task already exists — update its properties from the DTO
                     modelSetupDto.Classification.Adapt(existingTask);
+                    existingTask.GeneratedPrompt = GenerateModelPrompt(existingTask.Name, modelSetupDto);
+
                     existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Classification.SetupObject, options);
                     existingTask.LastModifiedByUserId = _userId;
 
@@ -228,6 +233,7 @@ public class InferencingModelService : IInferencingModelService
                     // Task does not exist — create a new task entity from the DTO
                     var newTask = modelSetupDto.SentimentAnalytics.Adapt<ModelTask>();
                     newTask.MLModelId = mlModel.Id;
+                    newTask.GeneratedPrompt = GenerateModelPrompt(newTask.Name, modelSetupDto);
                     newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.SentimentAnalytics.SetupObject, options);
                     newTask.CreatedByUserId = _userId;
                     newTask.LastModifiedByUserId = _userId;
@@ -238,6 +244,8 @@ public class InferencingModelService : IInferencingModelService
                 {
                     // Task already exists — update its properties from the DTO
                     modelSetupDto.SentimentAnalytics.Adapt(existingTask);
+                    existingTask.GeneratedPrompt = GenerateModelPrompt(existingTask.Name, modelSetupDto);
+
                     existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.SentimentAnalytics.SetupObject, options);
                     existingTask.LastModifiedByUserId = _userId;
 
@@ -253,6 +261,7 @@ public class InferencingModelService : IInferencingModelService
                     // Task does not exist — create a new task entity from the DTO
                     var newTask = modelSetupDto.QuestionAnswer.Adapt<ModelTask>();
                     newTask.MLModelId = mlModel.Id;
+                    newTask.GeneratedPrompt = GenerateModelPrompt(newTask.Name, modelSetupDto);
                     newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.QuestionAnswer.SetupObject, options);
                     newTask.CreatedByUserId = _userId;
                     newTask.LastModifiedByUserId = _userId;
@@ -263,6 +272,8 @@ public class InferencingModelService : IInferencingModelService
                 {
                     // Task already exists — update its properties from the DTO
                     modelSetupDto.QuestionAnswer.Adapt(existingTask);
+                    existingTask.GeneratedPrompt = GenerateModelPrompt(existingTask.Name, modelSetupDto);
+
                     existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.QuestionAnswer.SetupObject, options);
                     existingTask.LastModifiedByUserId = _userId;
 
@@ -278,6 +289,7 @@ public class InferencingModelService : IInferencingModelService
                     // Task does not exist — create a new task entity from the DTO
                     var newTask = modelSetupDto.Summarization.Adapt<ModelTask>();
                     newTask.MLModelId = mlModel.Id;
+                    newTask.GeneratedPrompt = GenerateModelPrompt(newTask.Name, modelSetupDto);
                     newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Summarization.SetupObject, options);
                     newTask.CreatedByUserId = _userId;
                     newTask.LastModifiedByUserId = _userId;
@@ -288,6 +300,8 @@ public class InferencingModelService : IInferencingModelService
                 {
                     // Task already exists — update its properties from the DTO
                     modelSetupDto.Summarization.Adapt(existingTask);
+                    existingTask.GeneratedPrompt = GenerateModelPrompt(existingTask.Name, modelSetupDto);
+
                     existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Summarization.SetupObject, options);
                     existingTask.LastModifiedByUserId = _userId;
 
@@ -609,87 +623,197 @@ public class InferencingModelService : IInferencingModelService
         }
     }
 
-
-    private string? GenerateExtractionModelPrompt(MLModelSetupDto mlModelSetupDto)
+    private string? GenerateModelPrompt(string name, InferencingModelDto inferencingModelDto)
     {
-        // Initialize a StringBuilder to build the default prompt string
+        // Final prompt that will be returned after template processing
+        string finalPrompt = string.Empty;
+
+        // Default prompt to begin with. It will be modified based on the model type.
         var defaultPrompt = new StringBuilder();
 
-        // Add the base instruction or use the provided NodePrompt from the setup object
-        // If mlModelSetupDto.SetupObject.Prompt is not null or empty, it will be used. Otherwise, a default message is added.
-        defaultPrompt.AppendLine(!string.IsNullOrEmpty(mlModelSetupDto.SetupObject?.Prompt)
-            ? mlModelSetupDto.SetupObject.Prompt.Trim()
-            : "You are an expert data extraction algorithm. Your task is to accurately extract relevant data from the provided document.");
-
-        // Initialize a StringBuilder for storing field extraction instructions
-        var fieldInstruction = new StringBuilder();
-
-        // Section: Field extraction instructions
-        if (mlModelSetupDto.SetupObject?.FieldSetups != null && mlModelSetupDto.SetupObject.FieldSetups.Any())
+        try
         {
-            // Iterate through the list of field setups in the model setup object
-            for (int i = 0; i < mlModelSetupDto.SetupObject.FieldSetups.Count; i++)
+            // Switch statement to handle different model types and generate the appropriate prompt
+            switch (name)
             {
-                var field = mlModelSetupDto.SetupObject.FieldSetups[i];
+                case nameof(InferencingModelTypesEnum.Extraction):
+                    // Handling for Data Extraction model
 
-                // If there are specific instructions for the field, append them, otherwise leave it blank
-                var instructions = string.IsNullOrEmpty(field.Instructions) ? "" : $", - {field.Instructions}";
+                    // Initialize builders for field and table extraction instructions
+                    var fieldInstruction = new StringBuilder();
+                    var tableInstruction = new StringBuilder();
 
-                // Append each field's details, including its name, type, and instructions if available
-                fieldInstruction.AppendLine($"{field.Index}. {field.Name} (type: {field.Type}){instructions}");
+                    // Default prompt for DataExtraction model, or use the one provided in the DTO
+                    defaultPrompt.AppendLine(inferencingModelDto.Extraction.NodePrompt ??
+                        "You are an expert data extraction algorithm. Your task is to accurately extract relevant data from the provided document.");
+
+                    // Generate field extraction instructions if any fields are provided
+                    if (inferencingModelDto.Extraction?.SetupObject?.Fields != null && inferencingModelDto.Extraction.SetupObject.Fields.Any())
+                    {
+                        foreach (var field in inferencingModelDto.Extraction.SetupObject.Fields)
+                        {
+                            var instructions = string.IsNullOrEmpty(field.Instructions) ? "" : $", - {field.Instructions}";
+                            fieldInstruction.AppendLine($"{field.Index}. {field.Name} (type: {field.Type}){instructions}");
+                        }
+                    }
+
+                    // Generate table extraction instructions if any tables are provided
+                    if (inferencingModelDto.Extraction.SetupObject.Tables != null && inferencingModelDto.Extraction.SetupObject.Tables.Any())
+                    {
+                        foreach (var table in inferencingModelDto.Extraction.SetupObject.Tables)
+                        {
+                            tableInstruction.AppendLine("### Data Extraction Instructions for the Table:");
+                            tableInstruction.AppendLine($"{table.Index}. Table name: {table.Name}{(string.IsNullOrEmpty(table.Context) ? "" : $", context - {table.Context}")}");
+                            tableInstruction.AppendLine("Please extract the following columns:");
+
+                            // Add table column headers if they exist
+                            if (table.TableHeaders != null)
+                            {
+                                foreach (var column in table.TableHeaders)
+                                {
+                                    var instructions = string.IsNullOrEmpty(column.Instructions) ? "" : $", - {column.Instructions}";
+                                    tableInstruction.AppendLine($"{column.Index}. {column.Name} (type: {column.Type}){instructions}");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // If no table details are available, provide a fallback message
+                        tableInstruction.AppendLine("Since the table has no details, return the `tables` array as an empty list: `[]`.");
+                    }
+
+                    // Load the Data Extraction prompt template and replace placeholders
+                    finalPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("ExtractionPrompt.txt", new Dictionary<string, string>()
+                    {
+                        { "{{Prompt}}", defaultPrompt.ToString() },
+                        { "{{Context}}", inferencingModelDto.BusinessContext.ToString() },
+                        { "{{FieldInstructions}}", fieldInstruction.ToString() },
+                        { "{{TableInstructions}}", tableInstruction.ToString() }
+                    });
+                    break;
+
+                case nameof(InferencingModelTypesEnum.Summarization):
+                    // Handling for Text Summarization model
+
+                    // Default prompt for Summarization model, or use the one provided in the DTO
+                    defaultPrompt.AppendLine(inferencingModelDto.Summarization.NodePrompt ??
+                        "You are an expert summarization algorithm. Your task is to generate a concise and accurate summary of the provided document.");
+
+                    // Load the Summarization prompt template and replace placeholders
+                    finalPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("SummarizationPrompt.txt", new Dictionary<string, string>()
+                    {
+                        { "{{Prompt}}", defaultPrompt.ToString() },
+                        { "{{Context}}", inferencingModelDto.BusinessContext.ToString() ?? "" },
+                        { "{{TotalMinimumWords}}", inferencingModelDto.Summarization.SetupObject.TotalMinimumWords.ToString() },
+                        { "{{TotalMaximumWords}}", inferencingModelDto.Summarization.SetupObject.TotalMaximumWords.ToString() }
+                    });
+                    break;
+
+                case nameof(InferencingModelTypesEnum.SentimentAnalytics):
+                    // Handling for Sentiment Analysis model
+
+                    // Default prompt for Sentiment Analysis model, or use the one provided in the DTO
+                    defaultPrompt.AppendLine(inferencingModelDto.SentimentAnalytics.NodePrompt ??
+                        "You are a sentiment analysis algorithm. Your task is to detect and classify the sentiment of the provided text as either positive, negative, or neutral.");
+
+                    // Initialize prompt builder for sentiment analysis categories (if available)
+                    var sentimentAnalyticsCategoriesPrompt = new StringBuilder();
+
+                    // Add category-based classification instructions if any categories are defined
+                    if (inferencingModelDto.SentimentAnalytics?.SetupObject?.Categories != null && inferencingModelDto.SentimentAnalytics.SetupObject.Categories.Any())
+                    {
+                        for (int i = 0; i < inferencingModelDto.SentimentAnalytics.SetupObject.Categories.Count; i++)
+                        {
+                            var category = inferencingModelDto.SentimentAnalytics.SetupObject.Categories[i];
+                            var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
+                            sentimentAnalyticsCategoriesPrompt.AppendLine($"{category.Index}. {category.Name}{instructions}");
+                        }
+                    }
+
+                    // Load the Sentiment Analysis prompt template and replace placeholders
+                    finalPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("SentimentAnalyticsPrompt.txt", new Dictionary<string, string>()
+                    {
+                        { "{{Prompt}}", defaultPrompt.ToString() },
+                        { "{{Context}}", inferencingModelDto.BusinessContext },
+                        { "{{Categories}}", sentimentAnalyticsCategoriesPrompt.Replace("\n", "").ToString() }
+                    });
+                    break;
+
+                case nameof(InferencingModelTypesEnum.Classification):
+                    // Handling for Classification model (similar to Sentiment Analytics but for general classification tasks)
+
+                    // Default prompt for Classification model, or use the one provided in the DTO
+                    defaultPrompt.AppendLine(inferencingModelDto.Classification.NodePrompt ??
+                        "You are a classification algorithm. Your task is to classify the provided text into predefined categories.");
+
+                    // Initialize prompt builder for classification categories (if available)
+                    var classificationCategoriesPrompt = new StringBuilder();
+
+                    // Add category-based classification instructions if any categories are defined
+                    if (inferencingModelDto.Classification?.SetupObject?.Categories != null && inferencingModelDto.Classification.SetupObject.Categories.Any())
+                    {
+                        for (int i = 0; i < inferencingModelDto.Classification.SetupObject.Categories.Count; i++)
+                        {
+                            var category = inferencingModelDto.Classification.SetupObject.Categories[i];
+                            var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
+                            classificationCategoriesPrompt.AppendLine($"{category.Index}. {category.Name}{instructions}");
+                        }
+                    }
+
+                    // Load the Classification prompt template and replace placeholders
+                    finalPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("ClassificationPrompt.txt", new Dictionary<string, string>()
+                    {
+                        { "{{Prompt}}", defaultPrompt.ToString() },
+                        { "{{Context}}", inferencingModelDto.BusinessContext },
+                        { "{{AllowMultipleClasses}}", inferencingModelDto.Classification.SetupObject.AllowMultipleClasses.ToString() },
+                        { "{{Categories}}", classificationCategoriesPrompt.Replace("\n", "").ToString() }
+                    });
+                    break;
+
+                case nameof(InferencingModelTypesEnum.QuestionAnswer):
+                    // Handling for Question Answering model
+
+                    // Default prompt for Question Answer model, or use the one provided in the DTO
+                    defaultPrompt.AppendLine(inferencingModelDto.QuestionAnswer.NodePrompt ??
+                        "You are a question-answering algorithm. Your task is to provide concise and accurate answers to the following questions based on the context.");
+
+                    // Initialize prompt builder for question-answer pairs (if available)
+                    var questionAnswerPrompt = new StringBuilder();
+
+                    // Add predefined question-answer pairs if available
+                    if (inferencingModelDto.QuestionAnswer.SetupObject?.QuestionAnswers != null && inferencingModelDto.QuestionAnswer.SetupObject.QuestionAnswers.Any())
+                    {
+                        for (int i = 0; i < inferencingModelDto.QuestionAnswer.SetupObject.QuestionAnswers.Count; i++)
+                        {
+                            var questionAnswer = inferencingModelDto.QuestionAnswer.SetupObject.QuestionAnswers[i];
+                            var instructions = string.IsNullOrEmpty(questionAnswer.Instructions) ? "" : $", - {questionAnswer.Instructions}";
+                            questionAnswerPrompt.AppendLine($"{questionAnswer.Index}. {questionAnswer.Name}{instructions}");
+                        }
+                    }
+
+                    // Load the Question Answering prompt template and replace placeholders
+                    finalPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("QuestionAnswerPrompt.txt", new Dictionary<string, string>()
+                    {
+                        { "{{Prompt}}", defaultPrompt.ToString() },
+                        { "{{Context}}", inferencingModelDto.BusinessContext },
+                        { "{{QuestionAnswers}}", questionAnswerPrompt.Replace("\n", "").ToString() }
+                    });
+                    break;
+
+                // Default case when no match is found for the model type
+                default:
+                    return "Model type not supported.";
             }
         }
-
-        // Initialize a StringBuilder for storing table extraction instructions
-        var tableInstruction = new StringBuilder();
-
-        // Section: Table extraction instructions
-        if (mlModelSetupDto.SetupObject?.TableMetadata != null && mlModelSetupDto.SetupObject.TableMetadata.Any())
+        catch (Exception ex)
         {
-            // Iterate through the list of table metadata in the model setup object
-            foreach (var table in mlModelSetupDto.SetupObject.TableMetadata)
-            {
-                // Add a new line and introduce the table extraction step
-                tableInstruction.AppendLine("### Data Extraction Instructions for the Table:");
-
-                // Display the table name with context if provided
-                tableInstruction.AppendLine($"{table.Index}. Table name: {table.Name}{(string.IsNullOrEmpty(table.Context) ? "" : $", context - {table.Context}")}");
-
-                // Inform the user about the columns to extract
-                tableInstruction.AppendLine("Please extract the following columns:");
-
-                // Check if table headers exist and loop through them to extract column info
-                if (table.TableHeaders != null)
-                {
-                    for (int i = 0; i < table.TableHeaders.Count; i++)
-                    {
-                        var column = table.TableHeaders[i];
-
-                        // Append instructions for the column, if any
-                        var instructions = string.IsNullOrEmpty(column.Instructions) ? "" : $", - {column.Instructions}";
-
-                        // Append each column's details, including its name, type, and instructions if available
-                        tableInstruction.AppendLine($"{column.Index}. {column.Name} (type: {column.Type}){instructions}");
-                    }
-                }
-            }
-        }
-        else
-        {
-            tableInstruction.AppendLine("Since the table has no details, return the `tables` array as an empty list: `[]`.");
+            // Log the exception (optional: use a logging framework here)
+            _logger.LogError($"An error occurred while generating the prompt: {ex.ToString()}");
         }
 
-        // Load a template file and replace placeholders with the generated prompt sections
-        var generatedPrompt = FileTemplateLoaderUtil.LoadAndRenderFile("ExtractionPrompt.txt", new Dictionary<string, string>()
-                    {
-                        // Replace the placeholders {{Prompt}}, {{Context}}, and {{OutputFormat}} in the template with the respective sections
-                        {"{{Prompt}}", defaultPrompt.Replace("\n","").ToString()  },
-                        //{"{{Context}}", mlModelSetupDto.SetupObject.Context },
-                    }
-                );
-
-        // Return the final generated prompt after replacing newline characters and returning the string
-        return generatedPrompt.Replace("\n", "").ToString();
+        // Return the final generated prompt after replacing newline characters
+        return finalPrompt;
     }
 
     // Maps tasks from an ML model to the appropriate properties in the InferencingModelDto. Each task is deserialized based on its type into a strongly-typed DTO.
@@ -821,8 +945,8 @@ public class InferencingModelService : IInferencingModelService
 
             // Prepare collections for extracted data and database operations
             var extractedDataList = new List<InferencingModelTaskResponseDto>();
-            var modelTaskList = model.Tasks.Where(w => 
-                    !modelExecutionRequestDto.ModelTaskId.HasValue || 
+            var modelTaskList = model.Tasks.Where(w =>
+                    !modelExecutionRequestDto.ModelTaskId.HasValue ||
                     w.Id == modelExecutionRequestDto.ModelTaskId.Value
                 )
                 .ToList();
@@ -877,4 +1001,3 @@ public class InferencingModelService : IInferencingModelService
         return serviceResponse;
     }
 }
-
