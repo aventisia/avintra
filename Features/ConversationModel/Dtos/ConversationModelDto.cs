@@ -23,11 +23,6 @@ public class ConversationModelDto
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the business context that the conversation model addresses.
-    /// </summary>
-    public required string BusinessContext { get; set; }
-
-    /// <summary>
     /// Gets or sets the extraction task setup for the conversation model.
     /// </summary>
     public ConversationModelSetupTaskDto? AIPersona { get; set; }
