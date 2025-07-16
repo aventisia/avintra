@@ -71,7 +71,7 @@ async def websocket_chat_handler(websocket: WebSocket):
                 continue
 
             # Step 6: Echo the user message back
-            await connection_manager.send_personal_message(user_message.dict(), connection_id)
+            await connection_manager.send_personal_message(user_message.json(), connection_id)
 
             # Step 7: Store user message in Qdrant
             try:
@@ -103,7 +103,7 @@ async def websocket_chat_handler(websocket: WebSocket):
             )
 
             # Step 11: Send AI response message to the client
-            await connection_manager.send_personal_message(ai_response_message.dict(), connection_id)
+            await connection_manager.send_personal_message(ai_response_message.json(), connection_id)
 
             # Step 12: Store AI response message in Qdrant
             add_document_to_collection(ai_response_message)
