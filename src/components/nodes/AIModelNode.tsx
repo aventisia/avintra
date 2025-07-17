@@ -68,6 +68,7 @@ export const AIModelNode = ({
           "flex h-[7rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-indigo-300 hover:ring hover:ring-ring",
           data.color,
           selected && "border-primary ring ring-ring",
+          data?.isDisabled && "opacity-50",
         )}
       >
         <div
