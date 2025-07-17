@@ -10,6 +10,7 @@ import { toast } from "@aventisia/ui/sonner";
 import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { useShallow } from "zustand/react/shallow";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
+import { getIntermediateNodeIds } from "../utils/getIntermediateNodes";
 
 /* Hook to perform cut copy paste and delete operations on nodes */
 export const useFlowOperations = () => {
@@ -239,9 +240,31 @@ export const useFlowOperations = () => {
   );
 
   const disableNode = (isDisabled: boolean) => {
-    // Find the node by id and update its inputs and outputs
+    if (!selectedNode) return;
+
+    const selectedId = selectedNode?.id;
+    const selectedData = selectedNode?.data || {};
+
+    const isGroupHead = Boolean(selectedData?.isGroupHead);
+    const groupId = selectedData?.groupId;
+    const mergeBranchesNodeId = selectedData?.mergeBranchesNodeId;
+
+    //  compute intermediate node IDs only if relevant
+    const intermediateNodeIds =
+      mergeBranchesNodeId && selectedId
+        ? getIntermediateNodeIds(nodes, edges, selectedId) || []
+        : [];
+
     const updatedNodes = nodes.map((node: Node) => {
-      if (node.id === selectedNode?.id) {
+      const isSameNode = node?.id === selectedId;
+
+      const nodeGroupId = node?.data?.groupId;
+      const isInSameGroup = isGroupHead && groupId && nodeGroupId === groupId;
+
+      const isInMergeBranch =
+        mergeBranchesNodeId && intermediateNodeIds.includes(node?.id);
+
+      if (isSameNode || isInSameGroup || isInMergeBranch) {
         return {
           ...node,
           data: {
@@ -250,6 +273,7 @@ export const useFlowOperations = () => {
           },
         };
       }
+
       return node;
     });
 
