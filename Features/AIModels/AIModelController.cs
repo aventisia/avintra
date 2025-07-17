@@ -13,9 +13,15 @@ public class AIModelController : BaseApiController
 
     /// Fetches a list of all published machine learning models
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AIModelDto>>>> GetAIModels()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AIModelDto>>>> GetAIModels(bool includeUnpublish = false)
     {
-        return ResultHelper(await _aiModelService.GetAIModelsAsync());
+        return ResultHelper(await _aiModelService.GetAIModelsAsync(includeUnpublish));
+    }
+
+    [HttpGet("list/{searchKey}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AIModelDto>>>> SearchAIModels(string searchKey, bool includeUnpublish = false)
+    {
+        return ResultHelper(await _aiModelService.SearchAIModelsAsync(searchKey, includeUnpublish));
     }
 
     /// Fetches the extraction setup configuration for a specific ML model by ID
@@ -32,7 +38,7 @@ public class AIModelController : BaseApiController
     {
         return ResultHelper(await _aiModelService.ExecuteViaLLMAsync(extractRequestDto));
     }
-    
+
     // Adds a new document record to the system for processing by a Language Learning Model (LLM).
     [ApiKeyAuth]
     [HttpPost("documents")]

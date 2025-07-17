@@ -40,7 +40,7 @@ public class AIModelService : IAIModelService
     }
 
     // Retrieves a list of published ai models.
-    public async Task<ServiceResponse<IEnumerable<AIModelDto>>> GetAIModelsAsync()
+    public async Task<ServiceResponse<IEnumerable<AIModelDto>>> GetAIModelsAsync(bool includeUnpublish)
     {
         var response = new ServiceResponse<IEnumerable<AIModelDto>>
         {
@@ -53,7 +53,7 @@ public class AIModelService : IAIModelService
             _logger.LogDebug("Querying the repository for published ai models...");
 
             var models = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.IsPublished)
+                .GetByConditionAsync(w => w.Type != null && (includeUnpublish || w.IsPublished))
                 .ProjectToType<AIModelDto>()
                 .ToListAsync();
 
@@ -68,6 +68,44 @@ public class AIModelService : IAIModelService
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while retrieving ai models for user {UserId}.", _userId);
+        }
+
+        return response;
+    }
+
+    // Retrieves a list of published ai models.
+    public async Task<ServiceResponse<IEnumerable<AIModelDto>>> SearchAIModelsAsync(string searchKey, bool includeUnpublish)
+    {
+        var response = new ServiceResponse<IEnumerable<AIModelDto>>
+        {
+            Data = null,
+            Message = "Failed to search for AI models. Please try again later.",
+        };
+
+        try
+        {
+            _logger.LogDebug("Starting search for AI models based on the provided search key...");
+
+            var models = await _unitOfWork.MLModelRepo
+                .GetByConditionAsync(w =>
+                    w.Type != null &&
+                    w.Name.ToLower().Contains(searchKey.ToLower()) &&
+                    (includeUnpublish || w.IsPublished)
+                )
+                .ProjectToType<AIModelDto>()
+                .ToListAsync();
+
+            _logger.LogDebug("Search completed. Found {Count} AI models matching the search criteria.", models.Count);
+
+            response.Data = models;
+            response.StatusCode = 200;
+            response.Message = "AI models retrieved successfully.";
+
+            _logger.LogInformation("Successfully retrieved {Count} AI models for user {UserId}.", models.Count, _userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while searching for AI models for user {UserId}.", _userId);
         }
 
         return response;
@@ -126,8 +164,8 @@ public class AIModelService : IAIModelService
                     // If the model type is Classification, fetch the classification setup
                     _logger.LogInformation("Processing AI model of type 'Classification'. Fetching setup...");
                     var classificationSetup = await _classificationService.GetClassificationSetupByMLModelIdAsync(mlModelId);
-                    data = new 
-                    { 
+                    data = new
+                    {
                         Type = mlModel.Type,
                         Categories = classificationSetup.Data.SetupObject?.Categories
                     };
@@ -138,8 +176,8 @@ public class AIModelService : IAIModelService
                     // If the model type is Summarization, fetch the summarization setup
                     _logger.LogInformation("Processing AI model of type 'Summarization'. Fetching setup...");
                     var summarizationSetup = await _summarizationService.GetSummarizationSetupByMLModelIdAsync(mlModelId);
-                    data = new 
-                    { 
+                    data = new
+                    {
                         Type = mlModel.Type,
                         Summary = string.Empty
                     };
@@ -150,8 +188,8 @@ public class AIModelService : IAIModelService
                     // If the model type is Sentiment Analysis, fetch the sentiment setup
                     _logger.LogInformation("Processing AI model of type 'SentimentAnalytics'. Fetching setup...");
                     var sentimentAnalyticsSetup = await _sentimentAnalyticsService.GetSentimentAnalyticsSetupByMLModelIdAsync(mlModelId);
-                    data = new 
-                    { 
+                    data = new
+                    {
                         Type = mlModel.Type,
                         Categories = sentimentAnalyticsSetup.Data.SetupObject?.Categories
                     };
@@ -162,8 +200,8 @@ public class AIModelService : IAIModelService
                     // If the model type is Question Answering, fetch the Q&A setup
                     _logger.LogInformation("Processing AI model of type 'QuestionAnswer'. Fetching setup...");
                     var questionAnswerSetup = await _questionAnswerService.GetQuestionAnswerSetupByMLModelIdAsync(mlModelId);
-                    data = new 
-                    { 
+                    data = new
+                    {
                         Type = mlModel.Type,
                         QuestionAnswers = questionAnswerSetup.Data.SetupObject?.QuestionAnswers
                     };
@@ -174,8 +212,8 @@ public class AIModelService : IAIModelService
                     // If the model type is AI Persona, fetch the persona setup
                     _logger.LogInformation("Processing AI model of type 'AIPersona'. Fetching setup...");
                     var aiPersonaSetup = await _aiPersonaService.GetAIPersonaSetupByMLModelIdAsync(mlModelId);
-                    data = new 
-                    { 
+                    data = new
+                    {
                         Type = mlModel.Type,
                     };
                     _logger.LogInformation("Successfully retrieved AI persona setup data.");
