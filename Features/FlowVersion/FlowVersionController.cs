@@ -46,4 +46,11 @@ public class FlowVersionController : BaseApiController
     {
         return ResultHelper(await _flowVersionService.GetPublishedFlowVersionsAsync(includeUnpublished));
     }
+
+    // Searches flow versions by flow name, with an option to include unpublished versions.
+    [HttpGet("published/{searchKey}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowAgentTableDto>>>> SearchFlowVersions(string searchKey, bool includeUnpublished = false)
+    {
+        return ResultHelper(await _flowVersionService.SearchFlowVersionsAsync(searchKey, includeUnpublished));
+    }
 }
