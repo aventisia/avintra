@@ -52,7 +52,7 @@ async def websocket_chat_handler(websocket: WebSocket):
             model_id=user_info.id,
             user_id=user_info.id,
             user_type="AIPersona",
-            message="Hey there! I'm here to help. What do you need assistance with?",
+            message="Hi! How can I assist you today?",
             timestamp=str(datetime.datetime.utcnow()),
             file=None
         )

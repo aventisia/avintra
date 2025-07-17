@@ -215,8 +215,18 @@ def get_last_chats_by_model_id(user_query: str, model_id: str, top_k: int = 2):
         else:
             logger.warning(f"No AI messages found for model: {model_id}")
 
-        # Step 8: Return the concatenated user and AI messages as a string
+        # Step 8: Simplified conditional logic for user_msg and ai_msg
+        if not user_msg and not ai_msg:
+            return ""
+
+        if ai_msg and not user_msg:
+            return f"AIPersona: {ai_msg}"
+
+        if user_msg and not ai_msg:
+            return f"User: {user_msg}"
+
         return f"User: {user_msg}, AIPersona: {ai_msg}"
+
 
     except Exception as e:
         # Handle any exceptions that occur during the process
