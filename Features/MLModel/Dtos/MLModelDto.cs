@@ -32,7 +32,7 @@ public class MLModelDto
     /// <summary>
     /// Gets or sets the type of LLM.
     /// </summary>/
-    public string? LLM { get; set; }
+    public List<string>? LLMs { get; set; }
 
     /// <summary>
     /// Gets or sets the description of ML model

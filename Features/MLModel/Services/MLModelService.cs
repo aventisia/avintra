@@ -37,6 +37,7 @@ public class MLModelService : IMLModelService
             var mlModels = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
                     w.CreatedByUserId == _userId)
+                .Include(i => i.Tasks)
                 .OrderByDescending(o => o.CreatedOn)
                 .ProjectToType<MLModelDto>()
                 .ToListAsync();
@@ -323,6 +324,7 @@ public class MLModelService : IMLModelService
             // Try to get a Model using identifier
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w => w.Id == modelId).Include(i => i.CreatedByUser)
+                .Include(i => i.Tasks)
                 .ProjectToType<MLModelDto>()
                 .SingleOrDefaultAsync();
 
