@@ -9,6 +9,7 @@ import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
 import { NodeDataType } from "@/types/node-data-type";
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import React from "react";
 
@@ -45,14 +46,10 @@ const BaseNode: React.FC<BaseNodeProps> = ({
           Array.from({ length: renderCount }).map((_, i) => (
             <div
               key={i}
-              className={`absolute inset-0 left-${renderCount - i} top-${renderCount - i} -z-10 h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 ${nodeData.color} bg-white hover:ring hover:ring-ring ${nodeData?.isDisabled && "opacity-50"} `}
+              className={`absolute inset-0 left-${renderCount - i} top-${renderCount - i} -z-10 h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-[#DEDEDE] bg-white hover:ring hover:ring-ring ${nodeData?.isDisabled && "opacity-50"} `}
             />
           ))}
-        <NodeContainer
-          className={nodeData?.color}
-          {...{ nodeId, nodeData, selected }}
-          {...props}
-        >
+        <NodeContainer {...{ nodeId, nodeData, selected }} {...props}>
           <NodeHeader>
             {nodeData.icon ? (
               iconMapper[nodeData.icon]
@@ -78,7 +75,14 @@ const BaseNode: React.FC<BaseNodeProps> = ({
               </Button>
             )}{" "}
           </NodeHeader>
-          <Separator className="h-[0.5px] w-full bg-border" />
+          <Separator
+            className={cn(
+              "h-[1px] w-full bg-[#EDEDED]",
+              nodeData.type == "forLoopNode" && "bg-[#D1CFF8]",
+              nodeData.type == "conditionalNode" && "bg-[#D1CFF8]",
+              nodeData.type == "blockNode" && "bg-[#E8E8E8]",
+            )}
+          />
           <NodeDescription>{nodeData.description}</NodeDescription>
           {children}
         </NodeContainer>
