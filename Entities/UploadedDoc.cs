@@ -52,7 +52,7 @@ public class UploadedDoc : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the extracted data to which this data model is associated with.
     /// </summary>
-    public virtual ExtractedData? ExtractedData { get; set; }
+    public virtual ICollection<ExtractedData>? ExtractedDatas { get; set; }
 
     /// <summary>
     /// Gets or sets the fine-tuning log associated with this data model, representing a specific instance of the machine learning model's tuning process.

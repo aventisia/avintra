@@ -63,7 +63,7 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<MLModel>().HasMany(many => many.Tasks).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
 
         // Configure One-to-One relationship between Uploaded doc and extracted data
-        modelBuilder.Entity<UploadedDoc>().HasOne(one => one.ExtractedData).WithOne(one => one.UploadedDoc).HasForeignKey<ExtractedData>(fKey => fKey.DocId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<UploadedDoc>().HasMany(many => many.ExtractedDatas).WithOne(one => one.UploadedDoc).HasForeignKey(fKey => fKey.DocId).OnDelete(DeleteBehavior.Restrict);
 
         // Configure One-to-One relationship between Schedule Model and ModelBuilder User
         modelBuilder.Entity<ScheduledModel>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
