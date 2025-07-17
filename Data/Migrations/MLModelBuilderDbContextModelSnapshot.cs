@@ -64,6 +64,9 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<Guid>("MLModelId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("ModelTaskId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("SubmitForFineTuning")
                         .HasColumnType("boolean");
 
@@ -86,12 +89,14 @@ namespace MLModelBuilderAPIs.Migrations
 
                     b.HasIndex("CreatedByUserId");
 
-                    b.HasIndex("DocId")
-                        .IsUnique();
+                    b.HasIndex("DocId");
 
                     b.HasIndex("LastModifiedByUserId");
 
                     b.HasIndex("MLModelId");
+
+                    b.HasIndex("ModelTaskId")
+                        .IsUnique();
 
                     b.ToTable("ExtractedData");
                 });
@@ -509,8 +514,8 @@ namespace MLModelBuilderAPIs.Migrations
                         .IsRequired();
 
                     b.HasOne("MLModelBuilderAPIs.Entities.UploadedDoc", "UploadedDoc")
-                        .WithOne("ExtractedData")
-                        .HasForeignKey("MLModelBuilderAPIs.Entities.ExtractedData", "DocId")
+                        .WithMany("ExtractedDatas")
+                        .HasForeignKey("DocId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -526,11 +531,19 @@ namespace MLModelBuilderAPIs.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelTask", "ModelTask")
+                        .WithOne("ExtractedData")
+                        .HasForeignKey("MLModelBuilderAPIs.Entities.ExtractedData", "ModelTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastModifiedByUser");
 
                     b.Navigation("MLModel");
+
+                    b.Navigation("ModelTask");
 
                     b.Navigation("UploadedDoc");
                 });
@@ -705,6 +718,11 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Navigation("UploadedDocs");
                 });
 
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ModelTask", b =>
+                {
+                    b.Navigation("ExtractedData");
+                });
+
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ScheduledModel", b =>
                 {
                     b.Navigation("FineTuningLogs");
@@ -712,7 +730,7 @@ namespace MLModelBuilderAPIs.Migrations
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.UploadedDoc", b =>
                 {
-                    b.Navigation("ExtractedData");
+                    b.Navigation("ExtractedDatas");
                 });
 #pragma warning restore 612, 618
         }
