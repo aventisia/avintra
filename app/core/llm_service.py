@@ -42,7 +42,7 @@ class LLMService:
         """
         return self.model_version_map.get(model_identifier, model_identifier)
 
-    async def generate_response(self, prompt: str, model: str, temperature: float = 0.7) -> Dict[str, Any]:
+    async def generate_response(self, prompt: str, model: str, temperature: float = 0.7) -> str:
         """
         Generate a response from the Ollama LLM based on the user's prompt.
 
@@ -52,6 +52,9 @@ class LLMService:
         :return: A dictionary containing either the cleaned response or an error.
         """
         model_version = self.resolve_model_version(model)
+
+        # Log the prompt before sending it to the LLM
+        logger.info(f"Prompt sent to LLM ({model_version}): {prompt}")
 
         # Step 5: Build request payload and headers
         request_payload = {
@@ -166,10 +169,12 @@ def generate_prompt_for_ai_persona(model_id: str, user_query: str) -> str:
 
     # Step 4: Build the final prompt as a single string content
     prompt = (
-        "You are a highly intelligent assistant with vast knowledge and insightful responses. "
+        "You are a knowledgeable assistant. Use the provided information to answer the question clearly and accurately. Please respond only with text and avoid including any non-text elements."
         f"{document_context} "
         f"{chat_history} "
         f"Current User Query: {user_query}"
+
+        "Please respond based on this information."
     )
 
     # Step 5: Return the final prompt
