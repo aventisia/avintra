@@ -399,19 +399,30 @@ public class InferencingModelService : IInferencingModelService
             var extractedDataToInsert = new List<ExtractedData>();
             var extractedDataToUpdate = new List<ExtractedData>();
 
-            // Process each task associated with the model
-            foreach (var modelTask in model.Tasks.ToList())
+            // Process each file specified in the request
+            foreach (var fileId in modelExecutionRequestDto.FileIds)
             {
-                _logger.LogInformation("Processing task {TaskId} with {FileCount} files for ModelId: {ModelId}", modelTask.Id, modelExecutionRequestDto.FileIds.Count, model.Id);
-
-                // Process each file specified in the request
-                foreach (var fileId in modelExecutionRequestDto.FileIds)
+                var documentExtractionData = new InferencingModelTaskResponseDto
                 {
-                    // Extract data for the current file and task
-                    var (documentExtractionData, newExtractedData, updatedExtractedData) = await ProcessFileAsync(model, modelTask, fileId);
+                    ExecutionCount = 0,
+                    FailedCount = 0,
+                    TokenCount = 0,
+                    ExecutionTime = 0,
+                    FileId = fileId,
+                    Remarks = string.Empty
+                };
+                // Get the list of model tasks to be executed, filtering by task IDs if provided
+                var modelTaskList = model.Tasks
+                    .Where(w => modelExecutionRequestDto.ModelTaskIds == null || modelExecutionRequestDto.ModelTaskIds.Contains(w.Id))
+                    .ToList();
 
-                    // Collect the extraction result for the response
-                    extractedDataList.Add(documentExtractionData);
+                // Process each task associated with the model
+                foreach (var modelTask in modelTaskList)
+                {
+                    _logger.LogInformation("Processing task {TaskId} with {FileCount} files for ModelId: {ModelId}", modelTask.Id, modelExecutionRequestDto.FileIds.Count, model.Id);
+
+                    // Extract data for the current file and task
+                    var (newExtractedData, updatedExtractedData) = await ProcessFileAsync(model, modelTask, fileId, documentExtractionData);
 
                     // Prepare new extracted data records for insertion
                     if (newExtractedData != null)
@@ -424,6 +435,9 @@ public class InferencingModelService : IInferencingModelService
                         extractedDataToUpdate.Add(updatedExtractedData);
                     }
                 }
+
+                // Collect the extraction result for the response
+                extractedDataList.Add(documentExtractionData);
             }
 
             // Insert new extracted data records in bulk if any
@@ -435,10 +449,6 @@ public class InferencingModelService : IInferencingModelService
                 {
                     _logger.LogError("Failed to save new extracted data to the database.");
                 }
-                else
-                {
-                    _logger.LogInformation("New extracted data records saved successfully.");
-                }
             }
 
             // Update existing extracted data records in bulk if any
@@ -449,10 +459,6 @@ public class InferencingModelService : IInferencingModelService
                 if (!await _unitOfWork.SaveAsync())
                 {
                     _logger.LogError("Failed to save updated extracted data to the database.");
-                }
-                else
-                {
-                    _logger.LogInformation("Existing extracted data records updated successfully.");
                 }
             }
 
@@ -479,51 +485,137 @@ public class InferencingModelService : IInferencingModelService
         return serviceResponse;
     }
 
-    private async Task<(InferencingModelTaskResponseDto DocumentExtractionData, ExtractedData? NewExtractedData, ExtractedData? UpdatedExtractedData)> ProcessFileAsync(
-        MLModel model,
-        ModelTask modelTask,
-        Guid fileId)
+    // Executes the model using raw file content and processes extraction tasks via LLM.
+    public async Task<ServiceResponse<InferencingModelResponseDto>> ExecuteLLMByFileContentAsync(ModelContentProcessingRequestDto modelExecutionRequestDto)
+    {
+        // Initialize the response with a default failure message
+        var serviceResponse = new ServiceResponse<InferencingModelResponseDto>
+        {
+            Data = null,
+            Message = "Failed to execute the model. Please try again later."
+        };
+
+        try
+        {
+            _logger.LogInformation("Starting model execution for ModelId: {ModelId} using file content.", modelExecutionRequestDto.ModelId);
+
+            // Retrieve the ML model and related data including tasks, extracted data, and uploaded documents
+            var model = await _unitOfWork.MLModelRepo
+                .GetByConditionAsync(w => w.Id == modelExecutionRequestDto.ModelId)
+                .Include(i => i.Tasks)
+                .Include(i => i.ExtractedData)
+                .Include(i => i.UploadedDocs)
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
+
+            // Early return if the model is not found
+            if (model == null)
+            {
+                _logger.LogWarning("Model with ModelId: {ModelId} not found. Execution aborted.", modelExecutionRequestDto.ModelId);
+                serviceResponse.Message = "Model not found.";
+                return serviceResponse;
+            }
+
+            // Prepare collections for extracted data and database operations
+            var extractedDataList = new List<InferencingModelTaskResponseDto>();
+            var modelTaskList = model.Tasks.Where(w =>
+                    modelExecutionRequestDto.ModelTaskIds == null || modelExecutionRequestDto.ModelTaskIds.Contains(w.Id)
+                )
+                .ToList();
+            var documentExtractionData = new InferencingModelTaskResponseDto
+            {
+                ExecutionCount = 0,
+                FailedCount = 0,
+                TokenCount = 0,
+                ExecutionTime = 0,
+                Remarks = string.Empty
+            };
+            // Process each task associated with the model
+            foreach (var modelTask in modelTaskList)
+            {
+                // Call LLM and process response for each task
+                documentExtractionData = await CallLLMAndProcessResponseAsync(modelTask, modelExecutionRequestDto.Content, documentExtractionData);
+
+                // Log task-specific details
+                if (documentExtractionData.Remarks.Contains("Failed"))
+                {
+                    _logger.LogWarning("Task execution failed for ModelTaskId: {ModelTaskId} while processing content for ModelId: {ModelId}. Remarks: {Remarks}", modelTask.Id, modelExecutionRequestDto.ModelId, documentExtractionData.Remarks);
+                }
+                else
+                {
+                    _logger.LogInformation("Task execution successful for ModelTaskId: {ModelTaskId} for ModelId: {ModelId}. Extracted {TokenCount} tokens.", modelTask.Id, modelExecutionRequestDto.ModelId, documentExtractionData.TokenCount);
+                }
+            }
+
+            extractedDataList.Add(documentExtractionData);
+
+            // Prepare the successful response with the list of extraction results
+            serviceResponse.Data = new InferencingModelResponseDto
+            {
+                ModelId = modelExecutionRequestDto.ModelId,
+                ExtractedData = extractedDataList
+            };
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = extractedDataList.Any(d => d.Remarks.Contains("Failed"))
+                ? "Data extraction partially failed for one or more tasks."
+                : "Data extraction completed successfully.";
+
+            // Log summary after extraction process
+            _logger.LogInformation("Extraction process completed for ModelId: {ModelId}. Summary: {Message}", modelExecutionRequestDto.ModelId, serviceResponse.Message);
+        }
+        catch (Exception ex)
+        {
+            // Log unexpected exceptions during processing
+            _logger.LogError(ex, "An error occurred during the extraction process for ModelId: {ModelId}. Exception: {ExceptionMessage}", modelExecutionRequestDto.ModelId, ex.Message);
+        }
+
+        // Return the service response, whether success or failure
+        return serviceResponse;
+    }
+
+    // Processes a document extraction for a model task, creating or updating extracted data based on the document's state.
+    private async Task<(ExtractedData? NewExtractedData, ExtractedData? UpdatedExtractedData)> ProcessFileAsync(MLModel model, ModelTask modelTask, Guid fileId, InferencingModelTaskResponseDto documentExtractionData)
     {
         _logger.LogInformation("Starting extraction for DocumentId: {DocumentId} in ModelId: {ModelId}, TaskId: {TaskId}", fileId, model.Id, modelTask.Id);
 
-        var existingData = model.ExtractedData.FirstOrDefault(d => d.DocId == fileId);
-        var documentExtractionData = new InferencingModelTaskResponseDto
-        {
-            ExecutionCount = 0,
-            FailedCount = 0,
-            TokenCount = 0,
-            ExecutionTime = 0,
-            FileId = fileId,
-            Remarks = $"001: Extraction failed for DocumentId: {fileId}."
-        };
+        // Retrieve the existing extracted data (if any) for the given document and task
+        var existingData = model.ExtractedData.FirstOrDefault(w => w.ModelTaskId == modelTask.Id && w.DocId == fileId);
 
+        // Retrieve the uploaded document by its file ID
         var document = model.UploadedDocs.FirstOrDefault(d => d.Id == fileId);
         if (document == null)
         {
+            // Log and handle the case where the document is not found
             _logger.LogWarning("Document not found for DocumentId: {DocumentId}", fileId);
             documentExtractionData.Remarks = $"002: Document not found with ID: {fileId}.";
-            return (documentExtractionData, null, null);
+            return (null, null);
         }
 
+        // Check if the document has a valid file path
         if (string.IsNullOrEmpty(document.Path))
         {
+            // Log and handle the case where the document's file path is missing
             _logger.LogWarning("Missing file path for DocumentId: {DocumentId}", fileId);
             documentExtractionData.Remarks = "Document file path is missing.";
-            return (documentExtractionData, null, null);
+            return (null, null);
         }
 
+        // Extract the text from the document using the provided path
         var documentText = await _llmDataExtractionService.GetFileTextAsync(document.Path);
         if (string.IsNullOrEmpty(documentText))
         {
+            // Log and handle the case where text extraction fails
             _logger.LogWarning("Failed to extract text for DocumentId: {DocumentId} at path: {Path}", fileId, document.Path);
             documentExtractionData.Remarks = "Failed to extract text from the document.";
-            return (documentExtractionData, null, null);
+            return (null, null);
         }
 
+        // Call the LLM service to process the extracted text and update the documentExtractionData
         documentExtractionData = await CallLLMAndProcessResponseAsync(modelTask, documentText, documentExtractionData);
 
-        string? dataObject = null;
+        string? dataObject = GetSerializedDataObjectBasedOnTaskName(modelTask.Name, documentExtractionData);
 
+        // If no existing extracted data, create a new record
         if (existingData == null)
         {
             var newExtracted = new ExtractedData
@@ -531,6 +623,7 @@ public class InferencingModelService : IInferencingModelService
                 DocId = fileId,
                 Type = document.Type,
                 MLModelId = model.Id,
+                ModelTaskId = modelTask.Id,
                 TokenCount = documentExtractionData.TokenCount,
                 ExecutionCount = documentExtractionData.ExecutionCount,
                 ExecutionTime = documentExtractionData.ExecutionTime,
@@ -540,23 +633,71 @@ public class InferencingModelService : IInferencingModelService
                 LastModifiedByUserId = _userId
             };
 
+            // Log the creation of a new extracted data record
             _logger.LogInformation("Created new extracted data record for DocumentId: {DocumentId}", fileId);
-            return (documentExtractionData, newExtracted, null);
+            return (newExtracted, null);
         }
         else
         {
+            // Update the existing extracted data with new values
             existingData.DataObject = dataObject;
-            existingData.ExecutionCount = existingData.ExecutionCount;
-            existingData.FailedCount = existingData.FailedCount;
-            existingData.TokenCount = existingData.TokenCount;
-            existingData.ExecutionTime = documentExtractionData.ExecutionTime;
+            existingData.ExecutionCount += documentExtractionData.ExecutionCount;
+            existingData.FailedCount += documentExtractionData.FailedCount;
+            existingData.TokenCount += documentExtractionData.TokenCount;
+            existingData.ExecutionTime += documentExtractionData.ExecutionTime;
             existingData.LastModifiedByUserId = _userId;
 
+            // Log the update of the existing extracted data record
             _logger.LogInformation("Updated existing extracted data record for DocumentId: {DocumentId}", fileId);
-            return (documentExtractionData, null, existingData);
+            return (null, existingData);
         }
     }
 
+    // Deserialize the LLM response data based on the task type (Extraction, Summarization, etc.) and return the serialized string of the data object.
+    private string? GetSerializedDataObjectBasedOnTaskName(string taskName, InferencingModelTaskResponseDto documentExtractionData)
+    {
+        try
+        {
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+            string? dataObject = null;
+
+            switch (taskName)
+            {
+                case nameof(InferencingModelTypesEnum.Extraction):
+                    dataObject = JsonSerializer.Serialize(documentExtractionData.Extraction, options);
+                    break;
+
+                case nameof(InferencingModelTypesEnum.Summarization):
+                    dataObject = JsonSerializer.Serialize(documentExtractionData.Summarization, options);
+                    break;
+
+                case nameof(InferencingModelTypesEnum.QuestionAnswer):
+                    dataObject = JsonSerializer.Serialize(documentExtractionData.QuestionAnswer, options);
+                    break;
+
+                case nameof(InferencingModelTypesEnum.SentimentAnalytics):
+                    dataObject = JsonSerializer.Serialize(documentExtractionData.SentimentAnalytics, options);
+                    break;
+
+                case nameof(InferencingModelTypesEnum.Classification):
+                    dataObject = JsonSerializer.Serialize(documentExtractionData.Classification, options);
+                    break;
+
+                default:
+                    _logger.LogWarning("Unhandled task type: {TaskName}", taskName);
+                    return null;
+            }
+            return dataObject;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deserializing and serializing data for task: {TaskName}", taskName);
+            return null;
+        }
+    }
+
+    // Calls the LLM with a prompt, processes the response, and populates extraction metadata.
     private async Task<InferencingModelTaskResponseDto> CallLLMAndProcessResponseAsync(ModelTask modelTask, string fileContent, InferencingModelTaskResponseDto documentExtractionData)
     {
         // Generate the prompt by replacing placeholders with actual content
@@ -636,6 +777,7 @@ public class InferencingModelService : IInferencingModelService
         }
     }
 
+    // Generates a task-specific LLM prompt based on the model type and setup configuration.
     private string? GenerateModelPrompt(string name, InferencingModelDto inferencingModelDto)
     {
         // Final prompt that will be returned after template processing
@@ -924,93 +1066,5 @@ public class InferencingModelService : IInferencingModelService
                     break;
             }
         }
-    }
-
-    public async Task<ServiceResponse<InferencingModelResponseDto>> ExecuteLLMByFileContentAsync(ModelContentProcessingRequestDto modelExecutionRequestDto)
-    {
-        // Initialize the response with a default failure message
-        var serviceResponse = new ServiceResponse<InferencingModelResponseDto>
-        {
-            Data = null,
-            Message = "Failed to execute the model. Please try again later."
-        };
-
-        try
-        {
-            _logger.LogInformation("Starting model execution for ModelId: {ModelId} using file content.", modelExecutionRequestDto.ModelId);
-
-            // Retrieve the ML model and related data including tasks, extracted data, and uploaded documents
-            var model = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == modelExecutionRequestDto.ModelId)
-                .Include(i => i.Tasks)
-                .Include(i => i.ExtractedData)
-                .Include(i => i.UploadedDocs)
-                .AsNoTracking()
-                .SingleOrDefaultAsync();
-
-            // Early return if the model is not found
-            if (model == null)
-            {
-                _logger.LogWarning("Model with ModelId: {ModelId} not found. Execution aborted.", modelExecutionRequestDto.ModelId);
-                serviceResponse.Message = "Model not found.";
-                return serviceResponse;
-            }
-
-            // Prepare collections for extracted data and database operations
-            var extractedDataList = new List<InferencingModelTaskResponseDto>();
-            var modelTaskList = model.Tasks.Where(w =>
-                    !modelExecutionRequestDto.ModelTaskId.HasValue ||
-                    w.Id == modelExecutionRequestDto.ModelTaskId.Value
-                )
-                .ToList();
-            // Process each task associated with the model
-            foreach (var modelTask in modelTaskList)
-            {
-                var documentExtractionData = new InferencingModelTaskResponseDto
-                {
-                    ExecutionCount = 0,
-                    FailedCount = 0,
-                    TokenCount = 0,
-                    ExecutionTime = 0,
-                    Remarks = $"001: Extraction failed for DocumentId: ."
-                };
-
-                // Call LLM and process response for each task
-                documentExtractionData = await CallLLMAndProcessResponseAsync(modelTask, modelExecutionRequestDto.Content, documentExtractionData);
-                extractedDataList.Add(documentExtractionData);
-
-                // Log task-specific details
-                if (documentExtractionData.Remarks.Contains("Failed"))
-                {
-                    _logger.LogWarning("Task execution failed for ModelTaskId: {ModelTaskId} while processing content for ModelId: {ModelId}. Remarks: {Remarks}", modelTask.Id, modelExecutionRequestDto.ModelId, documentExtractionData.Remarks);
-                }
-                else
-                {
-                    _logger.LogInformation("Task execution successful for ModelTaskId: {ModelTaskId} for ModelId: {ModelId}. Extracted {TokenCount} tokens.", modelTask.Id, modelExecutionRequestDto.ModelId, documentExtractionData.TokenCount);
-                }
-            }
-
-            // Prepare the successful response with the list of extraction results
-            serviceResponse.Data = new InferencingModelResponseDto
-            {
-                ModelId = modelExecutionRequestDto.ModelId,
-                ExtractedData = extractedDataList
-            };
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = extractedDataList.Any(d => d.Remarks.Contains("Failed"))
-                ? "Data extraction partially failed for one or more tasks."
-                : "Data extraction completed successfully.";
-
-            // Log summary after extraction process
-            _logger.LogInformation("Extraction process completed for ModelId: {ModelId}. Summary: {Message}", modelExecutionRequestDto.ModelId, serviceResponse.Message);
-        }
-        catch (Exception ex)
-        {
-            // Log unexpected exceptions during processing
-            _logger.LogError(ex, "An error occurred during the extraction process for ModelId: {ModelId}. Exception: {ExceptionMessage}", modelExecutionRequestDto.ModelId, ex.Message);
-        }
-
-        // Return the service response, whether success or failure
-        return serviceResponse;
     }
 }

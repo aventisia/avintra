@@ -16,9 +16,9 @@ public class ModelFileProcessingRequestDto
     public Guid ModelId { get; set; }
 
     /// <summary>
-    /// Gets or sets the optional task ID associated with the model execution request.
+    /// Gets or sets the list of task IDs associated with the model execution.
     /// </summary>
-    public Guid? ModelTaskId { get; set; }
+    public List<Guid>? ModelTaskIds { get; set; }
 
     /// <summary>
     /// Gets or sets the list of file IDs to be processed and extracted by the model.
@@ -42,9 +42,9 @@ public class ModelContentProcessingRequestDto
     public Guid ModelId { get; set; }
 
     /// <summary>
-    /// Gets or sets the optional task ID associated with the model execution request.
+    /// Gets or sets the list of task IDs associated with the model execution.
     /// </summary>
-    public Guid? ModelTaskId { get; set; }
+    public List<Guid>? ModelTaskIds { get; set; }
 
     /// <summary>
     /// Gets or sets the content to be processed by the model. This is an alternative to providing file IDs.
