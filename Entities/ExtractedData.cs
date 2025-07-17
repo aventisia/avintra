@@ -5,10 +5,16 @@ namespace MLModelBuilderAPIs.Entities;
 /// </summary>
 public class ExtractedData : BaseEntity, IMustHaveTenant
 {
+    // TODO: Remove model id once transition in completed
     /// <summary>
     /// Gets or sets the ML model record's primary key to which this record is associated.
     /// </summary>/
     public Guid MLModelId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the primary key of the model task associated with this record.
+    /// </summary>/
+    public Guid ModelTaskId { get; set; }
 
     /// <summary>
     /// Gets or sets the data model's fields JSON data in string format. The default value will be an empty object.
@@ -61,6 +67,12 @@ public class ExtractedData : BaseEntity, IMustHaveTenant
     /// </summary>
     [ForeignKey("MLModelId")]
     public virtual MLModel? MLModel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the model task that this data model is associated with.
+    /// </summary>
+    [ForeignKey("ModelTaskId")]
+    public virtual ModelTask? ModelTask { get; set; }
 
     /// <summary>
     /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).

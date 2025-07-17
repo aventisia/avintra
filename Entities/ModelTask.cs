@@ -58,4 +58,9 @@ public class ModelTask : BaseEntity, IMustHaveTenant
     /// </summary>
     [ForeignKey("MLModelId")]
     public virtual MLModel? MLModel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the extracted data associated with this data model
+    /// </summary>
+    public virtual ExtractedData? ExtractedData { get; set; }
 }
