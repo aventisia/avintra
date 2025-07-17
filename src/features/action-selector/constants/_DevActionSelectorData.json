@@ -18,7 +18,7 @@
             "label": "Router",
             "description": "Use conditions to decide which direction the flow should take",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
+            "icon": "ConditionalNodeIcon",
             "img": "/function.png"
           },
           {
@@ -27,7 +27,7 @@
             "label": "Loop",
             "description": "Use this to keep doing something again and again, as long as certain conditions are met.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
+            "icon": "LoopNodeIcon",
             "img": "/function.png"
           }
         ]

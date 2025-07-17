@@ -1,4 +1,5 @@
 import {
+  Boxes,
   BrainCircuit,
   Cable,
   CalendarCheck,
@@ -30,6 +31,7 @@ export const iconMapper: { [key: string]: JSX.Element } = {
   UIAutomationAndUserActionsIcon: <NodesCategoryL1Icon Icon={Keyboard} />,
   IntelligentAutomationIcon: <NodesCategoryL1Icon Icon={BrainCircuit} />,
   BLockIcon: <NodesCategoryL1Icon Icon={Combine} />,
+  BlockNodeIcon: <NodesCategoryL1Icon Icon={Boxes} />,
 
   // Logical Nodes
   ConditionalNodeIcon: <ConditionalNodeIcon />,

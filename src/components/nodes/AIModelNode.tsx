@@ -5,12 +5,13 @@ import { Node, NodeProps } from "@xyflow/react";
 import { ReactFlowContextMenu } from "@/features/react-flow/components/context-menu";
 import { cn } from "@aventisia/ui/lib";
 import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
-import { GripVertical, Sparkles } from "lucide-react";
+import { BrainCircuit, GripVertical } from "lucide-react";
 import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
 import { useShallow } from "zustand/react/shallow";
 import { Badge } from "@aventisia/ui/badge";
 import { useEffect } from "react";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { Separator } from "@aventisia/ui";
 
 type AIModelNode = Node<NodeDataType, "aiNode">;
 
@@ -65,40 +66,41 @@ export const AIModelNode = ({
     <ReactFlowContextMenu>
       <div
         className={cn(
-          "flex h-[7rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-indigo-300 hover:ring hover:ring-ring",
+          "flex h-[7.25rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-[#7D76EC] hover:ring hover:ring-ring",
           data.color,
           selected && "border-primary ring ring-ring",
+          data?.isDisabled && "opacity-50",
         )}
       >
         <div
           className={cn(
-            "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center rounded-l-lg bg-indigo-700",
+            "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center rounded-l-lg bg-[#13112F]",
           )}
         >
-          <GripVertical className={cn("h-5 w-5 text-slate-300")} />
+          <GripVertical className={cn("h-5 w-5 text-white")} />
         </div>
         <OpenNodeConfig {...{ nodeData: data, nodeId: id }}>
-          <div className="flex h-full w-[18rem] flex-1 flex-col justify-between rounded-r-lg bg-gradient-to-br from-indigo-500 to-indigo-700 px-3 pb-3 text-white">
-            <div className="flex flex-1 items-center justify-between gap-3">
-              {/* Sparkle Icon */}
-
-              <Sparkles className="text-white" />
-              <div className="flex flex-1 flex-col items-start gap-2">
-                <h3 className="line-clamp-1 text-start text-lg font-semibold">
-                  {data.label}
-                </h3>
-                {/* LLM Badge */}
-                {llm && (
-                  <Badge variant="outline" className="bg-white/10 text-white">
-                    {llm}
-                  </Badge>
-                )}
-              </div>
+          <div className="flex h-full w-[18rem] flex-1 flex-col justify-between gap-2 rounded-r-lg bg-[#1E1B4B] p-3 text-white">
+            <div className="flex items-center gap-3">
+              <BrainCircuit className="text-white" />
+              <h3 className="line-clamp-1 flex-1 text-start text-lg font-semibold">
+                {data.label}
+              </h3>
             </div>
-            {/* Description */}
-            <p className="truncate text-start text-sm text-secondary-foreground">
-              {data.description}
-            </p>
+            <div className="flex flex-1 flex-col items-start gap-2">
+              <Separator className="bg-[#35325D]" />
+              {/* Description */}
+              <p className="line-clamp-1 text-start text-sm text-secondary-foreground">
+                {data.description}
+              </p>
+
+              {/* LLM Badge */}
+              {llm && (
+                <Badge variant="outline" className="bg-white/10 text-white">
+                  {llm}
+                </Badge>
+              )}
+            </div>
           </div>
         </OpenNodeConfig>
       </div>
