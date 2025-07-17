@@ -6,12 +6,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import { studioPreferencesZodSchema } from "../constants/studio-preferences-zod-schema";
+import { INITIAL_PREFERENCES } from "../constants";
 
 export const useDefineStudioPreferencesForm = () => {
   // Get user preferences from browser local storage
-  const { studio } = JSON.parse(
-    localStorage.getItem(USER_PREFERENCES_LS_KEY) || "null",
-  ) as UserPreferencesType;
+  const { studio } = localStorage.getItem(USER_PREFERENCES_LS_KEY)
+    ? JSON.parse(localStorage.getItem(USER_PREFERENCES_LS_KEY) || "{}")
+    : ({ studio: INITIAL_PREFERENCES } as UserPreferencesType);
 
   // Get studio preferences store state and actions
   const { setStudioPreferences } = useStudioPreferencesStore(

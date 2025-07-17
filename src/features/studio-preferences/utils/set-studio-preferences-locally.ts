@@ -9,7 +9,7 @@ export const setStudioPreferencesLocally = (
 ) => {
   // Get old user preferences from local storage
   const oldUserPreferencesLSObj = JSON.parse(
-    localStorage.getItem(USER_PREFERENCES_LS_KEY) || '""',
+    localStorage.getItem(USER_PREFERENCES_LS_KEY) || '{}',
   ) as UserPreferencesType;
 
   // If user preferences does not exist in local storage, then return
