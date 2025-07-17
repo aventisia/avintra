@@ -1,5 +1,5 @@
 import httpx
-from app.qdrant.service import get_last_chat_turn_by_model_id, get_document_context_by_model_id 
+from app.qdrant.service import get_last_chats_by_model_id, get_document_context_by_model_id 
 from typing import Any, Dict
 from app.core.config import settings
 from app.core.logger import logger
@@ -143,41 +143,34 @@ class LLMService:
 
 def generate_prompt_for_ai_persona(model_id: str, user_query: str) -> str:
     """
-    Generates a prompt for the AIPersona that includes:
-    - Relevant document context
-    - The latest chat turn (user + AI)
-    - The current user query
-    """
-
-    # Step 1: Get document context
-    # Fetches the relevant context/document information that is associated with the model ID and user's query.
-    document_context = get_document_context_by_model_id(user_query=user_query, model_id=model_id)
-
-    # Step 2: Get last chat exchange (user + AI)
-    # Retrieves the latest conversation (most recent exchange between the user and the AIPersona).
-    last_chat = get_last_chat_turn_by_model_id(model_id=model_id)
+    Generates a clear and relevant prompt for the AIPersona (LLM), incorporating:
+    - Relevant document context based on the model ID and the user's query.
+    - The most recent chat exchange (user + AI), if available.
+    - The user's current query to generate an insightful response.
     
-    # Initialize an empty string to store chat history
+    If no previous chat is found, instructs the LLM to initiate the conversation.
+    """
+    # Step 1: Initialize variables
+    document_context = ""
     chat_history = ""
 
+    # Step 2: Extract relevant document context based on the model ID and user query
+    raw_document_context = get_document_context_by_model_id(user_query=user_query, model_id=model_id)
+    if raw_document_context:
+        document_context = f"Context from Documents: {str(raw_document_context)}"
+
+    # Step 3: Retrieve the most recent chat (user + AI), if any
+    last_chat = get_last_chats_by_model_id(user_query=user_query, model_id=model_id)
     if last_chat:
-        # If there is a previous chat exchange, format it as a string combining both user and AI messages
-        chat_history = f"User: {last_chat['User']}\nAIPersona: {last_chat['AIPersona']}"
+        chat_history = f"Previous Conversation: {str(last_chat)}"
 
-    # Step 3: Combine context, chat history, and current query into a final prompt
-    # Constructs a well-structured prompt by combining:
-    # 1. The document context
-    # 2. The most recent chat history
-    # 3. The new user query.
-    prompt = f"""
-        You are AIPersona, an intelligent assistant with helpful insights.
+    # Step 4: Build the final prompt as a single string content
+    prompt = (
+        "You are a highly intelligent assistant with vast knowledge and insightful responses. "
+        f"{document_context} "
+        f"{chat_history} "
+        f"Current User Query: {user_query}"
+    )
 
-        # # Context from Documents: {document_context}
-
-        # Previous Chat (most recent): {chat_history}
-
-        # New User Question: {user_query}
-        """
-
-    # Step 4: Return the final prompt after stripping any unnecessary whitespace
+    # Step 5: Return the final prompt
     return prompt.strip()
