@@ -1,9 +1,9 @@
-Prompt: {{Prompt}}
-Context: {{Context}}
+{{Prompt}},
+Context: {{Context}},
 Task: Please classify the input text based on its content into predefined categories and provide a confidence score for each classification.
-CategoriesToEvaluate: {{Categories}}
-AllowMultipleClasses: {{AllowMultipleClasses}}
-
+CategoriesToEvaluate: {{Categories}},
+AllowMultipleClasses: {{AllowMultipleClasses}},
+File Content: {{FileContent}},
 Instructions:
     - Do not modify, rephrase, or alter the categories in any way. Use them exactly as provided.
     - Do not include any numbers, explanations, or extra text outside the specified JSON output.

@@ -292,8 +292,8 @@ public class SummarizationService : ISummarizationService
                     return serviceResponse;
                 }
 
-                // Prepare the prompt for the LLM (Large Language Model) including the document content
-                var prompt = $"{model.GeneratedPrompt}\n\nDocument Text:\n{documentText}";
+                // Replace the placeholder {{FileContent}} in the generated prompt with the actual document content (documentText)
+                var prompt = model.GeneratedPrompt.Replace("{{FileContent}}", documentText);
 
                 // Record the start time before calling the LLM extraction service
                 var startExecutionTime = DateTime.UtcNow;

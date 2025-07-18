@@ -4,6 +4,8 @@ Context: {{Context}}
 
 Please provide a clear summary of the main points, following the original content closely. Avoid adding anything extra, and ensure the tone and meaning remain consistent with the expected format.
 
+File Content: {{FileContent}}
+
 Length Requirements:
 - Minimum Word Count: {{TotalMinimumWords}} words
 - Maximum Word Count: {{TotalMaximumWords}} words

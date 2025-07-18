@@ -1,10 +1,10 @@
-Prompt: {{Prompt}}
+{{Prompt}}
 
 Context: {{Context}}
 
 Task: Please extract answers to the following questions from the provided context. Include a confidence score for each extracted answer based on accuracy and relevance.
 Questions: {{Questions}},
-
+File Content: {{FileContent}}
 Instructions
       - Do not modify, rephrase, or alter the questions in any way. Use them exactly as provided.
       - Do not include any numbers, explanations, or extra text outside the JSON output.

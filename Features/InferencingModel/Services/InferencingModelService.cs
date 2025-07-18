@@ -701,9 +701,8 @@ public class InferencingModelService : IInferencingModelService
     private async Task<InferencingModelTaskResponseDto> CallLLMAndProcessResponseAsync(ModelTask modelTask, string fileContent, InferencingModelTaskResponseDto documentExtractionData)
     {
         // Generate the prompt by replacing placeholders with actual content
-        // var outputFormatJson = JsonSerializer.Serialize(outputFormat, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        var prompt = modelTask.GeneratedPrompt.Replace("{{FileContent}}", fileContent);
-        // .Replace("{{OutputFormat}}", outputFormatJson);
+        var outputFormatJson = GetOutputFormatJson(modelTask);
+        var prompt = modelTask.GeneratedPrompt.Replace("{{FileContent}}", fileContent).Replace("{{OutputFormat}}", outputFormatJson);
 
         // Log the generated prompt for debugging
         _logger.LogDebug("Sending prompt to LLM: {Prompt}", prompt);
@@ -775,6 +774,154 @@ public class InferencingModelService : IInferencingModelService
             documentExtractionData.FailedCount = 1;
             return documentExtractionData;
         }
+    }
+
+    // Generates and returns a JSON string representing the output format based on the model task type.
+    private string? GetOutputFormatJson(ModelTask modelTask)
+    {
+        // If the modelTask is null, return null immediately
+        if (modelTask == null) return null;
+
+        // Declare the variable to store the output
+        string? outputFormatJson = null;
+
+        // Configure JSON deserialization options to make property name matching case-insensitive
+        var jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        // Check the type of model task and process accordingly
+        switch (modelTask.Name)
+        {
+            // Handle Extraction task type
+            case nameof(InferencingModelTypesEnum.Extraction):
+                // Deserialize the SetupObject into the ExtractionTaskSetupDto
+                var extractionSetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(modelTask.SetupObject ?? null, jsonOptions);
+
+                // Prepare the output format with extracted data, mapping from fields and tables
+                var extractionResult = new ExtractionTaskExtractedDataDto()
+                {
+                    Fields = extractionSetupObject.Fields.Select(field => new ExtractionFieldDto()
+                    {
+                        Name = field.Name,
+                        Value = string.Empty,
+                        ConfidenceScore = "0",
+                    }).ToList(),
+
+                    // Map tables into a corresponding format
+                    Tables = extractionSetupObject.Tables.Select(table => new ExtractionTableDto()
+                    {
+                        Name = table.Name,
+                        Headers = table.TableHeaders.Select(header => new ExtractionSetupTableHeaderSchema()
+                        {
+                            Name = header.Name,
+                            Values = new List<string>(),
+                        }).ToList()
+                    }).ToList()
+                };
+
+                // Serialize to JSON string
+                outputFormatJson = JsonSerializer.Serialize(extractionResult, jsonOptions);
+                break;
+
+            // Handle Classification task type
+            case nameof(InferencingModelTypesEnum.Classification):
+                // Deserialize the SetupObject into ClassificationTaskSetupDto
+                var classificationSetupObject = JsonSerializer.Deserialize<ClassificationTaskSetupDto>(modelTask.SetupObject ?? null, jsonOptions);
+
+                // Prepare output for the classification categories and subcategories
+                var classificationResult = classificationSetupObject.Categories.Select(category => new ClassificationTaskExtractedDataDto()
+                {
+                    Name = category.Name,
+                    Value = string.Empty,
+                    ConfidenceScore = "0",
+                    Subcategories = category.Subcategories?.Select(subcategory => new SubcategoryExtractedDataDto()
+                    {
+                        Name = subcategory.Name,
+                        Value = string.Empty,
+                        ConfidenceScore = "0",
+                        SubSubcategories = subcategory.SubSubcategories?.Select(subSubcategory => new SubSubcategoryExtractedDataDto()
+                        {
+                            Name = subSubcategory.Name,
+                            Value = string.Empty,
+                            ConfidenceScore = "0",
+                        }).ToList()
+                    }).ToList()
+                }).ToList();
+
+                // Serialize to JSON string
+                outputFormatJson = JsonSerializer.Serialize(classificationResult, jsonOptions);
+                break;
+
+            // Handle Sentiment Analytics task type
+            case nameof(InferencingModelTypesEnum.SentimentAnalytics):
+                // Deserialize the SetupObject into SentimentAnalyticsTaskSetupDto
+                var sentimentAnalyticsSetupObject = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(modelTask.SetupObject ?? null, jsonOptions);
+
+                // Prepare output for sentiment categories and subcategories
+                var sentimentResult = sentimentAnalyticsSetupObject.Categories.Select(category => new SentimentAnalysisExtractedDataDto()
+                {
+                    Name = category.Name,
+                    Value = string.Empty,
+                    ConfidenceScore = "0",
+                    Subcategories = category.Subcategories?.Select(subcategory => new SubcategoryExtractedDataDto()
+                    {
+                        Name = subcategory.Name,
+                        Value = string.Empty,
+                        ConfidenceScore = "0",
+                        SubSubcategories = subcategory.SubSubcategories?.Select(subSubcategory => new SubSubcategoryExtractedDataDto()
+                        {
+                            Name = subSubcategory.Name,
+                            Value = string.Empty,
+                            ConfidenceScore = "0",
+                        }).ToList()
+                    }).ToList()
+                }).ToList();
+
+                // Serialize to JSON string
+                outputFormatJson = JsonSerializer.Serialize(sentimentResult, jsonOptions);
+                break;
+
+            // Handle Question Answer task type
+            case nameof(InferencingModelTypesEnum.QuestionAnswer):
+                // Deserialize the SetupObject into QuestionAnswerTaskSetupDto
+                var questionAnswerSetupObject = JsonSerializer.Deserialize<QuestionAnswerTaskSetupDto>(modelTask.SetupObject ?? null, jsonOptions);
+
+                // Prepare output for question-answer pairs
+                var questionAnswerResult = questionAnswerSetupObject.QuestionAnswers.Select(questionAnswer => new QuestionAnswerTaskExtractedDataDto()
+                {
+                    Question = questionAnswer.Name,
+                    Answer = string.Empty,
+                    ConfidenceScore = "0"
+                }).ToList();
+
+                // Serialize to JSON string
+                outputFormatJson = JsonSerializer.Serialize(questionAnswerResult, jsonOptions);
+                break;
+
+            // Handle Summarization task type
+            case nameof(InferencingModelTypesEnum.Summarization):
+                // Deserialize the SetupObject into SummarizationTaskSetupDto
+                var summarizationSetupObject = JsonSerializer.Deserialize<SummarizationTaskSetupDto>(modelTask.SetupObject ?? null, jsonOptions);
+
+                // Prepare output for summarized data
+                var summarizationResult = new SummarizationTaskExtractedDataDto()
+                {
+                    Summary = string.Empty
+                };
+
+                // Serialize to JSON string
+                outputFormatJson = JsonSerializer.Serialize(summarizationResult, jsonOptions);
+                break;
+
+            // Default case, if the model task name does not match any of the above
+            default:
+                return null;
+        }
+
+        // Return the serialized output format JSON string
+        return outputFormatJson;
     }
 
     // Generates a task-specific LLM prompt based on the model type and setup configuration.

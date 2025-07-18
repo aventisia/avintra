@@ -1,7 +1,8 @@
-Prompt: {{Prompt}}
+{{Prompt}}
 Context: {{Context}}
 AnalysisRequest: Please analyze the sentiment of the text above. Classify the tone as positive, negative, or neutral, and provide a confidence score for that classification.,
 CategoriesToEvaluate: {{Categories}},
+File Content: {{FileContent}},
 Instructions:
     - Do not modify, rephrase, or alter the categories in any way. Use them exactly as provided.,
     - Identify the overall sentiment expressed in the context.,
