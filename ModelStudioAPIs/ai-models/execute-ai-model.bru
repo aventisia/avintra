@@ -17,7 +17,8 @@ headers {
 script:pre-request {
   req.setBody({
     modelId: bru.getGlobalEnvVar("MLMODEL_ID"),
-    fileIds: [bru.getGlobalEnvVar("DOC_ID")]
+    content: "file_content",
+    modelTaskIds: null
   });
   
 }
