@@ -62,7 +62,7 @@ export const useInputsOutputsForm = () => {
   useEffect(() => {
     if (
       data &&
-      Object.keys(JSON.parse(data.data.inputOutputObject || "")).length > 0
+      Object.keys(JSON.parse(data?.data?.inputOutputObject || "{}")).length > 0
     ) {
       form.reset(
         DCPJsonToFormData(JSON.parse(data.data.inputOutputObject || "")),
