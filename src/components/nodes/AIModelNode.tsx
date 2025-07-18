@@ -11,7 +11,6 @@ import { useShallow } from "zustand/react/shallow";
 import { Badge } from "@aventisia/ui/badge";
 import { useEffect } from "react";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { Separator } from "@aventisia/ui";
 
 type AIModelNode = Node<NodeDataType, "aiNode">;
 
@@ -37,6 +36,7 @@ export const AIModelNode = ({
   );
 
   useEffect(() => {
+    if (data.type !== "aiNode") return;
     if (data?.outputs?.length) {
       const newLabel = data?.outputs[0].key + " " + "AI Node";
       // Find the node by id and update its label
@@ -56,7 +56,7 @@ export const AIModelNode = ({
       // Update the nodes in the store
       setNodes(updatedNodes);
     }
-  }, [data?.outputs, nodeId, setNodes]);
+  }, [data?.outputs]);
 
   //Get llm for the selected model
   const llm = data.inputs?.find((val) => val.key.includes("llm"))
@@ -80,27 +80,28 @@ export const AIModelNode = ({
           <GripVertical className={cn("h-5 w-5 text-white")} />
         </div>
         <OpenNodeConfig {...{ nodeData: data, nodeId: id }}>
-          <div className="flex h-full w-[18rem] flex-1 flex-col justify-between gap-2 rounded-r-lg bg-[#1E1B4B] p-3 text-white">
+          <div className="flex h-full w-[18rem] flex-1 flex-col items-start justify-between gap-2 rounded-r-lg bg-[#1E1B4B] p-3 text-white">
             <div className="flex items-center gap-3">
               <BrainCircuit className="text-white" />
               <h3 className="line-clamp-1 flex-1 text-start text-lg font-semibold">
                 {data.label}
               </h3>
             </div>
-            <div className="flex flex-1 flex-col items-start gap-2">
-              <Separator className="bg-[#35325D]" />
-              {/* Description */}
-              <p className="line-clamp-1 text-start text-sm text-secondary-foreground">
-                {data.description}
-              </p>
+            {/* <Separator className="bg-[#35325D]" /> */}
+            {/* Description */}
+            <p className="line-clamp-1 text-start text-sm text-secondary-foreground">
+              {data.description}
+            </p>
 
-              {/* LLM Badge */}
-              {llm && (
+            {/* LLM Badge */}
+
+            {llm && (
+              <div>
                 <Badge variant="outline" className="bg-white/10 text-white">
                   {llm}
                 </Badge>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </OpenNodeConfig>
       </div>
