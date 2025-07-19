@@ -22,9 +22,10 @@ export const AIModelNode = ({
   id,
 }: NodeProps<AIModelNode>) => {
   // Get node unique name state (required to get config panel data)
-  const { nodeId } = useDynamicConfigPanelStore(
+  const { nodeId, nodeData } = useDynamicConfigPanelStore(
     useShallow((state) => ({
       nodeId: state.nodeId,
+      nodeData: state.nodeData,
     })),
   );
 
@@ -41,7 +42,7 @@ export const AIModelNode = ({
       const newLabel = data?.outputs[0].key + " " + "AI Node";
       // Find the node by id and update its label
       const updatedNodes = nodes.map((node: Node) => {
-        if (node.id === nodeId) {
+        if (node.id === nodeId && nodeData?.type == "aiNode") {
           return {
             ...node,
             data: {
