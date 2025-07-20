@@ -156,7 +156,9 @@ export const useDagreAutoLayout = () => {
       const visibleNodeIds = new Set(visibleNodes.map((n) => n.id));
       const visibleEdges = currentEdges.filter(
         (edge) =>
-          visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target),
+          visibleNodeIds.has(edge.source) &&
+          visibleNodeIds.has(edge.target) &&
+          edge.targetHandle !== "for-loop-repeat",//filter loop back edge to get loop layout
       );
 
       // 🧠 Layout only visible nodes and edges
