@@ -10,8 +10,8 @@ using System.Xml.Linq;
 
 namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
 {
-    [DisplayName("Invoke SOAP Web Service")]
-    [Description("Invokes a specified method from a SOAP web service and returns the response.")]
+    //[DisplayName("Invoke SOAP Web Service")]
+    //[Description("Invokes a specified method from a SOAP web service and returns the response.")]
     public class InvokeSoapWebServiceActivity : BaseCodeActivity
     {
         // ----------------------
