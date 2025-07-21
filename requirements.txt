@@ -56,7 +56,7 @@ urllib3==2.3.0
 uvicorn==0.34.0
 watchfiles==1.0.4
 websockets==15.0
-pyttsx3==2.98
+# pyttsx3==2.98
 pydub==0.25.1
 openai-whisper==20240930
 resemblyzer==0.1.4
