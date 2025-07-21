@@ -7,7 +7,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-    [DisplayName("Paste Cells to Excel Worksheet")]
+    [DisplayName("Paste DataTable to Excel Worksheet")]
     [Description("Pastes a DataTable of data to the active Excel worksheet starting at the specified range.")]
     public class PasteDataTableToExcelWorksheetActivity : BaseCodeActivity
     {

@@ -28,8 +28,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [RequiredArgument]
         [DisplayName("Search Value")]
-        [Description("The worksheet name (if selection type is 'Name') or index (if selection type is 'Index').")]
-        public InArgument<string> SearchValue { get; set; }
+        [Description("The worksheet name (if selection type is 'Name') or index (if selection type is 'Index'). Can be string or integer depending on mode.")]
+        public InArgument<object> SearchValue { get; set; }
 
         // ----------------------
         // Output Arguments
@@ -58,11 +58,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 {
                     case WorksheetSelectionTypeEnum.Name:
                         {
-                            if (string.IsNullOrWhiteSpace(searchValue))
-                                throw new ArgumentException("Worksheet name cannot be empty when using 'Name' mode.");
+                            if (searchValue == null || !(searchValue is string sheetName) || string.IsNullOrWhiteSpace(sheetName))
+                                throw new ArgumentException("A valid worksheet name must be provided when using 'Name' mode.");
 
-                            if (!(wb.Worksheets[searchValue] is Excel.Worksheet ws))
-                                throw new ArgumentException($"Worksheet '{searchValue}' not found.");
+                            if (!(wb.Worksheets[sheetName] is Excel.Worksheet ws))
+                                throw new ArgumentException($"Worksheet '{sheetName}' not found.");
 
                             ws.Select();
                             break;
@@ -70,8 +70,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                     case WorksheetSelectionTypeEnum.Index:
                         {
-                            if (!int.TryParse(searchValue, out var sheetIndex))
-                                throw new ArgumentException("Invalid worksheet index provided.");
+                            if (searchValue == null)
+                                throw new ArgumentException("Search value cannot be null in 'Index' mode.");
+
+                            if (!(searchValue is int sheetIndex))
+                            {
+                                if (searchValue is string indexStr && int.TryParse(indexStr, out sheetIndex))
+                                {
+                                    // Try parsing from string if needed
+                                }
+                                else
+                                {
+                                    throw new ArgumentException("Invalid worksheet index provided. Must be an integer or string representation of an integer.");
+                                }
+                            }
 
                             if (!(wb.Worksheets[sheetIndex] is Excel.Worksheet ws))
                                 throw new ArgumentException($"Worksheet at index '{sheetIndex}' not found.");
