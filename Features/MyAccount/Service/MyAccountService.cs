@@ -79,13 +79,16 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
+            // Try to retrieve the access token from the request cookies
+            _httpContext.Request.Cookies.TryGetValue(CookieNamesEnum.AccessToken.ToString(), out var accessToken);
+
             var userSessionDto = new UserSessionDto()
             {
                 TenantName = user.Tenant.Name,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 UserInitials = GetUserInitialsUtil.GetUserInitials(user.FirstName, user.LastName),
-                AccessToken = "NA", // Not required to view the session
+                AccessToken = accessToken,
                 RefreshToken = session.RefreshToken,
                 RTExpiresOn = session.SessionExpiresOn
             };
