@@ -6,7 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { getColumnName } from "../constants/column-display-names";
 import { ModelsTableDto } from "../dtos/models-table-dto";
-import { ModelTypesEnum } from "../enums/model-type-enum";
+import { TaskTypesEnum } from "../enums/tasks-type-enum";
 import { formatSeconds } from "../utils/formatSeconds";
 
 import { ModelRowActions } from "./model-row-actions/ModelRowActions";
@@ -62,8 +62,8 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
     ),
     cell: ({ row }) => {
       const typeValue =
-        ModelTypesEnum[row.getValue("type") as keyof typeof ModelTypesEnum];
-      return <div className="w-auto font-medium">{typeValue}</div>;
+        TaskTypesEnum[row.getValue("type") as keyof typeof TaskTypesEnum];
+      return <div className="w-auto font-medium">{typeValue || "N/A"}</div>;
     },
   },
   {
