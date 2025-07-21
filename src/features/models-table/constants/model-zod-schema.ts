@@ -24,7 +24,7 @@ export const modelZodSchema = z.object({
   id: z.string(),
   type: z.string().readonly().nullable(),
   name: modelNameSchema,
-  llm: z.string().readonly(),
+  llMs: z.array(z.string()).readonly(),
   description: z
     .string()
     .max(500, { message: maxLenError("Model description", 500) }),

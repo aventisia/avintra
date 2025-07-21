@@ -67,13 +67,18 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
     },
   },
   {
-    accessorKey: "llm",
+    accessorKey: "llMs",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("llm")} />
+      <DTColumnHeader column={column} title={getColumnName("llMs")} />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto font-medium">{row.getValue("llm") || "N/A"}</div>
-    ),
+    cell: ({ row }) => {
+      const value = row.getValue("llMs") as string[];
+      return (
+        <div className="w-28 truncate font-medium">
+          {value.length > 0 ? value.join(", ") : "N/A"}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "docsProcessed",

@@ -38,7 +38,7 @@ const typeProps: SelectFieldProps = {
 
 // LLM
 const llmProps: SelectFieldProps = {
-  name: "llm",
+  name: "llMs",
   label: "Base LLM",
   isRequired: true,
   selectOptions: enumToArray(ModelLLMEnum),

@@ -17,7 +17,7 @@ export interface ModelsTableDto {
   /**
    * Gets or sets the llm of the model.
    */
-  llm: string; // TODO: Update enum values
+  llMs: string[]; // TODO: Update enum values
 
   /**
    * Gets or sets the name of the model. Max-255

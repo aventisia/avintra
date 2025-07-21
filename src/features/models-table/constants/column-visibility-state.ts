@@ -3,7 +3,7 @@ export const columnVisibilityState = {
   id: false,
   name: true,
   type: true,
-  llm: true,
+  llMs: true,
   accuracy: false,
   docsProcessed: false,
   setupStatus: false,
