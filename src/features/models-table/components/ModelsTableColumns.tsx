@@ -74,7 +74,10 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
     cell: ({ row }) => {
       const value = row.getValue("llMs") as string[];
       return (
-        <div className="w-28 truncate font-medium">
+        <div
+          className="w-28 truncate font-medium"
+          title={value.length > 0 ? value.join(", ") : ""}
+        >
           {value.length > 0 ? value.join(", ") : "N/A"}
         </div>
       );
