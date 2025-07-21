@@ -10,7 +10,7 @@
         "description": "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.",
         "icon": null,
         "img": null,
-        "listType": null,
+        "listType": "list",
         "actions": [
           {
             "type": "conditionalNode",
@@ -28,6 +28,24 @@
             "description": "Use this to keep doing something again and again, as long as certain conditions are met.",
             "docsLink": "https://docs.aventisia.com",
             "icon": "LoopNodeIcon",
+            "img": "/function.png"
+          },
+          {
+            "type": "callAgentNode",
+            "name": "callAgent",
+            "label": "Call Agent",
+            "description": " Use this to call another agent within the current agent",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": "CallAgentIcon",
+            "img": "/function.png"
+          },
+          {
+            "type": "blockNode",
+            "name": "blockNode",
+            "label": "Block Node",
+            "description": "Use to add custom block",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": "BlockNodeIcon",
             "img": "/function.png"
           }
         ]
