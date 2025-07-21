@@ -46,7 +46,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
           Array.from({ length: renderCount }).map((_, i) => (
             <div
               key={i}
-              className={`absolute inset-0 left-${renderCount - i} top-${renderCount - i} -z-10 h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-[#DEDEDE] bg-white hover:ring hover:ring-ring ${nodeData?.isDisabled && "opacity-50"} `}
+              className={`absolute inset-0 left-${renderCount - i} top-${renderCount - i} -z-10 h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-slate-400 bg-white hover:ring hover:ring-ring ${nodeData?.isDisabled && "opacity-50"} `}
             />
           ))}
         <NodeContainer {...{ nodeId, nodeData, selected }} {...props}>
@@ -77,7 +77,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
           </NodeHeader>
           <Separator
             className={cn(
-              "h-[1px] w-full bg-[#EDEDED]",
+              "h-[1px] w-full bg-border",
               nodeData.type == "forLoopNode" && "bg-[#D1CFF8]",
               nodeData.type == "conditionalNode" && "bg-[#D1CFF8]",
               nodeData.type == "blockNode" && "bg-[#E8E8E8]",
