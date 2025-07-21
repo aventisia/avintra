@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using Bookmark = Microsoft.Office.Interop.Word.Bookmark;
+using WordRange = Microsoft.Office.Interop.Word.Range;
 
 namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
@@ -65,7 +66,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                     throw new InvalidOperationException("No active Word document found.");
 
                 // Determine range based on insert location
-                Range insertionRange = GetInsertionRange(activeDocument, insertLocation, bookmarkName, searchText);
+                WordRange insertionRange = GetInsertionRange(activeDocument, insertLocation, bookmarkName, searchText);
 
                 // Insert image based on source
                 switch (imageSource)
@@ -81,6 +82,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                         break;
 
                     case ImageSourceEnum.Clipboard:
+                        wordApp.Selection.SetRange(insertionRange.Start, insertionRange.End);
                         wordApp.Selection.Paste();
                         break;
 
@@ -100,13 +102,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
             }
         }
 
-        private static Range GetInsertionRange(
+        private static WordRange GetInsertionRange(
             _Document document,
             InsertLocationEnum location,
             string bookmarkName,
             string searchText)
         {
-            Range range = null;
+            WordRange range = null;
 
             switch (location)
             {
@@ -171,20 +173,21 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
             return range;
         }
 
-        private static Range FindTextRange(_Document document, string text, bool insertBefore)
+        private static WordRange FindTextRange(_Document document, string text, bool insertBefore)
         {
-            foreach (var foundRange in from Range paragraphRange in document.Paragraphs
-                                       where paragraphRange.Text.Contains(text)
-                                       select paragraphRange.Duplicate)
+            foreach (Paragraph para in document.Paragraphs)
             {
-                foundRange.Find.ClearFormatting();
+                WordRange paraRange = para.Range.Duplicate;
+                paraRange.Find.ClearFormatting();
 
-                if (!foundRange.Find.Execute(FindText: text)) continue;
-                foundRange.Collapse(insertBefore
-                    ? WdCollapseDirection.wdCollapseStart
-                    : WdCollapseDirection.wdCollapseEnd);
+                if (!string.IsNullOrEmpty(text) && paraRange.Find.Execute(FindText: text))
+                {
+                    paraRange.Collapse(insertBefore
+                        ? WdCollapseDirection.wdCollapseStart
+                        : WdCollapseDirection.wdCollapseEnd);
 
-                return foundRange;
+                    return paraRange;
+                }
             }
 
             return null;
@@ -206,7 +209,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         AfterBookmark,
 
         [Display(Name = "Before Specific Text",
-            Description = "Inserts content before a specific text in the document.")]
+        Description = "Inserts content before a specific text in the document.")]
         BeforeSpecificText,
 
         [Display(Name = "After Specific Text", Description = "Inserts content after a specific text in the document.")]

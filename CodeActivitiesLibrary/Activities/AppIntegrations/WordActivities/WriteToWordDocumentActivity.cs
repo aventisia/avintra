@@ -5,6 +5,7 @@ using System.Activities;
 using System.Activities.Statements;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Range = Microsoft.Office.Interop.Word.Range;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
