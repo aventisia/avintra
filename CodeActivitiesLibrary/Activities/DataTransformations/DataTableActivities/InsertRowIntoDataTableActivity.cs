@@ -22,7 +22,8 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
         [RequiredArgument]
         [DisplayName("Row Values")]
-        [Description("An array of values to insert into the new row. Must match column count and types.")]
+        [Description("An array of values to insert into the new row. Must match column count and types." +
+                     "Example: For columns [Id, Name, Age], use [1, 'John', 30]")]
         public InArgument<object[]> RowValues { get; set; }
 
         [DisplayName("Insert Location")]
@@ -35,18 +36,16 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
         [RenderIfCondition(nameof(InsertLocation), DataTableInsertRowLocationEnum.BeforeRowIndex)]
         public InArgument<int> RowIndex { get; set; }
 
-         // ----------------------
+        // ----------------------
         // Output Arguments
         // ----------------------
         [DisplayName("Modified Data Table")]
         [Description("The updated data table with the new row inserted.")]
         public OutArgument<DataTable> ModifiedDataTable { get; set; }
 
-
         // ----------------------
         // Execution Logic
         // ----------------------
-
         protected override void Execute(CodeActivityContext context)
         {
             try
@@ -54,72 +53,65 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 var dataTable = DataTable.Get(context);
                 var rowValues = RowValues.Get(context);
                 var insertLocation = InsertLocation.Get(context);
+                var rowIndex = RowIndex.Get(context);
 
                 if (dataTable == null)
-                    throw new ArgumentException("DataTable cannot be null.");
+                    throw new ArgumentNullException("DataTable", "DataTable cannot be null.");
 
-                if (rowValues == null)
-                    throw new ArgumentException("RowValues cannot be null.");
+                if (rowValues == null || rowValues.Length == 0)
+                    throw new ArgumentException("RowValues cannot be null or empty.", nameof(RowValues));
 
                 if (rowValues.Length != dataTable.Columns.Count)
-                    throw new ArgumentException(
-                        $"RowValues length ({rowValues.Length}) does not match the number of columns ({dataTable.Columns.Count}).");
+                    throw new InvalidOperationException(
+                        $"The number of values provided ({rowValues.Length}) does not match the number of columns in the data table ({dataTable.Columns.Count}).");
 
-                // create new DataRow
                 var newRow = dataTable.NewRow();
+
                 for (int i = 0; i < rowValues.Length; i++)
                 {
-                    var columnType = dataTable.Columns[i].DataType;
+                    var column = dataTable.Columns[i];
+                    var columnType = column.DataType;
+                    var inputValue = rowValues[i];
 
-                    object value = rowValues[i];
-
-                    if (value == null || value == DBNull.Value)
+                    if (inputValue == null || Equals(inputValue, DBNull.Value))
                     {
                         newRow[i] = DBNull.Value;
-                    }
-                    else if (columnType.IsInstanceOfType(value))
-                    {
-                        newRow[i] = value;
                     }
                     else
                     {
                         try
                         {
-                            newRow[i] = Convert.ChangeType(value, columnType);
+                            newRow[i] = Convert.ChangeType(inputValue, columnType);
                         }
                         catch (Exception ex)
                         {
-                            throw new InvalidCastException($"Value at index {i} cannot be converted to {columnType.Name}.", ex);
+                            throw new InvalidCastException($"Value '{inputValue}' cannot be converted to {columnType.Name} for column '{column.ColumnName}'.", ex);
                         }
                     }
                 }
 
                 switch (insertLocation)
                 {
+                    case DataTableInsertRowLocationEnum.BeforeRowIndex:
+                        if (rowIndex < 0 || rowIndex > dataTable.Rows.Count)
+                            throw new ArgumentOutOfRangeException(nameof(RowIndex), "RowIndex must be within the range of the data table.");
+                        dataTable.Rows.InsertAt(newRow, rowIndex);
+                        break;
+
                     case DataTableInsertRowLocationEnum.EndOfDataTable:
                         dataTable.Rows.Add(newRow);
                         break;
 
-                    case DataTableInsertRowLocationEnum.BeforeRowIndex:
-                        var rowIndex = RowIndex.Get(context);
-                        if (rowIndex < 0 || rowIndex > dataTable.Rows.Count)
-                            throw new ArgumentOutOfRangeException(nameof(rowIndex),
-                                $"Row index must be between 0 and {dataTable.Rows.Count}.");
-                        dataTable.Rows.InsertAt(newRow, rowIndex);
-                        break;
-
                     default:
-                        throw new InvalidOperationException("Unsupported insert location.");
+                        throw new InvalidOperationException("Invalid insertion location.");
                 }
 
-                // Set outputs
                 ModifiedDataTable.Set(context, dataTable);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $"Successfully inserted row at location {insertLocation}.");
+                StatusMessage.Set(context, $"Successfully inserted row at location '{insertLocation}'.");
             }
             catch (Exception ex)
             {
-                ModifiedDataTable.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error inserting row: {ex.Message}");
             }

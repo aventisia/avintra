@@ -3,6 +3,7 @@ using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 
 namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
@@ -11,46 +12,30 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     [Description("Inserts a new column into the data table either at the end or before a specific column index.")]
     public sealed class InsertColumnIntoDataTable : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("Data Table")]
-        [Description("The data table to modify.")]
         public InArgument<DataTable> DataTable { get; set; }
 
         [RequiredArgument]
         [DisplayName("Column Name")]
-        [Description("The name of the new column.")]
         public InArgument<string> ColumnName { get; set; }
 
         [RequiredArgument]
         [DisplayName("Data Type")]
-        [Description("The data type of the new column (e.g., string, int, DateTime).")]
-        public InArgument<Type> DataType { get; set; }
+        [Description("Data type of the new column (e.g., String, Int, Decimal, etc).")]
+        public InArgument<DataTableColumnTypeEnum> DataType { get; set; }
 
         [DisplayName("Insert Location")]
-        [Description("Specifies whether to insert the column at the end or before a specific column index.")]
         [DefaultValue(DataTableInsertLocationEnum.EndOfDataTable)]
         public InArgument<DataTableInsertLocationEnum> InsertLocation { get; set; }
 
         [DisplayName("Column Index")]
-        [Description("Zero-based index where the column should be inserted (used only when location is 'Before Column Index').")]
+        [Description("Index to insert column at (used only if 'Before Column Index').")]
         [RenderIfCondition(nameof(InsertLocation), DataTableInsertLocationEnum.BeforeColumnIndex)]
         public InArgument<int> ColumnIndex { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
         [DisplayName("Modified Data Table")]
-        [Description("The updated data table with the new column inserted.")]
         public OutArgument<DataTable> ModifiedDataTable { get; set; }
-
-        // ----------------------
-        // Execution Logic
-        // ----------------------
 
         protected override void Execute(CodeActivityContext context)
         {
@@ -58,7 +43,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
             {
                 var dataTable = DataTable.Get(context);
                 var columnName = ColumnName.Get(context);
-                var dataType = DataType.Get(context);
+                var dataTypeEnum = DataType.Get(context);
                 var insertLocation = InsertLocation.Expression != null
                     ? InsertLocation.Get(context)
                     : DataTableInsertLocationEnum.EndOfDataTable;
@@ -69,13 +54,11 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 if (string.IsNullOrWhiteSpace(columnName))
                     throw new ArgumentException("Column name cannot be empty or whitespace.");
 
-                if (dataType == null)
-                    throw new ArgumentException("Data type for new column must be provided.");
-
                 if (dataTable.Columns.Contains(columnName))
                     throw new ArgumentException($"A column with name '{columnName}' already exists.");
 
-                var newColumn = new DataColumn(columnName, dataType);
+                Type resolvedType = ResolveType(dataTypeEnum);
+                var newColumn = new DataColumn(columnName, resolvedType);
 
                 if (insertLocation == DataTableInsertLocationEnum.EndOfDataTable)
                 {
@@ -93,7 +76,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 
                 ModifiedDataTable.Set(context, dataTable);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $"Successfully inserted column '{columnName}'.");
+                StatusMessage.Set(context, $"Successfully inserted column '{columnName}' of type '{resolvedType.Name}'.");
             }
             catch (Exception ex)
             {
@@ -101,6 +84,52 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error inserting column: {ex.Message}");
             }
+        }
+
+        private Type ResolveType(DataTableColumnTypeEnum enumValue)
+        {
+            switch (enumValue)
+            {
+                case DataTableColumnTypeEnum.String:
+                    return typeof(string);
+                case DataTableColumnTypeEnum.Int:
+                    return typeof(int);
+                case DataTableColumnTypeEnum.Double:
+                    return typeof(double);
+                case DataTableColumnTypeEnum.Decimal:
+                    return typeof(decimal);
+                case DataTableColumnTypeEnum.Float:
+                    return typeof(float);
+                case DataTableColumnTypeEnum.DateTime:
+                    return typeof(DateTime);
+                case DataTableColumnTypeEnum.Boolean:
+                    return typeof(bool);
+                default:
+                    return typeof(string);
+            }
+        }
+        public enum DataTableColumnTypeEnum
+        {
+            [Display(Name = "String", Description = "Represents a string (text) value.")]
+            String,
+
+            [Display(Name = "Integer", Description = "Represents an integer (whole number) value.")]
+            Int,
+
+            [Display(Name = "Double", Description = "Represents a double-precision floating-point number.")]
+            Double,
+
+            [Display(Name = "Decimal", Description = "Represents a high-precision decimal number, typically used for financial calculations.")]
+            Decimal,
+
+            [Display(Name = "Float", Description = "Represents a single-precision floating-point number.")]
+            Float,
+
+            [Display(Name = "DateTime", Description = "Represents a date and time value.")]
+            DateTime,
+
+            [Display(Name = "Boolean", Description = "Represents a true or false logical value.")]
+            Boolean
         }
     }
 }
