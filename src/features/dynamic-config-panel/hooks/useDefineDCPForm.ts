@@ -60,10 +60,10 @@ export const useDefineDCPForm = () => {
 
   // Get input and output keys (required at the time of form submission)
   const inputKeys: string[] = nodeConfig
-    .filter((f) => f.direction === "Input")
+    ?.filter((f) => f.direction === "Input")
     .map((f) => f.name);
   const outputKeys = nodeConfig
-    .filter((f) => f.direction === "Output")
+    ?.filter((f) => f.direction === "Output")
     .map((f) => f.name);
 
   // Define form with zod schema
