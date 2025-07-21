@@ -50,6 +50,7 @@ const ExecuteFlow = ({
 
     // Open the desktop executor if the app is running in Tauri
     if (IS_TAURI) {
+      localStorage.removeItem("flowExecutionStack"); //  Clear any previous subflow stack
       localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
       localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
       openDesktopExecutor();
