@@ -17,8 +17,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
     {
         [RequiredArgument]
         [DisplayName("Source Paths")]
-        [Description("The list of file or folder paths to zip.")]
-        public InArgument<IEnumerable<string>> SourcePaths { get; set; }
+        [Description(
+            "The list of file or folder paths to zip. pass the paths in format: [\"C:\\path\\to\\file1.txt\", \"C:\\path\\to\\folder1\"]")]
+        public InArgument<string[]> SourcePaths { get; set; }
 
         [DisplayName("Type of Compression")]
         [Description("The type of compression to use for the zip archive.")]
@@ -39,7 +40,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
             var sourcePaths = SourcePaths.Get(context);
             var outputZipPath = OutputZipPath.Get(context);
             var compressionType = TypeOfCompression.Get(context);
-
             try
             {
                 if (sourcePaths == null || !sourcePaths.Any())
@@ -54,17 +54,13 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
                 var zipDir = Path.GetDirectoryName(outputZipPath);
                 if (!string.IsNullOrWhiteSpace(zipDir) && !Directory.Exists(zipDir))
                     Directory.CreateDirectory(zipDir);
-
                 // Delete existing ZIP file if it exists
                 if (File.Exists(outputZipPath))
                     File.Delete(outputZipPath);
-
                 long totalSizeBytes = 0;
-
                 foreach (var path in sourcePaths)
                 {
                     var fullPath = Path.GetFullPath(path);
-
                     if (File.Exists(fullPath))
                     {
                         totalSizeBytes += new FileInfo(fullPath).Length;
@@ -72,7 +68,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
                     else if (Directory.Exists(fullPath))
                     {
                         totalSizeBytes += Directory.GetFiles(fullPath, "*", SearchOption.AllDirectories)
-                                                   .Sum(file => new FileInfo(file).Length);
+                            .Sum(file => new FileInfo(file).Length);
                     }
                 }
 
@@ -125,7 +121,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
         {
             foreach (var filePath in Directory.GetFiles(sourceDir))
             {
-                var relativePath = Path.GetFileName(filePath);
+                var relativePath = filePath.Substring(sourceDir.Length)
+                    .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                 var entryName = string.IsNullOrEmpty(destinationDir)
                     ? relativePath
                     : $"{destinationDir}/{relativePath}";

@@ -19,18 +19,21 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ClipboardActivities
         {
             string text = ClipboardText.Get(context);
 
+            bool success = false;
+            string statusMessage = "";
+
             Thread staThread = new Thread(() =>
             {
                 try
                 {
                     Clipboard.SetText(text);
-                    IsSuccess.Set(context, true);
-                    StatusMessage.Set(context, "Successfully set clipboard text");
+                    success = true;
+                    statusMessage = "Successfully set clipboard text.";
                 }
                 catch (Exception ex)
                 {
-                    IsSuccess.Set(context, false);
-                    StatusMessage.Set(context, $"Failed to set clipboard text: {ex.Message}");
+                    success = false;
+                    statusMessage = $"Failed to set clipboard text: {ex.Message}";
                 }
             });
 
@@ -38,9 +41,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ClipboardActivities
             staThread.Start();
             staThread.Join(); // Wait for thread to complete
 
-           
-            IsSuccess.Set(context, "Clipboard text set successfully");
-            StatusMessage.Set(context, $"Failed to set clipboard text");
+            IsSuccess.Set(context, success);
+            StatusMessage.Set(context, statusMessage);
         }
     }
 }

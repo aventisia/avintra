@@ -59,7 +59,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 
         // ----------------------
         // Execution Logic
-        // ----------------------
+        // ----------------------       
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Operation completed successfully.";
@@ -83,33 +83,47 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                 if (!Directory.Exists(destinationFolder))
                     Directory.CreateDirectory(destinationFolder);
 
-                // Locate the download link
+                //  Capture the list of files before the download starts
+                var existingFilesBefore = Directory.GetFiles(destinationFolder);
+
+                // Locate and click the download element
                 var by = BrowserAutomationHelper.GetWebElementLocator(findType, uiElement);
                 var element = driver.FindElement(by);
                 if (element == null)
                     throw new ArgumentException($"No element found using '{findType}': '{uiElement}'");
 
-                // Click the element to trigger download
-                element.Click();
+                element.Click(); 
 
-                // Optionally wait for file to appear in destination folder
                 if (waitForDownload && maxWaitTime > 0)
                 {
-                    var fileName = Path.Combine(destinationFolder, "*.crdownload");
                     var timeout = TimeSpan.FromSeconds(maxWaitTime);
                     var sw = new Stopwatch();
                     sw.Start();
+                    bool downloadStarted = false;
 
                     while (sw.Elapsed < timeout)
                     {
-                        var files = Directory.GetFiles(destinationFolder, "*.*", SearchOption.TopDirectoryOnly)
-                            .Where(f => !f.EndsWith(".crdownload") && !f.EndsWith(".tmp"))
-                            .ToList();
+                        var crdownloadFiles = Directory.GetFiles(destinationFolder, "*.crdownload");
 
-                        if (files.Count > 0)
+                        if (crdownloadFiles.Any())
                         {
-                            downloadedFilePath = files[0];
-                            break;
+                            downloadStarted = true;
+                        }
+
+                        // Wait until .crdownload disappears after appearing
+                        if (downloadStarted && !crdownloadFiles.Any())
+                        {
+                            // Get only the new files added after clicking
+                            var newFiles = Directory.GetFiles(destinationFolder)
+                                .Where(f => !f.EndsWith(".crdownload") && !f.EndsWith(".tmp"))
+                                .Except(existingFilesBefore)
+                                .ToList();
+
+                            if (newFiles.Any())
+                            {
+                                downloadedFilePath = newFiles.First();
+                                break;
+                            }
                         }
 
                         Thread.Sleep(500);
