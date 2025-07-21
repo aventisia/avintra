@@ -15,4 +15,5 @@ export type CustomNodeType =
   | "forEachLoopNode"
   | "flowEndNode"
   | "aiNode"
-  | "blockNode";
+  | "blockNode"
+  | "callAgentNode";

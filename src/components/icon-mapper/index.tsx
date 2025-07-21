@@ -1,5 +1,4 @@
 import {
-  Boxes,
   BrainCircuit,
   Cable,
   CalendarCheck,
@@ -19,7 +18,12 @@ import {
   TimerReset,
   Webhook,
 } from "lucide-react";
-import { ConditionalNodeIcon, LoopNodeIcon } from "./LogicalNodeIcons";
+import {
+  BlockNodeIcon,
+  CallAgentIcon,
+  ConditionalNodeIcon,
+  LoopNodeIcon,
+} from "./LogicalNodeIcons";
 import { NodesCategoryL1Icon } from "./NodesCategoryL1Icon";
 import { TriggerNodeIcon } from "./TriggerNodeIcon";
 
@@ -31,11 +35,13 @@ export const iconMapper: { [key: string]: JSX.Element } = {
   UIAutomationAndUserActionsIcon: <NodesCategoryL1Icon Icon={Keyboard} />,
   IntelligentAutomationIcon: <NodesCategoryL1Icon Icon={BrainCircuit} />,
   BLockIcon: <NodesCategoryL1Icon Icon={Combine} />,
-  BlockNodeIcon: <NodesCategoryL1Icon Icon={Boxes} />,
 
   // Logical Nodes
   ConditionalNodeIcon: <ConditionalNodeIcon />,
   LoopNodeIcon: <LoopNodeIcon />,
+
+  CallAgentIcon: <CallAgentIcon />,
+  BlockNodeIcon: <BlockNodeIcon />,
 
   // Trigger Nodes
   ManualTriggerIcon: <TriggerNodeIcon Icon={MousePointerClick} />,

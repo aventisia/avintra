@@ -1,4 +1,4 @@
-import { Repeat2Icon, SplitIcon } from "lucide-react";
+import { BotIcon, BoxesIcon, Repeat2Icon, SplitIcon } from "lucide-react";
 
 const IconContainer = ({ children }: React.PropsWithChildren) => {
   return (
@@ -24,4 +24,20 @@ const LoopNodeIcon = () => {
   );
 };
 
-export { ConditionalNodeIcon, LoopNodeIcon };
+const CallAgentIcon = () => {
+  return (
+    <IconContainer>
+      <BotIcon className="h-3.5 w-3.5 stroke-[2.5] text-blue-600" />
+    </IconContainer>
+  );
+};
+
+const BlockNodeIcon = () => {
+  return (
+    <IconContainer>
+      <BoxesIcon className="h-3.5 w-3.5 stroke-[2.5] text-blue-600" />
+    </IconContainer>
+  );
+};
+
+export { ConditionalNodeIcon, LoopNodeIcon, CallAgentIcon, BlockNodeIcon };

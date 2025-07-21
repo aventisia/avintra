@@ -83,6 +83,7 @@ export const ReactFlowExt = () => {
   const onNodeContextMenu: NodeMouseHandler = useCallback(
     (_: React.MouseEvent, node: Node) => {
       setSelectedNode(node);
+      if (import.meta.env.MODE !== "production") console.log("NODE:", node);
     },
     [setSelectedNode],
   );
