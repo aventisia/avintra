@@ -23,7 +23,7 @@ public class WorcTemplateController : BaseApiController
     [HttpPost("publish-flow-template/{flowVersionId}")]
     public async Task<ActionResult<ServiceResponse<WorcTemplateDto>>> PublishFlowAsTemplate(Guid flowVersionId)
     {
-        return ResultHelper(await _worcTemplateService.PublishWorcTemplateAsync(flowVersionId));  
+        return ResultHelper(await _worcTemplateService.PublishWorcTemplateAsync(flowVersionId));
     }
 
     // Fetch Worc template by its ID
@@ -45,5 +45,12 @@ public class WorcTemplateController : BaseApiController
     public async Task<ActionResult<ServiceResponse<IEnumerable<WorcTemplateCategoryBySearchQueryDto>>>> GetWorcTemplateCategoryBySearchQuery(CategoryTypesEnum Type, string Name)
     {
         return ResultHelper(await _worcTemplateService.GetWorcTemplateCategoryBySearchQueryAsync(Type, Name));
+    }
+
+    // Searches flow versions by flow name, with an option to include unpublished versions.
+    [HttpGet("search/{searchKey}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SearchWorcTemplateDto>>>> SearchTemplates(string searchKey)
+    {
+        return ResultHelper(await _worcTemplateService.SearchTemplatesAsync(searchKey));
     }
 }

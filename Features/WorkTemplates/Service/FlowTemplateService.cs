@@ -234,5 +234,41 @@ namespace WorkspaceAPIs.Services
 
             return serviceResponse;
         }
+
+        // Searches flow template by name
+        public async Task<ServiceResponse<IEnumerable<SearchWorcTemplateDto>>> SearchTemplatesAsync(string searchKey)
+        {
+            // Initialize ServiceResponse to indicate failure by default.
+            var serviceResponse = new ServiceResponse<IEnumerable<SearchWorcTemplateDto>>
+            {
+                Data = null,
+                Message = "Failed to search flow templates. Please try again."
+            };
+
+            try
+            {
+                // Attempt to retrieve the templates from the repository based on the search key.
+                var flowTemplates = await _unitOfWork.WorcTemplateRepo
+                               .GetByConditionAsync(w =>
+                                   w.Name.ToLower().Contains(searchKey.ToLower())
+                               )
+                               .Include(c => c.CreatedByUser)
+                               .ProjectToType<SearchWorcTemplateDto>()
+                               .ToListAsync();
+
+                // If successful, set the response data and status code.
+                serviceResponse.Data = flowTemplates;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Flow templates retrieved successfully.";
+            }
+            catch (Exception ex)
+            {
+                // Log any exception and return the default failure message.
+                _logger.LogError(ex.ToString());
+            }
+
+            // Return the service response with appropriate status and message.
+            return serviceResponse;
+        }
     }
 }
