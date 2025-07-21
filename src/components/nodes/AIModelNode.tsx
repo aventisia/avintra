@@ -81,7 +81,7 @@ export const AIModelNode = ({
           <GripVertical className={cn("h-5 w-5 text-white")} />
         </div>
         <OpenNodeConfig {...{ nodeData: data, nodeId: id }}>
-          <div className="flex h-full w-[18rem] flex-1 flex-col items-start justify-between gap-2 rounded-r-lg bg-[#1E1B4B] p-3 text-white">
+          <div className="flex h-full w-[18rem] flex-1 flex-col items-start  gap-2.5 rounded-r-lg bg-[#1E1B4B] p-3 text-white">
             <div className="flex items-center gap-3">
               <BrainCircuit className="text-white" />
               <h3 className="line-clamp-1 flex-1 text-start text-lg font-semibold">
