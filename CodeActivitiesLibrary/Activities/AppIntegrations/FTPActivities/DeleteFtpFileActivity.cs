@@ -2,13 +2,12 @@
 using FluentFTP;
 using System;
 using System.Activities;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Delete FTP File")]
-    [Description("Deletes one or more files from an FTP server.")]
+    [Description("Deletes a single file from an FTP server.")]
     public class DeleteFtpFileActivity : BaseCodeActivity
     {
         [RequiredArgument]
@@ -17,51 +16,44 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         public InArgument<FtpClient> FtpConnection { get; set; }
 
         [RequiredArgument]
-        [DisplayName("File Names")]
-        [Description("The list of file names to delete.")]
-        public InArgument<IEnumerable<string>> FileNames { get; set; }
+        [DisplayName("File Name")]
+        [Description("The name of the file to delete.")]
+        public InArgument<string> FileName { get; set; }
 
-        // Output Arguments
-       
         [DisplayName("Deleted Files")]
-        [Description("List of files that were successfully deleted.")]
-        public OutArgument<IEnumerable<string>> DeletedFiles { get; set; }
+        [Description("The file that was successfully deleted.")]
+        public OutArgument<string> DeletedFile { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
-            var connection = FtpConnection.Get(context);
-            var fileNames = FileNames.Get(context);
-
-            var deletedFiles = new List<string>();
-
             try
             {
-                foreach (var fileName in fileNames)
+                var connection = FtpConnection.Get(context);
+                var fileName = FileName.Get(context);
+
+                if (connection == null)
                 {
-                    try
-                    {
-                        connection.DeleteFile(fileName);
-                        deletedFiles.Add(fileName);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Log error but continue with next file
-                        Console.WriteLine($"Failed to delete {fileName}: {ex.Message}");
-                    }
+                    throw new InvalidOperationException("FTP connection is null.");
                 }
 
-                // Set output arguments
-                DeletedFiles.Set(context, deletedFiles);
+                if (string.IsNullOrWhiteSpace(fileName))
+                {
+                    throw new ArgumentException("File name is empty or null.");
+                }
 
-                // Determine overall success
-                IsSuccess.Set(context, deletedFiles.Count > 0);
-                StatusMessage.Set(context, deletedFiles.Count > 0
-                    ? $"{deletedFiles.Count} file(s) deleted successfully."
-                    : "No files were deleted.");
+                // Delete the file
+                connection.DeleteFile(fileName);
+
+                // Set output
+                DeletedFile.Set(context, fileName);
+
+                // Set success
+                IsSuccess.Set(context, true);
+                StatusMessage.Set(context, $"File '{fileName}' deleted successfully.");
             }
             catch (Exception ex)
             {
-                StatusMessage.Set(context, $"Error during FTP operation: {ex.Message}");
+                StatusMessage.Set(context, $"Error deleting file: {ex.Message}");
                 IsSuccess.Set(context, false);
             }
         }

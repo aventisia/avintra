@@ -2,13 +2,12 @@
 using FluentFTP;
 using System;
 using System.Activities;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 
 namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
-    [DisplayName("Download Folder(s) from FTP")]
+    [DisplayName("Download Folder from FTP")]
     [Description("Downloads one or more folders from an FTP server.")]
     public class DownloadFoldersFromFtpActivity : BaseCodeActivity
     {
@@ -18,45 +17,66 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
         public InArgument<FtpClient> FtpConnection { get; set; }
 
         [RequiredArgument]
-        [DisplayName("Folder Names")]
-        [Description("The list of folder names to download.")]
-        public InArgument<List<string>> FolderNames { get; set; }
+        [DisplayName("Folder Name")]
+        [Description("The folder name to download.")]
+        public InArgument<string> FolderNames { get; set; }
 
         [RequiredArgument]
         [DisplayName("Local Directory")]
-        [Description("The local directory to save the downloaded folders.")]
+        [Description("The local directory to save the downloaded folder.")]
         public InArgument<string> LocalDirectory { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
             var connection = FtpConnection.Get(context);
-            var folderNames = FolderNames.Get(context);
+            var folderName = FolderNames.Get(context);
             var localDirectory = LocalDirectory.Get(context);
             var status = "";
+
             try
             {
-                foreach (var folderName in folderNames)
+                if (connection == null)
+                    throw new InvalidOperationException("FTP connection is null.");
+
+                if (string.IsNullOrWhiteSpace(folderName))
+                    throw new ArgumentException("Folder name is empty or null.");
+
+                var targetLocalPath = Path.Combine(localDirectory, Path.GetFileName(folderName));
+
+                // Create local directory if not exists
+                if (!Directory.Exists(targetLocalPath))
+                    Directory.CreateDirectory(targetLocalPath);
+
+                // Get all entries (files + subfolders) under the remote folder
+                var remoteFiles = connection.GetNameListing(folderName);
+
+                foreach (var remotePath in remoteFiles)
                 {
-                    // Create the directory if it doesn't exist
-                    if (!Directory.Exists(Path.Combine(localDirectory, folderName)))
-                        Directory.CreateDirectory(Path.Combine(localDirectory, folderName));
-                    // Download files in the folder
-                    var files = connection.GetNameListing($"{folderName}");
-                    var downloadFileStream = connection.DownloadFiles(localDirectory, files);
-                    //TODO need to handle the downloadFileStream properly
+                    var fileName = Path.GetFileName(remotePath);
+                    var localFilePath = Path.Combine(targetLocalPath, fileName);
+
+                    if (connection.FileExists(remotePath))
+                    {
+                        connection.DownloadFile(localFilePath, remotePath);
+                    }
+                    else if (connection.DirectoryExists(remotePath))
+                    {
+                        // Optional: Recursively download subfolders
+                        // You could extend this for recursion if needed
+                    }
                 }
 
-                status = $"Folders downloaded successfully.";
+                status = $"Folder '{folderName}' downloaded successfully.";
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
-                status = $"Error downloading folders: {ex.Message}";
+                status = $"Error downloading folder: {ex.Message}";
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
             }
-
+            
         }
     }
 }
