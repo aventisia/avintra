@@ -985,12 +985,12 @@ public class InferencingModelService : IInferencingModelService
                     Name = category.Name,
                     Value = string.Empty,
                     ConfidenceScore = "0",
-                    Subcategories = category.Subcategories?.Select(subcategory => new SubcategoryExtractedDataDto()
+                    Subcategories = category.SubCategories?.Select(subcategory => new SubcategoryExtractedDataDto()
                     {
                         Name = subcategory.Name,
                         Value = string.Empty,
                         ConfidenceScore = "0",
-                        SubSubcategories = subcategory.SubSubcategories?.Select(subSubcategory => new SubSubcategoryExtractedDataDto()
+                        SubSubcategories = subcategory.SubSubCategories?.Select(subSubcategory => new SubSubcategoryExtractedDataDto()
                         {
                             Name = subSubcategory.Name,
                             Value = string.Empty,
@@ -1014,12 +1014,12 @@ public class InferencingModelService : IInferencingModelService
                     Name = category.Name,
                     Value = string.Empty,
                     ConfidenceScore = "0",
-                    Subcategories = category.Subcategories?.Select(subcategory => new SubcategoryExtractedDataDto()
+                    Subcategories = category.SubCategories?.Select(subcategory => new SubcategoryExtractedDataDto()
                     {
                         Name = subcategory.Name,
                         Value = string.Empty,
                         ConfidenceScore = "0",
-                        SubSubcategories = subcategory.SubSubcategories?.Select(subSubcategory => new SubSubcategoryExtractedDataDto()
+                        SubSubcategories = subcategory.SubSubCategories?.Select(subSubcategory => new SubSubcategoryExtractedDataDto()
                         {
                             Name = subSubcategory.Name,
                             Value = string.Empty,

@@ -174,7 +174,7 @@ public class TaskSetupCategoryDto
     /// <summary>
     /// Gets or sets the list of subcategories within this category.
     /// </summary>
-    public List<SubcategoryTaskSetupDto>? Subcategories { get; set; }
+    public List<SubcategoryTaskSetupDto>? SubCategories { get; set; }
 }
 
 /// <summary>
@@ -201,7 +201,7 @@ public class SubcategoryTaskSetupDto
     /// <summary>
     /// Gets or sets the list of sub-subcategories within this subcategory.
     /// </summary>
-    public List<SubSubcategorySetupTaskDto>? SubSubcategories { get; set; }
+    public List<SubSubcategorySetupTaskDto>? SubSubCategories { get; set; }
 }
 
 /// <summary>
