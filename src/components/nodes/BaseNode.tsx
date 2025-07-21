@@ -10,7 +10,13 @@ import { NodeDataType } from "@/types/node-data-type";
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import {
+  BoxesIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  Repeat2Icon,
+  SplitIcon,
+} from "lucide-react";
 import React from "react";
 
 interface BaseNodeProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -38,6 +44,15 @@ const BaseNode: React.FC<BaseNodeProps> = ({
           : 0
     : 0;
 
+  const customIconMapper: { [key: string]: JSX.Element } = {
+    ConditionalNodeIcon: (
+      <SplitIcon className="h-5 w-5 rotate-180 text-[#6159E8]" />
+    ),
+    LoopNodeIcon: <Repeat2Icon className="h-5 w-5 text-[#7D76EC]" />,
+
+    BlockNodeIcon: <BoxesIcon className="h-5 w-5 text-[#353535]" />,
+  };
+
   return (
     <ReactFlowContextMenu>
       <div className={nodeData?.isGroupHead ? "relative" : ""}>
@@ -52,7 +67,11 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         <NodeContainer {...{ nodeId, nodeData, selected }} {...props}>
           <NodeHeader>
             {nodeData.icon ? (
-              iconMapper[nodeData.icon]
+              Object.keys(customIconMapper).includes(nodeData?.icon) ? (
+                customIconMapper[nodeData?.icon]
+              ) : (
+                iconMapper[nodeData.icon]
+              )
             ) : (
               <NodeImage src={nodeData.img} />
             )}
