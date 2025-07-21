@@ -5,7 +5,7 @@ using System.Activities;
 using System.ComponentModel;
 using System.Threading.Tasks;
 
-namespace CodeActivitiesLibrary.AppIntegrations.M365.Graph.Outlook
+namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Get Access Token Using App Key")]
     [Description("Acquires a Microsoft Graph API access token using client credentials (App Key flow).")]

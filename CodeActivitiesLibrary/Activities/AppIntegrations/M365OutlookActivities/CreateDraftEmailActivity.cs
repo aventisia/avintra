@@ -10,7 +10,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CodeActivitiesLibrary.AppIntegrations.M365.Graph.Outlook
+namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Create Draft Email")]
     [Description("Creates a draft email message in the user's mailbox using Microsoft Graph API.")]

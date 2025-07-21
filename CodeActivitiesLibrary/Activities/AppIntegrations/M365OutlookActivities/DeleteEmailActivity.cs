@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace CodeActivitiesLibrary.AppIntegrations.M365.Graph.Outlook
+namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Delete Email")]
     [Description("Deletes an email from the mailbox using its Message ID via Microsoft Graph API.")]

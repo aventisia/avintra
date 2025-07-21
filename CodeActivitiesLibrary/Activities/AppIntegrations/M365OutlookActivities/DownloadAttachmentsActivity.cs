@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace CodeActivitiesLibrary.AppIntegrations.M365.Graph.Outlook
+namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Download Attachments")]
     [Description("Downloads all attachments for a specified email message using Microsoft Graph API.")]

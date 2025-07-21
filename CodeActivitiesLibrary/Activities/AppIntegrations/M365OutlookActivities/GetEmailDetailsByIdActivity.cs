@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace CodeActivitiesLibrary.AppIntegrations.M365.Graph.Outlook
+namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Get Email Details by ID")]
     [Description("Fetches full email details (including attachments) from Outlook using the Graph API by message ID.")]
