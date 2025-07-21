@@ -47,11 +47,11 @@ export const CallAgentNode = ({
             <Separator className="h-[1px] bg-[#E8E8E8]" />
             {/* Description */}
             <NodeDescription>{data.description}</NodeDescription>
+            <InputHandle position={targetPosition} />
+            <OutputHandle position={sourcePosition} />
           </div>
         </OpenNodeConfig>
       </div>
-      <InputHandle position={targetPosition} />
-      <OutputHandle position={sourcePosition} />
     </ReactFlowContextMenu>
   );
 };
