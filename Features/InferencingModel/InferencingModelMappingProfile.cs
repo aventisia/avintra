@@ -35,5 +35,17 @@ public class InferencingModelMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedByUserId)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn);
+
+        config.NewConfig<ExtractedData, InferencingModelExtractedDataDetailDto>()
+            .Map(dest => dest.Id, src => src.MLModelId)
+            .Map(dest => dest.DocId, src => src.DocId)
+            .Map(dest => dest.DocName, src => src.UploadedDoc.Name)
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                : null)
+            .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
+                ? src.CreatedByUser.UserName
+                : null);
     }
 }

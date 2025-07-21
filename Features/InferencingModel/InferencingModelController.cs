@@ -35,12 +35,12 @@ public class InferencingModelController : BaseApiController
         return ResultHelper(await _inferencingModelService.ExecuteLLMByFileIdsAsync(modelExecutionRequestDto));
     }
 
-    // // Retrieves a collection of extracted data records associated with a specific machine learning model.
-    // [HttpGet("extracted-data/{mlModelId}")]
-    // public async Task<ActionResult<ServiceResponse<IEnumerable<ExtractedDataResponseDto>>>> GetExtractedDataByMLModelId(Guid mlModelId)
-    // {
-    //     return ResultHelper(await _inferencingModelService.GetExtractedDataByMLModelIdAsync(mlModelId));
-    // }
+    // Retrieve a extracted data records associated with a specific machine learning model.
+    [HttpGet("extracted-data/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ExtractedDataResponseDto>>>> GetExtractedDataByMLModelId(Guid mlModelId)
+    {
+        return ResultHelper(await _inferencingModelService.GetExtractedDataByMLModelIdAsync(mlModelId));
+    }
 
     // // -------------------- Run & Review Data Endpoints --------------------
 

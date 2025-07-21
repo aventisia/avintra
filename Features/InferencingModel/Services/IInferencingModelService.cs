@@ -37,4 +37,14 @@ public interface IInferencingModelService
     /// <param name="modelExecutionRequestDto">The DTO containing the model ID, optional task ID, and content for extraction.</param>
     /// <returns>A service response containing the extracted data and status of the execution.</returns>
     Task<ServiceResponse<InferencingModelResponseDto>> ExecuteLLMByFileContentAsync(ModelContentProcessingRequestDto modelExecutionRequestDto);
+
+    /// <summary>
+    /// Gets the extracted data list linked to a specific machine learning model asynchronously.
+    /// </summary>
+    /// <param name="mlModelId">The ID of the machine learning model.</param>
+    /// <returns>
+    /// A task that returns a service response containing a list of 
+    /// <see cref="InferencingModelExtractedDataDetailDto"/> records.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<InferencingModelExtractedDataDetailDto>>>  GetExtractedDataByMLModelIdAsync(Guid mlModelId);
 }

@@ -573,6 +573,155 @@ public class InferencingModelService : IInferencingModelService
         return serviceResponse;
     }
 
+    // Retrieves extracted data records associated with a specific ML model.
+    public async Task<ServiceResponse<IEnumerable<InferencingModelExtractedDataDetailDto>>> GetExtractedDataByMLModelIdAsync(Guid mlModelId)
+    {
+        // Initialize the response with a default failure message
+        var serviceResponse = new ServiceResponse<IEnumerable<InferencingModelExtractedDataDetailDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve extracted data. Please try again later."
+        };
+
+        try
+        {
+            _logger.LogInformation("Retrieving extracted data for ML model ID: {MLModelId}", mlModelId);
+
+            // Retrieve the ML model along with associated tasks
+            var mlModel = await _unitOfWork.MLModelRepo
+                .GetByConditionAsync(w => w.Id == mlModelId)
+                .Include(i => i.Tasks)
+                .SingleOrDefaultAsync();
+
+            // Check if the ML model was found, if not return an appropriate message
+            if (mlModel == null)
+            {
+                _logger.LogWarning("ML model not found: {MLModelId}", mlModelId);
+                serviceResponse.Message = "ML model not found.";
+                return serviceResponse;
+            }
+
+            // Extract task IDs for fast lookup using a HashSet
+            var taskIds = mlModel.Tasks.Select(t => t.Id).ToHashSet();
+
+            // Fetch all extracted data related to the model's tasks
+            var extractedDataList = await _unitOfWork.ExtractedDataRepo
+                .GetByConditionAsync(w => taskIds.Contains(w.ModelTaskId))
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.UploadedDoc)
+                .Include(i => i.ModelTask)
+                .ToListAsync();
+
+            // Handle case where no extracted data exists
+            if (!extractedDataList.Any())
+            {
+                _logger.LogInformation("No extracted data found for ML model ID: {MLModelId}", mlModelId);
+                serviceResponse.Message = "No extracted data found.";
+                return serviceResponse;
+            }
+
+            // Group extracted data by DocId
+            var extractedDataByDocId = extractedDataList
+                .GroupBy(data => data.DocId)
+                .Select(group =>
+                {
+
+                    // Initialize the list to hold the DTOs for the current group
+                    var inferencingModelExtractedDataDetailDto = group.First().Adapt<InferencingModelExtractedDataDetailDto>();
+
+                    // Loop through each item in the group and populate the DTO
+                    foreach (var extractedData in group)
+                    {
+                        // Deserialize the data object and update the DTO accordingly
+                        inferencingModelExtractedDataDetailDto = DeserializeExtractedDataObject(extractedData.ModelTask?.Name, extractedData.DataObject, inferencingModelExtractedDataDetailDto);
+                    }
+
+                    // Return the list of valid DTOs for this group
+                    return inferencingModelExtractedDataDetailDto;
+                    ;
+                })
+                .ToList();
+
+            // Log success with the number of grouped records
+            _logger.LogInformation("Successfully grouped {Count} extracted records for ML model ID: {MLModelId}", extractedDataByDocId.Count, mlModelId);
+
+            // Populate the service response with the grouped data
+            serviceResponse.Data = extractedDataByDocId;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Extracted data grouped by document retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log any exception details for debugging purposes
+            _logger.LogError(ex, "Error retrieving extracted data for ML model ID: {MLModelId}", mlModelId);
+            serviceResponse.Message = "An error occurred while retrieving data. Please try again later.";
+        }
+
+        return serviceResponse;
+    }
+
+    // Deserializes the extracted data object JSON string into the appropriate DTO based on the given task name,
+    private InferencingModelExtractedDataDetailDto DeserializeExtractedDataObject(string taskName, string? dataObject, InferencingModelExtractedDataDetailDto inferencingModelExtractedDataDetailDto)
+    {
+        // Check if task name or data is empty or null
+        if (string.IsNullOrWhiteSpace(taskName) || string.IsNullOrWhiteSpace(dataObject))
+            return inferencingModelExtractedDataDetailDto;
+
+        try
+        {
+            // Configure JSON deserialization options (case-insensitive property mapping)
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            // Choose deserialization strategy based on the inferencing task name
+            switch (taskName)
+            {
+                case nameof(InferencingModelTypesEnum.Extraction):
+                    // Deserialize extraction task data
+                    inferencingModelExtractedDataDetailDto.Extraction = JsonSerializer.Deserialize<ExtractionTaskExtractedDataDto>(dataObject, jsonOptions);
+                    break;
+
+                case nameof(InferencingModelTypesEnum.Summarization):
+                    // Deserialize summarization task data
+                    inferencingModelExtractedDataDetailDto.Summarization = JsonSerializer.Deserialize<SummarizationTaskExtractedDataDto>(dataObject, jsonOptions);
+                    break;
+
+                case nameof(InferencingModelTypesEnum.QuestionAnswer):
+                    // Deserialize question-answer task data
+                    inferencingModelExtractedDataDetailDto.QuestionAnswer = JsonSerializer.Deserialize<List<QuestionAnswerTaskExtractedDataDto>>(dataObject, jsonOptions);
+                    break;
+
+                case nameof(InferencingModelTypesEnum.SentimentAnalytics):
+                    // Deserialize sentiment analytics task data
+                    inferencingModelExtractedDataDetailDto.SentimentAnalytics = JsonSerializer.Deserialize<List<SentimentAnalysisExtractedDataDto>>(dataObject, jsonOptions);
+                    break;
+
+                case nameof(InferencingModelTypesEnum.Classification):
+                    // Deserialize classification task data
+                    inferencingModelExtractedDataDetailDto.Classification = JsonSerializer.Deserialize<List<ClassificationTaskExtractedDataDto>>(dataObject, jsonOptions);
+                    break;
+
+                default:
+                    // Log warning if task type is unknown
+                    _logger.LogWarning("Unknown task name provided: {TaskName}", taskName);
+                    break;
+            }
+
+            // Return the updated DTO object
+            return inferencingModelExtractedDataDetailDto;
+        }
+        catch (Exception ex)
+        {
+            // Log error if deserialization fails
+            _logger.LogError(ex, "Failed to deserialize LLM response for task type: {TaskName}", taskName);
+            return inferencingModelExtractedDataDetailDto;
+        }
+    }
+
+
+
     // Processes a document extraction for a model task, creating or updating extracted data based on the document's state.
     private async Task<(ExtractedData? NewExtractedData, ExtractedData? UpdatedExtractedData)> ProcessFileAsync(MLModel model, ModelTask modelTask, Guid fileId, InferencingModelTaskResponseDto documentExtractionData)
     {
