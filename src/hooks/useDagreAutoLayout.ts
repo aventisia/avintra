@@ -158,7 +158,7 @@ export const useDagreAutoLayout = () => {
         (edge) =>
           visibleNodeIds.has(edge.source) &&
           visibleNodeIds.has(edge.target) &&
-          edge.targetHandle !== "for-loop-repeat",//filter loop back edge to get loop layout
+          edge.targetHandle !== "for-loop-repeat", // filter loop-back edge
       );
 
       // 🧠 Layout only visible nodes and edges
@@ -168,13 +168,20 @@ export const useDagreAutoLayout = () => {
         layoutDirection,
       );
 
-      // 💾 Keep original positions for hidden nodes
-      const hiddenNodes = currentNodes.filter((node) => node.hidden);
+      //  Create a map of layouted visible nodes
+      const layoutedNodeMap = new Map(
+        layoutedVisibleNodes.map((node) => [node.id, node]),
+      );
 
-      // 🧩 Merge back all nodes: layouted visible + unchanged hidden
-      const allLayoutedNodes = [...layoutedVisibleNodes, ...hiddenNodes];
+      // ✅ Rebuild full nodes array in original order
+      const allLayoutedNodes = currentNodes.map(
+        (originalNode) =>
+          layoutedNodeMap.has(originalNode.id)
+            ? layoutedNodeMap.get(originalNode.id)! // Replace with layouted node
+            : originalNode, // Keep hidden node untouched
+      );
 
-      setEdges([...currentEdges]); // Keep all original edges including temporary
+      // Animate layout with D3 timer
       const duration = AUTO_LAYOUT_ANIMATION_DURATION;
 
       const startPositions = currentNodes.map((node) => node.position);
@@ -183,7 +190,7 @@ export const useDagreAutoLayout = () => {
       // Animate using D3
       const d3Timer = timer((elapsed: number) => {
         const progress = Math.min(elapsed / duration, 1);
-        // Interpolate the positions of the nodes
+
         const interpolatedNodes = allLayoutedNodes.map((node, index) => ({
           ...node,
           position: {
@@ -202,6 +209,8 @@ export const useDagreAutoLayout = () => {
         // Stop the timer if the progress reaches 100%
         if (progress === 1) d3Timer.stop();
       });
+
+      setEdges([...currentEdges]);
     },
     [nodes, edges, layoutDirection, setNodes, setEdges],
   );
