@@ -23,21 +23,21 @@ class TTSRequest(BaseModel):
 kokoro_pipeline: Optional[KPipeline] = None
 OUTPUT_SAMPLE_RATE = 24000  # Sample rate expected by Kokoro
 
-def load_kokoro_model():
-    """
-    Loads the Kokoro TTS pipeline.
-    If the pipeline is already loaded, it does nothing.
-    """
-    global kokoro_pipeline
-    if kokoro_pipeline is None:
-        logger.info("Loading Kokoro TTS pipeline...")
+# def load_kokoro_model():
+#     """
+#     Loads the Kokoro TTS pipeline.
+#     If the pipeline is already loaded, it does nothing.
+#     """
+#     global kokoro_pipeline
+#     if kokoro_pipeline is None:
+#         logger.info("Loading Kokoro TTS pipeline...")
 
-        try:
-            kokoro_pipeline = KPipeline(lang_code='a')  # 'a' = American English
-            logger.info("Kokoro TTS pipeline loaded successfully.")
-        except Exception as e:
-            logger.error(f"Failed to initialize Kokoro TTS pipeline: {e}")
-            raise RuntimeError("TTS pipeline initialization failed.") from e
+#         try:
+#             kokoro_pipeline = KPipeline(lang_code='a')  # 'a' = American English
+#             logger.info("Kokoro TTS pipeline loaded successfully.")
+#         except Exception as e:
+#             logger.error(f"Failed to initialize Kokoro TTS pipeline: {e}")
+#             raise RuntimeError("TTS pipeline initialization failed.") from e
 
 @router.post("/tts/kokoro/generate", status_code=200)
 async def generate_kokoro_tts_audio(request: TTSRequest):
