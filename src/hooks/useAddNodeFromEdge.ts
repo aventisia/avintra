@@ -92,7 +92,7 @@ export const useAddNodeFromEdge = () => {
           source: groupHeadId,
           target: lastNode.id,
           label: "plus",
-          markerEnd: `${MARKER_ARROW_PREFIX}temp-${groupHeadId}-${lastNode.id}`,
+          markerEnd: `${MARKER_ARROW_PREFIX}temp-${groupHeadNode?.data?.groupId}-${lastNode.id}`,
           deletable: true,
           data: {
             isTemporary: true,
