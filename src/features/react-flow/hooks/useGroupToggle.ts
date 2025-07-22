@@ -30,14 +30,22 @@ export function useGroupToggle() {
 
     const groupNodes = nodes.filter((n) => n.data?.groupId === groupId);
     const groupNodeIds = groupNodes.map((n) => n.id);
-    const lastNode = groupNodes[groupNodes.length - 1];
+
+    // ✅ Find true last node (exit point): no outgoing edge to another group member
+    const groupLastNode = groupNodes.find(
+      (node) =>
+        !edges.some(
+          (edge) =>
+            edge.source === node.id && groupNodeIds.includes(edge.target),
+        ),
+    );
+    const lastNode = groupLastNode ?? groupNodes[groupNodes.length - 1];
 
     let updatedNodes: Node[] = [];
     let updatedEdges: Edge[] = [];
 
     if (!isCurrentlyExpanded) {
-      // --- EXPAND ---
-
+      // --- EXPAND GROUP ---
       updatedNodes = nodes.map((node) => {
         if (node.data?.groupId === groupId) {
           return {
@@ -52,16 +60,12 @@ export function useGroupToggle() {
         return node;
       });
 
-      // Remove temporary edge(s)
-      const cleanedEdges = edges.filter(
+      // Remove temporary edges related to this group
+      updatedEdges = edges.filter(
         (e) => !(e.data?.isTemporary && e.id.includes(groupId)),
       );
-
-      updatedEdges = cleanedEdges;
     } else {
-      // --- COLLAPSE ---
-
-      // Hide group members except head
+      // --- COLLAPSE GROUP ---
       updatedNodes = nodes.map((node) => {
         if (node.id === groupHead.id) {
           return {
@@ -72,16 +76,18 @@ export function useGroupToggle() {
             },
           };
         }
-        if (node.data?.groupId === groupId) {
+
+        if (node.data?.groupId === groupId && !node.data?.isGroupHead) {
           return {
             ...node,
             hidden: true,
           };
         }
+
         return node;
       });
 
-      // Add back single bypass edge from group head to next node (outside group)
+      // Create temporary bypass edge from group head to the next non-group node
       const outgoingEdge = edges.find(
         (e) => e.source === lastNode.id && !groupNodeIds.includes(e.target),
       );
@@ -93,11 +99,12 @@ export function useGroupToggle() {
             target: outgoingEdge.target,
             markerEnd: `${MARKER_ARROW_PREFIX}temp-${groupId}-${outgoingEdge.target}`,
             deletable: true,
-            // label: "plus",
+            label: "plus",
             data: {
               isTemporary: true,
               originalSource: outgoingEdge.source,
               originalTarget: outgoingEdge.target,
+              groupId,
             },
           }
         : null;
@@ -111,7 +118,6 @@ export function useGroupToggle() {
 
     setNodes(updatedNodes);
     setEdges(updatedEdges);
-
     setPendingLayoutTrigger(true);
   };
 
