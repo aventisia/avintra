@@ -14,7 +14,9 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    file_url: "/files/4bb3f813-4444-429e-badd-890b7b2b6503.mp3",
-    download: false
+    //file_url: "/files/default-files/7ae210ad-78ad-4661-b014-7dbdfa376590.mp3",
+    download: false,
+    lang_code: "en",
+    use_gpu: true
   })
 }
