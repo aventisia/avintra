@@ -61,7 +61,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
           Array.from({ length: renderCount }).map((_, i) => (
             <div
               key={i}
-              className={`absolute inset-0 left-${renderCount - i} top-${renderCount - i} -z-10 h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-slate-400 bg-white hover:ring hover:ring-ring ${nodeData?.isDisabled && "opacity-50"} `}
+              className={`absolute inset-0 left-${renderCount - i} top-${renderCount - i} -z-10 h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-slate-500 bg-white hover:ring hover:ring-ring ${nodeData?.isDisabled && "opacity-50"} `}
             />
           ))}
         <NodeContainer {...{ nodeId, nodeData, selected }} {...props}>
