@@ -24,7 +24,7 @@ export const NodeContainer = ({
         nodeData.type == "forLoopNode" && "border-[#B5B1F4]",
         nodeData.type == "conditionalNode" && "border-[#7D76EC]",
         nodeData.type == "blockNode" && "border-[#353535]",
-        !!nodeData?.groupId && "border-slate-400",
+        !!nodeData?.groupId && "border-slate-500",
         className,
         selected && "border-primary ring ring-ring",
         nodeData?.isDisabled && "opacity-50",
@@ -33,11 +33,11 @@ export const NodeContainer = ({
     >
       <div
         className={cn(
-          "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center rounded-l-lg bg-slate-100",
+          "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center rounded-l-lg bg-slate-200",
           nodeData.type == "forLoopNode" && "bg-[#7D76EC]",
           nodeData.type == "conditionalNode" && "bg-[#6159E8]",
           nodeData.type == "blockNode" && "bg-[#353535]",
-          !!nodeData?.groupId && "bg-slate-200",
+          !!nodeData?.groupId && "bg-slate-300",
         )}
       >
         <GripVertical className={cn("h-5 w-5 text-white")} />
