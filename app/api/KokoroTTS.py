@@ -33,25 +33,45 @@ def load_kokoro_model():
 @router.post("/tts/kokoro/generate", status_code=200)
 async def generate_kokoro_tts_audio(
     text: str = Form(..., description="Text to convert to speech."),
-    voice_name: Optional[str] = Form('af_heart', description="Voice name (default: 'af_heart').")
+    voice: Optional[str] = Form('af_heart', description="Voice name (default: 'af_heart')."),
+    lang_code: Optional[str] = Form('a', description="Voice name (default: 'a')."),
+    speed: Optional[float] = Form(1.0, description="Speed of speech (default: 1.0, range: 0.5 to 2.0).")
 ):
     """
     Convert input text to speech using Kokoro TTS and return it as an MP3 audio stream.
+    
+    Parameters:
+    - text: The text to be converted to speech.
+    - voice: The voice model to use for speech generation (default is 'af_heart').
+    - lang_code: The language code for the voice (default is 'a' for American English).
+    - speed: The speed of speech, ranging from 0.5 (slower) to 2.0 (faster). Default is 1.0.
+    
+    Returns:
+    - StreamingResponse: The generated audio file in MP3 format.
     """
 
     try:
-        # Load the model if not already loaded
-        load_kokoro_model()
+        
 
-        logger.info(f"Generating audio for text: '{text[:50]}...' | Voice: '{voice_name}'")
+        try:
+            # Initialize the TTS pipeline with the specified language code
+            kokoro_pipeline = KPipeline(lang_code=lang_code)  # 'a' = American English
+            logger.info("Kokoro TTS pipeline loaded successfully.")
+        except Exception as e:
+            # If the TTS pipeline fails to initialize, log the error and raise an exception
+            logger.error(f"Failed to initialize Kokoro TTS pipeline: {e}")
+            raise RuntimeError("TTS pipeline initialization failed.") from e
+            
+
+        logger.info(f"Generating audio for text: '{text[:50]}...' | Voice: '{voice}'")
 
         # Generate audio chunks using the Kokoro pipeline
         audio_segments = [
             segment.cpu()
             for _, _, segment in kokoro_pipeline(
                 text,
-                voice=voice_name,
-                speed=1,
+                voice=voice,
+                speed=speed,
                 split_pattern=r'\n+'
             )
         ]
