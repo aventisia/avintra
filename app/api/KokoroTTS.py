@@ -1,5 +1,6 @@
 # KokoroTTS.py
 import io
+from pydantic import BaseModel
 import torch
 import torchaudio as ta
 from typing import Optional
@@ -9,6 +10,14 @@ from app.core.logger import logger
 from kokoro import KPipeline
 
 router = APIRouter()
+
+# Define the request body using Pydantic model
+class TTSRequest(BaseModel):
+    text: str
+    voice: Optional[str] = 'af_heart'
+    lang_code: Optional[str] = 'a'
+    speed: Optional[float] = 1.0
+    use_gpu: Optional[bool] = False
 
 # Global variable to hold the Kokoro TTS pipeline instance
 kokoro_pipeline: Optional[KPipeline] = None
@@ -31,31 +40,29 @@ def load_kokoro_model():
             raise RuntimeError("TTS pipeline initialization failed.") from e
 
 @router.post("/tts/kokoro/generate", status_code=200)
-async def generate_kokoro_tts_audio(
-    text: str = Form(..., description="Text to convert to speech."),
-    voice: Optional[str] = Form('af_heart', description="Voice name (default: 'af_heart')."),
-    lang_code: Optional[str] = Form('a', description="Voice name (default: 'a')."),
-    speed: Optional[float] = Form(1.0, description="Speed of speech (default: 1.0, range: 0.5 to 2.0).")
-):
+async def generate_kokoro_tts_audio(request: TTSRequest):
     """
     Convert input text to speech using Kokoro TTS and return it as an MP3 audio stream.
-    
+
     Parameters:
     - text: The text to be converted to speech.
     - voice: The voice model to use for speech generation (default is 'af_heart').
     - lang_code: The language code for the voice (default is 'a' for American English).
     - speed: The speed of speech, ranging from 0.5 (slower) to 2.0 (faster). Default is 1.0.
-    
+    - use_gpu: Flag to indicate whether to use GPU for TTS generation. Default is False.
+
     Returns:
     - StreamingResponse: The generated audio file in MP3 format.
     """
 
     try:
+        # Check for GPU availability and set device
+        device = torch.device("cuda" if request.use_gpu and torch.cuda.is_available() else "cpu")
+        logger.info(f"Using device: {device}")
         
-
         try:
             # Initialize the TTS pipeline with the specified language code
-            kokoro_pipeline = KPipeline(lang_code=lang_code)  # 'a' = American English
+            kokoro_pipeline = KPipeline(lang_code=request.lang_code)  # 'a' = American English
             logger.info("Kokoro TTS pipeline loaded successfully.")
         except Exception as e:
             # If the TTS pipeline fails to initialize, log the error and raise an exception
@@ -63,15 +70,15 @@ async def generate_kokoro_tts_audio(
             raise RuntimeError("TTS pipeline initialization failed.") from e
             
 
-        logger.info(f"Generating audio for text: '{text[:50]}...' | Voice: '{voice}'")
+        logger.info(f"Generating audio for text: '{request.text[:50]}...' | Voice: '{request.voice}'")
 
         # Generate audio chunks using the Kokoro pipeline
         audio_segments = [
             segment.cpu()
             for _, _, segment in kokoro_pipeline(
-                text,
-                voice=voice,
-                speed=speed,
+                request.text,
+                voice=request.voice,
+                speed=request.speed,
                 split_pattern=r'\n+'
             )
         ]
@@ -80,7 +87,7 @@ async def generate_kokoro_tts_audio(
             raise ValueError("No audio segments were generated.")
 
         # Merge audio chunks into a single tensor
-        full_audio = torch.cat(audio_segments, dim=0)
+        full_audio = torch.cat(audio_segments, dim=0).to(device)  # Move to chosen device
 
         # Save the audio to a memory buffer as MP3
         audio_buffer = io.BytesIO()
