@@ -90,13 +90,13 @@ public class InferencingModelService : IInferencingModelService
 
         try
         {
-            // // Validate input DTO
-            // if (!ValidateModelSetupDto(modelSetupDto, out string? validationMessage))
-            // {
-            //     _logger.LogWarning("Model setup validation failed: {ValidationMessage}", validationMessage);
-            //     serviceResponse.Message = validationMessage;
-            //     return serviceResponse;
-            // }
+            // Validate input DTO
+            if (!ValidateModelSetupDto(modelSetupDto, out string? validationMessage))
+            {
+                _logger.LogWarning("Model setup validation failed: {ValidationMessage}", validationMessage);
+                serviceResponse.Message = validationMessage;
+                return serviceResponse;
+            }
 
             _logger.LogInformation("Starting update for model setup | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
 
@@ -660,6 +660,250 @@ public class InferencingModelService : IInferencingModelService
         return serviceResponse;
     }
 
+    // Validates the input model setup DTO and its associated tasks.
+    private bool ValidateModelSetupDto(InferencingModelDto modelSetupDto, out string? validationMessage)
+    {
+        validationMessage = null;
+        string? detailedMessage = null;
+
+        _logger.LogInformation("Starting validation for InferencingModelDto.");
+
+        // Ensure the required top-level field 'BusinessContext' is present
+        if (string.IsNullOrEmpty(modelSetupDto.BusinessContext))
+        {
+            detailedMessage = "BusinessContext is required."; // Missing BusinessContext
+            _logger.LogWarning("Validation failed: {ErrorDetail}", detailedMessage);
+            validationMessage = detailedMessage;
+            return false;
+        }
+
+        if (modelSetupDto.Extraction != null)
+        {
+            // Ensure that the 'Extraction' task has at least one field defined
+            if (modelSetupDto.Extraction.SetupObject.Fields == null || !modelSetupDto.Extraction.SetupObject.Fields.Any())
+            {
+                detailedMessage = "Extraction task requires at least one field."; // No fields in extraction
+                _logger.LogWarning("Validation failed: {ErrorDetail}", detailedMessage);
+                validationMessage = detailedMessage;
+                return false;
+            }
+
+            // Check for duplicate field names in 'Extraction'
+            var fieldNames = modelSetupDto.Extraction.SetupObject.Fields.Select(f => f.Name.ToLower()).ToList();
+            var duplicateFields = fieldNames.GroupBy(f => f)
+                                            .Where(g => g.Count() > 1)
+                                            .Select(g => g.Key)
+                                            .ToList();
+            if (duplicateFields.Any())
+            {
+                detailedMessage = $"Field name(s) '{string.Join(", ", duplicateFields)}' are duplicated."; // Duplicated field names
+                _logger.LogWarning("Validation failed: {ErrorDetail}", detailedMessage);
+                validationMessage = detailedMessage;
+                return false;
+            }
+
+            // Check for duplicate table names in 'Extraction'
+            var tableNames = modelSetupDto.Extraction.SetupObject.Tables.Select(t => t.Name.ToLower()).ToList();
+            var duplicateTables = tableNames.GroupBy(t => t)
+                                           .Where(g => g.Count() > 1)
+                                           .Select(g => g.Key)
+                                           .ToList();
+            if (duplicateTables.Any())
+            {
+                detailedMessage = $"Table name(s) '{string.Join(", ", duplicateTables)}' are duplicated."; // Duplicated table names
+                _logger.LogWarning("Validation failed: {ErrorDetail}", detailedMessage);
+                validationMessage = detailedMessage;
+                return false;
+            }
+
+            // Check for duplicate table headers within each table
+            foreach (var table in modelSetupDto.Extraction.SetupObject.Tables)
+            {
+                if (table.TableHeaders != null && table.TableHeaders.Any())
+                {
+                    var headerNames = table.TableHeaders.Select(h => h.Name.ToLower()).ToList();
+                    var duplicateHeaders = headerNames.GroupBy(h => h)
+                                                      .Where(g => g.Count() > 1)
+                                                      .Select(g => g.Key)
+                                                      .ToList();
+                    if (duplicateHeaders.Any())
+                    {
+                        detailedMessage = $"Table '{table.Name}' has duplicate header(s): '{string.Join(", ", duplicateHeaders)}'."; // Duplicated table headers
+                        _logger.LogWarning("Validation failed: {ErrorDetail}", detailedMessage);
+                        validationMessage = detailedMessage;
+                        return false;
+                    }
+                }
+            }
+        }
+
+        if (modelSetupDto.Summarization != null)
+        {
+            // Ensure TotalMinimumWords is greater than 0
+            if (modelSetupDto.Summarization.SetupObject.TotalMinimumWords <= 0)
+            {
+                detailedMessage = "TotalMinimumWords should be greater than 0."; // Invalid TotalMinimumWords
+                _logger.LogWarning("Validation failed: {ErrorDetail}", detailedMessage);
+                validationMessage = detailedMessage;
+                return false;
+            }
+
+            // Ensure TotalMaximumWords is greater than 0
+            if (modelSetupDto.Summarization.SetupObject.TotalMaximumWords <= 0)
+            {
+                detailedMessage = "TotalMaximumWords should be greater than 0."; // Invalid TotalMaximumWords
+                _logger.LogWarning("Validation failed: {ErrorDetail}", detailedMessage);
+                validationMessage = detailedMessage;
+                return false;
+            }
+        }
+
+        if (modelSetupDto.QuestionAnswer != null)
+        {
+            // Check for duplicate question answer names
+            var questionAnswerNames = modelSetupDto.QuestionAnswer.SetupObject.QuestionAnswers
+                .Select(qa => qa.Name.ToLower())
+                .ToList();
+
+            var duplicateQuestionAnswers = questionAnswerNames.GroupBy(qa => qa)
+                                                              .Where(g => g.Count() > 1)
+                                                              .Select(g => g.Key)
+                                                              .ToList();
+
+            if (duplicateQuestionAnswers.Any())
+            {
+                detailedMessage = $"Question answer name(s) '{string.Join(", ", duplicateQuestionAnswers)}' are duplicated."; // Duplicated question answer names
+                _logger.LogWarning("Validation failed: {ErrorDetail}", detailedMessage);
+                validationMessage = detailedMessage;
+                return false;
+            }
+        }
+
+        if (modelSetupDto.Classification != null)
+        {
+            // Check for duplicate category names in 'Classification'
+            var categoryNames = modelSetupDto.Classification.SetupObject.Categories
+                .Select(c => c.Name.ToLower())
+                .ToList();
+            var duplicateCategories = categoryNames.GroupBy(c => c)
+                                                   .Where(g => g.Count() > 1)
+                                                   .Select(g => g.Key)
+                                                   .ToList();
+
+            if (duplicateCategories.Any())
+            {
+                detailedMessage = $"Category name(s) '{string.Join(", ", duplicateCategories)}' are duplicated."; // Duplicated category names
+                _logger.LogWarning("Validation failed: {ErrorDetail}", detailedMessage);
+                validationMessage = detailedMessage;
+                return false;
+            }
+
+            // Check for duplicate subcategory names within each category
+            foreach (var category in modelSetupDto.Classification.SetupObject.Categories)
+            {
+                var subCategoryNames = category.SubCategories
+                                              .Select(sc => sc.Name.ToLower())
+                                              .ToList();
+                var duplicateSubCategories = subCategoryNames.GroupBy(sc => sc)
+                                                             .Where(g => g.Count() > 1)
+                                                             .Select(g => g.Key)
+                                                             .ToList();
+
+                if (duplicateSubCategories.Any())
+                {
+                    detailedMessage = $"Subcategory name(s) '{string.Join(", ", duplicateSubCategories)}' in category '{category.Name}' are duplicated."; // Duplicated subcategory names
+                    _logger.LogWarning("Validation failed: {ErrorDetail}", detailedMessage);
+                    validationMessage = detailedMessage;
+                    return false;
+                }
+
+                // Check for duplicate sub-subcategory names within each subcategory
+                foreach (var subCategory in category.SubCategories)
+                {
+                    var subSubCategoryNames = subCategory.SubSubCategories
+                                                         .Select(ssc => ssc.Name.ToLower())
+                                                         .ToList();
+                    var duplicateSubSubCategories = subSubCategoryNames.GroupBy(ssc => ssc)
+                                                                       .Where(g => g.Count() > 1)
+                                                                       .Select(g => g.Key)
+                                                                       .ToList();
+
+                    if (duplicateSubSubCategories.Any())
+                    {
+                        detailedMessage = $"Sub-subcategory name(s) '{string.Join(", ", duplicateSubSubCategories)}' in subcategory '{subCategory.Name}' under category '{category.Name}' are duplicated."; // Duplicated sub-subcategory names
+                        _logger.LogWarning("Validation failed: {ErrorDetail}", detailedMessage);
+                        validationMessage = detailedMessage;
+                        return false;
+                    }
+                }
+            }
+        }
+
+        if (modelSetupDto.SentimentAnalytics != null)
+        {
+            // Check for duplicate category names in SentimentAnalytics
+            var sentimentCategoryNames = modelSetupDto.SentimentAnalytics.SetupObject.Categories
+                .Select(c => c.Name.ToLower())
+                .ToList();
+            var duplicateSentimentCategories = sentimentCategoryNames.GroupBy(c => c)
+                                                                    .Where(g => g.Count() > 1)
+                                                                    .Select(g => g.Key)
+                                                                    .ToList();
+
+            if (duplicateSentimentCategories.Any())
+            {
+                detailedMessage = $"Category name(s) '{string.Join(", ", duplicateSentimentCategories)}' are duplicated in SentimentAnalytics."; // Duplicated sentiment categories
+                _logger.LogWarning("Validation failed: {ErrorDetail}", detailedMessage);
+                validationMessage = detailedMessage;
+                return false;
+            }
+
+            // Check for duplicate subcategory names within each SentimentAnalytics category
+            foreach (var category in modelSetupDto.SentimentAnalytics.SetupObject.Categories)
+            {
+                var sentimentSubCategoryNames = category.SubCategories
+                                                        .Select(sc => sc.Name.ToLower())
+                                                        .ToList();
+                var duplicateSentimentSubCategories = sentimentSubCategoryNames.GroupBy(sc => sc)
+                                                                               .Where(g => g.Count() > 1)
+                                                                               .Select(g => g.Key)
+                                                                               .ToList();
+
+                if (duplicateSentimentSubCategories.Any())
+                {
+                    detailedMessage = $"Subcategory name(s) '{string.Join(", ", duplicateSentimentSubCategories)}' in category '{category.Name}' in SentimentAnalytics are duplicated."; // Duplicated sentiment subcategory names
+                    _logger.LogWarning("Validation failed: {ErrorDetail}", detailedMessage);
+                    validationMessage = detailedMessage;
+                    return false;
+                }
+
+                // Check for duplicate sub-subcategory names within each SentimentAnalytics subcategory
+                foreach (var subCategory in category.SubCategories)
+                {
+                    var sentimentSubSubCategoryNames = subCategory.SubSubCategories
+                                                                 .Select(ssc => ssc.Name.ToLower())
+                                                                 .ToList();
+                    var duplicateSentimentSubSubCategories = sentimentSubSubCategoryNames.GroupBy(ssc => ssc)
+                                                                                       .Where(g => g.Count() > 1)
+                                                                                       .Select(g => g.Key)
+                                                                                       .ToList();
+
+                    if (duplicateSentimentSubSubCategories.Any())
+                    {
+                        detailedMessage = $"Sub-subcategory name(s) '{string.Join(", ", duplicateSentimentSubSubCategories)}' in subcategory '{subCategory.Name}' under category '{category.Name}' in SentimentAnalytics are duplicated."; // Duplicated sentiment sub-subcategory names
+                        _logger.LogWarning("Validation failed: {ErrorDetail}", detailedMessage);
+                        validationMessage = detailedMessage;
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // If all checks passed, log and return true
+        _logger.LogInformation("InferencingModelDto passed validation.");
+        return true;
+    }
+
     // Deserializes the extracted data object JSON string into the appropriate DTO based on the given task name,
     private InferencingModelExtractedDataDetailDto DeserializeExtractedDataObject(string taskName, string? dataObject, InferencingModelExtractedDataDetailDto inferencingModelExtractedDataDetailDto)
     {
@@ -719,8 +963,6 @@ public class InferencingModelService : IInferencingModelService
             return inferencingModelExtractedDataDetailDto;
         }
     }
-
-
 
     // Processes a document extraction for a model task, creating or updating extracted data based on the document's state.
     private async Task<(ExtractedData? NewExtractedData, ExtractedData? UpdatedExtractedData)> ProcessFileAsync(MLModel model, ModelTask modelTask, Guid fileId, InferencingModelTaskResponseDto documentExtractionData)
