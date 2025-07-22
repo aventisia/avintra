@@ -1,0 +1,23 @@
+meta {
+  name: Add document content
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/ai-model/document
+  body: multipartForm
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    model_id: bru.getGlobalEnvVar("MLMODEL_ID"),
+    file_path: faker.person.jobType(),
+    content: "Text",
+    user_id: bru.getGlobalEnvVar("USER_ID"),
+    timestamp: null,
+  })
+}

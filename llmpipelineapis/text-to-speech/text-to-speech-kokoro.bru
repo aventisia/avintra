@@ -6,11 +6,18 @@ meta {
 
 post {
   url: {{LLM_PIPELINE_APIS_BASE_URL}}/tts/kokoro/generate
-  body: multipartForm
+  body: none
   auth: none
 }
 
-body:multipart-form {
-  text: Artificial intelligence is transforming industries. Machine learning algorithms analyze vast datasets, powering innovations from self-driving cars to personalized recommendations
-  voice_name: af_alloy
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    text: faker.lorem.paragraphs(5),
+    voice: "af_heart",
+    lang_code: "a",
+    speed: "1",
+    use_gpu: false,
+  })
 }
