@@ -181,7 +181,7 @@ async def transcribe_from_url(request: FileRequest):
 
         else:
             # Use the local file path if the download flag is not set
-            file_path = Path("/var/www/aventisia.com") / request.file_url if platform.system() == "Linux" else request.file_url
+            file_path = "/var/www/aventisia.com" + str(request.file_url)
             logger.info(f"Using local file path: {file_path}")
 
         # Process the file for transcription
