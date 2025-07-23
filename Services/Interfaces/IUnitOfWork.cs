@@ -24,4 +24,5 @@ public interface IUnitOfWork
     IModelAPIKeyRepo ModelAPIKeyRepo { get; }
     IModelTaskRepo ModelTaskRepo { get; }
     IMLModelVersionRepo MLModelVersionRepo { get; }
+    IMLModelTemplateRepo MLModelTemplateRepo { get; }
 }
