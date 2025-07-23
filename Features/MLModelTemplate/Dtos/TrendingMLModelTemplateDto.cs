@@ -46,4 +46,24 @@ public class TrendingMLModelTemplateDto
     /// </summary>
     [Required]
     public required Guid MLModelVersionId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date and time when this template was created.
+    /// </summary>
+    public DateTimeOffset CreatedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the user who created this template.
+    /// </summary>
+    public Guid CreatedByUserId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the user who created this template.
+    /// </summary>
+    public string? CreatedBy { get; set; }
+
+    /// <summary>
+    /// Gets or sets the username of the user who created this template.
+    /// </summary>
+    public string? CreatedByUsername { get; set; }
 }
