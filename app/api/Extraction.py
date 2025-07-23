@@ -22,7 +22,7 @@ def get_pdf_path(pdf_url: str):
     logger.info("THE OS NAME IS: %s", platform.system())
 
     if platform.system() == "Linux":
-        return Path("/var/www/aventisia.com") / pdf_url
+        return Path("/var/www/aventisia.com") / pdf_url.lstrip('/')
     else:
         return pdf_url
 
@@ -69,16 +69,15 @@ router = APIRouter()
 @router.post("/extract-pdf-text/")
 async def extract_pdf_text(payload: PDFRequest):
     pdf_path = payload.pdf_url
+    temp_file = None  # Initialize temp_file variable here
 
     # Download PDF if required
-    if payload.download:
-        pdf_path = download_pdf(payload.pdf_url)
+    if payload.pdf_url and payload.pdf_url.startswith("https://"):
+        temp_file = download_pdf(payload.pdf_url)
+        pdf_path = temp_file
     else:
         pdf_path = get_pdf_path(payload.pdf_url)
 
-    # TODO: Not able to get the pdf full path so adding it manually
-    pdf_path = "/var/www/aventisia.com" + str(pdf_path)
-    
     logger.info("THE FULL PATH OF PDF: %s", pdf_path)
 
     try:
@@ -89,8 +88,8 @@ async def extract_pdf_text(payload: PDFRequest):
             extracted_text = extract_text_from_image_pdf(pdf_path)
     finally:
         # Clean up the temporary file if it was downloaded
-        if payload.download and os.path.exists(pdf_path):
-            os.remove(pdf_path)
+        if temp_file and os.path.exists(temp_file):
+            os.remove(temp_file)
 
     return extracted_text
 

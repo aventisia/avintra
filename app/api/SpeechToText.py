@@ -163,18 +163,19 @@ async def transcribe_from_url(request: FileRequest):
     """
     logger.info(f"Transcription requested from URL: {request.file_url}, download required: {request.download}")
     file_path = ""
-
+    temp_file = None  # Initialize temp_file variable here
     try:
+
         # Download file from URL if required
-        if request.download:
+        if request.file_url and request.file_url.startswith("https://"):  
             logger.debug("Downloading audio from URL...")
             response = requests.get(request.file_url)
             if response.status_code != 200:
                 logger.warning(f"Failed to download file (status code {response.status_code}): {request.file_url}")
                 raise HTTPException(status_code=400, detail="Failed to download file.")
 
-            temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
-            file_path = temp_file.name
+            temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3").name
+            file_path = temp_file
             with open(file_path, "wb") as f:
                 f.write(response.content)
             logger.info(f"Downloaded file saved to: {file_path}")
@@ -195,8 +196,8 @@ async def transcribe_from_url(request: FileRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
     finally:
-        # Remove the downloaded file if necessary
-        if request.download and os.path.exists(file_path):
-            os.remove(file_path)
+       # Remove the downloaded file if necessary
+        if temp_file and os.path.exists(temp_file):
+            os.remove(temp_file)
             logger.debug(f"Deleted downloaded temp file: {file_path}")
             
