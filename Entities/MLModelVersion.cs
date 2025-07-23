@@ -11,6 +11,16 @@ public class MLModelVersion : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the version number assigned to this model version.
+    /// </summary>
+    public int VersionNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets the timestamp when this model version was published.
+    /// </summary>
+    public DateTimeOffset? PublishedOn { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether this version is locked and cannot be modified.
     /// </summary>
     public bool IsLocked { get; set; }
@@ -40,11 +50,6 @@ public class MLModelVersion : BaseEntity, IMustHaveTenant
     /// </summary>
     [ForeignKey("MLModelId")]
     public virtual MLModel? MLModel { get; set; }
-
-    /// <summary>
-    /// Gets or sets the version number assigned to this model version.
-    /// </summary>
-    public int VersionNumber { get; set; }
 
     /// <summary>
     /// Gets or sets the collection of ML model templates linked to this version.
