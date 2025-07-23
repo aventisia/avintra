@@ -8,6 +8,17 @@ public class MLModelVersionDto
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of ML model. Max character is 50.
+    /// </summary>
+    [StringLength(50)]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of ML model.
+    /// </summary>
+    public ModelTypesEnum? Type { get; set; }
+
+    /// <summary>
     /// Gets or sets the identifier of the ML model to which this version belongs.
     /// </summary>
     public required Guid MLModelId { get; set; }
