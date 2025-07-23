@@ -7,7 +7,6 @@ public class ModelAPIKeyMappingProfile : IRegister
         // Mapping of DTO to get list of extracted data to show on the UI.
         config.NewConfig<ModelAPIKey, ModelAPIKeyDto>()
             .Map(dest => dest.ApiKey, src => string.Empty)
-            .Map(dest => dest.Name, src => src.MLModel != null ? src.MLModel.Name : null)
             .Map(dest => dest.Type, src => src.MLModel != null ? src.MLModel.Type.ToString() : null)
             .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName : null)
             .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null ? src.CreatedByUser.UserName : null);

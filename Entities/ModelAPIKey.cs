@@ -8,6 +8,17 @@ public class ModelAPIKey : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of api key. Max character is 50.
+    /// </summary>
+    [MaxLength(50)]
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the description of api key 
+    /// </summary>
+    public string? Description { get; set; }
+    
+    /// <summary>
     /// The API key used to access the associated ML model.
     /// </summary>
     [MaxLength(256)]
