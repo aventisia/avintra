@@ -11,12 +11,6 @@ public class MLModelTemplate : BaseEntity, IMustHaveTenant
     [Required]
     public Guid TenantId { get; set; }
 
-    /// <summary>
-    /// Gets or sets the name of the ML model template. Maximum length is 255 characters.
-    /// </summary>
-    [Required]
-    [MaxLength(255)]
-    public required string Name { get; set; }
 
     /// <summary>
     /// Gets or sets a description of the ML model template. Maximum length is 500 characters.
@@ -32,15 +26,20 @@ public class MLModelTemplate : BaseEntity, IMustHaveTenant
     public int UsagesCount { get; set; }
 
     /// <summary>
+    /// Gets or sets the access type, which defines the user's access level within the flow.
+    /// </summary>
+    public AccessTypesEnum? AccessType { get; set; }
+
+    /// <summary>
+    /// Gets or sets a list of tags associated with the machine learning model version.
+    /// </summary>
+    public List<string> Tags { get; set; } = new List<string>();
+
+    /// <summary>
     /// Gets or sets the identifier of the ML model version to which this template is associated.
     /// </summary>
     [Required]
     public required Guid MLModelVersionId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the access type, which defines the user's access level within the flow.
-    /// </summary>
-    public AccessTypesEnum AccessType { get; set; }
 
     /// <summary>
     /// Gets or sets the associated ML model version for this template.
