@@ -68,6 +68,25 @@ public class ModelAPIKeyService : IModelAPIKeyService
 
         try
         {
+            // Check if an API key with the same name already exists for the given model
+            var apiKey = await _unitOfWork.ModelAPIKeyRepo
+                .GetByConditionAsync(w =>
+                    w.MLModelId == apiKeyDto.MLModelId &&
+                    w.Name.ToLower() == apiKeyDto.Name.ToLower()
+                )
+                .SingleOrDefaultAsync();
+
+            if (apiKey != null)
+            {
+                // Log a warning if a duplicate API key name is found
+                _logger.LogWarning("API key with name '{ApiKeyName}' already exists for model ID {ModelId}. User: {UserId}",
+                    apiKeyDto.Name, apiKeyDto.MLModelId, _userId);
+
+                // Return a response indicating the conflict
+                serviceResponse.Message = $"API key with name '{apiKeyDto.Name}' already exists for the model.";
+                return serviceResponse;
+            }
+
             _logger.LogInformation("Generating new API key for user {UserId}", _userId);
 
             // Trim dto' string props
@@ -169,6 +188,25 @@ public class ModelAPIKeyService : IModelAPIKeyService
                 return serviceResponse;
             }
 
+            // Check if an API key with the same name already exists for the given model
+            var apiKey = await _unitOfWork.ModelAPIKeyRepo
+                .GetByConditionAsync(w =>
+                    w.Id != apiKeyDto.Id &&
+                    w.MLModelId == apiKeyDto.MLModelId &&
+                    w.Name.ToLower() == apiKeyDto.Name.ToLower()
+                )
+                .SingleOrDefaultAsync();
+
+            if (apiKey != null)
+            {
+                // Log a warning if a duplicate API key name is found
+                _logger.LogWarning("API key with name '{ApiKeyName}' already exists for model ID {ModelId}. User: {UserId}",
+                    apiKeyDto.Name, apiKeyDto.MLModelId, _userId);
+
+                // Return a response indicating the conflict
+                serviceResponse.Message = $"API key with name '{apiKeyDto.Name}' already exists for the model.";
+                return serviceResponse;
+            }
             // Trim any extra spaces from the string properties in the DTO
             apiKeyDto = TrimDtoStringPropsUtil.TrimDtoStringProps(apiKeyDto);
 
