@@ -23,4 +23,5 @@ public interface IUnitOfWork
     IFineTuningLogRepo FineTuningLogRepo { get; }
     IModelAPIKeyRepo ModelAPIKeyRepo { get; }
     IModelTaskRepo ModelTaskRepo { get; }
+    IMLModelVersionRepo MLModelVersionRepo { get; }
 }
