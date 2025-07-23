@@ -32,6 +32,7 @@ public static class AppServicesExtension
         config.Apply(new AIModelMappingProfile());
         config.Apply(new InferencingModelMappingProfile());
         config.Apply(new ConversationModelMappingProfile());
+        config.Apply(new MLModelVersionMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -59,6 +60,7 @@ public static class AppServicesExtension
         services.AddScoped<IAIModelService, AIModelService>();
         services.AddScoped<IInferencingModelService, InferencingModelService>();
         services.AddScoped<IConversationModelService, ConversationModelService>();
+        services.AddScoped<IMLModelVersionService, MLModelVersionService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
