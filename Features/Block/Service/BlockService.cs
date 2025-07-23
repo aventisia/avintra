@@ -369,4 +369,47 @@ public class BlockService : IBlockService
         // Return the final response
         return serviceResponse;
     }
+
+    // Searches for blocks based on a search key and optional flow version identifier.
+    public async Task<ServiceResponse<IEnumerable<SearchBlockDto>>> SearchBlocksAsync(string searchKey, Guid? flowVersionId)
+    {
+        // Initialize the service response with a failure message by default.
+        var serviceResponse = new ServiceResponse<IEnumerable<SearchBlockDto>>
+        {
+            Data = null,
+            Message = "Unable to search blocks. Please try again later."
+        };
+
+        try
+        {
+            // Retrieve blocks based on search criteria.
+            var blocks = await _unitOfWork.BlockRepo
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower().Contains(searchKey.ToLower()) &&
+                    (
+                        w.CreatedByUserId == _userId ||
+                        (
+                            w.Type == AccessTypesEnum.Public ||
+                            w.Type == AccessTypesEnum.TenantLevel ||
+                            (flowVersionId.HasValue && w.Type == AccessTypesEnum.AgentLevel && w.FlowVersionId == flowVersionId)
+                        )
+                    )
+                )
+                .Include(c => c.CreatedByUser)
+                .ToListAsync();
+
+            // If blocks were found, map them to SearchBlockDto and set the response status to success.
+            serviceResponse.Data = blocks.Adapt<IEnumerable<SearchBlockDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Blocks retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            // Log any exceptions that occur during the operation.
+            _logger.LogError(ex.ToString());
+        }
+
+        // Return the service response, indicating either success or failure.
+        return serviceResponse;
+    }
 }

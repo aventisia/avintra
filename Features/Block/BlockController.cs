@@ -53,4 +53,11 @@ public class BlockController : BaseApiController
     {
         return ResultHelper(await _blockService.DeleteMultipleBlocksAsync(blockIds));
     }
+
+    // Searches for blocks based on a search key and optional flow version identifier.
+    [HttpGet("search/{searchKey}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SearchBlockDto>>>> SearchBlocks(string searchKey, Guid? agentId)
+    {
+        return ResultHelper(await _blockService.SearchBlocksAsync(searchKey, agentId));
+    }
 }

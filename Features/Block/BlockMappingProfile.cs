@@ -15,6 +15,16 @@ public class BlockMappingProfile : IRegister
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
                     : null);
 
+             config.NewConfig<Block, SearchBlockDto>()
+            .Map(dest => dest.CreatedBy, 
+                src => src.CreatedByUser != null
+                    ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                    : null)
+            .Map(dest => dest.LastModifiedBy, 
+                src => src.LastModifiedByUser != null
+                    ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
+                    : null);
+
         // Mapping of DTO for inserting flow block. Note: Update mapping is manual.
         config.NewConfig<BlockDto, Block>()
             .Ignore(dest => dest.Id)
