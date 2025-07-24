@@ -337,28 +337,6 @@ public class MLModelVersionService : IMLModelVersionService
 
         try
         {
-            // Check if it's a publish template and if AccessType is not set
-            if (publishMLModelVersionDto.IsPublishTemplate && publishMLModelVersionDto.AccessType == null)
-            {
-                // Log the issue when AccessType is not set while trying to publish as a template
-                _logger.LogWarning("Attempted to publish model version {ModelVersionId} as template, but AccessType is missing.", publishMLModelVersionDto.Id);
-
-                // Set failure message for missing AccessType
-                serviceResponse.Message = "AccessType is required when publishing as a template.";
-                return serviceResponse;
-            }
-
-            // Check if it's a publish template with Space AccessType but no SpaceId provided
-            if (publishMLModelVersionDto.IsPublishTemplate && publishMLModelVersionDto.AccessType == AccessTypesEnum.Space && publishMLModelVersionDto.SpaceId == Guid.Empty)
-            {
-                // Log the issue when SpaceId is missing for a Space-level access type
-                _logger.LogWarning("Attempted to publish model version {ModelVersionId} as template with Space access, but SpaceId is missing.", publishMLModelVersionDto.Id);
-
-                // Set failure message for missing SpaceId
-                serviceResponse.Message = "SpaceId is required for Space-level AccessType when publishing as a template.";
-                return serviceResponse;
-            }
-
             // Retrieve the ML model version to ensure it exists and is valid for publishing
             var mlModelVersion = await _unitOfWork.MLModelVersionRepo
                 .GetByConditionAsync(w => w.Id == publishMLModelVersionDto.Id)

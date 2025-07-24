@@ -312,7 +312,7 @@ public class MLModelUserService : IMLModelUserService
             // TODO: Add custom logic if needed
 
             // Update entity properties from DTO (typically only editable fields)
-            mlModelUser.AccessType = mlModelUserDto.Type;
+            mlModelUser.AccessType = mlModelUserDto.AccessType;
             mlModelUser.MLModelId = mlModelUserDto.MLModelId;
             mlModelUser.LastModifiedByUserId = _userId;
 
