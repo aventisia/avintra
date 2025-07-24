@@ -4,7 +4,6 @@ import { FlowVersions } from "@/features/flow-versions/components";
 import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import { StudioPreferences } from "@/features/studio-preferences/components";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
 import { Button } from "@aventisia/ui/buttons";
 import { Header, HeaderContainer } from "@aventisia/ui/layout";
@@ -19,16 +18,9 @@ import { SettingsTrigger } from "@/features/flow-settings/components/SettingsTri
 import { useIsAgentsAssist } from "@/features/agents-assist/hooks/useIsAgentsAssist";
 import { FlowParticipantsFacePile } from "@/features/share-access/components/FlowParticipantsFacePile";
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
+import AgentName from "./AgentName";
 
 const AppHeader: React.FC = () => {
-  // Get global store state and actions
-  const { currentFlow } = useCurrentFlowStore(
-    useShallow((state) => ({
-      currentFlow: state.currentFlow,
-      isFlowSaving: state.isFlowSaving,
-    })),
-  );
-
   // Get user session state and actions
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
@@ -67,9 +59,7 @@ const AppHeader: React.FC = () => {
           {/* separator */}
           {!isAssist && <span className="rotate-12 text-white/50">/</span>}
           {/* Agent name */}
-          {!isAssist && (
-            <span className="truncate text-xs">{currentFlow.name}</span>
-          )}
+          {!isAssist && <AgentName />}
           {/* Version selector */}
           {!isAssist && <FlowVersions />}{" "}
         </div>
