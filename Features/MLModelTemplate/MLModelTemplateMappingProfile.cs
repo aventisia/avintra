@@ -8,14 +8,10 @@ public class MLModelTemplateMappingProfile : IRegister
     {
         // Mapping of DTO to get list of ML model template to show on the UI.
         config.NewConfig<MLModelTemplate, MLModelTemplateDto>()
-            .Map(dest => dest.Name, src => src.MLModelVersion.MLModel != null ? src.MLModelVersion.MLModel.Name : null)
-            .Map(dest => dest.Type, src => src.MLModelVersion.MLModel != null ? src.MLModelVersion.MLModel.Type : null)
             .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName : null)
             .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null ? src.CreatedByUser.UserName : null);
 
         config.NewConfig<MLModelTemplate, TrendingMLModelTemplateDto>()
-            .Map(dest => dest.Name, src => src.MLModelVersion.MLModel != null ? src.MLModelVersion.MLModel.Name : null)
-            .Map(dest => dest.Type, src => src.MLModelVersion.MLModel != null ? src.MLModelVersion.MLModel.Type : null)
             .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName : null)
             .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null ? src.CreatedByUser.UserName : null);
 

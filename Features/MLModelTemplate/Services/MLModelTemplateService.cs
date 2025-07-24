@@ -18,8 +18,8 @@ public class MLModelTemplateService : IMLModelTemplateService
         _unitOfWork = unitOfWork;
     }
 
-    // Retrieves all ML model templates optionally filtered by ML model ID.
-    public async Task<ServiceResponse<IEnumerable<MLModelTemplateDto>>> GetAllMLModelTemplatesAsync(Guid? mlModelVersionId)
+    // Retrieves all ML model templates.
+    public async Task<ServiceResponse<IEnumerable<MLModelTemplateDto>>> GetAllMLModelTemplatesAsync()
     {
         var serviceResponse = new ServiceResponse<IEnumerable<MLModelTemplateDto>>
         {
@@ -29,23 +29,18 @@ public class MLModelTemplateService : IMLModelTemplateService
 
         try
         {
-            // Start with all templates
-            var mLModelTemplates = await _unitOfWork.MLModelTemplateRepo
-                .GetAllAsync()
+            // Get all templates
+            var mlModelTemplates = await _unitOfWork.MLModelTemplateRepo
+                .GetByConditionAsync(w =>
+                    w.CreatedByUserId == _userId ||
+                    w.AccessType == AccessTypesEnum.Public ||
+                    w.AccessType == AccessTypesEnum.TenantLevel
+                )
                 .Include(i => i.CreatedByUser)
-                .Include(i => i.MLModelVersion)
-                .ThenInclude(i2 => i2.MLModel)
                 .ToListAsync();
 
-            // Filter by ML model version ID if provided
-            if (mlModelVersionId.HasValue)
-            {
-                mLModelTemplates = mLModelTemplates.Where(t => t.MLModelVersionId == mlModelVersionId.Value).ToList();
-                _logger.LogInformation("Filtering ML model templates by MLModelId {ModelId} for user {UserId}.", mlModelVersionId, _userId);
-            }
-
             // Populate service response with successful data
-            serviceResponse.Data = mLModelTemplates.Adapt<IEnumerable<MLModelTemplateDto>>();
+            serviceResponse.Data = mlModelTemplates.Adapt<IEnumerable<MLModelTemplateDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "ML model templates retrieved successfully.";
         }
@@ -70,10 +65,15 @@ public class MLModelTemplateService : IMLModelTemplateService
         {
             // Query for the template with the given ID
             var mLModelTemplate = await _unitOfWork.MLModelTemplateRepo
-                .GetByConditionAsync(t => t.Id == mlModelTemplateId)
+                .GetByConditionAsync(w =>
+                    w.Id == mlModelTemplateId &&
+                    w.CreatedByUserId == _userId ||
+                    (
+                        w.AccessType == AccessTypesEnum.TenantLevel ||
+                        w.AccessType == AccessTypesEnum.Public
+                    )
+                )
                 .Include(i => i.CreatedByUser)
-                .Include(i => i.MLModelVersion)
-                .ThenInclude(i2 => i2.MLModel)
                 .SingleOrDefaultAsync();
 
             // Check if template exists
@@ -159,7 +159,9 @@ public class MLModelTemplateService : IMLModelTemplateService
         {
             // Retrieve existing entity by ID
             var mLModelTemplate = await _unitOfWork.MLModelTemplateRepo
-                .GetByConditionAsync(t => t.Id == mlModelTemplateDto.Id)
+                .GetByConditionAsync(w =>
+                    w.Id == mlModelTemplateDto.Id
+                )
                 .SingleOrDefaultAsync();
 
             // Check if entity exists before updating
@@ -322,8 +324,6 @@ public class MLModelTemplateService : IMLModelTemplateService
             var mLModelTemplates = await _unitOfWork.MLModelTemplateRepo
                 .GetAllAsync()
                 .Include(i => i.CreatedByUser)
-                .Include(i => i.MLModelVersion)
-                .ThenInclude(i2 => i2.MLModel)
                 .OrderByDescending(o => o.UsagesCount)
                 .ToListAsync();
 

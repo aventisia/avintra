@@ -14,10 +14,10 @@ public class MLModelTemplateController : BaseApiController
 
     // Get all templates of a specific ML model
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<MLModelTemplateDto>>>> GetMLModelTemplatesByModelId(Guid? mlModelVersionId)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<MLModelTemplateDto>>>> GetMLModelTemplatesByModelId()
     {
         // Calling the service to get the list of templates for a specific ML model ID
-        return ResultHelper(await _mlModelTemplateService.GetAllMLModelTemplatesAsync(mlModelVersionId));
+        return ResultHelper(await _mlModelTemplateService.GetAllMLModelTemplatesAsync());
     }
 
     // Get a specific template by its ID

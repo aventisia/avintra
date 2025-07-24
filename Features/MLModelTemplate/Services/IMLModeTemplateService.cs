@@ -5,16 +5,15 @@ public interface IMLModelTemplateService
     /// <summary>
     /// Retrieves all ML model templates, optionally filtered by a specific ML model ID.
     /// </summary>
-    /// <param name="mlModelId">Optional ML model ID to filter templates.</param>
     /// <returns>A task that returns a service response containing a collection of ML model templates.</returns>
-    Task<ServiceResponse<IEnumerable<MLModelTemplateDto>>> GetAllMLModelTemplatesAsync(Guid? mlModelId);
+    Task<ServiceResponse<IEnumerable<MLModelTemplateDto>>> GetAllMLModelTemplatesAsync();
 
     /// <summary>
     /// Retrieves a single ML model template by its unique identifier.
     /// </summary>
     /// <param name="mlModelTemplateId">The unique identifier of the ML model template.</param>
     /// <returns>A service response containing the requested ML model template.</returns>
-    Task<ServiceResponse<MLModelTemplateDto>> GetMLModelTemplateByIdAsync(Guid mlModelmlModelTemplateId);
+    Task<ServiceResponse<MLModelTemplateDto>> GetMLModelTemplateByIdAsync(Guid mlModelTemplateId);
 
     /// <summary>
     /// Creates a new ML model template.
