@@ -6,6 +6,7 @@ public class AIModelMappingProfile : IRegister
     {
         // Create a new mapping configuration from MLModel to AIModelDto.
         // This allows automatic property mapping between the two types.
-        config.NewConfig<MLModel, AIModelDto>();
+        config.NewConfig<MLModel, AIModelDto>()
+            .Map(dest => dest.LLMs, src => src.Tasks != null ? src.Tasks.Select(s => s.LLM).Distinct().ToList() : null);
     }
 }
