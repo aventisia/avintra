@@ -389,6 +389,7 @@ public class MLModelVersionService : IMLModelVersionService
             // Update the model version as published and set the publishing date
             mlModelVersion.IsPublished = true;
             mlModelVersion.PublishedOn = DateTimeOffset.UtcNow;
+            mlModelVersion.LastModifiedByUserId = _userId;
 
             // Log the publishing of the model version
             _logger.LogInformation("Model version {ModelVersionId} has been successfully published by user {UserId}.", publishMLModelVersionDto.Id, _userId);
