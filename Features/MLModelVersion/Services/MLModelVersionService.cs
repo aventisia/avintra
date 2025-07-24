@@ -34,6 +34,7 @@ public class MLModelVersionService : IMLModelVersionService
             // Retrieve ML model versions for a specific model ID created by the user
             var modelVersions = await _unitOfWork.MLModelVersionRepo
                 .GetByConditionAsync(w => w.MLModelId == mlModelId)
+                .Include(i => i.MLModel)
                 .OrderByDescending(o => o.CreatedOn)
                 .ProjectToType<MLModelVersionDto>()
                 .ToListAsync();
@@ -55,11 +56,7 @@ public class MLModelVersionService : IMLModelVersionService
         return serviceResponse;
     }
 
-    /// <summary>
-    /// Retrieves a specific machine learning model version by its unique identifier.
-    /// </summary>
-    /// <param name="mlModelVersionId">The unique identifier (ID) of the ML model version to retrieve.</param>
-    /// <returns>A service response containing the ML model version data, or an error message if retrieval fails.</returns>
+    // Retrieves a specific machine learning model version by its unique identifier.
     public async Task<ServiceResponse<MLModelVersionDto>> GetModelVersionByIdAsync(Guid mlModelVersionId)
     {
         // Initialize service response with failure status
@@ -74,6 +71,7 @@ public class MLModelVersionService : IMLModelVersionService
             // Retrieve ML model version for a specific model ID created by the user
             var modelVersion = await _unitOfWork.MLModelVersionRepo
                 .GetByConditionAsync(w => w.Id == mlModelVersionId)
+                .Include(i => i.MLModel)
                 .Include(i => i.CreatedByUser)
                 .SingleOrDefaultAsync();
 
@@ -115,14 +113,28 @@ public class MLModelVersionService : IMLModelVersionService
 
         try
         {
+            var mlModel = await _unitOfWork.MLModelRepo
+            .GetByConditionAsync(w => w.Id == mlModelVersionDto.MLModelId)
+            .Include(i => i.Versions)
+            .SingleOrDefaultAsync();
+
+            // Check if the model was found
+            if (mlModel == null)
+            {
+                _logger.LogError($"MLModel with ID {mlModelVersionDto.MLModelId} not found.");
+                serviceResponse.Message = "ML model not found.";
+                return serviceResponse;
+            }
+
             // Trim all string properties of the DTO
             mlModelVersionDto = TrimDtoStringPropsUtil.TrimDtoStringProps(mlModelVersionDto);
 
             // Map the DTO to an entity
             var newModelVersion = mlModelVersionDto.Adapt<MLModelVersion>();
+            newModelVersion.VersionNumber = mlModel.Versions.Count() + 1;
             newModelVersion.CreatedByUserId = _userId;
-            newModelVersion.LastModifiedByUserId = _userId;
             newModelVersion.CreatedOn = DateTime.UtcNow;
+            newModelVersion.LastModifiedByUserId = _userId;
 
             // Insert the new model version into the repository
             await _unitOfWork.MLModelVersionRepo.InsertAsync(newModelVersion);
@@ -184,8 +196,10 @@ public class MLModelVersionService : IMLModelVersionService
                 return serviceResponse;
             }
 
-            // Map the DTO to the existing entity
-            existingModelVersion = mlModelVersionDto.Adapt<MLModelVersion>();
+            // Trim all string properties of the DTO
+            mlModelVersionDto = TrimDtoStringPropsUtil.TrimDtoStringProps(mlModelVersionDto);
+
+            mlModelVersionDto.Adapt(existingModelVersion);
             existingModelVersion.LastModifiedByUserId = _userId;
 
             // Update the model version in the repository

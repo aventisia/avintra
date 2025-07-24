@@ -1,6 +1,6 @@
 namespace MLModelBuilderAPIs.Controllers;
 
-[Route("ml-model-version")]
+[Route("ai-model-version")]
 [ApiController]
 [Authorize]
 public class MLModelVersionController : BaseApiController
