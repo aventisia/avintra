@@ -26,7 +26,7 @@ export const LoopBackEdge = ({
   const loopSpacing = 2; // Distance between nested loops
   const adjustedOffset = baseOffset + loopSpacing * depth;
 
-  const bendX = sourceX + Math.max(adjustedOffset, 150);
+  const bendX = sourceX + Math.max(adjustedOffset, 200);
   const cornerRadius = -10;
 
   const path = `
