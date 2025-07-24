@@ -50,9 +50,4 @@ public class MLModelVersion : BaseEntity, IMustHaveTenant
     /// </summary>
     [ForeignKey("MLModelId")]
     public virtual MLModel? MLModel { get; set; }
-
-    /// <summary>
-    /// Gets or sets the collection of ML model templates linked to this version.
-    /// </summary>
-    public virtual ICollection<MLModelTemplate>? MLModelTemplates { get; set; }
 }
