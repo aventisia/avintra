@@ -15,6 +15,7 @@ script:pre-request {
   
   req.setBody({
     name: "api-key",
+    description: faker.lorem.sentence(),
     mlModelId: bru.getGlobalEnvVar("MLMODEL_ID"),
   })
 }

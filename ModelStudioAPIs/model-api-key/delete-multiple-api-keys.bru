@@ -11,8 +11,8 @@ post {
 }
 
 script:pre-request {
-  // Set modelAPIKeyId in request body
+  // Set aiModelVersionId in request body
   req.setBody(
-    JSON.parse(`["${bru.getGlobalEnvVar("MODEL_API_KEY_ID")}"]`)
+    JSON.parse(`["${bru.getGlobalEnvVar("AI_MODEL_VERSION_ID")}"]`)
   )
 }

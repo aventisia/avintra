@@ -45,6 +45,39 @@ script:pre-request {
             }
           ]
         }
+      },
+    classification: {
+        //id: bru.getGlobalEnvVar("MLMODEL_TASK_ID"),
+        name: "Classification",
+        configurationType: "OnPrem",
+        llm: "gemma",
+        nodePrompt: "",
+        temperature: 0.3,
+        setupObject: {
+          allowMultipleClasses: false,
+          categories: [
+            {
+              name: "test",
+              instruction:"",
+              subCategories: [
+                {
+                  name: "test",
+                  instruction:"",
+                  subSubcategories: [
+                  {
+                    name: "test",
+                    instruction:""
+                  }
+              ]
+                }
+              ]
+            },
+            {
+              name: "test1",
+              instruction:""
+            }
+          ]
+        }
       }
   });
   
