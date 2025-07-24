@@ -23,7 +23,7 @@ export const NodeContainer = ({
         "flex h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-slate-300 hover:ring hover:ring-ring",
         nodeData.type == "forLoopNode" && "border-[#B5B1F4]",
         nodeData.type == "conditionalNode" && "border-[#7D76EC]",
-        nodeData.type == "blockNode" && "border-[#353535]",
+        nodeData.type == "blockNode" && "border-[#1E1B4B] bg-[#F9F9F9]",
         !!nodeData?.groupId && "border-slate-500",
         className,
         selected && "border-primary ring ring-ring",
@@ -36,7 +36,7 @@ export const NodeContainer = ({
           "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center rounded-l-lg bg-slate-200",
           nodeData.type == "forLoopNode" && "bg-[#7D76EC]",
           nodeData.type == "conditionalNode" && "bg-[#6159E8]",
-          nodeData.type == "blockNode" && "bg-[#353535]",
+          nodeData.type == "blockNode" && "bg-[#1E1B4B]",
           !!nodeData?.groupId && "bg-slate-300",
         )}
       >

@@ -50,7 +50,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
     ),
     LoopNodeIcon: <Repeat2Icon className="h-5 w-5 text-[#7D76EC]" />,
 
-    BlockNodeIcon: <BoxesIcon className="h-5 w-5 text-[#353535]" />,
+    BlockNodeIcon: <BoxesIcon className="h-5 w-5 text-[#1E1B4B]" />,
   };
 
   return (
@@ -75,7 +75,11 @@ const BaseNode: React.FC<BaseNodeProps> = ({
             ) : (
               <NodeImage src={nodeData.img} />
             )}
-            <NodeHeading>{nodeData.label}</NodeHeading>
+            <NodeHeading
+              className={cn(nodeData.type == "blockNode" && "text-[#1E1B4B]")}
+            >
+              {nodeData.label}
+            </NodeHeading>
             {nodeData?.isGroupHead && (
               <Button
                 variant={"ghost"}
