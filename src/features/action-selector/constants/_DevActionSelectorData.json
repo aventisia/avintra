@@ -42,7 +42,7 @@
           {
             "type": "blockNode",
             "name": "blockNode",
-            "label": "Block Node",
+            "label": "Call Block",
             "description": "Use to add custom block",
             "docsLink": "https://docs.aventisia.com",
             "icon": "BlockNodeIcon",

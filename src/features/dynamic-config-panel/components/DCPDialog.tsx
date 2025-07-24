@@ -8,6 +8,7 @@ import { DCPForm, useDynamicConfigPanelStore } from "..";
 import DCPDialogHeader from "./DCPDialogHeader";
 import { useLayoutEffect, useRef, useState } from "react";
 import CallAgentConfigForm from "@/features/call-agent/components/CallAgentConfigForm";
+import CallBlockConfigForm from "@/features/call-block/components/CallBlockConfigForm";
 
 export const DCPDialog = ({ children }: React.PropsWithChildren) => {
   // Ref and state for dynamic <p> height
@@ -34,6 +35,8 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
     switch (nodeData?.type) {
       case "callAgentNode":
         return <CallAgentConfigForm />;
+      case "blockNode":
+        return <CallBlockConfigForm />;
       default:
         return <DCPForm />;
     }
