@@ -7,22 +7,27 @@ public class ModelBuilderUserService : IModelBuilderUserService
     private readonly ILogger<ModelBuilderUserService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserManagementGuardService _userManagementGuardService;
+     private readonly DefaultTenantConfig _defaultTenantConfig;
     private readonly Guid _userId;
     private readonly string _userName;
+    private readonly Guid _tenantId;
 
     public ModelBuilderUserService(
         ILogger<ModelBuilderUserService> logger,
         IUnitOfWork unitOfWork,
         IUserManagementGuardService userManagementGuardService,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        DefaultTenantConfig defaultTenantConfig)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
+        _tenantId = Guid.TryParse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid"), out var tenantId) ? tenantId : Guid.Empty;
 
         _logger = logger;
         _unitOfWork = unitOfWork;
         _userManagementGuardService = userManagementGuardService;
+        _defaultTenantConfig = defaultTenantConfig;
     }
 
     // Retrieves a model builder user by its ID.
@@ -290,6 +295,67 @@ public class ModelBuilderUserService : IModelBuilderUserService
         {
             _logger.LogError(ex.ToString());
             return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Searches model builder users whose first name, last name, or username contains the given search key.
+    public async Task<ServiceResponse<IEnumerable<ModelBuilderUserDto>>> SearchModelBuilderUserAsync(string searchKey)
+    {
+        // Initialize the response with a default "Bad Request" status
+        var serviceResponse = new ServiceResponse<IEnumerable<ModelBuilderUserDto>>
+        {
+            Data = null,
+            Message = "Failed to search user. Please try again."
+        };
+
+        try
+        {
+            // Validate that the search key is not null or empty
+            if (string.IsNullOrWhiteSpace(searchKey))
+            {
+                _logger.LogWarning("Model builder user search failed: search key was empty or null.");
+                serviceResponse.Message = "Search key cannot be empty.";
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("User '{User}' initiated a model builder user search with key: '{SearchKey}'", _userName, searchKey);
+
+            List<ModelBuilderUserDto>? modelBuilderUsers = new List<ModelBuilderUserDto>();
+
+            // Check if the tenant ID matches and return if true
+            if (_defaultTenantConfig.TenantId == _tenantId)
+            {
+                // Tenant ID matches, so return with a message indicating access is not allowed
+                serviceResponse.Message = "Access denied: You cannot add users to agent.";
+                return serviceResponse;
+            }
+            else
+            {
+                // Search model builder users by FirstName, LastName, or UserName
+                modelBuilderUsers = await _unitOfWork.ModelBuilderUserRepo
+                    .GetByConditionAsync(w =>
+                        w.Id != _userId &&
+                        (
+                            w.FirstName.Contains(searchKey) ||
+                            w.LastName.Contains(searchKey) ||
+                            w.UserName.Contains(searchKey))
+                        )
+                    .ProjectToType<ModelBuilderUserDto>()
+                    .ToListAsync();
+            }
+
+            // Update and return the successful response
+            serviceResponse.Data = modelBuilderUsers;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = $"Search completed. {modelBuilderUsers.Count} user(s) found.";
+            _logger.LogInformation("model builder user search succeeded for key '{SearchKey}'. Total matches: {Count}.", searchKey, modelBuilderUsers.Count);
+        }
+        catch (Exception ex)
+        {
+            // Log unexpected error and return error response
+            _logger.LogError(ex, "Error occurred while searching model builder users with key '{SearchKey}'", searchKey);
         }
 
         return serviceResponse;

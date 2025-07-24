@@ -24,14 +24,20 @@ public interface IModelBuilderUserService
     /// <summary>
     /// Updates an existing model builder user.
     /// </summary>
-    /// <param name="modelBuilderUserDto">The updated data for the workspace user.</param>
-    /// <returns>The task result contains the updated workspace user.</returns>
+    /// <param name="modelBuilderUserDto">The updated data for the model builder user.</param>
+    /// <returns>The task result contains the updated model builder user.</returns>
     Task<ServiceResponse<ModelBuilderUserDto>> UpdateModelBuilderUserAsync(ModelBuilderUserDto modelBuilderUserDto);
 
     /// <summary>
-    /// Deletes a workspace user by its ID.
+    /// Deletes a model builder user by its ID.
     /// </summary>
-    /// <param name="id">The ID of the workspace user to delete.</param>
+    /// <param name="id">The ID of the model builder user to delete.</param>
     /// <returns>The task result contains a boolean indicating whether the deletion was successful.</returns>
     Task<ServiceResponse<bool>> DeleteModelBuilderUserAsync(Guid id);
+    /// <summary>
+    /// Retrieves a list of model builder users whose properties match the provided search key.
+    /// </summary>
+    /// <param name="searchKey">The keyword to search model builder users by.</param>
+    /// <returns>A task that returns a service response with an enumerable collection of matching model builder user DTOs.</returns>
+    Task<ServiceResponse<IEnumerable<ModelBuilderUserDto>>> SearchModelBuilderUserAsync(string searchKey);
 }

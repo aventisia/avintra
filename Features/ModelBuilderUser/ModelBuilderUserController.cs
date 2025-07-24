@@ -45,4 +45,11 @@ public class ModelBuilderUserController : BaseApiController
     {
         return ResultHelper(await _userService.DeleteModelBuilderUserAsync(id));
     }
+
+    // Searches for model build users matching the specified key.
+    [HttpGet("search/{searchKey}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> SearchModelBuilderUser(string searchKey)
+    {
+        return ResultHelper(await _userService.SearchModelBuilderUserAsync(searchKey));
+    }
 }
