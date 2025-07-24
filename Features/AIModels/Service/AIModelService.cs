@@ -4,12 +4,7 @@ public class AIModelService : IAIModelService
 {
     private readonly ILogger<AIModelService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ISummarizationService _summarizationService;
-    private readonly IExtractionSetupService _extractionSetupService;
-    private readonly IClassificationService _classificationService;
-    private readonly ISentimentAnalyticsService _sentimentAnalyticsService;
-    private readonly IQuestionAnswerService _questionAnswerService;
-    private readonly IAIPersonaService _aiPersonaService;
+    private readonly IInferencingModelService _inferencingModelService;
     private readonly Guid _userId;
     private readonly string? _apiKey;
 
@@ -17,26 +12,15 @@ public class AIModelService : IAIModelService
         ILogger<AIModelService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        ISummarizationService summarizationService,
-        IExtractionSetupService extractionSetupService,
-        IClassificationService classificationService,
-        ISentimentAnalyticsService sentimentAnalyticsService,
-        IQuestionAnswerService questionAnswerService,
-        IAIPersonaService aiPersonaService)
+        IInferencingModelService inferencingModelService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _summarizationService = summarizationService;
-        _extractionSetupService = extractionSetupService;
-        _classificationService = classificationService;
-        _sentimentAnalyticsService = sentimentAnalyticsService;
-        _questionAnswerService = questionAnswerService;
-        _aiPersonaService = aiPersonaService;
+        _inferencingModelService = inferencingModelService;
 
         // Attempt to extract the user ID from the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _apiKey = GetApiKeyOfRequestUtil.GetApiKeyOfRequest(httpContextAccessor.HttpContext);
-
     }
 
     // Retrieves a list of published ai models.
@@ -53,7 +37,15 @@ public class AIModelService : IAIModelService
             _logger.LogDebug("Querying the repository for published ai models...");
 
             var models = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Type != null && (includeUnpublish || w.IsPublished))
+                .GetByConditionAsync(w =>
+                    (includeUnpublish || w.IsPublished) &&
+                    w.CreatedByUserId == _userId ||
+                    (
+                        w.Users.Any(a => a.UserId == _userId)
+                    )
+                )
+                .Include(i => i.Tasks)
+                .Include(i => i.Users)
                 .ProjectToType<AIModelDto>()
                 .ToListAsync();
 
@@ -88,10 +80,12 @@ public class AIModelService : IAIModelService
 
             var models = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
+                    (includeUnpublish || w.IsPublished) &&
                     w.Type != null &&
-                    w.Name.ToLower().Contains(searchKey.ToLower()) &&
-                    (includeUnpublish || w.IsPublished)
+                    w.Name.ToLower().Contains(searchKey.ToLower())
                 )
+                .Include(i => i.Tasks)
+                .Include(i => i.Users)
                 .ProjectToType<AIModelDto>()
                 .ToListAsync();
 
@@ -114,134 +108,93 @@ public class AIModelService : IAIModelService
     // Fetches the setup details of a specific AI model using its ID.
     public async Task<ServiceResponse<object>> GetAIModelSetupByIdAsync(Guid mlModelId)
     {
+        // Initialize the response object with a default failure message.
         var serviceResponse = new ServiceResponse<object>
         {
             Data = null,
-            Message = "Failed to fetch AI model setup. Please try again later.",
+            Message = "Failed to fetch AI model setup. Please try again later.", 
         };
 
         try
         {
-            _logger.LogDebug("Initiating query to retrieve AI model setup from the repository...");
+            // Log the debug message about retrieving the model setup for the given ID.
+            _logger.LogDebug("Retrieving AI model with ID {ModelId} from repository...", mlModelId);
 
-            // Retrieve the model from the repository using its ID
+            // Fetch the ML model by its ID from the repository.
             var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == mlModelId)
-                .FirstOrDefaultAsync();
+                .GetByConditionAsync(m => m.Id == mlModelId) 
+                .FirstOrDefaultAsync(); 
 
+            // If no model is found with the given ID, log a warning and return a response with a not found message.
             if (mlModel == null)
             {
-                // If the model with the given ID doesn't exist, log the warning and return an appropriate message
-                _logger.LogWarning($"AI model with ID {mlModelId} not found.");
-                serviceResponse.Message = "AI model not found.";
-                return serviceResponse;
+                _logger.LogWarning("AI model with ID {ModelId} not found.", mlModelId);
+                serviceResponse.Message = "AI model not found."; 
+                return serviceResponse; 
             }
 
-            // Initialize a variable to hold the data based on the model type
-            object? data = null;
+            // Log the successful retrieval of the model.
+            _logger.LogInformation("Found AI model with ID {ModelId}, Type: {ModelType}.", mlModelId, mlModel.Type);
 
-            // Log the model type for better tracking
-            _logger.LogInformation($"Processing AI model with ID {mlModelId}, Model Type: {mlModel.Type}.");
+            // Initialize the setup data object to null.
+            object? setupData = null;
 
-            // Handle different AI model types
+            // Handle different types of AI models and fetch the appropriate setup data.
             switch (mlModel.Type)
             {
-                case ModelTypesEnum.Extraction:
-                    // If the model type is Extraction, fetch the extraction setup
-                    _logger.LogInformation("Processing AI model of type 'Extraction'. Fetching setup...");
-                    var extractionSetup = await _extractionSetupService.GetExtractionSetupByMLModelIdAsync(mlModelId);
-                    data = new
+                case ModelTypesEnum.Inferencing:  
+                    _logger.LogInformation("Fetching setup for Inferencing model...");
+                    setupData = new
                     {
-                        Type = mlModel.Type,
-                        Fields = extractionSetup.Data.SetupObject?.FieldSetups,
-                        Tables = extractionSetup.Data.SetupObject?.TableMetadata
+                        Data = await _inferencingModelService.GetSetupByMLModelIdAsync(mlModelId) 
                     };
-
-                    _logger.LogInformation("Successfully retrieved extraction setup data.");
                     break;
 
-                case ModelTypesEnum.Classification:
-                    // If the model type is Classification, fetch the classification setup
-                    _logger.LogInformation("Processing AI model of type 'Classification'. Fetching setup...");
-                    var classificationSetup = await _classificationService.GetClassificationSetupByMLModelIdAsync(mlModelId);
-                    data = new
+                case ModelTypesEnum.Conversation: 
+                    _logger.LogInformation("Fetching setup for Conversation model...");
+                    setupData = new
                     {
-                        Type = mlModel.Type,
-                        Categories = classificationSetup.Data.SetupObject?.Categories
+                        Data = await _inferencingModelService.GetSetupByMLModelIdAsync(mlModelId)
                     };
-                    _logger.LogInformation("Successfully retrieved classification setup data.");
                     break;
 
-                case ModelTypesEnum.Summarization:
-                    // If the model type is Summarization, fetch the summarization setup
-                    _logger.LogInformation("Processing AI model of type 'Summarization'. Fetching setup...");
-                    var summarizationSetup = await _summarizationService.GetSummarizationSetupByMLModelIdAsync(mlModelId);
-                    data = new
+                case ModelTypesEnum.Generative: 
+                    _logger.LogInformation("Fetching setup for Generative model...");
+                    setupData = new
                     {
-                        Type = mlModel.Type,
-                        Summary = string.Empty
+                        Data = await _inferencingModelService.GetSetupByMLModelIdAsync(mlModelId)
                     };
-                    _logger.LogInformation("Successfully retrieved summarization setup data.");
                     break;
 
-                case ModelTypesEnum.SentimentAnalytics:
-                    // If the model type is Sentiment Analysis, fetch the sentiment setup
-                    _logger.LogInformation("Processing AI model of type 'SentimentAnalytics'. Fetching setup...");
-                    var sentimentAnalyticsSetup = await _sentimentAnalyticsService.GetSentimentAnalyticsSetupByMLModelIdAsync(mlModelId);
-                    data = new
-                    {
-                        Type = mlModel.Type,
-                        Categories = sentimentAnalyticsSetup.Data.SetupObject?.Categories
-                    };
-                    _logger.LogInformation("Successfully retrieved sentiment analysis setup data.");
-                    break;
-
-                case ModelTypesEnum.QuestionAnswer:
-                    // If the model type is Question Answering, fetch the Q&A setup
-                    _logger.LogInformation("Processing AI model of type 'QuestionAnswer'. Fetching setup...");
-                    var questionAnswerSetup = await _questionAnswerService.GetQuestionAnswerSetupByMLModelIdAsync(mlModelId);
-                    data = new
-                    {
-                        Type = mlModel.Type,
-                        QuestionAnswers = questionAnswerSetup.Data.SetupObject?.QuestionAnswers
-                    };
-                    _logger.LogInformation("Successfully retrieved question answering setup data.");
-                    break;
-
-                case ModelTypesEnum.AIPersona:
-                    // If the model type is AI Persona, fetch the persona setup
-                    _logger.LogInformation("Processing AI model of type 'AIPersona'. Fetching setup...");
-                    var aiPersonaSetup = await _aiPersonaService.GetAIPersonaSetupByMLModelIdAsync(mlModelId);
-                    data = new
-                    {
-                        Type = mlModel.Type,
-                    };
-                    _logger.LogInformation("Successfully retrieved AI persona setup data.");
-                    break;
-
+                // If the model type is not recognized, log a warning and return a failure response.
                 default:
-                    // If the model type is unknown, log a warning and break
-                    _logger.LogWarning($"Unknown model type: {mlModel.Type}.");
-                    break;
+                    _logger.LogWarning("Unhandled model type: {ModelType}", mlModel.Type);
+                    serviceResponse.Message = $"Unsupported model type: {mlModel.Type}";
+                    return serviceResponse; 
             }
 
-            // Return the fetched setup data
-            serviceResponse.Data = data;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Successfully retrieved AI model setup.";
-            _logger.LogInformation("Successfully completed the retrieval of AI model setup.");
+            // Set the setup data and successful status in the response.
+            serviceResponse.Data = setupData;
+            serviceResponse.StatusCode = 200; 
+            serviceResponse.Message = "Successfully retrieved AI model setup."; 
+
+            // Log that the setup retrieval was successful.
+            _logger.LogInformation("Successfully retrieved setup for model ID {ModelId}.", mlModelId);
         }
-        catch (Exception ex)
+        catch (Exception ex) // Catch any exceptions that occur during the process
         {
-            // Log the error if an exception occurs
-            _logger.LogError($"An error occurred while fetching the AI model setup with ID {mlModelId}: {ex.Message}");
+            // Log the error if an exception is thrown during the process of fetching the model setup.
+            _logger.LogError(ex, "Error occurred while fetching AI model setup for ID {ModelId}", mlModelId);
         }
 
+        // Return the response, whether success or failure.
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<object>> ExecuteViaLLMAsync(ExtractRequestDto extractRequestDto)
+    // Executes an AI model using LLM logic, based on the provided model content and configuration.
+    public async Task<ServiceResponse<object>> ExecuteViaLLMAsync(ModelContentProcessingRequestDto requestDto)
     {
+        // Initialize the response object with a default failure message
         var serviceResponse = new ServiceResponse<object>
         {
             Data = null,
@@ -250,183 +203,69 @@ public class AIModelService : IAIModelService
 
         try
         {
-            _logger.LogDebug("Starting retrieval of AI model from the repository...");
+            // Log the beginning of the model retrieval process
+            _logger.LogDebug("Attempting to retrieve AI model with ID: {ModelId}", requestDto.ModelId);
 
-            // Attempt to retrieve the AI model using the provided ModelId
+            // Retrieve the published AI model including its associated API keys
             var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == extractRequestDto.ModelId && w.IsPublished)
-                .Include(i => i.ModelAPIKeys)
+                .GetByConditionAsync(m => m.Id == requestDto.ModelId && m.IsPublished)
+                .Include(m => m.ModelAPIKeys)
                 .FirstOrDefaultAsync();
 
+            // Return a failure response if the model does not exist or is not published
             if (mlModel == null)
             {
-                _logger.LogWarning($"AI model not found for ID: {extractRequestDto.ModelId}");
+                _logger.LogWarning("AI model not found for ID: {ModelId}", requestDto.ModelId);
                 serviceResponse.Message = "AI model not found.";
                 return serviceResponse;
             }
 
-            // Check if the provided API key is associated with the model
-            var isApiKeyValid = mlModel.ModelAPIKeys.FirstOrDefault(key => key.ApiKey == _apiKey);
-            if (isApiKeyValid == null)
+            // Validate that the provided API key exists among the model's allowed API keys
+            var apiKeyEntry = mlModel.ModelAPIKeys.FirstOrDefault(k => k.ApiKey == _apiKey);
+            if (apiKeyEntry == null)
             {
-                _logger.LogWarning($"Unauthorized access attempt with an invalid API key for model ID: {extractRequestDto.ModelId}");
-                serviceResponse.Message = "Authorization failed. Please verify your API key.";
+                _logger.LogWarning("Unauthorized request with invalid API key for model ID: {ModelId}", requestDto.ModelId);
+                serviceResponse.Message = "Authorization failed. Invalid API key.";
                 return serviceResponse;
             }
 
-            object? data = null;
+            // Log the model type before processing
+            _logger.LogInformation("Executing model ID: {ModelId}, Type: {ModelType}", requestDto.ModelId, mlModel.Type);
 
-            _logger.LogInformation($"Executing model ID: {extractRequestDto.ModelId} of type: {mlModel.Type}");
+            object? resultData = null;
 
-            // Determine execution path based on model type
+            // Select appropriate execution logic based on the model's type
             switch (mlModel.Type)
             {
-                case ModelTypesEnum.Extraction:
-                    _logger.LogInformation("Executing 'Extraction' model via LLM...");
-                    var extractionResult = await _extractionSetupService.ExtractViaLLMAsync(extractRequestDto);
-                    data = extractionResult.Data;
-                    _logger.LogInformation("Extraction completed successfully.");
-                    break;
+                case ModelTypesEnum.Inferencing:
+                    _logger.LogInformation("Starting execution of 'Inferencing' model...");
 
-                case ModelTypesEnum.Classification:
-                    _logger.LogInformation("Executing 'Classification' model via LLM...");
-                    var classificationResult = await _classificationService.ExtractViaLLMAsync(extractRequestDto);
-                    data = classificationResult.Data;
-                    _logger.LogInformation("Classification completed successfully.");
-                    break;
+                    // Execute the model via the inferencing service
+                    var result = await _inferencingModelService.ExecuteLLMByFileContentAsync(requestDto);
 
-                case ModelTypesEnum.Summarization:
-                    _logger.LogInformation("Executing 'Summarization' model via LLM...");
-                    var summarizationResult = await _summarizationService.ExtractViaLLMAsync(extractRequestDto);
-                    data = summarizationResult.Data;
-                    _logger.LogInformation("Summarization completed successfully.");
-                    break;
+                    // Store the resulting data
+                    resultData = result.Data;
 
-                case ModelTypesEnum.SentimentAnalytics:
-                    _logger.LogInformation("Executing 'SentimentAnalytics' model via LLM...");
-                    var sentimentResult = await _sentimentAnalyticsService.ExtractViaLLMAsync(extractRequestDto);
-                    data = sentimentResult.Data;
-                    _logger.LogInformation("Sentiment analysis completed successfully.");
-                    break;
-
-                case ModelTypesEnum.QuestionAnswer:
-                    _logger.LogInformation("Executing 'QuestionAnswer' model via LLM...");
-                    var qaResult = await _questionAnswerService.ExtractViaLLMAsync(extractRequestDto);
-                    data = qaResult.Data;
-                    _logger.LogInformation("Question answering completed successfully.");
-                    break;
-
-                case ModelTypesEnum.AIPersona:
-                    _logger.LogInformation("Initializing connection to LLM for 'AIPersona' model...");
-                    var personaResult = await _aiPersonaService.InitializeConnectionToLLMAsync(extractRequestDto.ModelId);
-                    data = personaResult.Data;
-                    _logger.LogInformation("AI Persona interaction completed successfully.");
+                    _logger.LogInformation("Execution of 'Inferencing' model completed.");
                     break;
 
                 default:
-                    _logger.LogWarning($"Unsupported or unknown model type: {mlModel.Type}");
-                    break;
-            }
-
-            serviceResponse.Data = data;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "AI model executed successfully.";
-            _logger.LogInformation("Model execution process completed.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"An error occurred while executing the AI model with ID: {extractRequestDto.ModelId}");
-        }
-
-        return serviceResponse;
-    }
-
-    // Adds a new document record by executing the associated AI model processing logic (e.g., Extraction, Classification, etc.) based on the model type.
-    public async Task<ServiceResponse<object>> AddDocumentRecordAsync(AddDocumentRequestDto addDocumentRequestDto)
-    {
-        var serviceResponse = new ServiceResponse<object>
-        {
-            Data = null,
-            Message = "Failed to process the document with the AI model. Please try again later."
-        };
-
-        try
-        {
-            _logger.LogDebug("Attempting to retrieve AI model with ID: {ModelId}", addDocumentRequestDto.MLModelId);
-
-            var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(m => m.Id == addDocumentRequestDto.MLModelId)
-                .Include(i => i.ModelAPIKeys)
-                .FirstOrDefaultAsync();
-
-            if (mlModel == null)
-            {
-                _logger.LogWarning("AI model not found for ID: {ModelId}", addDocumentRequestDto.MLModelId);
-                serviceResponse.Message = "AI model not found.";
-                return serviceResponse;
-            }
-
-            // Check if the provided API key is associated with the model
-            var modelAPIKey = mlModel.ModelAPIKeys.FirstOrDefault(key => key.ApiKey == _apiKey);
-            if (modelAPIKey == null)
-            {
-                _logger.LogWarning($"Unauthorized access attempt with an invalid API key for model ID: {addDocumentRequestDto.MLModelId}");
-                serviceResponse.Message = "Authorization failed. Please verify your API key.";
-                return serviceResponse;
-            }
-
-            _logger.LogInformation("Executing AI model of type: {ModelType} (ID: {ModelId})", mlModel.Type, mlModel.Id);
-
-            // Prepare request for review processing
-            var reviewRequest = new CreateModelReviewRequestDto
-            {
-                MLModelId = addDocumentRequestDto.MLModelId,
-                Type = ExtractedDataType.Viewer,
-                FileIds = addDocumentRequestDto.FileIds
-            };
-
-            object? processedData = null;
-
-            _logger.LogInformation("AI model processing started. Model Type: {ModelType}", mlModel.Type);
-            _logger.LogInformation("Attempting to add document record using model type: {ModelType}", mlModel.Type);
-
-            switch (mlModel.Type)
-            {
-                case ModelTypesEnum.Extraction:
-                    processedData = (await _extractionSetupService.AddReviewDataAsync(reviewRequest)).Data;
-                    break;
-
-                case ModelTypesEnum.Classification:
-                    processedData = (await _classificationService.AddReviewDataAsync(reviewRequest)).Data;
-                    break;
-
-                case ModelTypesEnum.Summarization:
-                    processedData = (await _summarizationService.AddReviewDataAsync(reviewRequest)).Data;
-                    break;
-
-                case ModelTypesEnum.SentimentAnalytics:
-                    processedData = (await _sentimentAnalyticsService.AddReviewDataAsync(reviewRequest)).Data;
-                    break;
-
-                case ModelTypesEnum.QuestionAnswer:
-                    processedData = (await _questionAnswerService.AddReviewDataAsync(reviewRequest)).Data;
-                    break;
-
-                default:
-                    _logger.LogWarning("Unsupported or unknown AI model type: {ModelType}", mlModel.Type);
-                    serviceResponse.Message = "Unsupported or unknown model type.";
+                    // Unsupported model types fall into the default case
+                    _logger.LogWarning("Unsupported model type: {ModelType} for model ID: {ModelId}", mlModel.Type, requestDto.ModelId);
+                    serviceResponse.Message = $"Model type '{mlModel.Type}' is not supported for execution.";
                     return serviceResponse;
             }
 
-            _logger.LogInformation("AI model processing completed successfully. Model Type: {ModelType}", mlModel.Type);
-            serviceResponse.Data = processedData;
+            // Populate a successful response with the result
+            serviceResponse.Data = resultData;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Document record added successfully.";
-            _logger.LogInformation("AI model execution completed successfully for model ID: {ModelId}", mlModel.Id);
+            serviceResponse.Message = "AI model executed successfully.";
+            _logger.LogInformation("Model execution completed successfully for model ID: {ModelId}", requestDto.ModelId);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while processing document record for model ID: {ModelId}", addDocumentRequestDto.MLModelId);
+            // Catch and log any unexpected errors during execution
+            _logger.LogError(ex, "An error occurred during execution of the AI model with ID: {ModelId}", requestDto.ModelId);
         }
 
         return serviceResponse;

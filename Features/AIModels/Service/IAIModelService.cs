@@ -33,21 +33,9 @@ public interface IAIModelService
     Task<ServiceResponse<object>> GetAIModelSetupByIdAsync(Guid mlModelId);
 
     /// <summary>
-    /// Executes an AI model using a large language model (LLM) based on the provided input request.
+    /// Executes an AI model using LLM logic, based on the provided model content and configuration.
     /// </summary>
-    /// <param name="extractRequestDto">The request payload containing the model ID and relevant input data.</param>
-    /// <returns>
-    /// A <see cref="ServiceResponse{T}"/> containing the execution result of the AI model,
-    /// or an appropriate error message if execution fails.
-    /// </returns>
-    Task<ServiceResponse<object>> ExecuteViaLLMAsync(ExtractRequestDto extractRequestDto);
-
-    /// <summary>
-    /// Add a new document records to the system using the provided metadata.
-    /// </summary>
-    /// <param name="request">The request containing document metadata and related details.</param>
-    /// <returns>
-    /// A task representing the asynchronous operation, containing a service response with the result of the save action.
-    /// </returns>
-    Task<ServiceResponse<object>> AddDocumentRecordAsync(AddDocumentRequestDto request);
+    /// <param name="requestDto">The request DTO containing the model ID and content to be processed.</param>
+    /// <returns>A <see cref="ServiceResponse{T}"/> containing the result of the execution.</returns>
+    Task<ServiceResponse<object>> ExecuteViaLLMAsync(ModelContentProcessingRequestDto modelContentProcessingRequestDto);
 }

@@ -34,16 +34,8 @@ public class AIModelController : BaseApiController
     // Initiates a data extraction process using a Language Learning Model (LLM)
     [ApiKeyAuth]
     [HttpPost("execute")]
-    public async Task<ActionResult<ServiceResponse<object>>> ExecuteViaLLM(ExtractRequestDto extractRequestDto)
+    public async Task<ActionResult<ServiceResponse<object>>> ExecuteViaLLM(ModelContentProcessingRequestDto requestDto)
     {
-        return ResultHelper(await _aiModelService.ExecuteViaLLMAsync(extractRequestDto));
-    }
-
-    // Adds a new document record to the system for processing by a Language Learning Model (LLM).
-    [ApiKeyAuth]
-    [HttpPost("documents")]
-    public async Task<ActionResult<ServiceResponse<object>>> AddDocumentRecord([FromBody] AddDocumentRequestDto addDocumentRequestDto)
-    {
-        return ResultHelper(await _aiModelService.AddDocumentRecordAsync(addDocumentRequestDto));
+        return ResultHelper(await _aiModelService.ExecuteViaLLMAsync(requestDto));
     }
 }
