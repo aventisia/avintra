@@ -138,8 +138,6 @@ export function getNodesAndEdgesAfterDeletion({
       (f) => !nodeIdsToDelete.includes(f.nodeId),
     );
   } else if (isSpecialNode && mergeNodeId) {
-    // eslint-disable-next-line no-debugger
-    debugger;
     const nodeIdsToDelete = getIntermediateNodeIds(nodes, edges, nodeId);
 
     updatedEdges = updatedEdges.filter(
