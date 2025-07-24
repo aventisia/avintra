@@ -1,6 +1,6 @@
 namespace MLModelBuilderAPIs.Controllers;
 
-[Route("ml-model-template")]
+[Route("ai-model-template")]
 [ApiController]
 [Authorize]
 public class MLModelTemplateController : BaseApiController
@@ -36,6 +36,14 @@ public class MLModelTemplateController : BaseApiController
         return ResultHelper(await _mlModelTemplateService.CreateMLModelTemplateAsync(mlModelTemplateDto));
     }
 
+    // Publish a ML model template
+    [HttpPost("publish")]
+    public async Task<ActionResult<ServiceResponse<MLModelTemplateDto>>> PublishMLModelTemplate([FromBody] PublishMLModelTemplateDto publishMLModelTemplateDto)
+    {
+        // Calling the service to create a new template
+        return ResultHelper(await _mlModelTemplateService.PublishMLModelTemplateAsync(publishMLModelTemplateDto));
+    }
+
     // Update an existing ML model template
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<MLModelTemplateDto>>> UpdateMLModelTemplate([FromBody] MLModelTemplateDto mlModelTemplateDto)
@@ -61,7 +69,7 @@ public class MLModelTemplateController : BaseApiController
     }
 
     // Publish a specific ML model template
-    [HttpPost("publish")]
+    [HttpPost("trending")]
     public async Task<ActionResult<ServiceResponse<bool>>> GetTrendingMLModelTemplate()
     {
         // Calling the service to publish the template
