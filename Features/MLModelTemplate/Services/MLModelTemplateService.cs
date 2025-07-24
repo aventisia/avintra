@@ -146,6 +146,64 @@ public class MLModelTemplateService : IMLModelTemplateService
         return serviceResponse;
     }
 
+    // Publish an ML model template.
+    public async Task<ServiceResponse<MLModelTemplateDto>> PublishMLModelTemplateAsync(PublishMLModelTemplateDto publishMLModelTemplateDto)
+    {
+        var serviceResponse = new ServiceResponse<MLModelTemplateDto>
+        {
+            Data = null,
+            Message = "Failed to publish ML model template. Please try again."
+        };
+
+        try
+        {
+            var mlModel = await _unitOfWork.MLModelRepo
+                .GetByConditionAsync(w => w.Id == publishMLModelTemplateDto.Id)
+                .SingleOrDefaultAsync();
+
+            if (mlModel == null)
+            {
+                _logger.LogError("ML model template with ID {TemplateId} not found.", publishMLModelTemplateDto.Id);
+                serviceResponse.Message = "ML model not found.";
+                return serviceResponse;
+            }
+
+            // Trim whitespace from all string properties in DTO for clean data
+            publishMLModelTemplateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(publishMLModelTemplateDto);
+
+            var mlModelTemplate = publishMLModelTemplateDto.Adapt<MLModelTemplate>();
+
+            mlModelTemplate.Type = mlModel.Type;
+            mlModelTemplate.ConfigJson = ""; // TODO: Add setup detail
+            // Set audit fields
+            mlModelTemplate.LastModifiedByUserId = _userId;
+            mlModelTemplate.LastModifiedOn = DateTime.UtcNow;
+
+            // Update the template in the repository
+            _unitOfWork.MLModelTemplateRepo.Update(mlModelTemplate);
+
+            // Persist changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to publish ML model template with ID {TemplateId} by user {UserId}.", mlModelTemplate.Id, _userId);
+                return serviceResponse;
+            }
+
+            // Map the updated entity back to DTO for response
+            serviceResponse.Data = mlModelTemplate.Adapt<MLModelTemplateDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "ML model template published successfully.";
+
+            _logger.LogInformation("Published ML model template with ID {TemplateId} by user {UserId}.", mlModelTemplate.Id, _userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error publishing ML model template for user {UserId}.", _userId);
+        }
+
+        return serviceResponse;
+    }
+
     // Updates an existing ML model template.
     public async Task<ServiceResponse<MLModelTemplateDto>> UpdateMLModelTemplateAsync(MLModelTemplateDto mlModelTemplateDto)
     {

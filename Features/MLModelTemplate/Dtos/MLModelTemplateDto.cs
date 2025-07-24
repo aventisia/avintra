@@ -14,15 +14,15 @@ public class MLModelTemplateDto
     public string? Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of ML model.
-    /// </summary>
-    public ModelTypesEnum? Type { get; set; }
-
-    /// <summary>
     /// Gets or sets a description of the ML model template. Maximum length is 500 characters.
     /// </summary>
     [MaxLength(500)]
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of ML model.
+    /// </summary>
+    public ModelTypesEnum? Type { get; set; }
 
     /// <summary>
     /// Gets or sets the number of times this template has been used to create ML models.
