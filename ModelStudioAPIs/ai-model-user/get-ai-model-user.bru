@@ -1,0 +1,11 @@
+meta {
+  name: Get ai model user
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/ai-model-user/list/{{ML_MODEL_ID}}
+  body: none
+  auth: none
+}

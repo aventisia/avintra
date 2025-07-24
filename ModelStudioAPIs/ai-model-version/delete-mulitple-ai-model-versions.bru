@@ -1,0 +1,27 @@
+meta {
+  name: Delete mulitple ai model version
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/ai-model-version/delete-multiple
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  // Set aiModelVersionId in request body
+  req.setBody(
+    JSON.parse(`["${bru.getGlobalEnvVar("AI_MODEL_VERSION_ID")}"]`)
+  )
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "AI_MODEL_VERSION_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

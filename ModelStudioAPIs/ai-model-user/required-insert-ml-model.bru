@@ -1,0 +1,34 @@
+meta {
+  name: Required - Insert ml model
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/ml-model
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+      
+  }
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    name: faker.person.jobType(),
+  })
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "FLOW_ID",
+          res.getBody().data.id
+      );
+  }
+}
