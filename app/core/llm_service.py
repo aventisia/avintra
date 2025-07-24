@@ -75,9 +75,11 @@ class LLMService:
         logger.info(f"Sending request to LLM model: {model_version}")
         logger.debug(f"Request payload: {request_payload}")
 
+        # Set timeout (30 seconds for the whole request cycle)
+        timeout = httpx.Timeout(30.0)  # 30 seconds timeout for the request
         try:
            # Step 6: Send POST request to generate the data from the LLM
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient(timeout=timeout) as client:
                 api_response = await client.post(
                     f"{self.api_url}/generate",
                     json=request_payload,
