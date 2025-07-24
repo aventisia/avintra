@@ -1,5 +1,5 @@
 import { Button } from "@aventisia/ui/buttons";
-import { ScrollArea } from "@aventisia/ui/scroll";
+import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
 import { Copy } from "lucide-react";
 import ReactJson from "react-json-view";
 import { useFlowExecutionActions } from "../../hooks/useFlowExecutionActions";
@@ -58,6 +58,7 @@ const FELInputOutput = ({ jsonData, title }: FELInputOutputProps) => {
           quotesOnKeys={false}
           src={parsed}
         />
+        <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </div>
   );
