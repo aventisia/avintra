@@ -32,6 +32,7 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<ModelTask>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<MLModelVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<MLModelTemplate>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<MLModelUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         modelBuilder.Entity<MLModel>().HasIndex(index => new { index.Name, index.CreatedByUserId }).IsUnique();
@@ -46,6 +47,7 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<ScheduledModel>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ScheduleTypesEnum>());
         modelBuilder.Entity<FineTuningLog>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ScheduleTypesEnum>());
         modelBuilder.Entity<MLModelTemplate>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<AccessTypesEnum>());
+        modelBuilder.Entity<MLModelUser>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<AgentAccessTypesEnum>());
 
         // Configure One-to-One relationship between Model Library and ModelBuilder User
         modelBuilder.Entity<MLModel>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -121,4 +123,5 @@ public class MLModelBuilderDbContext : DbContext
     public DbSet<ModelTask> ModelTasks { get; set; }
     public DbSet<MLModelVersion> MLModelVersions { get; set; }
     public DbSet<MLModelTemplate> MLModelTemplates { get; set; }
+    public DbSet<MLModelUser> MLModelUsers { get; set; }
 }

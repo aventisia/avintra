@@ -93,4 +93,9 @@ public class MLModel : BaseEntity, IMustHaveTenant
     /// Gets or sets the model tasks associated with this ML model.
     /// </summary>
     public virtual ICollection<ModelTask>? Tasks { get; set; }
+
+    /// <summary>
+    /// Gets or sets the model users associated with this ML model.
+    /// </summary>
+    public virtual ICollection<MLModelUser>? Users { get; set; }
 }
