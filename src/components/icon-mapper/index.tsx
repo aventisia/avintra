@@ -18,7 +18,12 @@ import {
   TimerReset,
   Webhook,
 } from "lucide-react";
-import { ConditionalNodeIcon, LoopNodeIcon } from "./LogicalNodeIcons";
+import {
+  BlockNodeIcon,
+  CallAgentIcon,
+  ConditionalNodeIcon,
+  LoopNodeIcon,
+} from "./LogicalNodeIcons";
 import { NodesCategoryL1Icon } from "./NodesCategoryL1Icon";
 import { TriggerNodeIcon } from "./TriggerNodeIcon";
 
@@ -34,6 +39,9 @@ export const iconMapper: { [key: string]: JSX.Element } = {
   // Logical Nodes
   ConditionalNodeIcon: <ConditionalNodeIcon />,
   LoopNodeIcon: <LoopNodeIcon />,
+
+  CallAgentIcon: <CallAgentIcon />,
+  BlockNodeIcon: <BlockNodeIcon />,
 
   // Trigger Nodes
   ManualTriggerIcon: <TriggerNodeIcon Icon={MousePointerClick} />,

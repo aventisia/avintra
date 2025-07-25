@@ -29,6 +29,8 @@ export const useUpdateNodeDataIO = () => {
     newInputs: NodeInputType[],
     newOutputs: NodeOutputType[],
     nodeLabel?: string,
+    selectedAgent?: { [key: string]: string }, // agent param
+    selectedBlock?: { [key: string]: string }, // block param
   ) => {
     // Find the node by id and update its inputs and outputs
     const updatedNodes = nodes.map((node: Node) => {
@@ -46,6 +48,8 @@ export const useUpdateNodeDataIO = () => {
             label: validNodeLabel,
             inputs: newInputs,
             outputs: newOutputs,
+            ...(selectedAgent !== undefined && { selectedAgent }), //  agent add if defined
+            ...(selectedBlock !== undefined && { selectedBlock }), //  block add if defined
           },
         };
       }

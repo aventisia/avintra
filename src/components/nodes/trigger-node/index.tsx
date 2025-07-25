@@ -16,7 +16,7 @@ export const TriggerNode = ({
         selected && "border-primary ring ring-ring",
       )}
     >
-      <span>Starts</span>
+      <span>Start</span>
       <OutputHandle position={sourcePosition} />
     </div>
   );

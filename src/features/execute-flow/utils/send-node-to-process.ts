@@ -13,6 +13,8 @@ import {
   getLoopNodeData,
   getWpfLoopNodeData,
 } from "..";
+import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
+import { deepParse } from "@/features/react-flow/utils/deepParse";
 
 // Get nodes from local storage
 const getNodesFromLS = () => {
@@ -244,6 +246,56 @@ const processLoopNode = (
   );
 };
 
+async function executeSubflow(
+  node: Node,
+  sendCommand: (command: WebSocketCommandType, data?: string) => void,
+) {
+  const subFlowObj = node.data?.selectedAgent as { [key: string]: string };
+
+  if (!subFlowObj?.flowId || !subFlowObj?.id) {
+    toast.error("Subflow data is missing.");
+    return sendCommand("error");
+  }
+
+  const returnNodeId = getEdgesFromLS().find(
+    (e) => e.source === node.id,
+  )?.target;
+
+  try {
+    const data = await getFlowToLoad(subFlowObj?.flowId, subFlowObj?.id);
+    const { nodes: subNodes, edges: subEdges } = deepParse(
+      data?.data.reactFlowObject ?? "{}",
+    ) as unknown as { nodes: Node[]; edges: Edge[] };
+
+    // Push current execution context to stack
+    const executionStack = JSON.parse(
+      localStorage.getItem("flowExecutionStack") || "[]",
+    );
+
+    executionStack.push({
+      nodes: getNodesFromLS(),
+      edges: getEdgesFromLS(),
+      conditionalExecutionGroup: getConditionalExecutionGroupFromLS(),
+      loopExecutionGroup: getLoopExecutionGroupFromLS(),
+      returnNodeId: returnNodeId ?? "",
+    });
+
+    localStorage.setItem("flowExecutionStack", JSON.stringify(executionStack));
+
+    // Load subflow context
+    localStorage.setItem("nodes", JSON.stringify(subNodes));
+    localStorage.setItem("edges", JSON.stringify(subEdges));
+    localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
+    localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
+
+    // Start subflow
+    sendNextNodeToProcess(sendCommand);
+  } catch (error) {
+    toast.error("Failed to execute subflow: " + error);
+    sendCommand("error");
+  }
+}
+
 // Function to find the node and send its data
 const sendNodeToProcess = (
   nodeId: string,
@@ -321,9 +373,48 @@ const sendNodeToProcess = (
       // TODO: We need to change the name from "forLoopNode" to "LoopNode" only.
       processLoopNode(nodeToProcess as Node<LoopNodeDataType>, sendCommand);
       return;
-    case "flowEndNode": // Execution is complete
-      sendExecutionComplete("complete", sendCommand);
+    case "flowEndNode": {
+      //Execution is complete
+      const executionStack = JSON.parse(
+        localStorage.getItem("flowExecutionStack") || "[]",
+      );
+
+      if (executionStack.length > 0) {
+        const {
+          nodes,
+          edges,
+          conditionalExecutionGroup,
+          loopExecutionGroup,
+          returnNodeId,
+        } = executionStack.pop();
+
+        localStorage.setItem(
+          "flowExecutionStack",
+          JSON.stringify(executionStack),
+        );
+        localStorage.setItem("nodes", JSON.stringify(nodes));
+        localStorage.setItem("edges", JSON.stringify(edges));
+        localStorage.setItem(
+          "conditionalExecutionGroup",
+          JSON.stringify(conditionalExecutionGroup),
+        );
+        localStorage.setItem(
+          "loopExecutionGroup",
+          JSON.stringify(loopExecutionGroup),
+        );
+
+        sendNodeToProcess(returnNodeId, sendCommand);
+      } else {
+        sendExecutionComplete("complete", sendCommand);
+      }
       return;
+    }
+
+    case "callAgentNode": {
+      executeSubflow(nodeToProcess, sendCommand);
+      return;
+    }
+
     default: // If unknown node type, show an error message
       toast.error(
         `Unknown node type: ${nodeToProcess.type}. Please check the flow.`,

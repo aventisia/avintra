@@ -149,10 +149,12 @@ export const ActionCategoryList = () => {
             <>
               <CommandItem className="rounded-lg p-1 aria-selected:bg-transparent">
                 {item.listType === "list" ? (
-                  <ActionsList
-                    item={item?.actions}
-                    nodeSelectionHandler={nodeSelectionHandler}
-                  />
+                  <div className="w-full">
+                    <ActionsList
+                      item={item?.actions}
+                      nodeSelectionHandler={nodeSelectionHandler}
+                    />
+                  </div>
                 ) : (
                   <Accordion
                     value={query ? item.label : undefined}

@@ -1,3 +1,4 @@
+import { UserType } from "@/features/share-access/dtos/flow-user-dto";
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
 /** To get flow props to load when user opens a flow in studio */
@@ -29,4 +30,6 @@ export interface LoadFlowDto {
   isArchived: boolean;
   type: FlowTypesEnum;
   description?: string;
+
+  accessType?: UserType;
 }

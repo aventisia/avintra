@@ -3,6 +3,7 @@ import { Edge, Node } from "@xyflow/react";
 import { getBranchSubgraphNodeIds } from "./getBranchSubNodeIds";
 import { getIntermediateNodeIds } from "./getIntermediateNodes";
 import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
+import { MARKER_ARROW_PREFIX } from "@/constants";
 
 interface DeleteContext {
   node: Node;
@@ -31,10 +32,40 @@ export function getNodesAndEdgesAfterDeletion({
     //Get outgoing edges  of the node
     const outgoingEdge = edges.find((edge) => edge.source === nodeId);
 
+    const tempEdge = edges.find(
+      (edge) => edge.target === nodeId && edge.data?.isTemporary,
+    );
+
+    const isTempEdgeCase = tempEdge && incomingEdge && outgoingEdge;
+
     // Remove edges connected to the node
     const newEdges = edges.filter(
       (edge) => edge.source !== nodeId && edge.target !== nodeId,
     );
+
+    if (isTempEdgeCase) {
+      const nextNodeId = outgoingEdge!.target;
+
+      const updatedRealEdge: Edge = {
+        ...incomingEdge!,
+        target: nextNodeId,
+      };
+
+      const updatedTempEdge: Edge = {
+        ...tempEdge!,
+        target: nextNodeId,
+        id: `temp-${tempEdge?.data?.groupId}-${nextNodeId}`,
+        label: "plus",
+        markerEnd: `${MARKER_ARROW_PREFIX}temp-${tempEdge?.data?.groupId}-${nextNodeId}`,
+        data: {
+          ...tempEdge.data,
+          originalTarget: nextNodeId,
+        },
+      };
+
+      newEdges.push(updatedRealEdge, updatedTempEdge);
+      return newEdges;
+    }
 
     // If both incoming and outgoing edges exist, create a new connection
     if (incomingEdge && outgoingEdge) {

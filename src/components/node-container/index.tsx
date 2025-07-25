@@ -21,9 +21,10 @@ export const NodeContainer = ({
     <div
       className={cn(
         "flex h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-slate-300 hover:ring hover:ring-ring",
-        nodeData.type == "forLoopNode" && "border-blue-500",
-        nodeData.type == "conditionalNode" && "border-violet-400",
-        nodeData.type == "blockNode" && "border-purple-300",
+        nodeData.type == "forLoopNode" && "border-[#B5B1F4]",
+        nodeData.type == "conditionalNode" && "border-[#7D76EC]",
+        nodeData.type == "blockNode" && "border-[#353535]",
+        !!nodeData?.groupId && "border-slate-500",
         className,
         selected && "border-primary ring ring-ring",
         nodeData?.isDisabled && "opacity-50",
@@ -32,21 +33,22 @@ export const NodeContainer = ({
     >
       <div
         className={cn(
-          "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center rounded-l-lg bg-slate-100",
-          nodeData.type == "forLoopNode" && "bg-blue-100",
-          nodeData.type == "conditionalNode" && "bg-violet-200",
-          nodeData.type == "blockNode" && "bg-purple-200",
+          "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center rounded-l-lg bg-slate-200",
+          nodeData.type == "forLoopNode" && "bg-[#7D76EC]",
+          nodeData.type == "conditionalNode" && "bg-[#6159E8]",
+          nodeData.type == "blockNode" && "bg-[#353535]",
+          !!nodeData?.groupId && "bg-slate-300",
         )}
       >
-        <GripVertical className={cn("h-5 w-5 text-slate-50")} />
+        <GripVertical className={cn("h-5 w-5 text-white")} />
       </div>
       <OpenNodeConfig {...{ nodeData, nodeId }}>
         <div
           className={cn(
             "flex w-[18rem] grow flex-col gap-2 rounded-r-lg bg-white px-4 pb-3.5 pt-[0.7rem]",
-            nodeData.type == "forLoopNode" && "bg-blue-50",
-            nodeData.type == "conditionalNode" && "bg-violet-100",
-            nodeData.type == "blockNode" && "bg-purple-100",
+            nodeData.type == "forLoopNode" && "bg-[#EDEDFC]",
+            nodeData.type == "conditionalNode" && "bg-[#EDEDFC]",
+            nodeData.type == "blockNode" && "bg-[#F9F9F9]",
           )}
         >
           {children}

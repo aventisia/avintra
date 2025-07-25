@@ -28,6 +28,7 @@ export const nodeDimensionLookup: Record<CustomNodeType, NodeDimensionType> = {
   whileLoopNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   forLoopNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   forEachLoopNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
-  aiNode: { width: NODE_WIDTH, height: 112 },
+  aiNode: { width: NODE_WIDTH, height: 116 },
   blockNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
+  callAgentNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
 };

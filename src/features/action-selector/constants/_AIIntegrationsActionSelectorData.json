@@ -15,8 +15,44 @@
           {
             "type": "aiNode",
             "name": "AIModel",
-            "label": "AI Model",
-            "description": "Extract information out of a pdf file",
+            "label": "Inferencing Model",
+            "description": "Perform inference tasks using a trained AI model",
+            "docsLink": null,
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "aiNode",
+            "name": "AIModel",
+            "label": "Conversation Model",
+            "description": "Enable natural, AI-powered conversational experiences",
+            "docsLink": null,
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "aiNode",
+            "name": "AIModel",
+            "label": "Generative Model",
+            "description": "Generate content such as text, images, or code using AI",
+            "docsLink": null,
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "aiNode",
+            "name": "AIModel",
+            "label": "Speech to Text (STT)",
+            "description": "Convert spoken language into written text using AI",
+            "docsLink": null,
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "aiNode",
+            "name": "AIModel",
+            "label": "Text to Speech (TTS)",
+            "description": "Convert written text into natural-sounding speech using AI",
             "docsLink": null,
             "icon": null,
             "img": "/function.png"

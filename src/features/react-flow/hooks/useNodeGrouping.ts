@@ -79,43 +79,55 @@ export function useNodeGrouping() {
       toast.warning("Selected nodes are not continuos in order.");
       return;
     }
-    const lightBgColors = [
-      "border-orange-300",
-      "border-green-300",
-      "border-yellow-300",
-      "border-pink-300",
-    ];
 
-    const groupHead = fullSelectedNodes[0];
     const groupMembers = fullSelectedNodes.slice(1);
 
     const groupId = `group-${Date.now()}`;
 
     const groupedNodeIds = fullSelectedNodes.map((n) => n.id);
-    const lastNode = fullSelectedNodes[fullSelectedNodes.length - 1];
 
-    // Find the next connected node *outside* the group (if any)
+    // Find first node (entry point): no incoming edge from other group members
+    const groupFirstNode = fullSelectedNodes.find(
+      (node) =>
+        !edges.some(
+          (edge) =>
+            groupedNodeIds.includes(edge.source) && edge.target === node.id,
+        ),
+    );
+
+    // Find last node (exit point): no outgoing edge to other group members
+    const groupLastNode = fullSelectedNodes.find(
+      (node) =>
+        !edges.some(
+          (edge) =>
+            edge.source === node.id && groupedNodeIds.includes(edge.target),
+        ),
+    );
+
+    const groupHead = groupFirstNode ?? fullSelectedNodes[0];
+    const lastNode =
+      groupLastNode ?? fullSelectedNodes[fullSelectedNodes.length - 1];
+
+    // Find the next connected node *outside* the group
     const outgoingEdge = edges.find(
       (e) => e.source === lastNode.id && !groupedNodeIds.includes(e.target),
     );
 
-    const tempEdge: Edge | null = outgoingEdge
-      ? {
-          id: `temp-${groupId}-${outgoingEdge.target}`,
-          source: groupHead.id,
-          target: outgoingEdge.target,
-          markerEnd: `${MARKER_ARROW_PREFIX}temp-${groupId}-${outgoingEdge.target}`,
-          deletable: true,
-          // label: "plus",
-          data: {
-            isTemporary: true,
-            originalSource: outgoingEdge.source,
-            originalTarget: outgoingEdge.target,
-          },
-        }
-      : null;
+    const tempEdge: Edge = {
+      id: `temp-${groupId}-${outgoingEdge?.target}`,
+      source: groupHead.id,
+      target: outgoingEdge?.target as string,
+      markerEnd: `${MARKER_ARROW_PREFIX}temp-${groupId}-${outgoingEdge?.target}`,
+      deletable: true,
+      label: "plus",
+      data: {
+        isTemporary: true,
+        originalSource: outgoingEdge?.source,
+        originalTarget: outgoingEdge?.target,
+        groupId,
+      },
+    };
 
-    const color = lightBgColors[Math.floor(Math.random() * 4)];
     const updatedNodes = nodes.map((node) => {
       if (node.id === groupHead.id) {
         return {
@@ -125,7 +137,6 @@ export function useNodeGrouping() {
             groupId,
             hasBlock,
             count: selectedNodes.length,
-            color,
             isGroupHead: true,
             isExpanded: false,
           },
@@ -137,7 +148,6 @@ export function useNodeGrouping() {
           hidden: true,
           data: {
             ...node.data,
-            color,
             groupId,
           },
         };
@@ -156,13 +166,7 @@ export function useNodeGrouping() {
 
     const groupId = selectedNode.data.groupId as string;
 
-    const keysToRemove = [
-      "groupId",
-      "isGroupHead",
-      "isExpanded",
-      "count",
-      "color",
-    ];
+    const keysToRemove = ["groupId", "isGroupHead", "isExpanded", "count"];
 
     const updatedNodes = nodes.map((node) => {
       if (node?.data?.groupId === groupId) {

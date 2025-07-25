@@ -7,6 +7,8 @@ import { useShallow } from "zustand/react/shallow";
 import { DCPForm, useDynamicConfigPanelStore } from "..";
 import DCPDialogHeader from "./DCPDialogHeader";
 import { useLayoutEffect, useRef, useState } from "react";
+import CallAgentConfigForm from "@/features/call-agent/components/CallAgentConfigForm";
+import CallBlockConfigForm from "@/features/call-block/components/CallBlockConfigForm";
 
 export const DCPDialog = ({ children }: React.PropsWithChildren) => {
   // Ref and state for dynamic <p> height
@@ -28,7 +30,55 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
     }
   }, [showDialog, nodeData?.description, nodeData?.docsLink]);
 
-  // Return dynamic config panel dialog
+  // Function to render correct form component based on nodeData.name
+  const renderFormComponent = () => {
+    switch (nodeData?.type) {
+      case "callAgentNode":
+        return <CallAgentConfigForm />;
+      case "blockNode":
+        return <CallBlockConfigForm />;
+      default:
+        return <DCPForm />;
+    }
+  };
+
+  // Renders the appropriate info link based on node type
+  const renderInfoLink = () => {
+    if (!nodeData) return null;
+
+    let href = "#";
+    let label = "Docs";
+
+    switch (nodeData.type) {
+      case "callAgentNode":
+        if (nodeData?.selectedAgent) {
+          href = `${import.meta.env.VITE_AGENT_BUILDER_URL}/agent?f=${nodeData.selectedAgent?.flowId}&v=${nodeData.selectedAgent?.id}`;
+          label = "Open Agent";
+        } else {
+          return null; // Don't render anything if there's no agent
+        }
+        break;
+
+      default:
+        href = nodeData.docsLink || "#";
+        label = "Docs";
+    }
+
+    return (
+      <a
+        className={cn(
+          buttonVariants({ variant: "link" }),
+          "ml-1 gap-1 text-xs",
+        )}
+        target="_blank"
+        href={href}
+      >
+        {label}
+        <SquareArrowOutUpRightIcon className="h-2.5 w-2.5 stroke-[2.5]" />
+      </a>
+    );
+  };
+
   return (
     <DialogWrapper
       open={showDialog}
@@ -49,17 +99,7 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
           className="mx-2.5 rounded-lg bg-accent px-3 py-2 text-xs"
         >
           ℹ️ {nodeData?.description || "No description available."}
-          <a
-            className={cn(
-              buttonVariants({ variant: "link" }),
-              "ml-1 gap-1 text-xs",
-            )}
-            target="_blank"
-            href={nodeData?.docsLink || "#"}
-          >
-            Docs{" "}
-            <SquareArrowOutUpRightIcon className="h-2.5 w-2.5 stroke-[2.5]" />
-          </a>
+          {renderInfoLink()}
         </p>
         <ScrollArea
           style={{
@@ -67,7 +107,7 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
           }}
           className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4"
         >
-          <DCPForm />
+          {renderFormComponent()}
         </ScrollArea>
       </DialogContent>
     </DialogWrapper>

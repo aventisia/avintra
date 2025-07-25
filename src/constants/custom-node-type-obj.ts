@@ -4,6 +4,7 @@ import { BlockNode } from "@/components/nodes/BlockNode";
 import { BranchEndNode } from "@/components/nodes/BranchEndNode";
 import { BranchNode } from "@/components/nodes/BranchNode";
 import { BranchNode1 } from "@/components/nodes/BranchNode1";
+import { CallAgentNode } from "@/components/nodes/CallAgentNode";
 import { ConditionalNode } from "@/components/nodes/ConditionalNode";
 import { FlowEndNode } from "@/components/nodes/FlowEndNode";
 import { ForLoopNode } from "@/components/nodes/ForLoopNode";
@@ -39,4 +40,5 @@ export const CustomNodeTypeObj = {
   //AI Node
   aiNode: AIModelNode,
   blockNode: BlockNode,
+  callAgentNode: CallAgentNode,
 };

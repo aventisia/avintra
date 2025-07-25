@@ -24,7 +24,7 @@ export function createActivityJson(
           label: value.name ?? "",
           description: value.description ?? "",
           docsLink: "",
-          icon: "",
+          icon: "BlockNodeIcon",
           img: "/function.png",
         },
       ],

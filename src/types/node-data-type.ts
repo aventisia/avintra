@@ -43,6 +43,7 @@ type NodeDataType = {
   color?: string;
   isBlock?: boolean;
   isDisabled?: boolean;
+  selectedAgent?: { [key: string]: string };
 };
 
 export type {

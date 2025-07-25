@@ -10,6 +10,7 @@ import { createIfElseNode } from "./create-nodes/create-if-else-node";
 import { createConditionalNode } from "./create-nodes/create-conditional-node";
 import { createAINode } from "./create-nodes/create-ai-node";
 import { createBlockNode } from "./create-nodes/create-block-node";
+import { createAgentNode } from "./create-nodes/create-agent-node";
 
 /**
  * Creates nodes and edges based on the provided node data and source node ID.
@@ -53,6 +54,9 @@ const createNodesAndEdgesUtil = (
       break;
     case "blockNode":
       nodesAndEdgesObj = createBlockNode(newNodeData, sourceNode);
+      break;
+    case "callAgentNode":
+      nodesAndEdgesObj = createAgentNode(newNodeData, sourceNode);
       break;
     default:
       return nodesAndEdgesObj;

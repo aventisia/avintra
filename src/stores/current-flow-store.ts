@@ -1,4 +1,5 @@
 import { ExecutionStateType } from "@/features/execute-flow/types/execution-state-type";
+import { UserType } from "@/features/share-access/dtos/flow-user-dto";
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 import { create } from "zustand";
 
@@ -13,6 +14,7 @@ interface ICurrentFlowDetails {
   isArchived: boolean;
   type: FlowTypesEnum;
   description?: string;
+  accessType?: UserType;
 }
 
 interface ConditionalExecutionGroup {

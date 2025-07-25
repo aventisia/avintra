@@ -68,6 +68,7 @@ export const createForLoopNode = (
     source: mergeBranchesNode.id,
     target: forLoopNode.id,
     deletable: false,
+    type: "loopBack",
     selectable: false,
     targetHandle: "for-loop-repeat",
     sourceHandle: "branch-return",
