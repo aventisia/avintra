@@ -4,18 +4,24 @@ public class MLModelTemplateService : IMLModelTemplateService
 {
     private readonly ILogger<MLModelTemplateService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IInferencingModelService _inferencingModelService;
+    private readonly IConversationModelService _conversationModelService;
     private readonly Guid _userId;
 
     public MLModelTemplateService(
         ILogger<MLModelTemplateService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IInferencingModelService inferencingModelService,
+        IConversationModelService conversationModelService)
     {
         // Extract user ID from the HTTP context claims; default to empty Guid if missing
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _inferencingModelService = inferencingModelService;
+        _conversationModelService = conversationModelService;
     }
 
     // Retrieves all ML model templates.
@@ -146,9 +152,10 @@ public class MLModelTemplateService : IMLModelTemplateService
         return serviceResponse;
     }
 
-    // Publish an ML model template.
+    // Publishes a machine learning model template by mapping input data, configuring the template, and persisting it to the database.
     public async Task<ServiceResponse<MLModelTemplateDto>> PublishMLModelTemplateAsync(PublishMLModelTemplateDto publishMLModelTemplateDto)
     {
+        // Initialize the response with default failure message
         var serviceResponse = new ServiceResponse<MLModelTemplateDto>
         {
             Data = null,
@@ -157,10 +164,12 @@ public class MLModelTemplateService : IMLModelTemplateService
 
         try
         {
+            // Retrieve the existing ML model based on the provided reference ID
             var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == publishMLModelTemplateDto.Id)
+                .GetByConditionAsync(w => w.Id == publishMLModelTemplateDto.RefId)
                 .SingleOrDefaultAsync();
 
+            // Check if the ML model exists
             if (mlModel == null)
             {
                 _logger.LogError("ML model template with ID {TemplateId} not found.", publishMLModelTemplateDto.Id);
@@ -168,36 +177,57 @@ public class MLModelTemplateService : IMLModelTemplateService
                 return serviceResponse;
             }
 
-            // Trim whitespace from all string properties in DTO for clean data
+            string setupData = "";
+
+            // If the model type is 'Inferencing', fetch and serialize its setup configuration
+            if (mlModel.Type == ModelTypesEnum.Inferencing)
+            {
+                setupData = JsonSerializer.Serialize(await _inferencingModelService.GetSetupByMLModelIdAsync(mlModel.Id),
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+
+            // If the model type is 'Conversation', fetch and serialize its setup configuration
+            else if (mlModel.Type == ModelTypesEnum.Conversation)
+            {
+                setupData = JsonSerializer.Serialize(await _conversationModelService.GetSetupByMLModelIdAsync(mlModel.Id),
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+
+            // Clean all string properties in the input DTO to remove leading/trailing whitespaces
             publishMLModelTemplateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(publishMLModelTemplateDto);
 
+            // Map the cleaned DTO to an MLModelTemplate entity
             var mlModelTemplate = publishMLModelTemplateDto.Adapt<MLModelTemplate>();
 
+            // Set additional configuration and model type
             mlModelTemplate.Type = mlModel.Type;
-            mlModelTemplate.ConfigJson = ""; // TODO: Add setup detail
-            // Set audit fields
+            mlModelTemplate.ConfigJson = setupData;
+
+            // Set auditing fields
             mlModelTemplate.LastModifiedByUserId = _userId;
             mlModelTemplate.LastModifiedOn = DateTime.UtcNow;
 
             // Update the template in the repository
             _unitOfWork.MLModelTemplateRepo.Update(mlModelTemplate);
 
-            // Persist changes to the database
+            // Save changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Failed to publish ML model template with ID {TemplateId} by user {UserId}.", mlModelTemplate.Id, _userId);
                 return serviceResponse;
             }
 
-            // Map the updated entity back to DTO for response
+            // Map the updated entity back to a DTO for returning to the client
             serviceResponse.Data = mlModelTemplate.Adapt<MLModelTemplateDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "ML model template published successfully.";
 
+            // Log the successful operation
             _logger.LogInformation("Published ML model template with ID {TemplateId} by user {UserId}.", mlModelTemplate.Id, _userId);
         }
         catch (Exception ex)
         {
+            // Log any unexpected exception during the publish process
             _logger.LogError(ex, "Error publishing ML model template for user {UserId}.", _userId);
         }
 
