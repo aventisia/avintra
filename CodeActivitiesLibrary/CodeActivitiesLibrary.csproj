@@ -181,6 +181,7 @@
     <Compile Include="Activities\AppIntegrations\M365OutlookActivities\ReplyToEmailActivity.cs" />
     <Compile Include="Activities\AppIntegrations\M365OutlookActivities\SearchEmailsActivity.cs" />
     <Compile Include="Activities\AppIntegrations\M365OutlookActivities\SendEmailM365Activity.cs" />
+    <Compile Include="Activities\AppIntegrations\M365OutlookActivities\_M365OutlookCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\OutlookActivities\CloseOutlookActivity.cs" />
     <Compile Include="Activities\AppIntegrations\OutlookActivities\LaunchOutlookActivity.cs" />
     <Compile Include="Activities\AppIntegrations\OutlookActivities\ProcessEmailMessagesInOutlookActivity.cs" />
