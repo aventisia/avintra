@@ -398,9 +398,9 @@ public class MLModelTemplateService : IMLModelTemplateService
     }
 
     // Retrieves all ML model templates optionally filtered by ML model ID.
-    public async Task<ServiceResponse<IEnumerable<MLModelTemplateDto>>> GetTrendingMLModelTemplatesAsync()
+    public async Task<ServiceResponse<IEnumerable<TrendingMLModelTemplateDto>>> GetTrendingMLModelTemplatesAsync()
     {
-        var serviceResponse = new ServiceResponse<IEnumerable<MLModelTemplateDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<TrendingMLModelTemplateDto>>
         {
             Data = null,
             Message = "Failed to retrieve ML model templates. Please try again."
@@ -416,7 +416,7 @@ public class MLModelTemplateService : IMLModelTemplateService
                 .ToListAsync();
 
             // Populate service response with successful data
-            serviceResponse.Data = mLModelTemplates.Adapt<IEnumerable<MLModelTemplateDto>>();
+            serviceResponse.Data = mLModelTemplates.Adapt<IEnumerable<TrendingMLModelTemplateDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "ML model templates retrieved successfully.";
         }

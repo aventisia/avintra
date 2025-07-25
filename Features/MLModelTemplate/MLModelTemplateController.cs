@@ -69,8 +69,8 @@ public class MLModelTemplateController : BaseApiController
     }
 
     // Publish a specific ML model template
-    [HttpPost("trending")]
-    public async Task<ActionResult<ServiceResponse<bool>>> GetTrendingMLModelTemplate()
+    [HttpGet("trending")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<TrendingMLModelTemplateDto>>>> GetTrendingMLModelTemplate()
     {
         // Calling the service to publish the template
         return ResultHelper(await _mlModelTemplateService.GetTrendingMLModelTemplatesAsync());
