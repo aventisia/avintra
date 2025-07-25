@@ -12,8 +12,8 @@
     "direction": "Input",
     "type": "text",
     "name": "FolderNames",
-    "label": "Folder Names",
-    "description": "The list of folder names to download.",
+    "label": "Folder Name",
+    "description": "The folder name to download.",
     "defaultValue": "",
     "required": true
   },
@@ -22,7 +22,7 @@
     "type": "text",
     "name": "LocalDirectory",
     "label": "Local Directory",
-    "description": "The local directory to save the downloaded folders.",
+    "description": "The local directory to save the downloaded folder.",
     "defaultValue": "",
     "required": true
   }

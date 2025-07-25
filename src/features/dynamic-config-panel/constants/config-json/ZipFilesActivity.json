@@ -4,7 +4,7 @@
     "type": "text",
     "name": "SourcePaths",
     "label": "Source Paths",
-    "description": "The list of file or folder paths to zip.",
+    "description": "The list of file or folder paths to zip. pass the paths in format: [\u0022C:\\path\\to\\file1.txt\u0022, \u0022C:\\path\\to\\folder1\u0022]",
     "defaultValue": "",
     "required": true
   },

@@ -32,7 +32,7 @@
     "name": "OverwriteFiles",
     "label": "Overwrite Files",
     "description": "If true, overwrites existing files on the server.",
-    "defaultValue": "",
+    "defaultValue": true,
     "required": false
   },
   {
@@ -41,7 +41,7 @@
     "name": "IncludeSubDirectories",
     "label": "Include Subdirectories",
     "description": "If true, uploads all subdirectories recursively.",
-    "defaultValue": "",
+    "defaultValue": true,
     "required": false
   },
   {
@@ -85,6 +85,18 @@
     "description": "Returns the list of files that were skipped during upload.",
     "defaultValue": {
       "value": "SkippedFiles",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "SkippedFolders",
+    "label": "Skipped Folders",
+    "description": "Returns the list of folders that were skipped during upload.",
+    "defaultValue": {
+      "value": "SkippedFolders",
       "enabled": true
     },
     "required": false
