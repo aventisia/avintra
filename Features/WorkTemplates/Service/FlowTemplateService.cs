@@ -332,10 +332,17 @@ namespace WorkspaceAPIs.Services
                     return new List<TrendingWorcTemplateDto>();
                 }
 
-                // Add Authorization header
+                // Set the Authorization header
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
                 var response = await client.GetAsync(requestUrl);
+
+                // Check if the request was successful
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle successful response
+                    _logger.LogInformation("Response content: " + await response.Content.ReadAsStringAsync());
+                }
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -346,7 +353,7 @@ namespace WorkspaceAPIs.Services
                 var content = await response.Content.ReadAsStringAsync();
                 _logger.LogInformation("Response received. Deserializing...");
 
-                var apiResponse = System.Text.Json.JsonSerializer.Deserialize<ServiceResponse<List<TrendingWorcTemplateDto>>>(content, new JsonSerializerOptions
+                var apiResponse = System.Text.Json.JsonSerializer.Deserialize<ServiceResponse<IEnumerable<TrendingWorcTemplateDto>>>(content, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
