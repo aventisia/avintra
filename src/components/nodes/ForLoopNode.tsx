@@ -20,7 +20,7 @@ export const ForLoopNode = ({
         id="for-loop-repeat"
         position={Position.Right}
         connectionCount={1}
-        className="right-1/2"
+        className="right-0 z-[5] h-[0.6rem] w-[0.6rem]"
       />
       <OutputHandle position={sourcePosition} connectionCount={2} />
     </BaseNode>

@@ -146,7 +146,11 @@ export function getNodesAndEdgesAfterDeletion({
         !nodeIdsToDelete.includes(edge.target),
     );
 
-    const incomingEdge = edges.find((edge) => edge.target === nodeId);
+    const incomingEdge = edges.find(
+      (edge) =>
+        edge.target === nodeId && edge.targetHandle !== "for-loop-repeat",
+    );
+
     const outgoingEdge = edges.find(
       (edge) => edge.source === mergeNodeId && edge.target !== nodeId,
     );

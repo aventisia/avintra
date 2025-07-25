@@ -25,12 +25,12 @@ export const BranchNode1 = ({
                 nodeData?.isDisabled && "opacity-50",
               )}
             >
-              <div className="grid place-items-center rounded-full border-2 border-indigo-400 bg-indigo-200 px-2 text-sm hover:ring hover:ring-ring">
+              <div className="grid place-items-center rounded-full border-2 border-[#7D76EC] bg-[#D1CFF8] px-2 text-sm hover:ring hover:ring-ring">
                 <InputHandle
                   position={targetPosition}
                   className="rounded-full opacity-0"
                 />
-                <span className="max-w-60 truncate">{nodeData?.label}</span>
+                <span className="max-w-60 truncate text-[#6159E8]">{nodeData?.label}</span>
                 <OutputHandle position={sourcePosition} />
               </div>
             </div>
