@@ -38,5 +38,10 @@ public interface IWorcTemplateService
     Task<ServiceResponse<IEnumerable<WorcTemplateCategoryBySearchQueryDto>>> GetWorcTemplateCategoryBySearchQueryAsync(CategoryTypesEnum type, string name);
 
     Task<ServiceResponse<IEnumerable<SearchWorcTemplateDto>>> SearchTemplatesAsync(string searchKey);
-
+    
+    /// <summary>
+    /// Retrieves a list of trending Worc templates.
+    /// </summary>
+    /// <returns>The task result contains the service response with the list of trending Worc templates.</returns>
+    Task<ServiceResponse<IEnumerable<TrendingWorcTemplateDto>>> GetAllTrendingTemplatesAsync();
 }

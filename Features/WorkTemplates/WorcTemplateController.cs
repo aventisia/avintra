@@ -53,4 +53,11 @@ public class WorcTemplateController : BaseApiController
     {
         return ResultHelper(await _worcTemplateService.SearchTemplatesAsync(searchKey));
     }
+
+    // Searches flow versions by flow name, with an option to include unpublished versions.
+    [HttpGet("list")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SearchWorcTemplateDto>>>> GetAllTrendingTemplatesAsync()
+    {
+        return ResultHelper(await _worcTemplateService.GetAllTrendingTemplatesAsync());
+    }
 }

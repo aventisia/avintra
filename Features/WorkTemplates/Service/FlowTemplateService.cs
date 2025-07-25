@@ -4,18 +4,25 @@ namespace WorkspaceAPIs.Services
     {
         private readonly ILogger<WorcTemplateService> _logger;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly HttpClientUrlConfig _httpClientUrlConfig;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly Guid _userId;
-
+        private readonly IHttpContextAccessor _httpContextAccessor;
         public WorcTemplateService(
             ILogger<WorcTemplateService> logger,
             IUnitOfWork unitOfWork,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            HttpClientUrlConfig httpClientUrlConfig,
+            IHttpClientFactory httpClientFactory)
         {
             // Set _userId
             _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _httpClientUrlConfig = httpClientUrlConfig;
+            _httpClientFactory = httpClientFactory;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         // Creates a new Worc template
@@ -261,6 +268,102 @@ namespace WorkspaceAPIs.Services
 
             // Return the service response with appropriate status and message.
             return serviceResponse;
+        }
+
+        // Get all trending templates
+        public async Task<ServiceResponse<IEnumerable<TrendingWorcTemplateDto>>> GetAllTrendingTemplatesAsync()
+        {
+            // Initialize a failed default response
+            var serviceResponse = new ServiceResponse<IEnumerable<TrendingWorcTemplateDto>>
+            {
+                Data = null,
+                Message = "Failed to get trending templates. Please try again"
+            };
+
+            try
+            {
+                // Fetch AI model templates from external service
+                var aiModelTemplates = await GetAIModelTemplatesAsync();
+
+                // Fetch Worc templates from the database, ordered by usage count
+                var trendingTemplates = await _unitOfWork.WorcTemplateRepo
+                    .GetAllAsync()
+                    .Include(i => i.CreatedByUser)
+                    .OrderByDescending(o => o.UsagesCount)
+                    .ProjectToType<TrendingWorcTemplateDto>()
+                    .ToListAsync();
+
+                // Merge external AI model templates with local trending templates
+                if (aiModelTemplates.Any())
+                {
+                    trendingTemplates.AddRange(aiModelTemplates);
+                }
+
+                // Return a successful response
+                serviceResponse.Data = trendingTemplates.OrderByDescending(o => o.UsagesCount).ToList();
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Trending templates retrieved successfully";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching trending templates");
+                serviceResponse.Message = "An unexpected error occurred while fetching trending templates";
+            }
+
+            return serviceResponse;
+        }
+
+        // Helper method to retrieve AI model templates from an external service
+        private async Task<List<TrendingWorcTemplateDto>> GetAIModelTemplatesAsync()
+        {
+            var client = _httpClientFactory.CreateClient();
+            var requestUrl = $"{_httpClientUrlConfig.ModelStudioApisBaseUrl}/ai-model-template/trending";
+
+            try
+            {
+                _logger.LogInformation("Sending request to: {Url}", requestUrl);
+
+                // Try to retrieve the access token from the request cookies
+                _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue(CookieNamesEnum.AccessToken.ToString(), out var accessToken);
+
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    _logger.LogWarning("Access token is missing from cookies.");
+                    return new List<TrendingWorcTemplateDto>();
+                }
+
+                // Add Authorization header
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+                var response = await client.GetAsync(requestUrl);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogError("Failed to retrieve templates. Status Code: {StatusCode}", response.StatusCode);
+                    return new List<TrendingWorcTemplateDto>();
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation("Response received. Deserializing...");
+
+                var apiResponse = System.Text.Json.JsonSerializer.Deserialize<ServiceResponse<List<TrendingWorcTemplateDto>>>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (apiResponse?.Data == null)
+                {
+                    _logger.LogWarning("Deserialization resulted in null data.");
+                    return new List<TrendingWorcTemplateDto>();
+                }
+
+                return apiResponse.Data;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving AI model templates.");
+                return new List<TrendingWorcTemplateDto>();
+            }
         }
     }
 }
