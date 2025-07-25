@@ -338,10 +338,11 @@ public class ModelBuilderUserService : IModelBuilderUserService
                     .GetByConditionAsync(w =>
                         w.Id != _userId &&
                         (
-                            w.FirstName.Contains(searchKey) ||
-                            w.LastName.Contains(searchKey) ||
-                            w.UserName.Contains(searchKey))
+                            w.FirstName.ToLower().Contains(searchKey.ToLower()) ||
+                            w.LastName.ToLower().Contains(searchKey.ToLower()) ||
+                            w.UserName.ToLower().Contains(searchKey.ToLower())
                         )
+                    )
                     .ProjectToType<ModelBuilderUserDto>()
                     .ToListAsync();
             }
