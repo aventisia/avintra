@@ -18,5 +18,10 @@ public enum AccessTypesEnum
     /// <summary>
     /// Access open to all users, including the public.
     /// </summary>
-    Public
+    Public,
+
+    /// <summary>
+    /// Access restricted to users within a specific space.
+    /// </summary>
+    Space
 }
