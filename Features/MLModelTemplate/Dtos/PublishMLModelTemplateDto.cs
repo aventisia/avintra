@@ -3,7 +3,7 @@ namespace MLModelBuilderAPIs.DTOs;
 public class PublishMLModelTemplateDto
 {
     /// <summary>
-    /// Gets or sets the unique identifier for the machine learning model version.
+    /// Gets or sets the unique identifier for the machine learning model template.
     /// </summary>
     public Guid Id { get; set; }
 
@@ -25,14 +25,19 @@ public class PublishMLModelTemplateDto
     public ModelTypesEnum? Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the access type, which defines the user's access level within the flow.
+    /// Gets or sets the access type, which defines the user's access level within the ml model.
     /// </summary>
-    public AccessTypesEnum? AccessType { get; set; }
+    public required AccessTypesEnum AccessType { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier for the space that the model version belongs to.
     /// </summary>
     public Guid? SpaceId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique identifier for the version of the machine learning model.
+    /// </summary>
+    public Guid RefId { get; set; }
 
     /// <summary>
     /// Gets or sets a list of tags associated with the machine learning model version.

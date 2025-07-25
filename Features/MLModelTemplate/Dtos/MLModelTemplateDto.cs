@@ -30,14 +30,19 @@ public class MLModelTemplateDto
     public int UsagesCount { get; set; }
 
     /// <summary>
-    /// Gets or sets the access type, which defines the user's access level within the flow.
+    /// Gets or sets the access type, which defines the user's access level within the ML model.
     /// </summary>
-    public AccessTypesEnum? AccessType { get; set; }
+    public required AccessTypesEnum AccessType { get; set; }
 
     /// <summary>
     /// Gets or sets a list of tags associated with the machine learning model version.
     /// </summary>
     public List<string> Tags { get; set; } = new List<string>();
+
+    /// <summary>
+    /// Gets or sets the unique identifier for the version of the machine learning model.
+    /// </summary>
+    public Guid RefId { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when this template was created.
