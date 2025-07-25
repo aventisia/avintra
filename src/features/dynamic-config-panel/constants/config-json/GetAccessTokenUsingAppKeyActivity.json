@@ -1,0 +1,41 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TenantId",
+    "label": "Tenant ID",
+    "description": "The Azure Active Directory tenant (directory) ID.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ClientId",
+    "label": "Client ID",
+    "description": "The Azure AD application (client) ID.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ClientSecret",
+    "label": "Client Secret",
+    "description": "The Azure AD application client secret.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "AccessToken",
+    "label": "Access Token",
+    "description": "The access token retrieved from Microsoft Graph using application permissions.",
+    "defaultValue": {
+      "value": "AccessToken",
+      "enabled": true
+    },
+    "required": false
+  }
+]

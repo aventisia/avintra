@@ -1,0 +1,32 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "File Path",
+    "description": "The full path to the Excel file (.xlsx or .xls) that needs to be opened.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "Visible",
+    "label": "Visible",
+    "description": "Set to true if you want the Excel application to be visible during automation.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Workbook",
+    "label": "Workbook",
+    "description": "The opened Excel Workbook object.",
+    "defaultValue": {
+      "value": "Workbook",
+      "enabled": true
+    },
+    "required": false
+  }
+]

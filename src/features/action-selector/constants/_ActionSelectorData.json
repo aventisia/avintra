@@ -2443,7 +2443,7 @@
             "type": "activityNode",
             "name": "DeleteFtpFileActivity",
             "label": "Delete FTP File",
-            "description": "Deletes one or more files from an FTP server.",
+            "description": "Deletes a single file from an FTP server.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2460,7 +2460,7 @@
           {
             "type": "activityNode",
             "name": "DownloadFoldersFromFtpActivity",
-            "label": "Download Folder(s) from FTP",
+            "label": "Download Folder from FTP",
             "description": "Downloads one or more folders from an FTP server.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
@@ -2523,8 +2523,8 @@
           {
             "type": "activityNode",
             "name": "UploadFilesToFtpActivity",
-            "label": "Upload File(s) to FTP",
-            "description": "Uploads one or more files to an FTP server.",
+            "label": "Upload File to FTP",
+            "description": "Uploads a single file to an FTP server.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2651,6 +2651,15 @@
             "name": "CloseExcelActivity",
             "label": "Close Excel Application",
             "description": "Closes the active Excel application instance and optionally saves changes.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CloseWorkbookActivity",
+            "label": "Close Excel Workbook",
+            "description": "Closes the specified Excel workbook and optionally quits the Excel application.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -2846,8 +2855,17 @@
           },
           {
             "type": "activityNode",
+            "name": "OpenWorkbookActivity",
+            "label": "Open Excel Workbook",
+            "description": "Opens an existing Excel workbook from the specified file path and reports success or failure.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
             "name": "PasteCellsToExcelWorksheetActivity",
-            "label": "Paste Cells to Excel Worksheet",
+            "label": "Paste range cells to Excel Worksheet",
             "description": "Pastes a range of cells from a source Excel instance/workbook to a specific range in a target Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
@@ -2856,7 +2874,7 @@
           {
             "type": "activityNode",
             "name": "PasteDataTableToExcelWorksheetActivity",
-            "label": "Paste Cells to Excel Worksheet",
+            "label": "Paste DataTable to Excel Worksheet",
             "description": "Pastes a DataTable of data to the active Excel worksheet starting at the specified range.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,

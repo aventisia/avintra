@@ -1,0 +1,38 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Workbook",
+    "label": "Workbook",
+    "description": "The Excel Workbook object to close.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelApp",
+    "label": "Excel Application",
+    "description": "Optional. The Excel Application object to quit after closing the workbook.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "SaveBeforeClose",
+    "label": "Save Before Close",
+    "description": "Set to true to save the workbook before closing.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "QuitApp",
+    "label": "Quit Application",
+    "description": "Set to true to quit the Excel application after closing the workbook.",
+    "defaultValue": "",
+    "required": true
+  }
+]

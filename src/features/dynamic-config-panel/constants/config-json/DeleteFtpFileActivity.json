@@ -11,20 +11,20 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "FileNames",
-    "label": "File Names",
-    "description": "The list of file names to delete.",
+    "name": "FileName",
+    "label": "File Name",
+    "description": "The name of the file to delete.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "DeletedFiles",
+    "name": "DeletedFile",
     "label": "Deleted Files",
-    "description": "List of files that were successfully deleted.",
+    "description": "The file that was successfully deleted.",
     "defaultValue": {
-      "value": "DeletedFiles",
+      "value": "DeletedFile",
       "enabled": true
     },
     "required": false

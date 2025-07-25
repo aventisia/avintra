@@ -11,9 +11,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "LocalFiles",
-    "label": "Local Files",
-    "description": "The list of local file paths to upload.",
+    "name": "LocalFile",
+    "label": "Local File",
+    "description": "The local file path to upload.",
     "defaultValue": "",
     "required": true
   },
@@ -22,7 +22,7 @@
     "type": "text",
     "name": "RemoteDirectory",
     "label": "Remote Directory",
-    "description": "The remote directory where files should be uploaded.",
+    "description": "The remote directory where the file should be uploaded.",
     "defaultValue": "",
     "required": true
   },
@@ -31,7 +31,7 @@
     "type": "select",
     "name": "OverwriteMode",
     "label": "Overwrite Mode",
-    "description": "Specifies when to overwrite files on the server.",
+    "description": "Specifies when to overwrite the file on the server.",
     "defaultValue": "IfNewerOrSizeDifferent",
     "required": false,
     "selectOptions": [
@@ -64,15 +64,6 @@
   },
   {
     "direction": "Input",
-    "type": "switch",
-    "name": "IncludeSubDirectories",
-    "label": "Include Subdirectories",
-    "description": "If true, includes subdirectories when uploading multiple files.",
-    "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Input",
     "type": "text",
     "name": "TimeoutSeconds",
     "label": "Timeout Seconds",
@@ -85,7 +76,7 @@
     "type": "config-panel-output",
     "name": "UploadedFilesCount",
     "label": "Uploaded Files Count",
-    "description": "Returns the number of files successfully uploaded.",
+    "description": "Returns the number of files successfully uploaded (0 or 1).",
     "defaultValue": {
       "value": "UploadedFilesCount",
       "enabled": true
@@ -97,7 +88,7 @@
     "type": "config-panel-output",
     "name": "SkippedFiles",
     "label": "Skipped Files",
-    "description": "Returns the list of files that were skipped during upload.",
+    "description": "Returns the list containing the file that was skipped during upload, if any.",
     "defaultValue": {
       "value": "SkippedFiles",
       "enabled": true

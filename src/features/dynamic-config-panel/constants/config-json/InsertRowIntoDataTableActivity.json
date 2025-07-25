@@ -13,7 +13,7 @@
     "type": "text",
     "name": "RowValues",
     "label": "Row Values",
-    "description": "An array of values to insert into the new row. Must match column count and types.",
+    "description": "An array of values to insert into the new row. Must match column count and types.Example: For columns [Id, Name, Age], use [1, \u0027John\u0027, 30]",
     "defaultValue": "",
     "required": true
   },

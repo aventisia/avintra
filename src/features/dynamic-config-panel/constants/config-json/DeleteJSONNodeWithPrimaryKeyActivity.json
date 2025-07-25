@@ -25,5 +25,17 @@
     "description": "The value of the primary key used to locate the target object.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "NodeDeleted",
+    "label": "Node Deleted",
+    "description": "Indicates whether a node was successfully deleted (values: \u0027true\u0027, \u0027false\u0027).",
+    "defaultValue": {
+      "value": "NodeDeleted",
+      "enabled": true
+    },
+    "required": false
   }
 ]

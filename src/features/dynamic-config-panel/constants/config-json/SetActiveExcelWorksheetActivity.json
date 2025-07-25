@@ -34,7 +34,7 @@
     "type": "text",
     "name": "SearchValue",
     "label": "Search Value",
-    "description": "The worksheet name (if selection type is \u0027Name\u0027) or index (if selection type is \u0027Index\u0027).",
+    "description": "The worksheet name (if selection type is \u0027Name\u0027) or index (if selection type is \u0027Index\u0027). Can be string or integer depending on mode.",
     "defaultValue": "",
     "required": true
   }
