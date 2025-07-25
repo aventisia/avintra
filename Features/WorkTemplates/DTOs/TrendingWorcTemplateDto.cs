@@ -11,10 +11,6 @@ public class TrendingWorcTemplateDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the associated flow version.
-    /// </summary>
-    public Guid FlowVersionId { get; set; }
-    /// <summary>
     /// Gets or sets the name of the worc template. Max-255 characters.
     /// </summary>
     [MaxLength(255)]
@@ -27,21 +23,21 @@ public class TrendingWorcTemplateDto
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the worc template's nodes, edges, and viewport JSON data in string format.
-    /// The default value will be an empty object.
-    /// </summary>
-    public string? ReactFlowObject { get; set; } = "{\"nodes\":[],\"edges\":[],\"viewport\":{\"x\":0,\"y\":0,\"zoom\":1}}";
-
-    /// <summary>
     /// Gets or sets the category of the worc template (e.g., Workflow, Automation, etc.).
     /// </summary>
-    public required CategoryTypesEnum Type { get; set; }
+    public string? Type { get; set; }
 
     /// <summary>
     /// Gets or sets the number of times this template has been used to create flows.
     /// This will be used to track trending templates.
     /// </summary>
     public int UsagesCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets a list of tags associated with the machine learning flow version.
+    /// </summary>
+    public List<string> Tags { get; set; } = new List<string>();
+
 
     /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
@@ -52,7 +48,7 @@ public class TrendingWorcTemplateDto
     public bool? IsDisabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the username of the user who created the user record.
+    /// Gets or sets the user name of the user who created the user record.
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     public string? CreatedBy { get; set; }
@@ -64,10 +60,10 @@ public class TrendingWorcTemplateDto
     public DateTimeOffset? CreatedOn { get; set; }
 
     /// <summary>
-    /// Gets or sets the username of the user who last modified the user record.
+    /// Gets or sets the username of the user who created the user record.
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
-    public string? LastModifiedBy { get; set; }
+    public string? CreatedByUsername { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the user record was last modified.

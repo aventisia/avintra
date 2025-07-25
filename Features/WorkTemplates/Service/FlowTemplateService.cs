@@ -166,16 +166,8 @@ namespace WorkspaceAPIs.Services
                 var trendingTemplates = await _unitOfWork.WorcTemplateRepo
                   .GetAllAsync()
                   .OrderByDescending(o => o.UsagesCount)
+                  .Include(i => i.CreatedByUser)
                   .ToListAsync();
-
-                // Check if there are any trending templates
-                if (trendingTemplates == null || !trendingTemplates.Any())
-                {
-                    _logger.LogInformation("No trending templates found.");
-                    serviceResponse.Message = "No trending templates found";
-                    serviceResponse.StatusCode = 404;
-                    return serviceResponse;
-                }
 
                 // Task successful
                 serviceResponse.Data = trendingTemplates.Adapt<IEnumerable<TrendingWorcTemplateDto>>();

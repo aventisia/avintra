@@ -21,7 +21,11 @@ public class WorcTemplateMappingProfile : IRegister
         config.NewConfig<WorcTemplate, SearchWorcTemplateDto>();
 
         // Request mapping for getting  trending flow template record
-        config.NewConfig<WorcTemplate, TrendingWorcTemplateDto>();
+        config.NewConfig<WorcTemplate, TrendingWorcTemplateDto>()
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName : null)
+            .Map(dest => dest.CreatedByUsername,
+                src => src.CreatedByUser != null ? src.CreatedByUser.UserName : null);
 
         // Request mapping for getting worc template record by category and name
         config.NewConfig<WorcTemplate, WorcTemplateCategoryBySearchQueryDto>();
