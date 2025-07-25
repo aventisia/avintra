@@ -204,6 +204,7 @@ public class MLModelTemplateService : IMLModelTemplateService
             mlModelTemplate.ConfigJson = setupData;
 
             // Set auditing fields
+            mlModelTemplate.CreatedByUserId = _userId;
             mlModelTemplate.LastModifiedByUserId = _userId;
             mlModelTemplate.LastModifiedOn = DateTime.UtcNow;
 

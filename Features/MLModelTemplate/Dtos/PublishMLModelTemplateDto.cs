@@ -32,7 +32,7 @@ public class PublishMLModelTemplateDto
     /// <summary>
     /// Gets or sets the unique identifier for the space that the model version belongs to.
     /// </summary>
-    public Guid? SpaceId { get; set; }
+    public List<Guid>? SpaceIds { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier for the version of the machine learning model.
