@@ -8,8 +8,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
 {
-
-    [NodeType("branchNode1")]
+    [ActivityMetaData(nodeType: "branchNode1")]
     [DisplayName("Conditional Branch")]
     [Description("Evaluates one or more groups of conditions. Each group is treated as an AND block, and the activity returns true if any group evaluates to true (OR logic between groups). Use this activity to create branching logic in your workflow based on custom conditions.")]
     public class ConditionalBranchActivity : BaseCodeActivity

@@ -50,12 +50,12 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(false)]
         public InArgument<bool> CheckUiElementState { get; set; }
 
-
         [DisplayName("State")]
         [Description("Specifies the expected state of the element (enabled or disabled).")]
         [DefaultValue(ElementStateTypeEnum.Enabled)]
-        public InArgument<ElementStateTypeEnum> State { get; set; }
+        [RenderIfCondition(nameof(CheckUiElementState), true)]
 
+        public InArgument<ElementStateTypeEnum> State { get; set; }
 
         [DisplayName("Text To Search")]
         [Description("The text to search for in the web page body or title.")]

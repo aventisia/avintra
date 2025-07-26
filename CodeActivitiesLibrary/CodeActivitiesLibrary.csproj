@@ -61,6 +61,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\AiIntegrations\AiStudioActivities\InvokeInfrencingModelWebServiceActivity.cs" />
+    <Compile Include="Activities\AiIntegrations\AiStudioActivities\_AiStudioCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\EmailActivities\ProcessEmailMessagesActivity.cs" />
     <Compile Include="Activities\AppIntegrations\EmailActivities\RetrieveEmailMessagesActivity.cs" />
     <Compile Include="Activities\AppIntegrations\EmailActivities\SendEmailActivity.cs" />
@@ -207,6 +209,10 @@
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\SetTextOnTerminalSessionActivity.cs" />
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\WaitForTextOnTerminalSessionActivity.cs" />
     <Compile Include="Activities\AppIntegrations\TerminalEmulationActivities\_TerminalEmulationCategoryMetaData.cs" />
+    <Compile Include="Activities\AppIntegrations\TwilioActivities\SendTextSmsActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\TwilioActivities\SendWhatsappMessageActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\TwilioActivities\SendWhatsappTemplateMessageActivity.cs" />
+    <Compile Include="Activities\AppIntegrations\TwilioActivities\_TwilioCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\UltraTaxCSActivities\FillUltraTaxFormActivity.cs" />
     <Compile Include="Activities\AppIntegrations\UltraTaxCSActivities\InspectUltraTaxFormActivity.cs" />
     <Compile Include="Activities\AppIntegrations\UltraTaxCSActivities\Helpers\UltraTaxFormHelper.cs" />
@@ -549,6 +555,8 @@
     <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\SetXmlElementValueActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\WriteXmlToFileActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\XMLActivities\_XMLCategoryMetaData.cs" />
+    <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\CallBlockActivity.cs" />
+    <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\CallAgentActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\ConditionalBranchActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\ConditionalActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\LoopActivity.cs" />
@@ -567,7 +575,7 @@
     <Compile Include="Activities\WorkflowLogics\FlowControlActivities\WaitActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\FlowControlActivities\_FlowControlCategoryMetaData.cs" />
     <Compile Include="Extensions\ActivityCategoryMetadataAttribute.cs" />
-    <Compile Include="Extensions\ActivityTypeAttribute.cs" />
+    <Compile Include="Extensions\ActivityMetaDataAttribute.cs" />
     <Compile Include="Extensions\BaseAsyncCodeActivity.cs" />
     <Compile Include="Extensions\BaseNativeActivity.cs" />
     <Compile Include="Extensions\BaseCodeActivity.cs" />
@@ -690,6 +698,9 @@
     </PackageReference>
     <PackageReference Include="Tesseract">
       <Version>5.2.0</Version>
+    </PackageReference>
+    <PackageReference Include="Twilio">
+      <Version>7.12.0</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

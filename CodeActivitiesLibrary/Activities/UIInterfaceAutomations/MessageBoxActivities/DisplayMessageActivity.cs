@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
@@ -51,6 +52,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
         [DisplayName("Timeout (Seconds)")]
         [Description(
             "The number of seconds after which the message box closes automatically if 'Close Message Box Automatically' is enabled.")]
+        [RenderIfCondition(nameof(AutoClose), true)]
         public InArgument<int> Timeout { get; set; }
 
 
@@ -74,7 +76,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
                 var icon = GetMessageBoxIcon(iconEnum);
                 var buttons = GetMessageBoxButtons(buttonEnum);
                 var defaultButton = GetDefaultButton(defaultEnum);
-
+             
                 DialogResult result;
 
                 // Format message based on type
@@ -91,39 +93,66 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
                         form.MinimizeBox = false;
                         form.ControlBox = false;
                         form.TopMost = keepOnTop;
+                        form.Size = new Size(700, 250);
 
                         var label = new Label
                         {
                             Text = messageText,
                             Dock = DockStyle.Fill,
                             TextAlign = ContentAlignment.MiddleCenter,
-                            MaximumSize = new Size(600, 400),
+                            Font = new Font("Segoe UI", 12),
+                            Padding = new Padding(10),
+                            AutoSize = false
+                        };
+
+                        var okButton = new Button
+                        {
+                            Text = "OK",
+                            DialogResult = DialogResult.OK,
+                            Dock = DockStyle.Bottom,
+                            Height = 40
                         };
 
                         form.Controls.Add(label);
-                        form.Show();
-                        System.Threading.Thread.Sleep(timeout * 1000);
-                        form.Close();
+                        form.Controls.Add(okButton);
+                        form.AcceptButton = okButton;
 
-                        result = DialogResult.None;
+                        bool wasAutoClosed = false;
+
+                        form.Shown += (sender, args) =>
+                        {
+                            var timer = new Timer { Interval = timeout * 1000 };
+                            timer.Tick += (s, e) =>
+                            {
+                                timer.Stop();
+                                wasAutoClosed = true;
+                                form.DialogResult = DialogResult.OK;
+                                form.Close();
+                            };
+                            timer.Start();
+                        };
+
+                        result = form.ShowDialog();
+
+                        // Fallback: ensure result reflects auto-close
+                        if (wasAutoClosed && result == DialogResult.None)
+                        {
+                            result = DialogResult.OK;
+                        }
                     }
                 }
                 else
                 {
                     var options = MessageBoxOptions.DefaultDesktopOnly;
-                    if (keepOnTop) options |= MessageBoxOptions.ServiceNotification;
+                    if (keepOnTop)
+                        options |= MessageBoxOptions.ServiceNotification;
 
-                    result = MessageBox.Show(
-                        messageText,
-                        title,
-                        buttons,
-                        icon,
-                        defaultButton,
-                        options
-                    );
+                    result = MessageBox.Show(messageText, title, buttons, icon, defaultButton, options);
                 }
 
-                context.SetValue(ButtonPressed, result != DialogResult.None);
+                // Key Fix: consider auto-close as valid interaction
+                bool buttonPressed = result != DialogResult.None || (autoClose && timeout > 0);
+                context.SetValue(ButtonPressed, buttonPressed);
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, $"Message box closed with result: {result}");
             }
@@ -137,8 +166,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
         private string FormatMessage(object obj)
         {
             if (obj == null) return string.Empty;
-
-            // If it's a DataTable, format as a simple grid-like text
+            
+               // If it's a DataTable, format as a simple grid-like text
             if (obj is DataTable table)
             {
                 return FormatDataTable(table);
@@ -148,7 +177,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
             return obj.ToString();
         }
 
-        private string FormatDataTable(DataTable table)
+         private string FormatDataTable(DataTable table)
         {
             if (table.Rows.Count == 0 || table.Columns.Count == 0)
                 return "No data available.";

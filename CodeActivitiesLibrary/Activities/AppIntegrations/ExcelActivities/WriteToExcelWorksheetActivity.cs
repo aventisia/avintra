@@ -2,6 +2,7 @@
 using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
@@ -162,7 +163,29 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             }
             else
             {
-                range.Value = value?.ToString();
+                string finalValue = string.Empty;
+
+                if (value == null)
+                {
+                    finalValue = string.Empty;
+                }
+                else if (value is string stringValue)
+                {
+                    finalValue = stringValue;
+                }
+                else if (value is IEnumerable<string> stringList)
+                {
+                    finalValue = string.Join(Environment.NewLine, stringList);
+                }
+                else
+                {
+                    finalValue = value.ToString();
+                }
+
+                range.Value = finalValue;
+
+                // Optional: Wrap text in Excel cell to show line breaks
+                range.WrapText = true;
             }
         }
 

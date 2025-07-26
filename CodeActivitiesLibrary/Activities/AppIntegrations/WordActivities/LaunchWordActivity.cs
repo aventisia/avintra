@@ -20,6 +20,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [DisplayName("Document Path")]
         [Description("The file path of the document to open. Required if 'Launch Mode' is 'Open Existing Document'.")]
         [DefaultValue("")]
+        [RenderIfCondition("LaunchMode", LaunchWordModeEnum.OpenExistingDocument)]
         public InArgument<string> DocumentPath { get; set; }
 
         [DisplayName("Make Instance Visible")]

@@ -10,7 +10,7 @@ using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities
 {
-    [DisplayName("Focus Text Field on Web Page")]
+    [DisplayName("Focus on Web Page")]
     [Description("Focuses a specific text field in a web browser. Optionally waits for page load and handles dialogs.")]
     public class FocusTextFieldActivity : BaseCodeActivity
     {

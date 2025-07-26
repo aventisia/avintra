@@ -47,12 +47,11 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 
         [DisplayName("Store Data")]
         [Description(
-            "If true, stores browser data (e.g., user profiles) in a specified path. If false, uses default browser settings. this usefull when launchin multiple instances of the same browser.")]
+            "If true, stores browser data (e.g., user profiles) in a specified path. If false, uses default browser settings. this usefull when launching multiple instances of the same browser.")]
         public InArgument<bool> StoreData { get; set; } = true;
 
         [DisplayName("User Data Storage Path")]
-        [Description(
-            "Path to store browser data (e.g., user profiles). Required if need for store data somewhere else.")]
+        [Description("Optional path to store browser data (e.g., user profiles). If not provided, a default under %APPDATA%\\RPAProfileData\\[BrowserType] will be used.")]
         [RenderIfCondition(nameof(StoreData), true)]
         public InArgument<string> UserDataStoragePath { get; set; }
 
@@ -107,7 +106,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
             }
 
             IWebDriver driver = null;
-            var status = "Success";
 
             try
             {
@@ -116,10 +114,42 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                 var customBrowserName = CustomBrowserName.Get(context);
                 var browserExePath = BrowserExecutablePath.Get(context);
                 var driverExePath = DriverExecutablePath.Get(context);
-                var storeData = StoreData.Get(context);
-                var userDataDir = UserDataStoragePath.Get(context);
                 var launchWithUrl = LaunchWithUrl.Get(context);
                 var launchUrl = LaunchUrl.Get(context);
+
+                string userDataDir = null;
+                var storeData = StoreData.Get(context);
+
+                if (storeData)
+                {
+                    userDataDir = UserDataStoragePath.Get(context);
+
+                    if (string.IsNullOrWhiteSpace(userDataDir))
+                    {
+                        var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+                        // Use traditional switch-case for compatibility with C# 7.3
+                        switch (browserType)
+                        {
+                            case BrowserTypeEnum.MicrosoftEdge:
+                                userDataDir = Path.Combine(localAppData, "RPAProfileData", "EdgeProfile");
+                                break;
+
+                            case BrowserTypeEnum.GoogleChrome:
+                                userDataDir = Path.Combine(localAppData, "Chrome", "ChromeProfile");
+                                break;
+
+                            default:
+                                userDataDir = Path.Combine(localAppData, "RPAProfileData", browserType.ToString());
+                                break;
+                        }
+                    }
+
+                    // Create directory if it doesn't exist
+                    Directory.CreateDirectory(userDataDir);
+                }
+
+
 
                 switch (browserType)
                 {

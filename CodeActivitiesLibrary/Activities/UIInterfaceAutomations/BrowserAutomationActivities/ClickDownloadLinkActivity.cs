@@ -27,7 +27,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 
         [RequiredArgument]
         [DisplayName("Find Type")]
-        [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
+       [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
         [DefaultValue(ElementSelectorTypeEnum.XPath)]
         public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
             new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
@@ -40,7 +40,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 
         [RequiredArgument]
         [DisplayName("Destination Folder")]
-        [Description("The full path of the folder where the downloaded file will be saved.")]
+         [Description("The full path of the folder where the downloaded file will be saved.")]
         public InArgument<string> DestinationFolder { get; set; }
 
 
@@ -50,73 +50,68 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 
 
         [DisplayName("Maximum Wait Time (Seconds)")]
-        [Description("The maximum time to wait for the file to appear in the destination folder.")]
+       [Description("The maximum time to wait for the file to appear in the destination folder.")]
+        [DefaultValue(30)]
+        [RenderIfCondition("WaitForDownload", true)]
         public InArgument<int> MaxWaitTime { get; set; }
 
         [DisplayName("Downloaded File Output")]
-        [Description("Returns the full path of the downloaded file.")]
+         [Description("Returns the full path of the downloaded file.")]
         public OutArgument<string> DownloadedFile { get; set; }
 
         // ----------------------
         // Execution Logic
-        // ----------------------       
+        // ---------------------- 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Operation completed successfully.";
+            string status = string.Empty;
             string downloadedFilePath = null;
 
             try
             {
                 var driver = WebBrowserInstance.Get(context);
-                var uiElement = ValueToFind.Get(context);
                 var findType = FindType.Get(context);
+                var selector = ValueToFind.Get(context);
                 var destinationFolder = DestinationFolder.Get(context);
                 var waitForDownload = WaitForDownload.Get(context);
-                var maxWaitTime = MaxWaitTime.Get(context);
+                var maxWait = MaxWaitTime.Expression != null ? MaxWaitTime.Get(context) : 30;
 
-                if (driver == null)
-                    throw new ArgumentException("Web browser instance cannot be null.");
-
-                if (string.IsNullOrWhiteSpace(uiElement))
-                    throw new ArgumentException("UI Element cannot be empty.");
+                if (driver == null) throw new ArgumentException("Web browser instance is null.");
+                if (string.IsNullOrWhiteSpace(selector)) throw new ArgumentException("ValueToFind is empty.");
+                if (string.IsNullOrWhiteSpace(destinationFolder)) throw new ArgumentException("DestinationFolder is empty.");
 
                 if (!Directory.Exists(destinationFolder))
                     Directory.CreateDirectory(destinationFolder);
-
+                    
                 //  Capture the list of files before the download starts
-                var existingFilesBefore = Directory.GetFiles(destinationFolder);
+                var existingFiles = Directory.GetFiles(destinationFolder);
 
                 // Locate and click the download element
-                var by = BrowserAutomationHelper.GetWebElementLocator(findType, uiElement);
+                var by = BrowserAutomationHelper.GetWebElementLocator(findType, selector);
                 var element = driver.FindElement(by);
-                if (element == null)
-                    throw new ArgumentException($"No element found using '{findType}': '{uiElement}'");
 
-                element.Click(); 
+                element.Click();
 
-                if (waitForDownload && maxWaitTime > 0)
+                if (waitForDownload && maxWait > 0)
                 {
-                    var timeout = TimeSpan.FromSeconds(maxWaitTime);
-                    var sw = new Stopwatch();
-                    sw.Start();
-                    bool downloadStarted = false;
+                    var sw = Stopwatch.StartNew();
+                    bool tempDownloadStarted = false;
 
-                    while (sw.Elapsed < timeout)
+                    while (sw.Elapsed.TotalSeconds < maxWait)
                     {
                         var crdownloadFiles = Directory.GetFiles(destinationFolder, "*.crdownload");
 
                         if (crdownloadFiles.Any())
-                        {
-                            downloadStarted = true;
-                        }
+                            tempDownloadStarted = true;
 
-                        // Wait until .crdownload disappears after appearing
-                        if (downloadStarted && !crdownloadFiles.Any())
+                        if (tempDownloadStarted && !crdownloadFiles.Any())
                         {
-                            // Get only the new files added after clicking
                             var newFiles = Directory.GetFiles(destinationFolder)
-                                .Where(f => !f.EndsWith(".crdownload") && !f.EndsWith(".tmp"))
-                                .Except(existingFilesBefore)
+                                .Where(f =>
+                                    !f.EndsWith(".crdownload", StringComparison.OrdinalIgnoreCase) &&
+                                    !f.EndsWith(".tmp", StringComparison.OrdinalIgnoreCase))
+                                .Except(existingFiles)
+                                .OrderByDescending(File.GetLastWriteTimeUtc)
                                 .ToList();
 
                             if (newFiles.Any())
@@ -129,24 +124,29 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                         Thread.Sleep(500);
                     }
 
-                    sw.Stop();
-
                     if (string.IsNullOrEmpty(downloadedFilePath))
-                        throw new TimeoutException("File did not finish downloading within the specified time.");
+                        throw new TimeoutException("File download timed out.");
                 }
                 else
                 {
-                    status += " File download initiated but not waited for.";
+                    Thread.Sleep(2000); // give the download a moment to start
+                    var postClickFiles = Directory.GetFiles(destinationFolder)
+                        .Where(f => !f.EndsWith(".crdownload", StringComparison.OrdinalIgnoreCase) &&
+                                    !f.EndsWith(".tmp", StringComparison.OrdinalIgnoreCase))
+                        .Except(existingFiles)
+                        .OrderByDescending(File.GetLastWriteTimeUtc)
+                        .ToList();
+
+                    downloadedFilePath = postClickFiles.FirstOrDefault();
                 }
                 DownloadedFile.Set(context, downloadedFilePath);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, "Download completed.");
             }
             catch (Exception ex)
             {
-                status = $"Error during download: {ex.Message}";
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, "Download failed: " + ex.Message);
             }
         }
     }
