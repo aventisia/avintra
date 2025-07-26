@@ -149,7 +149,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 StatusMessage.Set(context, "Successfully wrote to Excel.");
             }
             catch (Exception ex)
-            {              
+            {
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error writing to Excel: {ex.Message}");
             }

@@ -14,7 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.TwilioActivities
     [DisplayName("Send SMS (Twilio)")]
     public class SendTextSmsActivity : BaseCodeActivity
     {
-        // Required arguments
+
         [RequiredArgument]
         [DisplayName("Account SID")]
         [Description("Twilio Account SID")]

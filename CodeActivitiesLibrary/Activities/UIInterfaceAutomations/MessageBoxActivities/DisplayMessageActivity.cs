@@ -76,7 +76,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
                 var icon = GetMessageBoxIcon(iconEnum);
                 var buttons = GetMessageBoxButtons(buttonEnum);
                 var defaultButton = GetDefaultButton(defaultEnum);
-             
+
                 DialogResult result;
 
                 // Format message based on type
@@ -166,8 +166,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
         private string FormatMessage(object obj)
         {
             if (obj == null) return string.Empty;
-            
-               // If it's a DataTable, format as a simple grid-like text
+
+            // If it's a DataTable, format as a simple grid-like text
             if (obj is DataTable table)
             {
                 return FormatDataTable(table);
@@ -177,7 +177,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
             return obj.ToString();
         }
 
-         private string FormatDataTable(DataTable table)
+        private string FormatDataTable(DataTable table)
         {
             if (table.Rows.Count == 0 || table.Columns.Count == 0)
                 return "No data available.";

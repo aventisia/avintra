@@ -27,7 +27,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 
         [RequiredArgument]
         [DisplayName("Find Type")]
-       [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
+        [Description("Specifies how to find the element (e.g., ID, XPath, CssSelector).")]
         [DefaultValue(ElementSelectorTypeEnum.XPath)]
         public InArgument<ElementSelectorTypeEnum> FindType { get; set; } =
             new InArgument<ElementSelectorTypeEnum>(ElementSelectorTypeEnum.XPath);
@@ -40,7 +40,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 
         [RequiredArgument]
         [DisplayName("Destination Folder")]
-         [Description("The full path of the folder where the downloaded file will be saved.")]
+        [Description("The full path of the folder where the downloaded file will be saved.")]
         public InArgument<string> DestinationFolder { get; set; }
 
 
@@ -50,13 +50,13 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 
 
         [DisplayName("Maximum Wait Time (Seconds)")]
-       [Description("The maximum time to wait for the file to appear in the destination folder.")]
+        [Description("The maximum time to wait for the file to appear in the destination folder.")]
         [DefaultValue(30)]
         [RenderIfCondition("WaitForDownload", true)]
         public InArgument<int> MaxWaitTime { get; set; }
 
         [DisplayName("Downloaded File Output")]
-         [Description("Returns the full path of the downloaded file.")]
+        [Description("Returns the full path of the downloaded file.")]
         public OutArgument<string> DownloadedFile { get; set; }
 
         // ----------------------
@@ -82,7 +82,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 
                 if (!Directory.Exists(destinationFolder))
                     Directory.CreateDirectory(destinationFolder);
-                    
+
                 //  Capture the list of files before the download starts
                 var existingFiles = Directory.GetFiles(destinationFolder);
 

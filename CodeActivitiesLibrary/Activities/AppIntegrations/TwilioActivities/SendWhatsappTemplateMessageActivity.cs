@@ -8,9 +8,9 @@ using Twilio.Types;
 
 namespace CodeActivitiesLibrary.AppIntegrations.TwilioActivities
 {
-    [DisplayName("Send WhatsApp Template Message")]
-    [Description("Sends a WhatsApp template message using Twilio and predefined placeholders.")]
-    public class SendWhatsAppTemplateMessageActivity : BaseCodeActivity
+    [DisplayName("Send WhatsApp Message via Messaging Service")]
+    [Description("Sends a WhatsApp message using Twilio Messaging Service.")]
+    public class SendWhatsAppMessageViaMessagingServiceActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Account SID")]
@@ -33,22 +33,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.TwilioActivities
         public InArgument<string> ToNumber { get; set; }
 
         [RequiredArgument]
-        [DisplayName("Template SID")]
-        [Description("The SID of the approved WhatsApp template you want to send.")]
-        public InArgument<string> TemplateSid { get; set; }
+        [DisplayName("Messaging Service SID")]
+        [Description("The SID of the Twilio Messaging Service to use.")]
+        public InArgument<string> MessagingServiceSid { get; set; }
 
-        [DisplayName("Language Code")]
-        [Description("The language code for the template (default is 'en' for English).")]
-        [DefaultValue("en")]
-        public InArgument<string> LanguageCode { get; set; } = new InArgument<string>("en");
-
-        [DisplayName("Body Parameter 1")]
-        [Description("Optional: First body parameter to replace placeholders in the template.")]
-        public InArgument<string> BodyParameter1 { get; set; }
-
-        [DisplayName("Body Parameter 2")]
-        [Description("Optional: Second body parameter to replace placeholders in the template.")]
-        public InArgument<string> BodyParameter2 { get; set; }
+        [RequiredArgument]
+        [DisplayName("Message Body")]
+        [Description("The content of the WhatsApp message to send.")]
+        public InArgument<string> MessageBody { get; set; }
 
         [Description("Output result: Success or Error message")]
         [DisplayName("Result Output")]
@@ -61,14 +53,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.TwilioActivities
             string authToken = AuthToken.Get(context);
             string fromNumber = FromNumber.Get(context);
             string toNumber = ToNumber.Get(context);
-            string templateSid = TemplateSid.Get(context);
-            string languageCode = LanguageCode.Get(context);
-
-            string bodyParam1 = BodyParameter1.Get(context);
-            string bodyParam1Encoded = Uri.EscapeDataString(bodyParam1 ?? "");
-
-            string bodyParam2 = BodyParameter2.Get(context);
-            string bodyParam2Encoded = Uri.EscapeDataString(bodyParam2 ?? "");
+            string messagingServiceSid = MessagingServiceSid.Get(context);
+            string messageBody = MessageBody.Get(context);
 
             // Initialize Twilio client
             TwilioClient.Init(accountSid, authToken);
@@ -78,8 +64,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.TwilioActivities
                 var message = MessageResource.Create(
                     from: new PhoneNumber(fromNumber),
                     to: new PhoneNumber(toNumber),
-                    body: $"{{\"body\":{{\"text\":[\"{bodyParam1Encoded}\",\"{bodyParam2Encoded}\"]}},\"language\":\"{languageCode}\",\"preview_url\":false}}",
-                    messagingServiceSid: templateSid
+                    body: messageBody,
+                    messagingServiceSid: messagingServiceSid
                 );
 
                 // Set output arguments
