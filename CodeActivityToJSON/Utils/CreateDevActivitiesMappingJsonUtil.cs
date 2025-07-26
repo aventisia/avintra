@@ -100,7 +100,7 @@ namespace CodeActivityToJSON.Utils
                             }
 
                             // Get the DisplayName and Description attributes from the activity
-                            var nodeType = activity.GetCustomAttributes(typeof(NodeTypeAttribute), false).FirstOrDefault() as NodeTypeAttribute;
+                            var activityMetaData = activity.GetCustomAttributes(typeof(ActivityMetaDataAttribute), false).FirstOrDefault() as ActivityMetaDataAttribute;
                             var displayName = activity.GetCustomAttributes(typeof(DisplayNameAttribute), false).FirstOrDefault() as DisplayNameAttribute;
                             var description = activity.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as DescriptionAttribute;
                             if (displayName == null || description == null) continue;
@@ -108,12 +108,13 @@ namespace CodeActivityToJSON.Utils
                             // Add the activity to the action category
                             actionCategory.Actions.Add(new NodeAction
                             {
-                                Type = nodeType == null ? "activityNode" : nodeType.NodeType,
+                                Type = activityMetaData?.NodeType ?? "activityNode",
                                 Name = activity.Name,
                                 Label = displayName.DisplayName,
                                 Description = description.Description,
                                 DocsLink = "https://docs.aventisia.com",
                                 Img = "/function.png",
+                                Icon = activityMetaData?.NodeIcon ?? null
                             });
                         }
 
