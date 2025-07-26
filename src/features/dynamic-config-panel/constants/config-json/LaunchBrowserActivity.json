@@ -82,7 +82,7 @@
     "type": "switch",
     "name": "StoreData",
     "label": "Store Data",
-    "description": "If true, stores browser data (e.g., user profiles) in a specified path. If false, uses default browser settings. this usefull when launchin multiple instances of the same browser.",
+    "description": "If true, stores browser data (e.g., user profiles) in a specified path. If false, uses default browser settings. this usefull when launching multiple instances of the same browser.",
     "defaultValue": true,
     "required": false
   },
@@ -91,7 +91,7 @@
     "type": "text",
     "name": "UserDataStoragePath",
     "label": "User Data Storage Path",
-    "description": "Path to store browser data (e.g., user profiles). Required if need for store data somewhere else.",
+    "description": "Optional path to store browser data (e.g., user profiles). If not provided, a default under %APPDATA%\\RPAProfileData\\[BrowserType] will be used.",
     "defaultValue": "",
     "required": false,
     "renderIf": {

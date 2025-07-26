@@ -27,7 +27,15 @@
     "label": "Document Path",
     "description": "The file path of the document to open. Required if \u0027Launch Mode\u0027 is \u0027Open Existing Document\u0027.",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "LaunchMode",
+          "equals": "OpenExistingDocument"
+        }
+      ]
+    }
   },
   {
     "direction": "Input",

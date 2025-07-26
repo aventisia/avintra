@@ -213,7 +213,15 @@
         "value": "Disabled",
         "description": "Specifies that the element should be disabled."
       }
-    ]
+    ],
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "CheckUiElementState",
+          "equals": true
+        }
+      ]
+    }
   },
   {
     "direction": "Input",

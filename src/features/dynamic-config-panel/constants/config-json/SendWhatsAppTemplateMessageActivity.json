@@ -1,0 +1,86 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "AccountSid",
+    "label": "Account SID",
+    "description": "Your Twilio Account SID.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "AuthToken",
+    "label": "Auth Token",
+    "description": "Your Twilio Auth Token.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FromNumber",
+    "label": "From WhatsApp Number",
+    "description": "The WhatsApp-enabled Twilio number to send from. Format: whatsapp:\u002B14155238886",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ToNumber",
+    "label": "To WhatsApp Number",
+    "description": "The recipient\u0027s WhatsApp number. Format: whatsapp:\u002B91xxxxxxxxxx",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TemplateSid",
+    "label": "Template SID",
+    "description": "The SID of the approved WhatsApp template you want to send.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "LanguageCode",
+    "label": "Language Code",
+    "description": "The language code for the template (default is \u0027en\u0027 for English).",
+    "defaultValue": "en",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "BodyParameter1",
+    "label": "Body Parameter 1",
+    "description": "Optional: First body parameter to replace placeholders in the template.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "BodyParameter2",
+    "label": "Body Parameter 2",
+    "description": "Optional: Second body parameter to replace placeholders in the template.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result Output",
+    "description": "Output result: Success or Error message",
+    "defaultValue": {
+      "value": "Result",
+      "enabled": true
+    },
+    "required": false
+  }
+]

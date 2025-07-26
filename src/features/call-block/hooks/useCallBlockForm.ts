@@ -53,7 +53,7 @@ export const useCallBlockForm = () => {
   const selectedBlockId = selectedBlock?.id;
 
   // Get name (activityName), inputs and outputs from nodeData
-  const nodeUniqueName = nodeData?.name ?? "callBlock";
+  const nodeUniqueName = nodeData?.name ?? "CallBlockActivity";
 
   const inputs = nodeData?.inputs ?? [];
   const outputs = nodeData?.outputs ?? [];

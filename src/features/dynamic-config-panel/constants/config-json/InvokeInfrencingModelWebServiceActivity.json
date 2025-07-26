@@ -1,0 +1,146 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EndpointUrl",
+    "label": "Endpoint URL",
+    "description": "The URL of the web service endpoint (e.g., https://api.example.com/v1/completions).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SelectModel",
+    "label": "Select Model",
+    "description": "The name or identifier of the model to invoke (e.g., gpt-3.5-turbo).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "InputText",
+    "label": "Input Text",
+    "description": "The input text or prompt to send to the model.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ModelApiKey",
+    "label": "Model API Key",
+    "description": "The API key required to authenticate with the model service.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "HttpMethod",
+    "label": "HTTP Method",
+    "description": "The HTTP method to use. Commonly POST for model inference.",
+    "defaultValue": "POST",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "RequestBody",
+    "label": "Request Body",
+    "description": "The request body to send in POST requests.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ContentType",
+    "label": "Content Type",
+    "description": "Specifies the content type for the request body.",
+    "defaultValue": "application/json",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "AcceptHeader",
+    "label": "Accept Header",
+    "description": "Specifies the content type expected in the response.",
+    "defaultValue": "application/json",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "AuthenticationType",
+    "label": "Authentication Type",
+    "description": "Type of authentication to use. For Model API Key, Bearer is typically used.",
+    "defaultValue": "Bearer",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Basic",
+        "value": "Basic",
+        "description": "Uses Basic authentication with username and password."
+      },
+      {
+        "label": "Bearer",
+        "value": "Bearer",
+        "description": "Uses Bearer token authentication (commonly used with API Keys)."
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "UseDefaultCredentials",
+    "label": "Use Default Credentials",
+    "description": "If true, sends credentials of the current user with the request.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "IgnoreSslErrors",
+    "label": "Ignore SSL Errors",
+    "description": "If true, ignores SSL certificate validation errors.",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Headers",
+    "label": "Headers",
+    "description": "Custom HTTP headers to include in the request (e.g., specific model service headers).",
+    "defaultValue": "",
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "Result",
+    "label": "Result",
+    "description": "Returns the raw response from the web service as a string.",
+    "defaultValue": {
+      "value": "Result",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ResponseCode",
+    "label": "Response Code",
+    "description": "Returns the HTTP status code from the web service.",
+    "defaultValue": {
+      "value": "ResponseCode",
+      "enabled": true
+    },
+    "required": false
+  }
+]

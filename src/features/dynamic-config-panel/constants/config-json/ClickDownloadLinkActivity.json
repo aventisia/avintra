@@ -152,8 +152,16 @@
     "name": "MaxWaitTime",
     "label": "Maximum Wait Time (Seconds)",
     "description": "The maximum time to wait for the file to appear in the destination folder.",
-    "defaultValue": "",
-    "required": false
+    "defaultValue": 30,
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "WaitForDownload",
+          "equals": true
+        }
+      ]
+    }
   },
   {
     "direction": "Output",

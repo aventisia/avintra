@@ -145,7 +145,15 @@
     "label": "Timeout (Seconds)",
     "description": "The number of seconds after which the message box closes automatically if \u0027Close Message Box Automatically\u0027 is enabled.",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "AutoClose",
+          "equals": true
+        }
+      ]
+    }
   },
   {
     "direction": "Output",

@@ -54,7 +54,7 @@ export const useCallAgentForm = () => {
   const selectedAgentFlowId = selectedAgent?.flowId;
 
   // Get name (activityName), inputs and outputs from nodeData
-  const nodeUniqueName = nodeData?.name ?? "callAgent";
+  const nodeUniqueName = nodeData?.name ?? "CallAgentActivity";
 
   const inputs = nodeData?.inputs ?? [];
   const outputs = nodeData?.outputs ?? [];

@@ -4,7 +4,7 @@
     "type": "text",
     "name": "SourcePaths",
     "label": "Source Paths",
-    "description": "The list of file or folder paths to zip. pass the paths in format: [\u0022C:\\path\\to\\file1.txt\u0022, \u0022C:\\path\\to\\folder1\u0022]",
+    "description": "Accepts: string[], List\u003Cstring\u003E, or comma-separated string of file/folder paths.",
     "defaultValue": "",
     "required": true
   },
@@ -154,7 +154,7 @@
     "type": "text",
     "name": "OutputZipPath",
     "label": "Output Zip Path",
-    "description": "The path to save the resulting zip file.",
+    "description": "Full path where the ZIP file will be saved (e.g., C:\\temp\\archive.zip).",
     "defaultValue": "",
     "required": true
   },
@@ -163,7 +163,7 @@
     "type": "config-panel-output",
     "name": "OutputZipFullPath",
     "label": "Output Zip Full Path",
-    "description": "The full path of the resulting zip file.",
+    "description": "Returns the full path of the created ZIP file.",
     "defaultValue": {
       "value": "OutputZipFullPath",
       "enabled": true

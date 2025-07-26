@@ -10,15 +10,33 @@
         "description": "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.",
         "icon": null,
         "img": null,
-        "listType": null,
+        "listType": "list",
         "actions": [
+          {
+            "type": "blockNode",
+            "name": "CallBlockActivity",
+            "label": "Call Block",
+            "description": "Use to add custom block",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": "BlockNodeIcon",
+            "img": "/function.png"
+          },
+          {
+            "type": "callAgentNode",
+            "name": "CallAgentActivity",
+            "label": "Call Agent",
+            "description": "Use this to call another agent within the current agent",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": "CallAgentIcon",
+            "img": "/function.png"
+          },
           {
             "type": "conditionalNode",
             "name": "ConditionalActivity",
             "label": "Router",
             "description": "Use conditions to decide which direction the flow should take",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
+            "icon": "ConditionalNodeIcon",
             "img": "/function.png"
           },
           {
@@ -27,7 +45,7 @@
             "label": "Loop",
             "description": "Use this to keep doing something again and again, as long as certain conditions are met.",
             "docsLink": "https://docs.aventisia.com",
-            "icon": null,
+            "icon": "LoopNodeIcon",
             "img": "/function.png"
           }
         ]
@@ -1858,7 +1876,7 @@
           {
             "type": "activityNode",
             "name": "FocusTextFieldActivity",
-            "label": "Focus Text Field on Web Page",
+            "label": "Focus on Web Page",
             "description": "Focuses a specific text field in a web browser. Optionally waits for page load and handles dialogs.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
