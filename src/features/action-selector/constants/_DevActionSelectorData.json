@@ -2378,9 +2378,9 @@
           },
           {
             "type": "activityNode",
-            "name": "SendWhatsAppTemplateMessageActivity",
-            "label": "Send WhatsApp Template Message",
-            "description": "Sends a WhatsApp template message using Twilio and predefined placeholders.",
+            "name": "SendWhatsAppMessageViaMessagingServiceActivity",
+            "label": "Send WhatsApp Message via Messaging Service",
+            "description": "Sends a WhatsApp message using Twilio Messaging Service.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"

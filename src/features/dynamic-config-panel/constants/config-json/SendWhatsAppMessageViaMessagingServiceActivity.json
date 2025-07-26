@@ -38,38 +38,20 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "TemplateSid",
-    "label": "Template SID",
-    "description": "The SID of the approved WhatsApp template you want to send.",
+    "name": "MessagingServiceSid",
+    "label": "Messaging Service SID",
+    "description": "The SID of the Twilio Messaging Service to use.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "LanguageCode",
-    "label": "Language Code",
-    "description": "The language code for the template (default is \u0027en\u0027 for English).",
-    "defaultValue": "en",
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "BodyParameter1",
-    "label": "Body Parameter 1",
-    "description": "Optional: First body parameter to replace placeholders in the template.",
+    "name": "MessageBody",
+    "label": "Message Body",
+    "description": "The content of the WhatsApp message to send.",
     "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "BodyParameter2",
-    "label": "Body Parameter 2",
-    "description": "Optional: Second body parameter to replace placeholders in the template.",
-    "defaultValue": "",
-    "required": false
+    "required": true
   },
   {
     "direction": "Output",

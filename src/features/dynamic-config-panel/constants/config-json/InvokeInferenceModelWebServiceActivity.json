@@ -2,15 +2,6 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "EndpointUrl",
-    "label": "Endpoint URL",
-    "description": "The URL of the web service endpoint (e.g., https://api.example.com/v1/completions).",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
     "name": "SelectModel",
     "label": "Select Model",
     "description": "The name or identifier of the model to invoke (e.g., gpt-3.5-turbo).",
@@ -38,18 +29,54 @@
   {
     "direction": "Input",
     "type": "text",
+    "name": "EndpointUrl",
+    "label": "Endpoint URL",
+    "description": "The URL of the web service endpoint (e.g., https://api.example.com/v1/completions).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "select",
     "name": "HttpMethod",
     "label": "HTTP Method",
     "description": "The HTTP method to use. Commonly POST for model inference.",
     "defaultValue": "POST",
-    "required": true
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "GET",
+        "value": "GET",
+        "description": "Retrieves data from the specified resource."
+      },
+      {
+        "label": "POST",
+        "value": "POST",
+        "description": "Submits data to be processed to the specified resource."
+      },
+      {
+        "label": "PUT",
+        "value": "PUT",
+        "description": "Updates a current resource with new data."
+      },
+      {
+        "label": "DELETE",
+        "value": "DELETE",
+        "description": "Deletes the specified resource."
+      },
+      {
+        "label": "PATCH",
+        "value": "PATCH",
+        "description": "Applies partial modifications to a resource."
+      }
+    ]
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "RequestBody",
     "label": "Request Body",
-    "description": "The request body to send in POST requests.",
+    "description": "The request body to send in POST requests. Use {SelectModel} and {InputText} as placeholders.",
     "defaultValue": "",
     "required": false
   },
@@ -73,45 +100,6 @@
   },
   {
     "direction": "Input",
-    "type": "select",
-    "name": "AuthenticationType",
-    "label": "Authentication Type",
-    "description": "Type of authentication to use. For Model API Key, Bearer is typically used.",
-    "defaultValue": "Bearer",
-    "required": false,
-    "selectOptions": [
-      {
-        "label": "Basic",
-        "value": "Basic",
-        "description": "Uses Basic authentication with username and password."
-      },
-      {
-        "label": "Bearer",
-        "value": "Bearer",
-        "description": "Uses Bearer token authentication (commonly used with API Keys)."
-      }
-    ]
-  },
-  {
-    "direction": "Input",
-    "type": "switch",
-    "name": "UseDefaultCredentials",
-    "label": "Use Default Credentials",
-    "description": "If true, sends credentials of the current user with the request.",
-    "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "switch",
-    "name": "IgnoreSslErrors",
-    "label": "Ignore SSL Errors",
-    "description": "If true, ignores SSL certificate validation errors.",
-    "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Input",
     "type": "text",
     "name": "Headers",
     "label": "Headers",
@@ -122,11 +110,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Result",
-    "label": "Result",
+    "name": "AIModelResult",
+    "label": "AIModelResult",
     "description": "Returns the raw response from the web service as a string.",
     "defaultValue": {
-      "value": "Result",
+      "value": "AIModelResult",
       "enabled": true
     },
     "required": false
