@@ -29,6 +29,10 @@ export const useCallModelForm = () => {
         value: "AIModelResult",
         enabled: true,
       },
+      ResponseCode: {
+        value: "ResponseCode",
+        enabled: true,
+      },
     },
   });
 
