@@ -408,9 +408,9 @@ public class MLModelTemplateService : IMLModelTemplateService
     }
 
     // Retrieves all ML model templates optionally filtered by ML model ID.
-    public async Task<ServiceResponse<IEnumerable<TrendingMLModelTemplateDto>>> GetTrendingMLModelTemplatesAsync()
+    public async Task<ServiceResponse<PaginationDto<TrendingTemplateDto>>> GetTrendingMLModelTemplatesAsync(int pageNo, int pageSize)
     {
-        var serviceResponse = new ServiceResponse<IEnumerable<TrendingMLModelTemplateDto>>
+        var serviceResponse = new ServiceResponse<PaginationDto<TrendingTemplateDto>>
         {
             Data = null,
             Message = "Failed to retrieve ML model templates. Please try again."
@@ -425,8 +425,23 @@ public class MLModelTemplateService : IMLModelTemplateService
                 .OrderByDescending(o => o.UsagesCount)
                 .ToListAsync();
 
+            // Apply pagination (Skip + Take)
+            var pagedTemplates = mLModelTemplates
+                .Skip((pageNo - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            // Build PaginationDto
+            var paginationDto = new PaginationDto<TrendingTemplateDto>()
+            {
+                Items = pagedTemplates.Adapt<IEnumerable<TrendingTemplateDto>>(),
+                PageNo = pageNo,
+                PageSize = pageSize,
+                Total = mLModelTemplates.Count
+            };
+
             // Populate service response with successful data
-            serviceResponse.Data = mLModelTemplates.Adapt<IEnumerable<TrendingMLModelTemplateDto>>();
+            serviceResponse.Data = paginationDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "ML model templates retrieved successfully.";
         }
@@ -439,7 +454,7 @@ public class MLModelTemplateService : IMLModelTemplateService
     }
 
     // Uses a selected trending Worc template to create a new ml model
-    public async Task<ServiceResponse<UseTemplateDto>> UseTemplateToCreateMLModelAsync(TrendingMLModelTemplateDto trendingTemplateDto)
+    public async Task<ServiceResponse<UseTemplateDto>> UseTemplateToCreateMLModelAsync(TrendingTemplateDto trendingTemplateDto)
     {
         var serviceResponse = new ServiceResponse<UseTemplateDto>
         {

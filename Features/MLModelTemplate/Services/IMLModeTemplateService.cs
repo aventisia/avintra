@@ -42,27 +42,25 @@ public interface IMLModelTemplateService
     /// <param name="mlModelTemplateId">The unique identifier of the ML model template to delete.</param>
     /// <returns>A service response indicating success or failure of the deletion.</returns>
     Task<ServiceResponse<bool>> DeleteMLModelTemplateAsync(Guid mlModelTemplateId);
-
     /// <summary>
-    /// Deletes multiple ML model templates specified by their unique IDs.
+    /// Deletes multiple ML model templates based on the provided unique IDs.
     /// </summary>
-    /// <param name="mlModelTemplateIds">A collection of template IDs to be deleted.</param>
-    /// <returns>A service response indicating whether all deletions succeeded.</returns>
+    /// <param name="mlModelTemplateIds">A list of template IDs to be deleted.</param>
+    /// <returns>A service response indicating whether the deletion of all templates was successful.</returns>
     Task<ServiceResponse<bool>> DeleteMultipleMLModelTemplatesAsync(IEnumerable<Guid> mlModelTemplateIds);
 
     /// <summary>
-    /// Retrieves a list of trending ML model templates.
+    /// Fetches a list of currently trending ML model templates.
     /// </summary>
-    /// <returns>A task that returns a service response containing a collection of trending ML model templates.</returns>
-    Task<ServiceResponse<IEnumerable<TrendingMLModelTemplateDto>>> GetTrendingMLModelTemplatesAsync();
+    /// <returns>A task that returns a service response containing a paginated collection of trending ML model templates.</returns>
+    Task<ServiceResponse<PaginationDto<TrendingTemplateDto>>> GetTrendingMLModelTemplatesAsync(int pageNo, int pageSize);
 
     /// <summary>
-    /// Creates a new machine learning (ML) model using a selected trending ML model template.
+    /// Creates a new machine learning (ML) model by utilizing a selected trending ML model template.
     /// </summary>
-    /// <param name="trendingMLModelTemplateDto">The trending ML model template to be used for creating the ML model.</param>
+    /// <param name="trendingTemplateDto">The trending ML model template to be used for creating the new ML model.</param>
     /// <returns>
-    /// A task representing the asynchronous operation. 
-    /// The result contains a service response indicating whether the ML model creation was successful.
+    /// A task representing the asynchronous operation. The result contains a service response indicating whether the ML model creation was successful.
     /// </returns>
-    Task<ServiceResponse<UseTemplateDto>> UseTemplateToCreateMLModelAsync(TrendingMLModelTemplateDto trendingMLModelTemplateDto);
+    Task<ServiceResponse<UseTemplateDto>> UseTemplateToCreateMLModelAsync(TrendingTemplateDto trendingTemplateDto);
 }
