@@ -9,6 +9,7 @@ import DCPDialogHeader from "./DCPDialogHeader";
 import { useLayoutEffect, useRef, useState } from "react";
 import CallAgentConfigForm from "@/features/call-agent/components/CallAgentConfigForm";
 import CallBlockConfigForm from "@/features/call-block/components/CallBlockConfigForm";
+import ModelConfigForm from "@/features/call-model/components/ModelConfigForm";
 
 export const DCPDialog = ({ children }: React.PropsWithChildren) => {
   // Ref and state for dynamic <p> height
@@ -37,6 +38,8 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
         return <CallAgentConfigForm />;
       case "blockNode":
         return <CallBlockConfigForm />;
+      case "aiNode":
+        return <ModelConfigForm />;
       default:
         return <DCPForm />;
     }
