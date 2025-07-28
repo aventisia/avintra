@@ -66,7 +66,7 @@ public class AIModelService : IAIModelService
     }
 
     // Retrieves a list of published ai models.
-    public async Task<ServiceResponse<IEnumerable<AIModelDto>>> SearchAIModelsAsync(string searchKey, bool includeUnpublish)
+    public async Task<ServiceResponse<IEnumerable<AIModelDto>>> SearchAIModelsAsync(string searchKey)
     {
         var response = new ServiceResponse<IEnumerable<AIModelDto>>
         {
@@ -80,8 +80,8 @@ public class AIModelService : IAIModelService
 
             var models = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
-                    (includeUnpublish || w.IsPublished) &&
                     w.Type != null &&
+                    w.IsPublished &&
                     w.Name.ToLower().Contains(searchKey.ToLower())
                 )
                 .Include(i => i.Tasks)
@@ -112,7 +112,7 @@ public class AIModelService : IAIModelService
         var serviceResponse = new ServiceResponse<object>
         {
             Data = null,
-            Message = "Failed to fetch AI model setup. Please try again later.", 
+            Message = "Failed to fetch AI model setup. Please try again later.",
         };
 
         try
@@ -122,15 +122,15 @@ public class AIModelService : IAIModelService
 
             // Fetch the ML model by its ID from the repository.
             var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(m => m.Id == mlModelId) 
-                .FirstOrDefaultAsync(); 
+                .GetByConditionAsync(m => m.Id == mlModelId)
+                .FirstOrDefaultAsync();
 
             // If no model is found with the given ID, log a warning and return a response with a not found message.
             if (mlModel == null)
             {
                 _logger.LogWarning("AI model with ID {ModelId} not found.", mlModelId);
-                serviceResponse.Message = "AI model not found."; 
-                return serviceResponse; 
+                serviceResponse.Message = "AI model not found.";
+                return serviceResponse;
             }
 
             // Log the successful retrieval of the model.
@@ -142,15 +142,15 @@ public class AIModelService : IAIModelService
             // Handle different types of AI models and fetch the appropriate setup data.
             switch (mlModel.Type)
             {
-                case ModelTypesEnum.Inferencing:  
+                case ModelTypesEnum.Inferencing:
                     _logger.LogInformation("Fetching setup for Inferencing model...");
                     setupData = new
                     {
-                        Data = await _inferencingModelService.GetSetupByMLModelIdAsync(mlModelId) 
+                        Data = await _inferencingModelService.GetSetupByMLModelIdAsync(mlModelId)
                     };
                     break;
 
-                case ModelTypesEnum.Conversation: 
+                case ModelTypesEnum.Conversation:
                     _logger.LogInformation("Fetching setup for Conversation model...");
                     setupData = new
                     {
@@ -158,7 +158,7 @@ public class AIModelService : IAIModelService
                     };
                     break;
 
-                case ModelTypesEnum.Generative: 
+                case ModelTypesEnum.Generative:
                     _logger.LogInformation("Fetching setup for Generative model...");
                     setupData = new
                     {
@@ -170,13 +170,13 @@ public class AIModelService : IAIModelService
                 default:
                     _logger.LogWarning("Unhandled model type: {ModelType}", mlModel.Type);
                     serviceResponse.Message = $"Unsupported model type: {mlModel.Type}";
-                    return serviceResponse; 
+                    return serviceResponse;
             }
 
             // Set the setup data and successful status in the response.
             serviceResponse.Data = setupData;
-            serviceResponse.StatusCode = 200; 
-            serviceResponse.Message = "Successfully retrieved AI model setup."; 
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Successfully retrieved AI model setup.";
 
             // Log that the setup retrieval was successful.
             _logger.LogInformation("Successfully retrieved setup for model ID {ModelId}.", mlModelId);

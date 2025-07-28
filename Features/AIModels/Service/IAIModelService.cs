@@ -17,10 +17,9 @@ public interface IAIModelService
     /// Searches for AI models based on a search key, with an option to include unpublished models.
     /// </summary>
     /// <param name="searchKey"> A string used to filter AI models by name or description. If the searchKey is null or empty, all models will be considered. </param>
-    /// <param name="includeUnpublish"> A flag indicating whether to include unpublished AI models in the result. Defaults to <c>false</c>. </param>
     /// <returns> A task that represents the asynchronous operation. The task result contains a ServiceResponse object with an enumeration of AIModelDto objects representing the available AI models, including unpublished models if specified.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<AIModelDto>>> SearchAIModelsAsync(string searchKey, bool includeUnpublish);
+    Task<ServiceResponse<IEnumerable<AIModelDto>>> SearchAIModelsAsync(string searchKey);
 
     /// <summary>
     /// Retrieves the setup details for a specific AI model by its unique identifier.

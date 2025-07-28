@@ -19,9 +19,9 @@ public class AIModelController : BaseApiController
     }
 
     [HttpGet("list/{searchKey}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AIModelDto>>>> SearchAIModels(string searchKey, bool includeUnpublish = false)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AIModelDto>>>> SearchAIModels(string searchKey)
     {
-        return ResultHelper(await _aiModelService.SearchAIModelsAsync(searchKey, includeUnpublish));
+        return ResultHelper(await _aiModelService.SearchAIModelsAsync(searchKey));
     }
 
     /// Fetches the extraction setup configuration for a specific ML model by ID
