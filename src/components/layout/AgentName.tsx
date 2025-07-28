@@ -1,13 +1,12 @@
 import { useUpdateAgentNameMutation } from "@/hooks/useUpdateAgentNameMutation";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { Input, LoadingSpinner } from "@aventisia/ui";
+import { LoadingSpinner } from "@aventisia/ui";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+import AutoSizeInput from "./AutsizeInput";
 
 const AgentName = () => {
-  const [editing, setEditing] = useState(false);
-
   // Get global store state and actions
   const { currentFlow, setCurrentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
@@ -26,18 +25,15 @@ const AgentName = () => {
 
   return (
     <Tooltip content={currentFlow.name}>
-      {editing ? (
-        <Input
+      <div className="flex items-center">
+        <AutoSizeInput
           name="label"
-          className="w-[8rem] !max-w-[8rem] truncate !border-0 !border-none bg-transparent !p-0 !text-base !font-semibold !shadow-none !outline-none !ring-0"
+          className="rounded-none !border-0 !border-none bg-transparent !p-0 !text-xs !shadow-none !outline-none !ring-0"
           value={currentFlow.name}
-          autoFocus
           onChange={(e) => {
             setCurrentFlow({ ...currentFlow, name: e.target.value });
           }}
-          fieldSize="xs"
           onBlur={() => {
-            setEditing(false);
             if (isDirty?.trim() !== currentFlow?.name?.trim())
               updateFlow({
                 name: currentFlow.name,
@@ -46,19 +42,10 @@ const AgentName = () => {
               });
           }}
         />
-      ) : (
-        <div
-          onClick={() => setEditing(true)}
-          className="flex h-10 items-center gap-2"
-        >
-          <span className="max-w-[8rem] truncate text-xs">
-            {currentFlow.name}
-          </span>
-          {isPending ? (
-            <LoadingSpinner className="h-3 w-3 text-muted-foreground" />
-          ) : null}
-        </div>
-      )}
+        {isPending ? (
+          <LoadingSpinner className="h-3 w-3 text-muted-foreground" />
+        ) : null}
+      </div>
     </Tooltip>
   );
 };

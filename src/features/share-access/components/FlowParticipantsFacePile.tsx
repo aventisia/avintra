@@ -41,13 +41,14 @@ const FlowParticipantsFacePile = () => {
       <Tooltip key="share" delayDuration={0} content="Share Access">
         <Avatar
           onClick={() => setOpen(true)}
-          className="-ml-5 h-8 w-8 cursor-pointer border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200"
+          className="-ml-4 h-8 w-8 cursor-pointer border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200"
         >
           <AvatarFallback className="bg-[#aba7e7]">
             <PlusIcon className="h-4 w-4" />
           </AvatarFallback>
         </Avatar>
       </Tooltip>
+
       {data?.data
         ?.slice(0, maxFacesCount)
         ?.map(({ initials = "", avatarSrc, userFullName, type, userName }) => (
@@ -72,7 +73,7 @@ const FlowParticipantsFacePile = () => {
               </div>
             }
           >
-            <Avatar className="-ml-5 h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
+            <Avatar className="-ml-4 h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
               <AvatarImage src={avatarSrc} alt={initials} />
               <AvatarFallback className="bg-[#aba7e7] capitalize">
                 {initials}
@@ -104,7 +105,7 @@ const FlowParticipantsFacePile = () => {
             </div>
           }
         >
-          <Avatar className="-ml-5 h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
+          <Avatar className="-ml-4 h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
             <AvatarImage src={""} alt={userSession?.userInitials} />
             <AvatarFallback className="bg-[#aba7e7] capitalize">
               {userSession?.userInitials}
