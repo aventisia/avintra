@@ -74,6 +74,7 @@ public class ModelAPIKeyService : IModelAPIKeyService
                     w.MLModelId == apiKeyDto.MLModelId &&
                     w.Name.ToLower() == apiKeyDto.Name.ToLower()
                 )
+                .Include(i => i.MLModel)
                 .SingleOrDefaultAsync();
 
             if (apiKey != null)
@@ -84,6 +85,16 @@ public class ModelAPIKeyService : IModelAPIKeyService
 
                 // Return a response indicating the conflict
                 serviceResponse.Message = $"API key with name '{apiKeyDto.Name}' already exists for the model.";
+                return serviceResponse;
+            }
+            
+            if (!apiKey.MLModel.IsPublished)
+            {
+                // Log a warning if the model is not published
+                _logger.LogWarning("Cannot generate API key. Model ID {ModelId} is not published.", apiKeyDto.MLModelId);
+
+                // Return a simple response indicating the model is not published
+                serviceResponse.Message = "Model is not published. API key cannot be generated.";
                 return serviceResponse;
             }
 
