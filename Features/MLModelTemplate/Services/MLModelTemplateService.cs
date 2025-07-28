@@ -167,6 +167,7 @@ public class MLModelTemplateService : IMLModelTemplateService
             // Retrieve the existing ML model based on the provided reference ID
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w => w.Id == publishMLModelTemplateDto.RefId)
+                .Include(i => i.Tasks)
                 .SingleOrDefaultAsync();
 
             // Check if the ML model exists
@@ -174,6 +175,14 @@ public class MLModelTemplateService : IMLModelTemplateService
             {
                 _logger.LogError("ML model template with ID {TemplateId} not found.", publishMLModelTemplateDto.Id);
                 serviceResponse.Message = "ML model not found.";
+                return serviceResponse;
+            }
+
+            // Check if the ML model has any associated tasks
+            if (!mlModel.Tasks.Any())
+            {
+                _logger.LogError("ML model template with ID {TemplateId} has no associated tasks.", publishMLModelTemplateDto.Id);
+                serviceResponse.Message = "The ML model has no associated tasks.";
                 return serviceResponse;
             }
 
