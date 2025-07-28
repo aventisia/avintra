@@ -486,7 +486,6 @@ public class MLModelTemplateService : IMLModelTemplateService
             {
                 // Map the DTO to ml model entity and set user information
                 mlModelEntity = trendingTemplateDto.Adapt<MLModel>();
-                mlModelEntity.Type = templateEntity.Type;
                 mlModelEntity.CreatedByUserId = _userId;
                 mlModelEntity.LastModifiedByUserId = _userId;
 
@@ -499,11 +498,6 @@ public class MLModelTemplateService : IMLModelTemplateService
                     return serviceResponse;
                 }
 
-            }
-            else
-            {
-                mlModelEntity.Name = trendingTemplateDto.Name;
-                trendingTemplateDto.Description = string.IsNullOrEmpty(trendingTemplateDto.Description) ? mlModelEntity.Name : trendingTemplateDto.Description;
             }
 
             // If the model type is 'Inferencing', fetch and serialize its setup configuration
@@ -522,7 +516,8 @@ public class MLModelTemplateService : IMLModelTemplateService
                 var conversationData = JsonSerializer.Deserialize<InferencingModelDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 conversationData.Id = mlModelEntity.Id;
                 conversationData.Name = mlModelEntity.Name;
-                conversationData.Description = mlModelEntity.Description; await _inferencingModelService.UpdateSetupAsync(conversationData);
+                conversationData.Description = mlModelEntity.Description; 
+                await _inferencingModelService.UpdateSetupAsync(conversationData);
             }
 
             mlModelEntity = await _unitOfWork.MLModelRepo
