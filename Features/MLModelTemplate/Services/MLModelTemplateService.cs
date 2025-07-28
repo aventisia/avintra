@@ -408,9 +408,9 @@ public class MLModelTemplateService : IMLModelTemplateService
     }
 
     // Retrieves all ML model templates optionally filtered by ML model ID.
-    public async Task<ServiceResponse<PaginationDto<TrendingTemplateDto>>> GetTrendingMLModelTemplatesAsync(int pageNo, int pageSize)
+    public async Task<ServiceResponse<IEnumerable<TrendingTemplateDto>>> GetTrendingMLModelTemplatesAsync()
     {
-        var serviceResponse = new ServiceResponse<PaginationDto<TrendingTemplateDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<TrendingTemplateDto>>
         {
             Data = null,
             Message = "Failed to retrieve ML model templates. Please try again."
@@ -423,25 +423,11 @@ public class MLModelTemplateService : IMLModelTemplateService
                 .GetAllAsync()
                 .Include(i => i.CreatedByUser)
                 .OrderByDescending(o => o.UsagesCount)
+                .ProjectToType<TrendingTemplateDto>()
                 .ToListAsync();
 
-            // Apply pagination (Skip + Take)
-            var pagedTemplates = mLModelTemplates
-                .Skip((pageNo - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            // Build PaginationDto
-            var paginationDto = new PaginationDto<TrendingTemplateDto>()
-            {
-                Items = pagedTemplates.Adapt<IEnumerable<TrendingTemplateDto>>(),
-                PageNo = pageNo,
-                PageSize = pageSize,
-                Total = mLModelTemplates.Count
-            };
-
             // Populate service response with successful data
-            serviceResponse.Data = paginationDto;
+            serviceResponse.Data = mLModelTemplates;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "ML model templates retrieved successfully.";
         }

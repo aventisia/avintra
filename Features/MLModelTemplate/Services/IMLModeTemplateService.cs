@@ -53,7 +53,7 @@ public interface IMLModelTemplateService
     /// Fetches a list of currently trending ML model templates.
     /// </summary>
     /// <returns>A task that returns a service response containing a paginated collection of trending ML model templates.</returns>
-    Task<ServiceResponse<PaginationDto<TrendingTemplateDto>>> GetTrendingMLModelTemplatesAsync(int pageNo, int pageSize);
+    Task<ServiceResponse<IEnumerable<TrendingTemplateDto>>> GetTrendingMLModelTemplatesAsync();
 
     /// <summary>
     /// Creates a new machine learning (ML) model by utilizing a selected trending ML model template.
