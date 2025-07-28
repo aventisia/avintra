@@ -44,6 +44,7 @@ type NodeDataType = {
   isBlock?: boolean;
   isDisabled?: boolean;
   selectedAgent?: { [key: string]: string };
+  selectedModel?: { [key: string]: string };
 };
 
 export type {
