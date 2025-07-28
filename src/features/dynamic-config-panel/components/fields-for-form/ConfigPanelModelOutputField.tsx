@@ -21,9 +21,7 @@ import { useShallow } from "zustand/react/shallow";
 import { ConfigPanelAutosizeInput } from "../..";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import ReactJson from "react-json-view";
-import { getModelSetup } from "../../apis/models-apis";
-import { useEffect, useState } from "react";
-import { transformModelResponse } from "../../utils/transform-model-setup";
+import { useEffect } from "react";
 
 interface ConfigPanelModelOutputFieldProps
   extends React.ComponentPropsWithoutRef<typeof ConfigPanelAutosizeInput> {
@@ -83,26 +81,6 @@ const ConfigPanelModelOutputField = ({
     }
   }, [selectedValue, valueField, setSelectedValue, inputName, name]);
 
-  const [outputJSON, setOutputJSON] = useState();
-
-  const [isLoading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    getModelSetup(description || "")
-      .then((data) => {
-        if (data?.data) {
-          if (data?.data?.type == "Summarization")
-            setOutputJSON(data.data.summary as any);
-          else setOutputJSON(transformModelResponse(data.data) as any);
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch models", err);
-        setLoading(false);
-      });
-  }, [description]);
-
   // Render the ConfigPanelModelOutputField component
   return (
     <div className="flex flex-row items-center justify-between gap-8 rounded-lg">
@@ -140,11 +118,11 @@ const ConfigPanelModelOutputField = ({
                   <VariableIcon className="h-4 w-4" />
                 </PopoverTrigger>
 
-                {description && !isLoading ? (
+                {description ? (
                   <Tooltip
                     className="max-w-[30vw] bg-white"
                     content={
-                      typeof outputJSON == "string" ? (
+                      typeof description == "string" ? (
                         <span className="text-xs text-secondary">
                           summary: ""
                         </span>
@@ -162,7 +140,7 @@ const ConfigPanelModelOutputField = ({
                             displayDataTypes={false}
                             name={false}
                             quotesOnKeys={false}
-                            src={JSON.parse(JSON.stringify(outputJSON))}
+                            src={JSON.parse(JSON.stringify(description))}
                           />
                         </ScrollArea>
                       )
