@@ -38,37 +38,6 @@ const FlowParticipantsFacePile = () => {
 
   return (
     <div className={cn("flex flex-row-reverse items-center -space-x-3")}>
-      {userSession?.userInitials ? (
-        <Tooltip
-          key={"user"}
-          content={
-            <div className="flex items-center gap-3 p-1">
-              <Avatar className="h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
-                <AvatarImage src={""} alt={userSession?.userInitials} />
-                <AvatarFallback className="bg-[#aba7e7] capitalize">
-                  {userSession?.userInitials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="-mt-1 flex flex-col">
-                <h3 className="font-medium">{`${userSession?.firstName} ${userSession?.lastName}`}</h3>
-                <span className="text-2xs text-muted-foreground">
-                  {userSession?.email}
-                </span>
-                <span className="mt-0.5 text-2xs">
-                  {currentFlow.accessType}
-                </span>
-              </div>
-            </div>
-          }
-        >
-          <Avatar className="h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
-            <AvatarImage src={""} alt={userSession?.userInitials} />
-            <AvatarFallback className="bg-[#aba7e7] capitalize">
-              {userSession?.userInitials}
-            </AvatarFallback>
-          </Avatar>
-        </Tooltip>
-      ) : null}
       <Tooltip content="Share Access">
         <Avatar
           onClick={() => setOpen(true)}
@@ -116,6 +85,37 @@ const FlowParticipantsFacePile = () => {
           ),
         )
         .reverse()}
+      {userSession?.userInitials ? (
+        <Tooltip
+          key={"user"}
+          content={
+            <div className="flex items-center gap-3 p-1">
+              <Avatar className="h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
+                <AvatarImage src={""} alt={userSession?.userInitials} />
+                <AvatarFallback className="bg-[#aba7e7] capitalize">
+                  {userSession?.userInitials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="-mt-1 flex flex-col">
+                <h3 className="font-medium">{`${userSession?.firstName} ${userSession?.lastName}`}</h3>
+                <span className="text-2xs text-muted-foreground">
+                  {userSession?.email}
+                </span>
+                <span className="mt-0.5 text-2xs">
+                  {currentFlow.accessType}
+                </span>
+              </div>
+            </div>
+          }
+        >
+          <Avatar className="h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
+            <AvatarImage src={""} alt={userSession?.userInitials} />
+            <AvatarFallback className="bg-[#aba7e7] capitalize">
+              {userSession?.userInitials}
+            </AvatarFallback>
+          </Avatar>
+        </Tooltip>
+      ) : null}
     </div>
   );
 };
