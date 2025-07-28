@@ -6,6 +6,8 @@ import { useShallow } from "zustand/react/shallow";
 import { useShareStore } from "@/features/share-access/stores/share-store";
 import { useFetchFlowUserList } from "../hooks/useFetchFlowUserList";
 import { PlusIcon } from "lucide-react";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 /** The FacePile shows a list of faces or initials in a horizontal lockup.
  * Each circle represents a person. Many times this component is used when
@@ -14,6 +16,18 @@ import { PlusIcon } from "lucide-react";
 const FlowParticipantsFacePile = () => {
   const { data } = useFetchFlowUserList();
 
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
+  const { currentFlow } = useCurrentFlowStore(
+    useShallow((state) => ({
+      currentFlow: state.currentFlow,
+    })),
+  );
+
   /** How many faces can be shown */
   const maxFacesCount = 3;
   const { setOpen } = useShareStore(
@@ -21,8 +35,50 @@ const FlowParticipantsFacePile = () => {
       setOpen: state.setShowDialog,
     })),
   );
+
   return (
-    <div className={cn("flex items-center -space-x-3")}>
+    <div className={cn("flex flex-row-reverse items-center -space-x-3")}>
+      {userSession?.userInitials ? (
+        <Tooltip
+          key={"user"}
+          content={
+            <div className="flex items-center gap-3 p-1">
+              <Avatar className="h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
+                <AvatarImage src={""} alt={userSession?.userInitials} />
+                <AvatarFallback className="bg-[#aba7e7] capitalize">
+                  {userSession?.userInitials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="-mt-1 flex flex-col">
+                <h3 className="font-medium">{`${userSession?.firstName} ${userSession?.lastName}`}</h3>
+                <span className="text-2xs text-muted-foreground">
+                  {userSession?.email}
+                </span>
+                <span className="mt-0.5 text-2xs">
+                  {currentFlow.accessType}
+                </span>
+              </div>
+            </div>
+          }
+        >
+          <Avatar className="h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
+            <AvatarImage src={""} alt={userSession?.userInitials} />
+            <AvatarFallback className="bg-[#aba7e7] capitalize">
+              {userSession?.userInitials}
+            </AvatarFallback>
+          </Avatar>
+        </Tooltip>
+      ) : null}
+      <Tooltip content="Share Access">
+        <Avatar
+          onClick={() => setOpen(true)}
+          className="-ml-3 h-8 w-8 cursor-pointer border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200"
+        >
+          <AvatarFallback className="bg-[#aba7e7]">
+            <PlusIcon className="h-4 w-4" />
+          </AvatarFallback>
+        </Avatar>
+      </Tooltip>
       {data?.data
         ?.slice(0, maxFacesCount)
         ?.map(
@@ -58,17 +114,8 @@ const FlowParticipantsFacePile = () => {
               </Avatar>
             </Tooltip>
           ),
-        )}
-      <Tooltip content="Share Access">
-        <Avatar
-          onClick={() => setOpen(true)}
-          className="h-8 w-8 cursor-pointer border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200"
-        >
-          <AvatarFallback className="bg-[#aba7e7]">
-            <PlusIcon className="h-4 w-4" />
-          </AvatarFallback>
-        </Avatar>
-      </Tooltip>
+        )
+        .reverse()}
     </div>
   );
 };
