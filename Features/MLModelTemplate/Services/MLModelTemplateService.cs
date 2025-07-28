@@ -478,51 +478,56 @@ public class MLModelTemplateService : IMLModelTemplateService
             }
             var mlModelEntity = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w => w.Id == trendingTemplateDto.RefId)
+                .AsNoTracking()
+                .Include(i => i.CreatedByUser)
                 .FirstOrDefaultAsync();
+
             if (mlModelEntity == null)
             {
                 // Map the DTO to ml model entity and set user information
                 mlModelEntity = trendingTemplateDto.Adapt<MLModel>();
                 mlModelEntity.Type = templateEntity.Type;
                 mlModelEntity.CreatedByUserId = _userId;
+                mlModelEntity.LastModifiedByUserId = _userId;
+
+                // Insert the ml model entity into the repository
+                await _unitOfWork.MLModelRepo.InsertAsync(mlModelEntity);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogInformation("Failed to save ml model entity for template ID: {TemplateId}", trendingTemplateDto.Id);
+                    return serviceResponse;
+                }
 
             }
             else
             {
                 mlModelEntity.Name = trendingTemplateDto.Name;
                 trendingTemplateDto.Description = string.IsNullOrEmpty(trendingTemplateDto.Description) ? mlModelEntity.Name : trendingTemplateDto.Description;
-                mlModelEntity.Type = templateEntity.Type;
-            }
-
-            mlModelEntity.LastModifiedByUserId = _userId;
-
-            // Insert the ml model entity into the repository
-            await _unitOfWork.MLModelRepo.InsertAsync(mlModelEntity);
-
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogInformation("Failed to save ml model entity for template ID: {TemplateId}", trendingTemplateDto.Id);
-                return serviceResponse;
             }
 
             // If the model type is 'Inferencing', fetch and serialize its setup configuration
-            if (mlModelEntity.Type == ModelTypesEnum.Inferencing)
+            if (templateEntity.Type == ModelTypesEnum.Inferencing)
             {
                 var inferencingData = JsonSerializer.Deserialize<InferencingModelDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 inferencingData.Id = mlModelEntity.Id;
+                inferencingData.Name = mlModelEntity.Name;
+                inferencingData.Description = mlModelEntity.Description;
                 await _inferencingModelService.UpdateSetupAsync(inferencingData);
             }
 
             // If the model type is 'Conversation', fetch and serialize its setup configuration
-            else if (mlModelEntity.Type == ModelTypesEnum.Conversation)
+            else if (templateEntity.Type == ModelTypesEnum.Conversation)
             {
                 var conversationData = JsonSerializer.Deserialize<InferencingModelDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 conversationData.Id = mlModelEntity.Id;
-                await _inferencingModelService.UpdateSetupAsync(conversationData);
+                conversationData.Name = mlModelEntity.Name;
+                conversationData.Description = mlModelEntity.Description; await _inferencingModelService.UpdateSetupAsync(conversationData);
             }
 
             mlModelEntity = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w => w.Id == mlModelEntity.Id)
+                .AsNoTracking()
                 .Include(i => i.CreatedByUser)
                 .FirstOrDefaultAsync();
 
