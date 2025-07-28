@@ -37,11 +37,11 @@ const FlowParticipantsFacePile = () => {
   );
 
   return (
-    <div className={cn("flex flex-row-reverse items-center -space-x-3")}>
-      <Tooltip content="Share Access">
+    <div className={cn("flex flex-row-reverse items-center")}>
+      <Tooltip key="share" delayDuration={0} content="Share Access">
         <Avatar
           onClick={() => setOpen(true)}
-          className="-ml-3 h-8 w-8 cursor-pointer border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200"
+          className="-ml-5 h-8 w-8 cursor-pointer border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200"
         >
           <AvatarFallback className="bg-[#aba7e7]">
             <PlusIcon className="h-4 w-4" />
@@ -50,40 +50,36 @@ const FlowParticipantsFacePile = () => {
       </Tooltip>
       {data?.data
         ?.slice(0, maxFacesCount)
-        ?.map(
-          (
-            { initials = "", avatarSrc, userFullName, type, userName },
-            index,
-          ) => (
-            <Tooltip
-              key={index}
-              content={
-                <div className="flex items-center gap-3 p-1">
-                  <Avatar className="h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
-                    <AvatarImage src={avatarSrc} alt={initials} />
-                    <AvatarFallback className="bg-[#aba7e7] capitalize">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="-mt-1 flex flex-col">
-                    <h3 className="font-medium">{userFullName}</h3>
-                    <span className="text-2xs text-muted-foreground">
-                      {userName}
-                    </span>
-                    <span className="mt-0.5 text-2xs">{type}</span>
-                  </div>
+        ?.map(({ initials = "", avatarSrc, userFullName, type, userName }) => (
+          <Tooltip
+            delayDuration={0}
+            key={userName}
+            content={
+              <div className="flex items-center gap-3 p-1">
+                <Avatar className="h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
+                  <AvatarImage src={avatarSrc} alt={initials} />
+                  <AvatarFallback className="bg-[#aba7e7] capitalize">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="-mt-1 flex flex-col">
+                  <h3 className="font-medium">{userFullName}</h3>
+                  <span className="text-2xs text-muted-foreground">
+                    {userName}
+                  </span>
+                  <span className="mt-0.5 text-2xs">{type}</span>
                 </div>
-              }
-            >
-              <Avatar className="h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
-                <AvatarImage src={avatarSrc} alt={initials} />
-                <AvatarFallback className="bg-[#aba7e7] capitalize">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-            </Tooltip>
-          ),
-        )
+              </div>
+            }
+          >
+            <Avatar className="-ml-5 h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
+              <AvatarImage src={avatarSrc} alt={initials} />
+              <AvatarFallback className="bg-[#aba7e7] capitalize">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+          </Tooltip>
+        ))
         .reverse()}
       {userSession?.userInitials ? (
         <Tooltip
@@ -108,7 +104,7 @@ const FlowParticipantsFacePile = () => {
             </div>
           }
         >
-          <Avatar className="h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
+          <Avatar className="-ml-5 h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary transition-colors duration-300 hover:z-10 hover:border-slate-200">
             <AvatarImage src={""} alt={userSession?.userInitials} />
             <AvatarFallback className="bg-[#aba7e7] capitalize">
               {userSession?.userInitials}

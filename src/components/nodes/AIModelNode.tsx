@@ -38,8 +38,8 @@ export const AIModelNode = ({
 
   useEffect(() => {
     if (data.type !== "aiNode") return;
-    if (data?.outputs?.length) {
-      const newLabel = data?.selectedModel?.name + " " + "AI Node";
+    if (data?.selectedModel) {
+      const newLabel = data?.selectedModel?.name;
       // Find the node by id and update its label
       const updatedNodes = nodes.map((node: Node) => {
         if (node.id === nodeId && nodeData?.type == "aiNode") {
@@ -57,11 +57,10 @@ export const AIModelNode = ({
       // Update the nodes in the store
       setNodes(updatedNodes);
     }
-  }, [data?.outputs]);
+  }, [data?.selectedModel]);
 
   //Get llm for the selected model
-  const llm = data.inputs?.find((val) => val.key.includes("llm"))
-    ?.value as string;
+  const llm = data?.selectedModel?.llMs as unknown as string[];
 
   return (
     <ReactFlowContextMenu>
@@ -84,7 +83,7 @@ export const AIModelNode = ({
           <div className="flex h-full w-[18rem] flex-1 flex-col items-start gap-2.5 rounded-r-lg bg-[#1E1B4B] p-3 text-white">
             <div className="flex items-center gap-3">
               <BrainCircuit className="text-white" />
-              <h3 className="line-clamp-1 flex-1 text-start text-lg font-semibold">
+              <h3 className="line-clamp-1 flex-1 text-start text-lg font-semibold capitalize">
                 {data.label}
               </h3>
             </div>
@@ -96,11 +95,17 @@ export const AIModelNode = ({
 
             {/* LLM Badge */}
 
-            {llm && (
-              <div>
-                <Badge variant="outline" className="bg-white/10 text-white">
-                  {llm}
-                </Badge>
+            {llm?.length > 0 && (
+              <div className="flex items-center gap-2">
+                {llm.map((value: string) => (
+                  <Badge
+                    key={value}
+                    variant="outline"
+                    className="bg-white/10 text-white"
+                  >
+                    {value}
+                  </Badge>
+                ))}
               </div>
             )}
           </div>
