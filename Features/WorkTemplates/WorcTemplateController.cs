@@ -34,10 +34,10 @@ public class WorcTemplateController : BaseApiController
     }
 
     // Fetch trending Worc templates
-    [HttpGet("trending-templates")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<TrendingWorcTemplateDto>>>> GetTrendingTemplates()
+    [HttpGet("list")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<TrendingTemplateDto>>>> GetTrendingTemplates()
     {
-        return ResultHelper(await _worcTemplateService.GetTrendingTemplatesAsync());
+        return ResultHelper(await _worcTemplateService.GetAllTemplatesAsync());
     }
 
     // Retrieve Worc templates by category and search query
@@ -47,17 +47,24 @@ public class WorcTemplateController : BaseApiController
         return ResultHelper(await _worcTemplateService.GetWorcTemplateCategoryBySearchQueryAsync(Type, Name));
     }
 
-    // Searches flow versions by flow name, with an option to include unpublished versions.
+    // Searches Worc templates based on the provided search key.
     [HttpGet("search/{searchKey}")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<SearchWorcTemplateDto>>>> SearchTemplates(string searchKey)
     {
         return ResultHelper(await _worcTemplateService.SearchTemplatesAsync(searchKey));
     }
 
-    // Searches flow versions by flow name, with an option to include unpublished versions.
-    [HttpGet("list")]
+    // Retrieves all trending Worc templates.
+    [HttpGet("trending")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<SearchWorcTemplateDto>>>> GetAllTrendingTemplatesAsync()
     {
         return ResultHelper(await _worcTemplateService.GetAllTrendingTemplatesAsync());
+    }
+
+    // Creates a new flow using the selected trending Worc template.
+    [HttpPost("use")]
+    public async Task<ActionResult<ServiceResponse<TrendingTemplateDto>>> UseTemplateToCreateFlow([FromBody] TrendingTemplateDto trendingTemplateDto)
+    {
+        return ResultHelper(await _worcTemplateService.UseTemplateToCreateFlowAsync(trendingTemplateDto));
     }
 }

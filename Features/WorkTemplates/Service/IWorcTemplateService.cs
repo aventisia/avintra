@@ -24,10 +24,10 @@ public interface IWorcTemplateService
     Task<ServiceResponse<WorcTemplateDto>> GetWorcTemplateAsync(Guid id);
 
     /// <summary>
-    /// Retrieves a list of trending Worc templates.
+    /// Retrieves a list of Worc templates.
     /// </summary>
-    /// <returns>The task result contains the service response with the list of trending Worc templates.</returns>
-    Task<ServiceResponse<IEnumerable<TrendingWorcTemplateDto>>> GetTrendingTemplatesAsync();
+    /// <returns>The task result contains the service response with the list of Worc templates.</returns>
+    Task<ServiceResponse<IEnumerable<WorcTemplateDto>>> GetAllTemplatesAsync();
 
     /// <summary>
     /// Retrieves a list of Worc template categories by search query.
@@ -37,11 +37,23 @@ public interface IWorcTemplateService
     /// <returns>The task result contains the service response with the list of Worc template categories by search query.</returns>
     Task<ServiceResponse<IEnumerable<WorcTemplateCategoryBySearchQueryDto>>> GetWorcTemplateCategoryBySearchQueryAsync(CategoryTypesEnum type, string name);
 
-    Task<ServiceResponse<IEnumerable<SearchWorcTemplateDto>>> SearchTemplatesAsync(string searchKey);
-    
     /// <summary>
-    /// Retrieves a list of trending Worc templates.
+    /// Searches for Worc templates that match the given search key.
     /// </summary>
-    /// <returns>The task result contains the service response with the list of trending Worc templates.</returns>
-    Task<ServiceResponse<IEnumerable<TrendingWorcTemplateDto>>> GetAllTrendingTemplatesAsync();
+    /// <param name="searchKey">The keyword to search for in the template data.</param>
+    /// <returns>A task containing a service response with a collection of matching Worc templates.</returns>
+    Task<ServiceResponse<IEnumerable<SearchWorcTemplateDto>>> SearchTemplatesAsync(string searchKey);
+
+    /// <summary>
+    /// Retrieves a collection of trending Worc templates.
+    /// </summary>
+    /// <returns>A task containing a service response with the list of trending Worc templates.</returns>
+    Task<ServiceResponse<IEnumerable<TrendingTemplateDto>>> GetAllTrendingTemplatesAsync();
+
+    /// <summary>
+    /// Creates a new flow by utilizing a selected trending Worc template.
+    /// </summary>
+    /// <param name="trendingTemplateDto">The trending Worc template that will be used to create the flow.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a service response indicating the success or failure of the operation.</returns>
+    Task<ServiceResponse<TrendingTemplateDto>> UseTemplateToCreateFlowAsync(TrendingTemplateDto trendingTemplateDto);
 }

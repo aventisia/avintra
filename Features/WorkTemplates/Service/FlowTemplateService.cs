@@ -159,13 +159,13 @@ namespace WorkspaceAPIs.Services
         }
 
         // Retrieve trending Worc templates list
-        public async Task<ServiceResponse<IEnumerable<TrendingWorcTemplateDto>>> GetTrendingTemplatesAsync()
+        public async Task<ServiceResponse<IEnumerable<WorcTemplateDto>>> GetAllTemplatesAsync()
         {
             // Initialize ServiceResponse with failed response
-            var serviceResponse = new ServiceResponse<IEnumerable<TrendingWorcTemplateDto>>
+            var serviceResponse = new ServiceResponse<IEnumerable<WorcTemplateDto>>
             {
                 Data = null,
-                Message = "Failed to get trending templates. Please try again"
+                Message = "Failed to retrieve templates. Please try again"
             };
             try
             {
@@ -177,7 +177,7 @@ namespace WorkspaceAPIs.Services
                   .ToListAsync();
 
                 // Task successful
-                serviceResponse.Data = trendingTemplates.Adapt<IEnumerable<TrendingWorcTemplateDto>>();
+                serviceResponse.Data = trendingTemplates.Adapt<IEnumerable<WorcTemplateDto>>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Trending templates retrieved successfully";
             }
@@ -271,10 +271,10 @@ namespace WorkspaceAPIs.Services
         }
 
         // Get all trending templates
-        public async Task<ServiceResponse<IEnumerable<TrendingWorcTemplateDto>>> GetAllTrendingTemplatesAsync()
+        public async Task<ServiceResponse<IEnumerable<TrendingTemplateDto>>> GetAllTrendingTemplatesAsync()
         {
             // Initialize a failed default response
-            var serviceResponse = new ServiceResponse<IEnumerable<TrendingWorcTemplateDto>>
+            var serviceResponse = new ServiceResponse<IEnumerable<TrendingTemplateDto>>
             {
                 Data = null,
                 Message = "Failed to get trending templates. Please try again"
@@ -290,7 +290,7 @@ namespace WorkspaceAPIs.Services
                     .GetAllAsync()
                     .Include(i => i.CreatedByUser)
                     .OrderByDescending(o => o.UsagesCount)
-                    .ProjectToType<TrendingWorcTemplateDto>()
+                    .ProjectToType<TrendingTemplateDto>()
                     .ToListAsync();
 
                 // Merge external AI model templates with local trending templates
@@ -313,8 +313,109 @@ namespace WorkspaceAPIs.Services
             return serviceResponse;
         }
 
+        // Uses a selected trending Worc template to create a new flow
+        public async Task<ServiceResponse<TrendingTemplateDto>> UseTemplateToCreateFlowAsync(TrendingTemplateDto trendingTemplateDto)
+        {
+            // Initialize the response with a default failure message
+            var serviceResponse = new ServiceResponse<TrendingTemplateDto>
+            {
+                Message = "Failed to add template. Please try again."
+            };
+
+            try
+            {
+                // Clean up the input DTO by trimming string properties to remove extra whitespace
+                trendingTemplateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(trendingTemplateDto);
+                _logger.LogDebug("Trimmed string properties for trending template DTO.");
+
+                // Check if the template already exists in the database by looking for the template ID
+                var templateEntity = await _unitOfWork.WorcTemplateRepo
+                    .GetByConditionAsync(w => w.Id == trendingTemplateDto.Id)
+                    .SingleOrDefaultAsync();
+
+                // If template doesn't exist, log a warning and return with appropriate message
+                if (templateEntity == null)
+                {
+                    _logger.LogWarning("Template not found in the database for ID: {TemplateId}", trendingTemplateDto.Id);
+                    serviceResponse.Message = "Template not found in the database.";
+                    return serviceResponse;
+                }
+                _logger.LogInformation("Template found in the database for ID: {TemplateId}", trendingTemplateDto.Id);
+
+                // Map the DTO to a Flow entity and set the user information (created and last modified by)
+                var flowEntity = trendingTemplateDto.Adapt<Flow>();
+                flowEntity.CreatedByUserId = _userId;
+                flowEntity.LastModifiedByUserId = _userId;
+
+                // Insert the Flow entity into the repository
+                _logger.LogInformation("Inserting Flow entity for Template ID: {TemplateId}", trendingTemplateDto.Id);
+                await _unitOfWork.FlowRepo.InsertAsync(flowEntity);
+
+                // If saving fails, log the failure and return the response
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save Flow entity for Template ID: {TemplateId}", trendingTemplateDto.Id);
+                    return serviceResponse;
+                }
+                _logger.LogInformation("Flow entity saved successfully for Template ID: {TemplateId}", trendingTemplateDto.Id);
+
+                // Map the DTO to a FlowVersion entity and set the user information again
+                var flowVersionEntity = trendingTemplateDto.Adapt<FlowVersion>();
+                flowVersionEntity.FlowId = flowEntity.Id;
+                flowVersionEntity.ReactFlowObject = templateEntity.ReactFlowObject;
+                flowVersionEntity.CreatedByUserId = _userId;
+                flowVersionEntity.LastModifiedByUserId = _userId;
+
+                // Insert the FlowVersion entity into the repository
+                _logger.LogInformation("Inserting FlowVersion entity for Flow ID: {FlowId}", flowEntity.Id);
+                await _unitOfWork.FlowVersionRepo.InsertAsync(flowVersionEntity);
+
+                // If saving fails, log the failure and return the response
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save FlowVersion entity for Template ID: {TemplateId}", trendingTemplateDto.Id);
+                    return serviceResponse;
+                }
+                _logger.LogInformation("FlowVersion entity saved successfully for Flow ID: {FlowId}", flowEntity.Id);
+
+                // Increase the usage count for the template by 1.
+                templateEntity.UsagesCount++;
+
+                // Update the template entity in the repository.
+                _unitOfWork.WorcTemplateRepo.Update(templateEntity);
+
+                // Try saving the changes and log an error if the save operation fails.
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save the updated ML model entity for template ID: {TemplateId}.", trendingTemplateDto.Id);
+                    return serviceResponse;
+                }
+
+                // Retrieve the saved FlowVersion entity with included navigation properties for detailed info
+                flowVersionEntity = await _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w => w.Id == flowVersionEntity.Id)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.Flow)
+                    .FirstOrDefaultAsync();
+
+                // Log success and prepare the response with the saved FlowVersion data
+                _logger.LogInformation("Template successfully saved to the Template Library. Template ID: {TemplateId}", trendingTemplateDto.Id);
+                serviceResponse.Data = flowVersionEntity.Adapt<TrendingTemplateDto>();
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Template added successfully.";
+            }
+            catch (Exception ex)
+            {
+                // Catch any unhandled exceptions, log the details, and return a failed response
+                _logger.LogError(ex, "An error occurred while saving template to Template Library. Template ID: {TemplateId}", trendingTemplateDto.Id);
+            }
+
+            // Return the final service response
+            return serviceResponse;
+        }
+
         // Helper method to retrieve AI model templates from an external service
-        private async Task<List<TrendingWorcTemplateDto>> GetAIModelTemplatesAsync()
+        private async Task<List<TrendingTemplateDto>> GetAIModelTemplatesAsync()
         {
             var client = _httpClientFactory.CreateClient();
             var requestUrl = $"{_httpClientUrlConfig.ModelStudioApisBaseUrl}/ai-model-template/trending";
@@ -329,7 +430,7 @@ namespace WorkspaceAPIs.Services
                 if (string.IsNullOrEmpty(accessToken))
                 {
                     _logger.LogWarning("Access token is missing from cookies.");
-                    return new List<TrendingWorcTemplateDto>();
+                    return new List<TrendingTemplateDto>();
                 }
 
                 // Set the Authorization header
@@ -337,23 +438,25 @@ namespace WorkspaceAPIs.Services
 
                 var response = await client.GetAsync(requestUrl);
 
-                // Check if the request was successful
+                // Read response content once
+                var responseContent = await response.Content.ReadAsStringAsync();
+
                 if (response.IsSuccessStatusCode)
                 {
-                    // Handle successful response
-                    _logger.LogInformation("Response content: " + await response.Content.ReadAsStringAsync());
+                    _logger.LogInformation("Successful response received");
                 }
-
-                if (!response.IsSuccessStatusCode)
+                else
                 {
-                    _logger.LogError("Failed to retrieve templates. Status Code: {StatusCode}", response.StatusCode);
-                    return new List<TrendingWorcTemplateDto>();
+                    _logger.LogError("Failed to retrieve templates. Status Code: {StatusCode}. Error Content: {ErrorContent}",
+                        response.StatusCode, responseContent);
+                    return new List<TrendingTemplateDto>();
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
+
                 _logger.LogInformation("Response received. Deserializing...");
 
-                var apiResponse = System.Text.Json.JsonSerializer.Deserialize<ServiceResponse<IEnumerable<TrendingWorcTemplateDto>>>(content, new JsonSerializerOptions
+                var apiResponse = System.Text.Json.JsonSerializer.Deserialize<ServiceResponse<IEnumerable<TrendingTemplateDto>>>(content, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
@@ -361,15 +464,15 @@ namespace WorkspaceAPIs.Services
                 if (apiResponse?.Data == null)
                 {
                     _logger.LogWarning("Deserialization resulted in null data.");
-                    return new List<TrendingWorcTemplateDto>();
+                    return new List<TrendingTemplateDto>();
                 }
 
-                return apiResponse.Data;
+                return (List<TrendingTemplateDto>)apiResponse.Data;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while retrieving AI model templates.");
-                return new List<TrendingWorcTemplateDto>();
+                return new List<TrendingTemplateDto>();
             }
         }
     }
