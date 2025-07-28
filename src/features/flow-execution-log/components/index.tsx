@@ -35,7 +35,7 @@ const ExecutionLogDialog = () => {
       >
         <DialogContent
           side="left"
-          className={`flex h-screen flex-col ${isPublished ? "min-w-[75vw]" : "min-w-[50vw]"}`}
+          className={`flex h-screen flex-col ${isPublished ? "min-w-[75vw]" : "min-w-[60vw]"}`}
         >
           <DialogDefaultHeader heading={"Agent execution logs"} />
           <div
