@@ -782,7 +782,7 @@ public class InferencingModelService : IInferencingModelService
         if (modelSetupDto.Classification != null)
         {
             // Check for duplicate category names in 'Classification'
-            var categoryNames = modelSetupDto.Classification.SetupObject.Categories
+            var categoryNames = modelSetupDto.Classification.SetupObject?.Categories
                 .Select(c => c.Name.ToLower())
                 .ToList();
             var duplicateCategories = categoryNames.GroupBy(c => c)
@@ -799,8 +799,14 @@ public class InferencingModelService : IInferencingModelService
             }
 
             // Check for duplicate subcategory names within each category
-            foreach (var category in modelSetupDto.Classification.SetupObject.Categories)
+            foreach (var category in modelSetupDto.Classification?.SetupObject?.Categories)
             {
+                // If SubCategories is null, skip this category entirely
+                if (category.SubCategories == null)
+                {
+                    continue;
+                }
+
                 var subCategoryNames = category.SubCategories
                                               .Select(sc => sc.Name.ToLower())
                                               .ToList();
@@ -820,6 +826,12 @@ public class InferencingModelService : IInferencingModelService
                 // Check for duplicate sub-subcategory names within each subcategory
                 foreach (var subCategory in category.SubCategories)
                 {
+                    // If SubSubCategories is null, skip this subcategory
+                    if (subCategory.SubSubCategories == null)
+                    {
+                        continue;
+                    }
+
                     var subSubCategoryNames = subCategory.SubSubCategories
                                                          .Select(ssc => ssc.Name.ToLower())
                                                          .ToList();
@@ -839,6 +851,7 @@ public class InferencingModelService : IInferencingModelService
             }
         }
 
+
         if (modelSetupDto.SentimentAnalytics != null)
         {
             // Check for duplicate category names in SentimentAnalytics
@@ -846,9 +859,9 @@ public class InferencingModelService : IInferencingModelService
                 .Select(c => c.Name.ToLower())
                 .ToList();
             var duplicateSentimentCategories = sentimentCategoryNames.GroupBy(c => c)
-                                                                    .Where(g => g.Count() > 1)
-                                                                    .Select(g => g.Key)
-                                                                    .ToList();
+                                                                     .Where(g => g.Count() > 1)
+                                                                     .Select(g => g.Key)
+                                                                     .ToList();
 
             if (duplicateSentimentCategories.Any())
             {
@@ -861,13 +874,19 @@ public class InferencingModelService : IInferencingModelService
             // Check for duplicate subcategory names within each SentimentAnalytics category
             foreach (var category in modelSetupDto.SentimentAnalytics.SetupObject.Categories)
             {
+                // If SubCategories is null, skip this category
+                if (category.SubCategories == null)
+                {
+                    continue;
+                }
+
                 var sentimentSubCategoryNames = category.SubCategories
                                                         .Select(sc => sc.Name.ToLower())
                                                         .ToList();
                 var duplicateSentimentSubCategories = sentimentSubCategoryNames.GroupBy(sc => sc)
-                                                                               .Where(g => g.Count() > 1)
-                                                                               .Select(g => g.Key)
-                                                                               .ToList();
+                                                                             .Where(g => g.Count() > 1)
+                                                                             .Select(g => g.Key)
+                                                                             .ToList();
 
                 if (duplicateSentimentSubCategories.Any())
                 {
@@ -880,6 +899,12 @@ public class InferencingModelService : IInferencingModelService
                 // Check for duplicate sub-subcategory names within each SentimentAnalytics subcategory
                 foreach (var subCategory in category.SubCategories)
                 {
+                    // If SubSubCategories is null, skip this subcategory
+                    if (subCategory.SubSubCategories == null)
+                    {
+                        continue;
+                    }
+
                     var sentimentSubSubCategoryNames = subCategory.SubSubCategories
                                                                  .Select(ssc => ssc.Name.ToLower())
                                                                  .ToList();

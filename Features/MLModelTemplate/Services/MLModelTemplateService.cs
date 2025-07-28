@@ -182,15 +182,15 @@ public class MLModelTemplateService : IMLModelTemplateService
             // If the model type is 'Inferencing', fetch and serialize its setup configuration
             if (mlModel.Type == ModelTypesEnum.Inferencing)
             {
-                setupData = JsonSerializer.Serialize(await _inferencingModelService.GetSetupByMLModelIdAsync(mlModel.Id),
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var inferencing = await _inferencingModelService.GetSetupByMLModelIdAsync(mlModel.Id);
+                setupData = JsonSerializer.Serialize(inferencing.Data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
 
             // If the model type is 'Conversation', fetch and serialize its setup configuration
             else if (mlModel.Type == ModelTypesEnum.Conversation)
             {
-                setupData = JsonSerializer.Serialize(await _conversationModelService.GetSetupByMLModelIdAsync(mlModel.Id),
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var conversion = await _conversationModelService.GetSetupByMLModelIdAsync(mlModel.Id);
+                setupData = JsonSerializer.Serialize(conversion, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
 
             // Clean all string properties in the input DTO to remove leading/trailing whitespaces
@@ -453,10 +453,7 @@ public class MLModelTemplateService : IMLModelTemplateService
 
             // Map the DTO to ml model entity and set user information
             var mlModelEntity = trendingTemplateDto.Adapt<MLModel>();
-            mlModelEntity.Name = templateEntity.Name;
-            mlModelEntity.Description = templateEntity.Description;
             mlModelEntity.Type = templateEntity.Type;
-            mlModelEntity.Description = templateEntity.Description;
             mlModelEntity.CreatedByUserId = _userId;
             mlModelEntity.LastModifiedByUserId = _userId;
 
