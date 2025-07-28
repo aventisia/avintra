@@ -15,7 +15,7 @@ public class MLModelTemplateMappingProfile : IRegister
             .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName : null)
             .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null ? src.CreatedByUser.UserName : null);
 
-        config.NewConfig<MLModel, UseTemplateDto>()
+        config.NewConfig<MLModel, TrendingTemplateDto>()
             .Map(dest => dest.RefId, src => src.Id)
             .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName : null)
             .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null ? src.CreatedByUser.UserName : null);

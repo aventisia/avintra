@@ -62,5 +62,5 @@ public interface IMLModelTemplateService
     /// <returns>
     /// A task representing the asynchronous operation. The result contains a service response indicating whether the ML model creation was successful.
     /// </returns>
-    Task<ServiceResponse<UseTemplateDto>> UseTemplateToCreateMLModelAsync(TrendingTemplateDto trendingTemplateDto);
+    Task<ServiceResponse<TrendingTemplateDto>> UseTemplateToCreateMLModelAsync(TrendingTemplateDto trendingTemplateDto);
 }
