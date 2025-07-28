@@ -428,4 +428,81 @@ public class MLModelTemplateService : IMLModelTemplateService
 
         return serviceResponse;
     }
+
+    // Uses a selected trending Worc template to create a new ml model
+    public async Task<ServiceResponse<UseTemplateDto>> UseTemplateToCreateMLModelAsync(TrendingMLModelTemplateDto trendingTemplateDto)
+    {
+        var serviceResponse = new ServiceResponse<UseTemplateDto>
+        {
+            Message = "Failed to add template. Please try again."
+        };
+
+        try
+        {
+            // Trim string properties for cleanliness and ensure no extra whitespace
+            trendingTemplateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(trendingTemplateDto);
+
+            // Check if the template already exists in the database
+            var templateEntity = await _unitOfWork.MLModelTemplateRepo.GetByConditionAsync(w => w.Id == trendingTemplateDto.Id).SingleOrDefaultAsync();
+            if (templateEntity == null)
+            {
+                _logger.LogWarning("Template not found in the database for ID: {TemplateId}", trendingTemplateDto.Id);
+                serviceResponse.Message = "Template not found in the database.";
+                return serviceResponse;
+            }
+
+            // Map the DTO to ml model entity and set user information
+            var mlModelEntity = trendingTemplateDto.Adapt<MLModel>();
+            mlModelEntity.Name = templateEntity.Name;
+            mlModelEntity.Description = templateEntity.Description;
+            mlModelEntity.Type = templateEntity.Type;
+            mlModelEntity.Description = templateEntity.Description;
+            mlModelEntity.CreatedByUserId = _userId;
+            mlModelEntity.LastModifiedByUserId = _userId;
+
+            // Insert the ml model entity into the repository
+            await _unitOfWork.MLModelRepo.InsertAsync(mlModelEntity);
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Failed to save ml model entity for template ID: {TemplateId}", trendingTemplateDto.Id);
+                return serviceResponse;
+            }
+
+            // If the model type is 'Inferencing', fetch and serialize its setup configuration
+            if (mlModelEntity.Type == ModelTypesEnum.Inferencing)
+            {
+                var inferencingData = JsonSerializer.Deserialize<InferencingModelDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                inferencingData.Id = mlModelEntity.Id;
+                await _inferencingModelService.UpdateSetupAsync(inferencingData);
+            }
+
+            // If the model type is 'Conversation', fetch and serialize its setup configuration
+            else if (mlModelEntity.Type == ModelTypesEnum.Conversation)
+            {
+                var conversationData = JsonSerializer.Deserialize<InferencingModelDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                conversationData.Id = mlModelEntity.Id;
+                await _inferencingModelService.UpdateSetupAsync(conversationData);
+            }
+
+            mlModelEntity = await _unitOfWork.MLModelRepo
+                .GetByConditionAsync(w => w.Id == mlModelEntity.Id)
+                .Include(i => i.CreatedByUser)
+                .FirstOrDefaultAsync();
+
+            // If everything succeeds, log success and update the response
+            _logger.LogInformation("Template successfully saved to the Template Library. Template ID: {TemplateId}", trendingTemplateDto.Id);
+            serviceResponse.Data = mlModelEntity.Adapt<UseTemplateDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Template added successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log the exception with details for debugging
+            _logger.LogError(ex, "An error occurred while saving template to Template Library.");
+        }
+
+        return serviceResponse;
+    }
 }
+

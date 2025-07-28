@@ -35,6 +35,11 @@ public class TrendingMLModelTemplateDto
     /// </summary>
     public List<string> Tags { get; set; } = new List<string>();
 
+        /// <summary>
+    /// Gets or sets the unique identifier for the version of the machine learning model.
+    /// </summary>
+    public Guid RefId { get; set; }
+
     /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
     /// </summary>

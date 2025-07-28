@@ -75,4 +75,11 @@ public class MLModelTemplateController : BaseApiController
         // Calling the service to publish the template
         return ResultHelper(await _mlModelTemplateService.GetTrendingMLModelTemplatesAsync());
     }
+
+     // Creates a new ml model using the selected trending template.
+    [HttpPost("use")]
+    public async Task<ActionResult<ServiceResponse<UseTemplateDto>>> UseTemplateToCreateMLModel([FromBody] TrendingMLModelTemplateDto trendingMLModelTemplateDto)
+    {
+        return ResultHelper(await _mlModelTemplateService.UseTemplateToCreateMLModelAsync(trendingMLModelTemplateDto));
+    }
 }
