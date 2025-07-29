@@ -1488,6 +1488,15 @@
           },
           {
             "type": "activityNode",
+            "name": "FindFileInFolderActivity",
+            "label": "Find File in Folder",
+            "description": "Finds a single file in a folder (and optionally subfolders) based on criteria like largest, smallest, newest, oldest, etc.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
             "name": "GetFilesInFolderActivity",
             "label": "Retrieve Files in Folder",
             "description": "This activity retrieves the list of files in a specified folder, with options to include subfolders and sort the results.",
