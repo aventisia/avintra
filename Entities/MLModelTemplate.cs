@@ -47,4 +47,14 @@ public class MLModelTemplate : BaseEntity, IMustHaveTenant
     /// Gets or sets a list of tags associated with the machine learning model version.
     /// </summary>
     public List<string> Tags { get; set; } = new List<string>();
+
+    /// <summary>
+    /// Gets or sets a list of icons or avatars associated with the template.
+    /// </summary>
+    public List<string>? Icons { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique identifier for the version of the machine learning model.
+    /// </summary>
+    public Guid RefId { get; set; }
 }
