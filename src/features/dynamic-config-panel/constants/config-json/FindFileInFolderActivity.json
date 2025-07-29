@@ -6,7 +6,7 @@
     "label": "Folder Path",
     "description": "The path to the folder to search in.",
     "defaultValue": "",
-    "required": false
+    "required": true
   },
   {
     "direction": "Input",
@@ -15,7 +15,7 @@
     "label": "Search Option",
     "description": "Criteria to select the file: Largest, Smallest, Newest, Oldest, etc.",
     "defaultValue": "Largest",
-    "required": false,
+    "required": true,
     "selectOptions": [
       {
         "label": "Largest",
