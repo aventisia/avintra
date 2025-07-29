@@ -14,7 +14,7 @@
         "actions": [
           {
             "type": "aiNode",
-            "name": "AIModel",
+            "name": "InvokeInferenceModelWebServiceActivity",
             "label": "Inferencing Model",
             "description": "Perform inference tasks using a trained AI model",
             "docsLink": null,
