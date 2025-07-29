@@ -107,7 +107,7 @@ export default function ModelConfigForm() {
             searchQuery={searchTerm}
             isLoading={isUserLoading}
             isError={isError}
-            placeholder="Search block"
+            placeholder="Search Model"
           />
         )}
       />
