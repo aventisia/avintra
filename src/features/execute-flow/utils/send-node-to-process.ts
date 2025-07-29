@@ -337,6 +337,7 @@ const sendNodeToProcess = (
       sendNextNodeToProcess(sendCommand, nodeToProcess.id);
       return;
     case "activityNode": // Get activity node data -> Send the command to websocket
+    case "aiNode": // Get ai node data -> Send the command to websocket
       sendCommand(
         "process-node",
         JSON.stringify(
