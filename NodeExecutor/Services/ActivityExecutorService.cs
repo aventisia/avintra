@@ -365,9 +365,16 @@ namespace NodeExecutor.Services
 
             try
             {
+                // Handle enum types
                 if (targetType.IsEnum)
                 {
                     return Enum.Parse(targetType, inputValue.ToString(), ignoreCase: true);
+                }
+
+                // Handle Dictionary<string, string> from JSON string
+                if (targetType == typeof(Dictionary<string, string>) && inputValue is string inputValueStr)
+                {
+                    return JsonConvert.DeserializeObject<Dictionary<string, string>>(inputValueStr);
                 }
 
                 return Convert.ChangeType(inputValue, targetType);
