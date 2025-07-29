@@ -1,13 +1,17 @@
 import { SelectFieldProps } from "@/shared/select-field/SelectField";
-import { AutosizeTextareaFieldProps, CheckboxFieldProps } from "@aventisia/ui/form";
+import { AutosizeTextareaFieldProps } from "@aventisia/ui/form";
 import { enumToArray } from "@aventisia/ui/utils";
 import { ToneOfVoiceEnum } from "../enums/tone-of-voice-enums";
 import { SliderFieldProps } from "@/shared/Slider/SliderField";
 import { ModelLLMEnum } from "@/features/model-library-table/enums/model-llm-enum";
+import { LanguageEnum } from "../enums/language-enum";
+import { VoiceEnum } from "../enums/voice-enum";
+import { TextToSpeechModelEnum } from "../enums/text-to-speech-model";
+import { SpeechToTextModelEnum } from "../enums/speech-to-text-model";
 
 
 const personaNameProps: AutosizeTextareaFieldProps = {
-    name: "name",
+    name: "aiPersona.setupObject.name",
     label: "Persona Name",
     minHeight: 10,
     isRequired: true,
@@ -15,7 +19,7 @@ const personaNameProps: AutosizeTextareaFieldProps = {
 } 
 
 const roleObjectiveProps: AutosizeTextareaFieldProps = {
-    name: "roleOrObjective",
+    name: "aiPersona.setupObject.roleOrObjective",
     label: "Role/Objective",
     minHeight: 10,
     isRequired: true,
@@ -23,7 +27,7 @@ const roleObjectiveProps: AutosizeTextareaFieldProps = {
 } 
 
 const categoryDomainProps: AutosizeTextareaFieldProps = {
-    name: "categoryOrDomain",
+    name: "aiPersona.setupObject.categoryOrDomain",
     label: "Category/Domain",
     minHeight: 10,
     isRequired: true,
@@ -31,7 +35,7 @@ const categoryDomainProps: AutosizeTextareaFieldProps = {
 } 
 
 const toneOfVoiceProps: SelectFieldProps = {
-    name: "toneOfVoice",
+    name: "aiPersona.setupObject.toneOfVoice",
     label: "Tone of Voice",
     selectOptions: enumToArray(ToneOfVoiceEnum),
     isRequired: true,
@@ -40,7 +44,7 @@ const toneOfVoiceProps: SelectFieldProps = {
 } 
 
 const instructionsProps: AutosizeTextareaFieldProps = {
-    name: "instructions",
+    name: "aiPersona.setupObject.instructions",
     label: "Instructions",
     minHeight: 10,
     isRequired: true,
@@ -48,7 +52,7 @@ const instructionsProps: AutosizeTextareaFieldProps = {
 } 
 
 const exclusionsBoundariesProps: AutosizeTextareaFieldProps = {
-    name: "exclusionsOrBoundaries",
+    name: "aiPersona.setupObject.exclusionsOrBoundaries",
     label: "Exclusions/Boundaries",
     minHeight: 10,
     isRequired: true,
@@ -56,7 +60,7 @@ const exclusionsBoundariesProps: AutosizeTextareaFieldProps = {
 } 
 
 const contextMemoryProps: AutosizeTextareaFieldProps = {
-    name: "contextMemoryTimeframe",
+    name: "aiPersona.setupObject.contextMemoryTimeframe",
     label: "Context Memory",
     minHeight: 10,
     isRequired: true,
@@ -64,7 +68,7 @@ const contextMemoryProps: AutosizeTextareaFieldProps = {
 } 
 
 const modelTypeProps: SelectFieldProps = {
-    name: "llm",
+    name: "aiPersona.llm",
     label: "Model",
     selectOptions: enumToArray(ModelLLMEnum),
     placeholder: "Select",
@@ -87,27 +91,41 @@ const fileinstructionsProps: AutosizeTextareaFieldProps = {
 }
 
 const temperatureProps: SliderFieldProps = {
-    name: "temperature",
+    name: "aiPersona.temperature",
     label: "Temperature",
     className: "text-sm resize-none",
 }
 
-const enableAudioProps: CheckboxFieldProps = {
-    name: "enableAudio",
-    label: "",
-    className: "text-sm"
-}
-
-const enableVideoProps: CheckboxFieldProps = {
-    name: "enableVideo",
-    label: "",
+const languageProps: SelectFieldProps = {
+    name: "aiPersona.setupObject.speechConfiguration.language",
+    label: "Language",
     className: "text-sm",
+    selectOptions : enumToArray(LanguageEnum),
+    placeholder: "Select"
 }
 
-const enableChatProps: CheckboxFieldProps = {
-    name: "enableChat",
-    label: "",
-    className: "text-sm"
+const voiceProps: SelectFieldProps = {
+    name: "aiPersona.setupObject.speechConfiguration.voices",
+    label: "Voices",
+    className: "text-sm",
+    selectOptions : enumToArray(VoiceEnum),
+    placeholder: "Select"
+}
+
+const textToSpeechProps: SelectFieldProps = {
+    name: "aiPersona.setupObject.speechConfiguration.textToSpeech",
+    label: "Text to Speech",
+    className: "text-sm",
+    selectOptions : enumToArray(TextToSpeechModelEnum),
+    placeholder: "Select"
+}
+
+const speechToTextProps: SelectFieldProps = {
+    name: "aiPersona.setupObject.speechConfiguration.speechToText",
+    label: "Speech to Text",
+    className: "text-sm",
+    selectOptions : enumToArray(SpeechToTextModelEnum),
+    placeholder: "Select"
 }
 
 export {
@@ -122,7 +140,8 @@ export {
     fileNameProps,
     fileinstructionsProps,
     temperatureProps,
-    enableAudioProps,
-    enableVideoProps,
-    enableChatProps
+    languageProps,
+    voiceProps,
+    textToSpeechProps,
+    speechToTextProps
 }

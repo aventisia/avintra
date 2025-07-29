@@ -20,7 +20,8 @@ import {
 
 interface SelectFieldProps
   extends React.ComponentPropsWithoutRef<typeof SelectTrigger>,
-    BaseFieldProps {
+    BaseFieldProps,
+    React.PropsWithChildren {
   /** The name of the form field. */
   name: FieldPath<FieldValues>;
 
@@ -43,12 +44,11 @@ const SelectField = ({
   disabled,
   selectOptions,
   placeholder,
+  children,
   ...props
 }: SelectFieldProps) => {
-  // Get the form context
   const { control } = useFormContext<FieldValues>();
 
-  // Render the SelectField component
   return (
     <FormField
       {...{ name, control }}
@@ -83,6 +83,8 @@ const SelectField = ({
                     {item.label}
                   </SelectItem>
                 ))}
+                {/* Render children if provided */}
+                {children}
               </SelectContent>
             </Select>
           </FormControl>

@@ -1,3 +1,4 @@
+import { inferenceModelTestFormZodSchema } from "@/features/inferencing-model/constants/inference-model-test-zod-schema";
 import { infoExtractorTestFormZodSchema } from "@/features/information-extractor/constants/info-extractor-test-zod-schema";
 import { useInformationExtractorTestTableStore } from "@/features/information-extractor/stores/information-extractor-test-table-store";
 
@@ -14,7 +15,7 @@ type FormSchema = z.infer<typeof infoExtractorTestFormZodSchema>;
 type Field = NonNullable<FormSchema["tables"]>[number] & { id: string };
 
 type ExtractedTablesDataProps = {
-  form: UseFormReturn<z.infer<typeof infoExtractorTestFormZodSchema>>;
+  form: UseFormReturn<z.infer<typeof inferenceModelTestFormZodSchema>>;
   tableFields: Field[];
   handleAddRow: (tableIdx: number, rowIdx: number) => void;
   handleDeleteRow: (tableIdx: number, rowIdx: number) => void;
@@ -38,16 +39,16 @@ const ExtractedTablesData = ({
     <div className="space-y-3">
       <p className="text-base">Tables</p>
       {tableFields && tableFields.length > 0 && (
-        <div>
+        <div className="border rounded-lg p-2 bg-slate-50">
           <Tabs
             value={activeTab}
             defaultValue={"Table 1"}
             className="!mt-0.5 w-full"
             onValueChange={(val) => setActiveTab(val)}
           >
-            <div className="mb-3 grid">
+            <div className="mb-3">
               <ScrollArea>
-                <TabsList className="w-full justify-start !py-6">
+                <TabsList className="w-full justify-start !py-6 bg-slate-100">
                   {tableFields.map((_, tableIndex) => (
                     <TabsTrigger
                       value={`Table ${tableIndex + 1}`}
@@ -60,7 +61,7 @@ const ExtractedTablesData = ({
                         variant="ghost"
                         className="p-0 text-sm hover:bg-transparent"
                       >
-                        {form.watch(`tables.${tableIndex}.name`)}
+                        {form.watch(`extraction.tables.${tableIndex}.name`)}
                       </Button>
                     </TabsTrigger>
                   ))}
@@ -79,7 +80,7 @@ const ExtractedTablesData = ({
                     className="space-y-4 border-b-0 border rounded-lg"
                   >
                     {/* Table Headers */}
-                    <div className="inline-block bg-accent rounded-t-lg border-b w-full px-1 py-4">
+                    <div className="inline-block rounded-t-lg border-b w-full px-1 py-4">
                       <div className="flex text-sm gap-3 ">
                         {table.headers.map((item, rowIndex) => {
                           return (
@@ -112,7 +113,7 @@ const ExtractedTablesData = ({
                             >
                               <Controller
                                 control={control}
-                                name={`tables.${tableIndex}.headers.${colIndex}.values.${rowIndex}`}
+                                name={`extraction.tables.${tableIndex}.headers.${colIndex}.values.${rowIndex}`}
                                 render={({ field }) => (
                                   <InputField
                                     {...field}

@@ -15,12 +15,22 @@ interface SliderFieldProps
 
   /** Optional label displayed alongside the slider. */
   label?: React.ReactNode;
+
+  thumbColor?: string;
+  trackColor?: string;
 }
 
 /**
  * A form-integrated slider field component using Radix UI.
  */
-const SliderField = ({ name, label, disabled, ...props }: SliderFieldProps) => {
+const SliderField = ({
+  name,
+  label,
+  thumbColor,
+  trackColor,
+  disabled,
+  ...props
+}: SliderFieldProps) => {
   const { control } = useFormContext<FieldValues>();
 
   return (
@@ -36,6 +46,8 @@ const SliderField = ({ name, label, disabled, ...props }: SliderFieldProps) => {
               value={field.value ?? [0]}
               onValueChange={field.onChange}
               onValueCommit={field.onBlur}
+              thumbColor={thumbColor}
+              trackColor={trackColor}
               {...props}
             />
           </FormControl>

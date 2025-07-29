@@ -1,3 +1,5 @@
+import { ILLMConfiguration } from "@/features/llm-configuration/dtos/llm-configuration-dto";
+
 interface IDocumentInstruction {
     id: string;
     filePath: string;
@@ -14,11 +16,13 @@ interface ISetupObject {
     exclusionsOrBoundaries: string;
     documents: IDocumentInstruction[] | null;
     contextMemoryTimeframe: string;
-    llm: string;
-    temperature: number;
-    enableAudio: boolean;
-    enableVideo: boolean;
-    enableChat: boolean;
+    speechConfiguration: {
+        configurationType: "OnPrem" | "Cloud";
+        language: string;
+        voices: string;
+        textToSpeech: string;
+        speechToText: string;
+    }
 }
 
 interface IModelInfo {
@@ -29,7 +33,13 @@ interface IModelInfo {
     createdByUsername?: string;
 }
 
+interface IConversationModel extends ILLMConfiguration {
+    name: string;
+    setupObject: ISetupObject;
+}
+
 export interface AiPersonaSetupDTO extends IModelInfo {
     id: string;
-    setupObject: ISetupObject;
+    businessContext: string;
+    aiPersona: IConversationModel
 }

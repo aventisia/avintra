@@ -10,5 +10,4 @@ const questionAnswerSchema = z.object({
 export const questionAnswerTestFormZodSchema = z
   .object({
     questionAnswers: z.array(questionAnswerSchema),
-    submitForFineTuning: z.boolean()
 })

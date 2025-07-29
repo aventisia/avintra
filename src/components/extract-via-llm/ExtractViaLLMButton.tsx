@@ -1,3 +1,4 @@
+import { useTasksToExecuteStore } from "@/features/inferencing-model/store/tasks-to-execute";
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 import { useTabStore } from "@/store/tab-store";
@@ -12,7 +13,6 @@ import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { useFileListStore } from "../../features/multi-format-viewer/store/file-list-store";
-import { ModelNamesEnum } from "../../features/pdf-previewer/enums/model-name-enum";
 import { useExtractViaLLMMutation } from "../../hooks/useExtractViaLLMMutation";
 
 function ExtractViaLLMButton() {
@@ -27,30 +27,25 @@ function ExtractViaLLMButton() {
     })),
   );
   const { activeTab } = useTabStore();
-  const { data: modelData, isLoading: isModelLoading } = useFetchModel();
+  const { isLoading: isModelLoading } = useFetchModel();
   const { extractedData } = useExtractedDataStore(
     useShallow((state) => ({
       extractedData: state.extractedData,
     })),
   );
+  const { listOfTasksId } = useTasksToExecuteStore();
 
   // Get extract via LLM mutation and pending status
   const { extractViaLLMMutation, isExtractionPending } =
     useExtractViaLLMMutation();
 
   const handleExtract = () => {
-    const modelType = modelData?.data.type;
-    const modelName =
-      modelType && modelType in ModelNamesEnum
-        ? ModelNamesEnum[modelType as keyof typeof ModelNamesEnum]
-        : "";
-
     extractViaLLMMutation({
       postObj: {
         modelId: modelId,
         fileIds: [selectedPdf?.id || ""],
+        modelTaskIds: listOfTasksId.length > 0 ? listOfTasksId : null,
       },
-      modelType: modelName,
     });
   };
 
@@ -75,7 +70,7 @@ function ExtractViaLLMButton() {
         )}
       </Button>
       <Tooltip side="right" content="Last execution time">
-        <div className="flex items-center gap-1 mr-2">
+        <div className="flex items-center gap-1.5 mr-2">
           <>
             <Timer className="h-4 w-4" />
             <p className="text-sm">

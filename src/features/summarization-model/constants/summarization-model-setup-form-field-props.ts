@@ -1,19 +1,7 @@
-import { ModelLLMEnum } from "@/features/model-library-table/enums/model-llm-enum";
-import { SelectFieldProps } from "@/shared/select-field/SelectField";
-import { AutosizeTextareaFieldProps, InputFieldProps } from "@aventisia/ui/form";
-import { enumToArray } from "@aventisia/ui/utils";
-
-
-const contextProps: AutosizeTextareaFieldProps = {
-    name: "context",
-    label: "Context",
-    minHeight: 10,
-    isRequired: true,
-    className: "text-sm resize-none"
-} 
+import {  InputFieldProps } from "@aventisia/ui/form";
 
 const totalMinWordsProps: InputFieldProps = {
-    name: "totalMinimumWords",
+    name: "summarization.setupObject.totalMinimumWords",
     label: "Total Minimum Words",
     type: "number",
     min: 0,
@@ -22,7 +10,7 @@ const totalMinWordsProps: InputFieldProps = {
 }
 
 const totalMaxWordsProps: InputFieldProps = {
-    name: "totalMaximumWords",
+    name: "summarization.setupObject.totalMaximumWords",
     label: "Total Maximum Words",
     type: "number",
     min: 0,
@@ -30,29 +18,7 @@ const totalMaxWordsProps: InputFieldProps = {
     className: "text-sm"
 }
 
-
-const promptProps: AutosizeTextareaFieldProps = {
-    name: "stuffPrompt",
-    label: "Prompt",
-    minHeight: 10,
-    isRequired: true,
-    className: "text-sm resize-none"
-} 
-
-const modelTypeProps: SelectFieldProps = {
-    name: "llm",
-    label: "Model",
-    selectOptions: enumToArray(ModelLLMEnum),
-    placeholder: "Select",
-    isRequired: true,
-    className: "text-sm resize-none"
-} 
-
-
 export {
-    contextProps,
     totalMinWordsProps,
     totalMaxWordsProps,
-    promptProps,
-    modelTypeProps
 }

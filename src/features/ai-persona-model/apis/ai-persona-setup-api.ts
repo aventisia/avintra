@@ -4,7 +4,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { AiPersonaSetupDTO } from "../dtos/ai-persona-setup-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/ai-persona`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/conversation-model/setup`;
 
 /**
  * Get Form Data by id.
@@ -13,7 +13,7 @@ const getAiPersonaSetupFormDataById = (modelId: string) => {
   return axiosInstance
     .get<
       IHttpResponse<AiPersonaSetupDTO>
-    >(`${baseAPIURL}/setup-by-model/${modelId}`)
+    >(`${baseAPIURL}/${modelId}`)
     .then((res) => res.data);
 };
 
@@ -22,7 +22,7 @@ const getAiPersonaSetupFormDataById = (modelId: string) => {
  */
 const updateAiPersonaSetupFormData = (data: AiPersonaSetupDTO) => {
   return axiosInstance
-    .put<IHttpResponse<AiPersonaSetupDTO>>(`${baseAPIURL}/setup`, data)
+    .put<IHttpResponse<AiPersonaSetupDTO>>(`${baseAPIURL}`, data)
     .then((res) => res.data);
 };
 

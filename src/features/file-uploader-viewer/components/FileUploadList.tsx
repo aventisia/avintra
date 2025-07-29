@@ -18,14 +18,12 @@ interface FileUploadListProps {
   modelId: string;
   filesToUpload: FileUploadDto[];
   removeFile: (name: string | undefined) => void;
-  side?: "right" | "bottom";
 }
 const FileUploadList = ({
   files,
   filesToUpload,
   modelId,
   removeFile,
-  side = "right",
 }: FileUploadListProps) => {
   const { mutate: deleteFile } = useFileDelete({
     filesToUpload,
@@ -48,12 +46,7 @@ const FileUploadList = ({
   return (
     <>
       {!!files.length && (
-        <div
-          className={cn(
-            "rounded-lg border",
-            side === "right" && "h-full w-1/2",
-          )}
-        >
+        <div className={cn("rounded-lg border ")}>
           {/* Title Section */}
           <div className="flex items-center justify-between border-b p-2">
             <h2 className="text-md font-medium">
@@ -72,12 +65,7 @@ const FileUploadList = ({
           </div>
 
           {/* List of Files */}
-          <ScrollArea
-            className={cn(
-              " py-0.5",
-              side === "right" ? "h-[calc(100vh-12rem)]" : "h-[calc(30vh)]",
-            )}
-          >
+          <ScrollArea className={cn(" py-0.5 h-[calc(30vh)]")}>
             {files.map((file, idx) => {
               const progress = file.progress;
               return (

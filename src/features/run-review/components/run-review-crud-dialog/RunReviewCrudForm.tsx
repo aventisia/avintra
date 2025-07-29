@@ -84,7 +84,7 @@ const RunReviewCrudForm = () => {
       <ScrollArea className="h-[calc(100vh-9rem)] px-2.5 pb-0 pt-4">
         <FormProvider {...form}>
           <div className="space-y-4 px-4 pb-1">
-            <FileUploader side="bottom" />
+            <FileUploader />
             <Separator />
             <p className="!mt-4 font-semibold">Schedule Execution</p>
             <ScheduleFineTuning />

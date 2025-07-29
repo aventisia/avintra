@@ -1,120 +1,152 @@
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
-import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+import { inferenceModelFormZodSchema } from "@/features/inferencing-model/constants/inference-model-zod-schema";
+import LLMConfiguration from "@/features/llm-configuration/components/LLMConfiguration";
 
-import { LoadingSpinner, Separator } from "@aventisia/ui";
-import { Button } from "@aventisia/ui/buttons";
-import { AutosizeTextareaField, Form } from "@aventisia/ui/form";
-import { ScrollArea } from "@aventisia/ui/scroll";
-import { FormProvider } from "react-hook-form";
+import { Separator } from "@aventisia/ui";
+import { UseFormReturn, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { addInfoExtractorFormZodSchema } from "../../constants/add-info-extractor-zod-schema";
-import {
-  documentContextProps,
-  nodePropmptProps,
-} from "../../constants/info-extractor-form-field-props";
-import { InformationExtractorSetupDTO } from "../../dtos/info-extractor-setup-dto";
-import { useAddInformationExtractorForm } from "../../hooks/useAddInfoExtractorForm";
+import { useInformationExtractorTableStore } from "../../stores/info-extractor-table-store";
 import ContextTables from "./ContextTable";
 import DataToBeExtracted from "./DataToBeExtracted";
-import ModelConfiguration from "./ModelConfiguration";
 
-const InformationExtractorForm = () => {
-  const {
-    form,
-    isSubmitting,
-    isUpdatePending,
-    dataFields,
-    addDataToExtracted,
-    removeDataToExtracted,
-    tableFields,
-    addTableHandler,
-    removeTableHandler,
-    addTableHeaderHandler,
-    removeTableHeaderHandler,
-    updateFormData,
-  } = useAddInformationExtractorForm();
-  const { modelId } = useLabelDataStore(
+interface InformationExtractorFormProps {
+  form: UseFormReturn<z.infer<typeof inferenceModelFormZodSchema>>;
+}
+
+const InformationExtractorForm = ({ form }: InformationExtractorFormProps) => {
+  const { control, setValue } = form;
+  const { setActiveTab } = useInformationExtractorTableStore(
     useShallow((state) => ({
-      modelId: state.modelId,
+      setActiveTab: state.setActiveTab,
     })),
   );
-  const { data: modelData, isLoading } = useFetchModel();
 
-  // Submit handler
-  function submitHandler(
-    formData: z.infer<typeof addInfoExtractorFormZodSchema>,
-  ) {
-    updateFormData({
-      setupObject: formData,
-      id: modelId,
-    } as InformationExtractorSetupDTO);
-  }
+  // useFieldArray for handling the dynamic array of fields
+  const {
+    fields: dataFields,
+    append,
+    remove,
+  } = useFieldArray({
+    control,
+    name: "extraction.setupObject.fields",
+  });
 
+  // Function to add a new object to fields
+  const addDataToExtracted = () => {
+    append({ name: "", type: "", instructions: "" });
+  };
+
+  // Function to remove an object from fields
+  const removeDataToExtracted = (index: number) => {
+    remove(index);
+  };
+
+  // useFieldArray for handling the dynamic array of tables
+  const {
+    fields: tableFields,
+    append: appendTable,
+    remove: removeTable,
+  } = useFieldArray({
+    control,
+    name: "extraction.setupObject.tables",
+  });
+
+  // Function to add a new table to tables array
+  const addTableHandler = () => {
+    appendTable({
+      context: "",
+      name: `Table ${tableFields.length + 1}`,
+      tableHeaders: [{ name: "", type: "", instructions: "" }],
+    });
+  };
+
+  // Function to remove a table from the tables array
+  const removeTableHandler = (index: number | null) => {
+    if (index === null) return;
+
+    removeTable(index);
+
+    // Check how many tabs are left after removal
+    const remainingTabs = tableFields.length - 1;
+
+    if (remainingTabs <= 0) {
+      // If only one tab was present and it was deleted, set active tab to null
+      setActiveTab(undefined);
+    } else {
+      // If the last tab is deleted, set the active tab to the previous one
+      if (index === remainingTabs) {
+        setActiveTab(`Table ${remainingTabs}`);
+      } else {
+        // Otherwise, set the active tab to the next tab
+        setActiveTab(`Table ${index + 1}`);
+      }
+    }
+  };
+
+  // Function to add a new table header (row) to a specific table
+  const addTableHeaderHandler = (tableIndex: number) => {
+    const newHeaderRow = { name: "", type: "", instructions: "" };
+
+    // Access the current tables value
+    const tables = form.getValues("extraction.setupObject.tables");
+
+    // Ensure we are adding the header to the right table's tableData
+    if (tables && tables[tableIndex]) {
+      const tableData = tables[tableIndex].tableHeaders || [];
+
+      // Add the new header row to the tableData
+      tableData.push(newHeaderRow);
+
+      // Update the form state using setValue, casting the field name path
+      setValue(`extraction.setupObject.tables`, tables);
+    }
+  };
+
+  // Function to delete table row from a specific table
+  const removeTableHeaderHandler = (tableIndex: number, rowIndex: number) => {
+    // Get current tables value
+    const tables = form.getValues("extraction.setupObject.tables");
+
+    if (!tables) return;
+
+    // Clone the tables array to avoid mutating the state directly
+    const updatedTables = [...tables];
+
+    // Check if the table at tableIndex exists
+    if (updatedTables[tableIndex]) {
+      // Remove the header row at rowIndex from tableData
+      updatedTables[tableIndex].tableHeaders.splice(rowIndex, 1);
+
+      // Update the form state with the new tables array
+      setValue("extraction.setupObject.tables", updatedTables);
+    }
+  };
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(submitHandler)}
-      disabled={isSubmitting || isLoading || modelData?.data.isPublished}
-    >
-      <ScrollArea className="mt-4 flex-grow h-[calc(100vh-14.2rem)]">
-        <FormProvider {...form}>
-          <div className="space-y-4 px-4 pb-1 w-full">
-            {/* Context */}
-            <AutosizeTextareaField {...documentContextProps} />
+    <div className="space-y-4 px-4 pb-1 w-full">
+      {/* Data to be extracted */}
+      <DataToBeExtracted
+        addDataToExtracted={addDataToExtracted}
+        dataFields={dataFields}
+        form={form}
+        removeDataToExtracted={removeDataToExtracted}
+      />
 
-            {/* Separator */}
-            <Separator />
+      {/* Separator */}
+      {tableFields && tableFields.length > 0 && <Separator />}
 
-            {/* Data to be extracted */}
-            <DataToBeExtracted
-              addDataToExtracted={addDataToExtracted}
-              dataFields={dataFields}
-              form={form}
-              removeDataToExtracted={removeDataToExtracted}
-            />
+      {/* Context Table */}
+      <ContextTables
+        addTableHandler={addTableHandler}
+        addTableHeaderHandler={addTableHeaderHandler}
+        removeTableHeaderHandler={removeTableHeaderHandler}
+        form={form}
+        removeTableHandler={removeTableHandler}
+        tableFields={tableFields}
+      />
 
-            {/* Separator */}
-            {tableFields && tableFields.length > 0 && <Separator />}
-
-            {/* Context Table */}
-            <ContextTables
-              addTableHandler={addTableHandler}
-              addTableHeaderHandler={addTableHeaderHandler}
-              removeTableHeaderHandler={removeTableHeaderHandler}
-              form={form}
-              removeTableHandler={removeTableHandler}
-              tableFields={tableFields}
-            />
-
-            {tableFields && tableFields.length > 0 && <Separator />}
-
-            {/* Model Configuration */}
-            <ModelConfiguration form={form} />
-
-            {/* Prompt */}
-            <AutosizeTextareaField {...nodePropmptProps} />
-          </div>
-        </FormProvider>
-      </ScrollArea>
-
-      <Separator className="my-0 h-[0.5px] w-full" />
-      <div className="flex items-center justify-end gap-2 px-4 py-1 pb-4">
-        <Button
-          size="xs"
-          type="submit"
-          disabled={isSubmitting || isUpdatePending}
-          className="w-16"
-        >
-          {isSubmitting || isUpdatePending ? (
-            <LoadingSpinner className="h-4 w-4" />
-          ) : (
-            "Save"
-          )}
-        </Button>
-      </div>
-    </Form>
+      <LLMConfiguration form={form} modelType="extraction" />
+    </div>
   );
 };
 

@@ -1,3 +1,5 @@
+import { ILLMConfiguration } from "@/features/llm-configuration/dtos/llm-configuration-dto";
+
 interface IFieldDescriptor {
     id?: string;
     name: string;
@@ -15,23 +17,11 @@ interface ITableMetaData {
     tableHeaders: ITableMetaDataHeaders[];
 }
 
-interface ISetupObject {
-    context: string;
-    prompt: string;
-    tableMetadata: ITableMetaData[] | null,
-    fieldSetups: IFieldSetups[];
-    llm: string;
-    temperature: number;
-}
-interface IModelInfo {
-    createdOn?: string;
-    createdByUserId?: string;
-    lastModifiedByUserId?: string;
-    createdBy?: string;
-    createdByUsername?: string;
-}
-
-export interface InformationExtractorSetupDTO extends IModelInfo {
-    id: string;
-    setupObject: ISetupObject;
+export interface InformationExtractorSetupDTO extends ILLMConfiguration {
+   readonly id: string;
+   name: string;
+   setupObject: {
+    tables: ITableMetaData[],
+    fields: IFieldSetups[]
+   }
 }

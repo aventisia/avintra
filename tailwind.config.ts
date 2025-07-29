@@ -70,6 +70,16 @@ const config = {
         primary: {
           DEFAULT: "var(--primary)",
           foreground: "var(--primary-foreground)",
+          50: "hsl(224.3, 76.3%, 95%)",
+          100: "hsl(224.3, 76.3%, 90%)",
+          200: "hsl(224.3, 76.3%, 80%)",
+          300: "hsl(224.3, 76.3%, 70%)",
+          400: "hsl(224.3, 76.3%, 60%)",
+          500: "hsl(224.3, 76.3%, 48%)", // Base color
+          600: "hsl(224.3, 76.3%, 40%)",
+          700: "hsl(224.3, 76.3%, 30%)",
+          800: "hsl(224.3, 76.3%, 20%)",
+          900: "hsl(224.3, 76.3%, 10%)",
         },
         secondary: {
           DEFAULT: "var(--secondary)",

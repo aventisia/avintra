@@ -4,8 +4,11 @@ import * as React from "react";
 
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
->(({ className, value, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> & {
+    thumbColor?: string;
+    trackColor?: string;
+  }
+>(({ className, value, thumbColor, trackColor, ...props }, ref) => {
   const currentValue = Array.isArray(value) ? value[0] : 0;
 
   return (
@@ -18,10 +21,20 @@ const Slider = React.forwardRef<
       )}
       {...props}
     >
-      <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-accent">
+      <SliderPrimitive.Track
+        className={cn(
+          "relative h-1.5 w-full grow overflow-hidden rounded-full bg-white",
+          trackColor,
+        )}
+      >
         <SliderPrimitive.Range className="absolute h-full bg-primary" />
       </SliderPrimitive.Track>
-      <SliderPrimitive.Thumb className="relative block h-4 w-4 rounded-full bg-background shadow transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 border border-primary group">
+      <SliderPrimitive.Thumb
+        className={cn(
+          "relative block h-4 w-4 rounded-full bg-background shadow transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 border border-primary group",
+          thumbColor,
+        )}
+      >
         <span className="absolute hidden -top-6 left-1/2 -translate-x-1/2 text-xs text-white px-3 py-0.5 rounded-md bg-primary group-hover:block">
           {currentValue}
         </span>

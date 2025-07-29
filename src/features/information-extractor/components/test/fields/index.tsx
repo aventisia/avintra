@@ -1,3 +1,4 @@
+import { inferenceModelTestFormZodSchema } from "@/features/inferencing-model/constants/inference-model-test-zod-schema";
 import { fieldValueProps } from "@/features/information-extractor/constants/info-extractor-test-form-field-props";
 import { infoExtractorTestFormZodSchema } from "@/features/information-extractor/constants/info-extractor-test-zod-schema";
 import { textColorClassMap } from "@/features/information-extractor/constants/text-color-class-map";
@@ -17,7 +18,7 @@ type FormSchema = z.infer<typeof infoExtractorTestFormZodSchema>;
 type Field = FormSchema["fields"][number] & { id: string };
 
 type DataFieldsProps = {
-  form: UseFormReturn<z.infer<typeof infoExtractorTestFormZodSchema>>;
+  form: UseFormReturn<z.infer<typeof inferenceModelTestFormZodSchema>>;
   dataFields: Field[];
 };
 
@@ -64,7 +65,7 @@ const DataFields = ({ form, dataFields }: DataFieldsProps) => {
             <FormControl>
               <Controller
                 control={control}
-                name={`fields.${index}.value`}
+                name={`extraction.fields.${index}.value`}
                 render={({ field }) => (
                   <InputField {...fieldValueProps} {...field} />
                 )}

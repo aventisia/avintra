@@ -1,14 +1,10 @@
-import ClassificationModelTestForm from "@/features/classification-model/components/test/ClassificationModelTestForm";
-import InformationExtractorTestForm from "@/features/information-extractor/components/test/InformationExtractorTestForm";
+import InferenceModelTestForm from "@/features/inferencing-model/components/InferenceModelTestForm";
 import Nav from "@/features/label-data/components/Header/Nav";
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
 import MultiFormatViewer from "@/features/multi-format-viewer/MultiFormatViewer";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
-import QuestionsAnswersTestForm from "@/features/question-answer-model/components/test/QuestionsAnswersTestForm";
-import SentimentAnalyticsFormTestForm from "@/features/sentiment-analytics/components/test/SentimentAnalysisTestForm";
-import SummarizationModelTestForm from "@/features/summarization-model/components/test/SummarizationModelTestForm";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -16,7 +12,6 @@ import {
 } from "@/react-toolkit/ui/resizable";
 import { useTabStore } from "@/store/tab-store";
 
-import { toast } from "@aventisia/ui/sonner";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -69,29 +64,6 @@ export const ViewFile = () => {
     );
   }
 
-  const renderLLMComponent = () => {
-    const modelType = modelData?.data.type?.toLowerCase(); // Convert to lowercase for case insensitivity
-
-    switch (modelType) {
-      case "extraction":
-        return <InformationExtractorTestForm />;
-      case "sentimentanalytics":
-        return <SentimentAnalyticsFormTestForm />;
-      case "summarization":
-        return <SummarizationModelTestForm />;
-      case "classification":
-        return <ClassificationModelTestForm />;
-      case "questionanswer":
-        return <QuestionsAnswersTestForm />;
-      default:
-        // Optionally log an error or return a fallback component
-        toast.error(
-          `Unknown model type: ${modelType}. Falling back to default.`,
-        );
-        return <>Failed to open the Model. Please Try again</>; // Default component
-    }
-  };
-
   return (
     <>
       <Nav isPdfAvailable={!!fileList?.data.length} refetchList={refetch} />
@@ -106,7 +78,7 @@ export const ViewFile = () => {
             <div className="flex items-center gap-2 h-12 border-b px-4 py-2">
               <p className="text-md font-medium">{modelData?.data.type}</p>
             </div>
-            {renderLLMComponent()}
+            <InferenceModelTestForm />
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>

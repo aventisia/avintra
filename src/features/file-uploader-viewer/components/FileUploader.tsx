@@ -7,11 +7,7 @@ import { useFileStore } from "../stores/file-uploader-store";
 import FileDropzone from "./FileDropzone";
 import FileUploadList from "./FileUploadList";
 
-interface FileUploaderProps {
-  side?: "right" | "bottom";
-}
-
-const FileUploader = ({ side = "right" }: FileUploaderProps) => {
+const FileUploader = () => {
   const {
     files,
     addFile,
@@ -39,19 +35,13 @@ const FileUploader = ({ side = "right" }: FileUploaderProps) => {
   );
 
   return (
-    <div
-      className={cn(
-        "gap-6 rounded-lg border bg-white px-[1.4rem] py-6 shadow",
-        side === "bottom" ? "space-y-4" : "flex h-full",
-      )}
-    >
+    <div className={cn("gap-6 rounded-lg  bg-white flex flex-col h-full")}>
       <FileDropzone
         files={files}
         addFile={addFile}
         addFileToUpload={addFileToUpload}
         modelId={modelId}
         updateProgress={updateProgress}
-        side={side}
       />
       <FileUploadList
         files={files}
@@ -59,7 +49,6 @@ const FileUploader = ({ side = "right" }: FileUploaderProps) => {
         modelId={modelId}
         filesToUpload={filesToUpload}
         removeFile={removeFile}
-        side={side}
       />
     </div>
   );

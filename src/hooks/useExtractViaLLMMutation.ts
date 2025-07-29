@@ -9,6 +9,7 @@ import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useLocation } from "react-router-dom";
 import { useMemo } from "react";
+import { useFetchSetupFormData } from "@/features/inferencing-model/hooks/useFetchSetupFormData";
 
 export const useExtractViaLLMMutation = () => {
   const { setExtractedData } = useExtractedDataStore(
@@ -25,24 +26,24 @@ export const useExtractViaLLMMutation = () => {
     );
     const modelId = queryParams.get("mid") || mlModelId || "";
     const queryClient = useQueryClient();
-    
-  
+    const {data: setupFormData} = useFetchSetupFormData();
+    const {classification, extraction, questionAnswer, sentimentAnalytics, summarization} = setupFormData?.data || {};
+    const models = [classification, extraction, questionAnswer, sentimentAnalytics, summarization];
+    const nonNullModelCount = Math.max(1, models.filter(model => model !== null && model !== undefined).length);    
 
   // Define mutation to extract via LLM
   const { mutate: extractViaLLMMutation, isPending: isExtractionPending } = useMutation({
     mutationFn: ({
       postObj,
-      modelType,
     }: {
       postObj: ExtractRequestDto;
-      modelType: string;
-    }) => extractViaLLM(postObj, modelType),
+    }) => extractViaLLM(postObj, nonNullModelCount),
 
     onSuccess: (httpResponse) => {
       
-      if (!httpResponse.data.filesExtractedData.length) return;
+      if (!httpResponse.data.extractedData.length) return;
       
-      setExtractedData(httpResponse.data.filesExtractedData[0])
+      setExtractedData(httpResponse.data.extractedData[0])
       queryClient.invalidateQueries({
         queryKey: ["model", modelId],
       });

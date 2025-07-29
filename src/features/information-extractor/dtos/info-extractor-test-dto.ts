@@ -1,11 +1,3 @@
-interface IModelInfo {
-    createdOn?: string;
-    createdByUserId?: string;
-    lastModifiedByUserId?: string;
-    createdBy?: string;
-    createdByUsername?: string;
-}
-
 interface IFields {
     name: string;
     value: string;
@@ -13,27 +5,17 @@ interface IFields {
 }
 
 interface ITablesHeaders {
+    index?: string;
     name: string;
     values: string[]
 }
 
-interface ITables {
+export interface ITables {
     name: string;
     headers: ITablesHeaders[]
 }
 
-interface IExtractedData {
+export interface InfoExtractorTestDTO  {
     fields: IFields[];
-    tables: ITables[] ;
-}
-
-export interface InfoExtractorTestDTO extends IModelInfo {
-    id: string;
-    mlModelId: string;
-    docId: string;
-    docName: string;
-    accuracy: number;
-    type: string;
-    submitForFineTuning: boolean;
-    extractedData: IExtractedData
+    tables: ITables[]
 }
