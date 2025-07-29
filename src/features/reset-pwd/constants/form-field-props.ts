@@ -7,6 +7,7 @@ const labelClassName = "text-md";
 
 // Email
 const emailProps: InputFieldProps = {
+  autoFocus: true,
   name: "email",
   placeholder: "Enter your email",
   isRequired: true,
@@ -16,6 +17,7 @@ const emailProps: InputFieldProps = {
 
 // Verification code
 const verificationCodeProps: InputOtpFieldProps = {
+  autoFocus: true,
   name: "verificationCode",
   maxLength: 6,
   children: "", // Add an empty children property
@@ -24,6 +26,7 @@ const verificationCodeProps: InputOtpFieldProps = {
 
 // New password
 const newPwdProps: FloatingLabelInputFieldProps = {
+  autoFocus: true,
   label: "New password",
   name: "newPwd",
   type: "password",

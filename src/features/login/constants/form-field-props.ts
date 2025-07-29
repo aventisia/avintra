@@ -5,6 +5,7 @@ const className = "h-11 text-md";
 
 // Email
 const emailProps: InputFieldProps = {
+  autoFocus: true,
   name: "email",
   placeholder: "Email",
   isRequired: true,
@@ -14,6 +15,7 @@ const emailProps: InputFieldProps = {
 
 // Password
 const pwdProps: InputFieldProps = {
+  autoFocus: true,
   name: "pwd",
   placeholder: "Password",
   type: "password",
@@ -23,6 +25,7 @@ const pwdProps: InputFieldProps = {
 
 // Verification code
 const verificationCodeProps: InputOtpFieldProps = {
+  autoFocus: true,
   name: "verificationCode",
   maxLength: 6,
   children: "", // Add an empty children property

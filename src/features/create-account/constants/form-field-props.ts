@@ -6,6 +6,7 @@ const labelClassName = "text-md";
 
 // First Name
 const firstNameProps: FloatingLabelInputFieldProps = {
+  autoFocus: true,
   label: "First name",
   name: "firstName",
   className: className,
@@ -49,6 +50,7 @@ const confirmPwdProps: FloatingLabelInputFieldProps = {
 
 // Verification code
 const verificationCodeProps: InputOtpFieldProps = {
+  autoFocus: true,
   name: "verificationCode",
   maxLength: 6,
   children: "", // Add an empty children property
