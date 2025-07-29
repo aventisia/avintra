@@ -87,13 +87,19 @@ public class ModelAPIKeyService : IModelAPIKeyService
                 serviceResponse.Message = $"API key with name '{apiKeyDto.Name}' already exists for the model.";
                 return serviceResponse;
             }
-            
-            if (!apiKey.MLModel.IsPublished)
+
+            // Fetch the ML model by its ID from the repository
+            var mlModel = await _unitOfWork.MLModelRepo
+                .GetByConditionAsync(w => w.Id == apiKeyDto.MLModelId)
+                .FirstOrDefaultAsync();
+
+            // Validate whether the model exists and is published
+            if (mlModel == null || !mlModel.IsPublished)
             {
-                // Log a warning if the model is not published
+                // Log a warning if the model does not exist or is not published
                 _logger.LogWarning("Cannot generate API key. Model ID {ModelId} is not published.", apiKeyDto.MLModelId);
 
-                // Return a simple response indicating the model is not published
+                // Return a response indicating that the API key cannot be generated for an unpublished model
                 serviceResponse.Message = "Model is not published. API key cannot be generated.";
                 return serviceResponse;
             }
