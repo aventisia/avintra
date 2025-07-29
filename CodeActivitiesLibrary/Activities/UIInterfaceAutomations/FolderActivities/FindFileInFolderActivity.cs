@@ -12,12 +12,12 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
     [Description("Finds a single file in a folder (and optionally subfolders) based on criteria like largest, smallest, newest, oldest, etc.")]
     public class FindFileInFolderActivity : BaseCodeActivity
     {
-        [Required]
+        [RequiredArgument]
         [DisplayName("Folder Path")]
         [Description("The path to the folder to search in.")]
         public InArgument<string> FolderPath { get; set; }
 
-        [Required]
+        [RequiredArgument]
         [DisplayName("Search Option")]
         [Description("Criteria to select the file: Largest, Smallest, Newest, Oldest, etc.")]
         [DefaultValue(FileSearchOption.Largest)]
