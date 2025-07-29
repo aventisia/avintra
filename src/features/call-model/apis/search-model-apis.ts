@@ -8,7 +8,10 @@ const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/ai-models`;
 /**
  * Search models
  */
-const getSearchModels = (query: string, includeUnpublished: boolean = true) => {
+const getSearchModels = (
+  query: string,
+  includeUnpublished: boolean = false,
+) => {
   return axiosInstance
     .get<
       IHttpResponse<ModelsListDto[]>

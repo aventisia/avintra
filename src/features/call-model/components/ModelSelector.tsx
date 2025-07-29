@@ -89,7 +89,10 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
       {/* Label and Input */}
       <div>
         <div className="mb-1">
-          <FormLabelExt label="Select Model" description="Select an model" />
+          <FormLabelExt
+            label="Select AI Model"
+            description="Select an AI model"
+          />
         </div>
         <div className="relative">
           <Input

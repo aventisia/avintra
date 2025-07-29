@@ -6,7 +6,6 @@ import { ReactFlowContextMenu } from "@/features/react-flow/components/context-m
 import { cn } from "@aventisia/ui/lib";
 import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
 import { BrainCircuit, GripVertical } from "lucide-react";
-import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
 import { useShallow } from "zustand/react/shallow";
 import { Badge } from "@aventisia/ui/badge";
 import { useEffect } from "react";
@@ -21,14 +20,6 @@ export const AIModelNode = ({
   targetPosition,
   id,
 }: NodeProps<AIModelNode>) => {
-  // Get node unique name state (required to get config panel data)
-  const { nodeId, nodeData } = useDynamicConfigPanelStore(
-    useShallow((state) => ({
-      nodeId: state.nodeId,
-      nodeData: state.nodeData,
-    })),
-  );
-
   const { nodes, setNodes } = useReactFlowExtStore(
     useShallow((state) => ({
       nodes: state.nodes,
@@ -40,22 +31,24 @@ export const AIModelNode = ({
     if (data.type !== "aiNode") return;
     if (data?.selectedModel) {
       const newLabel = data?.selectedModel?.name;
-      // Find the node by id and update its label
-      const updatedNodes = nodes.map((node: Node) => {
-        if (node.id === nodeId && nodeData?.type == "aiNode") {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              label: newLabel,
-            },
-          };
-        }
-        return node;
-      });
+      if (newLabel) {
+        // Find the node by id and update its label
+        const updatedNodes = nodes.map((node: Node) => {
+          if (node.id === id) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                label: newLabel,
+              },
+            };
+          }
+          return node;
+        });
 
-      // Update the nodes in the store
-      setNodes(updatedNodes);
+        // Update the nodes in the store
+        setNodes(updatedNodes);
+      }
     }
   }, [data?.selectedModel]);
 
