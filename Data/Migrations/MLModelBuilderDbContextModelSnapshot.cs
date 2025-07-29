@@ -237,6 +237,9 @@ namespace MLModelBuilderAPIs.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.PrimitiveCollection<List<string>>("Icons")
+                        .HasColumnType("text[]");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
@@ -250,6 +253,9 @@ namespace MLModelBuilderAPIs.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
+
+                    b.Property<Guid>("RefId")
+                        .HasColumnType("uuid");
 
                     b.PrimitiveCollection<List<string>>("Tags")
                         .IsRequired()
