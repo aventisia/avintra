@@ -430,6 +430,7 @@
     <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\DeleteFolderActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\EmptyFolderActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\Enums\IfExistsActionEnum.cs" />
+    <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\FindFileInFolderActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\GetFilesInFolderActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\GetSpecialFolderActivity.cs" />
     <Compile Include="Activities\UIInterfaceAutomations\FolderActivities\GetSubfoldersInFolderActivity.cs" />
