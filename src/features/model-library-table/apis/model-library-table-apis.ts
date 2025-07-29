@@ -1,11 +1,13 @@
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import { IHttpResponse } from "@aventisia/ui/dtos";
 import { IOptimisticMutation } from "@aventisia/ui/dtos";
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { ModelLibraryTableDto } from "../dtos/model-library-table-dto";
 import { CheckAvailabilityDto } from "@aventisia/ui/dtos";
 import { TrueFalseResultDto } from "@aventisia/ui/dtos";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/ml-model`;
+import { ModelLibraryTableDto } from "../dtos/model-library-table-dto";
+
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/ml-model`;
 
 /**
  * Retrieves list of models.

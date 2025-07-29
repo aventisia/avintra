@@ -1,15 +1,19 @@
-import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
+
 import { ExtractedDataDto } from "../dtos/ extracted-data-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/extracted-data`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/extracted-data`;
 
 /**
  * Retrieves list of Extracted Data List.
  */
 const getExtractedDataList = (modelId: string) => {
   return axiosInstance
-    .get<IHttpResponse<ExtractedDataDto[]>>(`${baseAPIURL}/list/${modelId}/TestData`)
+    .get<
+      IHttpResponse<ExtractedDataDto[]>
+    >(`${baseAPIURL}/list/${modelId}/TestData`)
     .then((res) => res.data);
 };
 

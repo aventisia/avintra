@@ -1,7 +1,9 @@
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { DeleteFileResponseDto, FileUploadDto } from "../dtos/file-upload-dto";
-import { IHttpResponse } from "@aventisia/ui/dtos";
 import { FileViewerDto } from "@/features/multi-format-viewer/dtos/file-list-dtos";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
+
+import { DeleteFileResponseDto, FileUploadDto } from "../dtos/file-upload-dto";
 
 // Wrapper type for DataResponseWithController
 interface DataResponseWithController {
@@ -9,7 +11,7 @@ interface DataResponseWithController {
   controller: AbortController;
 }
 
-const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/upload-doc`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/upload-doc`;
 
 const getUploadedFiles = (modelId: string) => {
   return axiosInstance

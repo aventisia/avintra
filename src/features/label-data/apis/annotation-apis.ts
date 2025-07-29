@@ -1,18 +1,22 @@
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { AnnotationDataDto } from "../dtos/annotation-data-dtos";
+
 import { IHttpResponse } from "@aventisia/ui/dtos";
 import { IOptimisticMutation } from "@aventisia/ui/dtos";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/extracted-data`;
+import { AnnotationDataDto } from "../dtos/annotation-data-dtos";
+
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/extracted-data`;
 
 /**
  * Retrieves list of annotations.
  */
 const getAnnotationList = (modelId: string) => {
   console.log("inside annotation list");
-  
+
   return axiosInstance
-    .get<IHttpResponse<AnnotationDataDto[]>>(`${baseAPIURL}/list/${modelId}/viewer`)
+    .get<
+      IHttpResponse<AnnotationDataDto[]>
+    >(`${baseAPIURL}/list/${modelId}/viewer`)
     .then((res) => res.data);
 };
 

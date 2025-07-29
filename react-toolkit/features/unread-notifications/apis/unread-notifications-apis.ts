@@ -3,7 +3,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { IHttpResponse } from "@aventisia/ui/dtos";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AI_STUDIO_API_URL}/notification/unread`;
+const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/notification/unread`;
 
 /** Get list of unread notifications for the user */
 const getUnreadNotifications = () => {
