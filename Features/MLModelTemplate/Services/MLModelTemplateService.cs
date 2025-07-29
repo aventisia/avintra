@@ -187,12 +187,23 @@ public class MLModelTemplateService : IMLModelTemplateService
             }
 
             string setupData = "";
-
+            var llmNames = new List<string>();
             // If the model type is 'Inferencing', fetch and serialize its setup configuration
             if (mlModel.Type == ModelTypesEnum.Inferencing)
             {
-                var inferencing = await _inferencingModelService.GetSetupByMLModelIdAsync(mlModel.Id);
-                setupData = JsonSerializer.Serialize(inferencing.Data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var inferencingData = await _inferencingModelService.GetSetupByMLModelIdAsync(mlModel.Id);
+                var templateData = inferencingData.Data.Adapt<InferencingModelTemplateDto>();
+                llmNames = new List<string> 
+                {
+                    templateData?.Extraction?.LLM,
+                    templateData?.Classification?.LLM,
+                    templateData?.Summarization?.LLM,
+                    templateData?.SentimentAnalytics?.LLM,
+                    templateData?.QuestionAnswer?.LLM
+                }.Where(x => !string.IsNullOrEmpty(x))
+                .Distinct()
+                .ToList();
+                setupData = JsonSerializer.Serialize(templateData, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
 
             // If the model type is 'Conversation', fetch and serialize its setup configuration
@@ -211,6 +222,7 @@ public class MLModelTemplateService : IMLModelTemplateService
             // Set additional configuration and model type
             mlModelTemplate.Type = mlModel.Type;
             mlModelTemplate.ConfigJson = setupData;
+            mlModelTemplate.Icons = GetServiceItemDetailUtil.GetIconsByDisplayNames(llmNames);
 
             // Set auditing fields
             mlModelTemplate.CreatedByUserId = _userId;
@@ -498,7 +510,8 @@ public class MLModelTemplateService : IMLModelTemplateService
             if (templateEntity.Type == ModelTypesEnum.Inferencing)
             {
                 // Deserialize and update the Inferencing model configuration.
-                var inferencingData = JsonSerializer.Deserialize<InferencingModelDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var templateSetup = JsonSerializer.Deserialize<InferencingModelTemplateDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var inferencingData = templateSetup.Adapt<InferencingModelDto>();
                 inferencingData.Id = mlModelEntity.Id;
                 inferencingData.Name = mlModelEntity.Name;
                 inferencingData.Description = mlModelEntity.Description;
