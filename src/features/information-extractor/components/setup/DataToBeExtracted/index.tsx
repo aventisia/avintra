@@ -1,4 +1,6 @@
 // components/DataToBeExtractedSection.tsx
+import { inferenceModelFormZodSchema } from "@/features/inferencing-model/constants/inference-model-zod-schema";
+
 import { Button } from "@aventisia/ui/buttons";
 import { InputField } from "@aventisia/ui/form";
 import { SelectField } from "@aventisia/ui/form";
@@ -6,7 +8,6 @@ import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
-import { addInfoExtractorFormZodSchema } from "../../../constants/add-info-extractor-zod-schema";
 import {
   fieldNameProps,
   instructionsProps,
@@ -14,7 +15,7 @@ import {
 } from "../../../constants/info-extractor-form-field-props";
 
 type DataToBeExtractedProps = {
-  form: UseFormReturn<z.infer<typeof addInfoExtractorFormZodSchema>>;
+  form: UseFormReturn<z.infer<typeof inferenceModelFormZodSchema>>;
   dataFields: { id: string }[];
   addDataToExtracted: () => void;
   removeDataToExtracted: (index: number) => void;
@@ -30,7 +31,7 @@ const DataToBeExtracted = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-1">
         <p className="text-base">Fields</p>
         <Button
           variant="ghost"
@@ -41,8 +42,8 @@ const DataToBeExtracted = ({
           <PlusIcon className="h-5 w-5 stroke-2 text-primary" />
         </Button>
       </div>
-      <div className="!mt-0.5 inline-block rounded-lg border w-full">
-        <div className="grid grid-cols-3 bg-accent px-1 py-3 text-sm">
+      <div className="!mt-0.5 inline-block rounded-lg border w-full bg-slate-50">
+        <div className="grid grid-cols-3 rounded-lg px-1 py-3 text-sm border-b">
           <div className="px-3">Field Name</div>
           <div className="px-3">Type</div>
           <div className="px-3">Instructions</div>
@@ -56,7 +57,7 @@ const DataToBeExtracted = ({
             {/* Field Name */}
             <Controller
               control={control}
-              name={`fieldSetups.${index}.name`}
+              name={`extraction.setupObject.fields.${index}.name`}
               render={({ field }) => (
                 <InputField
                   {...fieldNameProps}
@@ -71,7 +72,7 @@ const DataToBeExtracted = ({
             {/* Type */}
             <Controller
               control={control}
-              name={`fieldSetups.${index}.type`}
+              name={`extraction.setupObject.fields.${index}.type`}
               render={({ field }) => (
                 <SelectField
                   {...typeProps}
@@ -87,7 +88,7 @@ const DataToBeExtracted = ({
               {/* Instructions */}
               <Controller
                 control={control}
-                name={`fieldSetups.${index}.instructions`}
+                name={`extraction.setupObject.fields.${index}.instructions`}
                 render={({ field }) => (
                   <InputField
                     {...instructionsProps}

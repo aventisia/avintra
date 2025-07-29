@@ -1,7 +1,4 @@
-// import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
-import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { cn } from "@aventisia/ui/lib";
 import React from "react";
@@ -24,7 +21,6 @@ const Header = ({
   extraContentCenter,
   className,
 }: HeaderProps) => {
-  const { userSession } = useUserSessionStore();
   return (
     <header
       className={cn(
@@ -50,12 +46,11 @@ const Header = ({
         <div className="ml-4 flex items-center gap-4">
           {/* Extra icons or content to render on along side of notificataions and UAM */}
           {extraContentRight}
-          {userSession ? (
+          {/* {userSession ? (
             <>
-              {/* <UnreadNotifications /> */}
               <UserAccountModal />
             </>
-          ) : null}
+          ) : null} */}
         </div>
       </div>
     </header>

@@ -1,3 +1,4 @@
+import { inferenceModelTestFormZodSchema } from "@/features/inferencing-model/constants/inference-model-test-zod-schema";
 import { answerProps } from "@/features/question-answer-model/constants/question-answer-test-form-field-props";
 import { questionAnswerTestFormZodSchema } from "@/features/question-answer-model/constants/question-answer-test-form-zod-schema";
 
@@ -14,7 +15,7 @@ type FormSchema = z.infer<typeof questionAnswerTestFormZodSchema>;
 type Field = FormSchema["questionAnswers"][number] & { id: string };
 
 type DataFieldsProps = {
-  form: UseFormReturn<z.infer<typeof questionAnswerTestFormZodSchema>>;
+  form: UseFormReturn<z.infer<typeof inferenceModelTestFormZodSchema>>;
   questionAnswerFields: Field[];
 };
 
@@ -39,7 +40,7 @@ const QuestionAnswerFields = ({
             <FormControl>
               <Controller
                 control={control}
-                name={`questionAnswers.${index}.answer`}
+                name={`questionAnswer.questionAnswers.${index}.answer`}
                 render={({ field }) => (
                   <AutosizeTextareaField {...answerProps} {...field} />
                 )}

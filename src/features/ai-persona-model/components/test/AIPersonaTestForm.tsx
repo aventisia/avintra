@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { useFetchUserSession } from "@/hooks/useUserSession";
+
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { toast } from "@aventisia/ui/sonner";
@@ -12,9 +15,8 @@ import {
 } from "@llamaindex/chat-ui";
 import "@llamaindex/chat-ui/styles/markdown.css";
 import "@llamaindex/chat-ui/styles/pdf.css";
-import * as signalR from "@microsoft/signalr";
 import { MicIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
@@ -27,10 +29,16 @@ interface Message {
 }
 
 function AIPersonaTestForm() {
-  const [conn, setConn] = useState<signalR.HubConnection | null>(null);
+  const [ws, setWs] = useState<WebSocket | null>(null);
+  const socketRef = useRef<WebSocket | null>(null);
+  const [wsStatus, setWsStatus] = useState<
+    "connecting" | "connected" | "failed"
+  >("connecting");
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { data: modelData } = useFetchModel();
 
   const {
     transcript,
@@ -45,6 +53,10 @@ function AIPersonaTestForm() {
 
   const annotations = getAnnotations();
 
+  const modelId = modelData?.data.id || "";
+  const { data } = useFetchUserSession();
+  const token = data?.data.accessToken || "";
+
   // Reflect transcript in input
   useEffect(() => {
     if (transcript) {
@@ -52,38 +64,55 @@ function AIPersonaTestForm() {
     }
   }, [transcript]);
 
-  // SignalR setup
+  // WebSocket setup
   useEffect(() => {
-    const connection = new signalR.HubConnectionBuilder()
-      .withUrl(`${import.meta.env.VITE_AISTUDIO_API_URL}/chatHub`)
-      .withAutomaticReconnect()
-      .build();
+    if (!token) return;
 
-    let mounted = true;
-    connection
-      .start()
-      .then(() => {
-        if (!mounted) return;
-        setConn(connection);
-      })
-      .catch(
-        () =>
-          mounted &&
-          toast.error("Failed to establish connection. Please try again..."),
-      );
+    const socket = new WebSocket(
+      `${import.meta.env.VITE_LLMPIPELINE_API_URL}/chat?token=${token}`,
+    );
 
-    connection.on("ReceiveMessage", (userType: string, msg: string) => {
-      if (userType === "ChatBot") {
-        setMessages((prev) => [...prev, { role: "assistant", content: msg }]);
-        setIsLoading(false);
+    socketRef.current = socket;
+
+    socket.onopen = () => {
+      toast.success("Chat created");
+      setWs(socket);
+      setWsStatus("connected"); // ✅ Connected
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data.user_type === "AIPersona" && data.message) {
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: data.message },
+          ]);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("WebSocket message parsing error:", error);
       }
-    });
+    };
+
+    socket.onclose = () => {
+      console.log("WebSocket disconnected");
+      if (wsStatus !== "connected") {
+        setWsStatus("failed"); // ✅ Failed if it never connected
+      }
+    };
+
+    socket.onerror = (err) => {
+      console.error("WebSocket error:", err);
+      toast.error("WebSocket connection failed.");
+      setWsStatus("failed"); // ✅ Failed
+    };
 
     return () => {
-      mounted = false;
-      connection.stop();
+      socket.close();
     };
-  }, []);
+  }, [token]);
 
   // File upload handler
   const handleUpload = async (file: File) => {
@@ -94,13 +123,12 @@ function AIPersonaTestForm() {
     }
   };
 
-  // Custom chat handler
+  // Chat handler
   const handler = {
     input,
     setInput: (val: string) => setInput(val),
     isLoading,
     messages,
-
     stop: () => {},
 
     append: async (message: Message) => {
@@ -111,11 +139,21 @@ function AIPersonaTestForm() {
 
       setMessages((prev) => [...prev, msgWithFiles]);
 
-      if (message.role === "user" && conn) {
+      if (
+        message.role === "user" &&
+        socketRef.current?.readyState === WebSocket.OPEN
+      ) {
         setIsLoading(true);
+        const msgPayload = {
+          model_id: modelId,
+          message: message.content,
+          file: null,
+        };
+
         try {
-          await conn.invoke("SendMessageAsync", message.content);
-        } catch {
+          socketRef.current.send(JSON.stringify(msgPayload));
+        } catch (e) {
+          console.error("Send failed:", e);
           toast.error("Failed to send message");
         }
       }
@@ -144,11 +182,9 @@ function AIPersonaTestForm() {
                     append={handler.append}
                   >
                     <ChatMessage.Content.Markdown />
-
                     <div className="w-1/4 self-end">
                       <ChatMessage.Content.Image />
                     </div>
-
                     <ChatMessage.Content.DocumentFile />
                   </ChatMessage.Content>
                 </ChatMessage>
@@ -160,21 +196,23 @@ function AIPersonaTestForm() {
 
             <ChatMessages.Empty
               children={
-                isLoading ? (
-                  <p className="animate-[slide-up_0.5s_ease-out] text-base [animation-delay:300ms] [animation-fill-mode:forwards] text-center">
+                wsStatus === "connecting" ? (
+                  <p className="animate-pulse text-xl font-semibold text-center">
                     Initializing chat, please wait...
                   </p>
-                ) : conn ? (
-                  <>
-                    <p className="mb-2 animate-[slide-up_0.5s_ease-out] text-3xl text-center font-semibold [animation-delay:100ms] [animation-fill-mode:forwards]">
-                      Hello there!
+                ) : wsStatus === "connected" && ws ? (
+                  <div className="text-center space-y-2 mb-4">
+                    <h1 className="text-xl md:text-3xl xl:text-4xl font-semibold ">
+                      Welcome to <span className="text-primary">AI Studio</span>
+                    </h1>
+                    <p className="max-w-lg md:max-w-2xl text-md md:text-base text-muted-foreground mx-auto">
+                      Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                      Impedit quos reprehenderit repellendus autem, magni
+                      doloremque nemo ratione explicabo cum ex.
                     </p>
-                    <p className="text-muted-foreground animate-[slide-up_0.5s_ease-out] text-center text-lg [animation-delay:300ms] [animation-fill-mode:forwards]">
-                      I'm here to help you with your questions.
-                    </p>
-                  </>
+                  </div>
                 ) : (
-                  <p className="animate-[slide-up_0.5s_ease-out] text-base [animation-delay:300ms] [animation-fill-mode:forwards] text-center">
+                  <p className="text-base text-center text-red-500">
                     Failed to create chat, please try again...
                   </p>
                 )
@@ -200,7 +238,7 @@ function AIPersonaTestForm() {
             )}
             <ChatInput.Form>
               <ChatInput.Field
-                className=" rounded-lg box-border bg-accent focus-visible:ring-2 focus-visible:ring-offset-0 focus-visible:outline-none text-md min-h-0 h-24 max-h-52 px-4 py-5"
+                className="rounded-lg box-border bg-accent focus-visible:ring-2 focus-visible:ring-offset-0 focus-visible:outline-none text-md min-h-0 h-24 max-h-52 px-4 py-5"
                 placeholder="Type your message..."
               />
               {browserSupportsSpeechRecognition && (
@@ -224,7 +262,6 @@ function AIPersonaTestForm() {
                 </Button>
               )}
               <ChatInput.Upload
-                // allowedExtensions={[".pdf", ".jpeg", ".jpg", ".png"]}
                 multiple={true}
                 onUpload={handleUpload}
                 className="[&>label]:bg-accent [&>label]:text-accent-foreground [&>label]:p-0"

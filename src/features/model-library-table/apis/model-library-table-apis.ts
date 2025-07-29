@@ -73,16 +73,6 @@ const isModelNameAvailable = (postObj: CheckAvailabilityDto) => {
     >(`${baseAPIURL}/IsMLModelNameAvailable`, postObj)
     .then((res) => res.data);
 };
-
-/**
- * Publish an existing model.
- */
-const publishModel = (id: string) => {
-  return axiosInstance
-    .post<IHttpResponse<ModelLibraryTableDto>>(`${baseAPIURL}/publish/${id}`)
-    .then((res) => res.data);
-};
-
 /**
  * Performs an optimistic mutation on a model based on the provided CRUD action.
  *
@@ -115,7 +105,6 @@ export {
   updateModel,
   deleteModel,
   deleteModels,
-  publishModel,
   isModelNameAvailable,
   modelOptimisticMutationFn,
 };

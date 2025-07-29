@@ -1,11 +1,14 @@
 import { Input } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronsLeftIcon,
   ChevronsRightIcon,
+  Redo,
   RotateCcw,
+  Undo,
   ZoomInIcon,
   ZoomOutIcon,
 } from "lucide-react";
@@ -65,6 +68,22 @@ const PageControl = (props: PageControlProps) => {
           className={`cursor-pointer ${props.lastPageClass} h-5 w-5 stroke-[1.5]`}
         />
       </Button>
+
+      {import.meta.env.MODE !== "production" && (
+        <div className="ml-1.5 space-x-1">
+          <Tooltip content="Rotate left" side="bottom" className="text-xs">
+            <Button variant="ghost" size="icon7" className="bg-accent">
+              <Undo className={`h-5 w-5 cursor-pointer stroke-[1.5] `} />
+            </Button>
+          </Tooltip>
+
+          <Tooltip content="Rotate right" side="bottom" className="text-xs">
+            <Button variant="ghost" size="icon7" className="bg-accent">
+              <Redo className={`h-5 w-5 cursor-pointer stroke-[1.5] `} />
+            </Button>
+          </Tooltip>
+        </div>
+      )}
     </div>
   );
 };

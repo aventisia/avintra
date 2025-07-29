@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { reqError } from "@aventisia/ui/utils";
+import { llmConfigZodSchema } from "@/features/llm-configuration/constants/llm-config-zod-schema";
 
 export const dataToBeExtractedSchema = z.object({
     name: z.string().min(1, {message: reqError("Field Name")}),
@@ -19,12 +20,11 @@ const tableSchema = z.object({
     )
 })
 
-export const addInfoExtractorFormZodSchema = z
-  .object({
-    context: z.string().min(1, {message: reqError("Context")}),
-    prompt: z.string().min(1, {message: reqError("Prompt")}),
-    tableMetadata: z.array(tableSchema).optional().nullable(),
-    fieldSetups: z.array(dataToBeExtractedSchema),
-    llm: z.string().min(1, {message: reqError("Model Type")}),
-    temperature: z.number().default(0),
+export const addInfoExtractorFormZodSchema = llmConfigZodSchema.extend({
+    id: z.string().readonly(),
+    name: z.string().readonly().default("Extraction"),
+    setupObject: z.object({
+      tables: z.array(tableSchema).optional().nullable(),
+      fields: z.array(dataToBeExtractedSchema)
+    }),
 })

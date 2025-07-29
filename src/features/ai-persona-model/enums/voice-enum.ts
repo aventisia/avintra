@@ -1,0 +1,34 @@
+export enum VoiceEnum {
+    af_heart = "US Heart",
+    af_bella = "US Bella",
+    af_nicole = "US Nicole",
+    af_aoede = "US Aoede",
+    af_kore = "US Kore",
+    af_sarah = "US Sarah",
+    af_nova = "US Nova",
+    af_sky = "US Sky",
+    af_alloy = "US Alloy",
+    af_jessica = "US Jessica",
+    af_river = "US River",
+  
+    am_michael = "US Michael",
+    am_fenrir = "US Fenrir",
+    am_puck = "US Puck",
+    am_echo = "US Echo",
+    am_eric = "US Eric",
+    am_liam = "US Liam",
+    am_onyx = "US Onyx",
+    am_santa = "US Santa",
+    am_adam = "US Adam",
+  
+    bf_emma = "GB Emma",
+    bf_isabella = "GB Isabella",
+    bf_alice = "GB Alice",
+    bf_lily = "GB Lily",
+  
+    bm_george = "GB George",
+    bm_fable = "GB Fable",
+    bm_lewis = "GB Lewis",
+    bm_daniel = "GB Daniel"
+  }
+  

@@ -1,29 +1,13 @@
-interface ISetupObject {
-    context: string;
-    // prompt: string;
-    // charactersPerChunk: number;
-    // chunkOverlap: number;
-    totalMinimumWords: number;
-    totalMaximumWords: number;
-    summarizationMethod: string;
-    // mapIndividualSummaryPrompt: string | null;
-    // mapFinalCombinePrompt: string | null;
-    // refineInitialPrompt: string | null;
-    // refineSubsequentPrompt: string | null;
-    stuffPrompt: string;
-    llm: string;
-    temperature: number;
+import { ILLMConfiguration } from "@/features/llm-configuration/dtos/llm-configuration-dto";
+
+export interface SummarizationSetupDTO extends ILLMConfiguration{
+    readonly id: string;
+    name: string;
+    setupObject: {
+        totalMinimumWords: number;
+        totalMaximumWords: number;
+        readonly summarizationMethod: string;
+    }
 }
 
-interface IModelInfo {
-    createdOn?: string;
-    createdByUserId?: string;
-    lastModifiedByUserId?: string;
-    createdBy?: string;
-    createdByUsername?: string;
-}
 
-export interface SummarizationSetupDTO extends IModelInfo {
-    id: string;
-    setupObject: ISetupObject;
-}

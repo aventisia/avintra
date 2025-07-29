@@ -1,4 +1,6 @@
 // components/ContextTablesSection.tsx
+import { inferenceModelFormZodSchema } from "@/features/inferencing-model/constants/inference-model-zod-schema";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +24,6 @@ import { Controller, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { addInfoExtractorFormZodSchema } from "../../../constants/add-info-extractor-zod-schema";
 import {
   headerNameProps,
   instructionsProps,
@@ -36,12 +37,15 @@ import { TabsRenameAction } from "./TabsActions/TabsRenameAction";
 import { TabsActionsTrigger } from "./TabsActionsTrigger";
 
 type Table = NonNullable<
-  z.infer<typeof addInfoExtractorFormZodSchema>["tableMetadata"]
+  NonNullable<
+    z.infer<typeof inferenceModelFormZodSchema>["extraction"]
+  >["setupObject"]["tables"]
 >[number];
+
 type TableDataItem = Table["tableHeaders"][number];
 
 type ContextTablesProps = {
-  form: UseFormReturn<z.infer<typeof addInfoExtractorFormZodSchema>>;
+  form: UseFormReturn<z.infer<typeof inferenceModelFormZodSchema>>;
   tableFields: {
     id: string;
     context?: string;
@@ -101,22 +105,22 @@ const ContextTables = ({
           <Tabs
             value={activeTab}
             defaultValue={"Table 1"}
-            className="!mt-0.5 w-full"
+            className="!mt-0.5 w-full border p-3 rounded-lg bg-slate-50"
             onValueChange={(val) => setActiveTab(val)}
           >
             <div className="mb-3 grid">
               <ScrollArea>
-                <TabsList className="w-full justify-start !py-6">
+                <TabsList className="w-full justify-start !py-6 bg-slate-100">
                   {tableFields.map((_, tableIndex) => (
                     <TabsTrigger
                       value={`Table ${tableIndex + 1}`}
                       key={tableIndex}
-                      className="flex items-center gap-0 rounded-xl bg-transparent px-3"
+                      className="flex items-center gap-0 rounded-xl px-3"
                     >
                       {tableIndex === tableToEditNameIndex ? (
                         <Controller
                           control={control}
-                          name={`tableMetadata.${tableIndex}.name`}
+                          name={`extraction.setupObject.tables.${tableIndex}.name`}
                           render={({ field }) => (
                             <InputField
                               {...tableNameProps}
@@ -136,12 +140,14 @@ const ContextTables = ({
                           size="xs"
                           type="button"
                           variant="ghost"
-                          className="p-0 text-sm hover:bg-transparent"
+                          className="p-0 text-sm hover:bg-slate-50"
                           onDoubleClick={() =>
                             setTableToEditNameIndex(tableIndex)
                           }
                         >
-                          {form.watch(`tableMetadata.${tableIndex}.name`)}
+                          {form.watch(
+                            `extraction.setupObject.tables.${tableIndex}.name`,
+                          )}
                         </Button>
                       )}
 
@@ -170,7 +176,7 @@ const ContextTables = ({
                     {/* Table context */}
                     <Controller
                       control={control}
-                      name={`tableMetadata.${tableIndex}.context`}
+                      name={`extraction.setupObject.tables.${tableIndex}.context`}
                       render={({ field }) => (
                         <InputField
                           {...tableContextProps}
@@ -184,7 +190,7 @@ const ContextTables = ({
 
                     {/* Table Headers */}
                     <div className="inline-block rounded-lg border w-full">
-                      <div className="grid grid-cols-3 bg-accent px-1 py-3 text-sm ">
+                      <div className="grid grid-cols-3 px-1 py-3 text-sm border-b">
                         <div className="px-3">Header Name</div>
                         <div className="px-3">Type</div>
                         <div className="px-3">Instructions</div>
@@ -201,7 +207,7 @@ const ContextTables = ({
                           {/* Header Name */}
                           <Controller
                             control={control}
-                            name={`tableMetadata.${tableIndex}.tableHeaders.${rowIndex}.name`}
+                            name={`extraction.setupObject.tables.${tableIndex}.tableHeaders.${rowIndex}.name`}
                             render={({ field }) => (
                               <InputField
                                 {...headerNameProps}
@@ -216,7 +222,7 @@ const ContextTables = ({
                           {/* Type */}
                           <Controller
                             control={control}
-                            name={`tableMetadata.${tableIndex}.tableHeaders.${rowIndex}.type`}
+                            name={`extraction.setupObject.tables.${tableIndex}.tableHeaders.${rowIndex}.type`}
                             render={({ field }) => (
                               <SelectField
                                 {...typeProps}
@@ -231,7 +237,7 @@ const ContextTables = ({
                             {/* Instructions */}
                             <Controller
                               control={control}
-                              name={`tableMetadata.${tableIndex}.tableHeaders.${rowIndex}.instructions`}
+                              name={`extraction.setupObject.tables.${tableIndex}.tableHeaders.${rowIndex}.instructions`}
                               render={({ field }) => (
                                 <InputField
                                   {...instructionsProps}

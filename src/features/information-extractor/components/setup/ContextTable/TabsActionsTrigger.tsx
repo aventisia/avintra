@@ -1,6 +1,6 @@
-import { cn } from "@aventisia/ui/lib";
 import { buttonVariants } from "@aventisia/ui/buttons";
 import { DropdownMenuTrigger } from "@aventisia/ui/dropdown-menu";
+import { cn } from "@aventisia/ui/lib";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 
 export const TabsActionsTrigger = () => {
@@ -8,7 +8,7 @@ export const TabsActionsTrigger = () => {
     <DropdownMenuTrigger
       className={cn(
         buttonVariants({ variant: "ghost", size: "icon7" }),
-        "hover:bg-slate-200",
+        "hover:bg-slate-50",
         //"opacity-0 group-hover/CommandItem:opacity-100 group-data-[selected]/CommandItem:opacity-100",
         "data-[state=open]:bg-slate-200 data-[state=open]:opacity-100",
       )}

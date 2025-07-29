@@ -1,4 +1,4 @@
-import PublishModel from "@/features/publish-model/PublishModel";
+import CreditsCount from "@/features/credits/components/CreditsCount";
 import { useClearQueryParamsOutsideView } from "@/hooks/useClearQueryParamsOutsideView";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { Header } from "@/react-toolkit/layout/Header";
@@ -11,6 +11,7 @@ import { Outlet } from "react-router-dom";
 // import { LLMSelector } from "./LLMSelector";
 import ModelInfo from "./ModelInfo";
 import { NavigationTabs } from "./NavigationTabs";
+import HeaderMenuActions from "./header-menu-actions";
 
 export const MLModelBuilderLayout = () => {
   useClearQueryParamsOutsideView();
@@ -26,11 +27,11 @@ export const MLModelBuilderLayout = () => {
           <Header
             extraContentRight={
               <>
-                <NavigationTabs />
-                <PublishModel />
+                <CreditsCount />
+                <HeaderMenuActions />
               </>
             }
-            // extraContentCenter={<LLMSelector />}
+            extraContentCenter={<NavigationTabs />}
             extraContentLeft={<ModelInfo />}
           />
           <ScrollArea className="mt-2.5 h-[calc(100vh-4.5rem)]">

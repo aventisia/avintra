@@ -1,107 +1,61 @@
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
-import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+import { inferenceModelFormZodSchema } from "@/features/inferencing-model/constants/inference-model-zod-schema";
+import LLMConfiguration from "@/features/llm-configuration/components/LLMConfiguration";
 
-import { LoadingSpinner, Separator } from "@aventisia/ui";
-import { Button } from "@aventisia/ui/buttons";
-import { AutosizeTextareaField, Form, SwitchField } from "@aventisia/ui/form";
-import { ScrollArea } from "@aventisia/ui/scroll";
-import { FormProvider } from "react-hook-form";
+import { Separator } from "@aventisia/ui";
+import { SwitchField } from "@aventisia/ui/form";
+import { UseFormReturn, useFieldArray } from "react-hook-form";
 import { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
 
-import {
-  allowMultipleClassesProps,
-  contextProps,
-  systemPromptProps,
-} from "../../constants/classification-model-setup-form-field-props";
-import { classificationModelSetupFormZodSchema } from "../../constants/classification-model-setup-zod-schema";
-import { ClassficationModelSetupDTO } from "../../dtos/classfication-model-setup-dto";
-import { useClassificationModelSetupForm } from "../../hooks/useClassificationModelSetupForm";
+import { allowMultipleClassesProps } from "../../constants/classification-model-setup-form-field-props";
 import CategoriesTable from "./CategoriesTable";
-import ModelConfiguration from "./ModelConfiguration";
 
-const ClassificationModelSetupForm = () => {
+interface ClassificationModelSetupFormProps {
+  form: UseFormReturn<z.infer<typeof inferenceModelFormZodSchema>>;
+}
+
+const ClassificationModelSetupForm = ({
+  form,
+}: ClassificationModelSetupFormProps) => {
+  const { control } = form;
+
   const {
-    form,
-    isSubmitting,
-    categoryFields,
-    addCategory,
-    removeCategory,
-    isUpdatePending,
-    updateFormData,
-  } = useClassificationModelSetupForm();
-  const { modelId } = useLabelDataStore(
-    useShallow((state) => ({
-      modelId: state.modelId,
-    })),
-  );
-  const { data: modelData, isLoading } = useFetchModel();
+    fields: categoryFields,
+    append,
+    remove,
+  } = useFieldArray({
+    control,
+    name: "classification.setupObject.categories",
+  });
 
-  // Submit handler
-  function submitHandler(
-    formData: z.infer<typeof classificationModelSetupFormZodSchema>,
-  ) {
-    updateFormData({
-      setupObject: formData,
-      id: modelId,
-    } as ClassficationModelSetupDTO);
-  }
+  // Function to add a new object to categories
+  const addCategory = () => {
+    append({ name: "", instructions: "", subCategories: [] });
+  };
+
+  // Function to remove an object from categories
+  const removeCategory = (index: number) => {
+    remove(index);
+  };
 
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(submitHandler)}
-      disabled={isSubmitting || isLoading || modelData?.data.isPublished}
-    >
-      <ScrollArea className="mt-4 flex-grow h-[calc(100vh-14.2rem)]">
-        <FormProvider {...form}>
-          <div className="space-y-4 px-4 pb-1 w-full">
-            {/* Context */}
-            <AutosizeTextareaField {...contextProps} />
+    <div className="space-y-4 w-full px-3 !py-1">
+      {/* Data to be extracted */}
+      <CategoriesTable
+        addCategory={addCategory}
+        removeCategory={removeCategory}
+        categoryFields={categoryFields}
+        form={form}
+      />
 
-            {/* Separator */}
-            <Separator />
+      {/* Separator */}
+      <Separator />
 
-            {/* Data to be extracted */}
-            <CategoriesTable
-              addCategory={addCategory}
-              removeCategory={removeCategory}
-              categoryFields={categoryFields}
-              form={form}
-            />
-
-            {/* Separator */}
-            <Separator />
-
-            <SwitchField {...allowMultipleClassesProps} />
-
-            {/* Separator */}
-            <Separator />
-
-            {/* Model Configuration */}
-            <ModelConfiguration form={form} />
-
-            {/* Prompt */}
-            <AutosizeTextareaField {...systemPromptProps} />
-          </div>
-        </FormProvider>
-      </ScrollArea>
-
-      <Separator className="my-0 h-[0.5px] w-full" />
-      <div className="flex items-center justify-end self-end gap-2 px-4 py-1 pb-4">
-        <Button
-          size="xs"
-          type="submit"
-          disabled={isSubmitting || isUpdatePending}
-        >
-          {isSubmitting || isUpdatePending ? (
-            <LoadingSpinner className="h-4 w-4" />
-          ) : (
-            "Save"
-          )}
-        </Button>
+      <div className="bg-slate-50">
+        <SwitchField {...allowMultipleClassesProps} />
       </div>
-    </Form>
+
+      <LLMConfiguration form={form} modelType="classification" />
+    </div>
   );
 };
 

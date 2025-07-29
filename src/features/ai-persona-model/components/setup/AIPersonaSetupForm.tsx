@@ -2,7 +2,7 @@ import { submitFiles } from "@/features/file-uploader-setup/apis/file-upload-api
 import FileUploader from "@/features/file-uploader-setup/components/FileUploader";
 import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
-import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+import LLMConfiguration from "@/features/llm-configuration/components/LLMConfiguration";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 
 import { LoadingSpinner, Separator } from "@aventisia/ui";
@@ -26,10 +26,9 @@ import { AiPersonaSetupDTO } from "../../dtos/ai-persona-setup-dto";
 import { useAIPersonaSetupForm } from "../../hooks/useAiPersonaSetupForm";
 import { useToggleFileUploadDialogStore } from "../../store/toggle-file-uploader-store";
 import BasicInformation from "./BasicInformation";
-import CommunicationChannels from "./CommunicationChannels";
 import KnowledgeContext from "./KnowledgeContext";
-import ModelConfiguration from "./ModelConfiguration";
 import PersonaBehavior from "./PersonaBehavior";
+import SpeechConfiguration from "./SpeechConfiguration";
 
 const AIPersonaSetupForm = () => {
   const { showFileUploadDialog, setShowFileUploadDialog } =
@@ -53,22 +52,12 @@ const AIPersonaSetupForm = () => {
     isUpdatePending,
     updateFormData,
   } = useAIPersonaSetupForm();
-  const { modelId } = useLabelDataStore(
-    useShallow((state) => ({
-      modelId: state.modelId,
-    })),
-  );
 
   // Submit handler
   function submitHandler(
     formData: z.infer<typeof aiPersonaSetupFormZodSchema>,
   ) {
-    console.log(formData);
-
-    updateFormData({
-      setupObject: formData,
-      id: modelId,
-    } as AiPersonaSetupDTO);
+    updateFormData({ ...formData } as AiPersonaSetupDTO);
   }
 
   useEffect(() => {
@@ -76,7 +65,7 @@ const AIPersonaSetupForm = () => {
       const setupFormDocuments = fileList.data.map(({ id, name, path }) => {
         return { id: id ?? "", name, instructions: "", filePath: path ?? "" };
       });
-      form.setValue("documents", setupFormDocuments);
+      form.setValue("aiPersona.setupObject.documents", setupFormDocuments);
     }
   }, [fileList, form]);
 
@@ -131,12 +120,16 @@ const AIPersonaSetupForm = () => {
               {/* Separator */}
               <Separator />
 
-              <ModelConfiguration form={form} />
+              <LLMConfiguration
+                form={form}
+                modelType="aiPersona"
+                className="bg-transparent"
+              />
 
               {/* Separator */}
               <Separator className="!mt-6" />
 
-              <CommunicationChannels />
+              <SpeechConfiguration form={form} />
             </div>
           </FormProvider>
         </ScrollArea>

@@ -15,22 +15,40 @@ import { aiPersonaSetupFormZodSchema } from "../constants/ai-persona-setup-zod-s
 import { AiPersonaSetupDTO } from "../dtos/ai-persona-setup-dto";
 
 export const useAIPersonaSetupForm = () => {
+  const { modelId } = useLabelDataStore(
+    useShallow((state) => ({
+      modelId: state.modelId,
+    })),
+  );
   const form = useForm<z.infer<typeof aiPersonaSetupFormZodSchema>>({
     resolver: zodResolver(aiPersonaSetupFormZodSchema),
     defaultValues: {
-      name: "",
-      roleOrObjective: "",
-      categoryOrDomain: "",
-      toneOfVoice: "",
-      instructions: "",
-      exclusionsOrBoundaries: "",
-      documents: null,
-      contextMemoryTimeframe: "",
-      llm: "",
-      temperature: 0.7,
-      enableAudio: false,
-      enableVideo: false,
-      enableChat: false,
+      id: modelId || "",
+      businessContext: "",
+      aiPersona: {
+        name: "AIPersona",
+        configurationType: "OnPrem",
+        llm: "gemma",
+        nodePrompt: "node prompt",
+        temperature: 0.7,
+        setupObject: {
+          name: "",
+          roleOrObjective: "",
+          categoryOrDomain: "",
+          toneOfVoice: "",
+          instructions: "",
+          exclusionsOrBoundaries: "",
+          documents: null,
+          contextMemoryTimeframe: "",
+          speechConfiguration: {
+            configurationType: "OnPrem",
+            language: "",
+            speechToText: "",
+            textToSpeech: "",
+            voices: "",
+          },
+        },
+      },
     },
   });
   const { showDefaultAlertDialog } = useShowAlertHandler();
@@ -47,7 +65,7 @@ export const useAIPersonaSetupForm = () => {
     remove,
   } = useFieldArray({
     control,
-    name: "documents",
+    name: "aiPersona.setupObject.documents",
   });
 
   // Function to add a new object to categories
@@ -91,31 +109,55 @@ export const useAIPersonaSetupForm = () => {
     }>(["AI_PERSONA_SETUP_FORM_DATA"]);
 
     // Extract setupObject from fetched data
-    const setupFormData = data?.data.setupObject;
+    const setupFormData = data?.data;
 
     form.reset({
-      name: setupFormData?.name ?? "",
-      roleOrObjective: setupFormData?.roleOrObjective ?? "",
-      categoryOrDomain: setupFormData?.categoryOrDomain ?? "",
-      toneOfVoice: setupFormData?.toneOfVoice ?? "",
-      instructions: setupFormData?.instructions ?? "",
-      exclusionsOrBoundaries: setupFormData?.exclusionsOrBoundaries ?? "",
-      documents: setupFormData?.documents ?? null,
-      contextMemoryTimeframe: setupFormData?.contextMemoryTimeframe ?? "",
-      llm: setupFormData?.llm ?? "",
-      temperature: setupFormData?.temperature ?? 0.7,
-      enableAudio: setupFormData?.enableAudio ?? false,
-      enableVideo: setupFormData?.enableVideo ?? false,
-      enableChat: setupFormData?.enableChat ?? false,
+      id: setupFormData?.id ?? modelId ?? "",
+      businessContext: setupFormData?.businessContext ?? "",
+      aiPersona: {
+        name: setupFormData?.aiPersona?.name ?? "AIPersona",
+        configurationType:
+          setupFormData?.aiPersona?.configurationType ?? "OnPrem",
+        llm: setupFormData?.aiPersona?.llm ?? "gemma",
+        nodePrompt: setupFormData?.aiPersona?.nodePrompt ?? "node prompt",
+        temperature: setupFormData?.aiPersona?.temperature ?? 0.7,
+        setupObject: {
+          name: setupFormData?.aiPersona?.setupObject?.name ?? "",
+          roleOrObjective:
+            setupFormData?.aiPersona?.setupObject?.roleOrObjective ?? "",
+          categoryOrDomain:
+            setupFormData?.aiPersona?.setupObject?.categoryOrDomain ?? "",
+          toneOfVoice: setupFormData?.aiPersona?.setupObject?.toneOfVoice ?? "",
+          instructions:
+            setupFormData?.aiPersona?.setupObject?.instructions ?? "",
+          exclusionsOrBoundaries:
+            setupFormData?.aiPersona?.setupObject?.exclusionsOrBoundaries ?? "",
+          documents: setupFormData?.aiPersona?.setupObject?.documents ?? null,
+          contextMemoryTimeframe:
+            setupFormData?.aiPersona?.setupObject?.contextMemoryTimeframe ?? "",
+          speechConfiguration: {
+            configurationType:
+              setupFormData?.aiPersona?.setupObject?.speechConfiguration
+                ?.configurationType ?? "OnPrem",
+            language:
+              setupFormData?.aiPersona?.setupObject?.speechConfiguration
+                ?.language ?? "",
+            voices:
+              setupFormData?.aiPersona?.setupObject?.speechConfiguration
+                ?.voices ?? "",
+            textToSpeech:
+              setupFormData?.aiPersona?.setupObject?.speechConfiguration
+                ?.textToSpeech ?? "",
+            speechToText:
+              setupFormData?.aiPersona?.setupObject?.speechConfiguration
+                ?.speechToText ?? "",
+          },
+        },
+      },
     });
-  }, [form, queryClient]);
+  }, [form, queryClient, modelId]);
 
   // Mutation to update form data
-  const { modelId } = useLabelDataStore(
-    useShallow((state) => ({
-      modelId: state.modelId,
-    })),
-  );
   const { mutate: updateFormData, isPending: isUpdatePending } = useMutation({
     mutationFn: updateAiPersonaSetupFormData,
     onSuccess: async () => {

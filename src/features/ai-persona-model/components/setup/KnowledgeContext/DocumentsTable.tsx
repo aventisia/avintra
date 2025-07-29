@@ -52,7 +52,9 @@ const DocumentsTable = ({
             >
               <div>
                 <p className="text-sm whitespace-nowrap truncate">
-                  {form.watch(`documents.${index}.name`) || "Untitled Document"}
+                  {form.watch(
+                    `aiPersona.setupObject.documents.${index}.name`,
+                  ) || "Untitled Document"}
                 </p>
               </div>
 
@@ -60,7 +62,7 @@ const DocumentsTable = ({
                 {/* Instructions */}
                 <Controller
                   control={control}
-                  name={`documents.${index}.instructions`}
+                  name={`aiPersona.setupObject.documents.${index}.instructions`}
                   render={({ field }) => (
                     <AutosizeTextareaField
                       {...fileinstructionsProps}
@@ -77,7 +79,9 @@ const DocumentsTable = ({
                   type="button"
                   onClick={() =>
                     removeCategory(
-                      form.getValues(`documents.${index}.id`),
+                      form.getValues(
+                        `aiPersona.setupObject.documents.${index}.id`,
+                      ),
                       index,
                     )
                   }

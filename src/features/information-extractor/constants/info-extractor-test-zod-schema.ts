@@ -21,5 +21,4 @@ export const infoExtractorTestFormZodSchema = z
   .object({
     fields: z.array(fieldsSchema),
     tables: z.array(tableSchema).optional().nullable(),
-    submitForFineTuning: z.boolean()
 })

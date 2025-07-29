@@ -1,17 +1,8 @@
-import { ModelLLMEnum } from "@/features/model-library-table/enums/model-llm-enum";
 import { DataTypeEnum } from "@/react-toolkit/enums/data-type-enum";
-import { AutosizeTextareaFieldProps, InputFieldProps } from "@aventisia/ui/form";
+import {  InputFieldProps } from "@aventisia/ui/form";
 import { SelectFieldProps } from "@aventisia/ui/form";
 import { enumToArray } from "@aventisia/ui/utils";
 
-
-const documentContextProps: AutosizeTextareaFieldProps = {
-    name: "context",
-    label: "Context",
-    minHeight: 10,
-    isRequired: true,
-    className: "text-sm resize-none"
-} 
 
 const fieldNameProps : InputFieldProps = {
     name: "",
@@ -55,32 +46,11 @@ const headerNameProps: InputFieldProps = {
     className: "text-sm",
 }
 
-const nodePropmptProps: AutosizeTextareaFieldProps = {
-    name: "prompt",
-    label: "Prompt",
-    minHeight: 10,
-    isRequired: true,
-    className: "text-sm resize-none",
-    rows: 4
-}
-
-const modelTypeProps: SelectFieldProps = {
-    name: "llm",
-    label: "Model",
-    selectOptions: enumToArray(ModelLLMEnum),
-    placeholder: "Select",
-    isRequired: true,
-    className: "text-sm resize-none"
-} 
-
 export {
-    documentContextProps,
     fieldNameProps,
     tableNameProps,
     typeProps,
     instructionsProps,
     tableContextProps,
     headerNameProps,
-    nodePropmptProps,
-    modelTypeProps
 }

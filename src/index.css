@@ -16,7 +16,7 @@
     --muted-foreground: rgb(100, 116, 139);
     --accent: rgb(245, 245, 245);
     --accent-foreground: rgb(23, 23, 23);
-    --destructive: rgb(244, 67, 54);
+    --destructive: hsl(0 84.2% 60.2%);
     --destructive-foreground: rgb(255, 255, 255);
     --success: rgb(159, 227, 205);
     --success-foreground: rgb(16, 185, 129);
@@ -26,9 +26,9 @@
     --info-foreground: rgb(61, 150, 255);
     --icon: rgb(17, 16, 31);
     --icon-color: #2a2f3c;
-    --border: rgb(234, 234, 253);
-    --input: rgb(224, 224, 241);
-    --ring: rgb(79, 70, 229);
+    --border: hsl(214.3 31.8% 91.4%);
+    --input: hsl(214.3 31.8% 91.4%);
+    --ring: rgba(78, 70, 229, 0.2);
     --radius: 0.5rem;
 
     --card: hsl(0 0% 100%);

@@ -1,16 +1,17 @@
 import * as z from "zod";
 import { reqError } from "@aventisia/ui/utils";
+import { llmConfigZodSchema } from "@/features/llm-configuration/constants/llm-config-zod-schema";
 
 export const questionAnswerSchema = z.object({
     name: z.string().min(1, {message: reqError("Question")}),
     instructions: z.string().optional()
 })
 
-export const questionAnswerSetupFormZodSchema = z
-  .object({
-    context: z.string().min(1, {message: reqError("Context")}),
-    questionAnswers: z.array(questionAnswerSchema),
-    prompt: z.string().min(1, {message: reqError("Prompt")}),
-    llm: z.string().min(1, {message: reqError("Model Type")}),
-    temperature: z.number().default(0),
+export const questionAnswerSetupFormZodSchema = llmConfigZodSchema.extend({
+      id: z.string().readonly(),
+      name: z.string().readonly().default("Question Answer"),
+      setupObject: z.object({
+        questionAnswers: z.array(questionAnswerSchema)
+      }),
 })
+

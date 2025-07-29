@@ -1,3 +1,4 @@
+import { inferenceModelFormZodSchema } from "@/features/inferencing-model/constants/inference-model-zod-schema";
 import {
   instructionsProps,
   questionProps,
@@ -9,10 +10,8 @@ import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
-import { questionAnswerSetupFormZodSchema } from "../../../constants/question-answer-setup-zod-schema";
-
 type QuestionAnswerProps = {
-  form: UseFormReturn<z.infer<typeof questionAnswerSetupFormZodSchema>>;
+  form: UseFormReturn<z.infer<typeof inferenceModelFormZodSchema>>;
   categoryFields: { id: string }[];
   addCategory: () => void;
   removeCategory: (index: number) => void;
@@ -28,7 +27,7 @@ const QuestionAnswerTable = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-1">
         <p className="text-base">Questions</p>
         <Button
           variant="ghost"
@@ -39,8 +38,8 @@ const QuestionAnswerTable = ({
           <PlusIcon className="h-5 w-5 stroke-2 text-primary" />
         </Button>
       </div>
-      <div className="!mt-0.5 inline-block rounded-lg border w-full">
-        <div className="grid grid-cols-2 bg-accent px-1 py-3 text-sm">
+      <div className="!mt-0.5 inline-block rounded-lg border w-full bg-slate-50">
+        <div className="grid grid-cols-2 px-1 rounded-lg py-3 text-sm border-b">
           <div className="px-3">Questions</div>
           <div className="px-3">Instructions</div>
         </div>
@@ -53,7 +52,7 @@ const QuestionAnswerTable = ({
             {/* Category Name */}
             <Controller
               control={control}
-              name={`questionAnswers.${index}.name`}
+              name={`questionAnswer.setupObject.questionAnswers.${index}.name`}
               render={({ field }) => (
                 <AutosizeTextareaField
                   {...questionProps}
@@ -69,7 +68,7 @@ const QuestionAnswerTable = ({
               {/* Instructions */}
               <Controller
                 control={control}
-                name={`questionAnswers.${index}.instructions`}
+                name={`questionAnswer.setupObject.questionAnswers.${index}.instructions`}
                 render={({ field }) => (
                   <AutosizeTextareaField
                     {...instructionsProps}
