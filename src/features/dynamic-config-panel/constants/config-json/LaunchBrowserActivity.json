@@ -4,7 +4,7 @@
     "type": "select",
     "name": "BrowserType",
     "label": "Browser Type",
-    "description": "Specifies which browser to launch (Microsoft Edge, Google Chrome, Mozilla Firefox).",
+    "description": "Specifies which browser to launch (Microsoft Edge, Google Chrome).",
     "defaultValue": "MicrosoftEdge",
     "required": true,
     "selectOptions": [
@@ -17,44 +17,17 @@
         "label": "Google Chrome",
         "value": "GoogleChrome",
         "description": "Launches Google Chrome browser."
-      },
-      {
-        "label": "Mozilla Firefox",
-        "value": "MozillaFirefox",
-        "description": "Launches Mozilla Firefox browser."
-      },
-      {
-        "label": "Custom",
-        "value": "Custom",
-        "description": "Launches a custom browser by specifying its executable and driver paths."
       }
     ]
-  },
-  {
-    "direction": "Input",
-    "type": "switch",
-    "name": "LaunchWithUrl",
-    "label": "Launch with Url",
-    "description": "If true, launches the browser with a specific URL.",
-    "defaultValue": "",
-    "required": false
   },
   {
     "direction": "Input",
     "type": "text",
     "name": "LaunchUrl",
     "label": "Launch Url",
-    "description": "The URL to launch if Launch with Url is true.",
+    "description": "The URL to launch the browser with. If empty, the browser will launch without navigating to a specific page.",
     "defaultValue": "",
-    "required": false,
-    "renderIf": {
-      "conditions": [
-        {
-          "field": "LaunchWithUrl",
-          "equals": true
-        }
-      ]
-    }
+    "required": false
   },
   {
     "direction": "Input",
@@ -76,83 +49,6 @@
         "description": "Opens browser in private/incognito mode."
       }
     ]
-  },
-  {
-    "direction": "Input",
-    "type": "switch",
-    "name": "StoreData",
-    "label": "Store Data",
-    "description": "If true, stores browser data (e.g., user profiles) in a specified path. If false, uses default browser settings. this usefull when launching multiple instances of the same browser.",
-    "defaultValue": true,
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "UserDataStoragePath",
-    "label": "User Data Storage Path",
-    "description": "Optional path to store browser data (e.g., user profiles). If not provided, a default under %APPDATA%\\RPAProfileData\\[BrowserType] will be used.",
-    "defaultValue": "",
-    "required": false,
-    "renderIf": {
-      "conditions": [
-        {
-          "field": "StoreData",
-          "equals": true
-        }
-      ]
-    }
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "CustomBrowserName",
-    "label": "Custom Browser Name",
-    "description": "Name of the custom browser (required if \u0027Browser Type\u0027 is \u0027Custom\u0027).",
-    "defaultValue": "",
-    "required": false,
-    "renderIf": {
-      "conditions": [
-        {
-          "field": "BrowserType",
-          "equals": "Custom"
-        }
-      ]
-    }
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "BrowserExecutablePath",
-    "label": "Browser Executable Path",
-    "description": "Path to the  browser executable (for Custom type).",
-    "defaultValue": "",
-    "required": false,
-    "renderIf": {
-      "conditions": [
-        {
-          "field": "BrowserType",
-          "equals": "Custom"
-        }
-      ]
-    }
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "DriverExecutablePath",
-    "label": "Driver Executable Path",
-    "description": "Path to driver executable (for Custom type).",
-    "defaultValue": "",
-    "required": false,
-    "renderIf": {
-      "conditions": [
-        {
-          "field": "BrowserType",
-          "equals": "Custom"
-        }
-      ]
-    }
   },
   {
     "direction": "Input",
@@ -181,34 +77,13 @@
     ]
   },
   {
-    "direction": "Input",
-    "type": "select",
-    "name": "KillExistingBrowserInstancesMode",
-    "label": "Kill Existing Browser Instances",
-    "description": "Enable or disable killing existing Selenium RPA-launched browsers before starting a new one.",
-    "defaultValue": "Enabled",
-    "required": false,
-    "selectOptions": [
-      {
-        "label": "Enabled",
-        "value": "Enabled",
-        "description": "Kill existing Selenium RPA browser instances before launching a new one."
-      },
-      {
-        "label": "Disabled",
-        "value": "Disabled",
-        "description": "Do not kill existing Selenium RPA browser instances before launching a new one."
-      }
-    ]
-  },
-  {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "WebBrowser",
+    "name": "WebBrowserInstance",
     "label": "Web Browser",
-    "description": "Returns the WebDriver object for further automation steps.",
+    "description": "Returns the Web browser instance.",
     "defaultValue": {
-      "value": "WebBrowser",
+      "value": "WebBrowserInstance",
       "enabled": true
     },
     "required": false

@@ -2093,7 +2093,7 @@
             "type": "activityNode",
             "name": "LaunchBrowserActivity",
             "label": "Launch Browser",
-            "description": "Launches a web browser instance (Edge, Chrome, Firefox) with optional window state.",
+            "description": "Launches a web browser instance of Microsoft Edge or Google Chrome.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
