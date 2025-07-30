@@ -42,7 +42,8 @@ public class FlowsTableService : IFlowsTableService
                     )
                 ) // TODO: Update condition
                 .OrderByDescending(w => w.CreatedOn)
-                .Include(w => w.FlowUsers)
+                .Include(i => i.FlowUsers)
+                .Include(i => i.CreatedByUser)
                 .ToListAsync();
 
             // Map the list of flows to a list of FlowsTableDto using the Adapt method
