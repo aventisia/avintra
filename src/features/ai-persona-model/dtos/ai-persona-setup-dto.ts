@@ -40,6 +40,5 @@ interface IConversationModel extends ILLMConfiguration {
 
 export interface AiPersonaSetupDTO extends IModelInfo {
     id: string;
-    businessContext: string;
     aiPersona: IConversationModel
 }

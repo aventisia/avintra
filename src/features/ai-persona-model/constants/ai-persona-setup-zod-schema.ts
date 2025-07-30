@@ -31,7 +31,6 @@ const setupObjectSchema = z.object({
 export const aiPersonaSetupFormZodSchema = z
   .object({
     id: z.string().readonly(),
-    businessContext: z.string().readonly(),
     aiPersona: z.object({
       name: z.string().readonly().default("AIPersona"),
       configurationType: z.enum(["OnPrem", "Cloud"]).default("OnPrem"),

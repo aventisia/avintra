@@ -24,7 +24,6 @@ export const useAIPersonaSetupForm = () => {
     resolver: zodResolver(aiPersonaSetupFormZodSchema),
     defaultValues: {
       id: modelId || "",
-      businessContext: "",
       aiPersona: {
         name: "AIPersona",
         configurationType: "OnPrem",
@@ -113,7 +112,6 @@ export const useAIPersonaSetupForm = () => {
 
     form.reset({
       id: setupFormData?.id ?? modelId ?? "",
-      businessContext: setupFormData?.businessContext ?? "",
       aiPersona: {
         name: setupFormData?.aiPersona?.name ?? "AIPersona",
         configurationType:

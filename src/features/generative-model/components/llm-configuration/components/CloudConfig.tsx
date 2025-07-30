@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useToggleCreateNewCredentialsDialogStore } from "@/features/create-new-credentials/store/toggle-add-credentials-store";
-import { generativeModelInputZodSchema } from "@/features/generative-model/constants/model-input-zod-schema";
 import { SliderField } from "@/shared/Slider/SliderField";
 import {
   Select,
@@ -31,22 +30,15 @@ import { nodePromptProps } from "../constants/llm-config-field-props";
 import { llmModelsList } from "../constants/llm-models-list";
 
 interface CloudConfigProps {
-  form: UseFormReturn<z.infer<typeof generativeModelInputZodSchema>>;
-  taskType:
-    | "thoughtLeadership"
-    | "companyDeepDives"
-    | "personaResearch"
-    | "rfpRpiResponseGenerator"
-    | "documentDrafting";
+  form: UseFormReturn<z.infer<any>>;
 }
 
-const CloudConfig = ({ form, taskType }: CloudConfigProps) => {
-  const { control } = form;
+const CloudConfig = ({ form }: CloudConfigProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { control } = form;
 
   const { setShowCreateNewCredentialsDialog } =
     useToggleCreateNewCredentialsDialogStore();
-
   return (
     <div className="space-y-4">
       <SelectField
@@ -57,13 +49,13 @@ const CloudConfig = ({ form, taskType }: CloudConfigProps) => {
       />
 
       <FormItem>
-        <FormLabel className={"flex items-center gap-0.5 mb-1"}>
+        <FormLabel className={"flex items-center gap-0.5 mb-1 px-1"}>
           Credentials
         </FormLabel>
 
         <Controller
           control={control}
-          name={"thoughtLeadership.llm"}
+          name=""
           rules={{ required: true }}
           render={({ field }) => (
             <Select
@@ -149,7 +141,7 @@ const CloudConfig = ({ form, taskType }: CloudConfigProps) => {
               </div>
               <Controller
                 control={form.control}
-                name={`${taskType}.temperature`}
+                name={`temperature`}
                 render={({ field }) => {
                   return (
                     <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-2">
@@ -170,10 +162,7 @@ const CloudConfig = ({ form, taskType }: CloudConfigProps) => {
                 }}
               />
             </FormItem>
-            <AutosizeTextareaField
-              {...nodePromptProps}
-              name={`${taskType}.nodePrompt`}
-            />
+            <AutosizeTextareaField {...nodePromptProps} name={`nodePrompt`} />
           </AccordionContent>
         </AccordionItem>
       </Accordion>

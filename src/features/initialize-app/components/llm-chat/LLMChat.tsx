@@ -221,9 +221,8 @@ function LLMChat() {
                       Welcome to <span className="text-primary">AI Studio</span>
                     </h1>
                     <p className="max-w-lg md:max-w-2xl text-md md:text-base text-muted-foreground mx-auto">
-                      Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-                      Impedit quos reprehenderit repellendus autem, magni
-                      doloremque nemo ratione explicabo cum ex.
+                      Build smart inferencing, conversational, and generative AI
+                      models — in minutes.
                     </p>
                   </div>
                 ) : (
@@ -237,9 +236,8 @@ function LLMChat() {
                       Welcome to <span className="text-primary">AI Studio</span>
                     </h1>
                     <p className="max-w-lg md:max-w-2xl text-md md:text-base text-muted-foreground mx-auto">
-                      Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-                      Impedit quos reprehenderit repellendus autem, magni
-                      doloremque nemo ratione explicabo cum ex.
+                      Build smart inferencing, conversational, and generative AI
+                      models — in minutes.
                     </p>
                   </div>
                 )

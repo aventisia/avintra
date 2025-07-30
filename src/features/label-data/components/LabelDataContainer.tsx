@@ -3,7 +3,7 @@ import APIKeysDialog from "@/features/api-keys/components/APIKeysDialog";
 import CreateNewCredentialsDialog from "@/features/create-new-credentials/components/CreateNewCredentialsDialog";
 import FileUploaderWrapper from "@/features/file-uploader-wrapper/components/FileUploaderWrapper";
 import StorageConnectDialog from "@/features/file-uploader-wrapper/components/storage-connect/StorageConnectDialog";
-import GenerativeModel from "@/features/generative-model-new/components";
+import GenerativeModel from "@/features/generative-model/components";
 import InferenceModel from "@/features/inferencing-model/components/InferenceModel";
 import InitializeApp from "@/features/initialize-app/components";
 import ModelLibraryDialog from "@/features/initialize-app/components/model-library/model-library-dialog/ModelLibraryDialog";

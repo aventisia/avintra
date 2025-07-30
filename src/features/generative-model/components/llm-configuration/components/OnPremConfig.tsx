@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { generativeModelInputZodSchema } from "@/features/generative-model/constants/model-input-zod-schema";
 import { SliderField } from "@/shared/Slider/SliderField";
 import { SelectField } from "@/shared/select-field/SelectField";
 
@@ -22,19 +21,13 @@ import {
 } from "../constants/llm-config-field-props";
 
 interface OnPremConfigProps {
-  form: UseFormReturn<z.infer<typeof generativeModelInputZodSchema>>;
-  taskType:
-    | "thoughtLeadership"
-    | "companyDeepDives"
-    | "personaResearch"
-    | "rfpRpiResponseGenerator"
-    | "documentDrafting";
+  form: UseFormReturn<z.infer<any>>;
 }
 
-const OnPremConfig = ({ form, taskType }: OnPremConfigProps) => {
+const OnPremConfig = ({ form }: OnPremConfigProps) => {
   return (
     <>
-      <SelectField {...baseLlmProps} name={`${taskType}.llm`} />
+      <SelectField {...baseLlmProps} name={`llm`} />
 
       {/* Advanced Options */}
       <Accordion type="single" collapsible className="w-full !p-0 mt-4">
@@ -87,7 +80,7 @@ const OnPremConfig = ({ form, taskType }: OnPremConfigProps) => {
               </div>
               <Controller
                 control={form.control}
-                name={`${taskType}.temperature`}
+                name={`temperature`}
                 render={({ field }) => {
                   return (
                     <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-2">
@@ -109,10 +102,7 @@ const OnPremConfig = ({ form, taskType }: OnPremConfigProps) => {
                 }}
               />
             </FormItem>
-            <AutosizeTextareaField
-              {...nodePromptProps}
-              name={`${taskType}.nodePrompt`}
-            />
+            <AutosizeTextareaField {...nodePromptProps} name={`nodePrompt`} />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
