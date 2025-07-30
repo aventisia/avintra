@@ -32,7 +32,7 @@ public class WorcTemplate : BaseEntity, IMustHaveTenant
     /// Gets or sets the category for the Worc template (e.g., Workflow, Automation, etc.).
     /// </summary>
     [MaxLength(50)]
-    public CategoryTypesEnum Type { get; set; }
+    public FlowTypesEnum Type { get; set; }
 
     /// <summary>
     /// Gets or sets the number of times the template has been used to create flows. 
@@ -41,13 +41,22 @@ public class WorcTemplate : BaseEntity, IMustHaveTenant
     public int UsagesCount { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier for the version of the flow that this template belongs to.
+    /// Gets or sets the access type, which defines the user's access level within the flow.
     /// </summary>
-    public required Guid FlowVersionId { get; set; }
+    public AccessTypesEnum? AccessType { get; set; }
 
     /// <summary>
-    /// Gets or sets the associated FlowVersion for this Worc template.
+    /// Gets or sets a list of tags associated with the worc template.
     /// </summary>
-    [ForeignKey("FlowVersionId")]
-    public virtual FlowVersion? FlowVersion { get; set; }
+    public List<string> Tags { get; set; } = new List<string>();
+
+    /// <summary>
+    /// Gets or sets a list of icons or avatars associated with the template.
+    /// </summary>
+    public List<string>? Icons { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique identifier for the version of the flow version.
+    /// </summary>
+    public Guid RefId { get; set; }
 }

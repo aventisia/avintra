@@ -99,10 +99,6 @@ public class WorkspaceDbContext : DbContext
         // Configure One-to-Many relationship between FlowLog and flow
         modelBuilder.Entity<Flow>().HasMany(many => many.FlowLog).WithOne(one => one.Flow).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Restrict);
 
-        // Configure One-to-Many Relationship between Flow and FlowTemplate
-        modelBuilder.Entity<FlowVersion>().HasMany(many => many.WorcTemplates).WithOne(one => one.FlowVersion).HasForeignKey(f => f.FlowVersionId).IsRequired();
-
-
         //Configure one-to-many relationship between Flow and Flow version
         modelBuilder.Entity<Flow>().HasMany(f => f.FlowVersions).WithOne(one => one.Flow).HasForeignKey(fKey => fKey.FlowId).IsRequired();
 
