@@ -35,7 +35,10 @@ export default function ModelConfigForm() {
         value: `${import.meta.env.VITE_AISTUDIO_API_URL}/ai-models/execute`,
       },
       { key: "RequestBody", value: JSON.stringify(RequestBody) },
-      { key: "Headers", value: `X-API-KEY: ${data.modelApiKey}` },
+      {
+        key: "Headers",
+        value: JSON.stringify({ "X-API-KEY": data.modelApiKey }),
+      },
     ];
 
     const outputData: NodeOutputType[] = [

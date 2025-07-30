@@ -9,6 +9,7 @@ import {
 } from "../constants/model-config-zod-schema";
 import { convertToFormData } from "../utils/convertToFormData";
 import { getModelSetup } from "../apis/search-model-apis";
+import { transformModelResponse } from "@/features/dynamic-config-panel/utils/transform-model-setup";
 
 export const useCallModelForm = () => {
   // Get node unique name state (required to get config panel data)
@@ -47,8 +48,14 @@ export const useCallModelForm = () => {
       if (watchModel?.id) {
         // API call to fetch setup based on model id
         getModelSetup(watchModel?.id)
-          .then((data) => {
-            setAiModelResultDescription(data.data.type?.toString() || "");
+          .then((response) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const rawModelSetup = response?.data as any;
+            const transformed = transformModelResponse(
+              rawModelSetup?.data?.data,
+            );
+
+            setAiModelResultDescription(transformed); // Now this is structured per model type
           })
           .catch(() => setAiModelResultDescription(""));
       } else {
