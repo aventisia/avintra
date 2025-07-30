@@ -16,13 +16,6 @@ public interface IMLModelTemplateService
     Task<ServiceResponse<MLModelTemplateDto>> GetMLModelTemplateByIdAsync(Guid mlModelTemplateId);
 
     /// <summary>
-    /// Creates a new ML model template.
-    /// </summary>
-    /// <param name="mlModelTemplateDto">The data transfer object with template details.</param>
-    /// <returns>A service response containing the created ML model template.</returns>
-    Task<ServiceResponse<MLModelTemplateDto>> CreateMLModelTemplateAsync(MLModelTemplateDto mlModelTemplateDto);
-
-    /// <summary>
     /// Publishes a new machine learning model template.
     /// </summary>
     /// <param name="publishMLModelTemplateDto">The DTO containing the template information.</param>

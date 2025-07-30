@@ -28,14 +28,6 @@ public class MLModelTemplateController : BaseApiController
         return ResultHelper(await _mlModelTemplateService.GetMLModelTemplateByIdAsync(mlModelTemplateId));
     }
 
-    // Insert a new ML model template
-    [HttpPost]
-    public async Task<ActionResult<ServiceResponse<MLModelTemplateDto>>> InsertMLModelTemplate([FromBody] MLModelTemplateDto mlModelTemplateDto)
-    {
-        // Calling the service to create a new template
-        return ResultHelper(await _mlModelTemplateService.CreateMLModelTemplateAsync(mlModelTemplateDto));
-    }
-
     // Publish a ML model template
     [HttpPost("publish")]
     public async Task<ActionResult<ServiceResponse<MLModelTemplateDto>>> PublishMLModelTemplate([FromBody] PublishMLModelTemplateDto publishMLModelTemplateDto)

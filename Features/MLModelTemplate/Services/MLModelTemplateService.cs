@@ -105,53 +105,6 @@ public class MLModelTemplateService : IMLModelTemplateService
         return serviceResponse;
     }
 
-    // Creates a new ML model template.
-    public async Task<ServiceResponse<MLModelTemplateDto>> CreateMLModelTemplateAsync(MLModelTemplateDto mlModelTemplateDto)
-    {
-        var serviceResponse = new ServiceResponse<MLModelTemplateDto>
-        {
-            Data = null,
-            Message = "Failed to create ML model template. Please try again."
-        };
-
-        try
-        {
-            // Trim whitespace from all string properties in DTO for clean data
-            mlModelTemplateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(mlModelTemplateDto);
-
-            // Map DTO to entity for persistence
-            var newTemplateEntity = mlModelTemplateDto.Adapt<MLModelTemplate>();
-
-            // Set audit fields
-            newTemplateEntity.CreatedByUserId = _userId;
-            newTemplateEntity.LastModifiedByUserId = _userId;
-            newTemplateEntity.CreatedOn = DateTime.UtcNow;
-
-            // Insert the new entity into the repository
-            await _unitOfWork.MLModelTemplateRepo.InsertAsync(newTemplateEntity);
-
-            // Persist changes to the database
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Failed to save new ML model template created by user {UserId}.", _userId);
-                return serviceResponse;
-            }
-
-            // Map the saved entity back to DTO for response
-            serviceResponse.Data = newTemplateEntity.Adapt<MLModelTemplateDto>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "ML model template created successfully.";
-
-            _logger.LogInformation("Created new ML model template with ID {mlModelTemplateId} for user {UserId}.", newTemplateEntity.Id, _userId);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error creating ML model template for user {UserId}.", _userId);
-        }
-
-        return serviceResponse;
-    }
-
     // Publishes a machine learning model template by mapping input data, configuring the template, and persisting it to the database.
     public async Task<ServiceResponse<MLModelTemplateDto>> PublishMLModelTemplateAsync(PublishMLModelTemplateDto publishMLModelTemplateDto)
     {
