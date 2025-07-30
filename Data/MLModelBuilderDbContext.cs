@@ -30,6 +30,7 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<FineTuningLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ModelAPIKey>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ModelTask>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<ConversationalModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<MLModelVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<MLModelTemplate>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<MLModelUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -48,6 +49,9 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<FineTuningLog>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ScheduleTypesEnum>());
         modelBuilder.Entity<MLModelTemplate>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<AccessTypesEnum>());
         modelBuilder.Entity<MLModelUser>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<AgentAccessTypesEnum>());
+        modelBuilder.Entity<ModelTask>().Property(e => e.ConfigurationType).HasConversion(new EnumToStringConverter<LLMConfigurationTypesEnum>());
+        modelBuilder.Entity<ConversationalModel>().Property(e => e.ConfigurationType).HasConversion(new EnumToStringConverter<SpeechConfigurationTypesEnum>());
+        modelBuilder.Entity<ConversationalModel>().Property(e => e.SpeechConfigurationType).HasConversion(new EnumToStringConverter<LLMConfigurationTypesEnum>());
 
         // Configure One-to-One relationship between Model Library and ModelBuilder User
         modelBuilder.Entity<MLModel>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -66,6 +70,7 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<MLModel>().HasMany(many => many.UploadedDocs).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
         modelBuilder.Entity<MLModel>().HasMany(many => many.ScheduledModels).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
         modelBuilder.Entity<MLModel>().HasMany(many => many.Tasks).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
+        modelBuilder.Entity<MLModel>().HasMany(many => many.ConversationalModels).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
 
         // Configure One-to-One relationship between Uploaded doc and extracted data
         modelBuilder.Entity<UploadedDoc>().HasMany(many => many.ExtractedDatas).WithOne(one => one.UploadedDoc).HasForeignKey(fKey => fKey.DocId).OnDelete(DeleteBehavior.Restrict);
@@ -121,6 +126,7 @@ public class MLModelBuilderDbContext : DbContext
     public DbSet<FineTuningLog> FineTuningLogs { get; set; }
     public DbSet<ModelAPIKey> ModelAPIKeys { get; set; }
     public DbSet<ModelTask> ModelTasks { get; set; }
+    public DbSet<ConversationalModel> ConversationalModels { get; set; }
     public DbSet<MLModelVersion> MLModelVersions { get; set; }
     public DbSet<MLModelTemplate> MLModelTemplates { get; set; }
     public DbSet<MLModelUser> MLModelUsers { get; set; }
