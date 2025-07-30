@@ -139,7 +139,7 @@ namespace WorkspaceAPIs.Services
         }
 
         // Retrieve Worc template category by search query
-        public async Task<ServiceResponse<IEnumerable<WorcTemplateCategoryBySearchQueryDto>>> GetWorcTemplateCategoryBySearchQueryAsync(FlowTypesEnum type, string name)
+        public async Task<ServiceResponse<IEnumerable<WorcTemplateCategoryBySearchQueryDto>>> GetWorcTemplateCategoryBySearchQueryAsync(PublishTypesEnum type, string name)
         {
             // Initialize ServiceResponse with failed response
             var serviceResponse = new ServiceResponse<IEnumerable<WorcTemplateCategoryBySearchQueryDto>>
@@ -296,7 +296,8 @@ namespace WorkspaceAPIs.Services
                 // Map DTO to entity
                 var templateEntity = publishTemplateDto.Adapt<WorcTemplate>();
                 templateEntity.ReactFlowObject = flowVersion.ReactFlowObject;
-                templateEntity.Type = flowVersion.Flow.Type;
+                templateEntity.Type = publishTemplateDto.Type;
+                templateEntity.Purpose = flowVersion.Flow.Type;
                 templateEntity.CreatedByUserId = _userId;
                 templateEntity.LastModifiedByUserId = _userId;
 

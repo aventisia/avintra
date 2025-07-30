@@ -42,7 +42,7 @@ public class WorcTemplateController : BaseApiController
 
     // Retrieve Worc templates by category and search query
     [HttpGet("templates-category-by-name")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<WorcTemplateCategoryBySearchQueryDto>>>> GetWorcTemplateCategoryBySearchQuery(FlowTypesEnum type, string Name)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<WorcTemplateCategoryBySearchQueryDto>>>> GetWorcTemplateCategoryBySearchQuery(PublishTypesEnum type, string Name)
     {
         return ResultHelper(await _worcTemplateService.GetWorcTemplateCategoryBySearchQueryAsync(type, Name));
     }

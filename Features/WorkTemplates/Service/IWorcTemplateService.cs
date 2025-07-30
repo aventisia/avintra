@@ -32,10 +32,10 @@ public interface IWorcTemplateService
     /// <summary>
     /// Retrieves a list of Worc template categories by search query.
     /// </summary>
-    /// <param name="type">The category type</param>
+    /// <param name="type">The template publish type</param>
     /// <param name="name">The search query for template name</param>
     /// <returns>The task result contains the service response with the list of Worc template categories by search query.</returns>
-    Task<ServiceResponse<IEnumerable<WorcTemplateCategoryBySearchQueryDto>>> GetWorcTemplateCategoryBySearchQueryAsync(FlowTypesEnum type, string name);
+    Task<ServiceResponse<IEnumerable<WorcTemplateCategoryBySearchQueryDto>>> GetWorcTemplateCategoryBySearchQueryAsync(PublishTypesEnum type, string name);
 
     /// <summary>
     /// Searches for Worc templates that match the given search key.
