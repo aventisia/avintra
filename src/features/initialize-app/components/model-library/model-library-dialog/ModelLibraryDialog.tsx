@@ -28,24 +28,27 @@ const ModelLibraryDialog = () => {
       <DialogContent className="space-y-2 !max-w-[40rem] px-1">
         <DialogHeader className="flex-row items-start justify-between px-5 pt-5">
           <div className="flex items-center gap-3">
-            <div className="bg-accent p-2 rounded-lg">
-              <img src={"/brand-img/gemma.svg"} alt="" className="h-8 w-8" />
-            </div>
-            <div className="bg-accent p-2 rounded-lg">
-              <img
-                src={"/brand-img/deepseek-r1.svg"}
-                alt=""
-                className="h-8 w-8"
-              />
-            </div>
+            {templateToUse.icons ? (
+              templateToUse.icons.map((imgPath) => {
+                return (
+                  <div className="bg-accent p-2 rounded-lg">
+                    <img src={imgPath} alt="" className="h-8 w-8" />
+                  </div>
+                );
+              })
+            ) : (
+              <div className="bg-accent p-2 rounded-lg">
+                <img src={""} alt="" className="h-8 w-8" />
+              </div>
+            )}
           </div>
           <Button
             variant={"ghost"}
-            className="px-1"
+            // className="px-1"
             onClick={() => setOpen(false)}
-            size={"icon9"}
+            size={"icon8"}
           >
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5 text-[--icon-color]" />
           </Button>
         </DialogHeader>
 
@@ -56,14 +59,14 @@ const ModelLibraryDialog = () => {
               {templateToUse.description || "No description available"}
             </p>
           </ScrollArea>
-          <Badge className="bg-transparent text-primary border-primary text-xs px-4">
+          <Badge className="border-primary-600 text-primary-600 bg-transparent text-xs px-4">
             {templateToUse.type}
           </Badge>
         </div>
 
         <DialogFooter className="flex-row !justify-between px-5 pt-4 pb-5">
           <div className="flex items-center gap-2 text-sm">
-            <Badge className="!rounded-full h-8 w-8 !p-0 flex justify-center">
+            <Badge className="!rounded-full h-8 w-8 !p-0 flex justify-center bg-primary-500">
               {templateToUse?.createdBy &&
                 templateToUse?.createdBy
                   .split(" ")

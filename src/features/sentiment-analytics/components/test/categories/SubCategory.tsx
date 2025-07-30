@@ -1,7 +1,14 @@
 import { inferenceModelTestFormZodSchema } from "@/features/inferencing-model/constants/inference-model-test-zod-schema";
 import { sentimentalAnalyticsTestFormZodSchema } from "@/features/sentiment-analytics/constants/sentiment-analytics-test-form-zod-schema";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/shared/collapsible/Collapsible";
 
+import { Button } from "@aventisia/ui/buttons";
 import { CheckboxField, FormItem, FormLabel } from "@aventisia/ui/form";
+import { ChevronDown } from "lucide-react";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
@@ -23,13 +30,20 @@ const SubCategory = ({
   const { control } = form;
 
   return (
-    <div className="ml-5 mt-1 space-y-0 grid gap-4">
+    <div className="ml-6 mt-2 space-y-0 grid gap-4">
       {subCategories?.map((subCat, subIndex) => (
-        <div
-          key={`${categoryIndex}-${subIndex}`}
-          className="space-y-4 border-l pl-1"
-        >
-          <FormItem className="flex items-center gap-2">
+        <Collapsible key={`${categoryIndex}-${subIndex}`} defaultOpen>
+          <div className="flex items-center gap-2">
+            <CollapsibleTrigger asChild>
+              <Button
+                variant={"ghost"}
+                size={"icon8"}
+                className="!m-0 data-[state=closed]:rotate-[-90deg] w-auto h-auto !p-0.5 rounded-full bg-slate-200"
+              >
+                <ChevronDown className="w-4 h-4 data-[state=closed]:rotate-[-90deg]" />
+              </Button>
+            </CollapsibleTrigger>
+
             <Controller
               control={control}
               name={`sentimentAnalytics.categories.${categoryIndex}.subCategories.${subIndex}.value`}
@@ -45,38 +59,39 @@ const SubCategory = ({
               )}
             />
             <FormLabel className="text-sm !mt-0">{subCat.name}</FormLabel>
-          </FormItem>
-
+          </div>
           {/* If subSubCategories exist, render those too */}
-          {subCat.subSubCategories && subCat.subSubCategories.length > 0 && (
-            <div className="ml-5 mt-1 border-l pl-1">
-              {subCat.subSubCategories.map((subSubCat, subSubIndex) => (
-                <FormItem
-                  key={`${categoryIndex}-${subIndex}-${subSubIndex}`}
-                  className="flex items-center gap-2"
-                >
-                  <Controller
-                    control={control}
-                    name={`sentimentAnalytics.categories.${categoryIndex}.subCategories.${subIndex}.subSubCategories.${subSubIndex}.value`}
-                    render={({ field }) => (
-                      <CheckboxField
-                        name={field.name}
-                        checked={field.value === "true"}
-                        onCheckedChange={(checked) =>
-                          field.onChange(checked ? "true" : "false")
-                        }
-                        label=""
-                      />
-                    )}
-                  />
-                  <FormLabel className="text-sm !mt-0">
-                    {subSubCat.name}
-                  </FormLabel>
-                </FormItem>
-              ))}
-            </div>
-          )}
-        </div>
+          <CollapsibleContent>
+            {subCat.subSubCategories && subCat.subSubCategories.length > 0 && (
+              <div className="ml-12 space-y-2 mt-2">
+                {subCat.subSubCategories.map((subSubCat, subSubIndex) => (
+                  <FormItem
+                    key={`${categoryIndex}-${subIndex}-${subSubIndex}`}
+                    className="flex items-center gap-2"
+                  >
+                    <Controller
+                      control={control}
+                      name={`sentimentAnalytics.categories.${categoryIndex}.subCategories.${subIndex}.subSubCategories.${subSubIndex}.value`}
+                      render={({ field }) => (
+                        <CheckboxField
+                          name={field.name}
+                          checked={field.value === "true"}
+                          onCheckedChange={(checked) =>
+                            field.onChange(checked ? "true" : "false")
+                          }
+                          label=""
+                        />
+                      )}
+                    />
+                    <FormLabel className="text-sm !mt-0">
+                      {subSubCat.name}
+                    </FormLabel>
+                  </FormItem>
+                ))}
+              </div>
+            )}
+          </CollapsibleContent>
+        </Collapsible>
       ))}
     </div>
   );

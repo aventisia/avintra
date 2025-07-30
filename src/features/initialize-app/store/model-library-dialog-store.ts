@@ -6,6 +6,7 @@ interface TemplateToUse {
   description: string;
   type: string;
   accessType: string;
+  icons: string[],
   tags: string[],
   refId: string;
   createdBy?: string;
@@ -31,6 +32,7 @@ export const useModelLibraryDialogStore = create<ModelLibraryDialogState & Model
     type: "",
     createdBy: "",
     tags: [],
+    icons: [],
     description: "",
     accessType:"",
     usagesCount: 0

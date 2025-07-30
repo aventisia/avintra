@@ -59,6 +59,7 @@ const ModelLibrary = () => {
       accessType,
       tags,
       usagesCount,
+      icons,
     } = template;
     setOpen(true);
     setTemplateToUse({
@@ -71,6 +72,7 @@ const ModelLibrary = () => {
       accessType,
       tags,
       usagesCount,
+      icons,
     });
   };
 
@@ -88,27 +90,19 @@ const ModelLibrary = () => {
             >
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-4">
-                  <div className="bg-accent p-2 rounded-lg">
-                    <img
-                      src={"/brand-img/gemma.svg"}
-                      alt=""
-                      className="h-6 w-6"
-                    />
-                  </div>
-                  <div className="bg-accent p-2 rounded-lg">
-                    <img
-                      src={"/brand-img/mistral.svg"}
-                      alt=""
-                      className="h-6 w-6"
-                    />
-                  </div>
-                  <div className="bg-accent p-2 rounded-lg">
-                    <img
-                      src={"/brand-img/phi-4.svg"}
-                      alt=""
-                      className="h-6 w-6"
-                    />
-                  </div>
+                  {item.icons ? (
+                    item.icons.map((imagePath) => {
+                      return (
+                        <div className="bg-accent p-2 rounded-lg">
+                          <img src={imagePath} alt="" className="h-6 w-6" />
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="bg-accent p-2 rounded-lg">
+                      <img src={""} alt="" className="h-6 w-6" />
+                    </div>
+                  )}
                 </div>
                 <CardTitle className="font-semibold capitalize !mt-5 text-base">
                   {item.name}
@@ -120,7 +114,7 @@ const ModelLibrary = () => {
 
               <CardContent className="space-y-3 pb-1">
                 <Badge
-                  className="border-primary-500 text-primary-500"
+                  className="border-primary-600 text-primary-600"
                   variant={"outline"}
                 >
                   {item.type}

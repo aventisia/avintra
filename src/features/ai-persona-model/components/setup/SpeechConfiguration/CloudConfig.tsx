@@ -39,48 +39,50 @@ const CloudConfig = ({ form }: CloudConfigFieldProps) => {
 
   return (
     <div className="space-y-4">
-      <SelectField {...languageProps} />
-      <FormItem>
-        <FormLabel className={"flex items-center gap-0.5 mb-1 px-1"}>
-          Speech to Text
-        </FormLabel>
+      <div className="grid grid-cols-2 gap-4 items-center">
+        <SelectField {...languageProps} />
+        <FormItem>
+          <FormLabel className={"flex items-center gap-0.5 mb-1 px-1"}>
+            Speech to Text
+          </FormLabel>
 
-        <Controller
-          control={control}
-          name="aiPersona.setupObject.speechConfiguration.speechToText"
-          rules={{ required: true }}
-          render={({ field }) => (
-            <Select
-              value={field.value}
-              onValueChange={field.onChange}
-              open={isSTTOpen}
-              onOpenChange={setSTTOpen}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select" />
-              </SelectTrigger>
+          <Controller
+            control={control}
+            name="aiPersona.setupObject.speechConfiguration.speechToText"
+            rules={{ required: true }}
+            render={({ field }) => (
+              <Select
+                value={field.value}
+                onValueChange={field.onChange}
+                open={isSTTOpen}
+                onOpenChange={setSTTOpen}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
 
-              <SelectContent>
-                {enumToArray(SpeechToTextModelEnum).map((cred) => (
-                  <SelectItem key={cred.value} value={cred.value}>
-                    {cred.label}
-                  </SelectItem>
-                ))}
-                <Button
-                  className="w-full bg-primary-foreground gap-1 hover:text-primary"
-                  variant={"outline"}
-                  onClick={() => {
-                    setSTTOpen(false);
-                    setShowCreateNewCredentialsDialog(true);
-                  }}
-                >
-                  <Plus size={18} /> Create New Credential
-                </Button>
-              </SelectContent>
-            </Select>
-          )}
-        />
-      </FormItem>
+                <SelectContent>
+                  {enumToArray(SpeechToTextModelEnum).map((cred) => (
+                    <SelectItem key={cred.value} value={cred.value}>
+                      {cred.label}
+                    </SelectItem>
+                  ))}
+                  <Button
+                    className="w-full bg-primary-foreground gap-1 hover:text-primary"
+                    variant={"outline"}
+                    onClick={() => {
+                      setSTTOpen(false);
+                      setShowCreateNewCredentialsDialog(true);
+                    }}
+                  >
+                    <Plus size={18} /> Create New Credential
+                  </Button>
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </FormItem>
+      </div>
 
       <div className="grid grid-cols-2 gap-4 items-center">
         <FormItem>

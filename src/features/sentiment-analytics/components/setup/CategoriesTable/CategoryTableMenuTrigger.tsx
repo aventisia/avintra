@@ -8,7 +8,7 @@ export const CategoryTableActionMenuTrigger = () => {
     <DropdownMenuTrigger
       className={cn(
         buttonVariants({ variant: "ghost", size: "icon8" }),
-        "hover:bg-white/10 ",
+        "hover:bg-white/10 mt-[3px]",
       )}
     >
       <EllipsisVerticalIcon className="h-5 w-5 text-black" />

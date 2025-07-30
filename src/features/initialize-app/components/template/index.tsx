@@ -1,11 +1,10 @@
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 
-import { Badge } from "@aventisia/ui/badge";
+// import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
 import {
   Card,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@aventisia/ui/cards";
@@ -42,9 +41,9 @@ const ScratchTemplate = () => {
             <Card
               key={item.id}
               onClick={() => moveToNextStep(item.type)}
-              className="cursor-pointer shadow-none hover:shadow-md border-primary-100"
+              className="cursor-pointer shadow-none hover:shadow-md border-primary-100 min-h-40"
             >
-              <CardHeader className="pb-4">
+              <CardHeader className="space-y-2">
                 <div className="flex justify-between items-center space-y-2">
                   <div className="flex items-center gap-2">
                     <img src={item.icon} alt="" />
@@ -62,15 +61,6 @@ const ScratchTemplate = () => {
                   {item.description}
                 </CardDescription>
               </CardHeader>
-
-              <CardFooter>
-                <Badge
-                  className="border-primary-500 text-primary-500"
-                  variant={"outline"}
-                >
-                  {item.model}
-                </Badge>
-              </CardFooter>
             </Card>
           );
         })}
