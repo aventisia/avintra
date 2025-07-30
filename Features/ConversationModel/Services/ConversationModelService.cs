@@ -40,7 +40,7 @@ public class ConversationModelService : IConversationModelService
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w => w.Id == mlModelId)
                 .Include(i => i.CreatedByUser)
-                .Include(i => i.ConversationalModels)
+                .Include(i => i.ConversationalModel)
                 .SingleOrDefaultAsync();
 
             // If no model setup is found, log a warning and return an appropriate message
@@ -58,10 +58,9 @@ public class ConversationModelService : IConversationModelService
             var conversationModelDto = mlModel.Adapt<ConversationModelDto>();
 
             // Retrieve the list of Conversation tasks and add it to the model DTO
-            var aiPersona = mlModel.Tasks.FirstOrDefault(w => w.Name == "AIPersona");
-            if (aiPersona != null)
+            if (mlModel.ConversationalModel != null)
             {
-                conversationModelDto.AIPersona = aiPersona.Adapt<ConversationModelSetupTaskDto>();
+                conversationModelDto.AIPersona = mlModel.ConversationalModel.Adapt<ConversationModelSetupTaskDto>();
             }
 
             // Map the adapted model setup (including tasks) to the response DTO
@@ -98,7 +97,7 @@ public class ConversationModelService : IConversationModelService
             // Retrieve the existing ML model from the database, including any associated conversational tasks
             var existingModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(m => m.Id == conversationModelDto.Id)
-                .Include(m => m.ConversationalModels)
+                .Include(m => m.ConversationalModel)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
@@ -143,9 +142,9 @@ public class ConversationModelService : IConversationModelService
             if (conversationModelDto.AIPersona != null)
             {
                 // Look for an existing persona task named "AIPersona"
-                var personaTask = existingModel.ConversationalModels.FirstOrDefault(t => t.Name == "AIPersona");
+                var conversationalModel = existingModel.ConversationalModel;
 
-                if (personaTask == null)
+                if (conversationalModel == null)
                 {
                     // No existing task — create a new conversational persona
                     var newPersona = conversationModelDto.AIPersona.Adapt<ConversationalModel>();
@@ -158,10 +157,10 @@ public class ConversationModelService : IConversationModelService
                 else
                 {
                     // Existing task found — update it from the DTO
-                    conversationModelDto.AIPersona.Adapt(personaTask);
-                    personaTask.LastModifiedByUserId = _userId;
+                    conversationModelDto.AIPersona.Adapt(conversationalModel);
+                    conversationalModel.LastModifiedByUserId = _userId;
 
-                    _unitOfWork.ConversationalModelRepo.Update(personaTask);
+                    _unitOfWork.ConversationalModelRepo.Update(conversationalModel);
                 }
 
                 // Save changes to the persona task

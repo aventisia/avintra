@@ -16,7 +16,7 @@ public class ConversationModelMappingProfile : IRegister
                 ? src.CreatedByUser.UserName
                 : null);
 
-        config.NewConfig<ModelTask, ConversationModelSetupTaskDto>()
+        config.NewConfig<ConversationalModel, ConversationModelSetupTaskDto>()
             .Map(dest => dest.Temperature, src => src.Temperature)
             .Map(dest => dest.LLM, src => src.LLM)
             .Map(dest => dest.SecretKey, src => src.SecretKey)
@@ -27,15 +27,12 @@ public class ConversationModelMappingProfile : IRegister
                     PropertyNameCaseInsensitive = true
                 }));
 
-        config.NewConfig<ConversationModelSetupTaskDto, ModelTask>()
+        config.NewConfig<ConversationModelSetupTaskDto, ConversationalModel>()
             .Map(dest => dest.SetupObject, src => JsonSerializer.Serialize(src.SetupObject,
                 new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
-                }));
-
-        // Mapping DTO to Entity for insert or update
-        config.NewConfig<ConversationModelDto, MLModel>()
+                }))
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.Name)
             .Ignore(dest => dest.CreatedByUserId)

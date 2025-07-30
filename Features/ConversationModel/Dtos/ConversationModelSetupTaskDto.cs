@@ -119,7 +119,7 @@ public class SpeechConfigurationDto
     /// <summary>
     /// Gets or sets the voice used for text-to-speech.
     /// </summary>
-    public string? Voices { get; set; }
+    public string? Voice { get; set; }
 
     /// <summary>
     /// Gets or sets the text-to-speech configuration, which may be empty if not defined.
