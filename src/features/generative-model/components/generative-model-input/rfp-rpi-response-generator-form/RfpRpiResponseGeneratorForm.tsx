@@ -59,7 +59,8 @@ const RfpRpiResponseGeneratorForm = () => {
       const setupFormDocuments = fileList.data.map(({ id, name, path }) => {
         return { id: id ?? "", name, instructions: "", filePath: path ?? "" };
       });
-      form.setValue("documents", setupFormDocuments);
+      form.setValue("rfiRfpDocuments", setupFormDocuments);
+      form.setValue("referenceDocuments", setupFormDocuments);
     }
   }, [fileList, form]);
 
@@ -96,7 +97,7 @@ const RfpRpiResponseGeneratorForm = () => {
             <Separator />
             <Documents
               form={form}
-              name="documents"
+              name="rfiRfpDocuments"
               label="RFP / RFI Documents"
             />
 
@@ -111,7 +112,7 @@ const RfpRpiResponseGeneratorForm = () => {
 
             <Documents
               form={form}
-              name="documents"
+              name="referenceDocuments"
               label="Reference Documents"
             />
             <Separator />
