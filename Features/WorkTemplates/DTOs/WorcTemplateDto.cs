@@ -34,10 +34,15 @@ public class WorcTemplateDto
     public string? ReactFlowObject { get; set; } = "{\"nodes\":[],\"edges\":[],\"viewport\":{\"x\":0,\"y\":0,\"zoom\":1}}";
 
     /// <summary>
-    /// Gets or sets the category of the worc template (e.g., Workflow, Automation, etc.).
+    /// Gets or sets the functional purpose of the template (e.g., Workflow, Automation).
     /// </summary>
-    public required CategoryTypesEnum Type { get; set; }
+    public FlowTypesEnum Purpose { get; set; }
 
+    /// <summary>
+    /// Gets or sets the structural category of the template (e.g., Block, Agent).
+    /// </summary>
+    public PublishTypesEnum Type { get; set; }
+    
     /// <summary>
     /// Gets or sets the number of times this template has been used to create flows.
     /// This will be used to track trending templates.

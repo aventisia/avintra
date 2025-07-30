@@ -29,10 +29,14 @@ public class WorcTemplate : BaseEntity, IMustHaveTenant
     public string? ReactFlowObject { get; set; } = "{\"nodes\":[],\"edges\":[],\"viewport\":{\"x\":0,\"y\":0,\"zoom\":1}}";
 
     /// <summary>
-    /// Gets or sets the category for the Worc template (e.g., Workflow, Automation, etc.).
+    /// Gets or sets the functional purpose of the template (e.g., Workflow, Automation).
     /// </summary>
-    [MaxLength(50)]
-    public FlowTypesEnum Type { get; set; }
+    public FlowTypesEnum Purpose { get; set; }
+
+    /// <summary>
+    /// Gets or sets the structural category of the template (e.g., Block, Agent).
+    /// </summary>
+    public PublishTypesEnum Type { get; set; }
 
     /// <summary>
     /// Gets or sets the number of times the template has been used to create flows. 

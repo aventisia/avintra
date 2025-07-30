@@ -3,9 +3,9 @@ namespace WorkspaceAPIs.DTOs;
 public class WorcTemplateCategoryBySearchQueryDto
 {
     /// <summary>
-    /// Gets or sets the category of the worc template (e.g., Workflow, Automation, etc.).
+    /// Gets or sets the structural category of the template (e.g., Block, Agent).
     /// </summary>
-    public required FlowTypesEnum Type { get; set; }
+    public required PublishTypesEnum Type { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the worc template. Max-255 characters.

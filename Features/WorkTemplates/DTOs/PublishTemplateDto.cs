@@ -18,6 +18,16 @@ public class PublishTemplateDto
     public string? Description { get; set; }
 
     /// <summary>
+    /// Gets or sets the functional purpose of the template (e.g., Workflow, Automation).
+    /// </summary>
+    public FlowTypesEnum Purpose { get; set; }
+
+    /// <summary>
+    /// Gets or sets the structural category of the template (e.g., Block, Agent).
+    /// </summary>
+    public PublishTypesEnum Type { get; set; }
+
+    /// <summary>
     /// Gets or sets the access level for the agent template. Possible values include: Space, Tenant Level, and Public.
     /// </summary>
     public required AccessTypesEnum AccessType { get; set; }
@@ -36,9 +46,4 @@ public class PublishTemplateDto
     /// Gets or sets a list of tags associated with the agent template.
     /// </summary>
     public List<string> Tags { get; set; } = new List<string>();
-
-    /// <summary>
-    /// Gets or sets the type of the entity being published (e.g., Agent, WORC).
-    /// </summary>
-    // public PublishTypesEnum Type { get; set; }
 }

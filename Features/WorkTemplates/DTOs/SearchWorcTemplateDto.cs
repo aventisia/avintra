@@ -28,7 +28,12 @@ public class SearchWorcTemplateDto
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the category of the worc template (e.g., Workflow, Automation, etc.).
+    /// Gets or sets the functional purpose of the template (e.g., Workflow, Automation).
     /// </summary>
-    public required CategoryTypesEnum Type { get; set; }
+    public FlowTypesEnum Purpose { get; set; }
+
+    /// <summary>
+    /// Gets or sets the structural category of the template (e.g., Block, Agent).
+    /// </summary>
+    public PublishTypesEnum Type { get; set; }
 }
