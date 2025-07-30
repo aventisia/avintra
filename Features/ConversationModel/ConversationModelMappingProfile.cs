@@ -34,7 +34,6 @@ public class ConversationModelMappingProfile : IRegister
                     PropertyNameCaseInsensitive = true
                 }))
             .Ignore(dest => dest.Id)
-            .Ignore(dest => dest.Name)
             .Ignore(dest => dest.CreatedByUserId)
             .Ignore(dest => dest.LastModifiedByUserId)
             .Ignore(dest => dest.CreatedOn)

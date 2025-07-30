@@ -68,11 +68,6 @@ public class ConversationModelSetupDto
     // Communication Capabilities
 
     /// <summary>
-    /// Gets or sets the speech configuration type for the conversational model.
-    /// </summary>
-    public SpeechConfigurationTypesEnum SpeechConfigurationType { get; set; }
-
-    /// <summary>
     /// Gets or sets the specific speech configuration for the conversational model.
     /// </summary>
     public required SpeechConfigurationDto SpeechConfiguration { get; set; }
@@ -111,6 +106,11 @@ public class ConversationModelDocumentInstruction
 /// </summary>
 public class SpeechConfigurationDto
 {
+    /// <summary>
+    /// Gets or sets the speech configuration type for the conversational model.
+    /// </summary>
+    public required SpeechConfigurationTypesEnum ConfigurationType { get; set; }
+
     /// <summary>
     /// Gets or sets the language code (e.g., "en" for English).
     /// </summary>
