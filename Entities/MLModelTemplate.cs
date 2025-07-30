@@ -23,9 +23,14 @@ public class MLModelTemplate : BaseEntity, IMustHaveTenant
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of the machine learning model.
+    /// Gets or sets the functional purpose of the template (e.g., Inferencing, Conversation, Generative ).
     /// </summary>
     public ModelTypesEnum? Type { get; set; }
+
+    /// <summary>
+    /// Gets or sets the structural category of the template (e.g., AIModel).
+    /// </summary>
+    public string? Purpose { get; set; } = "AIModel";
 
     /// <summary>
     /// Gets or sets the serialized configuration details of the model in JSON format.

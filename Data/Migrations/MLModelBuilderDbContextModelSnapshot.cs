@@ -328,6 +328,9 @@ namespace MLModelBuilderAPIs.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
+                    b.Property<string>("Purpose")
+                        .HasColumnType("text");
+
                     b.Property<Guid>("RefId")
                         .HasColumnType("uuid");
 
@@ -338,8 +341,8 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<int?>("Type")
-                        .HasColumnType("integer");
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
 
                     b.Property<int>("UsagesCount")
                         .HasColumnType("integer");

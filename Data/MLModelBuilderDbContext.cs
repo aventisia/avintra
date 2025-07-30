@@ -48,6 +48,7 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<ScheduledModel>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ScheduleTypesEnum>());
         modelBuilder.Entity<FineTuningLog>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ScheduleTypesEnum>());
         modelBuilder.Entity<MLModelTemplate>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<AccessTypesEnum>());
+        modelBuilder.Entity<MLModelTemplate>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ModelTypesEnum>());
         modelBuilder.Entity<MLModelUser>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<AgentAccessTypesEnum>());
         modelBuilder.Entity<ModelTask>().Property(e => e.ConfigurationType).HasConversion(new EnumToStringConverter<LLMConfigurationTypesEnum>());
         modelBuilder.Entity<ConversationalModel>().Property(e => e.ConfigurationType).HasConversion(new EnumToStringConverter<LLMConfigurationTypesEnum>());
