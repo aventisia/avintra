@@ -95,9 +95,10 @@ public class MLModel : BaseEntity, IMustHaveTenant
     public virtual ICollection<ModelTask>? Tasks { get; set; }
 
     /// <summary>
-    /// Gets or sets the conversation model associated with this ML model.
+    /// Gets or sets the associated conversational model for this ML model.
+    /// This represents the specific AI persona or conversational task linked to the ML model.
     /// </summary>
-    public virtual ICollection<ConversationalModel>? ConversationalModels { get; set; }
+    public virtual ConversationalModel? ConversationalModel { get; set; }
 
     /// <summary>
     /// Gets or sets the model versions associated with this ML model.

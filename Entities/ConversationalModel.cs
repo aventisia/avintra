@@ -8,6 +8,12 @@ public class ConversationalModel : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of the conversational model (required, max length 255 characters).
+    /// </summary>
+    [MaxLength(255)]
+    public required string Name { get; set; }
+
+    /// <summary>
     /// Gets or sets the configuration type for the conversational model.
     /// </summary>
     public required LLMConfigurationTypesEnum ConfigurationType { get; set; }
@@ -31,16 +37,6 @@ public class ConversationalModel : BaseEntity, IMustHaveTenant
     /// Gets or sets the temperature setting, controlling the model's randomness.
     /// </summary>
     public required double Temperature { get; set; }
-
-    /// <summary>
-    /// Gets or sets the speech configuration type for the conversational model.
-    /// </summary>
-    public SpeechConfigurationTypesEnum SpeechConfigurationType { get; set; }
-
-    /// <summary>
-    /// Gets or sets the specific speech configuration for the conversational model.
-    /// </summary>
-    public required string SpeechConfiguration { get; set; }
 
     /// <summary>
     /// Gets or sets optional setup information related to the conversational model.
