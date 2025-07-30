@@ -61,7 +61,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Notification>().Property(e => e.Type).HasConversion(new EnumToStringConverter<NotificationTypesEnum>());
         modelBuilder.Entity<Flow>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FlowTypesEnum>());
         modelBuilder.Entity<FlowLog>().Property(e => e.Status).HasConversion(new EnumToStringConverter<FlowLogStatusEnum>());
-        modelBuilder.Entity<WorcTemplate>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FlowTypesEnum>());
+        modelBuilder.Entity<WorcTemplate>().Property(e => e.Purpose).HasConversion(new EnumToStringConverter<FlowTypesEnum>());
+        modelBuilder.Entity<WorcTemplate>().Property(e => e.Type).HasConversion(new EnumToStringConverter<PublishTypesEnum>());
         modelBuilder.Entity<Machine>().Property(e => e.Type).HasConversion(new EnumToStringConverter<MachineTypeEnum>());
         modelBuilder.Entity<Machine>().Property(e => e.Status).HasConversion(new EnumToStringConverter<MachineStatusTypeEnum>());
         modelBuilder.Entity<Machine>().Property(e => e.Environment).HasConversion(new EnumToStringConverter<EnvironmentTypesEnum>());

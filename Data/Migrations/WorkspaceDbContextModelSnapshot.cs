@@ -1405,6 +1405,10 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
+                    b.Property<string>("Purpose")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ReactFlowObject")
                         .HasColumnType("text");
 
@@ -1420,8 +1424,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
 
                     b.Property<int>("UsagesCount")
                         .HasColumnType("integer");
