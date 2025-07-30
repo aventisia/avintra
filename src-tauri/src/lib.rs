@@ -18,7 +18,8 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             commands::launch_desktop_executor,
-            commands::launch_ui_inspector
+            commands::launch_ui_inspector,
+            websocket::get_websocket_port
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {

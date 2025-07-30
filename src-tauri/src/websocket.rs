@@ -3,11 +3,21 @@ use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
 use tokio::net::TcpListener;
 use tokio_tungstenite::accept_async;
+use once_cell::sync::OnceCell;
+
+static WEBSOCKET_PORT: OnceCell<u16> = OnceCell::new();
+
+#[tauri::command]
+pub fn get_websocket_port() -> Option<u16> {
+    WEBSOCKET_PORT.get().copied()
+}
 
 pub async fn start_websocket_server() {
-    let addr = "127.0.0.1:9001".parse::<SocketAddr>().unwrap();
+    let addr = "127.0.0.1:0".parse::<SocketAddr>().unwrap();
     let listener = TcpListener::bind(&addr).await.expect("Failed to bind");
-    println!("WebSocket server running at ws://{}", addr);
+    let actual_addr = listener.local_addr().expect("Failed to get local address");
+    let _ = WEBSOCKET_PORT.set(actual_addr.port());
+    println!("WebSocket server running at ws://{}", actual_addr);
 
     let peers = Arc::new(Mutex::new(Vec::new()));
 
