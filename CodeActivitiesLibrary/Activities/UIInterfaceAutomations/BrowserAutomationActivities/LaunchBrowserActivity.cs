@@ -11,6 +11,8 @@ using System.IO;
 using System.Management;
 using WebDriverManager.DriverConfigs.Impl;
 using WebDriverManager;
+using System.Net.Sockets;
+using System.Net;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities
 {
@@ -18,10 +20,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
     [Description("Launches a web browser instance of Microsoft Edge or Google Chrome.")]
     public sealed class LaunchBrowserActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("Browser Type")]
         [Description("Specifies which browser to launch (Microsoft Edge, Google Chrome).")]
@@ -43,17 +41,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
         [DefaultValue(WindowStateEnum.Maximized)]
         public InArgument<WindowStateEnum> WindowState { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
         [DisplayName("Web Browser")]
         [Description("Returns the Web browser instance.")]
         public OutArgument<IWebDriver> WebBrowserInstance { get; set; }
-
-        // ----------------------
-        // Execution Logic
-        // ---------------------- 
 
         protected override void Execute(CodeActivityContext context)
         {
@@ -81,12 +71,16 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                         // Auto resolve the Edge web driver verison if required
                         new DriverManager().SetUpDriver(new EdgeConfig());
 
-                        // Start a reusable edge session with remote debugging enabled
-                        var edgePort = "37196"; // Default port for edge remote debugging
-                        if (!IsChromiumWithRemoteDebuggingRunning(processName, edgePort))
+                        // Set the user data directory for Edge
+                        var edgeUserDataDir = Path.Combine(appDataFolder, "Microsoft", "Edge", "User Data");
+
+                        // Get port of edge session with remote debugging enabled
+                        var edgePort = GetPortOfRunningChromiumWithRemoteDebugging(processName, edgeUserDataDir);
+
+                        if (edgePort == null)
                         {
-                            // Set the user data directory for Edge
-                            var edgeUserDataDir = Path.Combine(appDataFolder, "Microsoft", "Edge", "User Data");
+                            // Get a random available port for remote debugging
+                            edgePort = GetAvailablePort().ToString();
 
                             // Set default arguments for Edge
                             string arguments = $"--remote-debugging-port={edgePort} --user-data-dir=\"{edgeUserDataDir}\" --profile-directory=Default {launchUrl}";
@@ -116,15 +110,20 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                         // Auto resolve the Chrome web driver verison if required
                         new DriverManager().SetUpDriver(new ChromeConfig());
 
-                        // Start a reusable chrome session with remote debugging enabled
-                        var chromPort = "73562"; // Default port for chrome remote debugging
-                        if (!IsChromiumWithRemoteDebuggingRunning(processName, chromPort))
+                        // Set the user data directory for chrome
+                        var chromeUserDataDir = Path.Combine(appDataFolder, "Google", "Chrome", "User Data");
+
+                        // Get port of chrome session with remote debugging enabled
+                        var chromePort = GetPortOfRunningChromiumWithRemoteDebugging(processName, chromeUserDataDir);
+
+                        // If no remote debugging port is found, start a new Chrome session
+                        if (chromePort == null)
                         {
-                            // Set the user data directory for chrome
-                            var chromeUserDataDir = Path.Combine(appDataFolder, "Google", "Chrome", "User Data");
+                            // Get a random available port for remote debugging
+                            chromePort = GetAvailablePort().ToString();
 
                             // Set default arguments for Chrome
-                            string arguments = $"--remote-debugging-port={chromPort} --user-data-dir=\"{chromeUserDataDir}\" --profile-directory=Default {launchUrl}";
+                            string arguments = $"--remote-debugging-port={chromePort} --user-data-dir=\"{chromeUserDataDir}\" --profile-directory=Default {launchUrl}";
 
                             // If browsing mode is private, add the incognito argument
                             if (browsingMode == BrowsingModeEnum.Private)
@@ -141,7 +140,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                         var chromeService = ChromeDriverService.CreateDefaultService();
                         chromeService.HideCommandPromptWindow = true;
                         var chromeOptions = new ChromeOptions();
-                        chromeOptions.DebuggerAddress = $"localhost:{chromPort}";
+                        chromeOptions.DebuggerAddress = $"localhost:{chromePort}";
                         webDriver = new ChromeDriver(chromeService, chromeOptions);
                         break;
                     default:
@@ -199,6 +198,15 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
             }
         }
 
+        public static int GetAvailablePort()
+        {
+            var listener = new TcpListener(IPAddress.Loopback, 0);
+            listener.Start();
+            int port = ((IPEndPoint)listener.LocalEndpoint).Port;
+            listener.Stop();
+            return port;
+        }
+
         private static string GetBrowserProcessName(BrowserTypeEnum browserType)
         {
             switch (browserType)
@@ -212,25 +220,30 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
             }
         }
 
-        private static bool IsChromiumWithRemoteDebuggingRunning(string processName, string port)
+        private static string GetPortOfRunningChromiumWithRemoteDebugging(string processName, string userDataDir)
         {
             try
             {
-                ManagementClass mngmtClass = new ManagementClass("Win32_Process");
+                var mngmtClass = new ManagementClass("Win32_Process");
                 foreach (ManagementObject obj in mngmtClass.GetInstances())
                 {
                     var nameObj = obj["Name"];
-                    if (nameObj != null && nameObj.ToString().Equals(processName, StringComparison.OrdinalIgnoreCase))
+                    var cmdLineObj = obj["CommandLine"];
+                    if (nameObj != null && nameObj.ToString().Equals(processName, StringComparison.OrdinalIgnoreCase)
+                        && cmdLineObj != null && cmdLineObj.ToString().Contains(userDataDir))
                     {
-                        var cmdLineObj = obj["CommandLine"];
-                        if (cmdLineObj != null && cmdLineObj.ToString().Contains($"--remote-debugging-port={port}"))
-                            return true;
+                        var cmdLine = cmdLineObj.ToString();
+                        var match = System.Text.RegularExpressions.Regex.Match(cmdLine, @"--remote-debugging-port=(\d+)");
+                        if (match.Success)
+                            return match.Groups[1].Value;
                     }
                 }
+                return null;
             }
-            catch { }
-
-            return false;
+            catch
+            {
+                return null;
+            }
         }
     }
 
@@ -259,8 +272,5 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 
         [Display(Name = "Minimized", Description = "Launches browser in minimized window state.")]
         Minimized,
-
-        [Display(Name = "Normal", Description = "Launches browser in normal window state.")]
-        Normal
     }
 }
