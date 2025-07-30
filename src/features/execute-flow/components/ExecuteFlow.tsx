@@ -66,31 +66,30 @@ const ExecuteFlow = ({
   // Tauri API to open desktop executor
   const openDesktopExecutor = async () => {
     try {
-      // Call the Tauri command to launch the desktop executor
-      await invoke("launch_desktop_executor", {
-        agentName: currentFlow.name,
-      })
-        .then((res) => {
-          console.log("Executor launched successfully:", res);
+      // Get websocket port
+      const wsPort = await invoke("get_websocket_port");
 
-          // Set versionId, nodes and edges in local storage for executor
-          localStorage.setItem(
-            CURRENT_VERSION_ID_KEY,
-            currentFlow.versionId || "",
-          );
-          clearNodeExecutionLog();
-          localStorage.setItem("nodes", JSON.stringify(nodes));
-          localStorage.setItem("edges", JSON.stringify(edges));
-        })
-        .catch((e) => console.error(e));
+      // Call the Tauri command to launch the desktop executor
+      const res = await invoke("launch_desktop_executor", {
+        wsPort,
+        agentName: currentFlow.name,
+      });
+      console.log("Executor launched successfully:", res);
+
+      // Set versionId, nodes and edges in local storage for executor
+      localStorage.setItem(CURRENT_VERSION_ID_KEY, currentFlow.versionId || "");
+      clearNodeExecutionLog();
+      localStorage.setItem("nodes", JSON.stringify(nodes));
+      localStorage.setItem("edges", JSON.stringify(edges));
     } catch (error) {
       // Inform the user about the failure
-      toast.error("Failed to launch the executor. Please try again.");
+      toast.error(`Failed to launch the executor. Please try again. Error: ${error}`);
 
       // Reset the executing state on failure
       setExecutionState("stopped");
     }
   };
+
   //To handle execution form Assist window
   useEffect(() => {
     if (isFlowReady) startExecution();

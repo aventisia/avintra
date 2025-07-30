@@ -1,5 +1,6 @@
 import { IS_TAURI } from "@/constants";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import {
@@ -52,67 +53,76 @@ export default function useWebSocket() {
     // App is outside of tauri, web socket not available
     if (!IS_TAURI) return;
 
-    // Create WebSocket connection
-    const socket = new WebSocket("ws://127.0.0.1:9001");
-    socketRef.current = socket;
+    let socket: WebSocket | null = null;
 
-    // Open the connection
-    socket.onopen = () => {
-      console.log("WebSocket connected");
-    };
+    const connect = async () => {
+      // Create WebSocket connection
+      const wsPort = await invoke("get_websocket_port");
+      socket = new WebSocket(`ws://127.0.0.1:${wsPort}`);
+      socketRef.current = socket;
 
-    // On webSocket message received
-    socket.onmessage = (event: MessageEvent) => {
-      try {
-        // Parse the incoming message
-        const msg = JSON.parse(event.data) as WebSocketMessageType;
+      // Open the connection
+      socket.onopen = () => {
+        console.log("WebSocket connected at port: " + wsPort);
+      };
 
-        //  Check if the message is from the expected source and has a command
-        if (msg.source !== "wpf" || !msg.command) return;
+      // On webSocket message received
+      socket.onmessage = (event: MessageEvent) => {
+        try {
+          // Parse the incoming message
+          const msg = JSON.parse(event.data) as WebSocketMessageType;
 
-        // Update the execution state based on the command
-        setExecutionState(getExecutionState(msg.command));
+          //  Check if the message is from the expected source and has a command
+          if (msg.source !== "wpf" || !msg.command) return;
 
-        // Handle different commands
-        switch (msg.command) {
-          case "pause":
-          case "abort":
-          case "error":
-          case "complete":
-            sendExecutionComplete(msg.command, sendCommand);
-            break;
-          case "start":
-            sendNextNodeToProcess(sendCommand);
-            break;
-          case "save-execution-log":
-            saveNodeExecutionLog(msg.data || "{}");
-            break;
-          default:
-            sendNodeToProcess(msg.data || "nodeId", sendCommand);
-            break;
+          // Update the execution state based on the command
+          setExecutionState(getExecutionState(msg.command));
+
+          // Handle different commands
+          switch (msg.command) {
+            case "pause":
+            case "abort":
+            case "error":
+            case "complete":
+              sendExecutionComplete(msg.command, sendCommand);
+              break;
+            case "start":
+              sendNextNodeToProcess(sendCommand);
+              break;
+            case "save-execution-log":
+              saveNodeExecutionLog(msg.data || "{}");
+              break;
+            default:
+              console.log("Unknown command:", msg.data);
+              sendNodeToProcess(msg.data || "nodeId", sendCommand);
+              break;
+          }
+        } catch (err) {
+          console.error("Failed to parse WebSocket message:", err);
         }
-      } catch (err) {
-        console.error("Failed to parse WebSocket message:", err);
-      }
+      };
+
+      // Handle errors
+      socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+
+      // Handle connection close
+      socket.onclose = () => {
+        console.log("WebSocket disconnected");
+      };
     };
 
-    // Handle errors
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-
-    // Handle connection close
-    socket.onclose = () => {
-      console.log("WebSocket disconnected");
-    };
+    connect();
 
     // Cleanup function to close the socket when the component unmounts
     return () => {
       if (
-        socket.readyState === WebSocket.OPEN ||
-        socket.readyState === WebSocket.CONNECTING
+        socketRef.current &&
+        (socketRef.current.readyState === WebSocket.OPEN ||
+          socketRef.current.readyState === WebSocket.CONNECTING)
       ) {
-        socket.close(1000, "Component unmounted");
+        socketRef.current.close(1000, "Component unmounted");
       }
     };
   }, [sendCommand, setExecutionState]);

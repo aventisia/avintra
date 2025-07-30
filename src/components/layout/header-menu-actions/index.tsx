@@ -39,13 +39,19 @@ export const HeaderActionMenu: React.FC = () => {
   // Tauri API to open the UI inspector
   const openUIInspector = async () => {
     try {
+      // Get websocket port
+      const wsPort = await invoke("get_websocket_port");
+
       // Call the Tauri command to launch the UI inspector
-      await invoke("launch_ui_inspector")
-        .then((res) => console.log(res))
-        .catch((e) => console.error(e));
+      const res = await invoke("launch_ui_inspector", {
+        wsPort,
+      });
+      console.log(res);
     } catch (error) {
       // Inform the user about the failure
-      toast.error("Failed to launch the UI Inspector. Please try again.");
+      toast.error(
+        `Failed to launch the UI Inspector. Please try again. ${error}`,
+      );
     }
   };
 
