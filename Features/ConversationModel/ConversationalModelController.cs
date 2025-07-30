@@ -3,11 +3,11 @@ namespace MLModelBuilderAPIs.Controllers;
 [Route("conversation-model")]
 [ApiController]
 [Authorize]
-public class ConversationModelController : BaseApiController
+public class ConversationalModelController : BaseApiController
 {
     private readonly IConversationModelService _ConversationModelService;
 
-    public ConversationModelController(IConversationModelService ConversationModelService)
+    public ConversationalModelController(IConversationModelService ConversationModelService)
     {
         _ConversationModelService = ConversationModelService;
     }
