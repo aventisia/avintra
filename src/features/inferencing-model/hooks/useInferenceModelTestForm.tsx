@@ -36,9 +36,6 @@ export const useInferenceModelTestForm = () => {
     control,
   } = form;
 
-  console.log("sentiment", form.getValues("sentimentAnalytics"));
-  console.log("ext", extractedData);
-
   const queryClient = useQueryClient();
   useEffect(() => {
     const data = queryClient.getQueryData<{

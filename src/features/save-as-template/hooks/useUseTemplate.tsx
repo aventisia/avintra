@@ -42,7 +42,6 @@ export const useUseTemplateMutation = () => {
       navigate(`${location.pathname}?${params.toString()}`);
       setStepState(1);
       refetch();
-      console.log("used template data", data);
     },
   });
 };

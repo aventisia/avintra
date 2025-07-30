@@ -43,8 +43,6 @@ export const useInferenceModelSetupForm = () => {
 
     const inferenceModelData = data?.data;
 
-    console.log("inference model data", data);
-
     form.reset({
       id: inferenceModelData?.id ?? modelId ?? "",
       businessContext: inferenceModelData?.businessContext ?? "",

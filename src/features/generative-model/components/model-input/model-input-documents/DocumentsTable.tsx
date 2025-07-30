@@ -82,10 +82,6 @@ const DocumentsTable = ({ form, taskType }: DocumentsTableProps) => {
       {categoryFields.length > 0 && (
         <div className="!mt-0 inline-block w-full px-2 py-4 space-y-3">
           {categoryFields.map((field, index) => {
-            console.log(
-              "doc fields",
-              form.watch(`${taskType}.documents.${index}.name`),
-            );
             return (
               <div
                 key={field.id}

@@ -109,20 +109,22 @@ const CategoriesTable = ({
                       }}
                       className="cursor-pointer"
                     />
-                    <Separator />
                     {categoryFields.length > 1 && (
-                      <DeleteDDMenuItem
-                        size="md"
-                        content="Delete"
-                        className="cursor-pointer"
-                        onClick={() => {
-                          showDefaultAlertDialog({
-                            confirmActionFn: () => removeCategory(index),
-                            alertType: "delete-record",
-                            additionalText: "categroy",
-                          });
-                        }}
-                      />
+                      <>
+                        <Separator />
+                        <DeleteDDMenuItem
+                          size="md"
+                          content="Delete"
+                          className="cursor-pointer"
+                          onClick={() => {
+                            showDefaultAlertDialog({
+                              confirmActionFn: () => removeCategory(index),
+                              alertType: "delete-record",
+                              additionalText: "categroy",
+                            });
+                          }}
+                        />
+                      </>
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>

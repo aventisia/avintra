@@ -1,7 +1,14 @@
 import { classificationModelTestFormZodSchema } from "@/features/classification-model/constants/classification-model-test-form-zod-schema";
 import { inferenceModelTestFormZodSchema } from "@/features/inferencing-model/constants/inference-model-test-zod-schema";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/shared/collapsible/Collapsible";
 
-import { CheckboxField, FormItem, FormLabel } from "@aventisia/ui/form";
+import { Button } from "@aventisia/ui/buttons";
+import { CheckboxField, FormLabel } from "@aventisia/ui/form";
+import { ChevronDown } from "lucide-react";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
@@ -30,11 +37,18 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
           const label = field.name;
 
           return (
-            <div className="border py-3 rounded-lg space-y-4">
-              <FormItem
-                key={field.id}
-                className="flex items-center gap-2  px-1.5"
-              >
+            <Collapsible key={field.id} defaultOpen>
+              <div className="flex items-center gap-2">
+                <CollapsibleTrigger asChild>
+                  <Button
+                    variant={"ghost"}
+                    size={"icon8"}
+                    className="!m-0 data-[state=closed]:rotate-[-90deg] w-auto h-auto bg-slate-200 !p-0.5 rounded-full"
+                  >
+                    <ChevronDown className="w-4 h-4 data-[state=closed]:rotate-[-90deg]" />
+                  </Button>
+                </CollapsibleTrigger>
+
                 <Controller
                   control={control}
                   name={`classification.categories.${index}.value`}
@@ -50,15 +64,18 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
                   )}
                 />
                 <FormLabel className="text-sm !mt-0">{label}</FormLabel>
-              </FormItem>
-              {field.subCategories && field.subCategories.length > 0 && (
-                <SubCategory
-                  form={form}
-                  categoryIndex={index}
-                  subCategories={field.subCategories}
-                />
-              )}
-            </div>
+              </div>
+
+              <CollapsibleContent>
+                {field.subCategories && field.subCategories.length > 0 && (
+                  <SubCategory
+                    form={form}
+                    categoryIndex={index}
+                    subCategories={field.subCategories}
+                  />
+                )}
+              </CollapsibleContent>
+            </Collapsible>
           );
         })}
       </div>

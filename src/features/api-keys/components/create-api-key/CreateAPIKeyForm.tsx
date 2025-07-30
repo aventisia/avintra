@@ -26,13 +26,11 @@ const CreateAPIKeyForm = () => {
     try {
       const data = await addApiKey(formData);
       setApiKeyToShow(data?.data?.apiKey || "");
-      console.log("new key data", data);
       setStep(1);
       refetch();
     } catch (error) {
       console.log(error);
     }
-    console.log(formData);
   }
 
   if (step === 0) {

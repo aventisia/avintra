@@ -22,9 +22,9 @@ const TranscriptTimeline = () => {
       ? currentTime
       : maxTimelineTime;
 
-  console.log("UAT DEBUG - currentTimeStamp", currentTimeStamp);
-  console.log("UAT DEBUG - parsed currentTime", currentTime);
-  console.log("UAT DEBUG - clamped safeCurrentTime", safeCurrentTime);
+  // console.log("UAT DEBUG - currentTimeStamp", currentTimeStamp);
+  // console.log("UAT DEBUG - parsed currentTime", currentTime);
+  // console.log("UAT DEBUG - clamped safeCurrentTime", safeCurrentTime);
 
   // Calculate active index based on current time
   const activeIndex =
