@@ -37,9 +37,16 @@ public class InferencingModelController : BaseApiController
 
     // Retrieve a extracted data records associated with a specific machine learning model.
     [HttpGet("extracted-data/{mlModelId}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<ExtractedDataResponseDto>>>> GetExtractedDataByMLModelId(Guid mlModelId)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<InferencingModelExtractedDataDetailDto>>>> GetExtractedDataByMLModelId(Guid mlModelId)
     {
         return ResultHelper(await _inferencingModelService.GetExtractedDataByMLModelIdAsync(mlModelId));
+    }
+
+    // Updates an extracted data record for a machine learning model.
+    [HttpPut("extracted-data")]
+    public async Task<ActionResult<ServiceResponse<bool>>> UpdateExtractedData(InferencingModelExtractedDataDetailDto inferencingModelExtractedDataDetailDto)
+    {
+        return ResultHelper(await _inferencingModelService.UpdateExtractedDataAsync(inferencingModelExtractedDataDetailDto));
     }
 
     // // -------------------- Run & Review Data Endpoints --------------------

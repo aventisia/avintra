@@ -46,5 +46,12 @@ public interface IInferencingModelService
     /// A task that returns a service response containing a list of 
     /// <see cref="InferencingModelExtractedDataDetailDto"/> records.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<InferencingModelExtractedDataDetailDto>>>  GetExtractedDataByMLModelIdAsync(Guid mlModelId);
+    Task<ServiceResponse<IEnumerable<InferencingModelExtractedDataDetailDto>>> GetExtractedDataByMLModelIdAsync(Guid mlModelId);
+
+    /// <summary>
+    /// Updates an extracted data record for a machine learning model.
+    /// </summary>
+    /// <param name="inferencingModelExtractedDataDetailDto">The data to be updated.</param>
+    /// <returns>A task that returns a success flag.</returns>
+    Task<ServiceResponse<bool>> UpdateExtractedDataAsync(InferencingModelExtractedDataDetailDto inferencingModelExtractedDataDetailDto);
 }

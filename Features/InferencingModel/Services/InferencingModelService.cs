@@ -660,6 +660,126 @@ public class InferencingModelService : IInferencingModelService
         return serviceResponse;
     }
 
+    // Updates an extracted data record for a machine learning model.
+    public async Task<ServiceResponse<bool>> UpdateExtractedDataAsync(InferencingModelExtractedDataDetailDto inferencingModelExtractedDataDetailDto)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to update extracted data. Please try again later."
+        };
+
+        try
+        {
+            _logger.LogInformation("Initiating update of extracted data for ML Model ID: {MLModelId}", inferencingModelExtractedDataDetailDto.Id);
+
+            // Fetch the ML model along with associated tasks
+            var mlModel = await _unitOfWork.MLModelRepo
+                .GetByConditionAsync(w => w.Id == inferencingModelExtractedDataDetailDto.Id)
+                .Include(i => i.Tasks)
+                .SingleOrDefaultAsync();
+
+            if (mlModel == null)
+            {
+                _logger.LogWarning("No ML model found with ID: {MLModelId}", inferencingModelExtractedDataDetailDto.Id);
+                serviceResponse.Message = "ML model not found.";
+                return serviceResponse;
+            }
+
+            var taskIds = mlModel.Tasks.Select(s => s.Id);
+            // Fetch tasks for the model, including associated extracted data
+            var existingExtractedDataList = await _unitOfWork.ExtractedDataRepo
+                .GetByConditionAsync(w => taskIds.Contains(w.ModelTaskId))
+                .ToListAsync();
+
+            var jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            var extractedDataToUpdate = new List<ExtractedData>();
+
+            // Update data for each available task type in the input DTO
+            if (inferencingModelExtractedDataDetailDto.Extraction != null)
+            {
+                var task = mlModel.Tasks.FirstOrDefault(t => t.Name == nameof(ModelTypesEnum.Extraction));
+                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == task.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
+                if (extractedData != null)
+                {
+                    extractedData.DataObject = JsonSerializer.Serialize(inferencingModelExtractedDataDetailDto.Extraction, jsonOptions);
+                    extractedData.LastModifiedByUserId = _userId;
+                    extractedDataToUpdate.Add(extractedData);
+                }
+            }
+
+            if (inferencingModelExtractedDataDetailDto.Classification != null)
+            {
+                var task = mlModel.Tasks.FirstOrDefault(t => t.Name == nameof(ModelTypesEnum.Classification));
+                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == task.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
+                if (extractedData != null)
+                {
+                    extractedData.DataObject = JsonSerializer.Serialize(inferencingModelExtractedDataDetailDto.Classification, jsonOptions);
+                    extractedData.LastModifiedByUserId = _userId;
+                    extractedDataToUpdate.Add(extractedData);
+                }
+            }
+
+            if (inferencingModelExtractedDataDetailDto.SentimentAnalytics != null)
+            {
+                var task = mlModel.Tasks.FirstOrDefault(t => t.Name == nameof(ModelTypesEnum.SentimentAnalytics));
+                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == task.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
+                if (extractedData != null)
+                {
+                    extractedData.DataObject = JsonSerializer.Serialize(inferencingModelExtractedDataDetailDto.SentimentAnalytics, jsonOptions);
+                    extractedData.LastModifiedByUserId = _userId;
+                    extractedDataToUpdate.Add(extractedData);
+                }
+            }
+
+            if (inferencingModelExtractedDataDetailDto.QuestionAnswer != null)
+            {
+               var task = mlModel.Tasks.FirstOrDefault(t => t.Name == nameof(ModelTypesEnum.QuestionAnswer));
+                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == task.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
+                if (extractedData != null)
+                {
+                    extractedData.DataObject = JsonSerializer.Serialize(inferencingModelExtractedDataDetailDto.QuestionAnswer, jsonOptions);
+                    extractedData.LastModifiedByUserId = _userId;
+                    extractedDataToUpdate.Add(extractedData);
+                }
+            }
+
+            if (inferencingModelExtractedDataDetailDto.Summarization != null)
+            {
+                var task = mlModel.Tasks.FirstOrDefault(t => t.Name == nameof(ModelTypesEnum.Summarization));
+                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == task.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
+                if (extractedData != null)
+                {
+                    extractedData.DataObject = JsonSerializer.Serialize(inferencingModelExtractedDataDetailDto.Summarization, jsonOptions);
+                    extractedData.LastModifiedByUserId = _userId;
+                    extractedDataToUpdate.Add(extractedData);
+                }
+            }
+
+            if (extractedDataToUpdate.Any())
+            {
+                _unitOfWork.ExtractedDataRepo.Update(extractedDataToUpdate);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogWarning("Failed to persist extracted data updates to the database for ML Model ID: {MLModelId}",
+                               inferencingModelExtractedDataDetailDto.Id); return serviceResponse;
+                }
+            }
+
+            _logger.LogInformation("Prepared {Count} extracted data record(s) for update on ML Model ID: {MLModelId}", extractedDataToUpdate.Count, inferencingModelExtractedDataDetailDto.Id);
+
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Extracted data successfully updated.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while updating extracted data for ML Model ID: {MLModelId}", inferencingModelExtractedDataDetailDto.Id);
+        }
+
+        return serviceResponse;
+    }
+
     // Validates the input model setup DTO and its associated tasks.
     private bool ValidateModelSetupDto(InferencingModelDto modelSetupDto, out string? validationMessage)
     {
