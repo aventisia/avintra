@@ -11,7 +11,7 @@ public class WorcTemplateMappingProfile : IRegister
 
         //Request mapping for publishing flow as a template record
         config.NewConfig<FlowVersion, WorcTemplate>()
-        .Map(dest => dest.FlowVersionId, src => src.Id)
+        .Map(dest => dest.RefId, src => src.Id)
         .IgnoreNullValues(true);
 
         // Request mapping for getting worc template record
@@ -20,9 +20,17 @@ public class WorcTemplateMappingProfile : IRegister
         // Request mapping for getting worc template record
         config.NewConfig<WorcTemplate, SearchWorcTemplateDto>();
 
+        config.NewConfig<TrendingTemplateDto, Flow>()
+            .Ignore(dest => dest.Id)
+            .IgnoreNullValues(true);
+
+        config.NewConfig<TrendingTemplateDto, FlowVersion>()
+            .Ignore(dest => dest.Id)
+            .IgnoreNullValues(true);
+            
         // Request mapping for getting  trending flow template record
         config.NewConfig<WorcTemplate, TrendingTemplateDto>()
-            .Map(dest => dest.RefId, src => src.FlowVersionId)
+            .Map(dest => dest.RefId, src => src.RefId)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName : null)
             .Map(dest => dest.CreatedByUsername,

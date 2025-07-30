@@ -12,9 +12,9 @@ public interface IWorcTemplateService
     /// <summary>
     /// Creates a new published flow as a Worc template.
     /// </summary>
-    /// <param name="flowId">The flow ID to be published as a template</param>
+    /// <param name="publishTemplateDto">The DTO containing the details of the flow version to be published as a WORC template.</param>
     /// <returns>Returns the newly created published flow as a Worc template</returns>
-    Task<ServiceResponse<WorcTemplateDto>> PublishWorcTemplateAsync(Guid flowId);
+    Task<ServiceResponse<WorcTemplateDto>> PublishWorcTemplateAsync(PublishTemplateDto publishTemplateDto);
 
     /// <summary>
     /// Retrieves a Worc template.
@@ -35,7 +35,7 @@ public interface IWorcTemplateService
     /// <param name="type">The category type</param>
     /// <param name="name">The search query for template name</param>
     /// <returns>The task result contains the service response with the list of Worc template categories by search query.</returns>
-    Task<ServiceResponse<IEnumerable<WorcTemplateCategoryBySearchQueryDto>>> GetWorcTemplateCategoryBySearchQueryAsync(CategoryTypesEnum type, string name);
+    Task<ServiceResponse<IEnumerable<WorcTemplateCategoryBySearchQueryDto>>> GetWorcTemplateCategoryBySearchQueryAsync(FlowTypesEnum type, string name);
 
     /// <summary>
     /// Searches for Worc templates that match the given search key.

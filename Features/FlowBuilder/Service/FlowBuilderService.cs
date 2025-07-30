@@ -220,7 +220,7 @@ public class FlowBuilderService : IFlowBuilderService
                     {
                         Name = !string.IsNullOrEmpty(publishFlowVersionDto.Name) ? publishFlowVersionDto.Name : string.Empty,
                         Description = publishFlowVersionDto.Description,
-                        FlowVersionId = flowVersion.Id,
+                        RefId = flowVersion.Id,
                         ReactFlowObject = publishFlowVersionDto.ReactFlowObject,
                         CreatedByUserId = _userId,
                         LastModifiedByUserId = _userId

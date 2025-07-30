@@ -20,10 +20,10 @@ public class WorcTemplateController : BaseApiController
     }
 
     // Publish a flow as a Worc template
-    [HttpPost("publish-flow-template/{flowVersionId}")]
-    public async Task<ActionResult<ServiceResponse<WorcTemplateDto>>> PublishFlowAsTemplate(Guid flowVersionId)
+    [HttpPost("publish")]
+    public async Task<ActionResult<ServiceResponse<WorcTemplateDto>>> PublishFlowAsTemplate(PublishTemplateDto publishTemplateDto)
     {
-        return ResultHelper(await _worcTemplateService.PublishWorcTemplateAsync(flowVersionId));
+        return ResultHelper(await _worcTemplateService.PublishWorcTemplateAsync(publishTemplateDto));
     }
 
     // Fetch Worc template by its ID
@@ -42,9 +42,9 @@ public class WorcTemplateController : BaseApiController
 
     // Retrieve Worc templates by category and search query
     [HttpGet("templates-category-by-name")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<WorcTemplateCategoryBySearchQueryDto>>>> GetWorcTemplateCategoryBySearchQuery(CategoryTypesEnum Type, string Name)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<WorcTemplateCategoryBySearchQueryDto>>>> GetWorcTemplateCategoryBySearchQuery(FlowTypesEnum type, string Name)
     {
-        return ResultHelper(await _worcTemplateService.GetWorcTemplateCategoryBySearchQueryAsync(Type, Name));
+        return ResultHelper(await _worcTemplateService.GetWorcTemplateCategoryBySearchQueryAsync(type, Name));
     }
 
     // Searches Worc templates based on the provided search key.
