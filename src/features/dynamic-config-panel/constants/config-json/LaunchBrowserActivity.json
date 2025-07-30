@@ -68,11 +68,6 @@
         "label": "Minimized",
         "value": "Minimized",
         "description": "Launches browser in minimized window state."
-      },
-      {
-        "label": "Normal",
-        "value": "Normal",
-        "description": "Launches browser in normal window state."
       }
     ]
   },
