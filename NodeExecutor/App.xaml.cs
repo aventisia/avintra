@@ -11,10 +11,11 @@ namespace NodeExecutor
         {
             base.OnStartup(e);
 
-            string agentName = e.Args.Length > 0 ? e.Args[0] : "Agent Name";
+            string wsPort = e.Args.Length > 0 ? e.Args[0] : "9001";
+            string agentName = e.Args.Length > 1 ? e.Args[1] : "Agent Name";
 
             // You can now pass these to your main window or use as needed
-            var mainWindow = new MainWindow(agentName);
+            var mainWindow = new MainWindow(wsPort, agentName);
             mainWindow.Show();
         }
     }

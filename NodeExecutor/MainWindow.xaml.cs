@@ -18,8 +18,9 @@ namespace NodeExecutor
         private AppTimerService _appTimer;
         private readonly ExecutionContext _executionContext = new ExecutionContext();
         private readonly string _agentName;
+        private readonly string _wsPort;
 
-        public MainWindow(string agentName)
+        public MainWindow(string wsPort, string agentName)
         {
             InitializeComponent();
 
@@ -27,11 +28,12 @@ namespace NodeExecutor
             Loaded += OnLoaded;
             Closed += OnClosed;
 
-            // Start the timer
-            InitServices();
-
-            // Set the agent name
+            // Set the arguments
+            this._wsPort = wsPort;
             this._agentName = agentName;
+
+            // Start the WebSocket and timer
+            InitServices();
         }
 
         // Window Closed Event
@@ -63,7 +65,7 @@ namespace NodeExecutor
         private void InitServices()
         {
             // Initialize the WebSocket connection
-            _webSocket = new WebSocketHelper();
+            _webSocket = new WebSocketHelper(_wsPort);
             _webSocket.OnCommandReceived += HandleWebsocketCommand;
             _ = _webSocket.ConnectAsync(); // Fire and forget
 

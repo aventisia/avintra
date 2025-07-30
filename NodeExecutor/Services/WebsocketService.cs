@@ -10,8 +10,13 @@ namespace NodeExecutor.Services
     public class WebSocketHelper
     {
         private ClientWebSocket _socket;
-        private readonly Uri _serverUri = new Uri("ws://127.0.0.1:9001");
+        private readonly Uri _serverUri;
         private CancellationTokenSource _cts;
+
+        public WebSocketHelper(string wsPort)
+        {
+            _serverUri = new Uri($"ws://127.0.0.1:{wsPort}");
+        }
 
         public event Action<string, string> OnCommandReceived;
 
