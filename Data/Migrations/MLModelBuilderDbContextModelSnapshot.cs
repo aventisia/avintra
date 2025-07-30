@@ -23,6 +23,80 @@ namespace MLModelBuilderAPIs.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ConversationalModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConfigurationType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("GeneratedPrompt")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LLM")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("MLModelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("NodePrompt")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SecretKey")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SetupObject")
+                        .HasColumnType("text");
+
+                    b.Property<double>("Temperature")
+                        .HasColumnType("double precision");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("MLModelId")
+                        .IsUnique();
+
+                    b.ToTable("ConversationalModels");
+                });
+
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ExtractedData", b =>
                 {
                     b.Property<Guid>("Id")
@@ -496,8 +570,9 @@ namespace MLModelBuilderAPIs.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("ConfigurationType")
-                        .HasColumnType("integer");
+                    b.Property<string>("ConfigurationType")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
@@ -697,6 +772,33 @@ namespace MLModelBuilderAPIs.Migrations
                     b.HasIndex("MLModelId");
 
                     b.ToTable("UploadedDocs");
+                });
+
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ConversationalModel", b =>
+                {
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
+                        .WithOne("ConversationalModel")
+                        .HasForeignKey("MLModelBuilderAPIs.Entities.ConversationalModel", "MLModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+
+                    b.Navigation("MLModel");
                 });
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ExtractedData", b =>
@@ -982,6 +1084,8 @@ namespace MLModelBuilderAPIs.Migrations
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModel", b =>
                 {
+                    b.Navigation("ConversationalModel");
+
                     b.Navigation("ExtractedData");
 
                     b.Navigation("ModelAPIKeys");
