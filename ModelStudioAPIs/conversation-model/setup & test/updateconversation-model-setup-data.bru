@@ -15,9 +15,7 @@ script:pre-request {
   
   req.setBody({
     id: bru.getGlobalEnvVar("MLMODEL_ID"),
-    businessContext:"test",
     aiPersona: {
-        //id: bru.getGlobalEnvVar("MLMODEL_TASK_ID"),
         name: "AIPersona",
         configurationType: "OnPrem",
         llm: "gemma",
@@ -37,10 +35,14 @@ script:pre-request {
             name: "Health Guidelines",
             instructions: "Use this document as the primary source for general health advice."
           }],
-        contextMemoryTimeframe: "30 days",
-        enableAudio: true,
-        enableVideo: false,
-        enableChat: true
+        contextMemoryTimeframe: "30 min",
+        speechConfiguration: {
+          configurationType: "OnPrem",
+          language: "english",
+          voice: "",
+          textToSpeech: "",
+          speechToText: ""
+        }
       }
       }
   });
