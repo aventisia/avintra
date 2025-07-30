@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { generativeModelInputZodSchema } from "@/features/generative-model/constants/model-input-zod-schema";
 import { ModelLLMEnum } from "@/features/model-library-table/enums/model-llm-enum";
 import {
   Select,
@@ -25,16 +24,10 @@ import CloudConfig from "./CloudConfig";
 import OnPremConfig from "./OnPremConfig";
 
 interface LLMConfigurationProps {
-  form: UseFormReturn<z.infer<typeof generativeModelInputZodSchema>>;
-  taskType:
-    | "thoughtLeadership"
-    | "companyDeepDives"
-    | "personaResearch"
-    | "rfpRpiResponseGenerator"
-    | "documentDrafting";
+  form: UseFormReturn<z.infer<any>>;
 }
 
-const LLMConfiguration = ({ form, taskType }: LLMConfigurationProps) => {
+const LLMConfiguration = ({ form }: LLMConfigurationProps) => {
   const [openItem, setOpenItem] = useState<string | undefined>("");
 
   return (
@@ -59,7 +52,7 @@ const LLMConfiguration = ({ form, taskType }: LLMConfigurationProps) => {
           {!openItem && (
             <Controller
               control={form.control}
-              name={`${taskType}.llm`}
+              name={`llm`}
               render={({ field }) => (
                 <FormItem className="absolute left-40 top-[50%] translate-y-[-50%] w-[125px]">
                   <Select value={field.value} onValueChange={field.onChange}>
@@ -104,11 +97,11 @@ const LLMConfiguration = ({ form, taskType }: LLMConfigurationProps) => {
             </TabsList>
 
             <TabsContent value="OnPrem">
-              <OnPremConfig form={form} taskType={taskType} />
+              <OnPremConfig form={form} />
             </TabsContent>
 
             <TabsContent value="Cloud">
-              <CloudConfig form={form} taskType={taskType} />
+              <CloudConfig form={form} />
             </TabsContent>
           </Tabs>
         </AccordionContent>
