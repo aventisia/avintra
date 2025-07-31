@@ -8,6 +8,7 @@ import {
 import { DesktopIcon } from "@radix-ui/react-icons";
 import {
   BotIcon,
+  Columns3Icon,
   FileBoxIcon,
   Library,
   MonitorPlayIcon,
@@ -31,6 +32,11 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: FileBoxIcon,
         name: "AI Models",
         route: "/ai-models",
+      },
+      {
+        Icon: Columns3Icon,
+        name: "Library",
+        route: "/library",
       },
     ],
   },
@@ -143,7 +149,9 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
 
 // TODO: Refactor this function to use a more efficient method of checking permissions
 // TODO: This function filters the sidebar menu sections based on the user's roles for now.
-function getSidebarMenuBasedOnPersmissions(userRoles: string[]): SidebarMenuSectionType[] {
+function getSidebarMenuBasedOnPersmissions(
+  userRoles: string[],
+): SidebarMenuSectionType[] {
   return sidebarMenuSections
     .map((section) => {
       // Filter menuItems based on item-level permissions (if present)
