@@ -482,8 +482,8 @@ public class MLModelTemplateService : IMLModelTemplateService
                 var templateSetup = JsonSerializer.Deserialize<InferencingModelTemplateDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 var inferencingData = templateSetup.Adapt<InferencingModelDto>();
                 inferencingData.Id = mlModelEntity.Id;
-                inferencingData.Name = mlModelEntity.Name;
-                inferencingData.Description = mlModelEntity.Description;
+                inferencingData.Name = templateEntity.Name;
+                inferencingData.Description = templateEntity.Description;
 
                 // Log the update process for the Inferencing model.
                 _logger.LogInformation("Updating Inferencing setup for ML model ID: {ModelId}.", mlModelEntity.Id);
@@ -494,8 +494,8 @@ public class MLModelTemplateService : IMLModelTemplateService
                 // Deserialize and update the Conversation model configuration.
                 var conversationData = JsonSerializer.Deserialize<ConversationModelDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 conversationData.Id = mlModelEntity.Id;
-                conversationData.Name = mlModelEntity.Name;
-                conversationData.Description = mlModelEntity.Description;
+                conversationData.Name = templateEntity.Name;
+                conversationData.Description = templateEntity.Description;
 
                 // Log the update process for the Conversation model.
                 _logger.LogInformation("Updating Conversation setup for ML model ID: {ModelId}.", mlModelEntity.Id);
