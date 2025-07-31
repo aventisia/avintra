@@ -1,0 +1,11 @@
+meta {
+  name: Get available voices by language
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/conversation-model/voices/{{LANGUAGE_NAME}}
+  body: none
+  auth: none
+}

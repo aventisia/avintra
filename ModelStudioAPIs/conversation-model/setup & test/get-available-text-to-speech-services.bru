@@ -1,0 +1,11 @@
+meta {
+  name: Get available text to speech services
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/conversation-model/languages/available
+  body: none
+  auth: none
+}
