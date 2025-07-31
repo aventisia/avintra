@@ -2,11 +2,33 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Helpers
 {
     public class BrowserAutomationHelper
     {
+        [DllImport("user32.dll")]
+        private static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+        private const uint WM_CLOSE = 0x0010;
+
+        public static void CloseEdgeWindowsGracefully()
+        {
+            foreach (var process in Process.GetProcessesByName("msedge"))
+            {
+                try
+                {
+                    if (process.MainWindowHandle != IntPtr.Zero)
+                    {
+                        PostMessage(process.MainWindowHandle, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+                    }
+                }
+                catch { /* Handle/log as needed */ }
+            }
+        }
+
         public static IWebElement FindElement(IWebDriver driver, ElementSelectorTypeEnum findType, string searchValue,
             string isDisplayed = "Validate", string isEnabled = "Validate", int waitSeconds = 10)
         {

@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActivities.Helpers;
+using CodeActivitiesLibrary.Extensions;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
@@ -68,39 +69,26 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                         // Kill all msedgedriver processes before launching a new one
                         KillProcesses("msedgedriver");
 
+                        // Kill all msedge processes before launching a new one.
+                        // Note: Just like chrome Edge does not allow to connect to existing remote debugging session.
+                        // We'll have to kill all existing Edge processes to ensure a clean start every time we execute launch Browser node.
+                        BrowserAutomationHelper.CloseEdgeWindowsGracefully();
+                        System.Threading.Thread.Sleep(2000); // Wait for 2 seconds to ensure all Edge processes are closed
+                        KillProcesses("msedge"); // This will close any edge processes those were still left after trying to close gracefully.
+
                         // Auto resolve the Edge web driver verison if required
                         new DriverManager().SetUpDriver(new EdgeConfig());
 
                         // Set the user data directory for Edge
                         var edgeUserDataDir = Path.Combine(appDataFolder, "Microsoft", "Edge", "User Data");
 
-                        // Get port of edge session with remote debugging enabled
-                        var edgePort = GetPortOfRunningChromiumWithRemoteDebugging(processName, edgeUserDataDir);
-
-                        if (edgePort == null)
-                        {
-                            // Get a random available port for remote debugging
-                            edgePort = GetAvailablePort().ToString();
-
-                            // Set default arguments for Edge
-                            string arguments = $"--remote-debugging-port={edgePort} --user-data-dir=\"{edgeUserDataDir}\" --profile-directory=Default {launchUrl}";
-
-                            // If browsing mode is private, add the inprivate argument
-                            if (browsingMode == BrowsingModeEnum.Private)
-                                arguments += " --inprivate";
-
-                            // Start the Edge process with the specified arguments
-                            var process = new Process();
-                            process.StartInfo.FileName = "msedge.exe";
-                            process.StartInfo.Arguments = arguments;
-                            process.Start();
-                        }
-
-                        // Base configuration for Edge
+                        // Configure and launch Edge driver
                         var edgeService = EdgeDriverService.CreateDefaultService();
                         edgeService.HideCommandPromptWindow = true;
                         var edgeOptions = new EdgeOptions();
-                        edgeOptions.DebuggerAddress = $"localhost:{edgePort}";
+                        edgeOptions.AddArgument($"--user-data-dir={edgeUserDataDir}");
+                        edgeOptions.AddArgument("--profile-directory=Default");
+                        if (browsingMode == BrowsingModeEnum.Private) edgeOptions.AddArgument("--inprivate");
                         webDriver = new EdgeDriver(edgeService, edgeOptions);
                         break;
                     case BrowserTypeEnum.GoogleChrome:
