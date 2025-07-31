@@ -27,4 +27,27 @@ public class ConversationalModelController : BaseApiController
     {
         return ResultHelper(await _ConversationModelService.UpdateSetupAsync(modelSetupDto));
     }
+
+    // -------------------- Text to Speech & Speech to Text --------------------
+
+    // Retrieves a list of available languages for Speech-to-Text services with associated voices.
+    [HttpGet("languages/available")]
+    public ActionResult<ServiceResponse<AvailableLanguageDto>> GetLanguagesWithVoices()
+    {
+        return ResultHelper(_ConversationModelService.GetLanguagesWithVoices());
+    }
+    
+    // Retrieves a list of available Speech-to-Text services and their options.
+    [HttpGet("speech-to-text")]
+    public ActionResult<ServiceResponse<SpeechToTextOptionDto>> GetAvailableSpeechToTextServices()
+    {
+        return ResultHelper(_ConversationModelService.GetAvailableSpeechToTextServices());
+    }
+
+    // Retrieves a list of available Text-to-Speech services and their options.
+    [HttpGet("text-to-speech")]
+    public ActionResult<ServiceResponse<TextToSpeechOptionDto>> GetAvailableTextToSpeechServices()
+    {
+        return ResultHelper(_ConversationModelService.GetAvailableTextToSpeechServices());
+    }
 }

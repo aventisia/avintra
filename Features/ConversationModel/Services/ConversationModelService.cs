@@ -1,3 +1,4 @@
+
 namespace MLModelBuilderAPIs.Services;
 
 public class ConversationModelService : IConversationModelService
@@ -183,6 +184,268 @@ public class ConversationModelService : IConversationModelService
             _logger.LogError(ex, "Error updating conversational model | Model ID: {Id} | User ID: {UserId}", conversationModelDto.Id, _userId);
         }
 
+        return serviceResponse;
+    }
+
+    // Retrieves a list of available languages, each with associated voices. 
+    public ServiceResponse<IEnumerable<AvailableLanguageDto>> GetLanguagesWithVoices()
+    {
+        // Initialize the response object with default values
+        var serviceResponse = new ServiceResponse<IEnumerable<AvailableLanguageDto>>()
+        {
+            Data = null,
+            Message = "Failed to retrieve languages with voices. Please try again later.",
+        };
+
+        // Define a list of languages and their associated voices
+        var languagesWithVoices = new List<AvailableLanguageDto>
+        {
+            new AvailableLanguageDto
+            {
+                Name = "American English",
+                Code = "a",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "af_heart", Gender = "F" },
+                    new AvailableVoiceDto { Name = "af_alloy", Gender = "F" },
+                    new AvailableVoiceDto { Name = "af_aoede", Gender = "F" },
+                    new AvailableVoiceDto { Name = "af_bella", Gender = "F" },
+                    new AvailableVoiceDto { Name = "af_jessica", Gender = "F" },
+                    new AvailableVoiceDto { Name = "af_kore", Gender = "F" },
+                    new AvailableVoiceDto { Name = "af_nicole", Gender = "F" },
+                    new AvailableVoiceDto { Name = "af_nova", Gender = "F" },
+                    new AvailableVoiceDto { Name = "af_river", Gender = "F" },
+                    new AvailableVoiceDto { Name = "af_sarah", Gender = "F" },
+                    new AvailableVoiceDto { Name = "af_sky", Gender = "F" },
+                    new AvailableVoiceDto { Name = "am_adam", Gender = "M" },
+                    new AvailableVoiceDto { Name = "am_echo", Gender = "M" },
+                    new AvailableVoiceDto { Name = "am_eric", Gender = "M" },
+                    new AvailableVoiceDto { Name = "am_fenrir", Gender = "M" },
+                    new AvailableVoiceDto { Name = "am_liam", Gender = "M" },
+                    new AvailableVoiceDto { Name = "am_michael", Gender = "M" },
+                    new AvailableVoiceDto { Name = "am_onyx", Gender = "M" },
+                    new AvailableVoiceDto { Name = "am_puck", Gender = "M" },
+                    new AvailableVoiceDto { Name = "am_santa", Gender = "M" }
+                }
+            },
+            new AvailableLanguageDto
+            {
+                Name = "British English",
+                Code = "b",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "bf_alice", Gender = "F" },
+                    new AvailableVoiceDto { Name = "bf_emma", Gender = "F" },
+                    new AvailableVoiceDto { Name = "bf_isabella", Gender = "F" },
+                    new AvailableVoiceDto { Name = "bf_lily", Gender = "F" },
+                    new AvailableVoiceDto { Name = "bm_daniel", Gender = "M" },
+                    new AvailableVoiceDto { Name = "bm_fable", Gender = "M" },
+                    new AvailableVoiceDto { Name = "bm_george", Gender = "M" },
+                    new AvailableVoiceDto { Name = "bm_lewis", Gender = "M" }
+                }
+            },
+            new AvailableLanguageDto
+            {
+                Name = "Japanese",
+                Code = "j",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "jf_alpha", Gender = "F" },
+                    new AvailableVoiceDto { Name = "jf_gongitsune", Gender = "F" },
+                    new AvailableVoiceDto { Name = "jf_nezumi", Gender = "F" },
+                    new AvailableVoiceDto { Name = "jf_tebukuro", Gender = "F" },
+                    new AvailableVoiceDto { Name = "jm_kumo", Gender = "M" }
+                }
+            },
+            new AvailableLanguageDto
+            {
+                Name = "Mandarin Chinese",
+                Code = "z",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "zf_xiaobei", Gender = "F" },
+                    new AvailableVoiceDto { Name = "zf_xiaoni", Gender = "F" },
+                    new AvailableVoiceDto { Name = "zf_xiaoxiao", Gender = "F" },
+                    new AvailableVoiceDto { Name = "zf_xiaoyi", Gender = "F" },
+                    new AvailableVoiceDto { Name = "zm_yunjian", Gender = "M" },
+                    new AvailableVoiceDto { Name = "zm_yunxi", Gender = "M" },
+                    new AvailableVoiceDto { Name = "zm_yunxia", Gender = "M" },
+                    new AvailableVoiceDto { Name = "zm_yunyang", Gender = "M" }
+                }
+            },
+            new AvailableLanguageDto
+            {
+                Name = "Spanish",
+                Code = "e",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "ef_dora", Gender = "F" },
+                    new AvailableVoiceDto { Name = "em_alex", Gender = "M" },
+                    new AvailableVoiceDto { Name = "em_santa", Gender = "M" }
+                }
+            },
+            new AvailableLanguageDto
+            {
+                Name = "French",
+                Code = "f",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "ff_siwis", Gender = "F" }
+                }
+            },
+            new AvailableLanguageDto
+            {
+                Name = "Hindi",
+                Code = "h",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "hf_alpha", Gender = "F" },
+                    new AvailableVoiceDto { Name = "hf_beta", Gender = "F" },
+                    new AvailableVoiceDto { Name = "hm_omega", Gender = "M" },
+                    new AvailableVoiceDto { Name = "hm_psi", Gender = "M" }
+                }
+            },
+            new AvailableLanguageDto
+            {
+                Name = "Italian",
+                Code = "i",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "if_sara", Gender = "F" },
+                    new AvailableVoiceDto { Name = "im_nicola", Gender = "M" }
+                }
+            },
+            new AvailableLanguageDto
+            {
+                Name = "Brazilian Portuguese",
+                Code = "p",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "pf_dora", Gender = "F" },
+                    new AvailableVoiceDto { Name = "pm_alex", Gender = "M" },
+                    new AvailableVoiceDto { Name = "pm_santa", Gender = "M" }
+                }
+            }
+        };
+
+        // Assign the language data to the response
+        serviceResponse.Data = languagesWithVoices;
+        serviceResponse.StatusCode = 200;
+        serviceResponse.Message = "Languages with associated voices retrieved successfully.";
+
+        // Return the response
+        return serviceResponse;
+    }
+
+    // Retrieves a list of available Text-to-Speech services and their options.
+    public ServiceResponse<IEnumerable<TextToSpeechOptionDto>> GetAvailableTextToSpeechServices()
+    {
+        // Initialize the response object with default values
+        var serviceResponse = new ServiceResponse<IEnumerable<TextToSpeechOptionDto>>()
+        {
+            Data = null,
+            Message = "Failed to retrieve Text-to-Speech services and their options. Please try again later.",
+        };
+
+        // Seed top 6 available services for Text-to-Speech with process-focused descriptions
+        var textToSpeechServices = new List<TextToSpeechOptionDto>
+    {
+        new TextToSpeechOptionDto
+        {
+            Name = "OpenAI TTS",
+            Description = "OpenAI's TTS system processes input text through advanced language models, transforming it into human-like speech. The process involves generating the speech waveform with highly realistic and natural-sounding voices that adapt to different tones and contexts."
+        },
+        new TextToSpeechOptionDto
+        {
+            Name = "Google TTS Wavenet",
+            Description = "Google's Wavenet TTS works by feeding text through a deep neural network that predicts waveform characteristics for each phoneme. The resulting sound is high-quality and lifelike, with smooth prosody and expressive tone adjustments based on the context."
+        },
+        new TextToSpeechOptionDto
+        {
+            Name = "Amazon Polly",
+            Description = "Amazon Polly converts text to speech by utilizing deep learning algorithms to generate lifelike voices. The TTS process involves breaking down the input text into phonetic units, adjusting pitch and speed, and creating a dynamic waveform that mimics human speech patterns."
+        },
+        new TextToSpeechOptionDto
+        {
+            Name = "Microsoft Azure TTS",
+            Description = "Microsoft Azure TTS uses neural networks to synthesize speech by first analyzing the input text, then generating the corresponding voice waveform with appropriate intonation, tone, and pace. Azure’s system allows for fine-tuned customization of voice attributes to suit different applications."
+        },
+        new TextToSpeechOptionDto
+        {
+            Name = "Conqui TTS",
+            Description = "Conqui TTS processes text input into speech by leveraging neural network models that understand linguistic nuances. It adjusts speech characteristics such as speed, pitch, and emotion, producing clear and articulate speech across different languages and accents."
+        },
+        new TextToSpeechOptionDto
+        {
+            Name = "Bark by Sone",
+            Description = "Bark by Sone processes text using advanced deep learning techniques to generate expressive and emotional speech. Its TTS model incorporates human-like inflections, producing nuanced and context-aware speech ideal for immersive environments and emotionally engaging experiences."
+        }
+    };
+
+        // Assign the seeded language data to the response
+        serviceResponse.Data = textToSpeechServices;
+        serviceResponse.StatusCode = 200;
+
+        // Updated success message reflecting the retrieval of the Text-to-Speech options
+        serviceResponse.Message = "Successfully retrieved Text-to-Speech service options with associated process descriptions.";
+
+        // Return the response
+        return serviceResponse;
+    }
+
+    // Retrieves a list of available Speech-to-Text services and their options.
+    public ServiceResponse<IEnumerable<SpeechToTextOptionDto>> GetAvailableSpeechToTextServices()
+    {
+        // Initialize the response object with default values
+        var serviceResponse = new ServiceResponse<IEnumerable<SpeechToTextOptionDto>>()
+        {
+            Data = null,
+            Message = "Failed to retrieve Speech-to-Text services. Please try again later.",
+        };
+
+        // Seed available Speech-to-Text services with process-focused descriptions
+        var speechToTextServices = new List<SpeechToTextOptionDto>
+    {
+        new SpeechToTextOptionDto
+        {
+            Name = "Whisper AI",
+            Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription."
+        },
+        new SpeechToTextOptionDto
+        {
+            Name = "Google Speech-to-Text",
+            Description = "Google Speech-to-Text captures audio input and processes it using advanced neural networks to convert spoken words into written text. It utilizes a cloud-based model, providing real-time transcription with high accuracy."
+        },
+        new SpeechToTextOptionDto
+        {
+            Name = "Assembly AI",
+            Description = "Assembly AI's process involves real-time audio recognition where audio files are transcribed into text using state-of-the-art machine learning algorithms, while also supporting advanced features like speaker separation and keyword detection."
+        },
+        new SpeechToTextOptionDto
+        {
+            Name = "Deepgram",
+            Description = "Deepgram’s process involves converting audio into text by first extracting speech features through AI models, and then transcribing them with neural networks. Its unique pipeline allows for fast and efficient processing even in noisy environments."
+        },
+        new SpeechToTextOptionDto
+        {
+            Name = "Mozilla DeepSpeech",
+            Description = "Mozilla DeepSpeech uses a deep learning framework to process raw audio and transform it into text. It works by training a neural network model that recognizes patterns in speech and outputs the corresponding textual representation."
+        },
+        new SpeechToTextOptionDto
+        {
+            Name = "Vosk",
+            Description = "Vosk transcribes speech by processing audio through a lightweight speech recognition model that operates offline. The system analyzes the acoustic features of speech, matches it to pre-trained phonetic models, and outputs the text."
+        }
+    };
+
+        // Assign the speech-to-text services data to the response
+        serviceResponse.Data = speechToTextServices;
+        serviceResponse.StatusCode = 200;
+
+        // Updated success message reflecting successful retrieval
+        serviceResponse.Message = "Successfully retrieved available Speech-to-Text services.";
+
+        // Return the response
         return serviceResponse;
     }
 }
