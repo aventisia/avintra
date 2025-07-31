@@ -1,7 +1,7 @@
 use std::process::Command;
 
 #[tauri::command]
-pub fn launch_desktop_executor(agent_name: String) -> Result<(), String> {
+pub fn launch_desktop_executor(ws_port: u16, agent_name: String) -> Result<(), String> {
     // Get the directory where tauri_app.exe is running
     let current_exe = std::env::current_exe().map_err(|e| e.to_string())?;
     let exe_dir = current_exe
@@ -22,6 +22,7 @@ pub fn launch_desktop_executor(agent_name: String) -> Result<(), String> {
     }
 
     Command::new(desktop_executor_path)
+        .arg(ws_port.to_string())
         .arg(agent_name)
         .spawn()
         .map_err(|e| format!("Failed to start the executor: {}", e))?;
@@ -29,7 +30,7 @@ pub fn launch_desktop_executor(agent_name: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn launch_ui_inspector() -> Result<(), String> {
+pub fn launch_ui_inspector(ws_port: u16) -> Result<(), String> {
     // Get the directory where tauri_app.exe is running
     let current_exe = std::env::current_exe().map_err(|e| e.to_string())?;
     let exe_dir = current_exe
@@ -50,6 +51,7 @@ pub fn launch_ui_inspector() -> Result<(), String> {
     }
 
     Command::new(ui_inspector_path)
+        .arg(ws_port.to_string())
         .spawn()
         .map_err(|e| format!("Failed to start the inspector: {}", e))?;
     Ok(())
