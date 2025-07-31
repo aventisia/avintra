@@ -32,6 +32,7 @@ public static class AppServicesExtension
         config.Apply(new AIModelMappingProfile());
         config.Apply(new InferencingModelMappingProfile());
         config.Apply(new ConversationModelMappingProfile());
+        config.Apply(new GenerativeModelMappingProfile());
         config.Apply(new MLModelVersionMappingProfile());
         config.Apply(new MLModelTemplateMappingProfile());
         config.Apply(new MLModelUserMappingProfile());
@@ -63,6 +64,7 @@ public static class AppServicesExtension
         services.AddScoped<IAIModelService, AIModelService>();
         services.AddScoped<IInferencingModelService, InferencingModelService>();
         services.AddScoped<IConversationModelService, ConversationModelService>();
+        services.AddScoped<IGenerativeModelService, GenerativeModelService>();
         services.AddScoped<IMLModelVersionService, MLModelVersionService>();
         services.AddScoped<IMLModelTemplateService, MLModelTemplateService>();
         services.AddScoped<IMLModelUserService, MLModelUserService>();
