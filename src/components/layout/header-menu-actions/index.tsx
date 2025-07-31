@@ -11,6 +11,7 @@ import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { invoke } from "@tauri-apps/api/core";
 import {
   ArrowLeftRightIcon,
+  BookCopyIcon,
   DockIcon,
   DownloadIcon,
   KeyboardIcon,
@@ -21,6 +22,7 @@ import {
 import { useShallow } from "zustand/react/shallow";
 import { HeaderActionMenuTrigger } from "./HeaderActionMenuTrigger";
 import { useInputOutputsStore } from "@/features/add-input-output/stores/inputs-outputs-store";
+import { useSaveAsTemplateStore } from "@/features/save-as-template/stores/save-as-template-store";
 
 export const HeaderActionMenu: React.FC = () => {
   // Get flow execution store state & actions
@@ -31,6 +33,13 @@ export const HeaderActionMenu: React.FC = () => {
   );
 
   const { setShowDialog: setExportDialog } = useInputOutputsStore(
+    useShallow((state) => ({
+      setShowDialog: state.setShowDialog,
+    })),
+  );
+
+  // Get state and actions from the  store
+  const { setShowDialog: setSATDialog } = useSaveAsTemplateStore(
     useShallow((state) => ({
       setShowDialog: state.setShowDialog,
     })),
@@ -74,6 +83,15 @@ export const HeaderActionMenu: React.FC = () => {
           content="Execution Logs"
           onClick={() => setShowDialog(true)}
         />
+
+        {/* <Save As Template /> */}
+        <SimpleDDMenuItem
+          size="md"
+          Icon={BookCopyIcon}
+          content="Save As Template"
+          onClick={() => setSATDialog(true)}
+        />
+
         {IS_TAURI ? (
           <SimpleDDMenuItem
             size="md"
