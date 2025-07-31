@@ -376,6 +376,7 @@ namespace WorkspaceAPIs.Services
                 var newFlowVersionEntity = trendingTemplateDto.Adapt<FlowVersion>();
                 newFlowVersionEntity.FlowId = flowEntity.Id;
                 newFlowVersionEntity.ReactFlowObject = templateEntity.ReactFlowObject;
+                newFlowVersionEntity.VersionNumber = 1;
                 newFlowVersionEntity.CreatedByUserId = _userId;
                 newFlowVersionEntity.LastModifiedByUserId = _userId;
 
