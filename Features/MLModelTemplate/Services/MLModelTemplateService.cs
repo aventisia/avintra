@@ -121,6 +121,7 @@ public class MLModelTemplateService : IMLModelTemplateService
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w => w.Id == publishMLModelTemplateDto.RefId)
                 .Include(i => i.Tasks)
+                .Include(i => i.ConversationalModel)
                 .SingleOrDefaultAsync();
 
             // Check if the ML model exists
@@ -131,11 +132,19 @@ public class MLModelTemplateService : IMLModelTemplateService
                 return serviceResponse;
             }
 
-            // Check if the ML model has any associated tasks
-            if (!mlModel.Tasks.Any())
+            // Check if the ML model has any associated tasks for Inferencing type
+            if (!mlModel.Tasks.Any() && mlModel.Type == ModelTypesEnum.Inferencing)
             {
-                _logger.LogError("ML model template with ID {TemplateId} has no associated tasks.", publishMLModelTemplateDto.Id);
-                serviceResponse.Message = "The ML model has no associated tasks.";
+                _logger.LogError("ML model template with ID {TemplateId} has no associated tasks for inferencing.", publishMLModelTemplateDto.Id);
+                serviceResponse.Message = "The ML model for inferencing has no associated tasks.";
+                return serviceResponse;
+            }
+
+            // Check if the ML model has a ConversationalModel for Conversation type
+            if (mlModel.ConversationalModel == null && mlModel.Type == ModelTypesEnum.Conversation)
+            {
+                _logger.LogError("ML model template with ID {TemplateId} has no associated conversational model.", publishMLModelTemplateDto.Id);
+                serviceResponse.Message = "The conversational model setup is incomplete.";
                 return serviceResponse;
             }
 
@@ -146,7 +155,7 @@ public class MLModelTemplateService : IMLModelTemplateService
             {
                 var inferencingData = await _inferencingModelService.GetSetupByMLModelIdAsync(mlModel.Id);
                 var templateData = inferencingData.Data.Adapt<InferencingModelTemplateDto>();
-                llmNames = new List<string> 
+                llmNames = new List<string>
                 {
                     templateData?.Extraction?.LLM,
                     templateData?.Classification?.LLM,
@@ -162,8 +171,15 @@ public class MLModelTemplateService : IMLModelTemplateService
             // If the model type is 'Conversation', fetch and serialize its setup configuration
             else if (mlModel.Type == ModelTypesEnum.Conversation)
             {
-                var conversion = await _conversationModelService.GetSetupByMLModelIdAsync(mlModel.Id);
-                setupData = JsonSerializer.Serialize(conversion, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var conversionData = await _conversationModelService.GetSetupByMLModelIdAsync(mlModel.Id);
+                var templateData = conversionData.Data.Adapt<ConversationModelDto>();
+                llmNames = new List<string>
+                {
+                    templateData?.AIPersona?.LLM,
+                }.Where(w => !string.IsNullOrEmpty(w))
+                .Distinct()
+                .ToList();
+                setupData = JsonSerializer.Serialize(templateData, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
 
             // Clean all string properties in the input DTO to remove leading/trailing whitespaces
@@ -476,14 +492,14 @@ public class MLModelTemplateService : IMLModelTemplateService
             else if (templateEntity.Type == ModelTypesEnum.Conversation)
             {
                 // Deserialize and update the Conversation model configuration.
-                var conversationData = JsonSerializer.Deserialize<InferencingModelDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var conversationData = JsonSerializer.Deserialize<ConversationModelDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 conversationData.Id = mlModelEntity.Id;
                 conversationData.Name = mlModelEntity.Name;
                 conversationData.Description = mlModelEntity.Description;
 
                 // Log the update process for the Conversation model.
                 _logger.LogInformation("Updating Conversation setup for ML model ID: {ModelId}.", mlModelEntity.Id);
-                await _inferencingModelService.UpdateSetupAsync(conversationData);
+                await _conversationModelService.UpdateSetupAsync(conversationData);
             }
 
             // Increase the usage count for the template by 1.
