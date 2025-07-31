@@ -1520,7 +1520,7 @@
             "description": "The path of the source folder that you want to copy the folder",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Folder.svg"
           },
           {
             "type": "activityNode",
@@ -1529,7 +1529,7 @@
             "description": "Generates a new folder within the specified parent directory using a given folder name.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Folder.svg"
           },
           {
             "type": "activityNode",
@@ -1538,7 +1538,7 @@
             "description": "Removes the specified folder and its contents from the file system.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Folder.svg"
           },
           {
             "type": "activityNode",
@@ -1547,7 +1547,7 @@
             "description": "Removes all files and subdirectories within the specified folder, preserving the folder itself.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Folder.svg"
           },
           {
             "type": "activityNode",
@@ -1556,7 +1556,7 @@
             "description": "Finds a single file in a folder (and optionally subfolders) based on criteria like largest, smallest, newest, oldest, etc.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Folder.svg"
           },
           {
             "type": "activityNode",
@@ -1565,7 +1565,7 @@
             "description": "This activity retrieves the list of files in a specified folder, with options to include subfolders and sort the results.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Folder.svg"
           },
           {
             "type": "activityNode",
@@ -1574,7 +1574,7 @@
             "description": "This activity retrieves the path of a Windows special folder, such as Desktop, My Pictures, Internet Cache, etc.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Folder.svg"
           },
           {
             "type": "activityNode",
@@ -1583,7 +1583,7 @@
             "description": "Returns a list of subfolder paths within the specified directory.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Folder.svg"
           },
           {
             "type": "activityNode",
@@ -1592,7 +1592,7 @@
             "description": "Checks whether the specified folder exists or doesn't exist based on the selected condition.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Folder.svg"
           },
           {
             "type": "activityNode",
@@ -1601,7 +1601,7 @@
             "description": "This activity moves an existing folder to a specified destination folder.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Folder.svg"
           },
           {
             "type": "activityNode",
@@ -1610,7 +1610,7 @@
             "description": "This activity renames an existing folder by specifying the original folder path and the new folder name.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Folder.svg"
           }
         ]
       },
@@ -2203,7 +2203,7 @@
             "description": "Attaches to a Word document that's already open, or opens it if needed.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Word.svg"
           },
           {
             "type": "activityNode",
@@ -2212,7 +2212,7 @@
             "description": "Closes a Word instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Word.svg"
           },
           {
             "type": "activityNode",
@@ -2221,7 +2221,7 @@
             "description": "Finds text and replaces it with another in the active document of a Word instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Word.svg"
           },
           {
             "type": "activityNode",
@@ -2230,7 +2230,7 @@
             "description": "Inserts an image into a Word file at a specified location.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Word.svg"
           },
           {
             "type": "activityNode",
@@ -2239,7 +2239,7 @@
             "description": "Launches a new Word instance or opens a Word document.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Word.svg"
           },
           {
             "type": "activityNode",
@@ -2248,7 +2248,7 @@
             "description": "Reads the text content from a document of a Word instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Word.svg"
           },
           {
             "type": "activityNode",
@@ -2257,7 +2257,7 @@
             "description": "Saves a previously launched Word instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Word.svg"
           },
           {
             "type": "activityNode",
@@ -2266,7 +2266,7 @@
             "description": "Writes or appends text to a Word file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Word.svg"
           }
         ]
       },
@@ -2284,7 +2284,7 @@
             "description": "Marks the beginning of a If Service block of actions depending on whether a service is running, paused, stopped, or installed.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/WindowsService.svg"
           },
           {
             "type": "activityNode",
@@ -2293,7 +2293,7 @@
             "description": "Pauses a running Windows service.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/WindowsService.svg"
           },
           {
             "type": "activityNode",
@@ -2302,7 +2302,7 @@
             "description": "Resumes a paused Windows service.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/WindowsService.svg"
           },
           {
             "type": "activityNode",
@@ -2311,7 +2311,7 @@
             "description": "Starts a stopped Windows service.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/WindowsService.svg"
           },
           {
             "type": "activityNode",
@@ -2320,7 +2320,7 @@
             "description": "Stops a running Windows service.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/WindowsService.svg"
           },
           {
             "type": "activityNode",
@@ -2329,7 +2329,7 @@
             "description": "Suspends the execution of the automation until a service is running, paused, or stopped on the computer.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/WindowsService.svg"
           }
         ]
       },
@@ -2347,7 +2347,7 @@
             "description": "Fill an UltraTax CS form by inspecting UI elements and mapping them to a JSON content",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/WindowsService.svg"
           },
           {
             "type": "activityNode",
@@ -2356,7 +2356,7 @@
             "description": "Get inspection details of a UI element in an UltraTax CS form, such as name, position etc.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/WindowsService.svg"
           }
         ]
       },
@@ -2527,7 +2527,7 @@
             "description": "Closes an Outlook application instance and releases COM resources.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           },
           {
             "type": "activityNode",
@@ -2536,7 +2536,7 @@
             "description": "Launches an Outlook application instance. Optionally connects to a specific profile.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           },
           {
             "type": "activityNode",
@@ -2545,7 +2545,7 @@
             "description": "Moves or deletes a collection of email messages in Outlook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           },
           {
             "type": "activityNode",
@@ -2554,7 +2554,7 @@
             "description": "Retrieves email messages from a specified Outlook folder. Optionally filters by unread status or subject.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           },
           {
             "type": "activityNode",
@@ -2563,7 +2563,7 @@
             "description": "Saves selected Outlook email messages (.msg files) to a specified location.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           }
         ]
       },
@@ -2581,7 +2581,7 @@
             "description": "Creates a draft email message in the user's mailbox using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           },
           {
             "type": "activityNode",
@@ -2590,7 +2590,7 @@
             "description": "Deletes an email from the mailbox using its Message ID via Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           },
           {
             "type": "activityNode",
@@ -2599,7 +2599,7 @@
             "description": "Downloads all attachments for a specified email message using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           },
           {
             "type": "activityNode",
@@ -2608,7 +2608,7 @@
             "description": "Acquires a Microsoft Graph API access token using client credentials (App Key flow).",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           },
           {
             "type": "activityNode",
@@ -2617,7 +2617,7 @@
             "description": "Fetches full email details (including attachments) from Outlook using the Graph API by message ID.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           },
           {
             "type": "activityNode",
@@ -2626,7 +2626,7 @@
             "description": "Retrieves top 10 emails from the Inbox folder using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           },
           {
             "type": "activityNode",
@@ -2635,7 +2635,7 @@
             "description": "Lists all mail folders for a user's mailbox using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           },
           {
             "type": "activityNode",
@@ -2644,7 +2644,7 @@
             "description": "Marks an email as read or unread using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           },
           {
             "type": "activityNode",
@@ -2653,7 +2653,7 @@
             "description": "Moves an email to a specified folder using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           },
           {
             "type": "activityNode",
@@ -2662,7 +2662,7 @@
             "description": "Replies to an email using Message ID.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           },
           {
             "type": "activityNode",
@@ -2671,7 +2671,7 @@
             "description": "Searches inbox emails using a filter query (e.g., subject eq 'Test')",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           },
           {
             "type": "activityNode",
@@ -2680,7 +2680,7 @@
             "description": "Sends an email via the Microsoft Graph API using application permissions.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Outlook.svg"
           }
         ]
       },
@@ -2914,7 +2914,7 @@
             "description": "Activates a specific cell in the active worksheet of an Excel instance based on absolute position, relative offset, or named range.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -2923,7 +2923,7 @@
             "description": "Adds a new worksheet to the document of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -2932,7 +2932,7 @@
             "description": "Appends a range of data (e.g., from a DataTable) to the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -2941,7 +2941,7 @@
             "description": "Attaches to a running Excel instance and opens the specified workbook if not already open.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -2950,7 +2950,7 @@
             "description": "Copies data from a source range to a target range in the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -2959,7 +2959,7 @@
             "description": "Clears a specified range or named cell in the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -2968,7 +2968,7 @@
             "description": "Closes the active Excel application instance and optionally saves changes.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -2977,7 +2977,7 @@
             "description": "Closes the specified Excel workbook and optionally quits the Excel application.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -2986,7 +2986,7 @@
             "description": "Copies a specified range of cells from an Excel worksheet for later use or pasting into another worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -2995,7 +2995,7 @@
             "description": "Copies a worksheet from one Excel instance to another by duplicating its content.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3004,7 +3004,7 @@
             "description": "Copies a specified range of cells from the active worksheet of an Excel instance into a DataTable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3013,7 +3013,7 @@
             "description": "Deletes a specific column from the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3022,7 +3022,7 @@
             "description": "Deletes a specific worksheet from the active Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3031,7 +3031,7 @@
             "description": "Deletes a range of cells from the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3040,7 +3040,7 @@
             "description": "Deletes a specific row from the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3049,7 +3049,7 @@
             "description": "Filters cells in the active Excel worksheet based on criteria applied to a specific column.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3058,7 +3058,7 @@
             "description": "Finds text and replaces it with another in the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3067,7 +3067,7 @@
             "description": "Gets the address of the currently active cell in the active worksheet of an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3076,7 +3076,7 @@
             "description": "Retrieves the name and index of the currently active worksheet in an Excel instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3085,7 +3085,7 @@
             "description": "Retrieves all worksheet names from the active Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3094,7 +3094,7 @@
             "description": "Gets the name of a column by reading the first non-empty cell in the specified column.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3103,7 +3103,7 @@
             "description": "Retrieves the first free column and/or row of the active worksheet. This is useful for adding new data into a worksheet that already has data in it.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3112,7 +3112,7 @@
             "description": "Retrieves the first free row number for a specific column from the active worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3121,7 +3121,7 @@
             "description": "Retrieves the currently selected cell range in the active Excel worksheet as first column, first row, last column, and last row indices.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3130,7 +3130,7 @@
             "description": "Retrieves the range address (e.g., 'A1:B10') of a specified table in the active Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3139,7 +3139,7 @@
             "description": "Inserts a new column to the left of the specified column in the active Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3148,7 +3148,7 @@
             "description": "Inserts a new row above the selected row in the active Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3157,7 +3157,7 @@
             "description": "Launches a new Excel application instance or opens an existing Excel document.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3166,7 +3166,7 @@
             "description": "Performs a LOOKUP operation in an Excel worksheet. Searches for a lookup value in a single row or column and returns a value from the same position in another row or column.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3175,7 +3175,7 @@
             "description": "Opens an existing Excel workbook from the specified file path and reports success or failure.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3184,7 +3184,7 @@
             "description": "Pastes a range of cells from a source Excel instance/workbook to a specific range in a target Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3193,7 +3193,7 @@
             "description": "Pastes a DataTable of data to the active Excel worksheet starting at the specified range.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3202,7 +3202,7 @@
             "description": "Reads the formula from a specific cell or named range in Excel.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3211,7 +3211,7 @@
             "description": "Reads values from a specified cell range in the active Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3220,7 +3220,7 @@
             "description": "Renames a specific worksheet in the active Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3229,7 +3229,7 @@
             "description": "Resizes the width of columns or the height of rows in the active Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3238,7 +3238,7 @@
             "description": "Runs a specified VBA macro in the active Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3247,7 +3247,7 @@
             "description": "Saves the active Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3256,7 +3256,7 @@
             "description": "Selects a specific range of cells in the active Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3265,7 +3265,7 @@
             "description": "Activates a specific worksheet in the active Excel workbook by name or index.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3274,7 +3274,7 @@
             "description": "Fills the background of a selected range of cells with the specified color.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
@@ -3283,7 +3283,7 @@
             "description": "Writes a value to a specific cell or range of cells in an Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           }
         ]
       },
