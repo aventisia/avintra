@@ -25,7 +25,7 @@ public class GenerativeModelDto
     /// <summary>
     /// Gets or sets the extraction task setup for the generative model.
     /// </summary>
-    public GenerativeModelSetupTaskDto? GenerativeModel { get; set; }
+    public GenerativeModelDefaultSetupDto? GenerativeModel { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the generative model was created.

@@ -39,4 +39,7 @@ public class GenerativeModelDefaultSetupDto
     /// Gets or sets the temperature setting, controlling the randomness of the model's responses.
     /// </summary>
     public required double Temperature { get; set; }
+
+    public object? SetupObject { get; set; }
+
 }
