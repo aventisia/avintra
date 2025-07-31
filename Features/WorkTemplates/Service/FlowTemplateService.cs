@@ -352,17 +352,11 @@ namespace WorkspaceAPIs.Services
 
                 _logger.LogInformation("Template found in the database. Template ID: {TemplateId}", trendingTemplateDto.Id);
 
-                // Retrieve the flow version entity linked to the template
-                var flowVersionEntity = await _unitOfWork.FlowVersionRepo
-                    .GetByConditionAsync(w => w.Id == templateEntity.RefId)
-                    .Include(i => i.Flow)
-                    .SingleOrDefaultAsync();
-
                 // Map the trending template DTO to a new Flow entity and set user info (created and last modified)
                 var flowEntity = trendingTemplateDto.Adapt<Flow>();
-                flowEntity.Name = $"{flowVersionEntity.Flow.Name} #{templateEntity.UsagesCount + 1}";
-                flowEntity.Description = flowVersionEntity.Flow.Description;
-                flowEntity.Type = flowVersionEntity.Flow.Type;
+                flowEntity.Name = $"{templateEntity.Name} #{templateEntity.UsagesCount + 1}";
+                flowEntity.Description = templateEntity.Description;
+                flowEntity.Type = templateEntity.Purpose;
                 flowEntity.CreatedByUserId = _userId;
                 flowEntity.LastModifiedByUserId = _userId;
 
@@ -411,7 +405,7 @@ namespace WorkspaceAPIs.Services
                 }
 
                 // Retrieve the saved FlowVersion entity with included navigation properties for detailed info
-                flowVersionEntity = await _unitOfWork.FlowVersionRepo
+                var flowVersionEntity = await _unitOfWork.FlowVersionRepo
                     .GetByConditionAsync(w => w.Id == newFlowVersionEntity.Id)
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.Flow)
