@@ -96,9 +96,13 @@ public class MLModel : BaseEntity, IMustHaveTenant
 
     /// <summary>
     /// Gets or sets the associated conversational model for this ML model.
-    /// This represents the specific AI persona or conversational task linked to the ML model.
     /// </summary>
     public virtual ConversationalModel? ConversationalModel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the associated generative model for this ML model.
+    /// </summary>
+    public virtual GenerativeModel? GenerativeModel { get; set; }
 
     /// <summary>
     /// Gets or sets the model versions associated with this ML model.
