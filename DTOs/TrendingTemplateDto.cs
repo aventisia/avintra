@@ -26,8 +26,12 @@ public class TrendingTemplateDto
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the category or type of the template 
-    /// (e.g., "Machine Learning", "Agent Workflow").
+    /// Gets or sets the functional purpose of the template (e.g., AIModel, Workflow, Automation).
+    /// </summary>
+    public string? Purpose { get; set; }
+
+    /// <summary>
+    /// Gets or sets the structural category of the template (e.g., Block, Agent, Inferencing, Conversation, Generative).
     /// </summary>
     public string? Type { get; set; }
 
