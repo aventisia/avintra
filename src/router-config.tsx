@@ -19,6 +19,7 @@ import { SupportTicketEditForm } from "./features/support-tickets-table/componen
 import { BillingPage } from "./pages/BillingPage";
 import ComingSoon from "./pages/CommingSoon";
 import { FlowsPage } from "./pages/FlowsPage";
+import { LibraryPage } from "./pages/LibraryPage";
 import { LicensesPage } from "./pages/LicensesPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import MyAccountPage from "./pages/MyAccountPage";
@@ -56,6 +57,10 @@ const routerConfig: RouteObject[] = [
       {
         path: "/ai-models",
         element: <ModelsPage />,
+      },
+      {
+        path: "/library",
+        element: <LibraryPage />,
       },
       {
         path: "/home",
