@@ -21,25 +21,37 @@ public interface IConversationModelService
     /// This method returns the supported languages along with their corresponding voice options.
     /// </summary>
     /// <returns>
-    /// A ServiceResponse containing an IEnumerable of AvailableLanguageDto objects, each representing a language with a list of voices.
+    /// A ServiceResponse containing an IEnumerable of SelectOptionDto objects, 
+    /// each representing a language with a list of voices.
     /// </returns>
-    ServiceResponse<IEnumerable<AvailableLanguageDto>> GetLanguagesWithVoices();
+    ServiceResponse<IEnumerable<SelectOptionDto>> GetLanguageOptions();
 
     /// <summary>
-    /// Retrieves a list of available Speech-to-Text services and their options.
+    /// Retrieves a list of voice options available for a specific language. 
+    /// This method returns the voices that are supported for the provided language name.
+    /// </summary>
+    /// <param name="language">The name of the language for which voice options are to be retrieved.</param>
+    /// <returns>
+    /// A ServiceResponse containing an IEnumerable of SelectOptionDto objects, 
+    /// each representing a voice option for the given language.
+    /// </returns>
+    ServiceResponse<IEnumerable<SelectOptionDto>> GetVoiceOptionsByLanguageName(string language);
+
+    /// <summary>
+    /// Retrieves a list of available Speech-to-Text options.
     /// This method returns the Speech-to-Text services with descriptions of their process and capabilities.
     /// </summary>
     /// <returns>
-    /// A ServiceResponse containing an IEnumerable of SpeechToTextOptionDto objects, each representing a Speech-to-Text service with its description.
+    /// A ServiceResponse containing an IEnumerable of SelectOptionDto objects, each representing a Speech-to-Text service with its description.
     /// </returns>
-    ServiceResponse<IEnumerable<SpeechToTextOptionDto>> GetAvailableSpeechToTextServices();
+    ServiceResponse<IEnumerable<SelectOptionDto>> GetAvailableSpeechToTextOptions();
 
     /// <summary>
-    /// Retrieves a list of available Text-to-Speech services and their options.
+    /// Retrieves a list of available Text-to-Speech options.
     /// This method returns the Text-to-Speech services along with descriptions of their process and capabilities.
     /// </summary>
     /// <returns>
-    /// A ServiceResponse containing an IEnumerable of TextToSpeechOptionDto objects, each representing a Text-to-Speech service with its description.
+    /// A ServiceResponse containing an IEnumerable of SelectOptionDto objects, each representing a Text-to-Speech option with its description.
     /// </returns>
-    ServiceResponse<IEnumerable<TextToSpeechOptionDto>> GetAvailableTextToSpeechServices();
+    ServiceResponse<IEnumerable<SelectOptionDto>> GetAvailableTextToSpeechOptions();
 }

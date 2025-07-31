@@ -187,16 +187,243 @@ public class ConversationModelService : IConversationModelService
         return serviceResponse;
     }
 
-    // Retrieves a list of available languages, each with associated voices. 
-    public ServiceResponse<IEnumerable<AvailableLanguageDto>> GetLanguagesWithVoices()
+    // Retrieves a list of available languages. 
+    public ServiceResponse<IEnumerable<SelectOptionDto>> GetLanguageOptions()
     {
-        // Initialize the response object with default values
-        var serviceResponse = new ServiceResponse<IEnumerable<AvailableLanguageDto>>()
+        // Initialize the service response with default failure message and status
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
         {
             Data = null,
-            Message = "Failed to retrieve languages with voices. Please try again later.",
+            Message = "Failed to retrieve languages. Please try again later.",
+            StatusCode = 500
         };
 
+        try
+        {
+            _logger.LogInformation("Attempting to retrieve available languages options.");
+
+            // Retrieve list of languages with their associated voices
+            var availableLanguages = GetLanguagesAndVoices();
+
+            // Convert the languages into SelectOptionDto format (Label = Name, Value = Code)
+            var languages = availableLanguages.Select(s => new SelectOptionDto
+            {
+                Label = s.Name,
+                Value = s.Code
+            }).ToList();
+
+            // Set successful response data
+            serviceResponse.Data = languages;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Languages retrieved successfully.";
+
+            _logger.LogInformation("Successfully retrieved {Count} languages.", languages.Count);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception
+            _logger.LogError(ex, "An error occurred while retrieving language options.");
+        }
+
+        // Return the service response (either success or failure)
+        return serviceResponse;
+    }
+
+    // Retrieves a list of available voices. 
+    public ServiceResponse<IEnumerable<SelectOptionDto>> GetVoiceOptionsByLanguageName(string language)
+    {
+        // Initialize the response object with default values
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>()
+        {
+            Data = null,
+            Message = "Failed to retrieve voices. Please try again later.",
+        };
+
+        try
+        {
+            var languages = new List<SelectOptionDto>();
+
+            // Retrieve the list of languages and voices
+            var availableLanguages = GetLanguagesAndVoices();
+
+            // Find the language by name (case-insensitive)
+            var availableLanguage = availableLanguages
+                        .FirstOrDefault(f =>
+                            f.Name.ToLower() == language.ToLower() ||
+                            f.Code.ToLower() == language.ToLower()
+                        );
+
+            // If no language is found, update the response and return
+            if (availableLanguage != null && availableLanguage.Voices.Any())
+            {
+                // Map the voices to SelectOptionDto
+                languages = availableLanguage.Voices.Select(s => new SelectOptionDto()
+                {
+                    Label = s.Name,
+                    Value = s.Name,
+                    Description = s.Gender
+                }).ToList();
+            }
+
+            // Success response
+            serviceResponse.Data = languages;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Voices retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log the exception details (you can adjust this as per your logging framework)
+            _logger.LogError(ex, "An error occurred while retrieving voice options for language: {Language}", language);
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieves a list of available Text-to-Speech services and their options.
+    public ServiceResponse<IEnumerable<SelectOptionDto>> GetAvailableTextToSpeechOptions()
+    {
+        // Initialize the response object with default error state
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>()
+        {
+            Data = null,
+            Message = "Failed to retrieve Text-to-Speech options. Please try again later.",
+            StatusCode = 500
+        };
+
+        try
+        {
+            _logger.LogInformation("Attempting to retrieve available Text-to-Speech options.");
+
+            // Seed top available services for Text-to-Speech with detailed descriptions
+            var textToSpeechServices = new List<SelectOptionDto>
+            {
+                new SelectOptionDto
+                {
+                    Label = "OpenAI TTS",
+                    Value = "OpenAI TTS",
+                    Description = "OpenAI's TTS system processes input text through advanced language models, transforming it into human-like speech. The process involves generating the speech waveform with highly realistic and natural-sounding voices that adapt to different tones and contexts."
+                },
+                new SelectOptionDto
+                {
+                    Label = "Google TTS Wavenet",
+                    Value = "Google TTS Wavenet",
+                    Description = "Google's Wavenet TTS works by feeding text through a deep neural network that predicts waveform characteristics for each phoneme. The resulting sound is high-quality and lifelike, with smooth prosody and expressive tone adjustments based on the context."
+                },
+                new SelectOptionDto
+                {
+                    Label = "Amazon Polly",
+                    Value = "Amazon Polly",
+                    Description = "Amazon Polly converts text to speech by utilizing deep learning algorithms to generate lifelike voices. The TTS process involves breaking down the input text into phonetic units, adjusting pitch and speed, and creating a dynamic waveform that mimics human speech patterns."
+                },
+                new SelectOptionDto
+                {
+                    Label = "Microsoft Azure TTS",
+                    Value = "Microsoft Azure TTS",
+                    Description = "Microsoft Azure TTS uses neural networks to synthesize speech by first analyzing the input text, then generating the corresponding voice waveform with appropriate intonation, tone, and pace. Azure’s system allows for fine-tuned customization of voice attributes to suit different applications."
+                },
+                new SelectOptionDto
+                {
+                    Label = "Conqui TTS",
+                    Value = "Conqui TTS",
+                    Description = "Conqui TTS processes text input into speech by leveraging neural network models that understand linguistic nuances. It adjusts speech characteristics such as speed, pitch, and emotion, producing clear and articulate speech across different languages and accents."
+                },
+                new SelectOptionDto
+                {
+                    Label = "Bark by Sone",
+                    Value = "Bark by Sone",
+                    Description = "Bark by Sone processes text using advanced deep learning techniques to generate expressive and emotional speech. Its TTS model incorporates human-like inflections, producing nuanced and context-aware speech ideal for immersive environments and emotionally engaging experiences."
+                }
+            };
+
+            // Set successful response details
+            serviceResponse.Data = textToSpeechServices;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Successfully retrieved Text-to-Speech options.";
+
+            _logger.LogInformation("Retrieved {Count} Text-to-Speech options successfully.", textToSpeechServices.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving Text-to-Speech options.");
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieves a list of available Speech-to-Text services and their options.
+    public ServiceResponse<IEnumerable<SelectOptionDto>> GetAvailableSpeechToTextOptions()
+    {
+        // Initialize the response object with default error state
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>()
+        {
+            Data = null,
+            Message = "Failed to retrieve Speech-to-Text options. Please try again later.",
+            StatusCode = 500
+        };
+
+        try
+        {
+            _logger.LogInformation("Attempting to retrieve available Speech-to-Text options.");
+
+            // Seed available Speech-to-Text options with process-focused descriptions
+            var speechToTextServices = new List<SelectOptionDto>
+            {
+                new SelectOptionDto
+                {
+                    Label = "Whisper AI",
+                    Value ="Whisper AI",
+                    Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription."
+                },
+                new SelectOptionDto
+                {
+                    Label = "Google Speech-to-Text",
+                    Value = "Google Speech-to-Text",
+                    Description = "Google Speech-to-Text captures audio input and processes it using advanced neural networks to convert spoken words into written text. It utilizes a cloud-based model, providing real-time transcription with high accuracy."
+                },
+                new SelectOptionDto
+                {
+                    Label = "Assembly AI",
+                    Value = "Assembly AI",
+                    Description = "Assembly AI's process involves real-time audio recognition where audio files are transcribed into text using state-of-the-art machine learning algorithms, while also supporting advanced features like speaker separation and keyword detection."
+                },
+                new SelectOptionDto
+                {
+                    Label = "Deepgram",
+                    Value = "Deepgram",
+                    Description = "Deepgram’s process involves converting audio into text by first extracting speech features through AI models, and then transcribing them with neural networks. Its unique pipeline allows for fast and efficient processing even in noisy environments."
+                },
+                new SelectOptionDto
+                {
+                    Label = "Mozilla DeepSpeech",
+                    Value = "Mozilla DeepSpeech",
+                    Description = "Mozilla DeepSpeech uses a deep learning framework to process raw audio and transform it into text. It works by training a neural network model that recognizes patterns in speech and outputs the corresponding textual representation."
+                },
+                new SelectOptionDto
+                {
+                    Label = "Vosk",
+                    Value = "Vosk",
+                    Description = "Vosk transcribes speech by processing audio through a lightweight speech recognition model that operates offline. The system analyzes the acoustic features of speech, matches it to pre-trained phonetic models, and outputs the text."
+                }
+            };
+
+            // Assign data and update status/message for a successful response
+            serviceResponse.Data = speechToTextServices;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Successfully retrieved available Speech-to-Text options.";
+
+            _logger.LogInformation("Retrieved {Count} Speech-to-Text options successfully.", speechToTextServices.Count);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception details
+            _logger.LogError(ex, "An error occurred while retrieving Speech-to-Text options.");
+        }
+
+        return serviceResponse;
+    }
+
+    private IEnumerable<AvailableLanguageDto> GetLanguagesAndVoices()
+    {
         // Define a list of languages and their associated voices
         var languagesWithVoices = new List<AvailableLanguageDto>
         {
@@ -327,126 +554,7 @@ public class ConversationModelService : IConversationModelService
                 }
             }
         };
-
-        // Assign the language data to the response
-        serviceResponse.Data = languagesWithVoices;
-        serviceResponse.StatusCode = 200;
-        serviceResponse.Message = "Languages with associated voices retrieved successfully.";
-
-        // Return the response
-        return serviceResponse;
-    }
-
-    // Retrieves a list of available Text-to-Speech services and their options.
-    public ServiceResponse<IEnumerable<TextToSpeechOptionDto>> GetAvailableTextToSpeechServices()
-    {
-        // Initialize the response object with default values
-        var serviceResponse = new ServiceResponse<IEnumerable<TextToSpeechOptionDto>>()
-        {
-            Data = null,
-            Message = "Failed to retrieve Text-to-Speech services and their options. Please try again later.",
-        };
-
-        // Seed top 6 available services for Text-to-Speech with process-focused descriptions
-        var textToSpeechServices = new List<TextToSpeechOptionDto>
-    {
-        new TextToSpeechOptionDto
-        {
-            Name = "OpenAI TTS",
-            Description = "OpenAI's TTS system processes input text through advanced language models, transforming it into human-like speech. The process involves generating the speech waveform with highly realistic and natural-sounding voices that adapt to different tones and contexts."
-        },
-        new TextToSpeechOptionDto
-        {
-            Name = "Google TTS Wavenet",
-            Description = "Google's Wavenet TTS works by feeding text through a deep neural network that predicts waveform characteristics for each phoneme. The resulting sound is high-quality and lifelike, with smooth prosody and expressive tone adjustments based on the context."
-        },
-        new TextToSpeechOptionDto
-        {
-            Name = "Amazon Polly",
-            Description = "Amazon Polly converts text to speech by utilizing deep learning algorithms to generate lifelike voices. The TTS process involves breaking down the input text into phonetic units, adjusting pitch and speed, and creating a dynamic waveform that mimics human speech patterns."
-        },
-        new TextToSpeechOptionDto
-        {
-            Name = "Microsoft Azure TTS",
-            Description = "Microsoft Azure TTS uses neural networks to synthesize speech by first analyzing the input text, then generating the corresponding voice waveform with appropriate intonation, tone, and pace. Azure’s system allows for fine-tuned customization of voice attributes to suit different applications."
-        },
-        new TextToSpeechOptionDto
-        {
-            Name = "Conqui TTS",
-            Description = "Conqui TTS processes text input into speech by leveraging neural network models that understand linguistic nuances. It adjusts speech characteristics such as speed, pitch, and emotion, producing clear and articulate speech across different languages and accents."
-        },
-        new TextToSpeechOptionDto
-        {
-            Name = "Bark by Sone",
-            Description = "Bark by Sone processes text using advanced deep learning techniques to generate expressive and emotional speech. Its TTS model incorporates human-like inflections, producing nuanced and context-aware speech ideal for immersive environments and emotionally engaging experiences."
-        }
-    };
-
-        // Assign the seeded language data to the response
-        serviceResponse.Data = textToSpeechServices;
-        serviceResponse.StatusCode = 200;
-
-        // Updated success message reflecting the retrieval of the Text-to-Speech options
-        serviceResponse.Message = "Successfully retrieved Text-to-Speech service options with associated process descriptions.";
-
-        // Return the response
-        return serviceResponse;
-    }
-
-    // Retrieves a list of available Speech-to-Text services and their options.
-    public ServiceResponse<IEnumerable<SpeechToTextOptionDto>> GetAvailableSpeechToTextServices()
-    {
-        // Initialize the response object with default values
-        var serviceResponse = new ServiceResponse<IEnumerable<SpeechToTextOptionDto>>()
-        {
-            Data = null,
-            Message = "Failed to retrieve Speech-to-Text services. Please try again later.",
-        };
-
-        // Seed available Speech-to-Text services with process-focused descriptions
-        var speechToTextServices = new List<SpeechToTextOptionDto>
-    {
-        new SpeechToTextOptionDto
-        {
-            Name = "Whisper AI",
-            Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription."
-        },
-        new SpeechToTextOptionDto
-        {
-            Name = "Google Speech-to-Text",
-            Description = "Google Speech-to-Text captures audio input and processes it using advanced neural networks to convert spoken words into written text. It utilizes a cloud-based model, providing real-time transcription with high accuracy."
-        },
-        new SpeechToTextOptionDto
-        {
-            Name = "Assembly AI",
-            Description = "Assembly AI's process involves real-time audio recognition where audio files are transcribed into text using state-of-the-art machine learning algorithms, while also supporting advanced features like speaker separation and keyword detection."
-        },
-        new SpeechToTextOptionDto
-        {
-            Name = "Deepgram",
-            Description = "Deepgram’s process involves converting audio into text by first extracting speech features through AI models, and then transcribing them with neural networks. Its unique pipeline allows for fast and efficient processing even in noisy environments."
-        },
-        new SpeechToTextOptionDto
-        {
-            Name = "Mozilla DeepSpeech",
-            Description = "Mozilla DeepSpeech uses a deep learning framework to process raw audio and transform it into text. It works by training a neural network model that recognizes patterns in speech and outputs the corresponding textual representation."
-        },
-        new SpeechToTextOptionDto
-        {
-            Name = "Vosk",
-            Description = "Vosk transcribes speech by processing audio through a lightweight speech recognition model that operates offline. The system analyzes the acoustic features of speech, matches it to pre-trained phonetic models, and outputs the text."
-        }
-    };
-
-        // Assign the speech-to-text services data to the response
-        serviceResponse.Data = speechToTextServices;
-        serviceResponse.StatusCode = 200;
-
-        // Updated success message reflecting successful retrieval
-        serviceResponse.Message = "Successfully retrieved available Speech-to-Text services.";
-
-        // Return the response
-        return serviceResponse;
+        return languagesWithVoices;
     }
 }
 

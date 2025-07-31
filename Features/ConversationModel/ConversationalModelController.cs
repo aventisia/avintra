@@ -31,23 +31,29 @@ public class ConversationalModelController : BaseApiController
     // -------------------- Text to Speech & Speech to Text --------------------
 
     // Retrieves a list of available languages for Speech-to-Text services with associated voices.
-    [HttpGet("languages/available")]
-    public ActionResult<ServiceResponse<AvailableLanguageDto>> GetLanguagesWithVoices()
+    [HttpGet("languages")]
+    public ActionResult<ServiceResponse<SelectOptionDto>> GetLanguageOptions()
     {
-        return ResultHelper(_ConversationModelService.GetLanguagesWithVoices());
+        return ResultHelper(_ConversationModelService.GetLanguageOptions());
+    }
+
+    [HttpGet("voices/{language}")]
+    public ActionResult<ServiceResponse<SelectOptionDto>> GetVoiceOptionsByLanguageName(string language)
+    {
+        return ResultHelper(_ConversationModelService.GetVoiceOptionsByLanguageName(language));
     }
     
     // Retrieves a list of available Speech-to-Text services and their options.
     [HttpGet("speech-to-text")]
-    public ActionResult<ServiceResponse<SpeechToTextOptionDto>> GetAvailableSpeechToTextServices()
+    public ActionResult<ServiceResponse<SelectOptionDto>> GetAvailableSpeechToTextOptions()
     {
-        return ResultHelper(_ConversationModelService.GetAvailableSpeechToTextServices());
+        return ResultHelper(_ConversationModelService.GetAvailableSpeechToTextOptions());
     }
 
     // Retrieves a list of available Text-to-Speech services and their options.
     [HttpGet("text-to-speech")]
-    public ActionResult<ServiceResponse<TextToSpeechOptionDto>> GetAvailableTextToSpeechServices()
+    public ActionResult<ServiceResponse<SelectOptionDto>> GetAvailableTextToSpeechOptions()
     {
-        return ResultHelper(_ConversationModelService.GetAvailableTextToSpeechServices());
+        return ResultHelper(_ConversationModelService.GetAvailableTextToSpeechOptions());
     }
 }
