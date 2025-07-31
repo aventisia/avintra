@@ -21,6 +21,7 @@ public class UnitOfWork : IUnitOfWork
     public IModelAPIKeyRepo ModelAPIKeyRepo => new ModelAPIKeyRepo(_mlModelBuilderDbContext);
     public IModelTaskRepo ModelTaskRepo => new ModelTaskRepo(_mlModelBuilderDbContext);
     public IConversationalModelRepo ConversationalModelRepo => new ConversationalModelRepo(_mlModelBuilderDbContext);
+    public IGenerativeModelRepo GenerativeModelRepo => new GenerativeModelRepo(_mlModelBuilderDbContext);
     public IMLModelVersionRepo MLModelVersionRepo => new MLModelVersionRepo(_mlModelBuilderDbContext);
     public IMLModelTemplateRepo MLModelTemplateRepo => new MLModelTemplateRepo(_mlModelBuilderDbContext);
     public IMLModelUserRepo MLModelUserRepo => new MLModelUserRepo(_mlModelBuilderDbContext);

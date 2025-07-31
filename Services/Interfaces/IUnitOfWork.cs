@@ -23,7 +23,8 @@ public interface IUnitOfWork
     IFineTuningLogRepo FineTuningLogRepo { get; }
     IModelAPIKeyRepo ModelAPIKeyRepo { get; }
     IModelTaskRepo ModelTaskRepo { get; }
-    IConversationalModelRepo ConversationalModelRepo {get;}
+    IConversationalModelRepo ConversationalModelRepo { get; }
+    IGenerativeModelRepo GenerativeModelRepo { get; }
     IMLModelVersionRepo MLModelVersionRepo { get; }
     IMLModelTemplateRepo MLModelTemplateRepo { get; }
     IMLModelUserRepo MLModelUserRepo { get; }
