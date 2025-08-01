@@ -38,33 +38,65 @@ public class AvailableVoiceDto
 }
 
 /// <summary>
-/// Represents a Text-to-Speech option, including the name and description of the service.
+/// Represents a Text-to-Speech (TTS) option, including details about the service,
+/// the language it supports, and the available voices for that language.
 /// </summary>
 public class TextToSpeechOptionDto
 {
     /// <summary>
-    /// Gets or sets the name of the Text-to-Speech option.
+    /// Gets or sets the name of the Text-to-Speech service or option (e.g., "Google TTS").
     /// </summary>
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the description of the Text-to-Speech option (e.g., "English for Text-to-Speech").
+    /// Gets or sets the description of the Text-to-Speech option, detailing its capabilities 
+    /// and features (e.g., "English for Text-to-Speech").
     /// </summary>
     public required string Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the language supported by the Text-to-Speech option 
+    /// (e.g., "English", "Spanish").
+    /// </summary>
+    public required string LanguageName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the code for the language (e.g., "en" for English, "es" for Spanish).
+    /// </summary>
+    public string? LanguageCode { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of voices available for the specified language in the Text-to-Speech service.
+    /// Each voice includes a name and other optional properties, such as gender.
+    /// </summary>
+    public List<AvailableVoiceDto>? Voices { get; set; }
 }
 
 /// <summary>
-/// Represents a Speech-to-Text option, including the name and description of the service.
+/// Represents a Speech-to-Text (STT) option, including details about the service,
+/// the language it supports, and the service's capabilities.
 /// </summary>
 public class SpeechToTextOptionDto
 {
     /// <summary>
-    /// Gets or sets the name of the Speech-to-Text option.
+    /// Gets or sets the name of the Speech-to-Text service (e.g., "Google Speech-to-Text").
     /// </summary>
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the description of the Speech-to-Text option (e.g., "English for Speech-to-Text").
+    /// Gets or sets the description of the Speech-to-Text option, detailing its capabilities 
+    /// and the technology it uses for converting speech to text (e.g., "Real-time transcription with high accuracy").
     /// </summary>
     public required string Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the language supported by the Speech-to-Text option 
+    /// (e.g., "English", "Spanish").
+    /// </summary>
+    public required string LanguageName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the code for the language (e.g., "en" for English, "es" for Spanish).
+    /// </summary>
+    public string? LanguageCode { get; set; }
 }
