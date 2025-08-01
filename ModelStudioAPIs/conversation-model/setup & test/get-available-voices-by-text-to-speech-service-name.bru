@@ -1,0 +1,11 @@
+meta {
+  name: Get available voices bytext to speech service name
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/conversation-model/text-to-speech/voices/{{TTS_NAME}}
+  body: none
+  auth: none
+}

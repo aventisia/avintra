@@ -1,11 +1,11 @@
 meta {
   name: Get available text to speech services
   type: http
-  seq: 6
+  seq: 7
 }
 
 get {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/conversation-model/languages/available
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/conversation-model/text-to-speech/{{LANGUAGE}}
   body: none
   auth: none
 }
