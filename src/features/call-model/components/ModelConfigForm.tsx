@@ -26,7 +26,7 @@ export default function ModelConfigForm() {
       userSession: state.userSession,
     })),
   );
-  console.log(userSession);
+
   const onSubmit = (data: modelFormData) => {
     const RequestBody = {
       modelId: data.MLModel.id,
