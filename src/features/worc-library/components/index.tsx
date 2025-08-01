@@ -27,12 +27,15 @@ const WorcLibrary = () => {
         {/* Header section with title and subtitle */}
         <div className="">
           <div className="mx-auto max-w-7xl px-4 py-8">
-            <div className="mb-8 text-center">
+            <div className="mx-auto mb-8 max-w-3xl text-center">
               <h1 className="text-[4rem] font-semibold text-[#1E1B4B]">
                 Worc <span className="text-primary">Library</span>
               </h1>
-              <h2 className="text-lg text-muted-foreground">
-                Get started with our library of pre-made templates
+              <h2 className=" text-muted-foreground">
+                The Library of Worc brings together a rich catalog of
+                ready-to-use automations and AI blueprints, empowering teams to
+                build faster, smarter, and at scale — no need to start from
+                scratch.
               </h2>
             </div>
 
