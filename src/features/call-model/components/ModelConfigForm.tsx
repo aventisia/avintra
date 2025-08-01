@@ -12,13 +12,21 @@ import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 import { useCallModelForm } from "../hooks/useCallModelForm";
 import { modelFormData } from "../constants/model-config-zod-schema";
 import { ConfigPanelModelOutputField } from "@/features/dynamic-config-panel/components/fields-for-form/ConfigPanelModelOutputField";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useShallow } from "zustand/react/shallow";
 
 export default function ModelConfigForm() {
   // Get handlers to update node inputs and outputs
   const { updateNodeDataIO, updateFlowVariablesObject } = useUpdateNodeDataIO();
   const { control, form, nodeId, setShowDialog, aiModelResultDescription } =
     useCallModelForm();
-
+  // Get user session state and actions
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+  console.log(userSession);
   const onSubmit = (data: modelFormData) => {
     const RequestBody = {
       modelId: data.MLModel.id,
@@ -27,6 +35,10 @@ export default function ModelConfigForm() {
     };
 
     const inputData: NodeInputType[] = [
+      {
+        key: "HttpMethod",
+        value: "POST",
+      },
       { key: "SelectModel", value: data.MLModel.id },
       { key: "InputText", value: data.inputText },
       { key: "ModelApiKey", value: data.modelApiKey },
@@ -37,7 +49,10 @@ export default function ModelConfigForm() {
       { key: "RequestBody", value: JSON.stringify(RequestBody) },
       {
         key: "Headers",
-        value: JSON.stringify({ "X-API-KEY": data.modelApiKey }),
+        value: JSON.stringify({
+          "X-API-KEY": data.modelApiKey,
+          tntid: userSession?.tenantId,
+        }),
       },
     ];
 
