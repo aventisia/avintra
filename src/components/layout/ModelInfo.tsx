@@ -19,7 +19,7 @@ const ModelInfo = () => {
     <>
       <DotSeparator className="-mt-4 text-[2rem]" />
       <span
-        className="mr-[0.6rem] truncate text-sm font-medium text-white mt-1 max-w-24"
+        className="mr-[0.6rem] truncate text-sm font-medium text-white mt-1 max-w-[182px]"
         title={modelName}
       >
         {modelName}

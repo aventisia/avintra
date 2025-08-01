@@ -31,70 +31,78 @@ const SubCategory = ({
 
   return (
     <div className="ml-6 mt-2 space-y-0 grid gap-4">
-      {subCategories?.map((subCat, subIndex) => (
-        <Collapsible key={`${categoryIndex}-${subIndex}`} defaultOpen>
-          <div className="flex items-center gap-2">
-            <CollapsibleTrigger asChild>
-              <Button
-                variant={"ghost"}
-                size={"icon8"}
-                className="!m-0 data-[state=closed]:rotate-[-90deg] w-auto h-auto !p-0.5 rounded-full bg-slate-200"
-              >
-                <ChevronDown className="w-4 h-4 data-[state=closed]:rotate-[-90deg]" />
-              </Button>
-            </CollapsibleTrigger>
-
-            <Controller
-              control={control}
-              name={`classification.categories.${categoryIndex}.subCategories.${subIndex}.value`}
-              render={({ field }) => (
-                <CheckboxField
-                  name={field.name}
-                  checked={field.value}
-                  // onCheckedChange={(checked) =>
-                  //   field.onChange(checked ? "true" : "false")
-                  // }
-                  onCheckedChange={field.onChange}
-                  label=""
-                />
-              )}
-            />
-            <FormLabel className="text-sm !mt-0">{subCat.name}</FormLabel>
-          </div>
-
-          <CollapsibleContent>
-            {subCat.subSubCategories && subCat.subSubCategories.length > 0 && (
-              <div className="ml-12 space-y-2 mt-2">
-                {subCat.subSubCategories.map((subSubCat, subSubIndex) => (
-                  <FormItem
-                    key={`${categoryIndex}-${subIndex}-${subSubIndex}`}
-                    className="flex items-center gap-2"
+      {subCategories?.map((subCat, subIndex) => {
+        const hasChildren =
+          subCat.subSubCategories && subCat.subSubCategories.length > 0;
+        return (
+          <Collapsible key={`${categoryIndex}-${subIndex}`} defaultOpen>
+            <div className="flex items-center gap-2">
+              {hasChildren && (
+                <CollapsibleTrigger asChild>
+                  <Button
+                    variant={"ghost"}
+                    size={"icon8"}
+                    className="!m-0 data-[state=closed]:rotate-[-90deg] w-auto h-auto !p-0.5 rounded-full bg-slate-200"
                   >
-                    <Controller
-                      control={control}
-                      name={`classification.categories.${categoryIndex}.subCategories.${subIndex}.subSubCategories.${subSubIndex}.value`}
-                      render={({ field }) => (
-                        <CheckboxField
-                          name={field.name}
-                          checked={field.value}
-                          // onCheckedChange={(checked) =>
-                          //   field.onChange(checked ? "true" : "false")
-                          // }
-                          onCheckedChange={field.onChange}
-                          label=""
+                    <ChevronDown className="w-4 h-4 data-[state=closed]:rotate-[-90deg]" />
+                  </Button>
+                </CollapsibleTrigger>
+              )}
+
+              <Controller
+                control={control}
+                name={`classification.categories.${categoryIndex}.subCategories.${subIndex}.value`}
+                render={({ field }) => (
+                  <CheckboxField
+                    name={field.name}
+                    checked={field.value}
+                    // onCheckedChange={(checked) =>
+                    //   field.onChange(checked ? "true" : "false")
+                    // }
+                    onCheckedChange={field.onChange}
+                    label=""
+                    className={!hasChildren ? "ml-[30px]" : ""}
+                  />
+                )}
+              />
+              <FormLabel className="text-sm !mt-0">{subCat.name}</FormLabel>
+            </div>
+
+            <CollapsibleContent>
+              {subCat.subSubCategories &&
+                subCat.subSubCategories.length > 0 && (
+                  <div className="ml-12 space-y-2 mt-2">
+                    {subCat.subSubCategories.map((subSubCat, subSubIndex) => (
+                      <FormItem
+                        key={`${categoryIndex}-${subIndex}-${subSubIndex}`}
+                        className="flex items-center gap-2"
+                      >
+                        <Controller
+                          control={control}
+                          name={`classification.categories.${categoryIndex}.subCategories.${subIndex}.subSubCategories.${subSubIndex}.value`}
+                          render={({ field }) => (
+                            <CheckboxField
+                              name={field.name}
+                              checked={field.value}
+                              // onCheckedChange={(checked) =>
+                              //   field.onChange(checked ? "true" : "false")
+                              // }
+                              onCheckedChange={field.onChange}
+                              label=""
+                            />
+                          )}
                         />
-                      )}
-                    />
-                    <FormLabel className="text-sm !mt-0">
-                      {subSubCat.name}
-                    </FormLabel>
-                  </FormItem>
-                ))}
-              </div>
-            )}
-          </CollapsibleContent>
-        </Collapsible>
-      ))}
+                        <FormLabel className="text-sm !mt-0">
+                          {subSubCat.name}
+                        </FormLabel>
+                      </FormItem>
+                    ))}
+                  </div>
+                )}
+            </CollapsibleContent>
+          </Collapsible>
+        );
+      })}
     </div>
   );
 };
