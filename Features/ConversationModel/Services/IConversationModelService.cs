@@ -27,6 +27,15 @@ public interface IConversationModelService
     ServiceResponse<IEnumerable<SelectOptionDto>> GetLanguageOptions();
 
     /// <summary>
+    /// Retrieves a list of available languages. 
+    /// This method returns the supported languages options.
+    /// </summary>
+    /// <returns>
+    /// A ServiceResponse containing an IEnumerable of SelectOptionDto options.
+    /// </returns>
+    ServiceResponse<IEnumerable<SelectOptionDto>> GetAvailableLanguageOptions();
+
+    /// <summary>
     /// Retrieves a list of voice options available for a specific language. 
     /// This method returns the voices that are supported for the provided language name.
     /// </summary>

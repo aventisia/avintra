@@ -279,6 +279,50 @@ public class ConversationModelService : IConversationModelService
         return serviceResponse;
     }
 
+
+    // Retrieves a list of available languages. 
+    public ServiceResponse<IEnumerable<SelectOptionDto>> GetAvailableLanguageOptions()
+    {
+        // Initialize the service response with default failure message and status
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve languages. Please try again later.",
+        };
+
+        try
+        {
+            _logger.LogInformation("Attempting to retrieve available languages options.");
+
+            // Retrieve list of languages with their associated voices
+            var availableLanguages = GetExternalTextToSpeechServices();
+
+            // Convert the languages into SelectOptionDto format (Label = Name, Value = Code)
+            var languages = availableLanguages.Select(s => new SelectOptionDto
+            {
+                Label = s.LanguageName,
+                Value = s.LanguageCode
+            })
+            .DistinctBy(d => d.Label)
+            .ToList();
+
+            // Set successful response data
+            serviceResponse.Data = languages;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Languages retrieved successfully.";
+
+            _logger.LogInformation("Successfully retrieved {Count} languages.", languages.Count);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception
+            _logger.LogError(ex, "An error occurred while retrieving language options.");
+        }
+
+        // Return the service response (either success or failure)
+        return serviceResponse;
+    }
+
     // Retrieves a list of available Text-to-Speech services and their options.
     public ServiceResponse<IEnumerable<SelectOptionDto>> GetAvailableTextToSpeechOptions(string language)
     {

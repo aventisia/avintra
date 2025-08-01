@@ -43,6 +43,13 @@ public class ConversationalModelController : BaseApiController
         return ResultHelper(_ConversationModelService.GetVoiceOptionsByLanguageName(language));
     }
 
+    // Retrieves a list of available languages options.
+    [HttpGet("available-languages")]
+    public ActionResult<ServiceResponse<SelectOptionDto>> GetAvailableLanguageOptions()
+    {
+        return ResultHelper(_ConversationModelService.GetAvailableLanguageOptions());
+    }
+
     // Retrieves a list of available Speech-to-Text services and their options.
     [HttpGet("speech-to-text/{language}")]
     public ActionResult<ServiceResponse<SelectOptionDto>> GetAvailableSpeechToTextOptions(string language)

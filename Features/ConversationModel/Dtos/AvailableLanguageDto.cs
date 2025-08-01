@@ -63,7 +63,7 @@ public class TextToSpeechOptionDto
     /// <summary>
     /// Gets or sets the code for the language (e.g., "en" for English, "es" for Spanish).
     /// </summary>
-    public string? LanguageCode { get; set; }
+    public string LanguageCode { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the list of voices available for the specified language in the Text-to-Speech service.
@@ -98,5 +98,5 @@ public class SpeechToTextOptionDto
     /// <summary>
     /// Gets or sets the code for the language (e.g., "en" for English, "es" for Spanish).
     /// </summary>
-    public string? LanguageCode { get; set; }
+    public string LanguageCode { get; set; } = string.Empty;
 }
