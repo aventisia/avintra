@@ -73,8 +73,8 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<MLModel>().HasMany(many => many.UploadedDocs).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
         modelBuilder.Entity<MLModel>().HasMany(many => many.ScheduledModels).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
         modelBuilder.Entity<MLModel>().HasMany(many => many.Tasks).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
-        modelBuilder.Entity<MLModel>().HasOne(one => one.ConversationalModel).WithOne(one => one.MLModel).HasForeignKey<ConversationalModel>(fKey => fKey.MLModelId) .IsRequired();
-        modelBuilder.Entity<MLModel>().HasOne(one => one.GenerativeModel).WithOne(one => one.MLModel).HasForeignKey<ConversationalModel>(fKey => fKey.MLModelId) .IsRequired();
+        modelBuilder.Entity<MLModel>().HasOne(one => one.ConversationalModel).WithOne(one => one.MLModel).HasForeignKey<ConversationalModel>(fKey => fKey.MLModelId).IsRequired();
+        modelBuilder.Entity<MLModel>().HasOne(one => one.GenerativeModel).WithOne(one => one.MLModel).HasForeignKey<GenerativeModel>(fKey => fKey.MLModelId).IsRequired();
 
         // Configure One-to-One relationship between Uploaded doc and extracted data
         modelBuilder.Entity<UploadedDoc>().HasMany(many => many.ExtractedDatas).WithOne(one => one.UploadedDoc).HasForeignKey(fKey => fKey.DocId).OnDelete(DeleteBehavior.Restrict);
