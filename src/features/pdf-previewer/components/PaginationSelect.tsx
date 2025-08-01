@@ -6,14 +6,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@aventisia/ui/select";
-import { Tooltip } from "@aventisia/ui/tooltip";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronsLeftIcon,
   ChevronsRightIcon,
-  FolderOpen,
-  Trash2,
 } from "lucide-react";
 import { Image } from "lucide-react";
 
@@ -39,14 +36,7 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
   const handleNext = () => onPdfSelect(pdfList[currentIndex + 1]);
 
   return (
-    <div className="flex w-full gap-4 rounded-b-lg border-t bg-white px-3 items-center py-2">
-      {import.meta.env.MODE !== "production" && (
-        <Tooltip side="right" content="Delete File">
-          <Button variant={"ghost"} size={"icon7"} className="text-destructive">
-            <Trash2 className="h-5 w-5 stroke-[1.5]" />
-          </Button>
-        </Tooltip>
-      )}
+    <div className="flex w-full rounded-b-lg border-t bg-white px-3 items-center py-2">
       <div className="flex items-center justify-center gap-1.5 w-full">
         <Button
           variant="outline"
@@ -107,11 +97,9 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
         </Button>
       </div>
       {import.meta.env.MODE !== "production" && (
-        <Tooltip side="left" content="Upload/Modify Files">
-          <Button variant={"ghost"} size={"icon7"} className="text-primary">
-            <FolderOpen className="h-5 w-5 stroke-[1.5]" />
-          </Button>
-        </Tooltip>
+        <Button variant={"ghost"} className="hover:text-primary">
+          Manage Files
+        </Button>
       )}
     </div>
   );

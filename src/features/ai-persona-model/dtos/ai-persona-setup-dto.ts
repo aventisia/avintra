@@ -19,7 +19,7 @@ interface ISetupObject {
     speechConfiguration: {
         configurationType: "OnPrem" | "Cloud";
         language: string;
-        voices: string;
+        voice: string;
         textToSpeech: string;
         speechToText: string;
     }

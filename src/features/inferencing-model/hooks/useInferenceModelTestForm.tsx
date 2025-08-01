@@ -1,15 +1,19 @@
 import { ITables } from "@/features/information-extractor/dtos/info-extractor-test-dto";
+import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
 import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 
+import { toast } from "@aventisia/ui/sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { updateInferenceModelTestFormData } from "../apis/inference-mode-test-apis";
 import { inferenceModelTestFormZodSchema } from "../constants/inference-model-test-zod-schema";
 import { InferenceModelSetupDTO } from "../dtos/inference-model-setup-dto";
+import { useFetchTestFormData } from "./useFetchTestFormData";
 
 export const useInferenceModelTestForm = () => {
   const { extractedData } = useExtractedDataStore(
@@ -17,11 +21,16 @@ export const useInferenceModelTestForm = () => {
       extractedData: state.extractedData,
     })),
   );
+  const { selectedFile } = useFileListStore(
+    useShallow((state) => ({
+      selectedFile: state.selectedFile,
+    })),
+  );
+  const { data: fieldDataValues } = useFetchTestFormData();
   const form = useForm<z.infer<typeof inferenceModelTestFormZodSchema>>({
     resolver: zodResolver(inferenceModelTestFormZodSchema),
     defaultValues: {
       id: "",
-      name: "",
       submitForFineTuning: false,
       classification: null,
       extraction: null,
@@ -37,49 +46,109 @@ export const useInferenceModelTestForm = () => {
   } = form;
 
   const queryClient = useQueryClient();
-  useEffect(() => {
+
+  // 1. Initialize Field Names
+  const initializeFieldNames = useCallback(async () => {
     const data = queryClient.getQueryData<{
       data: InferenceModelSetupDTO;
     }>(["INFERENCE_SETUP_FORM_DATA"]);
     if (!data || !data.data) return;
 
-    const { classification, extraction, questionAnswer, sentimentAnalytics } =
-      data.data;
+    const {
+      classification,
+      extraction,
+      questionAnswer,
+      sentimentAnalytics,
+      summarization,
+    } = data.data;
 
     form.reset({
       ...form.getValues(),
-      classification: {
-        categories: classification?.setupObject?.categories ?? [],
-      },
-      extraction: {
-        fields: extraction?.setupObject.fields ?? [],
-        tables:
-          extraction?.setupObject.tables?.map((table) => ({
-            name: table.name,
-            headers:
-              table.tableHeaders?.map((item) => ({
-                name: item.name,
-                values: [""], // or omit if your Zod schema allows
+      classification: classification
+        ? {
+            categories: classification?.setupObject?.categories ?? [],
+          }
+        : null,
+      extraction: extraction
+        ? {
+            fields: extraction?.setupObject.fields ?? [],
+            tables:
+              extraction?.setupObject.tables?.map((table) => ({
+                name: table.name,
+                headers:
+                  table.tableHeaders?.map((item) => ({
+                    name: item.name,
+                    values: [""], // or omit if your Zod schema allows
+                  })) ?? [],
               })) ?? [],
-          })) ?? [],
-      },
-      questionAnswer: {
-        questionAnswers: questionAnswer?.setupObject.questionAnswers?.map(
-          (quesAns) => ({
+          }
+        : null,
+      questionAnswer: questionAnswer
+        ? (questionAnswer?.setupObject.questionAnswers?.map((quesAns) => ({
             question: quesAns?.name ?? "",
             answer: "",
-          }),
-        ) ?? [{}],
-      },
-      sentimentAnalytics: {
-        categories: sentimentAnalytics?.setupObject.categories ?? [],
-      },
-      summarization: {
-        summarizedText: "",
-      },
+            confidenceScore: "",
+          })) ?? [{}])
+        : null,
+      sentimentAnalytics: sentimentAnalytics
+        ? {
+            categories: sentimentAnalytics?.setupObject.categories ?? [],
+          }
+        : null,
+      summarization: summarization
+        ? {
+            summary: "",
+          }
+        : null,
     });
   }, [form, queryClient]);
 
+  // 2. Load TEST_FORM
+  const populateFieldValues = useCallback(() => {
+    if (!fieldDataValues || !selectedFile) return;
+
+    const matchingExtractedData = fieldDataValues.data.find(
+      (item) => item.docId === selectedFile.id,
+    );
+
+    if (matchingExtractedData) {
+      form.reset({
+        id: matchingExtractedData.id ?? "",
+        submitForFineTuning: matchingExtractedData.submitForFineTuning ?? false,
+        extraction:
+          matchingExtractedData?.extraction ?? form.getValues("extraction"),
+        summarization:
+          matchingExtractedData?.summarization ??
+          form.getValues("summarization"),
+        questionAnswer:
+          matchingExtractedData?.questionAnswer ??
+          form.getValues("questionAnswer"),
+
+        // To be done - Classification and Sentiment Analytics
+        classification: form.getValues("classification"),
+        sentimentAnalytics: form.getValues("sentimentAnalytics"),
+      });
+    }
+  }, [form, selectedFile, fieldDataValues]);
+
+  useEffect(() => {
+    const setupForm = async () => {
+      try {
+        await initializeFieldNames();
+        populateFieldValues();
+      } catch (error) {
+        toast.error(error?.toString());
+      }
+    };
+
+    setupForm();
+  }, [initializeFieldNames, populateFieldValues]);
+
+  // 2. Load TEST_FORM Field values
+
+  useEffect(() => {}, []);
+
+  // 3. Load Executed data, when execute button is clicked
   useEffect(() => {
     const finalExtractedData = extractedData ?? {};
 
@@ -109,10 +178,10 @@ export const useInferenceModelTestForm = () => {
         ? { categories: extractedData?.sentimentAnalytics }
         : form.getValues("sentimentAnalytics"),
       summarization: extractedData?.summarization
-        ? { summarizedText: extractedData.summarization.summary }
+        ? { summary: extractedData.summarization.summary }
         : form.getValues().summarization,
       questionAnswer: extractedData?.questionAnswer
-        ? { questionAnswers: extractedData?.questionAnswer }
+        ? extractedData?.questionAnswer
         : form.getValues("questionAnswer"),
       extraction: extractedData?.extraction
         ? {
@@ -121,16 +190,32 @@ export const useInferenceModelTestForm = () => {
               extractedData?.extraction?.fields.length > 0
                 ? extractedData?.extraction?.fields
                 : form.getValues("extraction.fields"),
-            // tables:
-            //   extractedData?.extraction?.tables &&
-            //   extractedData?.extraction?.tables.length > 0
-            //     ? extractedData?.extraction?.tables
-            //     : form.getValues("extraction.tables"),
             tables: normalizedTables,
           }
         : form.getValues("extraction"),
     });
   }, [extractedData, form]);
 
-  return { form, isSubmitting, isDirty, errors, control };
+  // 4. Mutation to save/update the test form data in backend.
+  const { mutateAsync: updateExtractedFormData, isPending: isUpdatePending } =
+    useMutation({
+      mutationFn: updateInferenceModelTestFormData,
+      onSuccess: () => {
+        toast.success("Data successfully updated.");
+      },
+      onError: () => {
+        toast.error("Failed to update data.");
+      },
+    });
+
+  return {
+    form,
+    isSubmitting,
+    isDirty,
+    errors,
+    control,
+    updateExtractedFormData,
+    isUpdatePending,
+    initializeFieldNames,
+  };
 };

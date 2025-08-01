@@ -44,7 +44,7 @@ export const useAIPersonaSetupForm = () => {
             language: "",
             speechToText: "",
             textToSpeech: "",
-            voices: "",
+            voice: "",
           },
         },
       },
@@ -140,9 +140,9 @@ export const useAIPersonaSetupForm = () => {
             language:
               setupFormData?.aiPersona?.setupObject?.speechConfiguration
                 ?.language ?? "",
-            voices:
+            voice:
               setupFormData?.aiPersona?.setupObject?.speechConfiguration
-                ?.voices ?? "",
+                ?.voice ?? "",
             textToSpeech:
               setupFormData?.aiPersona?.setupObject?.speechConfiguration
                 ?.textToSpeech ?? "",

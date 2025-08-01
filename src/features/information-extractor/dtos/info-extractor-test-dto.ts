@@ -17,5 +17,5 @@ export interface ITables {
 
 export interface InfoExtractorTestDTO  {
     fields: IFields[];
-    tables: ITables[]
+    tables: ITables[] | null;
 }

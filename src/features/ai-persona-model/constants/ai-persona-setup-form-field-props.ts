@@ -105,7 +105,7 @@ const languageProps: SelectFieldProps = {
 }
 
 const voiceProps: SelectFieldProps = {
-    name: "aiPersona.setupObject.speechConfiguration.voices",
+    name: "aiPersona.setupObject.speechConfiguration.voice",
     label: "Voices",
     className: "text-sm",
     selectOptions : enumToArray(VoiceEnum),

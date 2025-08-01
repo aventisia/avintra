@@ -11,7 +11,7 @@ const documentInstructionSchema = z.object({
 const speechConfigSchema = z.object({
     configurationType: z.enum(["OnPrem", "Cloud"]).default("OnPrem"),
     language: z.string(),
-    voices: z.string(),
+    voice: z.string(),
     textToSpeech: z.string(),
     speechToText: z.string(),
 })

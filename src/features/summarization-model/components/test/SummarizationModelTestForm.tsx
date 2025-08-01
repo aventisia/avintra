@@ -13,16 +13,16 @@ interface SummarizationModelTestFormProps {
 const SummarizationModelTestForm = ({
   form,
 }: SummarizationModelTestFormProps) => {
+  const summarizedText = form.getValues("summarization.summary")?.trim();
+  const summarizedTextLength = summarizedText
+    ? summarizedText.split(/\s+/).length
+    : 0;
+
   return (
     <div className="space-y-4 px-4 pb-1 ">
       <AutosizeTextareaField
         {...summarizedTextProps}
-        label={`Summarized Text (${
-          form.getValues("summarization.summarizedText").trim() === ""
-            ? 0
-            : form.getValues("summarization.summarizedText").trim().split(/\s+/)
-                .length
-        })`}
+        label={`Summarized Text (${summarizedTextLength})`}
       />
     </div>
   );

@@ -13,7 +13,7 @@ const QuestionsAnswersTestForm = ({ form }: QuestionsAnswersTestFormProps) => {
   const { control } = form;
   const { fields: questionAnswerFields } = useFieldArray({
     control,
-    name: "questionAnswer.questionAnswers",
+    name: "questionAnswer",
   });
 
   return (

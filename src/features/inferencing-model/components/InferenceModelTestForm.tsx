@@ -1,9 +1,11 @@
 import LoaderTemplate from "@/components/templates/LoaderTemplate";
+import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useSourceParam } from "@/features/label-data/hooks/useSourceParam";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
+import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 
-import { Checkbox, Separator } from "@aventisia/ui";
+import { Checkbox, LoadingSpinner, Separator } from "@aventisia/ui";
 import {
   Accordion,
   AccordionContent,
@@ -24,6 +26,7 @@ import { inferenceModelTestFormZodSchema } from "../constants/inference-model-te
 import { inferenceTestTaskComponentMap } from "../constants/inference-test-tasks-component";
 import { TaskNameEnum } from "../enum/tasks-name-enum";
 import { useFetchSetupFormData } from "../hooks/useFetchSetupFormData";
+import { useFetchTestFormData } from "../hooks/useFetchTestFormData";
 import { useInferenceModelTestForm } from "../hooks/useInferenceModelTestForm";
 import { useTasksToExecuteStore } from "../store/tasks-to-execute";
 
@@ -32,21 +35,28 @@ const InferenceModelTestForm = () => {
   const modelNames = enumToArray(TaskNameEnum);
   const { listOfTasksId, toggleTaskId } = useTasksToExecuteStore();
   const { data: fileList } = useFetchUploadedFiles();
-  const { selectedFile } = useFileListStore(
+  const { selectedFile, setSelectedFile } = useFileListStore(
     useShallow((state) => ({
       selectedFile: state.selectedFile,
       setSelectedFile: state.setSelectedFile,
     })),
   );
   const { isFineTuneFlow } = useSourceParam();
-  const { form, isSubmitting, isDirty } = useInferenceModelTestForm();
+  const {
+    form,
+    isSubmitting,
+    isDirty,
+    isUpdatePending,
+    updateExtractedFormData,
+    initializeFieldNames,
+  } = useInferenceModelTestForm();
   const { setValue, watch } = form;
   const submitForFinetuningValue = watch("submitForFineTuning");
-  const submitHandler = (
-    formData: z.infer<typeof inferenceModelTestFormZodSchema>,
-  ) => {
-    console.log(formData);
-  };
+  const { data } = useFetchTestFormData();
+  const { data: modelData } = useFetchModel();
+  const { setExtractedData } = useExtractedDataStore();
+
+  console.log("TEST FORM DATA", data?.data);
 
   const isLastFile =
     selectedFile?.id === fileList?.data[fileList.data.length - 1]?.id;
@@ -73,40 +83,42 @@ const InferenceModelTestForm = () => {
     return <LoaderTemplate />;
   }
 
-  // const handleNextFile = () => {
-  //   const files = Array.isArray(fileList?.data) ? fileList.data : [];
-  //   if (!files.length || !selectedFile) return;
+  const handleNextFile = () => {
+    const files = Array.isArray(fileList?.data) ? fileList.data : [];
+    if (!files.length || !selectedFile) return;
 
-  //   const currentIndex = files.findIndex((pdf) => pdf.id === selectedFile.id);
-  //   if (currentIndex < files.length - 1) {
-  //     const nextFile = files[currentIndex + 1];
-  //     setSelectedFile(nextFile);
-  //   }
-  // };
+    const currentIndex = files.findIndex((pdf) => pdf.id === selectedFile.id);
+    if (currentIndex < files.length - 1) {
+      const nextFile = files[currentIndex + 1];
+      setSelectedFile(nextFile);
+    }
+  };
+
+  console.log("errors", form.formState.errors);
 
   // For reference later
-  //  async function submitHandler(
-  //     formData: z.infer<typeof classificationModelTestFormZodSchema>,
-  //   ) {
-  //     const { submitForFineTuning, ...dataToSend } = formData;
+  async function submitHandler(
+    formData: z.infer<typeof inferenceModelTestFormZodSchema>,
+  ) {
+    try {
+      await updateExtractedFormData({
+        id: modelData?.data.id ?? "",
+        docId: selectedFile?.id ?? "",
+        submitForFineTuning: formData.submitForFineTuning ?? false,
+        summarization: formData.summarization ?? null,
+        questionAnswer: formData.questionAnswer ?? null,
+        extraction: formData.extraction ?? null,
+        classification: formData.classification ?? null,
+        sentimentAnalytics: formData.sentimentAnalytics ?? null,
+      });
 
-  //     try {
-  //       await updateExtractedFormData({
-  //         id: modelId,
-  //         mlModelId: modelId,
-  //         accuracy: null,
-  //         dataObject: JSON.stringify(dataToSend.categories),
-  //         submitForFineTuning,
-  //         docId: selectedFile?.id ?? "",
-  //       });
-
-  //       setExtractedData({});
-  //       handleNextFile(); // ✅ Called only on success
-  //       if (!isLastFile) initializeFieldNames();
-  //     } catch {
-  //       // error handled in onError mutation fn
-  //     }
-  //   }
+      setExtractedData({});
+      handleNextFile(); // ✅ Called only on success
+      if (!isLastFile) initializeFieldNames();
+    } catch {
+      // error handled in onError mutation fn
+    }
+  }
 
   return (
     <Form
@@ -132,6 +144,7 @@ const InferenceModelTestForm = () => {
                     type="single"
                     collapsible
                     className="w-full bg-slate-100 rounded-lg shadow-sm"
+                    defaultValue={value} // 👈 this makes it open by default
                   >
                     <AccordionItem
                       value={value}
@@ -183,10 +196,15 @@ const InferenceModelTestForm = () => {
             <Button
               size="xs"
               type="submit"
-              // disabled={isSubmitting || isUpdatePending}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isUpdatePending}
             >
-              {isLastFile ? "Save" : "Save & Next"}
+              {isUpdatePending ? (
+                <LoadingSpinner className="h-4 w-4" />
+              ) : isLastFile ? (
+                "Save"
+              ) : (
+                "Save & Next"
+              )}
             </Button>
           </div>
         </>

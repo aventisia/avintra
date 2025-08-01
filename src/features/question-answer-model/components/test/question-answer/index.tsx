@@ -11,8 +11,9 @@ import {
 import { Controller, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
-type FormSchema = z.infer<typeof questionAnswerTestFormZodSchema>;
-type Field = FormSchema["questionAnswers"][number] & { id: string };
+type Field = z.infer<typeof questionAnswerTestFormZodSchema>[number] & {
+  id: string;
+};
 
 type DataFieldsProps = {
   form: UseFormReturn<z.infer<typeof inferenceModelTestFormZodSchema>>;
@@ -40,7 +41,7 @@ const QuestionAnswerFields = ({
             <FormControl>
               <Controller
                 control={control}
-                name={`questionAnswer.questionAnswers.${index}.answer`}
+                name={`questionAnswer.${index}.answer`}
                 render={({ field }) => (
                   <AutosizeTextareaField {...answerProps} {...field} />
                 )}

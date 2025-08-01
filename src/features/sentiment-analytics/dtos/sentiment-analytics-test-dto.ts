@@ -1,11 +1,3 @@
-interface IModelInfo {
-    createdOn?: string;
-    createdByUserId?: string;
-    lastModifiedByUserId?: string;
-    createdBy?: string;
-    createdByUsername?: string;
-}
-
 // Level 3
 export interface ISubSubCategoryDescriptor {
     id?: string;
@@ -18,23 +10,18 @@ export interface ISubSubCategoryDescriptor {
     id?: string;
     name: string;
     value: string;
-    subSubCategories?: ISubSubCategoryDescriptor[]; // optional, can default to []
+    subSubCategories?: ISubSubCategoryDescriptor[] | null; // optional, can default to []
 }
 
-interface IExtractedData {
+// Level 1
+interface SentimentAnalyticsCategoryDescriptor {
+    id?: string
     name: string;
     value: string;
-    subCategories?: ISubCategoryDescriptor[]; // optional, can default to []
+    subCategories?: ISubCategoryDescriptor[] | null; // optional, can default to []
     
 }
 
-export interface SentimentAnalyticsTestDTO extends IModelInfo {
-    id: string;
-    mlModelId: string;
-    docId: string;
-    docName: string;
-    accuracy: number;
-    type: string;
-    submitForFineTuning: boolean;
-    extractedData: IExtractedData[]
+export interface SentimentAnalyticsTestDTO {
+    categories: SentimentAnalyticsCategoryDescriptor[];
 }
