@@ -16,7 +16,7 @@ import { HeaderActionMenu } from "./header-menu-actions";
 import SearchCommandTrigger from "./Search";
 import { SettingsTrigger } from "@/features/flow-settings/components/SettingsTrigger";
 import { useIsAgentsAssist } from "@/features/agents-assist/hooks/useIsAgentsAssist";
-import { FlowParticipantsFacePile } from "@/features/share-access/components/FlowParticipantsFacePile";
+import { FlowParticipantsFacePile } from "@/features/share-access/components/share-avatars/FlowParticipantsFacePile";
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import AgentName from "./AgentName";
 
