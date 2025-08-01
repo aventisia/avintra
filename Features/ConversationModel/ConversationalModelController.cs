@@ -42,18 +42,25 @@ public class ConversationalModelController : BaseApiController
     {
         return ResultHelper(_ConversationModelService.GetVoiceOptionsByLanguageName(language));
     }
-    
+
     // Retrieves a list of available Speech-to-Text services and their options.
-    [HttpGet("speech-to-text")]
-    public ActionResult<ServiceResponse<SelectOptionDto>> GetAvailableSpeechToTextOptions()
+    [HttpGet("speech-to-text/{language}")]
+    public ActionResult<ServiceResponse<SelectOptionDto>> GetAvailableSpeechToTextOptions(string language)
     {
-        return ResultHelper(_ConversationModelService.GetAvailableSpeechToTextOptions());
+        return ResultHelper(_ConversationModelService.GetAvailableSpeechToTextOptions(language));
     }
 
     // Retrieves a list of available Text-to-Speech services and their options.
-    [HttpGet("text-to-speech")]
-    public ActionResult<ServiceResponse<SelectOptionDto>> GetAvailableTextToSpeechOptions()
+    [HttpGet("text-to-speech/{language}")]
+    public ActionResult<ServiceResponse<SelectOptionDto>> GetAvailableTextToSpeechOptions(string language)
     {
-        return ResultHelper(_ConversationModelService.GetAvailableTextToSpeechOptions());
+        return ResultHelper(_ConversationModelService.GetAvailableTextToSpeechOptions(language));
+    }
+
+    // Retrieves a list of available Speech-to-Text voices and their options.
+    [HttpGet("text-to-speech/voices/{serviceName}")]
+    public ActionResult<ServiceResponse<SelectOptionDto>> GetAvailableTextToSpeechVoicesOptions(string serviceName)
+    {
+        return ResultHelper(_ConversationModelService.GetAvailableTextToSpeechVoicesOptions(serviceName));
     }
 }
