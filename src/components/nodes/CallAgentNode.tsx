@@ -24,20 +24,20 @@ export const CallAgentNode = ({
     <ReactFlowContextMenu>
       <div
         className={cn(
-          "flex h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-[#3E37B3] hover:ring hover:ring-ring",
+          "flex h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-[#3E37B3] bg-[#3E37B3] hover:ring hover:ring-ring",
           selected && "border-primary ring ring-ring",
           data?.isDisabled && "opacity-50",
         )}
       >
         <div
           className={cn(
-            "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center rounded-l-lg bg-[#3E37B3]",
+            "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center bg-[#3E37B3]",
           )}
         >
           <GripVertical className={cn("h-5 w-5 text-white")} />
         </div>
         <OpenNodeConfig {...{ nodeData: data, nodeId: id }}>
-          <div className="flex w-[18rem] grow flex-col gap-2 rounded-r-lg bg-[#F9F9F9] px-4 pb-3.5 pt-[0.7rem]">
+          <div className="flex h-full w-full flex-col gap-2 bg-[#F9F9F9] px-4 pb-3.5 pt-[0.7rem]">
             <NodeHeader>
               {/* <div className="flex items-center gap-3"> */}
               <Bot className="h-5 w-5 text-[#3E37B3]" />

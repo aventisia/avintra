@@ -27,6 +27,7 @@ export const OpenNodeConfig = ({
   return (
     // Do not use DialogTrigger to open the dialog. It creats focus issue due to multiple DialogTriggers
     <button
+      className="w-[calc(100%-1.25rem)] rounded-r-lg overflow-clip"
       onDoubleClick={() => {
         setShowDialog(!showDialog);
         setNodeId(nodeId);
