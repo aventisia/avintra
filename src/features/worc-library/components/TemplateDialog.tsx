@@ -8,7 +8,7 @@ import {
   DialogHeader,
 } from "@aventisia/ui/dialog";
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { Copy, X } from "lucide-react";
+import { BotIcon, Copy, X } from "lucide-react";
 
 import { useAgentTemplateMutation } from "../hooks/useAgentTemplateMutation";
 import { useModelTemplateMutation } from "../hooks/useModelTemplateMutation";
@@ -72,8 +72,9 @@ const TemplateDialog = () => {
                 </div>
               ))
             ) : (
+              // Fallback icon
               <div className="rounded-lg bg-accent p-2">
-                <img src={""} alt="" className="h-8 w-8" />
+                <BotIcon className="h-8 w-8" />
               </div>
             )}
           </div>
@@ -129,14 +130,11 @@ const TemplateDialog = () => {
             {/* Apply template */}
             <Button
               onClick={handleUseTemplate}
-              className="min-w-36"
+              className="flex items-center gap-2"
               disabled={isPending}
             >
-              {isPending ? (
-                <LoadingSpinner className="h-6 w-6" />
-              ) : (
-                "Use this Template"
-              )}
+              {isPending ? <LoadingSpinner className="h-4 w-4" /> : null}
+              Use this Template
             </Button>
           </div>
         </DialogFooter>
