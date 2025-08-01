@@ -16,9 +16,10 @@ Instructions
       - The entire response MUST be a single, valid JSON array string, exactly as specified in the 'OutputFormat' field. Do NOT include any additional text, markdown, headers, bolding, newlines, or any other characters or formatting outside of this specified JSON array string. Provide ONLY the JSON array string.
 
 EachResultMustInclude
-      - index: index value of associated question (e.g., "1", "2")
       - question: the original question text
       - answer: the corresponding answer based on the context (empty string if not found)
       - confidenceScore: a string value representing the model's confidence in the accuracy of the answer scaled from 0 to 100 (e.g., "94", "0" if not found).
 
-OutputFormat: [{\"index\":\"1\", \"question\": \"question 1\", \"answer\": \"answer 1\", \"confidenceScore\": \"confidence_score1\"}, {\"index\":\"2\", \"question\": \"another_question\", \"answer\": \"another_answer\", \"confidenceScore\": \"another_confidence_score\"}]
+```json
+{{OutputFormat}},
+```

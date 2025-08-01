@@ -17,5 +17,6 @@ Instructions:
 - Maintain original tone: Ensure the tone of the summary aligns with the tone of the original content.
 - Ensure accurate meaning: The summary should reflect the content's intent without adding or changing its core ideas
 
+
 Output Format:
 "{"summary":"summary_content"}"

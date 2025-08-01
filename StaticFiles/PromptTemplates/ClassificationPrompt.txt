@@ -24,9 +24,10 @@ Instructions:
     - The entire response MUST be a single, valid JSON array string, exactly as specified in the 'OutputFormat' field. Do NOT include any additional text, markdown, headers, bolding, newlines, or any other characters or formatting outside of this specified JSON array string. Provide ONLY the JSON array string.
 
 EachClassificationResultMustInclude:
-    - index: a unique, sequential number corresponding to the category's original order (e.g., "0", "1")
     - name: the category name,
     - value: "true" or "false",
     - confidenceScore: a string representing the model's confidence in the classification, scaled from 1 to 100 (e.g., "92"). Use "0" for completely irrelevant/false categories.
 
-OutputFormat: [{"index":"\"0\"", "name":"category_name_0", "value":"true", "confidenceScore":"\"92\""}, {"index":"\"1\"", "name":"category_name_1", "value":"false", "confidenceScore":"\"0\""}]
+```json
+{{OutputFormat}},
+```

@@ -12,10 +12,11 @@ Instructions:
     - The entire response MUST be a single, valid JSON array string, exactly as specified in the 'OutputFormat' field. Do NOT include any additional text, markdown, headers, bolding, newlines, or any other characters or formatting outside of this specified JSON array string. Provide ONLY the JSON array string.
  
 EachCategoryResultMustInclude:
-    - index: index value of associated category (e.g., "1", "2")
     - name: the category name
     - value": "true" or "false"
     - confidenceScore: a string representing the model's confidence scaled from 1 to 100 (e.g., "92")
 
- OutputFormat: 
- [{\"index\":\"1\", \"name\":\"category_name\", \"value\":\"true\", \"confidenceScore\": \"confidence_score\"}, {\"index\":\"2\", \"name\":\"another_category_name\", \"value\":\"false\", \"confidenceScore\": \"confidence_score\"}]"}}
+ 
+```json
+{{OutputFormat}},
+```
