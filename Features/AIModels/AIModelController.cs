@@ -13,9 +13,9 @@ public class AIModelController : BaseApiController
 
     /// Fetches a list of all published machine learning models
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AIModelDto>>>> GetAIModels(bool includeUnpublish = false)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AIModelDto>>>> GetAIModels()
     {
-        return ResultHelper(await _aiModelService.GetAIModelsAsync(includeUnpublish));
+        return ResultHelper(await _aiModelService.GetAIModelsAsync());
     }
 
     [HttpGet("list/{searchKey}")]

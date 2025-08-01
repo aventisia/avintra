@@ -5,7 +5,6 @@ public class AIModelService : IAIModelService
     private readonly ILogger<AIModelService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IInferencingModelService _inferencingModelService;
-    private readonly Guid _userId;
     private readonly string? _apiKey;
 
     public AIModelService(
@@ -18,13 +17,11 @@ public class AIModelService : IAIModelService
         _unitOfWork = unitOfWork;
         _inferencingModelService = inferencingModelService;
 
-        // Attempt to extract the user ID from the HTTP context
-        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _apiKey = GetApiKeyOfRequestUtil.GetApiKeyOfRequest(httpContextAccessor.HttpContext);
     }
 
     // Retrieves a list of published ai models.
-    public async Task<ServiceResponse<IEnumerable<AIModelDto>>> GetAIModelsAsync(bool includeUnpublish)
+    public async Task<ServiceResponse<IEnumerable<AIModelDto>>> GetAIModelsAsync()
     {
         var response = new ServiceResponse<IEnumerable<AIModelDto>>
         {
@@ -35,14 +32,9 @@ public class AIModelService : IAIModelService
         try
         {
             _logger.LogDebug("Querying the repository for published ai models...");
-
             var models = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
-                    (includeUnpublish || w.IsPublished) &&
-                    w.CreatedByUserId == _userId ||
-                    (
-                        w.Users.Any(a => a.UserId == _userId)
-                    )
+                    w.IsPublished
                 )
                 .Include(i => i.Tasks)
                 .Include(i => i.Users)
@@ -55,11 +47,11 @@ public class AIModelService : IAIModelService
             response.StatusCode = 200;
             response.Message = "AI models retrieved successfully.";
 
-            _logger.LogInformation("Successfully retrieved {Count} ai models for user {UserId}.", models.Count, _userId);
+            _logger.LogInformation("Successfully retrieved {Count} ai models", models.Count);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving ai models for user {UserId}.", _userId);
+            _logger.LogError(ex, "An error occurred while retrieving ai models.");
         }
 
         return response;
@@ -80,7 +72,6 @@ public class AIModelService : IAIModelService
 
             var models = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
-                    w.Type != null &&
                     w.IsPublished &&
                     w.Name.ToLower().Contains(searchKey.ToLower())
                 )
@@ -95,11 +86,11 @@ public class AIModelService : IAIModelService
             response.StatusCode = 200;
             response.Message = "AI models retrieved successfully.";
 
-            _logger.LogInformation("Successfully retrieved {Count} AI models for user {UserId}.", models.Count, _userId);
+            _logger.LogInformation("Successfully retrieved {Count} AI models.", models.Count);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while searching for AI models for user {UserId}.", _userId);
+            _logger.LogError(ex, "An error occurred while searching for AI models.");
         }
 
         return response;

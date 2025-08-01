@@ -8,10 +8,9 @@ public interface IAIModelService
     /// <summary>
     /// Retrieves a collection of AI models with an option to include unpublished models.
     /// </summary>
-    /// <param name="includeUnpublish"> A flag indicating whether to include unpublished AI models in the result. Defaults to <c>false</c>. </param>
     /// <returns> A task that represents the asynchronous operation. The task result contains a ServiceResponse object with an enumeration of AIModelDto objects representing the available AI models, including unpublished models if specified.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<AIModelDto>>> GetAIModelsAsync(bool includeUnpublish);
+    Task<ServiceResponse<IEnumerable<AIModelDto>>> GetAIModelsAsync();
 
     /// <summary>
     /// Searches for AI models based on a search key, with an option to include unpublished models.
