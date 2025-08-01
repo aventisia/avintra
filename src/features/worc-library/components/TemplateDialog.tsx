@@ -32,7 +32,7 @@ const TemplateDialog = () => {
 
   // Determine type of template
   const isModelTemplate = templateToUse?.type === "Inferencing";
-  const isAgentTemplate = templateToUse?.type.includes("Agent");
+  const isAgentTemplate = ["Agent", "Block"].includes(templateToUse?.type);
 
   // Track loading state based on active mutation
   const isPending = isModelTemplate

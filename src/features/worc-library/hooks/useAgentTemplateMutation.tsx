@@ -31,8 +31,7 @@ export const useAgentTemplateMutation = () => {
 
     // On success, open Agent Builder with the applied template
     onSuccess: (data) => {
-      const url = `${import.meta.env.VITE_AGENTBUILDER_URL}/agent?f=${data.data.refId}`;
-      window.open(url);
+      window.location.href = `${import.meta.env.VITE_AGENTBUILDER_URL}/agent?f=${data.data.refId}`;
     },
   });
 };
