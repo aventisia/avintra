@@ -36,6 +36,9 @@ public class InferencingModelMappingProfile : IRegister
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn);
 
+        config.NewConfig<TaskSetupCategoryDto, ClassificationTaskExtractedDataDto>();
+        config.NewConfig<TaskSetupCategoryDto, SentimentAnalysisExtractedDataDto>();
+
         config.NewConfig<ExtractedData, InferencingModelExtractedDataDetailDto>()
             .Map(dest => dest.Id, src => src.MLModelId)
             .Map(dest => dest.DocId, src => src.DocId)

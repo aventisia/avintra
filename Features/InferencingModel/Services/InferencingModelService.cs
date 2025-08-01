@@ -734,7 +734,7 @@ public class InferencingModelService : IInferencingModelService
 
             if (inferencingModelExtractedDataDetailDto.QuestionAnswer != null)
             {
-               var task = mlModel.Tasks.FirstOrDefault(t => t.Name == nameof(ModelTypesEnum.QuestionAnswer));
+                var task = mlModel.Tasks.FirstOrDefault(t => t.Name == nameof(ModelTypesEnum.QuestionAnswer));
                 var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == task.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
                 if (extractedData != null)
                 {
@@ -1241,7 +1241,7 @@ public class InferencingModelService : IInferencingModelService
         var prompt = modelTask.GeneratedPrompt.Replace("{{FileContent}}", fileContent).Replace("{{OutputFormat}}", outputFormatJson);
 
         // Log the generated prompt for debugging
-        _logger.LogDebug("Sending prompt to LLM: {Prompt}", prompt);
+        _logger.LogInformation("Sending prompt to LLM: {Prompt}", prompt);
 
         var startTime = DateTime.UtcNow;
 
@@ -1251,8 +1251,11 @@ public class InferencingModelService : IInferencingModelService
         var endTime = DateTime.UtcNow;
         var executionSeconds = (int)Math.Ceiling((endTime - startTime).TotalSeconds);
 
+        // Log the generated response for debugging
+        _logger.LogInformation("LLM response received for prompt: {llmResponse}", llmResponse);
+
         // Log the LLM response status and execution time
-        _logger.LogDebug("LLM response for prompt status: {ResponseStatus}, Execution Time: {ExecutionTime}s", llmResponse.StatusCode, executionSeconds);
+        _logger.LogInformation("LLM response for prompt status: {ResponseStatus}, Execution Time: {ExecutionTime}s", llmResponse.StatusCode, executionSeconds);
 
         // If LLM response is not successful, log the error and return a failed response
         if (llmResponse.StatusCode != 200 || string.IsNullOrEmpty(llmResponse.Data))
@@ -1284,11 +1287,119 @@ public class InferencingModelService : IInferencingModelService
                     break;
 
                 case nameof(InferencingModelTypesEnum.SentimentAnalytics):
-                    documentExtractionData.SentimentAnalytics = JsonSerializer.Deserialize<List<SentimentAnalysisExtractedDataDto>>(llmResponse.Data, options);
+                    var sentimentAnalyticsSetupDto = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(modelTask.SetupObject, options);
+                    documentExtractionData.SentimentAnalytics = sentimentAnalyticsSetupDto.Categories.Adapt<List<SentimentAnalysisExtractedDataDto>>();
+                    var sentimentAnalyticsCategories = JsonSerializer.Deserialize<List<CategoryDataDto>>(llmResponse.Data, options);
+                    foreach (var detectedCategory in sentimentAnalyticsCategories)
+                    {
+                        foreach (var classification in documentExtractionData.Classification)
+                        {
+                            // Match top-level category
+                            if (string.Equals(classification.Name, detectedCategory.Name, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                classification.Value = detectedCategory.Value;
+                                classification.ConfidenceScore = detectedCategory.ConfidenceScore;
+                                continue;
+                            }
+
+                            // Match subcategory
+                            if (classification.SubCategories != null)
+                            {
+                                foreach (var subcategory in classification.SubCategories)
+                                {
+                                    if (string.Equals(subcategory.Name, detectedCategory.Name, StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        subcategory.Value = detectedCategory.Value;
+                                        subcategory.ConfidenceScore = detectedCategory.ConfidenceScore;
+
+                                        // Also update parent category
+                                        classification.Value = detectedCategory.Value;
+                                        classification.ConfidenceScore = detectedCategory.ConfidenceScore;
+                                        continue;
+                                    }
+
+                                    // Match subsubcategory
+                                    if (subcategory.SubSubCategories != null)
+                                    {
+                                        foreach (var subSubcategory in subcategory.SubSubCategories)
+                                        {
+                                            if (string.Equals(subSubcategory.Name, detectedCategory.Name, StringComparison.InvariantCultureIgnoreCase))
+                                            {
+                                                subSubcategory.Value = detectedCategory.Value;
+                                                subSubcategory.ConfidenceScore = detectedCategory.ConfidenceScore;
+
+                                                // Also update parent subcategory
+                                                subcategory.Value = detectedCategory.Value;
+                                                subcategory.ConfidenceScore = detectedCategory.ConfidenceScore;
+
+                                                // Also update top-level category
+                                                classification.Value = detectedCategory.Value;
+                                                classification.ConfidenceScore = detectedCategory.ConfidenceScore;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                     break;
 
                 case nameof(InferencingModelTypesEnum.Classification):
-                    documentExtractionData.Classification = JsonSerializer.Deserialize<List<ClassificationTaskExtractedDataDto>>(llmResponse.Data, options);
+                    var classificationSetupDto = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(modelTask.SetupObject, options);
+                    documentExtractionData.Classification = classificationSetupDto.Categories.Adapt<List<ClassificationTaskExtractedDataDto>>();
+                    var classificationCategories = JsonSerializer.Deserialize<List<CategoryDataDto>>(llmResponse.Data, options);
+                    foreach (var detectedCategory in classificationCategories)
+                    {
+                        foreach (var classification in documentExtractionData.Classification)
+                        {
+                            // Match top-level category
+                            if (string.Equals(classification.Name, detectedCategory.Name, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                classification.Value = detectedCategory.Value;
+                                classification.ConfidenceScore = detectedCategory.ConfidenceScore;
+                                continue;
+                            }
+
+                            // Match subcategory
+                            if (classification.SubCategories != null)
+                            {
+                                foreach (var subcategory in classification.SubCategories)
+                                {
+                                    if (string.Equals(subcategory.Name, detectedCategory.Name, StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        subcategory.Value = detectedCategory.Value;
+                                        subcategory.ConfidenceScore = detectedCategory.ConfidenceScore;
+
+                                        // Also update parent category
+                                        classification.Value = detectedCategory.Value;
+                                        classification.ConfidenceScore = detectedCategory.ConfidenceScore;
+                                        continue;
+                                    }
+
+                                    // Match subsubcategory
+                                    if (subcategory.SubSubCategories != null)
+                                    {
+                                        foreach (var subSubcategory in subcategory.SubSubCategories)
+                                        {
+                                            if (string.Equals(subSubcategory.Name, detectedCategory.Name, StringComparison.InvariantCultureIgnoreCase))
+                                            {
+                                                subSubcategory.Value = detectedCategory.Value;
+                                                subSubcategory.ConfidenceScore = detectedCategory.ConfidenceScore;
+
+                                                // Also update parent subcategory
+                                                subcategory.Value = detectedCategory.Value;
+                                                subcategory.ConfidenceScore = detectedCategory.ConfidenceScore;
+
+                                                // Also update top-level category
+                                                classification.Value = detectedCategory.Value;
+                                                classification.ConfidenceScore = detectedCategory.ConfidenceScore;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                     break;
 
                 default:
@@ -1367,27 +1478,71 @@ public class InferencingModelService : IInferencingModelService
                 var classificationSetupObject = JsonSerializer.Deserialize<ClassificationTaskSetupDto>(modelTask.SetupObject ?? null, jsonOptions);
 
                 // Prepare output for the classification categories and subcategories
-                var classificationResult = classificationSetupObject.Categories.Select(category => new ClassificationTaskExtractedDataDto()
+                // var classificationResult = classificationSetupObject.Categories.Select(category => new ClassificationTaskExtractedDataDto()
+                // {
+                //     Name = category.Name,
+                //     Value = string.Empty,
+                //     ConfidenceScore = "0",
+                //     Subcategories = category.SubCategories?.Select(subcategory => new SubcategoryExtractedDataDto()
+                //     {
+                //         Name = subcategory.Name,
+                //         Value = string.Empty,
+                //         ConfidenceScore = "0",
+                //         SubSubcategories = subcategory.SubSubCategories?.Select(subSubcategory => new SubSubcategoryExtractedDataDto()
+                //         {
+                //             Name = subSubcategory.Name,
+                //             Value = string.Empty,
+                //             ConfidenceScore = "0",
+                //         }).ToList()
+                //     }).ToList()
+                // }).ToList();
+                var classificationCategories = new List<CategoryDataDto>();
+
+                foreach (var category in classificationSetupObject.Categories)
                 {
-                    Name = category.Name,
-                    Value = string.Empty,
-                    ConfidenceScore = "0",
-                    Subcategories = category.SubCategories?.Select(subcategory => new SubcategoryExtractedDataDto()
+                    // No subcategories: use the category itself
+                    if (category.SubCategories == null || !category.SubCategories.Any())
                     {
-                        Name = subcategory.Name,
-                        Value = string.Empty,
-                        ConfidenceScore = "0",
-                        SubSubcategories = subcategory.SubSubCategories?.Select(subSubcategory => new SubSubcategoryExtractedDataDto()
+                        classificationCategories.Add(new CategoryDataDto
                         {
-                            Name = subSubcategory.Name,
+                            Name = category.Name,
                             Value = string.Empty,
                             ConfidenceScore = "0",
-                        }).ToList()
-                    }).ToList()
-                }).ToList();
+                        });
+                    }
+                    else
+                    {
+                        foreach (var subcategory in category.SubCategories)
+                        {
+                            // If subcategory has subsubcategories, use subsubcategories
+                            if (subcategory.SubSubCategories != null && subcategory.SubSubCategories.Any())
+                            {
+                                foreach (var subSubcategory in subcategory.SubSubCategories)
+                                {
+                                    classificationCategories.Add(new CategoryDataDto
+                                    {
+                                        Name = subSubcategory.Name,
+                                        Value = string.Empty,
+                                        ConfidenceScore = "0",
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                // No subsubcategories, use subcategory
+                                classificationCategories.Add(new CategoryDataDto
+                                {
+                                    Name = subcategory.Name,
+                                    Value = string.Empty,
+                                    ConfidenceScore = "0",
+                                });
+                            }
+                        }
+                    }
+                }
 
                 // Serialize to JSON string
-                outputFormatJson = JsonSerializer.Serialize(classificationResult, jsonOptions);
+                outputFormatJson = JsonSerializer.Serialize(classificationCategories, jsonOptions);
                 break;
 
             // Handle Sentiment Analytics task type
@@ -1395,28 +1550,73 @@ public class InferencingModelService : IInferencingModelService
                 // Deserialize the SetupObject into SentimentAnalyticsTaskSetupDto
                 var sentimentAnalyticsSetupObject = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(modelTask.SetupObject ?? null, jsonOptions);
 
-                // Prepare output for sentiment categories and subcategories
-                var sentimentResult = sentimentAnalyticsSetupObject.Categories.Select(category => new SentimentAnalysisExtractedDataDto()
+                // // Prepare output for sentiment categories and subcategories
+                // var sentimentResult = sentimentAnalyticsSetupObject.Categories.Select(category => new SentimentAnalysisExtractedDataDto()
+                // {
+                //     Name = category.Name,
+                //     Value = string.Empty,
+                //     ConfidenceScore = "0",
+                //     Subcategories = category.SubCategories?.Select(subcategory => new SubcategoryExtractedDataDto()
+                //     {
+                //         Name = subcategory.Name,
+                //         Value = string.Empty,
+                //         ConfidenceScore = "0",
+                //         SubSubcategories = subcategory.SubSubCategories?.Select(subSubcategory => new SubSubcategoryExtractedDataDto()
+                //         {
+                //             Name = subSubcategory.Name,
+                //             Value = string.Empty,
+                //             ConfidenceScore = "0",
+                //         }).ToList()
+                //     }).ToList()
+                // }).ToList();
+
+                var sentimentAnalyticsCategories = new List<CategoryDataDto>();
+
+                foreach (var category in sentimentAnalyticsSetupObject.Categories)
                 {
-                    Name = category.Name,
-                    Value = string.Empty,
-                    ConfidenceScore = "0",
-                    Subcategories = category.SubCategories?.Select(subcategory => new SubcategoryExtractedDataDto()
+                    // No subcategories: use the category itself
+                    if (category.SubCategories == null || !category.SubCategories.Any())
                     {
-                        Name = subcategory.Name,
-                        Value = string.Empty,
-                        ConfidenceScore = "0",
-                        SubSubcategories = subcategory.SubSubCategories?.Select(subSubcategory => new SubSubcategoryExtractedDataDto()
+                        sentimentAnalyticsCategories.Add(new CategoryDataDto
                         {
-                            Name = subSubcategory.Name,
+                            Name = category.Name,
                             Value = string.Empty,
                             ConfidenceScore = "0",
-                        }).ToList()
-                    }).ToList()
-                }).ToList();
+                        });
+                    }
+                    else
+                    {
+                        foreach (var subcategory in category.SubCategories)
+                        {
+                            // If subcategory has subsubcategories, use subsubcategories
+                            if (subcategory.SubSubCategories != null && subcategory.SubSubCategories.Any())
+                            {
+                                foreach (var subSubcategory in subcategory.SubSubCategories)
+                                {
+                                    sentimentAnalyticsCategories.Add(new CategoryDataDto
+                                    {
+                                        Name = subSubcategory.Name,
+                                        Value = string.Empty,
+                                        ConfidenceScore = "0",
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                // No subsubcategories, use subcategory
+                                sentimentAnalyticsCategories.Add(new CategoryDataDto
+                                {
+                                    Name = subcategory.Name,
+                                    Value = string.Empty,
+                                    ConfidenceScore = "0",
+                                });
+                            }
+                        }
+                    }
+                }
 
                 // Serialize to JSON string
-                outputFormatJson = JsonSerializer.Serialize(sentimentResult, jsonOptions);
+                outputFormatJson = JsonSerializer.Serialize(sentimentAnalyticsCategories, jsonOptions);
                 break;
 
             // Handle Question Answer task type

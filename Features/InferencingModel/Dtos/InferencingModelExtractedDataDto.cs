@@ -152,7 +152,7 @@ public abstract class CategoryExtractedDataDto
     /// <summary>
     /// Gets or sets the list of subcategories under this category.
     /// </summary>
-    public List<SubcategoryExtractedDataDto>? Subcategories { get; set; }
+    public List<SubcategoryExtractedDataDto>? SubCategories { get; set; }
 }
 
 /// <summary>
@@ -178,7 +178,7 @@ public class SubcategoryExtractedDataDto
     /// <summary>
     /// Gets or sets the list of sub-subcategories under this subcategory.
     /// </summary>
-    public List<SubSubcategoryExtractedDataDto>? SubSubcategories { get; set; }
+    public List<SubSubcategoryExtractedDataDto>? SubSubCategories { get; set; }
 }
 
 /// <summary>
@@ -198,6 +198,24 @@ public class SubSubcategoryExtractedDataDto
 
     /// <summary>
     /// Gets or sets the confidence score for the sub-subcategory.
+    /// </summary>
+    public string? ConfidenceScore { get; set; }
+}
+
+public class CategoryDataDto
+{
+    /// <summary>
+    /// Gets or sets the name of the category.
+    /// </summary>
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the value associated with the category.
+    /// </summary>
+    public string? Value { get; set; }
+
+    /// <summary>
+    /// Gets or sets the confidence score for the category.
     /// </summary>
     public string? ConfidenceScore { get; set; }
 }
