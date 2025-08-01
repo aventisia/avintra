@@ -1,0 +1,34 @@
+meta {
+  name: Update generative model setup data
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/generative-model/setup
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("MLMODEL_ID"),
+    generativeModel: {
+        name: "PersonaResearch",
+        configurationType: "OnPrem",
+        llm: "gemma",
+        nodePrompt: "",
+        temperature: 0.3,
+        setupObject: {
+          personaName: "Virtual Assistant",
+          companyName: "Customer Support Agent",
+          links: ["Healthcare"],
+          purposeOfResearch: "Friendly, Professional",
+          desiredOutput: "Respond with empathy and provide accurate medical information, always defer to a healthcare professional when unsure."
+        }
+      }
+  });
+  
+}
