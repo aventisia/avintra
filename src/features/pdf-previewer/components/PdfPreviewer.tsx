@@ -109,7 +109,6 @@ export const PdfPreviewer: React.FC = () => {
     if (selectedPdf) {
       downloadPdf(selectedPdf.path || "");
       setIsPdfLoading(false);
-      setRotate(0);
     }
   }, [selectedPdf, downloadPdf, modelId, setRotate]);
 
@@ -117,6 +116,7 @@ export const PdfPreviewer: React.FC = () => {
     setNumPages(numPages);
     setPageNumber(1);
     setIsPdfLoading(false);
+    setRotate(0);
   };
 
   if (isLoadingList || isPdfLoading) {

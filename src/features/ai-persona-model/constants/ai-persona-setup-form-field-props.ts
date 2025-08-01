@@ -8,8 +8,6 @@ import { LanguageEnum } from "../enums/language-enum";
 import { VoiceEnum } from "../enums/voice-enum";
 import { TextToSpeechModelEnum } from "../enums/text-to-speech-model";
 import { SpeechToTextModelEnum } from "../enums/speech-to-text-model";
-import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-import { getAiPersonaLanguageList, getAiPersonaSpeechToTextServicesList, getAiPersonaTextToSpeechServicesList } from "../apis/ai-persona-setup-api";
 
 
 const personaNameProps: AutosizeTextareaFieldProps = {
@@ -114,15 +112,14 @@ const voiceProps: SelectFieldProps = {
     placeholder: "Select"
 }
 
-// Language Async Select Field
-const languageAsyncProps: AsyncSelectFieldProps = {
+// Cloud Language Props
+const languageCloudProps: SelectFieldProps = {
     name: "aiPersona.setupObject.speechConfiguration.language",
     label: "Language",
-    className: "text-sm !w-full",
-    triggerClassName: "!w-full mt-0.5",
+    className: "text-sm",
     placeholder: "Select",
     size: "base",
-    selectOptions: () => getAiPersonaLanguageList().then((data) => data.data),
+    selectOptions: []
 }
 
 const textToSpeechProps: SelectFieldProps = {
@@ -133,33 +130,11 @@ const textToSpeechProps: SelectFieldProps = {
     placeholder: "Select"
 }
 
-// TTS Async select field
-const textToSpeechAsyncProps: AsyncSelectFieldProps = {
-    name: "aiPersona.setupObject.speechConfiguration.textToSpeech",
-    label: "Text to Speech",
-    className: "text-sm !w-full",
-    triggerClassName: "!w-full mt-0.5",
-    size: "base",
-    selectOptions: () => getAiPersonaTextToSpeechServicesList().then((data) => data.data),
-    placeholder: "Select"
-}
-
 const speechToTextProps: SelectFieldProps = {
     name: "aiPersona.setupObject.speechConfiguration.speechToText",
     label: "Speech to Text",
     className: "text-sm",
     selectOptions : enumToArray(SpeechToTextModelEnum),
-    placeholder: "Select"
-}
-
-// STT Async select field
-const speechToTextAsyncProps: AsyncSelectFieldProps = {
-    name: "aiPersona.setupObject.speechConfiguration.speechToText",
-    label: "Speech to Text",
-    className: "text-sm !w-full",
-    triggerClassName: "!w-full mt-0.5",
-    size: "base",
-    selectOptions: () => getAiPersonaSpeechToTextServicesList().then((data) => data.data),
     placeholder: "Select"
 }
 
@@ -179,7 +154,5 @@ export {
     voiceProps,
     textToSpeechProps,
     speechToTextProps,
-    languageAsyncProps,
-    textToSpeechAsyncProps,
-    speechToTextAsyncProps
+    languageCloudProps
 }

@@ -49,6 +49,10 @@ function ExtractViaLLMButton() {
     });
   };
 
+  if (activeTab === "setup") {
+    return null;
+  }
+
   return (
     <div className="flex gap-2 items-center">
       <Button

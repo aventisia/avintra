@@ -34,48 +34,48 @@ const getAiPersonaLanguageList = () => {
   return axiosInstance
     .get<
       IHttpResponse<ISelectOption[]>
-    >(`${baseAPIURL}/languages`)
+    >(`${baseAPIURL}/available-languages`)
     .then((res) => res.data);
 };
 
 /**
  * Get list of available text to speech services.
  */
-const getAiPersonaTextToSpeechServicesList = () => {
+const getAiPersonaTextToSpeechServicesList = (lang:string) => {
   return axiosInstance
     .get<
       IHttpResponse<ISelectOption[]>
-    >(`${baseAPIURL}/text-to-speech`)
+    >(`${baseAPIURL}/text-to-speech/${lang}`)
     .then((res) => res.data);
 };
 
 /**
  * Get list of available speech to text services.
  */
-const getAiPersonaSpeechToTextServicesList = () => {
+const getAiPersonaSpeechToTextServicesList = (lang: string) => {
   return axiosInstance
     .get<
       IHttpResponse<ISelectOption[]>
-    >(`${baseAPIURL}/speech-to-text`)
+    >(`${baseAPIURL}/speech-to-text/${lang}`)
     .then((res) => res.data);
 };
 
 /**
  * Get list of available languages and voices.
  */
-const getAiPersonaVoicesList = (langCode: string) => {
+const getAiPersonaVoicesList = (ttsService: string) => {
   return axiosInstance
     .get<
       IHttpResponse<ISelectOption[]>
-    >(`${baseAPIURL}/languages/${langCode}`)
+    >(`${baseAPIURL}/text-to-speech/voices/${ttsService}`)
     .then((res) => res.data);
 };
 
 export {  
-          getAiPersonaSetupFormDataById, 
-          updateAiPersonaSetupFormData, 
-          getAiPersonaLanguageList, 
-          getAiPersonaTextToSpeechServicesList, 
-          getAiPersonaSpeechToTextServicesList, 
-          getAiPersonaVoicesList
+      getAiPersonaSetupFormDataById, 
+      updateAiPersonaSetupFormData, 
+      getAiPersonaLanguageList, 
+      getAiPersonaTextToSpeechServicesList, 
+      getAiPersonaSpeechToTextServicesList, 
+      getAiPersonaVoicesList
   };
