@@ -59,7 +59,7 @@ export const AIModelNode = ({
     <ReactFlowContextMenu>
       <div
         className={cn(
-          "flex h-[7.25rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-[#7D76EC] hover:ring hover:ring-ring",
+          "flex h-[7.25rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-[#7D76EC] bg-[#7D76EC] hover:ring hover:ring-ring",
           data.color,
           selected && "border-primary ring ring-ring",
           data?.isDisabled && "opacity-50",
@@ -67,13 +67,13 @@ export const AIModelNode = ({
       >
         <div
           className={cn(
-            "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center rounded-l-lg bg-[#13112F]",
+            "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center  bg-[#13112F]",
           )}
         >
           <GripVertical className={cn("h-5 w-5 text-white")} />
         </div>
         <OpenNodeConfig {...{ nodeData: data, nodeId: id }}>
-          <div className="flex h-full w-[18rem] flex-1 flex-col items-start gap-2.5 rounded-r-lg bg-[#1E1B4B] p-3 text-white">
+          <div className="flex h-full w-full flex-col items-start gap-2.5  bg-[#1E1B4B] p-3 text-white">
             <div className="flex items-center gap-3">
               <BrainCircuit className="text-white" />
               <h3 className="line-clamp-1 flex-1 text-start text-lg font-semibold capitalize">

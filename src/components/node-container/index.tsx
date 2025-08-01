@@ -21,8 +21,8 @@ export const NodeContainer = ({
     <div
       className={cn(
         "flex h-[5.3rem] w-[19.5rem] overflow-clip rounded-lg border-2 border-slate-300 hover:ring hover:ring-ring",
-        nodeData.type == "forLoopNode" && "border-[#B5B1F4]",
-        nodeData.type == "conditionalNode" && "border-[#7D76EC]",
+        nodeData.type == "forLoopNode" && "border-[#B5B1F4] bg-[#B5B1F4]",
+        nodeData.type == "conditionalNode" && "border-[#7D76EC] bg-[#7D76EC]",
         nodeData.type == "blockNode" && "border-[#1E1B4B] bg-[#F9F9F9]",
         !!nodeData?.groupId && "border-slate-500",
         className,
@@ -33,7 +33,7 @@ export const NodeContainer = ({
     >
       <div
         className={cn(
-          "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center rounded-l-lg bg-slate-200",
+          "custom-drag-handle flex h-full w-5 cursor-grab items-center justify-center bg-slate-200",
           nodeData.type == "forLoopNode" && "bg-[#7D76EC]",
           nodeData.type == "conditionalNode" && "bg-[#6159E8]",
           nodeData.type == "blockNode" && "bg-[#1E1B4B]",
@@ -45,7 +45,7 @@ export const NodeContainer = ({
       <OpenNodeConfig {...{ nodeData, nodeId }}>
         <div
           className={cn(
-            "flex w-[18rem] grow flex-col gap-2 rounded-r-lg bg-white px-4 pb-3.5 pt-[0.7rem]",
+            "flex h-full w-full flex-col gap-2 bg-white px-4 pb-3.5 pt-[0.7rem]",
             nodeData.type == "forLoopNode" && "bg-[#EDEDFC]",
             nodeData.type == "conditionalNode" && "bg-[#EDEDFC]",
             nodeData.type == "blockNode" && "bg-[#F9F9F9]",
