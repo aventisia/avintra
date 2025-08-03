@@ -2347,7 +2347,7 @@
             "description": "Fill an UltraTax CS form by inspecting UI elements and mapping them to a JSON content",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/assets/WindowsService.svg"
+            "img": "/function.png"
           },
           {
             "type": "activityNode",
@@ -2356,7 +2356,7 @@
             "description": "Get inspection details of a UI element in an UltraTax CS form, such as name, position etc.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/assets/WindowsService.svg"
+            "img": "/function.png"
           }
         ]
       },

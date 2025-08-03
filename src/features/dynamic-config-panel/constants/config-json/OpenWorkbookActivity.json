@@ -28,5 +28,17 @@
       "enabled": true
     },
     "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ExcelApp",
+    "label": "Excel Application",
+    "description": "The Excel Application instance (used for later close).",
+    "defaultValue": {
+      "value": "ExcelApp",
+      "enabled": true
+    },
+    "required": false
   }
 ]

@@ -27,7 +27,15 @@
     "label": "Index To Remove",
     "description": "The zero-based index of the item to remove.",
     "defaultValue": "",
-    "required": false
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RemoveMode",
+          "equals": "Index"
+        }
+      ]
+    }
   },
   {
     "direction": "Input",
@@ -36,7 +44,15 @@
     "label": "Value To Remove",
     "description": "The value of the item to remove from the list.",
     "defaultValue": "",
-    "required": true
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RemoveMode",
+          "equals": "Value"
+        }
+      ]
+    }
   },
   {
     "direction": "Input",

@@ -3,17 +3,8 @@
     "direction": "Input",
     "type": "text",
     "name": "Workbook",
-    "label": "Workbook",
-    "description": "The Excel Workbook object to close.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "ExcelApp",
-    "label": "Excel Application",
-    "description": "Optional. The Excel Application object to quit after closing the workbook.",
+    "label": "Workbook Object",
+    "description": "The Excel Workbook object to be closed.",
     "defaultValue": "",
     "required": true
   },
@@ -21,18 +12,35 @@
     "direction": "Input",
     "type": "switch",
     "name": "SaveBeforeClose",
-    "label": "Save Before Close",
-    "description": "Set to true to save the workbook before closing.",
-    "defaultValue": "",
-    "required": true
+    "label": "Save Before Closing",
+    "description": "Whether to save the workbook before closing.",
+    "defaultValue": true,
+    "required": false
   },
   {
     "direction": "Input",
     "type": "switch",
-    "name": "QuitApp",
-    "label": "Quit Application",
-    "description": "Set to true to quit the Excel application after closing the workbook.",
+    "name": "QuitExcelApp",
+    "label": "Quit Excel Application",
+    "description": "Whether to quit the Excel Application after closing the workbook.",
+    "defaultValue": true,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelApp",
+    "label": "Excel Application Object",
+    "description": "The Excel Application instance to optionally quit.",
     "defaultValue": "",
-    "required": true
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "QuitExcelApp",
+          "equals": true
+        }
+      ]
+    }
   }
 ]

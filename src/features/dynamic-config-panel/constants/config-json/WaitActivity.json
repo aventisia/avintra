@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Seconds",
+    "label": "Duration (Seconds)",
+    "description": "The number of seconds to pause workflow execution.",
+    "defaultValue": "",
+    "required": true
+  }
+]

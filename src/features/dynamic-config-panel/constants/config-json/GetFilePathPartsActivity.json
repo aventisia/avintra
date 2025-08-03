@@ -67,5 +67,17 @@
       "enabled": true
     },
     "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "CreationDateTime",
+    "label": "Creation Date Time",
+    "description": "The creation date and time of the source file.",
+    "defaultValue": {
+      "value": "CreationDateTime",
+      "enabled": true
+    },
+    "required": false
   }
 ]
