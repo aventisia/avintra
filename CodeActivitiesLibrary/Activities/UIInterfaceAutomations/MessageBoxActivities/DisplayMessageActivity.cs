@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
@@ -50,8 +51,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 
 
         [DisplayName("Timeout (Seconds)")]
-        [Description(
-            "The number of seconds after which the message box closes automatically if 'Close Message Box Automatically' is enabled.")]
+        [Description("The number of seconds after which the message box closes automatically if 'Close Message Box Automatically' is enabled.")]
         [RenderIfCondition(nameof(AutoClose), true)]
         public InArgument<int> Timeout { get; set; }
 
@@ -77,10 +77,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
                 var buttons = GetMessageBoxButtons(buttonEnum);
                 var defaultButton = GetDefaultButton(defaultEnum);
 
-                DialogResult result;
-
-                // Format message based on type
                 string messageText = FormatMessage(messageObj);
+
+                DialogResult result;
 
                 if (autoClose && timeout > 0)
                 {
@@ -173,8 +172,31 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
                 return FormatDataTable(table);
             }
 
-            // Otherwise, convert to string
-            return obj.ToString();
+            string rawMessage = obj.ToString();
+            return ReplacePlaceholders(rawMessage);
+        }
+
+        private string ReplacePlaceholders(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return input;
+
+            var pattern = @"\{\{(.*?)\}\}";
+            var matches = Regex.Matches(input, pattern);
+
+            foreach (Match match in matches)
+            {
+                var placeholder = match.Value;
+                var varName = match.Groups[1].Value;
+
+                var envValue = Environment.GetEnvironmentVariable(varName);
+                if (!string.IsNullOrEmpty(envValue))
+                {
+                    input = input.Replace(placeholder, envValue);
+                }
+            }
+
+            return input;
         }
 
         private string FormatDataTable(DataTable table)
@@ -183,7 +205,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
                 return "No data available.";
 
             // Build header row
-            string header = string.Join(" | ", table.Columns);
+            string header = string.Join(" | ", table.Columns.Cast<DataColumn>().Select(c => c.ColumnName));
             string separator = new string('-', header.Length);
 
             // Build data rows

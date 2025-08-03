@@ -40,6 +40,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
         [Description("The extension (for example, .doc) of the source file.")]
         public OutArgument<string> FileExtension { get; set; }
 
+        [DisplayName("Creation Date Time")]
+        [Description("The creation date and time of the source file.")]
+        public OutArgument<DateTime> CreationDateTime { get; set; }
+
         protected override void Execute(CodeActivityContext context)
         {
             try
@@ -54,6 +58,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
                 FileName.Set(context, Path.GetFileName(filePath));
                 FileNameNoExtension.Set(context, Path.GetFileNameWithoutExtension(filePath));
                 FileExtension.Set(context, Path.GetExtension(filePath));
+                CreationDateTime.Set(context, File.GetCreationTime(filePath));
 
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "File path components extracted successfully.");

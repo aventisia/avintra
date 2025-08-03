@@ -12,23 +12,19 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
     [Description("Removes an item from a list by index or value.")]
     public class RemoveItemFromListActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("Remove Mode")]
         [Description("Specifies whether to remove by Index or Value.")]
         public InArgument<RemoveModeEnum> RemoveMode { get; set; }
 
-
         [DisplayName("Index To Remove")]
         [Description("The zero-based index of the item to remove.")]
+        [RenderIfCondition(nameof(RemoveMode), RemoveModeEnum.Index)]
         public InArgument<int> IndexToRemove { get; set; }
 
-        [RequiredArgument]
         [DisplayName("Value To Remove")]
         [Description("The value of the item to remove from the list.")]
+        [RenderIfCondition(nameof(RemoveMode), RemoveModeEnum.Value)]
         public InArgument<object> ValueToRemove { get; set; }
 
         [RequiredArgument]
@@ -36,18 +32,10 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
         [Description("The list from which the item will be removed.")]
         public InArgument<List<object>> SourceList { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
         [DisplayName("Modified List")]
         [Description("Returns the updated list after removing the item(s).")]
         public OutArgument<List<object>> ModifiedList { get; set; }
 
-        // ----------------------
-        // Execution Logic
-        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Success";
@@ -93,7 +81,8 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
             }
             catch (Exception ex)
             {
-                ModifiedList.Set(context, 0);
+
+                ModifiedList.Set(context, new List<object>()); // Safer fallback
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error removing item from list: {ex.Message}");
             }
