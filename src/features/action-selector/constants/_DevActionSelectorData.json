@@ -6,6 +6,24 @@
     "img": null,
     "actionCategories": [
       {
+        "label": "Flow control",
+        "description": "Set rules and manage the course of the flow",
+        "icon": null,
+        "img": null,
+        "listType": "list",
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "WaitActivity",
+            "label": "Wait",
+            "description": "Pauses the workflow execution for a specified number of seconds.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
         "label": "Conditionals",
         "description": "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.",
         "icon": null,
