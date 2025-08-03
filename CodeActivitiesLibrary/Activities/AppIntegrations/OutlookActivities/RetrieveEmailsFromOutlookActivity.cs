@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
     [DisplayName("Retrieve Emails from Outlook")]
     [Description(
         "Retrieves email messages from a specified Outlook folder. Optionally filters by unread status or subject.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
     public class RetrieveEmailsFromOutlookActivity : BaseCodeActivity
     {
         // ----------------------

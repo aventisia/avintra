@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Delete Email")]
     [Description("Deletes an email from the mailbox using its Message ID via Microsoft Graph API.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
     public class DeleteEmailActivity : BaseCodeActivity
     {
         [RequiredArgument]

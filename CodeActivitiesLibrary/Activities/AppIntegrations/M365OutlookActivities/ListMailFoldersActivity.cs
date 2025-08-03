@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("List Mail Folders")]
     [Description("Lists all mail folders for a user's mailbox using Microsoft Graph API.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
     public class ListMailFoldersActivity : BaseCodeActivity
     {
         [RequiredArgument]

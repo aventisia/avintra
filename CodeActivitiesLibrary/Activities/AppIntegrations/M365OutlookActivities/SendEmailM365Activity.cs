@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Send Email")]
     [Description("Sends an email via the Microsoft Graph API using application permissions.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
     public class SendEmailM365Activity : BaseCodeActivity
     {
         [RequiredArgument]
