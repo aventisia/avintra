@@ -114,23 +114,29 @@ namespace CodeActivityToJSON
         // Create directory to save JSON files
         public static string GetOutputDirectoryToSaveJsonFiles()
         {
-            return @"C:\My Space\Gitea\Aventisia\studio\src\features\dynamic-config-panel\constants\config-json";
             //return @"C:\My Space\Gitea\OpenAI Doc Generation\input";
-            // Get user's Downloads folder
-            var downloadsPath = Path.Combine(
+
+            // Get user's studio directory
+            var outputDir = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                "Downloads",
-                "ActivityJson"
+                "Gitea",
+                "Aventisia",
+                "agent-builder",
+                "src",
+                "features",
+                "dynamic-config-panel",
+                "constants",
+                "config-json"
             );
 
             // If the directory already exists, delete it
-            if (Directory.Exists(downloadsPath))
-                Directory.Delete(downloadsPath, true);
+            if (Directory.Exists(outputDir))
+                Directory.Delete(outputDir, true);
 
             // Create the directory
-            Directory.CreateDirectory(downloadsPath);
+            Directory.CreateDirectory(outputDir);
 
-            return downloadsPath;
+            return outputDir;
         }
 
         // Get the CodeActivitiesLibrary assembly

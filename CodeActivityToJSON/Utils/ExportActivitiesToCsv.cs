@@ -38,7 +38,12 @@ namespace CodeActivityToJSON.Utils
             }
 
             // Write to CSV
-            var outputCsvPath = @"C:\My Space\Gitea\Aventisia\studio\src\features\action-selector\constants\sample-activities-list.csv";
+            var outputCsvPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                "Downloads",
+                "sample-activities-list.csv"
+            );
+
             using (var writer = new StreamWriter(outputCsvPath))
             {
                 writer.WriteLine("MainCategory,SubCategory,NodeName");

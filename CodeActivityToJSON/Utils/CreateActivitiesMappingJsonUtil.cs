@@ -112,8 +112,8 @@ namespace CodeActivityToJSON.Utils
                                 Name = activity.Name,
                                 Label = displayName.DisplayName,
                                 Description = description.Description,
-                                DocsLink = "https://docs.aventisia.com",
-                                Img = "/function.png",
+                                DocsLink = activityMetaData?.DocsLink ?? "https://docs.aventisia.com",
+                                Img = activityMetaData?.NodeImg ?? "/function.png",
                                 Icon = activityMetaData?.NodeIcon ?? null
                             });
                         }
@@ -126,7 +126,18 @@ namespace CodeActivityToJSON.Utils
 
             // Save the primary categories to JSON file
             // var outputFilePath = Path.Combine(outputDir, "_ActionSelectorData.json");
-            var outputFilePath = @"C:\My Space\Gitea\Aventisia\studio\src\features\action-selector\constants\_ActionSelectorData.json";
+            var outputFilePath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                "Gitea",
+                "Aventisia",
+                "agent-builder",
+                "src",
+                "features",
+                "action-selector",
+                "constants",
+                "_ActionSelectorData.json"
+            );
+
             using (var writer = new StreamWriter(outputFilePath))
             {
                 var json = JsonConvert.SerializeObject(primaryCategories, Formatting.Indented, settings);
