@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
     [DisplayName("Wait for Service")]
     [Description(
         "Suspends the execution of the automation until a service is running, paused, or stopped on the computer.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/WindowsService.svg")]
     public class WaitForServiceActivity : BaseCodeActivity
     {
         // ----------------------

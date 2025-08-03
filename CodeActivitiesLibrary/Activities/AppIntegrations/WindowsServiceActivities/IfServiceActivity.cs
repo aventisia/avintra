@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
 
     [DisplayName("If Service")]
     [Description("Marks the beginning of a If Service block of actions depending on whether a service is running, paused, stopped, or installed.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/WindowsService.svg")]
     public class IfServiceActivity : BaseCodeActivity
     {
         // ----------------------
@@ -140,7 +141,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
                 return false;
             }
         }
-      
+
     }
 
     // Define the IsRunningEnum with Display attributes

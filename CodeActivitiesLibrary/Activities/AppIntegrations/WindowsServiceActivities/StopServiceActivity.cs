@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
 
     [DisplayName("Stop Service")]
     [Description("Stops a running Windows service.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/WindowsService.svg")]
     public class StopServiceActivity : BaseCodeActivity
     {
         // ----------------------

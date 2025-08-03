@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
     // Activity to resume a paused Windows service
     [DisplayName("Resume Service")]
     [Description("Resumes a paused Windows service.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/WindowsService.svg")]
     public class ResumeServiceActivity : BaseCodeActivity
     {
         // ----------------------
