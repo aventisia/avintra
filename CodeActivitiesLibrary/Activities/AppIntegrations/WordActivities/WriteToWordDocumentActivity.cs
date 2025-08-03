@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     [DisplayName("Write to Word Document")]
     [Description("Writes or appends text to a Word file.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Word.svg")]
     public class WriteToWordDocumentActivity : BaseCodeActivity
     {
         [RequiredArgument]

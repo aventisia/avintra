@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     [DisplayName("Attach to Running Word")]
     [Description("Attaches to a Word document that's already open, or opens it if needed.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Word.svg")]
     public class AttachToRunningWordActivity : BaseCodeActivity
     {
         [RequiredArgument]

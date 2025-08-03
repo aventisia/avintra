@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     [DisplayName("Find and Replace Words in Word Document")]
     [Description("Finds text and replaces it with another in the active document of a Word instance.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Word.svg")]
     public class FindAndReplaceWordsActivity : BaseCodeActivity
     {
         [RequiredArgument]
