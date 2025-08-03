@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
     [DisplayName("Get Special Folder Path")]
     [Description(
         "This activity retrieves the path of a Windows special folder, such as Desktop, My Pictures, Internet Cache, etc.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Folder.svg")]
     public class GetSpecialFolderPathActivity : BaseCodeActivity
     {
         [DisplayName("Special Folder Name")]

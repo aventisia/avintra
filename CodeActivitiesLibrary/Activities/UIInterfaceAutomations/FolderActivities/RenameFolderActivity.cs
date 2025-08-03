@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
     [DisplayName("Rename Folder")]
     [Description(
         "This activity renames an existing folder by specifying the original folder path and the new folder name.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Folder.svg")]
     public class RenameFolderActivity : BaseCodeActivity
     {
         [DisplayName("Original Folder Path")]

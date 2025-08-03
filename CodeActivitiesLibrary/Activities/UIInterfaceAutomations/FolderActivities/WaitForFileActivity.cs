@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 {
     [DisplayName("Wait for File")]
     [Description("Suspends running the flow until a file is created or deleted.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Folder.svg")]
     public class WaitForFileActivity : Extensions.BaseNativeActivity
     {
         [RequiredArgument]
@@ -109,10 +110,12 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 
     public enum WaitForFileAction
     {
-        [Display(Name = "Created")] [Description("Waits for the file to be created at the specified path.")]
+        [Display(Name = "Created")]
+        [Description("Waits for the file to be created at the specified path.")]
         Created,
 
-        [Display(Name = "Deleted")] [Description("Waits for the file to be deleted from the specified path.")]
+        [Display(Name = "Deleted")]
+        [Description("Waits for the file to be deleted from the specified path.")]
         Deleted
     }
 }
