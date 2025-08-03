@@ -37,7 +37,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
             var key = Key.Get(context);
             var algorithm = Algorithm.Get(context);
             var hashedText = "";
-            var status = "";
+            
             try
             {
                 // Combine the text and the key

@@ -74,7 +74,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
             try
             {
                 // Retrieve input arguments

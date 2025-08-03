@@ -90,7 +90,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                 if (windowHandles.Count == 0)
                     throw new InvalidOperationException("No open tabs found.");
 
-                var success = false;
                 string targetHandle = null;
 
                 switch (switchMode)
@@ -132,7 +131,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
                 currentUrl = driver.Url;
                 currentTitle = driver.Title;
                 status = $"Switched to tab '{currentTitle}' ({currentUrl})";
-                success = true;
 
                 CurrentTabUrl.Set(context, currentUrl);
                 CurrentTabTitle.Set(context, currentTitle);

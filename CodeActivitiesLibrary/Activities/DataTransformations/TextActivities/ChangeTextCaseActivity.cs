@@ -35,8 +35,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
         protected override void Execute(CodeActivityContext context)
         {
             string result = null;
-            string status = "Success";
-
+            
             try
             {
                 var input = TextToConvert.Get(context);

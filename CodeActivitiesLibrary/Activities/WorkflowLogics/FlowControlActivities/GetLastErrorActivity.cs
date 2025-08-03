@@ -14,7 +14,6 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
             try
             {
                 // Simulate retrieving last error
-                var error = "Simulated last error";
                 StatusMessage.Set(context, "Last error retrieved successfully.");
             }
             catch (Exception ex)
