@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Set Color in Excel Worksheet")]
     [Description("Fills the background of a selected range of cells with the specified color.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class SetColorInExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

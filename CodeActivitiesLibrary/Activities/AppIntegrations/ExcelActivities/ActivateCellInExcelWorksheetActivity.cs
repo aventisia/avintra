@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [DisplayName("Activate Cell in Excel Worksheet")]
     [Description(
         "Activates a specific cell in the active worksheet of an Excel instance based on absolute position, relative offset, or named range.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class ActivateCellInExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
@@ -84,10 +85,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         var colStr = Column.Get(context);
 
                         if (!int.TryParse(colStr, out var colNum))
-                           // Convert column letter (like "A", "B") to number
+                            // Convert column letter (like "A", "B") to number
                             colNum = GetColumnIndex(colStr);
 
-                        worksheet.Cells[row, colNum]?.Select(); 
+                        worksheet.Cells[row, colNum]?.Select();
                         status = $"Activated cell at Row {row}, Column {colStr}.";
                         break;
 
@@ -173,7 +174,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             }
         }
 
-     // Helper method to convert column letters to numbers
+        // Helper method to convert column letters to numbers
         private static int GetColumnIndex(string columnName)
         {
             if (string.IsNullOrEmpty(columnName)) return -1;

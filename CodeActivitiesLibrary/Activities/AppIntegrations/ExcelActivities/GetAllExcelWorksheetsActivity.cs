@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get All Excel Worksheets")]
     [Description("Retrieves all worksheet names from the active Excel workbook.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class GetAllExcelWorksheetsActivity : BaseCodeActivity
     {
         // ----------------------

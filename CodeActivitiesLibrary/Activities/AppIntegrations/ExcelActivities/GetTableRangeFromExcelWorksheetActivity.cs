@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Table Range from Excel Worksheet")]
     [Description("Retrieves the range address (e.g., 'A1:B10') of a specified table in the active Excel worksheet.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class GetTableRangeFromExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

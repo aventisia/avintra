@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Close Excel Application")]
     [Description("Closes the active Excel application instance and optionally saves changes.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class CloseExcelActivity : BaseCodeActivity
     {
         // ----------------------
@@ -87,7 +88,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 {
                     Marshal.ReleaseComObject(excelApp?.ActiveWorkbook);
                 }
-                Marshal.ReleaseComObject(excelApp);             
+                Marshal.ReleaseComObject(excelApp);
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }

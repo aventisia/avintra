@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Copy Excel Worksheet")]
     [Description("Copies a worksheet from one Excel instance to another by duplicating its content.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class CopyExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Read from Excel Worksheet")]
     [Description("Reads values from a specified cell range in the active Excel worksheet.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class ReadFromExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
@@ -192,7 +193,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 // If the range is empty, return an empty DataTable
                 if (rowCount < startRow || colCount < 1)
                     return dataTable; // Return empty DataTable
-                
+
                 // Add columns dynamically
                 for (var j = 1; j <= colCount; j++)
                 {

@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Rename Excel Worksheet")]
     [Description("Renames a specific worksheet in the active Excel workbook.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class RenameExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

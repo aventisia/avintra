@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Open Excel Workbook")]
     [Description("Opens an existing Excel workbook from the specified file path and reports success or failure.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class OpenWorkbookActivity : BaseCodeActivity
     {
         [RequiredArgument]

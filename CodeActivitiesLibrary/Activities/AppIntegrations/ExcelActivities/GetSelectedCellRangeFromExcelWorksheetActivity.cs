@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [DisplayName("Get Selected Cell Range from Excel Worksheet")]
     [Description(
         "Retrieves the currently selected cell range in the active Excel worksheet as first column, first row, last column, and last row indices.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class GetSelectedCellRangeFromExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

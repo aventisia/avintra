@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Attach to Running Excel Workbook")]
     [Description("Attaches to a running Excel instance and opens the specified workbook if not already open.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class AttachToRunningExcelActivity : BaseCodeActivity
     {
         [RequiredArgument]

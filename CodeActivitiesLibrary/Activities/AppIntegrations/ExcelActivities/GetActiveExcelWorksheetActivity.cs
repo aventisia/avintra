@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Active Excel Worksheet")]
     [Description("Retrieves the name and index of the currently active worksheet in an Excel instance.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class GetActiveExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

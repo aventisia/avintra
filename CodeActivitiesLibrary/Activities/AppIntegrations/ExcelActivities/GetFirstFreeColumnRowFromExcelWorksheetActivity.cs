@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [DisplayName("Get First Free Column or Row from Excel Worksheet")]
     [Description(
         "Retrieves the first free column and/or row of the active worksheet. This is useful for adding new data into a worksheet that already has data in it.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class GetFirstFreeColumnRowFromExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

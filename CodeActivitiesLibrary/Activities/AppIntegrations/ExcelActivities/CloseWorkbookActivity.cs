@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Close Excel Workbook")]
     [Description("Closes the specified Excel workbook and optionally quits the Excel application.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class CloseWorkbookActivity : BaseCodeActivity
     {
         [RequiredArgument]

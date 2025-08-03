@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Copy Range from Excel Worksheet to DataTable")]
     [Description("Copies a specified range of cells from the active worksheet of an Excel instance into a DataTable.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class CopyExcelWorksheetActivityToDataTable : BaseCodeActivity
     {
         // ----------------------

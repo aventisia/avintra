@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Add New Worksheet")]
     [Description("Adds a new worksheet to the document of an Excel instance.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class AddNewWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

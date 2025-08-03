@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Write to Excel Worksheet")]
     [Description("Writes a value to a specific cell or range of cells in an Excel worksheet.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class WriteToExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

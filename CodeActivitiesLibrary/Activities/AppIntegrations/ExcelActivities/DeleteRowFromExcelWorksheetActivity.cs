@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Delete Row from Excel Worksheet")]
     [Description("Deletes a specific row from the active worksheet of an Excel instance.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class DeleteRowFromExcelWorksheetActivity : BaseCodeActivity
     {
         [RequiredArgument]

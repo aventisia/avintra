@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [DisplayName("Paste range cells to Excel Worksheet")]
     [Description(
         "Pastes a range of cells from a source Excel instance/workbook to a specific range in a target Excel worksheet.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class PasteCellsToExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Insert Row to Excel Worksheet")]
     [Description("Inserts a new row above the selected row in the active Excel worksheet.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class InsertRowToExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
