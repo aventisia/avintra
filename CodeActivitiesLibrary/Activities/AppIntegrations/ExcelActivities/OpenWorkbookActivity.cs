@@ -24,6 +24,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("The opened Excel Workbook object.")]
         public OutArgument<Workbook> Workbook { get; set; }
 
+        [DisplayName("Excel Application")]
+        [Description("The Excel Application instance (used for later close).")]
+        public OutArgument<Application> ExcelApp { get; set; }
+
         protected override void Execute(CodeActivityContext context)
         {
             string filePath = FilePath.Get(context);
@@ -31,6 +35,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             bool isSuccess;
             string statusMessage;
             Workbook workbook = null;
+            Application excelApp = null;
 
             if (string.IsNullOrWhiteSpace(filePath))
             {
@@ -46,7 +51,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             {
                 try
                 {
-                    Application excelApp = new Application
+                    excelApp = new Application
                     {
                         Visible = visible,
                         DisplayAlerts = false
@@ -65,6 +70,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
             // Set output arguments
             Workbook.Set(context, workbook);
+            ExcelApp.Set(context, excelApp);
             IsSuccess.Set(context, isSuccess);
             StatusMessage.Set(context, statusMessage);
         }

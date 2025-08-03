@@ -12,78 +12,68 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     public class CloseWorkbookActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("Workbook")]
-        [Description("The Excel Workbook object to close.")]
-        public InArgument<Workbook> Workbook { get; set; }
+        [DisplayName("Workbook Object")]
+        [Description("The Excel Workbook object to be closed.")]
+        public InArgument<object> Workbook { get; set; }
 
-        [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("Optional. The Excel Application object to quit after closing the workbook.")]
-        public InArgument<Application> ExcelApp { get; set; }
-
-        [RequiredArgument]
-        [DisplayName("Save Before Close")]
-        [Description("Set to true to save the workbook before closing.")]
+        [DisplayName("Save Before Closing")]
+        [Description("Whether to save the workbook before closing.")]
+        [DefaultValue(true)]
         public InArgument<bool> SaveBeforeClose { get; set; }
 
-        [RequiredArgument]
-        [DisplayName("Quit Application")]
-        [Description("Set to true to quit the Excel application after closing the workbook.")]
-        public InArgument<bool> QuitApp { get; set; }
+        [DisplayName("Quit Excel Application")]
+        [Description("Whether to quit the Excel Application after closing the workbook.")]
+        [DefaultValue(true)]
+        public InArgument<bool> QuitExcelApp { get; set; }
+
+        [DisplayName("Excel Application Object")]
+        [Description("The Excel Application instance to optionally quit.")]
+        [RenderIfCondition(nameof(QuitExcelApp), true)]
+        public InArgument<object> ExcelApp { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
+            object workbookObj = Workbook.Get(context);
+            object excelAppObj = ExcelApp.Get(context);
+            bool saveBeforeClose = SaveBeforeClose.Get(context);
+            bool quitApp = QuitExcelApp.Get(context);
+
             bool isSuccess = false;
-            string statusMessage = string.Empty;
+            string statusMessage;
 
             Workbook workbook = null;
             Application excelApp = null;
 
             try
             {
-                // Get Workbook (required)
-                workbook = Workbook.Get(context);
+                workbook = workbookObj as Workbook;
+                excelApp = excelAppObj as Application;
+
                 if (workbook == null)
-                    throw new ArgumentNullException(nameof(Workbook), "Workbook reference is null.");
+                    throw new ArgumentNullException(nameof(Workbook), "Workbook is null or invalid.");
 
-                // Get Excel Application (optional)
-                if (ExcelApp != null && ExcelApp.Expression != null)
-                    excelApp = ExcelApp.Get(context);
-
-                // Get boolean values from InArguments
-                bool saveBeforeClose = SaveBeforeClose.Get(context);
-                bool quitApp = QuitApp.Get(context);
-
-                // Close the workbook
                 workbook.Close(saveBeforeClose);
+                Marshal.ReleaseComObject(workbook);
+                workbook = null;
 
-                // Quit Excel application if requested
-                if (quitApp && excelApp != null)
+                if (excelApp != null && quitApp)
                 {
                     excelApp.Quit();
-
-                    // Release COM object of ActiveWorkbook first if it exists
-                    if (excelApp.ActiveWorkbook != null)
-                        Marshal.ReleaseComObject(excelApp.ActiveWorkbook);
-
-                    // Release COM object of Excel Application
                     Marshal.ReleaseComObject(excelApp);
+                    excelApp = null;
                 }
 
-                // Also release workbook object explicitly
-                if (workbook != null)
-                    Marshal.ReleaseComObject(workbook);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
                 isSuccess = true;
                 statusMessage = "Workbook closed successfully.";
             }
             catch (Exception ex)
             {
-                isSuccess = false;
                 statusMessage = $"Error closing workbook: {ex.Message}";
             }
 
-            // Set output arguments
             IsSuccess.Set(context, isSuccess);
             StatusMessage.Set(context, statusMessage);
         }
