@@ -153,6 +153,15 @@ public abstract class CategoryExtractedDataDto
     /// Gets or sets the list of subcategories under this category.
     /// </summary>
     public List<SubcategoryExtractedDataDto>? SubCategories { get; set; }
+
+    // Constructor to set default values
+    public CategoryExtractedDataDto()
+    {
+        // Set default values for properties
+        Value = "false";
+        ConfidenceScore = "0";
+        SubCategories = new List<SubcategoryExtractedDataDto>();
+    }
 }
 
 /// <summary>
@@ -179,6 +188,15 @@ public class SubcategoryExtractedDataDto
     /// Gets or sets the list of sub-subcategories under this subcategory.
     /// </summary>
     public List<SubSubcategoryExtractedDataDto>? SubSubCategories { get; set; }
+
+    // Constructor to set default values
+    public SubcategoryExtractedDataDto()
+    {
+        // Set default values for properties
+        Value = "false";
+        ConfidenceScore = "0";
+        SubSubCategories = new List<SubSubcategoryExtractedDataDto>();
+    }
 }
 
 /// <summary>
@@ -200,6 +218,14 @@ public class SubSubcategoryExtractedDataDto
     /// Gets or sets the confidence score for the sub-subcategory.
     /// </summary>
     public string? ConfidenceScore { get; set; }
+
+    // Constructor to set default values
+    public SubSubcategoryExtractedDataDto()
+    {
+        // Set default values for properties
+        Value = "false";
+        ConfidenceScore = "0";
+    }
 }
 
 public class CategoryDataDto
