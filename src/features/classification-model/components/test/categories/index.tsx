@@ -39,18 +39,23 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
             field.subCategories && field.subCategories?.length > 0;
 
           return (
-            <Collapsible key={field.id} defaultOpen>
+            <Collapsible key={field.id} defaultOpen className="relative group">
               <div className="flex items-center gap-2">
                 {hasChildren && (
-                  <CollapsibleTrigger asChild>
-                    <Button
-                      variant={"ghost"}
-                      size={"icon8"}
-                      className="!m-0 data-[state=closed]:rotate-[-90deg] w-auto h-auto bg-slate-200 !p-0.5 rounded-full"
-                    >
-                      <ChevronDown className="w-4 h-4 data-[state=closed]:rotate-[-90deg]" />
-                    </Button>
-                  </CollapsibleTrigger>
+                  <>
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        variant={"ghost"}
+                        size={"icon8"}
+                        className="!m-0 data-[state=closed]:rotate-[-90deg] w-auto h-auto bg-slate-200 !p-0.5 rounded-full"
+                      >
+                        <ChevronDown className="w-4 h-4 data-[state=closed]:rotate-[-90deg]" />
+                      </Button>
+                    </CollapsibleTrigger>
+                  </>
+                )}
+                {hasChildren && (
+                  <div className="h-full w-[2px] bg-slate-200 absolute left-[9.9px] top-[19px] group-data-[state=open]:block hidden"></div>
                 )}
 
                 <Controller
@@ -59,13 +64,13 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
                   render={({ field }) => (
                     <CheckboxField
                       name={field.name}
-                      checked={field.value}
-                      // onCheckedChange={(checked) =>
-                      //   field.onChange(checked ? "true" : "false")
-                      // }
-                      onCheckedChange={field.onChange}
+                      checked={field.value === "true"}
+                      onCheckedChange={(checked) =>
+                        field.onChange(checked ? "true" : "false")
+                      }
+                      // onCheckedChange={field.onChange}
                       label=""
-                      className={!hasChildren ? "ml-[30px]" : ""}
+                      className={!hasChildren ? "ml-[1.5px]" : ""}
                     />
                   )}
                 />

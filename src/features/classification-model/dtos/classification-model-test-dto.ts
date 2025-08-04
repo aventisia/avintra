@@ -2,14 +2,14 @@
 export interface ISubSubCategoryDescriptor {
     id?: string;
     name: string;
-    value: boolean;
+    value: string;
   }
   
 // Level 2
 export interface ISubCategoryDescriptor {
     id?: string;
     name: string;
-    value: boolean;
+    value: string;
     subSubCategories: ISubSubCategoryDescriptor[] | null;
 }
   
@@ -17,7 +17,7 @@ export interface ISubCategoryDescriptor {
 export interface ClassificationCategoryDescriptor {
     id?: string;
     name: string;
-    value: boolean;
+    value: string;
     subCategories: ISubCategoryDescriptor[] | null;
 }
 

@@ -55,11 +55,11 @@ const SubCategory = ({
                 render={({ field }) => (
                   <CheckboxField
                     name={field.name}
-                    checked={field.value}
-                    // onCheckedChange={(checked) =>
-                    //   field.onChange(checked ? "true" : "false")
-                    // }
-                    onCheckedChange={field.onChange}
+                    checked={field.value === "true"}
+                    onCheckedChange={(checked) =>
+                      field.onChange(checked ? "true" : "false")
+                    }
+                    // onCheckedChange={field.onChange}
                     label=""
                     className={!hasChildren ? "ml-[30px]" : ""}
                   />
@@ -83,11 +83,11 @@ const SubCategory = ({
                           render={({ field }) => (
                             <CheckboxField
                               name={field.name}
-                              checked={field.value}
-                              // onCheckedChange={(checked) =>
-                              //   field.onChange(checked ? "true" : "false")
-                              // }
-                              onCheckedChange={field.onChange}
+                              checked={field.value === "true"}
+                              onCheckedChange={(checked) =>
+                                field.onChange(checked ? "true" : "false")
+                              }
+                              // onCheckedChange={field.onChange}
                               label=""
                             />
                           )}
