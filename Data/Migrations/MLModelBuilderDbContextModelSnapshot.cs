@@ -170,8 +170,7 @@ namespace MLModelBuilderAPIs.Migrations
 
                     b.HasIndex("MLModelId");
 
-                    b.HasIndex("ModelTaskId")
-                        .IsUnique();
+                    b.HasIndex("ModelTaskId");
 
                     b.ToTable("ExtractedData");
                 });
@@ -904,8 +903,8 @@ namespace MLModelBuilderAPIs.Migrations
                         .IsRequired();
 
                     b.HasOne("MLModelBuilderAPIs.Entities.ModelTask", "ModelTask")
-                        .WithOne("ExtractedData")
-                        .HasForeignKey("MLModelBuilderAPIs.Entities.ExtractedData", "ModelTaskId")
+                        .WithMany("ExtractedData")
+                        .HasForeignKey("ModelTaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

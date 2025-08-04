@@ -58,9 +58,9 @@ public class ModelTask : BaseEntity, IMustHaveTenant
     /// </summary>
     [ForeignKey("MLModelId")]
     public virtual MLModel? MLModel { get; set; }
-
+    
     /// <summary>
-    /// Gets or sets the extracted data associated with this data model
+    /// Gets or sets the machine learning model task that this extracted data is associated with.
     /// </summary>
-    public virtual ExtractedData? ExtractedData { get; set; }
+    public virtual ICollection<ExtractedData>? ExtractedData { get; set; }
 }
