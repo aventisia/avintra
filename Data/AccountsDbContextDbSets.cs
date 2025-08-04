@@ -20,4 +20,6 @@ public partial class AccountsDbContext
     public DbSet<BillingAccount> BillingAccounts { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
     public DbSet<Address> Addresses { get; set; }
+    public DbSet<Space> Spaces { get; set; }
+    public DbSet<SpaceUser> SpaceUsers { get; set; }
 }

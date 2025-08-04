@@ -127,4 +127,8 @@ public class AccountUser : IdentityUser<Guid>
     /// </summary>
     public DateTime DeactivatedOn { get; set; }
 
+    /// <summary>
+    /// Gets or sets the list of spaces associated with the user.
+    /// </summary>
+    public virtual ICollection<SpaceUser>? Spaces { get; set; }
 }
