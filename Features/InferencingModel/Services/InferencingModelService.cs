@@ -1292,20 +1292,20 @@ public class InferencingModelService : IInferencingModelService
                     var sentimentAnalyticsCategories = JsonSerializer.Deserialize<List<CategoryDataDto>>(llmResponse.Data, options);
                     foreach (var detectedCategory in sentimentAnalyticsCategories)
                     {
-                        foreach (var classification in documentExtractionData.Classification)
+                        foreach (var sentimentAnalysis in documentExtractionData.SentimentAnalytics)
                         {
                             // Match top-level category
-                            if (string.Equals(classification.Name, detectedCategory.Name, StringComparison.InvariantCultureIgnoreCase))
+                            if (string.Equals(sentimentAnalysis.Name, detectedCategory.Name, StringComparison.InvariantCultureIgnoreCase))
                             {
-                                classification.Value = detectedCategory.Value;
-                                classification.ConfidenceScore = detectedCategory.ConfidenceScore;
+                                sentimentAnalysis.Value = detectedCategory.Value;
+                                sentimentAnalysis.ConfidenceScore = detectedCategory.ConfidenceScore;
                                 continue;
                             }
 
                             // Match subcategory
-                            if (classification.SubCategories != null)
+                            if (sentimentAnalysis.SubCategories != null)
                             {
-                                foreach (var subcategory in classification.SubCategories)
+                                foreach (var subcategory in sentimentAnalysis.SubCategories)
                                 {
                                     if (string.Equals(subcategory.Name, detectedCategory.Name, StringComparison.InvariantCultureIgnoreCase))
                                     {
@@ -1313,8 +1313,8 @@ public class InferencingModelService : IInferencingModelService
                                         subcategory.ConfidenceScore = detectedCategory.ConfidenceScore;
 
                                         // Also update parent category
-                                        classification.Value = detectedCategory.Value;
-                                        classification.ConfidenceScore = detectedCategory.ConfidenceScore;
+                                        sentimentAnalysis.Value = detectedCategory.Value;
+                                        sentimentAnalysis.ConfidenceScore = detectedCategory.ConfidenceScore;
                                         continue;
                                     }
 
@@ -1333,8 +1333,8 @@ public class InferencingModelService : IInferencingModelService
                                                 subcategory.ConfidenceScore = detectedCategory.ConfidenceScore;
 
                                                 // Also update top-level category
-                                                classification.Value = detectedCategory.Value;
-                                                classification.ConfidenceScore = detectedCategory.ConfidenceScore;
+                                                sentimentAnalysis.Value = detectedCategory.Value;
+                                                sentimentAnalysis.ConfidenceScore = detectedCategory.ConfidenceScore;
                                             }
                                         }
                                     }

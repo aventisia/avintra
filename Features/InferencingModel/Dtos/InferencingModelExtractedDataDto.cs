@@ -212,10 +212,12 @@ public class CategoryDataDto
     /// <summary>
     /// Gets or sets the value associated with the category.
     /// </summary>
+    [JsonConverter(typeof(ToStringConverter))]
     public string? Value { get; set; }
 
     /// <summary>
     /// Gets or sets the confidence score for the category.
     /// </summary>
+    [JsonConverter(typeof(ToStringConverter))]
     public string? ConfidenceScore { get; set; }
 }
