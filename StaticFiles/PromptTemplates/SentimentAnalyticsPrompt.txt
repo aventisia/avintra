@@ -1,22 +1,25 @@
 {{Prompt}}
-Context: {{Context}}
-AnalysisRequest: Please analyze the sentiment of the text above. Classify the tone as positive, negative, or neutral, and provide a confidence score for that classification.,
-CategoriesToEvaluate: {{Categories}},
-File Content: {{FileContent}},
-Instructions:
-    - Do not modify, rephrase, or alter the categories in any way. Use them exactly as provided.,
-    - Identify the overall sentiment expressed in the context.,
-    - For each category: Return "true" if the sentiment and content clearly support or reflect the category. Return "false" if the category is not supported, not relevant, or clearly does not apply.", 
-    - Only include categories that can be confidently evaluated based on the context.,
-    - Use "false" for any category that cannot be confidently validated.,
-    - The entire response MUST be a single, valid JSON array string, exactly as specified in the 'OutputFormat' field. Do NOT include any additional text, markdown, headers, bolding, newlines, or any other characters or formatting outside of this specified JSON array string. Provide ONLY the JSON array string.
- 
-EachCategoryResultMustInclude:
-    - name: the category name
-    - value": "true" or "false"
-    - confidenceScore: a string representing the model's confidence scaled from 1 to 100 (e.g., "92")
 
- 
+Context: {{Context}}  
+CategoriesToEvaluate: {{Categories}}  
+FileContent: {{FileContent}}
+
+Instructions:  
+1. Use categories exactly as provided — no edits.  
+2. Use Prompt, Context, and FileContent together.  
+3. For each category:  
+   - `value`: "true" if clearly matched, else "false"  
+   - `confidenceScore`:  
+     - "1"–"100" if `value = "true"`  
+     - "0" if `value = "false"`  
+4. Output must be a **valid JSON array string** — no extra text or formatting.  
+5. Include all categories, even if `"false"` or `"0"`.
+
+Each result must include:  
+- `name`: (string) category name  
+- `value`: (string) "true" or "false"  
+- `confidenceScore`: (string) "0"–"100"
+
+Return only this:
 ```json
-{{OutputFormat}},
-```
+{{OutputFormat}}

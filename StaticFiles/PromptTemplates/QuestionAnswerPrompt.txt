@@ -1,25 +1,20 @@
 {{Prompt}}
 
-Context: {{Context}}
+Context: {{Context}}  
+Questions: {{Questions}}  
+FileContent: {{FileContent}}
 
-Task: Please extract answers to the following questions from the provided context. Include a confidence score for each extracted answer based on accuracy and relevance.
-Questions: {{Questions}},
-File Content: {{FileContent}}
-Instructions
-      - Do not modify, rephrase, or alter the questions in any way. Use them exactly as provided.
-      - Do not include any numbers, explanations, or extra text outside the JSON output.
-      - Answer only the questions listed in the 'Questions' field.
-      - Base all answers strictly on the given 'Context'. Do not use external knowledge.
-      - Classify and extract each answer based on the question's intent and content, directly from the context.
-      - If an answer cannot be found or confidently inferred from the context, the 'answer' field should be an empty string, and 'confidenceScore' should be '0'
-      - Do not include any text or commentary outside the specified JSON output.
-      - The entire response MUST be a single, valid JSON array string, exactly as specified in the 'OutputFormat' field. Do NOT include any additional text, markdown, headers, bolding, newlines, or any other characters or formatting outside of this specified JSON array string. Provide ONLY the JSON array string.
+Instructions:  
+1. Use questions exactly as written.  
+2. Answer only what's asked, based solely on Context and FileContent.  
+3. If the answer is missing or unclear, leave `answer` empty and set `confidenceScore` to `"0"`.  
+4. Return a valid JSON array string only — no markdown or extra text.
 
-EachResultMustInclude
-      - question: the original question text
-      - answer: the corresponding answer based on the context (empty string if not found)
-      - confidenceScore: a string value representing the model's confidence in the accuracy of the answer scaled from 0 to 100 (e.g., "94", "0" if not found).
+Each result must include:  
+- `question`: (string)  
+- `answer`: (string, empty if not found)  
+- `confidenceScore`: (string from "0" to "100")
 
+Output format (return **only** this):
 ```json
-{{OutputFormat}},
-```
+{{OutputFormat}}
