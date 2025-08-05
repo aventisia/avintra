@@ -1322,7 +1322,7 @@
             "description": "Runs a DOS command or console application in invisible mode and retrieves its output upon completion.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Scripting.svg"
           },
           {
             "type": "activityNode",
@@ -1331,7 +1331,7 @@
             "description": "Executes some custom .NET script and retrieves its output into a variable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Scripting.svg"
           },
           {
             "type": "activityNode",
@@ -1340,7 +1340,7 @@
             "description": "Executes some custom JavaScript code and retrieves its output into a variable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Scripting.svg"
           },
           {
             "type": "activityNode",
@@ -1349,7 +1349,7 @@
             "description": "Executes some custom PowerShell script and retrieves its output into a variable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Scripting.svg"
           },
           {
             "type": "activityNode",
@@ -1358,7 +1358,7 @@
             "description": "Executes some custom Python script and retrieves its output into a variable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Scripting.svg"
           },
           {
             "type": "activityNode",
@@ -1367,7 +1367,7 @@
             "description": "Executes custom VBScript code and retrieves its output.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Scripting.svg"
           }
         ]
       },
