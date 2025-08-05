@@ -1871,7 +1871,7 @@
             "description": "Closes a previously opened CMD session.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CMDSession.svg"
           },
           {
             "type": "activityNode",
@@ -1880,7 +1880,7 @@
             "description": "Opens a new CMD session with optional encoding settings.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CMDSession.svg"
           },
           {
             "type": "activityNode",
@@ -1889,7 +1889,7 @@
             "description": "Reads the output of a CMD session.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CMDSession.svg"
           },
           {
             "type": "activityNode",
@@ -1898,7 +1898,7 @@
             "description": "Waits for a specific text on a previously opened CMD session.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CMDSession.svg"
           },
           {
             "type": "activityNode",
@@ -1907,7 +1907,7 @@
             "description": "Executes a command on an open CMD session.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CMDSession.svg"
           }
         ]
       },
