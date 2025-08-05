@@ -1,7 +1,7 @@
 meta {
-  name: Update inferencing model setup data
+  name: Update inferencing setup cloud speech config
   type: http
-  seq: 2
+  seq: 3
 }
 
 put {
@@ -37,11 +37,19 @@ script:pre-request {
           }],
         contextMemoryTimeframe: "30 min",
         speechConfiguration: {
-          configurationType: "OnPrem",
-          language: "english",
-          voice: "",
-          textToSpeech: "",
-          speechToText: ""
+          configurationType: "Cloud",
+          cloudConfig: {
+            language: "english",
+            voice: "",
+            textToSpeech: {
+              name: "",
+              secret: null
+            },
+            speechToText: {
+              name: "",
+              secret: null
+            }
+          },
         }
       }
       }
