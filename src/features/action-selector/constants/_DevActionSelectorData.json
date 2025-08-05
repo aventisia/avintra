@@ -1493,7 +1493,7 @@
             "description": "Displays a dialog box that prompts the user to enter text.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MessageBox.svg"
           },
           {
             "type": "activityNode",
@@ -1502,7 +1502,7 @@
             "description": "Displays a message box",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MessageBox.svg"
           },
           {
             "type": "activityNode",
@@ -1511,7 +1511,7 @@
             "description": "Displays a file selection dialog to let users choose one or more files.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MessageBox.svg"
           },
           {
             "type": "activityNode",
@@ -1520,7 +1520,7 @@
             "description": "Displays a folder selection dialog to let users choose a folder.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MessageBox.svg"
           }
         ]
       },
