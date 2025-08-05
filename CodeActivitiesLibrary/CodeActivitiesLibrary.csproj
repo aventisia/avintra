@@ -562,6 +562,7 @@
     <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\ConditionalActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\LoopActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\ConditionalsLoopsActivities\_ConditionalsLoopsCategoryMetaData.cs" />
+    <Compile Include="Activities\WorkflowLogics\FlowControlActivities\BreakLoopActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\FlowControlActivities\CommentActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\FlowControlActivities\EndActivity.cs" />
     <Compile Include="Activities\WorkflowLogics\FlowControlActivities\EndRegionActivity.cs" />

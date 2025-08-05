@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
-    [DisplayName("Label"), Description("Marks a destination point for 'Go To' statements.")]
+    //[DisplayName("Label"), Description("Marks a destination point for 'Go To' statements.")]
     public class LabelActivity : Extensions.BaseNativeActivity
     {
         [RequiredArgument, Category("Input"), Description("Name of the label.")]
