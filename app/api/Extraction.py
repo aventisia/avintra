@@ -51,8 +51,10 @@ def extract_text_from_pdf(pdf_path):
     """Extract text from an electronic (text-based) PDF."""
     text = ""
     with pdfplumber.open(pdf_path) as pdf:
-        first_page = pdf.pages[0]  # TODO: just to avoid max token size issue in ollama extracting first page only
-        text = first_page.extract_text()
+        for page in pdf.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text + "\n"
     return text.strip()
 
 def extract_text_from_image_pdf(pdf_path):
