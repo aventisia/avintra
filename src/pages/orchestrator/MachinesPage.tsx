@@ -1,9 +1,16 @@
-import { MachineTabs } from "@/features/orchestrator/machines-table/components/MachineTabs";
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { Suspense } from "react";
+
+import { MachinesTable } from "@/features/orchestrator/machines-table/components/MachinesTable";
 
 /**
  * Renders the machine Page component.
  * @returns JSX element representing the MachinesPage component.
  */
 export const MachinesPage = () => {
-  return <MachineTabs />;
+  return (
+    <Suspense fallback={<DataTableSkeleton />}>
+      <MachinesTable />
+    </Suspense>
+  );
 };

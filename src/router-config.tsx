@@ -27,6 +27,7 @@ import { ExecutionsPage } from "./pages/orchestrator/ExecutionsPage";
 import { KeystorePage } from "./pages/orchestrator/KeystorePage";
 import { MachinesPage } from "./pages/orchestrator/MachinesPage";
 import { Orchestrator } from "./pages/orchestrator/Orchestrator";
+import { PublishedAgentsPage } from "./pages/orchestrator/PublishedAgentsPage";
 import { QueuesPage } from "./pages/orchestrator/QueuesPage";
 import { QueuesWorkItemsPage } from "./pages/orchestrator/QueuesWorkItemsPage";
 import { TriggersPage } from "./pages/orchestrator/TriggersPage";
@@ -128,6 +129,17 @@ const routerConfig: RouteObject[] = [
         element: <Orchestrator />,
         errorElement: <AppErrorPage />,
         children: [
+          {
+            index: true,
+            path: "/orchestrator/published-agents",
+            element: (
+              <ProtectedRoute
+                persmissions={["SA", "GA"]}
+                page={<PublishedAgentsPage />}
+              />
+            ),
+          },
+
           {
             index: true,
             path: "/orchestrator/machines/:id?/:a?",

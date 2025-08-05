@@ -45,6 +45,12 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
     menuItems: [
       {
         permissions: ["SA", "GA"],
+        Icon: BotIcon,
+        name: "Published Agents",
+        route: "/orchestrator/published-agents",
+      },
+      {
+        permissions: ["SA", "GA"],
         Icon: DesktopIcon,
         name: "machines",
         route: "/orchestrator/machines",
