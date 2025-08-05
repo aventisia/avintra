@@ -1844,7 +1844,7 @@
             "description": "Extracts files from a ZIP archive to a specified destination folder.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Compression.svg"
           },
           {
             "type": "activityNode",
@@ -1853,7 +1853,7 @@
             "description": "Compress one or more files or folders into a zip archive.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Compression.svg"
           }
         ]
       },
