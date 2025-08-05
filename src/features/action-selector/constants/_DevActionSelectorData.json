@@ -845,7 +845,7 @@
             "description": "Executes an XPath expression on the provided XML content and returns the result.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -854,7 +854,7 @@
             "description": "Gets the value of an attribute of an XML element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -863,7 +863,7 @@
             "description": "Gets the value of an XML element based on the provided XPath query.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -872,7 +872,7 @@
             "description": "Inserts a new XML element into an existing XML document.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -881,7 +881,7 @@
             "description": "Reads the contents of an XML file into a variable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -890,7 +890,7 @@
             "description": "Removes one or more XML elements from an XML document.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -899,7 +899,7 @@
             "description": "Removes an attribute from an XML element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -908,7 +908,7 @@
             "description": "Sets the value of an attribute of an XML element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -917,7 +917,7 @@
             "description": "Sets the value of an XML element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -926,7 +926,7 @@
             "description": "Writes the contents of an XML node or string into a file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           }
         ]
       },
@@ -944,7 +944,7 @@
             "description": "Enables, disables, starts, or stops the screensaver.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -953,7 +953,7 @@
             "description": "Deletes all files from the Windows recycle bin for all users or current user.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -962,7 +962,7 @@
             "description": "Gets the name of the default printer using multiple methods.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -971,7 +971,7 @@
             "description": "Gets the width, height, bit depth, and refresh rate of one or all monitors.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -980,7 +980,7 @@
             "description": "Locks the workstation's display to protect it from unauthorized use. Optionally forces lock even if workstation doesn't support it.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -989,7 +989,7 @@
             "description": "Logs off the current user with various methods and options.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -998,7 +998,7 @@
             "description": "Plays a sound from a WAV file or system sound with options for sync/async playback and volume control.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -1007,7 +1007,7 @@
             "description": "Prints documents with advanced options including printer selection and print settings.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -1016,7 +1016,7 @@
             "description": "Sets the width, height, bit count, and frequency of a selected monitor.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -1025,7 +1025,7 @@
             "description": "Minimizes or restores all windows to show/hide the desktop.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -1034,7 +1034,7 @@
             "description": "Shuts down, restarts, sleeps, or hibernates the computer.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -1043,7 +1043,7 @@
             "description": "Takes a screenshot of all screens, primary screen, or a specific screen and saves it to clipboard or file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           }
         ]
       },
@@ -1061,7 +1061,7 @@
             "description": "Invokes or clicks a UI element using UI Automation or mouse click.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1070,7 +1070,7 @@
             "description": "Closes the selected application window.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1079,7 +1079,7 @@
             "description": "Expands or collapses a UI element (such as a tree item or combo box) by searching for it using a property and value.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1088,7 +1088,7 @@
             "description": "Brings the selected window to the front and makes it active.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1097,7 +1097,7 @@
             "description": "Reads and returns the selected item from a drop-down list in a window using the property you choose.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1106,7 +1106,7 @@
             "description": "Retrieves the names of the selected checkboxes in a checkbox group or the state of a specific checkbox.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1115,7 +1115,7 @@
             "description": "Retrieves the name of the selected radio button in a radio button group or the state of a specific radio button.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1124,7 +1124,7 @@
             "description": "Reads and returns the text from a text box or editable field in a window using the UI element you provide.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1133,7 +1133,7 @@
             "description": "Get information like position, text, or state from a UI element in a window.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1142,7 +1142,7 @@
             "description": "Finds a desktop window by name using UI Automation.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1151,7 +1151,7 @@
             "description": "Moves a window to the position you choose on the screen.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1160,7 +1160,7 @@
             "description": "Fills a text box or editable field in a window with the specified text using the method you choose.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1169,7 +1169,7 @@
             "description": "Change the size of a window to the width and height you want.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1178,7 +1178,7 @@
             "description": "Selects a radio button in a group by its name or zero-based index.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1187,7 +1187,7 @@
             "description": "Selects the provided UI element, such as a list item, tab item or combo box option, using UI Automation.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1196,7 +1196,7 @@
             "description": "Checks or unchecks a checkbox UI element by searching for it by name within a parent element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1205,7 +1205,7 @@
             "description": "Selects an option from a drop-down or list UI element by specifying the option's visible name or its zero-based index.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1214,7 +1214,7 @@
             "description": "Brings the specified UI element into focus, allowing further interaction.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1223,7 +1223,7 @@
             "description": "Change the window to normal, maximized, or minimized state.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           }
         ]
       },
@@ -1322,7 +1322,7 @@
             "description": "Runs a DOS command or console application in invisible mode and retrieves its output upon completion.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Scripting.svg"
           },
           {
             "type": "activityNode",
@@ -1331,7 +1331,7 @@
             "description": "Executes some custom .NET script and retrieves its output into a variable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Scripting.svg"
           },
           {
             "type": "activityNode",
@@ -1340,7 +1340,7 @@
             "description": "Executes some custom JavaScript code and retrieves its output into a variable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Scripting.svg"
           },
           {
             "type": "activityNode",
@@ -1349,7 +1349,7 @@
             "description": "Executes some custom PowerShell script and retrieves its output into a variable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Scripting.svg"
           },
           {
             "type": "activityNode",
@@ -1358,7 +1358,7 @@
             "description": "Executes some custom Python script and retrieves its output into a variable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Scripting.svg"
           },
           {
             "type": "activityNode",
@@ -1367,7 +1367,7 @@
             "description": "Executes custom VBScript code and retrieves its output.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Scripting.svg"
           }
         ]
       },
@@ -1385,7 +1385,7 @@
             "description": "Blocks user mouse and keyboard input, so that the flow can perform mouse and keyboard actions without interference from the user.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1394,7 +1394,7 @@
             "description": "Retrieves the active keyboard identifier from the machine's registry.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1403,7 +1403,7 @@
             "description": "Retrieves the current position of the mouse cursor on the screen in pixel coordinates.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1412,7 +1412,7 @@
             "description": "Moves the mouse cursor to a specific position on the screen.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1421,7 +1421,7 @@
             "description": "Moves the mouse cursor to the center of a specified image on the screen using template matching.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1430,7 +1430,7 @@
             "description": "Presses (and holds) or releases one or more modifier keys (Alt, Control, Shift, Win). Supports combinations like Ctrl+Alt.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1439,7 +1439,7 @@
             "description": "Sends keys to the specified target (foreground window, UI element, window handle, or title/class).",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1448,7 +1448,7 @@
             "description": "Sends a mouse click event to the specified location.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1457,7 +1457,7 @@
             "description": "Sets the state (on or off) for the keys Caps Lock, Num Lock, or Scroll Lock.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1466,7 +1466,7 @@
             "description": "Suspends the execution of the flow until the mouse pointer changes to or from the specified cursor.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1475,7 +1475,7 @@
             "description": "Pauses the flow run until a specific shortcut key is pressed.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           }
         ]
       },
@@ -1493,7 +1493,7 @@
             "description": "Displays a dialog box that prompts the user to enter text.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MessageBox.svg"
           },
           {
             "type": "activityNode",
@@ -1502,7 +1502,7 @@
             "description": "Displays a message box",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MessageBox.svg"
           },
           {
             "type": "activityNode",
@@ -1511,7 +1511,7 @@
             "description": "Displays a file selection dialog to let users choose one or more files.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MessageBox.svg"
           },
           {
             "type": "activityNode",
@@ -1520,7 +1520,7 @@
             "description": "Displays a folder selection dialog to let users choose a folder.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MessageBox.svg"
           }
         ]
       },
@@ -1646,7 +1646,7 @@
             "description": "Converts a Base64-encoded string to plain text.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1655,7 +1655,7 @@
             "description": "Converts binary data (byte[] or Base64 string) to a file at the specified path.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1664,7 +1664,7 @@
             "description": "Converts a file to binary data.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1673,7 +1673,7 @@
             "description": "Copies one or more files into a destination folder.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1682,7 +1682,7 @@
             "description": "Deletes one or more files.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1691,7 +1691,7 @@
             "description": "Extracts various parts (directory, name, extension) from the given file path.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1700,7 +1700,7 @@
             "description": "Creates a uniquely named empty temporary file on disk and returns its FileInfo object.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1709,7 +1709,7 @@
             "description": "Checks if a file exists or does not exist and marks the beginning of a conditional block.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1718,7 +1718,7 @@
             "description": "Moves one or more files into a destination folder.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1727,7 +1727,7 @@
             "description": "Reads a CSV file into a DataTable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1736,7 +1736,7 @@
             "description": "Reads all text content from the specified file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1745,7 +1745,7 @@
             "description": "Renames one or more files.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1754,7 +1754,7 @@
             "description": "Suspends running the flow until a file is created or deleted.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1763,7 +1763,7 @@
             "description": "Writes the given text to the specified file using either Replace or Append mode.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1772,7 +1772,7 @@
             "description": "Writes a data table, data row, or list to a CSV file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           }
         ]
       },
@@ -1790,7 +1790,7 @@
             "description": "Retrieves the password for a stored credential from Windows Credential Manager.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CredentialManager.svg"
           },
           {
             "type": "activityNode",
@@ -1799,7 +1799,7 @@
             "description": "Retrieves stored credentials from Windows Credential Manager for a specified target.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CredentialManager.svg"
           },
           {
             "type": "activityNode",
@@ -1808,7 +1808,7 @@
             "description": "Removes stored credentials from Windows Credential Manager for a specified target.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CredentialManager.svg"
           },
           {
             "type": "activityNode",
@@ -1817,7 +1817,7 @@
             "description": "Saves credentials to Windows Credential Manager for a specified target.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CredentialManager.svg"
           },
           {
             "type": "activityNode",
@@ -1826,7 +1826,7 @@
             "description": "Updates the password for an existing credential in Windows Credential Manager.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CredentialManager.svg"
           }
         ]
       },
@@ -1844,7 +1844,7 @@
             "description": "Extracts files from a ZIP archive to a specified destination folder.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Compression.svg"
           },
           {
             "type": "activityNode",
@@ -1853,7 +1853,7 @@
             "description": "Compress one or more files or folders into a zip archive.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Compression.svg"
           }
         ]
       },
@@ -1871,7 +1871,7 @@
             "description": "Closes a previously opened CMD session.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CMDSession.svg"
           },
           {
             "type": "activityNode",
@@ -1880,7 +1880,7 @@
             "description": "Opens a new CMD session with optional encoding settings.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CMDSession.svg"
           },
           {
             "type": "activityNode",
@@ -1889,7 +1889,7 @@
             "description": "Reads the output of a CMD session.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CMDSession.svg"
           },
           {
             "type": "activityNode",
@@ -1898,7 +1898,7 @@
             "description": "Waits for a specific text on a previously opened CMD session.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CMDSession.svg"
           },
           {
             "type": "activityNode",
@@ -1907,7 +1907,7 @@
             "description": "Executes a command on an open CMD session.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CMDSession.svg"
           }
         ]
       },
@@ -1925,7 +1925,7 @@
             "description": "Clears all contents from the system clipboard.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Clipboard.svg"
           },
           {
             "type": "activityNode",
@@ -1934,7 +1934,7 @@
             "description": "Retrieves the text currently stored in the system clipboard.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Clipboard.svg"
           },
           {
             "type": "activityNode",
@@ -1943,7 +1943,7 @@
             "description": "Sets the specified text to the system clipboard.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Clipboard.svg"
           }
         ]
       },
@@ -1961,7 +1961,7 @@
             "description": "Verifies if an element is visible, enabled, or selected.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1970,7 +1970,7 @@
             "description": "Simulates clicking a download link on a web page and saves the file to the specified folder.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1979,7 +1979,7 @@
             "description": "Simulates clicking a UI element (e.g., link, button) on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1988,7 +1988,7 @@
             "description": "Closes a web browser instance or all instances if needed.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1997,7 +1997,7 @@
             "description": "Closes web browser tabs based on various conditions (current, by title/URL, all except main, timeout-based).",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2006,7 +2006,7 @@
             "description": "Creates a new tab in the web browser and optionally navigates to a specified URL.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2015,7 +2015,7 @@
             "description": "Extracts data from a specified UI element on a web page using configurable parameters.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2024,7 +2024,7 @@
             "description": "Focuses a specific text field in a web browser. Optionally waits for page load and handles dialogs.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2033,7 +2033,7 @@
             "description": "Retrieves the current value (checked/unchecked) of a checkbox element on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2042,7 +2042,7 @@
             "description": "Retrieves the value of a specified attribute from a selected UI element in a web browser.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2051,7 +2051,7 @@
             "description": "Retrieves specific information about a web page such as title, description, URL, or source code.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2060,7 +2060,7 @@
             "description": "Retrieves the value of an element's attribute from a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2069,7 +2069,7 @@
             "description": "Finds and returns all sibling elements of the specified web element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2078,7 +2078,7 @@
             "description": "Finds and returns the parent element of the specified web element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2087,7 +2087,7 @@
             "description": "Navigates a web browser instance to a specified URL, back, forward, or reload.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2096,7 +2096,7 @@
             "description": "Moves the mouse cursor over a specified element on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2105,7 +2105,7 @@
             "description": "Checks if a web page contains a specific UI element or text. Optionally checks if the element is enabled or disabled.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2114,7 +2114,7 @@
             "description": "Launches a web browser instance of Microsoft Edge or Google Chrome.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2123,7 +2123,7 @@
             "description": "Fills a specified text field in a web browser with provided text. Supports plain or encrypted input.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2132,7 +2132,7 @@
             "description": "Simulates clicking a UI button element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2141,7 +2141,7 @@
             "description": "Executes a custom JavaScript function in the context of the current web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2150,7 +2150,7 @@
             "description": "Scrolls the browser window to a specified element or coordinates.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2159,7 +2159,7 @@
             "description": "Simulates selecting a radio button element on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2168,7 +2168,7 @@
             "description": "Sets the state (checked/unchecked) of a checkbox element on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2177,7 +2177,7 @@
             "description": "Sets or clears the value of a drop-down list element on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2186,7 +2186,7 @@
             "description": "Sets the value of a specified attribute of a web element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2195,7 +2195,7 @@
             "description": "Switches control to a browser tab using index, title, or partial URL.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           }
         ]
       }
