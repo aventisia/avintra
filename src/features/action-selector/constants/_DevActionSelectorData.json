@@ -944,7 +944,7 @@
             "description": "Enables, disables, starts, or stops the screensaver.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -953,7 +953,7 @@
             "description": "Deletes all files from the Windows recycle bin for all users or current user.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -962,7 +962,7 @@
             "description": "Gets the name of the default printer using multiple methods.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -971,7 +971,7 @@
             "description": "Gets the width, height, bit depth, and refresh rate of one or all monitors.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -980,7 +980,7 @@
             "description": "Locks the workstation's display to protect it from unauthorized use. Optionally forces lock even if workstation doesn't support it.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -989,7 +989,7 @@
             "description": "Logs off the current user with various methods and options.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -998,7 +998,7 @@
             "description": "Plays a sound from a WAV file or system sound with options for sync/async playback and volume control.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -1007,7 +1007,7 @@
             "description": "Prints documents with advanced options including printer selection and print settings.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -1016,7 +1016,7 @@
             "description": "Sets the width, height, bit count, and frequency of a selected monitor.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -1025,7 +1025,7 @@
             "description": "Minimizes or restores all windows to show/hide the desktop.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -1034,7 +1034,7 @@
             "description": "Shuts down, restarts, sleeps, or hibernates the computer.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           },
           {
             "type": "activityNode",
@@ -1043,7 +1043,7 @@
             "description": "Takes a screenshot of all screens, primary screen, or a specific screen and saves it to clipboard or file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Workstation.svg"
           }
         ]
       },
