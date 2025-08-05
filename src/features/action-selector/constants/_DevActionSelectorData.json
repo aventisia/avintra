@@ -845,7 +845,7 @@
             "description": "Executes an XPath expression on the provided XML content and returns the result.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -854,7 +854,7 @@
             "description": "Gets the value of an attribute of an XML element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -863,7 +863,7 @@
             "description": "Gets the value of an XML element based on the provided XPath query.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -872,7 +872,7 @@
             "description": "Inserts a new XML element into an existing XML document.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -881,7 +881,7 @@
             "description": "Reads the contents of an XML file into a variable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -890,7 +890,7 @@
             "description": "Removes one or more XML elements from an XML document.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -899,7 +899,7 @@
             "description": "Removes an attribute from an XML element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -908,7 +908,7 @@
             "description": "Sets the value of an attribute of an XML element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -917,7 +917,7 @@
             "description": "Sets the value of an XML element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           },
           {
             "type": "activityNode",
@@ -926,7 +926,7 @@
             "description": "Writes the contents of an XML node or string into a file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/XML.svg"
           }
         ]
       },
