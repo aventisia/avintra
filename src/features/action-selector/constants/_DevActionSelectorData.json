@@ -1385,7 +1385,7 @@
             "description": "Blocks user mouse and keyboard input, so that the flow can perform mouse and keyboard actions without interference from the user.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1394,7 +1394,7 @@
             "description": "Retrieves the active keyboard identifier from the machine's registry.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1403,7 +1403,7 @@
             "description": "Retrieves the current position of the mouse cursor on the screen in pixel coordinates.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1412,7 +1412,7 @@
             "description": "Moves the mouse cursor to a specific position on the screen.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1421,7 +1421,7 @@
             "description": "Moves the mouse cursor to the center of a specified image on the screen using template matching.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1430,7 +1430,7 @@
             "description": "Presses (and holds) or releases one or more modifier keys (Alt, Control, Shift, Win). Supports combinations like Ctrl+Alt.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1439,7 +1439,7 @@
             "description": "Sends keys to the specified target (foreground window, UI element, window handle, or title/class).",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1448,7 +1448,7 @@
             "description": "Sends a mouse click event to the specified location.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1457,7 +1457,7 @@
             "description": "Sets the state (on or off) for the keys Caps Lock, Num Lock, or Scroll Lock.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1466,7 +1466,7 @@
             "description": "Suspends the execution of the flow until the mouse pointer changes to or from the specified cursor.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           },
           {
             "type": "activityNode",
@@ -1475,7 +1475,7 @@
             "description": "Pauses the flow run until a specific shortcut key is pressed.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/MouseAndKeyboard.svg"
           }
         ]
       },
