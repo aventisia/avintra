@@ -112,22 +112,61 @@ public class SpeechConfigurationDto
     public required SpeechConfigurationTypesEnum ConfigurationType { get; set; }
 
     /// <summary>
-    /// Gets or sets the language code (e.g., "en" for English).
+    /// Gets or sets the on-premises configuration.
+    /// </summary>
+    public OnPremConfigDto? OnPremConfig { get; set; }
+
+    /// <summary>
+    /// Gets or sets the cloud configuration.
+    /// </summary>
+    public CloudConfigDto? CloudConfig { get; set; }
+}
+
+public class OnPremConfigDto
+{
+    /// <summary>
+    /// Gets or sets the language code (e.g., "en").
     /// </summary>
     public required string Language { get; set; }
 
     /// <summary>
-    /// Gets or sets the voice used for text-to-speech.
+    /// Gets or sets the voice used for on-premises TTS.
+    /// </summary>
+    public string? Voice { get; set; }
+}
+
+public class CloudConfigDto
+{
+    /// <summary>
+    /// Gets or sets the language code (e.g., "en").
+    /// </summary>
+    public required string Language { get; set; }
+
+    /// <summary>
+    /// Gets or sets the voice used for cloud TTS.
     /// </summary>
     public string? Voice { get; set; }
 
     /// <summary>
-    /// Gets or sets the text-to-speech configuration, which may be empty if not defined.
+    /// Gets or sets the text-to-speech configuration.
     /// </summary>
-    public string? TextToSpeech { get; set; }
+    public CredentialDto? TextToSpeech { get; set; }
 
     /// <summary>
-    /// Gets or sets the speech-to-text configuration, which may be empty if not defined.
+    /// Gets or sets the speech-to-text configuration.
     /// </summary>
-    public string? SpeechToText { get; set; }
+    public CredentialDto? SpeechToText { get; set; }
+}
+
+public class CredentialDto
+{
+    /// <summary>
+    /// Gets or sets the credential name.
+    /// </summary>
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the credential secret.
+    /// </summary>
+    public string? Secret { get; set; }
 }
