@@ -1790,7 +1790,7 @@
             "description": "Retrieves the password for a stored credential from Windows Credential Manager.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CredentialManager.svg"
           },
           {
             "type": "activityNode",
@@ -1799,7 +1799,7 @@
             "description": "Retrieves stored credentials from Windows Credential Manager for a specified target.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CredentialManager.svg"
           },
           {
             "type": "activityNode",
@@ -1808,7 +1808,7 @@
             "description": "Removes stored credentials from Windows Credential Manager for a specified target.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CredentialManager.svg"
           },
           {
             "type": "activityNode",
@@ -1817,7 +1817,7 @@
             "description": "Saves credentials to Windows Credential Manager for a specified target.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CredentialManager.svg"
           },
           {
             "type": "activityNode",
@@ -1826,7 +1826,7 @@
             "description": "Updates the password for an existing credential in Windows Credential Manager.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/CredentialManager.svg"
           }
         ]
       },
