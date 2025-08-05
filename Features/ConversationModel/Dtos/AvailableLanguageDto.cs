@@ -73,7 +73,7 @@ public class TextToSpeechOptionDto
 }
 
 /// <summary>
-/// Represents a Speech-to-Text (STT) option, including details about the service,
+/// Represents a Speech-to-Text (STT) option, including detasils about the service,
 /// the language it supports, and the service's capabilities.
 /// </summary>
 public class SpeechToTextOptionDto

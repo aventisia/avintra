@@ -195,7 +195,6 @@ public class ConversationModelService : IConversationModelService
         {
             Data = null,
             Message = "Failed to retrieve languages. Please try again later.",
-            StatusCode = 500
         };
 
         try
@@ -294,14 +293,95 @@ public class ConversationModelService : IConversationModelService
         {
             _logger.LogInformation("Attempting to retrieve available languages options.");
 
-            // Retrieve list of languages with their associated voices
-            var availableLanguages = GetExternalTextToSpeechServices();
+            // Initialize list to hold languages (without voices for now)
+            var availableLanguages = new List<AvailableLanguageDto>
+            {
+                // English: Widely supported with a broad range of expressive voices
+                new AvailableLanguageDto
+                {
+                    Name = "English",
+                    Code = "en",
+                    Voices = new List<AvailableVoiceDto>()
+                },
+
+                // Mandarin Chinese: Supported via multilingual models
+                new AvailableLanguageDto
+                {
+                    Name = "Mandarin Chinese",
+                    Code = "zh",
+                    Voices = new List<AvailableVoiceDto>()
+                },
+
+                // Hindi: Supported with multilingual voices; commonly used in India
+                new AvailableLanguageDto
+                {
+                    Name = "Hindi",
+                    Code = "hi",
+                    Voices = new List<AvailableVoiceDto>()
+                },
+
+                // Spanish: Includes support for both Latin American and European accents
+                new AvailableLanguageDto
+                {
+                    Name = "Spanish",
+                    Code = "es",
+                    Voices = new List<AvailableVoiceDto>()
+                },
+
+                // Arabic: Supported through multilingual and expressive voices
+                new AvailableLanguageDto
+                {
+                    Name = "Arabic",
+                    Code = "ar",
+                    Voices = new List<AvailableVoiceDto>()
+                },
+
+                // Bengali: Covered via ElevenLabs multilingual model
+                new AvailableLanguageDto
+                {
+                    Name = "Bengali",
+                    Code = "bn",
+                    Voices = new List<AvailableVoiceDto>()
+                },
+
+                // Portuguese: Strong support for Brazilian Portuguese
+                new AvailableLanguageDto
+                {
+                    Name = "Portuguese",
+                    Code = "pt",
+                    Voices = new List<AvailableVoiceDto>()
+                },
+
+                // Russian: Multilingual voice models handle Russian fluently
+                new AvailableLanguageDto
+                {
+                    Name = "Russian",
+                    Code = "ru",
+                    Voices = new List<AvailableVoiceDto>()
+                },
+
+                // Japanese: Supported via multilingual and expressive voices
+                new AvailableLanguageDto
+                {
+                    Name = "Japanese",
+                    Code = "ja",
+                    Voices = new List<AvailableVoiceDto>()
+                },
+
+                // Punjabi: Supported through multilingual models; used in India and Pakistan
+                new AvailableLanguageDto
+                {
+                    Name = "Punjabi",
+                    Code = "pa",
+                    Voices = new List<AvailableVoiceDto>()
+                }
+            };
 
             // Convert the languages into SelectOptionDto format (Label = Name, Value = Code)
             var languages = availableLanguages.Select(s => new SelectOptionDto
             {
-                Label = s.LanguageName,
-                Value = s.LanguageCode
+                Label = s.Name,
+                Value = s.Code
             })
             .DistinctBy(d => d.Label)
             .ToList();
@@ -341,19 +421,20 @@ public class ConversationModelService : IConversationModelService
             // Fetch the list of available Text-to-Speech services with their descriptions
             var availableTextToSpeechServices = GetExternalTextToSpeechServices();
 
-            // Filter and transform the services based on the provided language (either by language name or language code)
+            // Filter and transform the services based on the provided language (matching either by language name or code)
             var filteredTextToSpeechServices = availableTextToSpeechServices
                 .Where(w =>
                     w.LanguageName.Equals(language, StringComparison.InvariantCultureIgnoreCase) ||
                     w.LanguageCode.Equals(language, StringComparison.InvariantCultureIgnoreCase)
                 )
-                .Select(s => new SelectOptionDto()
+                .Select(service => new SelectOptionDto
                 {
-                    Label = s.Name,
-                    Value = s.Name,
-                    Description = s.Description
+                    Label = service.Name,
+                    Value = service.Name,
+                    Description = service.Description
                 })
                 .ToList();
+
 
             // Assign the filtered services to the response data
             serviceResponse.Data = filteredTextToSpeechServices;
@@ -470,6 +551,266 @@ public class ConversationModelService : IConversationModelService
 
         // Return the service response object containing the data and status
         return serviceResponse;
+    }
+
+    public List<TextToSpeechOptionDto> GetExternalTextToSpeechServices()
+    {
+        // Create a list to store the TextToSpeech provider information
+        var textToSpeechServices = new List<TextToSpeechOptionDto>
+        {
+            // English
+            new TextToSpeechOptionDto
+            {
+                Name = "ElevenLabs",
+                Description = "High-quality AI voice synthesis for various global languages.",
+                LanguageName = "English",
+                LanguageCode = "en",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "adam", Gender = "M" },
+                    new AvailableVoiceDto { Name = "alice", Gender = "F" },
+                    new AvailableVoiceDto { Name = "clyde", Gender = "M" },
+                    new AvailableVoiceDto { Name = "dorothy", Gender = "F" },
+                    new AvailableVoiceDto { Name = "serena", Gender = "F" },
+                    new AvailableVoiceDto { Name = "thomas", Gender = "M" },
+                    new AvailableVoiceDto { Name = "bill", Gender = "M" }
+                }
+            },
+
+            // Mandarin Chinese
+            new TextToSpeechOptionDto
+            {
+                Name = "ElevenLabs",
+                Description = "High-quality AI voice synthesis for various global languages.",
+                LanguageName = "Mandarin Chinese",
+                LanguageCode = "zh",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "alice", Gender = "F" },
+                    new AvailableVoiceDto { Name = "bill", Gender = "M" },
+                    new AvailableVoiceDto { Name = "serena", Gender = "F" },
+                    new AvailableVoiceDto { Name = "adam", Gender = "M" },
+                    new AvailableVoiceDto { Name = "grace", Gender = "F" }
+                }
+            },
+
+            // Hindi
+            new TextToSpeechOptionDto
+            {
+
+                Name = "ElevenLabs",
+                Description = "High-quality AI voice synthesis for various global languages.",
+                LanguageName = "Hindi",
+                LanguageCode = "hi",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "bill", Gender = "M" },
+                    new AvailableVoiceDto { Name = "alice", Gender = "F" },
+                    new AvailableVoiceDto { Name = "thomas", Gender = "M" },
+                    new AvailableVoiceDto { Name = "serena", Gender = "F" },
+                    new AvailableVoiceDto { Name = "dorothy", Gender = "F" }
+                }
+            },
+
+            // Spanish
+            new TextToSpeechOptionDto
+            {
+                Name = "ElevenLabs",
+                Description = "High-quality AI voice synthesis for various global languages.",
+                LanguageName = "Spanish",
+                LanguageCode = "es",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "dorothy", Gender = "F" },
+                    new AvailableVoiceDto { Name = "glinda", Gender = "F" },
+                    new AvailableVoiceDto { Name = "grace", Gender = "F" },
+                    new AvailableVoiceDto { Name = "matilda", Gender = "F" },
+                    new AvailableVoiceDto { Name = "adam", Gender = "M" }
+                }
+            },
+
+            // Arabic
+            new TextToSpeechOptionDto
+            {
+                Name = "ElevenLabs",
+                Description = "High-quality AI voice synthesis for various global languages.",
+                LanguageName = "Arabic",
+                LanguageCode = "ar",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "alice", Gender = "F" },
+                    new AvailableVoiceDto { Name = "bill", Gender = "M" },
+                    new AvailableVoiceDto { Name = "serena", Gender = "F" },
+                    new AvailableVoiceDto { Name = "adam", Gender = "M" },
+                    new AvailableVoiceDto { Name = "dorothy", Gender = "F" }
+                }
+            },
+
+            // Bengali
+            new TextToSpeechOptionDto
+            {
+                Name = "ElevenLabs",
+                Description = "High-quality AI voice synthesis for various global languages.",
+                LanguageName = "Bengali",
+                LanguageCode = "bn",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "alice", Gender = "F" },
+                    new AvailableVoiceDto { Name = "bill", Gender = "M" },
+                    new AvailableVoiceDto { Name = "serena", Gender = "F" },
+                    new AvailableVoiceDto { Name = "adam", Gender = "M" },
+                    new AvailableVoiceDto { Name = "dorothy", Gender = "F" }
+                }
+            },
+
+            // Portuguese
+            new TextToSpeechOptionDto
+            {
+                Name = "ElevenLabs",
+                Description = "High-quality AI voice synthesis for various global languages.",
+                LanguageName = "Portuguese",
+                LanguageCode = "pt",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "giovanni", Gender = "M" },
+                    new AvailableVoiceDto { Name = "alice", Gender = "F" },
+                    new AvailableVoiceDto { Name = "serena", Gender = "F" },
+                    new AvailableVoiceDto { Name = "grace", Gender = "F" },
+                    new AvailableVoiceDto { Name = "bill", Gender = "M" }
+                }
+            },
+
+            // Russian
+            new TextToSpeechOptionDto
+            {
+                Name = "ElevenLabs",
+                Description = "High-quality AI voice synthesis for various global languages.",
+                LanguageName = "Russian",
+                LanguageCode = "ru",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "gigi", Gender = "F" },
+                    new AvailableVoiceDto { Name = "adam", Gender = "M" },
+                    new AvailableVoiceDto { Name = "charlie", Gender = "M" },
+                    new AvailableVoiceDto { Name = "harry", Gender = "M" },
+                    new AvailableVoiceDto { Name = "serena", Gender = "F" }
+                }
+            },
+
+            // Japanese
+            new TextToSpeechOptionDto
+            {
+                Name = "ElevenLabs",
+                Description = "High-quality AI voice synthesis for various global languages.",
+                LanguageName = "Japanese",
+                LanguageCode = "ja",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "alice", Gender = "F" },
+                    new AvailableVoiceDto { Name = "bill", Gender = "M" },
+                    new AvailableVoiceDto { Name = "serena", Gender = "F" },
+                    new AvailableVoiceDto { Name = "freya", Gender = "F" },
+                    new AvailableVoiceDto { Name = "adam", Gender = "M" }
+                }
+            },
+
+            // Punjabi
+            new TextToSpeechOptionDto
+            {
+                Name = "ElevenLabs",
+                Description = "High-quality AI voice synthesis for various global languages.",
+                LanguageName = "Punjabi",
+                LanguageCode = "pa",
+                Voices = new List<AvailableVoiceDto>
+                {
+                    new AvailableVoiceDto { Name = "alice", Gender = "F" },
+                    new AvailableVoiceDto { Name = "bill", Gender = "M" },
+                    new AvailableVoiceDto { Name = "serena", Gender = "F" },
+                    new AvailableVoiceDto { Name = "adam", Gender = "M" },
+                    new AvailableVoiceDto { Name = "grace", Gender = "F" }
+                }
+            }
+        };
+
+        return textToSpeechServices;
+    }
+
+    private List<SpeechToTextOptionDto> GetExternalSpeechToTextServices()
+    {
+        return new List<SpeechToTextOptionDto>
+        {
+            new SpeechToTextOptionDto
+            {
+                Name = "Whisper AI",
+                Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription.",
+                LanguageName = "English",
+                LanguageCode = "en",
+            },
+            new SpeechToTextOptionDto
+            {
+                Name = "Whisper AI",
+                Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription.",
+                LanguageName = "Mandarin Chinese",
+                LanguageCode = "zh",
+            },
+            new SpeechToTextOptionDto
+            {
+                Name = "Whisper AI",
+                Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription.",
+                LanguageName = "Hindi",
+                LanguageCode = "hi",
+            },
+            new SpeechToTextOptionDto
+            {
+                Name = "Whisper AI",
+                Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription.",
+                LanguageName = "Spanish",
+                LanguageCode = "es",
+            },
+            new SpeechToTextOptionDto
+            {
+                Name = "Whisper AI",
+                Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription.",
+                LanguageName = "Arabic",
+                LanguageCode = "ar",
+            },
+            new SpeechToTextOptionDto
+            {
+                Name = "Whisper AI",
+                Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription.",
+                LanguageName = "Bengali",
+                LanguageCode = "bn",
+            },
+            new SpeechToTextOptionDto
+            {
+                Name = "Whisper AI",
+                Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription.",
+                LanguageName = "Portuguese",
+                LanguageCode = "pt",
+            },
+            new SpeechToTextOptionDto
+            {
+                Name = "Whisper AI",
+                Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription.",
+                LanguageName = "Russian",
+                LanguageCode = "ru",
+            },
+            new SpeechToTextOptionDto
+            {
+                Name = "Whisper AI",
+                Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription.",
+                LanguageName = "Japanese",
+                LanguageCode = "ja",
+            },
+            new SpeechToTextOptionDto
+            {
+                Name = "Whisper AI",
+                Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription.",
+                LanguageName = "Punjabi",
+                LanguageCode = "pa",
+            },
+            
+        };
     }
 
     private IEnumerable<AvailableLanguageDto> GetLanguagesAndVoices()
@@ -605,264 +946,5 @@ public class ConversationModelService : IConversationModelService
             }
         };
         return languagesWithVoices;
-    }
-
-    private List<TextToSpeechOptionDto> GetExternalTextToSpeechServices()
-    {
-        var services = new[] { "OpenAI TTS", "Google TTS Wavenet", "Amazon Polly", "Microsoft Azure TTS", "Conqui TTS" };
-        var languages = new[]
-        {
-        new { Name = "English", Code = "en" },
-        new { Name = "French", Code = "fr" },
-        new { Name = "Spanish", Code = "es" },
-        new { Name = "German", Code = "de" },
-        new { Name = "Mandarin Chinese", Code = "zh" }
-    };
-
-        var allOptions = new List<TextToSpeechOptionDto>();
-
-        foreach (var service in services)
-        {
-            foreach (var lang in languages)
-            {
-                var voices = new List<AvailableVoiceDto>();
-                for (int i = 1; i <= 5; i++)
-                {
-                    voices.Add(new AvailableVoiceDto
-                    {
-                        Name = $"{lang.Code}_voice{i}",
-                        Gender = i % 2 == 0 ? "M" : "F"
-                    });
-                }
-
-                allOptions.Add(new TextToSpeechOptionDto
-                {
-                    Name = service,
-                    Description = $"{service} generates human-like speech using neural or deep learning models.",
-                    LanguageName = lang.Name,
-                    LanguageCode = lang.Code,
-                    Voices = voices
-                });
-            }
-        }
-
-        return allOptions;
-    }
-
-    private List<SpeechToTextOptionDto> GetExternalSpeechToTextServices()
-    {
-        return new List<SpeechToTextOptionDto>
-        {
-            new SpeechToTextOptionDto
-            {
-                Name = "Whisper AI",
-                Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription.",
-                LanguageName = "English",
-                LanguageCode = "en"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Whisper AI",
-                Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription.",
-                LanguageName = "Spanish",
-                LanguageCode = "es"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Whisper AI",
-                Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription.",
-                LanguageName = "French",
-                LanguageCode = "fr"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Whisper AI",
-                Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription.",
-                LanguageName = "German",
-                LanguageCode = "de"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Whisper AI",
-                Description = "Whisper AI processes audio input through deep learning models, where speech is transcribed into text. It continuously adapts to different accents, languages, and noise conditions for accurate transcription.",
-                LanguageName = "Mandarin Chinese",
-                LanguageCode = "zh"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Google Speech-to-Text",
-                Description = "Google Speech-to-Text captures audio input and processes it using advanced neural networks to convert spoken words into written text. It utilizes a cloud-based model, providing real-time transcription with high accuracy.",
-                LanguageName = "English",
-                LanguageCode = "en"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Google Speech-to-Text",
-                Description = "Google Speech-to-Text captures audio input and processes it using advanced neural networks to convert spoken words into written text. It utilizes a cloud-based model, providing real-time transcription with high accuracy.",
-                LanguageName = "Spanish",
-                LanguageCode = "es"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Google Speech-to-Text",
-                Description = "Google Speech-to-Text captures audio input and processes it using advanced neural networks to convert spoken words into written text. It utilizes a cloud-based model, providing real-time transcription with high accuracy.",
-                LanguageName = "French",
-                LanguageCode = "fr"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Google Speech-to-Text",
-                Description = "Google Speech-to-Text captures audio input and processes it using advanced neural networks to convert spoken words into written text. It utilizes a cloud-based model, providing real-time transcription with high accuracy.",
-                LanguageName = "German",
-                LanguageCode = "de"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Google Speech-to-Text",
-                Description = "Google Speech-to-Text captures audio input and processes it using advanced neural networks to convert spoken words into written text. It utilizes a cloud-based model, providing real-time transcription with high accuracy.",
-                LanguageName = "Mandarin Chinese",
-                LanguageCode = "zh"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Assembly AI",
-                Description = "Assembly AI's process involves real-time audio recognition where audio files are transcribed into text using state-of-the-art machine learning algorithms, while also supporting advanced features like speaker separation and keyword detection.",
-                LanguageName = "English",
-                LanguageCode = "en"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Assembly AI",
-                Description = "Assembly AI's process involves real-time audio recognition where audio files are transcribed into text using state-of-the-art machine learning algorithms, while also supporting advanced features like speaker separation and keyword detection.",
-                LanguageName = "Spanish",
-                LanguageCode = "es"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Assembly AI",
-                Description = "Assembly AI's process involves real-time audio recognition where audio files are transcribed into text using state-of-the-art machine learning algorithms, while also supporting advanced features like speaker separation and keyword detection.",
-                LanguageName = "French",
-                LanguageCode = "fr"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Assembly AI",
-                Description = "Assembly AI's process involves real-time audio recognition where audio files are transcribed into text using state-of-the-art machine learning algorithms, while also supporting advanced features like speaker separation and keyword detection.",
-                LanguageName = "German",
-                LanguageCode = "de"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Assembly AI",
-                Description = "Assembly AI's process involves real-time audio recognition where audio files are transcribed into text using state-of-the-art machine learning algorithms, while also supporting advanced features like speaker separation and keyword detection.",
-                LanguageName = "Mandarin Chinese",
-                LanguageCode = "zh"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Deepgram",
-                Description = "Deepgram’s process involves converting audio into text by first extracting speech features through AI models, and then transcribing them with neural networks. Its unique pipeline allows for fast and efficient processing even in noisy environments.",
-                LanguageName = "English",
-                LanguageCode = "en"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Deepgram",
-                Description = "Deepgram’s process involves converting audio into text by first extracting speech features through AI models, and then transcribing them with neural networks. Its unique pipeline allows for fast and efficient processing even in noisy environments.",
-                LanguageName = "Spanish",
-                LanguageCode = "es"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Deepgram",
-                Description = "Deepgram’s process involves converting audio into text by first extracting speech features through AI models, and then transcribing them with neural networks. Its unique pipeline allows for fast and efficient processing even in noisy environments.",
-                LanguageName = "French",
-                LanguageCode = "fr"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Deepgram",
-                Description = "Deepgram’s process involves converting audio into text by first extracting speech features through AI models, and then transcribing them with neural networks. Its unique pipeline allows for fast and efficient processing even in noisy environments.",
-                LanguageName = "German",
-                LanguageCode = "de"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Deepgram",
-                Description = "Deepgram’s process involves converting audio into text by first extracting speech features through AI models, and then transcribing them with neural networks. Its unique pipeline allows for fast and efficient processing even in noisy environments.",
-                LanguageName = "Mandarin Chinese",
-                LanguageCode = "zh"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Mozilla DeepSpeech",
-                Description = "Mozilla DeepSpeech uses a deep learning framework to process raw audio and transform it into text. It works by training a neural network model that recognizes patterns in speech and outputs the corresponding textual representation.",
-                LanguageName = "English",
-                LanguageCode = "en"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Mozilla DeepSpeech",
-                Description = "Mozilla DeepSpeech uses a deep learning framework to process raw audio and transform it into text. It works by training a neural network model that recognizes patterns in speech and outputs the corresponding textual representation.",
-                LanguageName = "Spanish",
-                LanguageCode = "es"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Mozilla DeepSpeech",
-                Description = "Mozilla DeepSpeech uses a deep learning framework to process raw audio and transform it into text. It works by training a neural network model that recognizes patterns in speech and outputs the corresponding textual representation.",
-                LanguageName = "French",
-                LanguageCode = "fr"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Mozilla DeepSpeech",
-                Description = "Mozilla DeepSpeech uses a deep learning framework to process raw audio and transform it into text. It works by training a neural network model that recognizes patterns in speech and outputs the corresponding textual representation.",
-                LanguageName = "German",
-                LanguageCode = "de"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Mozilla DeepSpeech",
-                Description = "Mozilla DeepSpeech uses a deep learning framework to process raw audio and transform it into text. It works by training a neural network model that recognizes patterns in speech and outputs the corresponding textual representation.",
-                LanguageName = "Mandarin Chinese",
-                LanguageCode = "zh"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Vosk",
-                Description = "Vosk transcribes speech by processing audio through a lightweight speech recognition model that operates offline. The system analyzes the acoustic features of speech, matches it to pre-trained phonetic models, and outputs the text.",
-                LanguageName = "English",
-                LanguageCode = "en"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Vosk",
-                Description = "Vosk transcribes speech by processing audio through a lightweight speech recognition model that operates offline. The system analyzes the acoustic features of speech, matches it to pre-trained phonetic models, and outputs the text.",
-                LanguageName = "Spanish",
-                LanguageCode = "es"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Vosk",
-                Description = "Vosk transcribes speech by processing audio through a lightweight speech recognition model that operates offline. The system analyzes the acoustic features of speech, matches it to pre-trained phonetic models, and outputs the text.",
-                LanguageName = "French",
-                LanguageCode = "fr"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Vosk",
-                Description = "Vosk transcribes speech by processing audio through a lightweight speech recognition model that operates offline. The system analyzes the acoustic features of speech, matches it to pre-trained phonetic models, and outputs the text.",
-                LanguageName = "German",
-                LanguageCode = "de"
-            },
-            new SpeechToTextOptionDto
-            {
-                Name = "Vosk",
-                Description = "Vosk transcribes speech by processing audio through a lightweight speech recognition model that operates offline. The system analyzes the acoustic features of speech, matches it to pre-trained phonetic models, and outputs the text.",
-                LanguageName = "Mandarin Chinese",
-                LanguageCode = "zh"
-            }
-        };
     }
 }
