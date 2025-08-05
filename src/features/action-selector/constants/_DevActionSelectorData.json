@@ -1646,7 +1646,7 @@
             "description": "Converts a Base64-encoded string to plain text.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1655,7 +1655,7 @@
             "description": "Converts binary data (byte[] or Base64 string) to a file at the specified path.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1664,7 +1664,7 @@
             "description": "Converts a file to binary data.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1673,7 +1673,7 @@
             "description": "Copies one or more files into a destination folder.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1682,7 +1682,7 @@
             "description": "Deletes one or more files.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1691,7 +1691,7 @@
             "description": "Extracts various parts (directory, name, extension) from the given file path.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1700,7 +1700,7 @@
             "description": "Creates a uniquely named empty temporary file on disk and returns its FileInfo object.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1709,7 +1709,7 @@
             "description": "Checks if a file exists or does not exist and marks the beginning of a conditional block.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1718,7 +1718,7 @@
             "description": "Moves one or more files into a destination folder.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1727,7 +1727,7 @@
             "description": "Reads a CSV file into a DataTable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1736,7 +1736,7 @@
             "description": "Reads all text content from the specified file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1745,7 +1745,7 @@
             "description": "Renames one or more files.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1754,7 +1754,7 @@
             "description": "Suspends running the flow until a file is created or deleted.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1763,7 +1763,7 @@
             "description": "Writes the given text to the specified file using either Replace or Append mode.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           },
           {
             "type": "activityNode",
@@ -1772,7 +1772,7 @@
             "description": "Writes a data table, data row, or list to a CSV file.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/File.svg"
           }
         ]
       },
