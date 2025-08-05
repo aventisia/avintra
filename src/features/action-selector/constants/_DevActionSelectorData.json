@@ -1061,7 +1061,7 @@
             "description": "Invokes or clicks a UI element using UI Automation or mouse click.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1070,7 +1070,7 @@
             "description": "Closes the selected application window.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1079,7 +1079,7 @@
             "description": "Expands or collapses a UI element (such as a tree item or combo box) by searching for it using a property and value.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1088,7 +1088,7 @@
             "description": "Brings the selected window to the front and makes it active.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1097,7 +1097,7 @@
             "description": "Reads and returns the selected item from a drop-down list in a window using the property you choose.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1106,7 +1106,7 @@
             "description": "Retrieves the names of the selected checkboxes in a checkbox group or the state of a specific checkbox.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1115,7 +1115,7 @@
             "description": "Retrieves the name of the selected radio button in a radio button group or the state of a specific radio button.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1124,7 +1124,7 @@
             "description": "Reads and returns the text from a text box or editable field in a window using the UI element you provide.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1133,7 +1133,7 @@
             "description": "Get information like position, text, or state from a UI element in a window.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1142,7 +1142,7 @@
             "description": "Finds a desktop window by name using UI Automation.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1151,7 +1151,7 @@
             "description": "Moves a window to the position you choose on the screen.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1160,7 +1160,7 @@
             "description": "Fills a text box or editable field in a window with the specified text using the method you choose.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1169,7 +1169,7 @@
             "description": "Change the size of a window to the width and height you want.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1178,7 +1178,7 @@
             "description": "Selects a radio button in a group by its name or zero-based index.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1187,7 +1187,7 @@
             "description": "Selects the provided UI element, such as a list item, tab item or combo box option, using UI Automation.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1196,7 +1196,7 @@
             "description": "Checks or unchecks a checkbox UI element by searching for it by name within a parent element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1205,7 +1205,7 @@
             "description": "Selects an option from a drop-down or list UI element by specifying the option's visible name or its zero-based index.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1214,7 +1214,7 @@
             "description": "Brings the specified UI element into focus, allowing further interaction.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1223,7 +1223,7 @@
             "description": "Change the window to normal, maximized, or minimized state.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/UIAutomation.svg"
           }
         ]
       },
