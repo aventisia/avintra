@@ -1961,7 +1961,7 @@
             "description": "Verifies if an element is visible, enabled, or selected.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1970,7 +1970,7 @@
             "description": "Simulates clicking a download link on a web page and saves the file to the specified folder.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1979,7 +1979,7 @@
             "description": "Simulates clicking a UI element (e.g., link, button) on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1988,7 +1988,7 @@
             "description": "Closes a web browser instance or all instances if needed.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -1997,7 +1997,7 @@
             "description": "Closes web browser tabs based on various conditions (current, by title/URL, all except main, timeout-based).",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2006,7 +2006,7 @@
             "description": "Creates a new tab in the web browser and optionally navigates to a specified URL.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2015,7 +2015,7 @@
             "description": "Extracts data from a specified UI element on a web page using configurable parameters.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2024,7 +2024,7 @@
             "description": "Focuses a specific text field in a web browser. Optionally waits for page load and handles dialogs.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2033,7 +2033,7 @@
             "description": "Retrieves the current value (checked/unchecked) of a checkbox element on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2042,7 +2042,7 @@
             "description": "Retrieves the value of a specified attribute from a selected UI element in a web browser.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2051,7 +2051,7 @@
             "description": "Retrieves specific information about a web page such as title, description, URL, or source code.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2060,7 +2060,7 @@
             "description": "Retrieves the value of an element's attribute from a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2069,7 +2069,7 @@
             "description": "Finds and returns all sibling elements of the specified web element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2078,7 +2078,7 @@
             "description": "Finds and returns the parent element of the specified web element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2087,7 +2087,7 @@
             "description": "Navigates a web browser instance to a specified URL, back, forward, or reload.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2096,7 +2096,7 @@
             "description": "Moves the mouse cursor over a specified element on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2105,7 +2105,7 @@
             "description": "Checks if a web page contains a specific UI element or text. Optionally checks if the element is enabled or disabled.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2114,7 +2114,7 @@
             "description": "Launches a web browser instance of Microsoft Edge or Google Chrome.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2123,7 +2123,7 @@
             "description": "Fills a specified text field in a web browser with provided text. Supports plain or encrypted input.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2132,7 +2132,7 @@
             "description": "Simulates clicking a UI button element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2141,7 +2141,7 @@
             "description": "Executes a custom JavaScript function in the context of the current web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2150,7 +2150,7 @@
             "description": "Scrolls the browser window to a specified element or coordinates.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2159,7 +2159,7 @@
             "description": "Simulates selecting a radio button element on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2168,7 +2168,7 @@
             "description": "Sets the state (checked/unchecked) of a checkbox element on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2177,7 +2177,7 @@
             "description": "Sets or clears the value of a drop-down list element on a web page.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2186,7 +2186,7 @@
             "description": "Sets the value of a specified attribute of a web element.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           },
           {
             "type": "activityNode",
@@ -2195,7 +2195,7 @@
             "description": "Switches control to a browser tab using index, title, or partial URL.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BrowserAutomation.svg"
           }
         ]
       }
