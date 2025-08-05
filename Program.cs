@@ -132,10 +132,6 @@ app.MapControllers();
 
 var parameters = Environment.GetCommandLineArgs();
 
-if (parameters.Length > 1 && parameters[1] == "seed")
-{
-    Console.WriteLine("Seeding data...");
-    await app.SeedInitialData();
-}
+await app.SeedInitialData();
 
 await app.RunAsync();
