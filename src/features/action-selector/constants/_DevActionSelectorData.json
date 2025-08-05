@@ -1925,7 +1925,7 @@
             "description": "Clears all contents from the system clipboard.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Clipboard.svg"
           },
           {
             "type": "activityNode",
@@ -1934,7 +1934,7 @@
             "description": "Retrieves the text currently stored in the system clipboard.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Clipboard.svg"
           },
           {
             "type": "activityNode",
@@ -1943,7 +1943,7 @@
             "description": "Sets the specified text to the system clipboard.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Clipboard.svg"
           }
         ]
       },
