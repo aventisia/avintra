@@ -27,4 +27,11 @@ public class GenerativeModelController : BaseApiController
     {
         return ResultHelper(await _generativeModelService.UpdateSetupAsync(modelSetupDto));
     }
+    
+    // Execute data via a Language Learning Model (LLM)
+    [HttpPost("execute/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<ExtractionResponseDto>>> ExecuteModelViaLLM(Guid mlModelId)
+    {
+        return ResultHelper(await _generativeModelService.ExecuteModelViaLLMAsync(mlModelId));
+    }
 }

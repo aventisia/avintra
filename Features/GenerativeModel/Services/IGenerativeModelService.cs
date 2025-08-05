@@ -15,4 +15,12 @@ public interface IGenerativeModelService
     /// <param name="modelSetupDto">The new setup configuration to be applied to the generative model.</param>
     /// <returns>A task that represents the asynchronous operation. It returns the updated model setup DTO.</returns>
     Task<ServiceResponse<GenerativeModelDto>> UpdateSetupAsync(GenerativeModelDto modelSetupDto);
+
+    /// <summary>
+    /// Executes the specified machine learning model using a large language model (LLM).
+    /// This method triggers the execution of the model by providing the model's unique identifier.
+    /// </summary>
+    /// <param name="mlModelId">The unique identifier of the machine learning model to be executed.</param>
+    /// <returns>A task that represents the asynchronous operation. It returns a string response upon completion of the execution.</returns>
+    Task<ServiceResponse<string>> ExecuteModelViaLLMAsync(Guid mlModelId);
 }

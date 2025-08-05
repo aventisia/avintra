@@ -191,6 +191,65 @@ public class GenerativeModelService : IGenerativeModelService
         return serviceResponse;
     }
 
+    // Executes the specified machine learning model using a large language model (LLM).
+    public async Task<ServiceResponse<string>> ExecuteModelViaLLMAsync(Guid mlModelId)
+    {
+        // Initialize the response with a default failure message
+        var serviceResponse = new ServiceResponse<string>
+        {
+            Data = null,
+            Message = "Failed to execute via LLM. Please try again."
+        };
+
+        try
+        {
+            _logger.LogInformation("Initiating LLM execution for ML Model ID: {ModelId}", mlModelId);
+
+            // Retrieve the ML model along with its generative model configuration
+            var model = await _unitOfWork.MLModelRepo
+                .GetByConditionAsync(m => m.Id == mlModelId)
+                .Include(m => m.GenerativeModel)
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
+
+            // Check if the model exists
+            if (model == null)
+            {
+                _logger.LogWarning("ML Model not found for ID: {ModelId}", mlModelId);
+                serviceResponse.Message = "ML model not found.";
+                return serviceResponse;
+            }
+
+            // Ensure the generative model configuration is present
+            if (model.GenerativeModel == null)
+            {
+                _logger.LogWarning("Generative model setup is incomplete for ML Model ID: {ModelId}", mlModelId);
+                serviceResponse.Message = "Model setup is not completed.";
+                return serviceResponse;
+            }
+
+            // Call the LLM data extraction service with the configured prompt and parameters
+            var llmResponse = await _llmDataExtractionService.ExtractDataAsync(
+                model.GenerativeModel.GeneratedPrompt,
+                model.GenerativeModel.LLM,
+                model.GenerativeModel.Temperature
+            );
+
+            // Update the response with success
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Data = llmResponse.Data;
+            serviceResponse.Message = "Execution completed successfully.";
+
+            _logger.LogInformation("LLM execution completed for ML Model ID: {ModelId}", mlModelId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred during LLM execution for ML Model ID: {ModelId}", mlModelId);
+        }
+
+        return serviceResponse;
+    }
+
     // Validates the SetupObject in a GenerativeModelDefaultSetupDto by deserializing it into the expected config DTO based on the specified model type. Logs detail for troubleshooting and returns a concise validation message on failure.
     private bool ValidateModelSetupDto(GenerativeModelDefaultSetupDto modelSetupDto, out string? validationMessage)
     {
