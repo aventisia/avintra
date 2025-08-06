@@ -38,9 +38,9 @@ public class ThoughtLeadershipModelConfigDto
     public required string DataAndStats { get; set; }
 
     /// <summary>
-    /// Gets or sets a list of external reference links that the model may use during content generation.
+    /// Gets or sets the collection of external reference links that can be utilized by the model during content generation.
     /// </summary>
-    public List<string>? Links { get; set; }
+    public List<ReferenceLinkDto>? Links { get; set; }
 
     /// <summary>
     /// Gets or sets a list of reference documents and associated usage instructions that support generation tasks.

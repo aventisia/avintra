@@ -410,7 +410,7 @@ public class GenerativeModelService : IGenerativeModelService
                             
                             SOURCES & MATERIALS
                             {(thoughtLeadership.Links.Any()
-                                ? "Reference Links:" + string.Join(Environment.NewLine, thoughtLeadership.Links.Select((link, index) => $"{index + 1}. {link}"))
+                                ? "Reference Links:" + string.Join(Environment.NewLine, thoughtLeadership.Links.Select((link, index) => $"{index + 1}. {link.Url}"))
                                 : "")}
 
                             {referenceMaterialsSection}
@@ -473,7 +473,7 @@ public class GenerativeModelService : IGenerativeModelService
 
                         SOURCES & MATERIALS
                         {(companyProfile.Links.Any()
-                            ? "Input Links:" + string.Join(Environment.NewLine, companyProfile.Links.Select((link, index) => $"{index + 1}. {link}"))
+                            ? "Input Links:" + string.Join(Environment.NewLine, companyProfile.Links.Select((link, index) => $"{index + 1}. {link.Url}"))
                             : "")}
 
                         {referenceMaterialsSection}
@@ -531,7 +531,7 @@ public class GenerativeModelService : IGenerativeModelService
 
                         SOURCES
                         {(personaResearch.Links.Any()
-                            ? "Input Links:\n" + string.Join("\n", personaResearch.Links.Select((link, index) => $"{index + 1}. {link}"))
+                            ? "Input Links:\n" + string.Join("\n", personaResearch.Links.Select((link, index) => $"{index + 1}. {link.Url}"))
                             : "")}
 
                         OBJECTIVE
@@ -619,7 +619,7 @@ public class GenerativeModelService : IGenerativeModelService
                         {referenceMaterialsSection}
 
                         {(rfpResponse.Links.Any()
-                            ? "External Links:\n" + string.Join("\n", rfpResponse.Links.Select((link, i) => $"{i + 1}. {link}"))
+                            ? "External Links:\n" + string.Join("\n", rfpResponse.Links.Select((link, index) => $"{index + 1}. {link.Url}"))
                             : "")}
 
                         STRATEGY & SCOPE

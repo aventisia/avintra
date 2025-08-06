@@ -23,9 +23,9 @@ public class CompanyProfileGenerationConfigDto
     public required string WebData { get; set; }
 
     /// <summary>
-    /// Gets or sets a list of external links that can be used for additional reference or validation during content generation.
+    /// Gets or sets a list of external links that may be used as additional references or for validation during content generation.
     /// </summary>
-    public List<string>? Links { get; set; }
+    public List<ReferenceLinkDto>? Links { get; set; }
 
     /// <summary>
     /// Gets or sets a list of document references, including any relevant instructions for the model to consider during content generation.

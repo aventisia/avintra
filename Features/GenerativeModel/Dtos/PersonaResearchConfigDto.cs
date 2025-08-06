@@ -13,9 +13,9 @@ public class PersonaResearchConfigDto
     public required string CompanyName { get; set; }
 
     /// <summary>
-    /// Gets or sets a list of external reference links that can be used for additional research or validation during content generation.
+    /// Gets or sets a list of external reference links that may be used for additional research or validation during content generation.
     /// </summary>
-    public List<string>? Links { get; set; }
+    public List<ReferenceLinkDto>? Links { get; set; }
 
     /// <summary>
     /// Gets or sets the purpose or objective of the research, such as understanding customer behaviors or creating a persona profile.

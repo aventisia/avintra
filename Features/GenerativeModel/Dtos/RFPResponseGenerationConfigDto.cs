@@ -28,9 +28,9 @@ public class RFPResponseGenerationConfigDto
     public required string ResponseBoundary { get; set; }
 
     /// <summary>
-    /// Gets or sets a list of external reference links that may be consulted for additional context or validation during content generation.
+    /// Gets or sets a list of external reference links that may be used for additional context or validation during content generation.
     /// </summary>
-    public List<string>? Links { get; set; }
+    public List<ReferenceLinkDto>? Links { get; set; }
 
     /// <summary>
     /// Gets or sets a list of preferred documents that should be prioritized or emphasized during content generation.
@@ -59,4 +59,22 @@ public class ReferenceDocumentDto
     /// Gets or sets optional instructions on how the reference document should be utilized in the content generation process.
     /// </summary>
     public string? Instructions { get; set; }
+}
+
+
+
+/// <summary>
+/// Represents a reference link to a document used for content generation or related tasks.
+/// </summary>
+public class ReferenceLinkDto
+{
+    /// <summary>
+    /// Gets or sets the unique identifier of the reference link.
+    /// </summary>
+    public Guid Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the URL of the reference document.
+    /// </summary>
+    public required string Url { get; set; }
 }
