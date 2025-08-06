@@ -1,4 +1,5 @@
 import { LoadingSpinner } from "@aventisia/ui";
+import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
 import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
 import {
@@ -103,12 +104,16 @@ const TemplateDialog = () => {
         {/* Footer with creator, usage count, and action button */}
         <DialogFooter className="flex-row !justify-between px-5 pb-5 pt-4">
           <div className="flex items-center gap-2 text-sm">
-            <Badge className="flex h-8 w-8 justify-center !rounded-full bg-primary-500 !p-0">
-              {templateToUse.createdBy
-                ?.split(" ")
-                .map((word) => word[0])
-                .join("")}
-            </Badge>
+            <Avatar className="h-8 w-8 border-2 border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary">
+              <AvatarFallback className="bg-[#aba7e7] text-xs font-bold capitalize text-secondary">
+                {templateToUse?.createdBy
+                  ? templateToUse?.createdBy
+                      ?.split(" ")
+                      .map((word) => word[0])
+                      .join("")
+                  : "--"}
+              </AvatarFallback>
+            </Avatar>
             <p>By {templateToUse.createdBy}</p>
           </div>
 

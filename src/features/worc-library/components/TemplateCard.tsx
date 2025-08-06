@@ -1,4 +1,5 @@
 import { Separator } from "@aventisia/ui";
+import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
 import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
 import {
@@ -73,14 +74,16 @@ export const TemplateCard = ({ template, onClick }: TemplateCardProps) => {
       <CardFooter className="flex items-center justify-between !pb-3.5">
         {/* Creator badge and name */}
         <div className="flex items-center gap-2">
-          <Badge className="flex h-6 w-6 justify-center !rounded-full !p-0 text-3xs">
-            {template?.createdBy
-              ? template.createdBy
-                  .split(" ")
-                  .map((word) => word[0])
-                  .join("")
-              : "?"}
-          </Badge>
+          <Avatar className="h-7 w-7 border-2 border-primary tracking-wider">
+            <AvatarFallback className="bg-[#aba7e7] text-xs font-semibold capitalize text-secondary">
+              {template?.createdBy
+                ? template?.createdBy
+                    ?.split(" ")
+                    .map((word) => word[0])
+                    .join("")
+                : "--"}
+            </AvatarFallback>
+          </Avatar>
           <p className="text-xs text-accent-foreground">{template.createdBy}</p>
         </div>
 
