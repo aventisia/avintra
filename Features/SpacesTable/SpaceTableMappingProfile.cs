@@ -14,6 +14,11 @@ public class SpaceTableMappingProfile : IRegister
                 src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
                     : null);
+                    
+        config.NewConfig<SpaceUser, SpaceUserDto>()
+            .Map(dest => dest.Email, src => src.User != null ? src.User.Email : null)
+            .Map(dest => dest.FirstName, src => src.User != null ? src.User.FirstName : null)
+            .Map(dest => dest.LastName, src => src.User != null ? src.User.LastName : null);
 
         // Mapping for inserting or updating a space record.
         config.NewConfig<SpaceDto, Space>()
@@ -21,7 +26,7 @@ public class SpaceTableMappingProfile : IRegister
                    .Ignore(dest => dest.CreatedOn)
                    .Ignore(dest => dest.LastModifiedOn)
                    .IgnoreNullValues(true);
-                   
+
         // Get spaces in SelectOptionDto format
         config.NewConfig<Space, SelectOptionDto>()
             .Map(dest => dest.Label, src => src.Name)
