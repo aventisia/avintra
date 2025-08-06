@@ -20,6 +20,8 @@ import { triggersList } from "../constants/trigger-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { ActionCategoryType } from "../types/action-category-type";
 import ActionsList from "./ActionsList";
+import { iconMapper } from "@/components/icon-mapper";
+import { FallbackImageIcon } from "./FallbackImageIcon";
 
 export const ActionCategoryList = () => {
   // Get the origin and originId from the store
@@ -164,7 +166,16 @@ export const ActionCategoryList = () => {
                   >
                     <AccordionItem value={item.label} className="border-none">
                       <AccordionTrigger className="px-1.5 py-2">
-                        <div className="flex w-full gap-3 text-sm">
+                        <div className="flex w-full items-center gap-3 text-sm">
+                          {item.icon ? (
+                            <div>{iconMapper[item.icon]}</div>
+                          ) : item.img ? (
+                            <FallbackImageIcon
+                              className="h-5 w-5 "
+                              src={item.img}
+                            />
+                          ) : null}
+
                           {item.label}
                         </div>
                       </AccordionTrigger>

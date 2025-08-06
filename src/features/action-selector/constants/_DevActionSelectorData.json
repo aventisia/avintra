@@ -835,7 +835,7 @@
         "label": "XML",
         "description": "Read, write, and manipulate XML data.",
         "icon": null,
-        "img": null,
+        "img": "/assets/XML.svg",
         "listType": null,
         "actions": [
           {
@@ -934,7 +934,7 @@
         "label": "Workstation",
         "description": "Automate workstation and desktop environment tasks.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Workstation.svg",
         "listType": null,
         "actions": [
           {
@@ -1051,7 +1051,7 @@
         "label": "UI Automation",
         "description": "Automate user interface interactions in windows and applications.",
         "icon": null,
-        "img": null,
+        "img": "/assets/UIAutomation.svg",
         "listType": null,
         "actions": [
           {
@@ -1231,7 +1231,7 @@
         "label": "System",
         "description": "Perform system-level operations and checks.",
         "icon": null,
-        "img": null,
+        "img": "/assets/System.svg",
         "listType": null,
         "actions": [
           {
@@ -1241,7 +1241,7 @@
             "description": "Deletes an environment variable from a given scope.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/System.svg"
           },
           {
             "type": "activityNode",
@@ -1250,7 +1250,7 @@
             "description": "Retrieves the value of an environment variable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/System.svg"
           },
           {
             "type": "activityNode",
@@ -1259,7 +1259,7 @@
             "description": "Marks the beginning of a conditional block of actions depending on whether a process is running or not.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/System.svg"
           },
           {
             "type": "activityNode",
@@ -1268,7 +1268,7 @@
             "description": "Sends a message to determine whether a remote computer is accessible over the network.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/System.svg"
           },
           {
             "type": "activityNode",
@@ -1277,7 +1277,7 @@
             "description": "Executes an application or opens a document by executing the associated application.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/System.svg"
           },
           {
             "type": "activityNode",
@@ -1286,7 +1286,7 @@
             "description": "Sets an environment variable to a given value.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/System.svg"
           },
           {
             "type": "activityNode",
@@ -1295,7 +1295,7 @@
             "description": "Immediately stops a running process.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/System.svg"
           },
           {
             "type": "activityNode",
@@ -1304,7 +1304,7 @@
             "description": "Waits for a specific process to start or stop.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/System.svg"
           }
         ]
       },
@@ -1312,7 +1312,7 @@
         "label": "Scripting",
         "description": "Run scripts and automate tasks using scripting languages.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Scripting.svg",
         "listType": null,
         "actions": [
           {
@@ -1375,7 +1375,7 @@
         "label": "Mouse and Keyboard",
         "description": "Automate mouse and keyboard actions.",
         "icon": null,
-        "img": null,
+        "img": "/assets/MouseAndKeyboard.svg",
         "listType": null,
         "actions": [
           {
@@ -1483,7 +1483,7 @@
         "label": "Message Box",
         "description": "Display message boxes and dialogs.",
         "icon": null,
-        "img": null,
+        "img": "/assets/MessageBox.svg",
         "listType": null,
         "actions": [
           {
@@ -1528,7 +1528,7 @@
         "label": "Folder",
         "description": "Folder operations such as create, delete, move, and list.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Folder.svg",
         "listType": null,
         "actions": [
           {
@@ -1636,7 +1636,7 @@
         "label": "File",
         "description": "File operations such as copy, move, and conversion.",
         "icon": null,
-        "img": null,
+        "img": "/assets/File.svg",
         "listType": null,
         "actions": [
           {
@@ -1780,7 +1780,7 @@
         "label": "Credential Manager",
         "description": "Manage credentials such as usernames and passwords securely using windows credential manager.",
         "icon": null,
-        "img": null,
+        "img": "/assets/CredentialManager.svg",
         "listType": null,
         "actions": [
           {
@@ -1834,7 +1834,7 @@
         "label": "Compression",
         "description": "Compress and decompress files and folders.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Compression.svg",
         "listType": null,
         "actions": [
           {
@@ -1861,7 +1861,7 @@
         "label": "CMD Session",
         "description": "Automate command prompt session operations.",
         "icon": null,
-        "img": null,
+        "img": "/assets/CMDSession.svg",
         "listType": null,
         "actions": [
           {
@@ -1915,7 +1915,7 @@
         "label": "Clipboard",
         "description": "Clipboard operations and automation.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Clipboard.svg",
         "listType": null,
         "actions": [
           {
@@ -1951,7 +1951,7 @@
         "label": "Browser Automation",
         "description": "Automate web browser interactions.",
         "icon": null,
-        "img": null,
+        "img": "/assets/BrowserAutomation.svg",
         "listType": null,
         "actions": [
           {
