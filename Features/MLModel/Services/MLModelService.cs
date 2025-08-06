@@ -38,6 +38,8 @@ public class MLModelService : IMLModelService
                 .GetByConditionAsync(w =>
                     w.CreatedByUserId == _userId)
                 .Include(i => i.Tasks)
+                .Include(i => i.ConversationalModel)
+                .Include(i => i.GenerativeModel)
                 .OrderByDescending(o => o.CreatedOn)
                 .ProjectToType<MLModelDto>()
                 .ToListAsync();

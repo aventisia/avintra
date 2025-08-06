@@ -8,8 +8,7 @@ public class MLModelMappingProfile : IRegister
     {
         // Mapping of DTO to get list of ML model to show on the UI.
         config.NewConfig<MLModel, MLModelDto>()
-        .Map(dest => dest.LLMs,
-            src => src.Tasks != null ? src.Tasks.Select(s => s.LLM).Distinct().ToList() : null)
+        .Map(dest => dest.LLMs, src => GetLlmList(src))
         .Map(dest => dest.ExecutionCount,
             src => src.ExtractedData != null ? src.ExtractedData.Sum(s => s.ExecutionCount) : 0)
         .Map(dest => dest.FailedCount,
@@ -38,5 +37,16 @@ public class MLModelMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
 
+    }
+
+    private static List<string>? GetLlmList(MLModel src)
+    {
+        return src.Type switch
+        {
+            ModelTypesEnum.Inferencing => src.Tasks?.Select(t => t.LLM).Distinct().ToList(),
+            ModelTypesEnum.Conversation => new List<string> { src.ConversationalModel?.LLM },
+            ModelTypesEnum.Generative => new List<string> { src.GenerativeModel?.LLM },
+            _ => null
+        };
     }
 }
