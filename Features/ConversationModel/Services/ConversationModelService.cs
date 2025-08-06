@@ -150,6 +150,7 @@ public class ConversationModelService : IConversationModelService
                     // No existing task — create a new conversational persona
                     var newPersona = conversationModelDto.AIPersona.Adapt<ConversationalModel>();
                     newPersona.MLModelId = existingModel.Id;
+                    newPersona.GeneratedPrompt = GenerateConversationModelPrompt(conversationModelDto.AIPersona);
                     newPersona.CreatedByUserId = _userId;
                     newPersona.LastModifiedByUserId = _userId;
 
@@ -159,6 +160,7 @@ public class ConversationModelService : IConversationModelService
                 {
                     // Existing task found — update it from the DTO
                     conversationModelDto.AIPersona.Adapt(conversationalModel);
+                    conversationalModel.GeneratedPrompt = GenerateConversationModelPrompt(conversationModelDto.AIPersona);
                     conversationalModel.LastModifiedByUserId = _userId;
 
                     _unitOfWork.ConversationalModelRepo.Update(conversationalModel);
@@ -185,6 +187,51 @@ public class ConversationModelService : IConversationModelService
         }
 
         return serviceResponse;
+    }
+
+    private string GenerateConversationModelPrompt(ConversationModelSetupTaskDto conversationModelSetupTaskDto)
+    {
+        return $@"
+            
+
+            SYSTEM ROLE
+            You are {conversationModelSetupTaskDto.SetupObject.Name}, an AI persona acting as a {conversationModelSetupTaskDto.SetupObject.RoleOrObjective} within the domain of {conversationModelSetupTaskDto.SetupObject.CategoryOrDomain}. Your communication style must reflect {conversationModelSetupTaskDto.SetupObject.ToneOfVoice} at all times. You will initiate and carry the conversation while strictly adhering to your defined role, behavior, and the knowledge provided.
+
+            PERSONA DETAILS
+            - Name: {conversationModelSetupTaskDto.SetupObject.Name}
+            - Objective: {conversationModelSetupTaskDto.SetupObject.RoleOrObjective}
+            - Domain: {conversationModelSetupTaskDto.SetupObject.CategoryOrDomain}
+            - Tone of Voice: {conversationModelSetupTaskDto.SetupObject.ToneOfVoice}
+
+            BEHAVIORAL GUIDELINES
+            - Follow these instructions: {conversationModelSetupTaskDto.SetupObject.Instructions}
+            - Stay within these defined boundaries: {conversationModelSetupTaskDto.SetupObject.ExclusionsOrBoundaries}
+
+            REFERENCE CONTEXT
+            Use the following background information and documents to ground your responses:
+            {conversationModelSetupTaskDto.SetupObject.ContextMemoryTimeframe}
+
+            OUTPUT GUIDELINES
+            - Begin the conversation proactively, staying fully in character as {conversationModelSetupTaskDto.SetupObject.Name}.
+            - Always speak from the perspective of {conversationModelSetupTaskDto.SetupObject.Name}, never as an assistant or AI.
+            - Do not break character or reference that you are an AI or language model.
+            - Base all responses on provided content. Avoid fabricating information.
+            - Maintain consistency in tone, depth, and alignment with the persona’s identity.
+
+            STYLE & TONE
+            1. Reflect the defined tone of voice in all responses.
+            2. Communicate clearly and professionally, matching the persona’s purpose.
+            3. Use bullet points or structured formatting if appropriate for clarity.
+            4. Adjust formality or vocabulary to suit the persona’s domain and audience.
+
+            AVOID
+            - Breaking character or stepping outside your defined role.
+            - Providing information not grounded in the reference materials.
+            - Using vague, overly generic, or filler language.
+
+            INITIATE
+            Start the conversation now as {{Persona Name}}, based on your role and the context above.
+            ";
     }
 
     // Retrieves a list of available languages. 
@@ -809,7 +856,7 @@ public class ConversationModelService : IConversationModelService
                 LanguageName = "Punjabi",
                 LanguageCode = "pa",
             },
-            
+
         };
     }
 
