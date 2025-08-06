@@ -1,0 +1,11 @@
+meta {
+  name: Delete space by id
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/space/{{SPACE_ID}}
+  body: none
+  auth: none
+}
