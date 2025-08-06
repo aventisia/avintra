@@ -158,7 +158,7 @@ public class AgentTableService : IAgentTableService
 
             // Check if the agent exists and belongs to the current user.
             var agent = await _unitOfWork.FlowVersionRepo
-                        .GetByConditionAsync(w => 
+                        .GetByConditionAsync(w =>
                             w.Id == agentId && w.CreatedByUserId == _userId
                         )
                         .Include(a => a.MachineFlows)
@@ -174,7 +174,7 @@ public class AgentTableService : IAgentTableService
 
             // Check if all provided machine IDs are valid and belong to the current user.
             var machines = await _unitOfWork.MachineRepo
-                        .GetByConditionAsync(w => 
+                        .GetByConditionAsync(w =>
                             machineIds.Contains(w.Id) && w.CreatedByUserId == _userId
                         )
                         .ToListAsync();
@@ -391,6 +391,46 @@ public class AgentTableService : IAgentTableService
         {
             // Log any unexpected error.
             _logger.LogError(ex, "An unexpected error occurred while retrieving machines for agent {AgentId}.", agentId);
+        }
+
+        return serviceResponse;
+    }
+
+
+    // Searches and retrieves a list of published flow versions where the flow name matches the specified search key.
+    public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> SearchPublishFlowVersionsAsync(string searchKey)
+    {
+        // Initialize a failed service response by default
+        var serviceResponse = new ServiceResponse<IEnumerable<AgentTableDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve published agents. Please try again."
+        };
+
+        try
+        {
+            // Query the repository for published flow versions where the flow name contains the search key (case-insensitive)
+            var publishedFlowVersions = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w =>
+                    w.IsPublished &&
+                    w.Flow.Name.ToLower().Contains(searchKey.ToLower())
+                )
+                .Include(i => i.Flow)
+                .Include(i => i.MachineFlows)
+                .Include(i => i.CreatedByUser)
+                .OrderBy(o => o.VersionNumber)
+                .AsNoTracking()
+                .ToListAsync();
+
+            // Map the result to DTOs and update the service response to indicate success
+            serviceResponse.Data = publishedFlowVersions.Adapt<IEnumerable<AgentTableDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Published agents retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log detailed error information for troubleshooting
+            _logger.LogError($"[SearchPublishFlowVersionsAsync] Error occurred while searching published agents for key '{searchKey}': {ex}");
         }
 
         return serviceResponse;

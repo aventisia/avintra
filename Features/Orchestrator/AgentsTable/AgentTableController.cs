@@ -53,4 +53,11 @@ public class AgentTableController : BaseApiController
     {
         return ResultHelper(await _agentTableService.GetMachinesByAgentAsync(agentId));
     }
+
+    // Searches for published flow versions that match the specified search keyword.
+    [HttpGet("search/{seachKey}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AssignMachineDto>>>> SearchPublishFlowVersions(string seachKey)
+    {
+        return ResultHelper(await _agentTableService.SearchPublishFlowVersionsAsync(seachKey));
+    }
 }

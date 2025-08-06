@@ -44,4 +44,13 @@ public interface IAgentTableService
     /// <param name="agentId">The ID of the agent whose assigned machines are to be retrieved.</param>
     /// <returns>A service response containing a list of machines assigned to the agent.</returns>
     Task<ServiceResponse<IEnumerable<AssignMachineDto>>> GetMachinesByAgentAsync(Guid agentId);
+
+    /// <summary>
+    /// Search and retrieve all published flow versions where the flow name contains the specified search keyword.
+    /// </summary>
+    /// <param name="searchKey">The keyword used to search flow names.</param>
+    /// <returns>
+    /// A <see cref="ServiceResponse{T}"/> containing a list of <see cref="AgentTableDto"/> objects representing the published flow versions matching the search criteria.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<AgentTableDto>>> SearchPublishFlowVersionsAsync(string searchKey);
 }
