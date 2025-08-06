@@ -440,7 +440,8 @@ public class SpaceTableService : ISpaceTableService
             // Retrieve the space along with its associated users
             var space = await _unitOfWork.SpaceRepo
                 .GetByConditionAsync(s => s.Id == spaceId)
-                .Include(s => s.SpaceUsers)
+                .Include(i => i.SpaceUsers)
+                    .ThenInclude(i2 => i2.User)
                 .SingleOrDefaultAsync();
 
             // If the space is not found, return an appropriate response
