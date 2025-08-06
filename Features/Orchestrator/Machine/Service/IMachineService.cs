@@ -65,4 +65,13 @@ public interface IMachineService
     /// </summary>
     /// <returns>A service response containing a list of select options for machines, including labels, values, and descriptions.</returns>
     Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetMachineToSelectOptionAsync();
+
+    /// <summary>
+    /// Searches for machines whose properties match the specified search keyword.
+    /// </summary>
+    /// <param name="searchKey">The keyword used to search machine details (e.g., name or identifier).</param>
+    /// <returns>
+    /// A <see cref="ServiceResponse{T}"/> containing a collection of <see cref="MachineDto"/> objects matching the search criteria.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<MachineDto>>> FindMachinesByKeywordAsync(string searchKey);
 }

@@ -599,4 +599,45 @@ public class MachineService : IMachineService
 
         return serviceResponse;
     }
+
+    // Searches for machines created by the current user that match the specified search keyword.
+    public async Task<ServiceResponse<IEnumerable<MachineDto>>> FindMachinesByKeywordAsync(string searchKey)
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<MachineDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve machines. Please try again."
+        };
+
+        try
+        {
+            // Normalize search key for case-insensitive comparison
+            var normalizedKey = searchKey?.ToLower() ?? string.Empty;
+
+            // Query machines created by the current user and match the search key
+            var machines = await _unitOfWork.MachineRepo
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower().Contains(normalizedKey)
+                )
+                .OrderByDescending(o => o.CreatedOn)
+                .Include(a => a.CreatedByUser)
+                .Include(a => a.LastModifiedByUser)
+                .Include(a => a.MachineFlows)
+                    .ThenInclude(fv => fv.FlowVersion)
+                    .ThenInclude(f => f.Flow)
+                .AsNoTracking()
+                .ToListAsync();
+
+            serviceResponse.Data = machines.Adapt<IEnumerable<MachineDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Machines retrieved successfully.";
+            _logger.LogInformation("Machines retrieved successfully using search key: {SearchKey}", searchKey);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while searching machines with key: {SearchKey}", searchKey);
+        }
+
+        return serviceResponse;
+    }
 }
