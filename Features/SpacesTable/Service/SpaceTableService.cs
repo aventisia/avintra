@@ -231,7 +231,7 @@ public class SpaceTableService : ISpaceTableService
             // Retrieve the existing space
             var existingSpace = await _unitOfWork.SpaceRepo
                 .GetByConditionAsync(w => w.Id == spaceDto.Id)
-                .Include(i => i.Users)
+                .Include(i => i.SpaceUsers)
                 .SingleOrDefaultAsync();
 
             if (existingSpace == null)
@@ -262,7 +262,7 @@ public class SpaceTableService : ISpaceTableService
             _unitOfWork.SpaceRepo.Update(existingSpace);
 
             // Handle users: Add new users and delete removed users
-            var existingUserIds = existingSpace.Users
+            var existingUserIds = existingSpace.SpaceUsers
             .Where(w => w.SpaceId == spaceDto.Id)
                 .Select(s => s.UserId)
                 .ToList();
@@ -280,7 +280,7 @@ public class SpaceTableService : ISpaceTableService
             }).ToList();
 
             // Remove users who are no longer part of the space
-            var spaceUsersToRemove = existingSpace.Users
+            var spaceUsersToRemove = existingSpace.SpaceUsers
                 .Where(w => w.SpaceId == existingSpace.Id && usersToRemove.Contains(w.UserId))
                 .ToList();
 
@@ -440,7 +440,7 @@ public class SpaceTableService : ISpaceTableService
             // Retrieve the space along with its associated users
             var space = await _unitOfWork.SpaceRepo
                 .GetByConditionAsync(s => s.Id == spaceId)
-                .Include(s => s.Users)
+                .Include(s => s.SpaceUsers)
                 .SingleOrDefaultAsync();
 
             // If the space is not found, return an appropriate response
@@ -452,11 +452,11 @@ public class SpaceTableService : ISpaceTableService
             }
 
             // Map the users to DTOs and prepare a successful response
-            serviceResponse.Data = space.Users.Adapt<IEnumerable<SpaceUserDto>>();
+            serviceResponse.Data = space.SpaceUsers.Adapt<IEnumerable<SpaceUserDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Users retrieved successfully.";
 
-            _logger.LogInformation("Successfully retrieved {UserCount} user(s) for space ID: {SpaceId}.", space.Users.Count, spaceId);
+            _logger.LogInformation("Successfully retrieved {UserCount} user(s) for space ID: {SpaceId}.", space.SpaceUsers.Count, spaceId);
         }
         catch (Exception ex)
         {

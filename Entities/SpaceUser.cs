@@ -3,7 +3,6 @@ namespace AccountsAPIs.Entities;
 /// <summary>
 /// Represents the association between a user and a space, including user-specific status or metadata within that space.
 /// </summary>
-[Table("SpaceUsers")]
 public class SpaceUser : BaseEntity
 {
     /// <summary>

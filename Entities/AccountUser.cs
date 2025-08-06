@@ -126,9 +126,4 @@ public class AccountUser : IdentityUser<Guid>
     /// Gets or sets the duration to deactivate the account
     /// </summary>
     public DateTime DeactivatedOn { get; set; }
-
-    /// <summary>
-    /// Gets or sets the list of spaces associated with the user.
-    /// </summary>
-    public virtual ICollection<SpaceUser>? Spaces { get; set; }
 }

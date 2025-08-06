@@ -3,7 +3,6 @@ namespace AccountsAPIs.Entities;
 /// <summary>
 /// Represents a space in the system.
 /// </summary>
-[Table("Spaces")]
 public class Space : BaseEntity, IMustHaveTenant
 {
     /// <summary>
@@ -31,5 +30,5 @@ public class Space : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the list of users associated with the space.
     /// </summary>
-    public virtual ICollection<SpaceUser>? Users { get; set; }
+    public virtual ICollection<SpaceUser>? SpaceUsers { get; set; }
 }
