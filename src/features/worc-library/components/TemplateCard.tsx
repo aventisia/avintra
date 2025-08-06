@@ -62,10 +62,7 @@ export const TemplateCard = ({ template, onClick }: TemplateCardProps) => {
 
       <CardContent className="space-y-3 pb-1">
         {/* Type badge */}
-        <Badge
-          className="border-primary-600 text-primary-600"
-          variant="outline"
-        >
+        <Badge className="border-primary text-primary" variant="outline">
           {template.type}
         </Badge>
         <Separator />
@@ -74,8 +71,8 @@ export const TemplateCard = ({ template, onClick }: TemplateCardProps) => {
       <CardFooter className="flex items-center justify-between !pb-3.5">
         {/* Creator badge and name */}
         <div className="flex items-center gap-2">
-          <Avatar className="h-7 w-7 border-2 border-primary tracking-wider">
-            <AvatarFallback className="bg-[#aba7e7] text-xs font-semibold capitalize text-secondary">
+          <Avatar className="flex h-7 w-7 items-center justify-center">
+            <AvatarFallback className="bg-[#aba7e7] text-xs font-medium capitalize leading-7 tracking-wider text-secondary">
               {template?.createdBy
                 ? template?.createdBy
                     ?.split(" ")
@@ -84,7 +81,9 @@ export const TemplateCard = ({ template, onClick }: TemplateCardProps) => {
                 : "--"}
             </AvatarFallback>
           </Avatar>
-          <p className="text-xs text-accent-foreground">{template.createdBy}</p>
+          <p className="text-xs leading-7 text-accent-foreground">
+            {template.createdBy}
+          </p>
         </div>
 
         {/* Usage count with clipboard copy button */}

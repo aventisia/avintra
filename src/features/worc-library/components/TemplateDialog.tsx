@@ -96,7 +96,7 @@ const TemplateDialog = () => {
             </p>
           </ScrollArea>
 
-          <Badge className="border-primary-600 bg-transparent px-4 text-xs text-primary-600">
+          <Badge className="border-primary bg-transparent px-4 text-xs text-primary">
             {templateToUse.type}
           </Badge>
         </div>
@@ -104,8 +104,8 @@ const TemplateDialog = () => {
         {/* Footer with creator, usage count, and action button */}
         <DialogFooter className="flex-row !justify-between px-5 pb-5 pt-4">
           <div className="flex items-center gap-2 text-sm">
-            <Avatar className="h-8 w-8 border-2 border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary">
-              <AvatarFallback className="bg-[#aba7e7] text-xs font-bold capitalize text-secondary">
+            <Avatar className="flex h-8 w-8 items-center justify-center">
+              <AvatarFallback className="bg-[#aba7e7] text-sm font-medium capitalize leading-8 tracking-wider text-secondary">
                 {templateToUse?.createdBy
                   ? templateToUse?.createdBy
                       ?.split(" ")
@@ -114,7 +114,9 @@ const TemplateDialog = () => {
                   : "--"}
               </AvatarFallback>
             </Avatar>
-            <p>By {templateToUse.createdBy}</p>
+            <p className="text-sm leading-8 text-accent-foreground">
+              {templateToUse.createdBy}
+            </p>
           </div>
 
           <div className="flex items-center gap-4">
