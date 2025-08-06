@@ -371,7 +371,7 @@ public class GenerativeModelService : IGenerativeModelService
                 case GenerativeModelTypesEnum.ThoughtLeadership:
                     // Expected DTO: ThoughtLeadershipModelConfigDto
                     var thoughtLeadership = JsonSerializer.Deserialize<ThoughtLeadershipModelConfigDto>(setupObjectJson, jsonOptions);
-                    if (thoughtLeadership == null)
+                    if (thoughtLeadership != null)
                     {
                         // Pre-build the reference materials section before interpolating
                         string referenceMaterialsSection = string.Empty;
@@ -389,8 +389,8 @@ public class GenerativeModelService : IGenerativeModelService
 
                             referenceMaterialsSection = string.Join("\n", lines);
                         }
-                        generatedPrompt = $"""
-                            SYSTEM PROMPT
+
+                        generatedPrompt = $@"SYSTEM PROMPT
                             {(!string.IsNullOrWhiteSpace(generativeModelDefaultSetupDto.NodePrompt)
                                 ? generativeModelDefaultSetupDto.NodePrompt
                                 : "You are an expert technical writer and content strategist. Your task is to draft high-quality documents tailored to specific business needs, using clear structure, tone, and formatting. Always follow the provided guidelines exactly.")}
@@ -400,28 +400,25 @@ public class GenerativeModelService : IGenerativeModelService
 
                             INPUT DETAILS
                             - Task Type: Thought Leadership
-                            - Document Type: {thoughtLeadership?.DocumentType ?? "{{Document Type}}"}
-                            - Primary Topic: {thoughtLeadership?.Topic ?? "{{Topic}}"}
-                            - Industry / Domain: {thoughtLeadership?.Industry ?? "{{Industry}}"}
-                            - Purpose / Goal: {thoughtLeadership?.Purpose ?? "{{Purpose}}"}
-                            - Target Audience: {thoughtLeadership?.AudienceTarget ?? "{{Target Audience}}"}
-                            - Tone & Style: {thoughtLeadership?.ToneStyle ?? "{{Tone and Style}}"}
-                            - Supporting Data & Stats: {thoughtLeadership?.DataAndStats ?? "{{Data and Stats}}"}
-                            - Reference Links:
-                            {string.Join(Environment.NewLine, (thoughtLeadership?.Links ?? new List<string> { "{{Links}}" })
-                                .Select((link, index) => $"{index + 1}. {link}"))}
+                            - Document Type: {thoughtLeadership.DocumentType}
+                            - Primary Topic: {thoughtLeadership.Topic}
+                            - Industry / Domain: {thoughtLeadership.Industry}
+                            - Purpose / Goal: {thoughtLeadership.Purpose}
+                            - Target Audience: {thoughtLeadership.AudienceTarget}
+                            - Tone & Style: {thoughtLeadership.ToneStyle}
+                            - Supporting Data & Stats: {thoughtLeadership.DataAndStats}
+                            
+                            SOURCES & MATERIALS
+                            {(thoughtLeadership.Links.Any()
+                                ? "Reference Links:" + string.Join(Environment.NewLine, thoughtLeadership.Links.Select((link, index) => $"{index + 1}. {link}"))
+                                : "")}
 
-                            REFERENCE MATERIALS
                             {referenceMaterialsSection}
 
                             STRUCTURE & FORMAT
-                            - Expected Length: {thoughtLeadership?.ContentLength ?? "{{Output Length}}"}
-                            - Required Structure / Outline: {thoughtLeadership?.ContentStructure ?? "{{Structure}}"}
+                            - Expected Length: {thoughtLeadership.ContentLength}
+                            - Required Structure / Outline: {thoughtLeadership.ContentStructure}
                             - Use **headings**, **subheadings**, **bullet points**, and **bold** text where needed.
-
-                            CONFIGURATION SETTINGS
-                            - LLM Model: {generativeModelDefaultSetupDto.LLM}
-                            - Temperature: {generativeModelDefaultSetupDto.Temperature}
 
                             CONTENT RULES
                             1. Facts must be verifiable (2023–{DateTime.UtcNow.Year} sources).
@@ -436,14 +433,14 @@ public class GenerativeModelService : IGenerativeModelService
                             - Repetition or off-topic discussion.
 
                             OUTPUT BELOW THIS LINE
-                            """;
+                            ";
                     }
                     break;
 
                 case GenerativeModelTypesEnum.CompanyDeepDive:
                     // Expected DTO: CompanyProfileGenerationConfigDto
                     var companyProfile = JsonSerializer.Deserialize<CompanyProfileGenerationConfigDto>(setupObjectJson, jsonOptions);
-                    if (companyProfile == null)
+                    if (companyProfile != null)
                     {
                         // Pre-build the reference materials section before interpolating
                         string referenceMaterialsSection = string.Empty;
@@ -463,9 +460,9 @@ public class GenerativeModelService : IGenerativeModelService
                         }
 
 
-                        generatedPrompt = $@"SYSTEM ROLE
+                        generatedPrompt = $@"SYSTEM PROMPT
                         {(string.IsNullOrEmpty(generativeModelDefaultSetupDto.NodePrompt)
-                            ? "You are a business research analyst and expert content generator. Your goal is to produce a comprehensive, data-backed Company Deep Dive using real, verifiable information only (2023–{DateTime.UtcNow.Year}). No assumptions or fabrications are permitted."
+                            ? $"You are a business research analyst and expert content generator. Your goal is to produce a comprehensive, data-backed Company Deep Dive using real, verifiable information only (2023–{DateTime.UtcNow.Year}). No assumptions or fabrications are permitted."
                             : generativeModelDefaultSetupDto.NodePrompt)}
 
                         COMPANY PROFILE
@@ -499,10 +496,6 @@ public class GenerativeModelService : IGenerativeModelService
                         8. Risks & Challenges
                         9. Key Metrics & Takeaways
 
-                        GENERATION CONFIGURATION
-                        - Base LLM: {generativeModelDefaultSetupDto.LLM}
-                        - Temperature: {generativeModelDefaultSetupDto.Temperature}
-
                         CONTENT RULES
                         1. Use only data from the input links and documents.
                         2. Cross-reference key points with publicly verifiable sources.
@@ -523,11 +516,13 @@ public class GenerativeModelService : IGenerativeModelService
                 case GenerativeModelTypesEnum.PersonaResearch:
                     // Expected DTO: PersonaResearchConfigDto
                     var personaResearch = JsonSerializer.Deserialize<PersonaResearchConfigDto>(setupObjectJson, jsonOptions);
-                    if (personaResearch == null)
+                    if (personaResearch != null)
                     {
-                        generatedPrompt = $@"SYSTEM ROLE
-                        You are a B2B/B2C persona research analyst with expertise in audience profiling, behavioral segmentation, and market insights. Your task is to generate a realistic, data-supported buyer or user persona based on the given inputs. No made-up or speculative details are allowed.
-
+                        generatedPrompt = $@"SYSTEM PROMPT
+                        {(string.IsNullOrEmpty(generativeModelDefaultSetupDto.NodePrompt)
+                            ? "You are a B2B/B2C persona research analyst with expertise in audience profiling, behavioral segmentation, and market insights. Your task is to generate a realistic, data-supported buyer or user persona based on the given inputs. No made-up or speculative details are allowed."
+                            : generativeModelDefaultSetupDto.NodePrompt)}
+                        
                         PERSONA INFORMATION
                         - Persona Name: {personaResearch.PersonaName}
                         - Company / Brand Context: {personaResearch.CompanyName}
@@ -539,7 +534,7 @@ public class GenerativeModelService : IGenerativeModelService
                             ? "Input Links:\n" + string.Join("\n", personaResearch.Links.Select((link, index) => $"{index + 1}. {link}"))
                             : "")}
 
-                        📄 OBJECTIVE
+                        OBJECTIVE
                         Create a comprehensive and tailored persona profile that will inform the development of product strategy, content, marketing, or sales efforts. Use only data from the links provided or from current (2023–{DateTime.UtcNow.Year}) known industry trends.
 
                         📐 OUTPUT STRUCTURE
@@ -555,22 +550,18 @@ public class GenerativeModelService : IGenerativeModelService
                         9. **Buying Journey or Funnel Stage Alignment**
                         10. **Real-World Quotes or Example Behaviors** (optional)
 
-                        ⚙️ LLM CONFIGURATION
-                        - Base LLM: {generativeModelDefaultSetupDto.LLM}
-                        - Temperature: {generativeModelDefaultSetupDto.Temperature}
-
-                        ✅ GUIDELINES
+                         GUIDELINES
                         1. Focus on industry-accurate persona behavior.
                         2. If insufficient data is provided, clarify what assumptions are being made.
-                        3. Ensure output is clear, structured, and easy to use for marketing/sales/product teams.
+                        3. Ensure output is clear, structured, and easy to use for mareting/sales/product teams.
                         4. Avoid repetition or vague descriptors.
 
-                        🚫 DO NOT INCLUDE
+                        DO NOT INCLUDE
                         - Fabricated quotes or demographics
                         - Generic filler content (e.g., “likes to stay updated”)
                         - Overly promotional or brand-centric assumptions
 
-                        📝 OUTPUT BELOW THIS LINE
+                        OUTPUT BELOW THIS LINE
                         ";
                     }
                     break;
@@ -578,7 +569,7 @@ public class GenerativeModelService : IGenerativeModelService
                 case GenerativeModelTypesEnum.RFPResponseGenerator:
                     // Expected DTO: RFPResponseGenerationConfigDto
                     var rfpResponse = JsonSerializer.Deserialize<RFPResponseGenerationConfigDto>(setupObjectJson, jsonOptions);
-                    if (rfpResponse == null)
+                    if (rfpResponse != null)
                     {
                         // Pre-build the reference materials section before interpolating
                         string rfpReferenceDocument = string.Empty;
@@ -613,8 +604,10 @@ public class GenerativeModelService : IGenerativeModelService
 
                             referenceMaterialsSection = string.Join("\n", lines);
                         }
-                        generatedPrompt = $@"SYSTEM ROLE
-                        You are a senior bid strategist and technical writer specializing in high-stakes RFP and RFI responses. Your job is to craft winning, client-aligned, and criteria-compliant proposals using only the provided documents and sources.
+                        generatedPrompt = $@"SYSTEM PROMPT
+                        {(string.IsNullOrEmpty(generativeModelDefaultSetupDto.NodePrompt)
+                            ? "You are a senior bid strategist and technical writer specializing in high-stakes RFP and RFI responses. Your job is to craft winning, client-aligned, and criteria-compliant proposals using only the provided documents and sources."
+                            : generativeModelDefaultSetupDto.NodePrompt)}
 
                         CLIENT/BIDDER INFORMATION
                         - Client/Bidder Name: {rfpResponse.ClientName}
@@ -629,7 +622,7 @@ public class GenerativeModelService : IGenerativeModelService
                             ? "External Links:\n" + string.Join("\n", rfpResponse.Links.Select((link, i) => $"{i + 1}. {link}"))
                             : "")}
 
-                        🎯 STRATEGY & SCOPE
+                        STRATEGY & SCOPE
                         - Response Strategy: {rfpResponse.ResponseStrategy} (e.g., highlight innovation, emphasize cost-efficiency, stress security certifications)
                         - Response Boundaries: {rfpResponse.ResponseBoundary} (e.g., only respond to sections 1–3; no pricing details; adhere strictly to 20-page limit)
 
@@ -640,11 +633,7 @@ public class GenerativeModelService : IGenerativeModelService
                         3. Use formal, persuasive language suitable for B2B or government procurement
                         4. Highlight differentiators clearly using bullets or bold text
 
-                        ⚙️ LLM CONFIGURATION
-                        - Base LLM: {generativeModelDefaultSetupDto.LLM}
-                        - Temperature: {generativeModelDefaultSetupDto.Temperature}
-
-                        ✅ GUIDELINES
+                        GUIDELINES
                         1. Pull content only from provided documents or links
                         2. Reuse known approved boilerplate (if available in Reference Docs)
                         3. Avoid generic marketing language unless strategy requires it
@@ -663,7 +652,7 @@ public class GenerativeModelService : IGenerativeModelService
                 case GenerativeModelTypesEnum.DocumentDrafting:
                     // Expected DTO: DocumentDraftingConfigDto
                     var documentDraft = JsonSerializer.Deserialize<DocumentDraftingConfigDto>(setupObjectJson, jsonOptions);
-                    if (documentDraft == null)
+                    if (documentDraft != null)
                     {
                         // Pre-build the reference materials section before interpolating
                         string referenceMaterialsSection = string.Empty;
@@ -682,8 +671,10 @@ public class GenerativeModelService : IGenerativeModelService
                             referenceMaterialsSection = string.Join("\n", lines);
                         }
 
-                        generatedPrompt = $@"SYSTEM ROLE
-                        You are an expert technical writer and content strategist. Your task is to draft high-quality documents tailored to specific business needs, using clear structure, tone, and formatting. Always follow the provided guidelines exactly.
+                        generatedPrompt = $@"SYSTEM PROMPT
+                        {(!string.IsNullOrWhiteSpace(generativeModelDefaultSetupDto.NodePrompt)
+                                ? generativeModelDefaultSetupDto.NodePrompt
+                                : "You are an expert technical writer and content strategist. Your task is to draft high-quality documents tailored to specific business needs, using clear structure, tone, and formatting. Always follow the provided guidelines exactly.")}
 
                         DOCUMENT DETAILS
                         - Document Title: {documentDraft.DocumentTitle}
@@ -696,10 +687,6 @@ public class GenerativeModelService : IGenerativeModelService
                         GUIDELINES & STRUCTURE
                         - Follow these instructions: {documentDraft.GuidelineInstruction}
                         - Output must follow this structure: {documentDraft.OutputStructure}
-
-                        LLM CONFIGURATION
-                        - Base LLM: {generativeModelDefaultSetupDto.LLM}
-                        - Temperature: {generativeModelDefaultSetupDto.Temperature}
 
                         STYLE & TONE
                         1. Maintain professional and business-appropriate tone
