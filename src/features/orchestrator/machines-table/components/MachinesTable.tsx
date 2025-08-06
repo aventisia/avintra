@@ -9,7 +9,6 @@ import {
   DTViewOptions,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
-import { TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 
 import { useDtCrudQueryAction } from "@/react-toolkit/hooks/useDtCrudQueryAction";
 
@@ -55,13 +54,6 @@ export const MachinesTable = () => {
             {/* Table toolbar */}
             <div className="flex items-center justify-between">
               <DTHeading heading={TABLE_HEADING} />
-
-              <span className="me-4">
-                <TabsList>
-                  <TabsTrigger value="machines">Machines</TabsTrigger>
-                  <TabsTrigger value="agents">Agents</TabsTrigger>
-                </TabsList>
-              </span>
 
               <div className="flex items-center gap-2">
                 <DTSearchBox

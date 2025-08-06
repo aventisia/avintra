@@ -7,7 +7,6 @@ import {
   DTViewOptions,
 } from "@aventisia/ui/data-table";
 import { useDataTable } from "@aventisia/ui/hooks";
-import { TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 
 import { SEARCH_COLUMN } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
@@ -46,14 +45,7 @@ export const AgentsTable = () => {
             {/* Table toolbar */}
             <div className="flex items-center justify-between">
               {/* <AgentsTableHeading /> */}
-              <DTHeading heading="Agents" />
-
-              <span className="me-4">
-                <TabsList>
-                  <TabsTrigger value="machines">Machines</TabsTrigger>
-                  <TabsTrigger value="agents">Agents</TabsTrigger>
-                </TabsList>
-              </span>
+              <DTHeading heading="Published Agents" />
 
               <div className="flex items-center gap-2">
                 <DTSearchBox

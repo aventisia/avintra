@@ -1,6 +1,8 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { LoadingSpinner } from "@aventisia/ui";
 import { Navigate, useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 interface ProtectedRouteProps {
   persmissions: string[]; // Optional prop for permissions
@@ -15,6 +17,10 @@ const ProtectedRoute = ({ persmissions, page }: ProtectedRouteProps) => {
       userSession: state.userSession,
     })),
   );
+
+  if (!userSession) {
+    return <LoadingSpinner className="h-8 w-8" />;
+  }
 
   // Get user roles from the session
   const userRoles = userSession?.userRoles ?? [];
