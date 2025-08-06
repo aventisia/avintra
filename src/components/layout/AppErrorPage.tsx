@@ -6,7 +6,7 @@ import { AppMinimalFooter } from "./AppMinimalFooter";
 export const AppErrorPage = () => {
   return (
     <ErrorPage
-      appLogo={<AppLogo logoSrc="logo.svg" />}
+      appLogo={<AppLogo logoSrc="/logo.svg" />}
       minimalFooter={<AppMinimalFooter />}
     />
   );

@@ -40,7 +40,7 @@ export const AppLayout = () => {
   // Set environment variables and sidebar menu sections only once
   useEffect(() => {
     // If the user session is still pending, do not proceed
-    if (isPending) return;
+    if (isPending || !userSession) return;
 
     // Set the environment variables
     setViteEnvVars({
