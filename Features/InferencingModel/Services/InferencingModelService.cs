@@ -38,7 +38,14 @@ public class InferencingModelService : IInferencingModelService
 
             // Fetch the model setup from the database by its ML model ID, including related user and task data
             var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == mlModelId)
+                .GetByConditionAsync(w =>
+                    w.Id == mlModelId &&
+                    w.CreatedByUserId == _userId ||
+                    (
+                        w.Users != null && w.Users.Any(a => a.UserId == _userId)
+                    )
+                )
+                .Include(i => i.Users)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.Tasks)
                 .SingleOrDefaultAsync();
@@ -102,7 +109,14 @@ public class InferencingModelService : IInferencingModelService
 
             // Fetch the model including associated tasks
             var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == modelSetupDto.Id)
+                .GetByConditionAsync(w =>
+                    w.Id == modelSetupDto.Id &&
+                    w.CreatedByUserId == _userId ||
+                    (
+                        w.Users != null && w.Users.Any(a => a.UserId == _userId)
+                    )
+                )
+                .Include(i => i.Users)
                 .Include(i => i.Tasks)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
@@ -114,6 +128,21 @@ public class InferencingModelService : IInferencingModelService
                 serviceResponse.Message = "Model not found.";
                 return serviceResponse;
             }
+            // Check if the user is the creator or has the required access (Owner/Edit)
+            var flowUserAccess = mlModel.Users?.FirstOrDefault(w =>
+                w.MLModelId == mlModel.Id &&
+                w.UserId == _userId &&
+                (w.AccessType == AgentAccessTypesEnum.Owner || w.AccessType == AgentAccessTypesEnum.Edit)
+            );
+
+            // Allow access if the user is the creator, else check if they have access
+            if (mlModel.CreatedByUserId != _userId && flowUserAccess == null)
+            {
+                _logger.LogWarning("Unauthorized update attempt on model setup | Model ID: {ModelId} | User ID: {UserId}", mlModel.Id, _userId);
+                serviceResponse.Message = "You do not have access to update this model's setup.";
+                return serviceResponse;
+            }
+
 
             // Prevent updates to published models
             if (mlModel.IsPublished)
