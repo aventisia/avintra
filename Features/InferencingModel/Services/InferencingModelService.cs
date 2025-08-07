@@ -128,15 +128,16 @@ public class InferencingModelService : IInferencingModelService
                 serviceResponse.Message = "Model not found.";
                 return serviceResponse;
             }
+            
             // Check if the user is the creator or has the required access (Owner/Edit)
-            var flowUserAccess = mlModel.Users?.FirstOrDefault(w =>
+            var modelUserAccess = mlModel.Users?.FirstOrDefault(w =>
                 w.MLModelId == mlModel.Id &&
                 w.UserId == _userId &&
                 (w.AccessType == AgentAccessTypesEnum.Owner || w.AccessType == AgentAccessTypesEnum.Edit)
             );
 
             // Allow access if the user is the creator, else check if they have access
-            if (mlModel.CreatedByUserId != _userId && flowUserAccess == null)
+            if (mlModel.CreatedByUserId != _userId && modelUserAccess == null)
             {
                 _logger.LogWarning("Unauthorized update attempt on model setup | Model ID: {ModelId} | User ID: {UserId}", mlModel.Id, _userId);
                 serviceResponse.Message = "You do not have access to update this model's setup.";

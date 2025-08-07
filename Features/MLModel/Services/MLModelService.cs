@@ -203,14 +203,14 @@ public class MLModelService : IMLModelService
             }
 
             // Check if the user is the creator or has the required access (Owner/Edit)
-            var flowUserAccess = mlModel.Users?.FirstOrDefault(w =>
+            var modelUserAccess = mlModel.Users?.FirstOrDefault(w =>
                 w.MLModelId == mlModel.Id &&
                 w.UserId == _userId &&
                 (w.AccessType == AgentAccessTypesEnum.Owner || w.AccessType == AgentAccessTypesEnum.Edit)
             );
 
             // Allow access if the user is the creator, else check if they have access
-            if (mlModel.CreatedByUserId != _userId && flowUserAccess == null)
+            if (mlModel.CreatedByUserId != _userId && modelUserAccess == null)
             {
                 _logger.LogWarning($"User {_userId} is not authorized to modify this model.");
                 serviceResponse.Message = "You don't have access to modify this model.";
@@ -322,14 +322,14 @@ public class MLModelService : IMLModelService
             }
 
             // Check if the user is the creator or has the required access (Owner/Edit)
-            var flowUserAccess = mlModel.Users?.FirstOrDefault(w =>
+            var modelUserAccess = mlModel.Users?.FirstOrDefault(w =>
                 w.MLModelId == mlModel.Id &&
                 w.UserId == _userId &&
                 w.AccessType == AgentAccessTypesEnum.Owner
             );
 
             // Allow access if the user is the creator, else check if they have access
-            if (mlModel.CreatedByUserId != _userId && flowUserAccess == null)
+            if (mlModel.CreatedByUserId != _userId && modelUserAccess == null)
             {
                 _logger.LogWarning($"User {_userId} is not authorized to delete this model.");
                 serviceResponse.Message = "You don't have access to delete this model.";
@@ -383,6 +383,8 @@ public class MLModelService : IMLModelService
                 )
                 .Include(i => i.Users)
                 .Include(i => i.Tasks)
+                .Include(i => i.GenerativeModel)
+                .Include(i => i.ConversationalModel)
                 .ProjectToType<MLModelDto>()
                 .SingleOrDefaultAsync();
 
