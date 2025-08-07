@@ -34,7 +34,7 @@ public class MLModelUserController : BaseApiController
     }
 
     // Assign new users to a specific ML model.
-    [HttpPost]
+    [HttpPost("assign")]
     public async Task<ActionResult<ServiceResponse<bool>>> AssignMLModelUser([FromBody] AssignMLModelUserDto assignMLModelUserDto)
     {
         return ResultHelper(await _mlModelUserService.AssignMLModelUserAsync(assignMLModelUserDto));
