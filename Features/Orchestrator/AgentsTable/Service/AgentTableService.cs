@@ -91,7 +91,7 @@ public class AgentTableService : IAgentTableService
 
             // Update and save changes
             _unitOfWork.FlowVersionRepo.Update(existingVersion);
-            if (await _unitOfWork.SaveAsync())
+            if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogInformation("Context SaveChanges failed while updating existing flow version");
                 return serviceResponse;
