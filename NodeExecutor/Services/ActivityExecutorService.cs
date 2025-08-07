@@ -577,8 +577,11 @@ namespace NodeExecutor.Services
                     return ResolveKey(key);
                 }
 
-                // Otherwise, do string replacement for embedded variables
-                Regex PlaceholderRegex = new Regex(@"(?<!\\)\{\{(?<key>[^\}]+)\}\}");
+                // Otherwise, do string replacement for embedded variables. Use @ to escape {{ and }} in the template.
+                // Cannot use \\ because it will not work in windows path like C:\Users\{{username}}\Documents
+                Regex PlaceholderRegex = new Regex(@"(?<!@)\{\{(?<key>[^\}]+)\}\}");
+                // Regex PlaceholderRegex = new Regex(@"(?<!\\)\{\{(?<key>[^\}]+)\}\}");
+                // Regex PlaceholderRegex = new Regex(@"\{\{(?<key>[a-zA-Z0-9_]+)\}\}");
 
                 var result = PlaceholderRegex.Replace(template, match =>
                 {
