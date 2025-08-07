@@ -126,8 +126,8 @@ public class FlowUserService : IFlowUserService
             }
 
             var flowUser = await _unitOfWork.FlowUserRepo
-                .GetByConditionAsync(w => 
-                    w.UserId == flowUserDto.UserId && 
+                .GetByConditionAsync(w =>
+                    w.UserId == flowUserDto.UserId &&
                     w.FlowId == flowUserDto.FlowId
                 )
                 .SingleOrDefaultAsync();
@@ -395,6 +395,60 @@ public class FlowUserService : IFlowUserService
         }
 
         // Return the final response
+        return serviceResponse;
+    }
+
+    // Removes a user's access from the specified flow, without deleting the user's data.
+    public async Task<ServiceResponse<bool>> RemoveUserAccessFromFlowAsync(Guid flowId)
+    {
+        // Initialize a response indicating failure by default
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to revoke flow user access. Please try again."
+        };
+
+        try
+        {
+            // Fetch the user's flow association based on flowId and current user's ID
+            var flowUser = await _unitOfWork.FlowUserRepo
+                .GetByConditionAsync(w =>
+                    w.FlowId == flowId && w.UserId == _userId
+                )
+                .SingleOrDefaultAsync();
+
+            // If the user is not associated with the flow, return an error response
+            if (flowUser == null)
+            {
+                _logger.LogInformation($"No association found for the user with Id {flowId}.");
+                serviceResponse.Message = "User is not associated with this flow.";
+                return serviceResponse;
+            }
+
+            // Delete the flow user's access
+            _unitOfWork.FlowUserRepo.Delete(flowUser);
+
+            // Save changes and check the result
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning($"Failed to save changes after revoking access for flow user with Id {flowId}.");
+                return serviceResponse;
+            }
+
+            // Successful response indicating that the access was revoked
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Access successfully removed from the flow.";
+
+            _logger.LogInformation($"Successfully revoked access for the user associated with flow Id {flowId}.");
+        }
+        catch (Exception ex)
+        {
+            // Log the exception with relevant details
+            _logger.LogError(ex, $"An error occurred while attempting to revoke access for flow user with Id {flowId}.");
+        }
+
+        // Return the final response indicating the success or failure of the operation
         return serviceResponse;
     }
 }

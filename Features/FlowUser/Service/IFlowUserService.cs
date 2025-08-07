@@ -38,6 +38,13 @@ public interface IFlowUserService
     Task<ServiceResponse<bool>> DeleteFlowUserAsync(Guid flowUserId);
 
     /// <summary>
+    /// Removes a user's access to the flow.
+    /// </summary>
+    /// <param name="flowId">The unique identifier of the flow whose access is to be removed</param>
+    /// <returns>A service response indicating whether the access removal operation was successful</returns>
+    Task<ServiceResponse<bool>> RemoveUserAccessFromFlowAsync(Guid flowId);
+
+    /// <summary>
     /// Removes multiple users from the flow based on a list of unique identifiers.
     /// </summary>
     /// <param name="flowUserIds">A collection of GUIDs representing the flow users to be removed</param>

@@ -47,6 +47,14 @@ public class FlowUserController : BaseApiController
         return ResultHelper(await _flowUserService.DeleteFlowUserAsync(flowUserId));
     }
 
+    // Removes access of a flow user from the flow permanently.
+    [HttpDelete("access/{flowId}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> RemoveAccessByFlow(Guid flowId)
+    {
+        return ResultHelper(await _flowUserService.RemoveUserAccessFromFlowAsync(flowId));
+    }
+
+
     // Deletes multiple flow users by a list of their unique identifiers.
     [HttpPost("delete-multiple")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteMultipleFlowUsers([FromBody] IEnumerable<Guid> flowUserIds)
