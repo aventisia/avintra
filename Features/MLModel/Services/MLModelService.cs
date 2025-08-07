@@ -36,7 +36,12 @@ public class MLModelService : IMLModelService
             //Try to get model records created by the user
             var mlModels = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
-                    w.CreatedByUserId == _userId)
+                    w.CreatedByUserId == _userId ||
+                    (
+                        w.Users != null && w.Users.Any(a => a.UserId == _userId)
+                    )
+                )
+                .Include(i => i.Users)
                 .Include(i => i.Tasks)
                 .Include(i => i.ConversationalModel)
                 .Include(i => i.GenerativeModel)
@@ -179,8 +184,14 @@ public class MLModelService : IMLModelService
             // Validate model record existence
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
-                    w.Id == mlModelDto.Id &&
-                    w.CreatedByUserId == _userId)
+                   w.Id == mlModelDto.Id &&
+                   (
+                    w.CreatedByUserId == _userId ||
+                    (
+                        w.Users != null && w.Users.Any(a => a.UserId == _userId))
+                    )
+                )
+                .Include(i => i.Users)
                 .SingleOrDefaultAsync();
 
             // Model does not exist
@@ -188,6 +199,21 @@ public class MLModelService : IMLModelService
             {
                 _logger.LogInformation($"Model does not exist");
                 serviceResponse.Message = "Model does not exist";
+                return serviceResponse;
+            }
+
+            // Check if the user is the creator or has the required access (Owner/Edit)
+            var flowUserAccess = mlModel.Users?.FirstOrDefault(w =>
+                w.MLModelId == mlModel.Id &&
+                w.UserId == _userId &&
+                (w.AccessType == AgentAccessTypesEnum.Owner || w.AccessType == AgentAccessTypesEnum.Edit)
+            );
+
+            // Allow access if the user is the creator, else check if they have access
+            if (mlModel.CreatedByUserId != _userId && flowUserAccess == null)
+            {
+                _logger.LogWarning($"User {_userId} is not authorized to modify this model.");
+                serviceResponse.Message = "You don't have access to modify this model.";
                 return serviceResponse;
             }
 
@@ -227,6 +253,7 @@ public class MLModelService : IMLModelService
                 serviceResponse.Message = "Setup status change not allowed.";
                 return serviceResponse;
             }
+
             // Trim dto' string props
             mlModelDto = TrimDtoStringPropsUtil.TrimDtoStringProps(mlModelDto);
 
@@ -276,7 +303,14 @@ public class MLModelService : IMLModelService
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
                     w.Id == id &&
-                    w.CreatedByUserId == _userId)
+                    (
+                        w.CreatedByUserId == _userId ||
+                        (
+                            w.Users != null && w.Users.Any(a => a.UserId == _userId)
+                        )
+                    )
+                )
+                .Include(i => i.Users)
                 .SingleOrDefaultAsync();
 
             // Model record does not exist
@@ -284,6 +318,21 @@ public class MLModelService : IMLModelService
             {
                 _logger.LogInformation($"Model does not exist");
                 serviceResponse.Message = "Model does not exist";
+                return serviceResponse;
+            }
+
+            // Check if the user is the creator or has the required access (Owner/Edit)
+            var flowUserAccess = mlModel.Users?.FirstOrDefault(w =>
+                w.MLModelId == mlModel.Id &&
+                w.UserId == _userId &&
+                w.AccessType == AgentAccessTypesEnum.Owner
+            );
+
+            // Allow access if the user is the creator, else check if they have access
+            if (mlModel.CreatedByUserId != _userId && flowUserAccess == null)
+            {
+                _logger.LogWarning($"User {_userId} is not authorized to delete this model.");
+                serviceResponse.Message = "You don't have access to delete this model.";
                 return serviceResponse;
             }
 
@@ -325,7 +374,14 @@ public class MLModelService : IMLModelService
         {
             // Try to get a Model using identifier
             var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == modelId).Include(i => i.CreatedByUser)
+                .GetByConditionAsync(w =>
+                    w.Id == modelId &&
+                    w.CreatedByUserId == _userId ||
+                    (
+                        w.Users != null && w.Users.Any(a => a.UserId == _userId)
+                    )
+                )
+                .Include(i => i.Users)
                 .Include(i => i.Tasks)
                 .ProjectToType<MLModelDto>()
                 .SingleOrDefaultAsync();
