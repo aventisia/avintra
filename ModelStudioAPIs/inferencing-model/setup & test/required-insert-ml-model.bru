@@ -6,17 +6,15 @@ meta {
 
 post {
   url: {{MLMODELBUILDER_APIS_BASE_URL}}/ml-model
-  body: none
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    name: faker.person.jobType(),
-    description: faker.lorem.sentence(),
-  })
+body:json {
+  {
+    "name": "Inferening model testing",
+    "description": ""
+  }
 }
 
 script:post-response {

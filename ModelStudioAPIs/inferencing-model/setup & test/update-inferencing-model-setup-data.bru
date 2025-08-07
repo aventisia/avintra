@@ -6,79 +6,41 @@ meta {
 
 put {
   url: {{MLMODELBUILDER_APIS_BASE_URL}}/inferencing-model/setup
-  body: none
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("MLMODEL_ID"),
-    businessContext:"test",
-    summarization: {
+body:json {
+  {
+    "id": "{{MLMODEL_ID}}",
+    "businessContext":"test",
+    "extraction": {
         //id: bru.getGlobalEnvVar("MLMODEL_TASK_ID"),
-        name: "Summarization",
-        configurationType: "OnPrem",
-        llm: "gemma",
-        nodePrompt: "",
-        temperature: 0.3,
-        setupObject: {
-          totalMinimumWords: 100,
-          totalMaximumWords: 200,
-        }
-      },
-    extraction: {
-        //id: bru.getGlobalEnvVar("MLMODEL_TASK_ID"),
-        name: "Extraction",
-        configurationType: "OnPrem",
-        llm: "gemma",
-        nodePrompt: "",
-        temperature: 0.3,
-        setupObject: {
-          tables: [],
-          fields: [
+        "name": "Extraction",
+        "configurationType": "OnPrem",
+        "llm": "gemma",
+        "nodePrompt": "You are a highly accurate information extraction assistant. Your task is to carefully analyse the provided text and extract specific pieces of information based on predefined fields or entities.Only extract relevant, factual data as it appears in the input. Do not infer, assume, or create information that is not explicitly present in the text.Return the output with clearly labeled fields as per the extraction schema.If a field is not present in the input, return null or without making assumptions.Ensure the extracted data is clean, free from noise, and maintains the original context",
+        "temperature": 0.3,
+        "setupObject": {
+          "tables":[],
+          "fields": [
             {
-              name: "test",
-              type: "Text",
-              instruction:""
-            }
-          ]
-        }
-      },
-    classification: {
-        //id: bru.getGlobalEnvVar("MLMODEL_TASK_ID"),
-        name: "Classification",
-        configurationType: "OnPrem",
-        llm: "gemma",
-        nodePrompt: "",
-        temperature: 0.3,
-        setupObject: {
-          allowMultipleClasses: false,
-          categories: [
-            {
-              name: "test",
-              instruction:"",
-              subCategories: [
-                {
-                  name: "test",
-                  instruction:"",
-                  subSubcategories: [
-                  {
-                    name: "test",
-                    instruction:""
-                  }
-              ]
-                }
-              ]
+              "name": "Project name",
+              "type": "Text",
+              "instruction":""
             },
             {
-              name: "test1",
-              instruction:""
-            }
-          ]
+              "name": "Document approved by",
+              "type": "Text",
+              "instruction":""
+            },
+            {
+              "name": "Document prepared by",
+              "type": "Text",
+              "instruction":""
+            }]
         }
       }
-  });
+  }
   
 }

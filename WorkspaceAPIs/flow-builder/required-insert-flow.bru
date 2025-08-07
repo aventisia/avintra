@@ -6,13 +6,15 @@ meta {
 
 post {
   url: {{WORKSPACE_APIS_BASE_URL}}/flow
-  body: none
+  body: json
   auth: none
 }
 
 body:json {
   {
-      
+    "type": "AutomationAgent",
+    "name": "test",
+    "description": ""
   }
 }
 

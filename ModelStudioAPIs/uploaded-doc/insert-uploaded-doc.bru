@@ -6,8 +6,19 @@ meta {
 
 post {
   url: {{MLMODELBUILDER_APIS_BASE_URL}}/upload-doc/insert-file
-  body: none
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "mlModelId": "{{MLMODEL_ID}}",
+    "name": "test",
+    "extension": "PDF",
+    "size": 304889,
+    "type":"TestData",
+    "path": "{{FILE_URL}}"
+  }
 }
 
 script:pre-request {
@@ -20,7 +31,7 @@ script:pre-request {
       extension: "PDF",
       size: 304889,
       type:"TestData",
-      path: "/files/4bb3f813-4444-429e-badd-890b7b2b6503.pdf"
+      path: "files/default-files/62f5a219-2e30-4968-8ab0-1f0eea88ad14.pdf"
     }
     ])
 }

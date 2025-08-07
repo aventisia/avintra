@@ -6,24 +6,16 @@ meta {
 
 post {
   url: {{MLMODELBUILDER_APIS_BASE_URL}}/ai-model-user
-  body: none
+  body: json
   auth: none
 }
 
 body:json {
   {
-      
+    "mlModelId": "{{FLOW_ID}}",
+    "userId": "0afbf579-88b3-40fd-af50-7ba0d1c12698",// bru.getGlobalEnvVar("USER_ID"),
+    "accessType": "Edit"
   }
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    mlModelId: bru.getGlobalEnvVar("ML_MODEL_ID"),
-    userId: bru.getGlobalEnvVar("USER_ID"),
-    AccessType: "Edit"
-  })
 }
 
 script:post-response {
