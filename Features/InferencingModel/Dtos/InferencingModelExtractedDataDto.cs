@@ -36,6 +36,7 @@ public class ExtractionFieldDto
     /// <summary>
     /// Gets or sets the confidence score for the extracted field.
     /// </summary>
+    [JsonConverter(typeof(ToStringConverter))]
     public string? ConfidenceScore { get; set; }
 }
 

@@ -4,10 +4,19 @@ Do not extract any other information which is not specified in the json format. 
 
 Here is the json format and pdf text. 
 
-```json
-{{OutputFormat}},
-```
-
 ```plaintext
 {{FileContent}}
+```
+
+Instructions:
+- Match values by their `Name`.
+- If a value is found in the content, populate the `Value` and assign a `ConfidenceScore` between "1" and "100".
+- If not found, leave `Value` as "" and `ConfidenceScore` as "0".
+- Do not extract or generate anything else.
+- Return ONLY the JSON output in the same structure.
+
+
+JSON schema:
+```
+{{OutputFormat}}
 ```
