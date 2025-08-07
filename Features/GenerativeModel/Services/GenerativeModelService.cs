@@ -39,7 +39,14 @@ public class GenerativeModelService : IGenerativeModelService
 
             // Fetch the model setup from the database by its ML model ID, including related user and task data
             var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == mlModelId)
+                .GetByConditionAsync(w =>
+                    w.Id == mlModelId &&
+                    w.CreatedByUserId == _userId ||
+                    (
+                        w.Users != null && w.Users.Any(a => a.UserId == _userId)
+                    )
+                )
+                .Include(i => i.Users)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.GenerativeModel)
                 .SingleOrDefaultAsync();
@@ -105,8 +112,15 @@ public class GenerativeModelService : IGenerativeModelService
 
             // Retrieve the existing ML model from the database, including any associated generative tasks
             var existingModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(m => m.Id == generativeModelDto.Id)
-                .Include(m => m.GenerativeModel)
+                .GetByConditionAsync(w =>
+                    w.Id == generativeModelDto.Id &&
+                    w.CreatedByUserId == _userId ||
+                    (
+                        w.Users != null && w.Users.Any(a => a.UserId == _userId)
+                    )
+                )
+                .Include(i => i.Users)
+                .Include(i => i.GenerativeModel)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
@@ -115,6 +129,21 @@ public class GenerativeModelService : IGenerativeModelService
             {
                 _logger.LogWarning("generative model not found | ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
                 serviceResponse.Message = "generative model not found.";
+                return serviceResponse;
+            }
+
+            // Check if the user is the creator or has the required access (Owner/Edit)
+            var flowUserAccess = existingModel.Users?.FirstOrDefault(w =>
+                w.MLModelId == existingModel.Id &&
+                w.UserId == _userId &&
+                (w.AccessType == AgentAccessTypesEnum.Owner || w.AccessType == AgentAccessTypesEnum.Edit)
+            );
+
+            // Allow access if the user is the creator, else check if they have access
+            if (existingModel.CreatedByUserId != _userId && flowUserAccess == null)
+            {
+                _logger.LogWarning("Unauthorized update attempt on model setup | Model ID: {ModelId} | User ID: {UserId}", existingModel.Id, _userId);
+                serviceResponse.Message = "You do not have access to update this model's setup.";
                 return serviceResponse;
             }
 
