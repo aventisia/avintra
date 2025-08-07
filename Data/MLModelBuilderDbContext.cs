@@ -3,8 +3,6 @@
  * https://codewithmukesh.com/blog/multitenancy-in-aspnet-core/
 */
 
-using Org.BouncyCastle.Bcpg;
-
 namespace MLModelBuilderAPIs.Data;
 
 public class MLModelBuilderDbContext : DbContext
@@ -35,6 +33,7 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<MLModelVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<MLModelTemplate>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<MLModelUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<ConversationHistory>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         modelBuilder.Entity<MLModel>().HasIndex(index => new { index.Name, index.CreatedByUserId }).IsUnique();
@@ -55,6 +54,7 @@ public class MLModelBuilderDbContext : DbContext
         modelBuilder.Entity<ConversationalModel>().Property(e => e.ConfigurationType).HasConversion(new EnumToStringConverter<LLMConfigurationTypesEnum>());
         modelBuilder.Entity<GenerativeModel>().Property(e => e.ConfigurationType).HasConversion(new EnumToStringConverter<LLMConfigurationTypesEnum>());
         modelBuilder.Entity<GenerativeModel>().Property(e => e.Name).HasConversion(new EnumToStringConverter<GenerativeModelTypesEnum>());
+        modelBuilder.Entity<ConversationHistory>().Property(e => e.ParticipantType).HasConversion(new EnumToStringConverter<ParticipantTypesEnum>());
 
         // Configure One-to-One relationship between Model Library and ModelBuilder User
         modelBuilder.Entity<MLModel>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -135,4 +135,5 @@ public class MLModelBuilderDbContext : DbContext
     public DbSet<MLModelVersion> MLModelVersions { get; set; }
     public DbSet<MLModelTemplate> MLModelTemplates { get; set; }
     public DbSet<MLModelUser> MLModelUsers { get; set; }
+    public DbSet<ConversationHistory> ConversationHistories { get; set; }
 }

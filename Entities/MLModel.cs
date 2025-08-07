@@ -113,4 +113,9 @@ public class MLModel : BaseEntity, IMustHaveTenant
     /// Gets or sets the model users associated with this ML model.
     /// </summary>
     public virtual ICollection<MLModelUser>? Users { get; set; }
+
+    /// <summary>
+    /// Gets or sets the conversation history associated with this ML model.
+    /// </summary>
+    public virtual ICollection<ConversationHistory>? ConversationHistories { get; set; }
 }
