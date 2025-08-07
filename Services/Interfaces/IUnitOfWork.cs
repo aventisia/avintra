@@ -28,4 +28,5 @@ public interface IUnitOfWork
     IMLModelVersionRepo MLModelVersionRepo { get; }
     IMLModelTemplateRepo MLModelTemplateRepo { get; }
     IMLModelUserRepo MLModelUserRepo { get; }
+    IConversationHistoryRepo ConversationHistoryRepo { get; }
 }

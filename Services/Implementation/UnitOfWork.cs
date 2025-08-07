@@ -25,6 +25,7 @@ public class UnitOfWork : IUnitOfWork
     public IMLModelVersionRepo MLModelVersionRepo => new MLModelVersionRepo(_mlModelBuilderDbContext);
     public IMLModelTemplateRepo MLModelTemplateRepo => new MLModelTemplateRepo(_mlModelBuilderDbContext);
     public IMLModelUserRepo MLModelUserRepo => new MLModelUserRepo(_mlModelBuilderDbContext);
+    public IConversationHistoryRepo ConversationHistoryRepo => new ConversationHistoryRepo(_mlModelBuilderDbContext);
 
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
