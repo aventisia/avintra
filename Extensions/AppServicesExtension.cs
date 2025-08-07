@@ -36,6 +36,7 @@ public static class AppServicesExtension
         config.Apply(new MLModelVersionMappingProfile());
         config.Apply(new MLModelTemplateMappingProfile());
         config.Apply(new MLModelUserMappingProfile());
+        config.Apply(new ConversationHistoryMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -68,6 +69,7 @@ public static class AppServicesExtension
         services.AddScoped<IMLModelVersionService, MLModelVersionService>();
         services.AddScoped<IMLModelTemplateService, MLModelTemplateService>();
         services.AddScoped<IMLModelUserService, MLModelUserService>();
+        services.AddScoped<IConversationHistoryService, ConversationHistoryService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
