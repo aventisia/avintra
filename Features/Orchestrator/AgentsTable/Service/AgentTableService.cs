@@ -408,7 +408,7 @@ public class AgentTableService : IAgentTableService
         {
             // Check if the agent exists and belongs to the current user.
             var agent = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w => w.Id == agentId && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Id == agentId)
                 .Include(a => a.MachineFlows)
                 .FirstOrDefaultAsync();
 
