@@ -1,5 +1,3 @@
-using MLModelBuilderAPIs.DTOs;
-
 namespace MLModelBuilderAPIs.Controllers;
 
 [Route("user")]
