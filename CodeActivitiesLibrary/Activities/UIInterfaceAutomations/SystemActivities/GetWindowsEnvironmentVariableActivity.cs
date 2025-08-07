@@ -10,14 +10,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
     [Description("Retrieves the value of an environment variable.")]
     public class GetWindowsEnvironmentVariableActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
-
         [DisplayName("Environment variable name")]
         [Description("The name of the environment variable to retrieve.")]
+        [DefaultValue(EnvVarNameEnum.USERNAME)]
         public InArgument<EnvVarNameEnum> EnvironmentVariableName { get; set; }
 
 
@@ -29,21 +25,12 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
         [DisplayName("Scope")]
         [Description("Specifies the scope (User or System) to search for the environment variable.")]
         [RenderIfCondition(nameof(SearchForVariableOnlyInScope), true)]
+        [DefaultValue(ScopeEnum.User)]
         public InArgument<ScopeEnum> Scope { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
 
         [DisplayName("Environment Variable Value")]
         [Description("The retrieved value of the environment variable.")]
         public OutArgument<string> EnvironmentVariableValue { get; set; }
-
-        public OutArgument<string> StatusMessages { get; set; }
-        // ----------------------
-        // Execution Logic
-        // ----------------------
 
         protected override void Execute(CodeActivityContext context)
         {
@@ -54,7 +41,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
                 var searchInScope = SearchForVariableOnlyInScope.Get(context);
                 var scope = Scope.Get(context);
 
-                  // Convert enum to actual environment variable name
+                // Convert enum to actual environment variable name
                 var envVarNameString = GetEnvVarName(envVarName);
 
                 // Retrieve the environment variable value
