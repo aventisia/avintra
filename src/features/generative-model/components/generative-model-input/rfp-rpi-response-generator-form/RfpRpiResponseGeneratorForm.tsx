@@ -7,7 +7,7 @@ import {
   responseBoundariesProps,
   responseStrategyProps,
 } from "@/features/generative-model/constants/generative-model-field-props/rfp-rpi-response-generator-field-props";
-import { rfpRpiResponseGeneratorZodSchema } from "@/features/generative-model/constants/generative-model-zod-schemas/rfp-rpi-response-generator-dto";
+import { rfpRpiResponseGeneratorZodSchema } from "@/features/generative-model/constants/generative-model-zod-schemas/rfp-rpi-response-generator-zod-schema";
 import { useRfpRpiResponseGeneratorForm } from "@/features/generative-model/hooks/useRfpRpiResponseGeneratorForm";
 import { useToggleFileUploadDialogStore } from "@/features/generative-model/store/toggle-file-upload-store";
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
@@ -59,8 +59,8 @@ const RfpRpiResponseGeneratorForm = () => {
       const setupFormDocuments = fileList.data.map(({ id, name, path }) => {
         return { id: id ?? "", name, instructions: "", filePath: path ?? "" };
       });
-      form.setValue("rfiRfpDocuments", setupFormDocuments);
-      form.setValue("referenceDocuments", setupFormDocuments);
+      form.setValue("setupObject.rfiRfpDocuments", setupFormDocuments);
+      form.setValue("setupObject.referenceDocuments", setupFormDocuments);
     }
   }, [fileList, form]);
 

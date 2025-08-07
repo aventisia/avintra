@@ -10,12 +10,10 @@ const documentInstructionSchema = z.object({
   
 const linksSchema = z.object({
     id: z.string().readonly(),
-    link: z.string().min(1, {message: reqError("Link")})
+    url: z.string().min(1, {message: reqError("Link")})
 })
   
-
-export const rfpRpiResponseGeneratorZodSchema = llmConfigZodSchema.extend({
-    taskName: z.string().readonly(),
+const setupObjectSchema = z.object({
     clientName:  z.string().min(1, {message: reqError("Client Name")}),
     clientLink:  z.string().min(1, {message: reqError("Client Link")}),
     rfiRfpDocuments: z.array(documentInstructionSchema).nullable(),
@@ -23,4 +21,9 @@ export const rfpRpiResponseGeneratorZodSchema = llmConfigZodSchema.extend({
     links: z.array(linksSchema),
     responseBoundaries: z.string().min(1, {message: reqError("Response Boundaries")}),
     referenceDocuments: z.array(documentInstructionSchema).nullable(),
+})
+
+export const rfpRpiResponseGeneratorZodSchema = llmConfigZodSchema.extend({
+    name: z.string().readonly().default("RFPResponseGenerator"),
+    setupObject: setupObjectSchema,
 })

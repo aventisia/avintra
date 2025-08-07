@@ -3,23 +3,35 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { personaResearchZodSchema } from "../constants/generative-model-zod-schemas/persona-research-zod-schema";
 import { useSelectedTaskStore } from "../store/selected-task-store";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateGenerativeModelSetupFormData } from "../apis/generative-model-setup-apis";
+import { toast } from "@aventisia/ui/sonner";
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+import { useShallow } from "zustand/react/shallow";
 
 
 export const usePersonaResearchForm = () => {
   const {selectedTask} = useSelectedTaskStore();
+  const { modelId } = useLabelDataStore(
+    useShallow((state) => ({
+      modelId: state.modelId,
+    })),
+  );
   const form = useForm<z.infer<typeof personaResearchZodSchema>>({
     resolver: zodResolver(personaResearchZodSchema),
     defaultValues: {
-        taskName: "",
-        personaName: "",
-        companyName: "",
-        referenceURLs: [{id: "", link: ""}],
-        purposeOfResearch: "",
-        desiredOutputs: "",
+        name: "PersonaResearch",
         configurationType: "OnPrem",
         llm: "gemma",
+        temperature: 0.2,
         nodePrompt: "",
-        temperature: 0.2
+        setupObject: {
+          personaName: "",
+          companyName: "",
+          links: [{id: "", url: ""}],
+          purposeOfResearch: "",
+          desiredOutput: "",
+        },
     },
   });
 
@@ -33,10 +45,33 @@ export const usePersonaResearchForm = () => {
     return {...formData, taskName : selectedTask};
   };
 
+  // updateGenerativeModelSetupFormData
+  
+  const queryClient = useQueryClient();
+ 
+  // Mutation to update form data
+  const { mutate: updateFormData, isPending: isUpdatePending } = useMutation({
+    mutationFn: updateGenerativeModelSetupFormData,
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: ["GENERATIVE_SETUP_FORM_DATA"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["model", modelId],
+      });
+      toast.success("Data saved successfully");
+    },
+    onError: (error) => {
+      toast.error(error.toString());
+    },
+  });
+
   return {
     form,
     isDirty,
     isSubmitting,
-    refineFormData
+    refineFormData,
+    updateFormData,
+    isUpdatePending
   };
 };

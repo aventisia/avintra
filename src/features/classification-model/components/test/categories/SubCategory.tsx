@@ -19,7 +19,7 @@ type ClassificationSchema = z.infer<
 type SubCategoryProps = {
   form: UseFormReturn<z.infer<typeof inferenceModelTestFormZodSchema>>;
   categoryIndex: number;
-  subCategories: ClassificationSchema["categories"][number]["subCategories"];
+  subCategories: ClassificationSchema[number]["subCategories"];
 };
 
 const SubCategory = ({
@@ -30,12 +30,16 @@ const SubCategory = ({
   const { control } = form;
 
   return (
-    <div className="ml-6 mt-2 space-y-0 grid gap-4">
+    <div className="ml-12 mt-2 space-y-0 grid gap-4">
       {subCategories?.map((subCat, subIndex) => {
         const hasChildren =
           subCat.subSubCategories && subCat.subSubCategories.length > 0;
         return (
-          <Collapsible key={`${categoryIndex}-${subIndex}`} defaultOpen>
+          <Collapsible
+            key={`${categoryIndex}-${subIndex}`}
+            defaultOpen
+            className="relative group"
+          >
             <div className="flex items-center gap-2">
               {hasChildren && (
                 <CollapsibleTrigger asChild>
@@ -49,9 +53,13 @@ const SubCategory = ({
                 </CollapsibleTrigger>
               )}
 
+              {hasChildren && (
+                <div className="h-full w-[2px] bg-slate-200 absolute left-[9.9px] top-[19px] group-data-[state=open]:block hidden"></div>
+              )}
+
               <Controller
                 control={control}
-                name={`classification.categories.${categoryIndex}.subCategories.${subIndex}.value`}
+                name={`classification.${categoryIndex}.subCategories.${subIndex}.value`}
                 render={({ field }) => (
                   <CheckboxField
                     name={field.name}
@@ -61,7 +69,7 @@ const SubCategory = ({
                     }
                     // onCheckedChange={field.onChange}
                     label=""
-                    className={!hasChildren ? "ml-[30px]" : ""}
+                    className={!hasChildren ? "ml-[1.5px]" : ""}
                   />
                 )}
               />
@@ -79,7 +87,7 @@ const SubCategory = ({
                       >
                         <Controller
                           control={control}
-                          name={`classification.categories.${categoryIndex}.subCategories.${subIndex}.subSubCategories.${subSubIndex}.value`}
+                          name={`classification.${categoryIndex}.subCategories.${subIndex}.subSubCategories.${subSubIndex}.value`}
                           render={({ field }) => (
                             <CheckboxField
                               name={field.name}

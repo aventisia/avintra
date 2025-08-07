@@ -10,6 +10,7 @@ import ModelLibraryDialog from "@/features/initialize-app/components/model-libra
 import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
 import PublishModel from "@/features/publish-model/components/PublishModel";
 import SaveAsTemplateDialog from "@/features/save-as-template/components/SaveAsTemplateDialog";
+import ShareAccessDialog from "@/features/share-access/components";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -70,6 +71,7 @@ export const LabelDataContainer = () => {
       <StorageConnectDialog />
       <ModelLibraryDialog />
       <CreateNewCredentialsDialog />
+      <ShareAccessDialog />
 
       {isLoading ? (
         <div className="flex h-[calc(100vh-3.5rem)] w-full items-center justify-center gap-3">

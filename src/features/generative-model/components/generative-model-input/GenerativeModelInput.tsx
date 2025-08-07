@@ -22,6 +22,7 @@ const GenerativeModelInput = () => {
   const handleValueChange = (value: string) => {
     setSelectedTask(value);
   };
+  console.log(selectedTask);
 
   return (
     <div className="rounded-lg bg-white shadow h-full flex flex-col max-w-screen-lg mx-auto self-center">
@@ -39,19 +40,19 @@ const GenerativeModelInput = () => {
 
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="thought-leadership">
+                <SelectItem value="ThoughtLeadership">
                   Thought Leadership
                 </SelectItem>
-                <SelectItem value="company-deep-dives">
+                <SelectItem value="CompanyDeepDive">
                   Company Deep Dives
                 </SelectItem>
-                <SelectItem value="persona-research">
+                <SelectItem value="PersonaResearch">
                   Persona Research
                 </SelectItem>
-                <SelectItem value="rfp-rpi-response-generator">
+                <SelectItem value="RFPResponseGenerator">
                   RFP / RPI Response Generator
                 </SelectItem>
-                <SelectItem value="document-drafting">
+                <SelectItem value="DocumentDrafting">
                   Document Drafting
                 </SelectItem>
               </SelectGroup>
@@ -59,13 +60,13 @@ const GenerativeModelInput = () => {
           </Select>
         </div>
 
-        {selectedTask === "thought-leadership" && <ThoughtLeadershipForm />}
-        {selectedTask === "company-deep-dives" && <CompanyDeepDivesForm />}
-        {selectedTask === "persona-research" && <PersonaResearchForm />}
-        {selectedTask === "rfp-rpi-response-generator" && (
+        {selectedTask === "ThoughtLeadership" && <ThoughtLeadershipForm />}
+        {selectedTask === "CompanyDeepDive" && <CompanyDeepDivesForm />}
+        {selectedTask === "PersonaResearch" && <PersonaResearchForm />}
+        {selectedTask === "RFPResponseGenerator" && (
           <RfpRpiResponseGeneratorForm />
         )}
-        {selectedTask === "document-drafting" && <DocumentDraftingForm />}
+        {selectedTask === "DocumentDrafting" && <DocumentDraftingForm />}
       </ScrollArea>
     </div>
   );

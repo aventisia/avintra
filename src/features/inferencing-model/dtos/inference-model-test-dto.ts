@@ -19,9 +19,9 @@ export interface InferenceModelTestDTO extends IModelInfo {
     docName?: string;
 
     extraction: InfoExtractorTestDTO | null;
-    classification: ClassificationTestDTO | null;
+    classification: ClassificationTestDTO[] | null;
     summarization: SummarizationTestDTO | null;
-    sentimentAnalytics: SentimentAnalyticsTestDTO | null;
+    sentimentAnalytics: SentimentAnalyticsTestDTO[] | null;
     questionAnswer: QuestionAnswersTestDTO[] | null;
 
     accuracy?: number | null;

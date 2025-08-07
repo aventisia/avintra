@@ -32,7 +32,7 @@ const DataFields = ({ form, dataFields }: DataFieldsProps) => {
       {dataFields.map((field, index) => {
         const fieldName = field.name;
         const dotColor = textColorClassMap[index % textColorClassMap.length];
-        const confidenceScore = field.confidenceScore || "0";
+        // const confidenceScore = field.confidenceScore || "0";
 
         return (
           <FormItem key={field.id} className="space-y-0.5">
@@ -47,7 +47,7 @@ const DataFields = ({ form, dataFields }: DataFieldsProps) => {
                     )}
                   />
                 </div>
-                <div>
+                {/* <div>
                   <span
                     className={
                       parseFloat(confidenceScore) < 35
@@ -59,7 +59,7 @@ const DataFields = ({ form, dataFields }: DataFieldsProps) => {
                   >
                     {field.confidenceScore ? field.confidenceScore : 0}%
                   </span>
-                </div>
+                </div> */}
               </div>
             </FormLabel>
             <FormControl>

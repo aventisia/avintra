@@ -18,7 +18,7 @@ type FormSchema = z.infer<typeof inferenceModelTestFormZodSchema>;
 type ClassificationSchema = z.infer<
   typeof classificationModelTestFormZodSchema
 >;
-type Field = ClassificationSchema["categories"][number] & { id: string };
+type Field = ClassificationSchema[number] & { id: string };
 
 type DataFieldsProps = {
   form: UseFormReturn<FormSchema>;
@@ -60,7 +60,7 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
 
                 <Controller
                   control={control}
-                  name={`classification.categories.${index}.value`}
+                  name={`classification.${index}.value`}
                   render={({ field }) => (
                     <CheckboxField
                       name={field.name}

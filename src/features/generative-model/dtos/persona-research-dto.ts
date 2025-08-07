@@ -1,12 +1,19 @@
+import { ILLMConfiguration } from "../components/llm-configuration/dtos/llm-configuration-dto";
+
 interface ILinks {
-    id: string;
-    link: string;
+    id?: string;
+    url: string;
 }
 
-export interface PersonaResearchDTO { 
+interface ISetupObject { 
     personaName: string;
     companyName: string;
-    referenceURLs: ILinks[];
+    links: ILinks[];
     purposeOfResearch: string;
-    desiredOutputs: string;
+    desiredOutput: string;
+}
+
+export interface PersonaResearchDTO extends ILLMConfiguration { 
+    name: string;
+    setupObject: ISetupObject;
 }

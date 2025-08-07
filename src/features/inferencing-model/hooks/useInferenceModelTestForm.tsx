@@ -65,9 +65,7 @@ export const useInferenceModelTestForm = () => {
     form.reset({
       ...form.getValues(),
       classification: classification
-        ? {
-            categories: classification?.setupObject?.categories ?? [],
-          }
+        ? (classification?.setupObject?.categories ?? [])
         : null,
       extraction: extraction
         ? {
@@ -91,9 +89,7 @@ export const useInferenceModelTestForm = () => {
           })) ?? [{}])
         : null,
       sentimentAnalytics: sentimentAnalytics
-        ? {
-            categories: sentimentAnalytics?.setupObject.categories ?? [],
-          }
+        ? (sentimentAnalytics?.setupObject.categories ?? [])
         : null,
       summarization: summarization
         ? {
@@ -111,22 +107,182 @@ export const useInferenceModelTestForm = () => {
       (item) => item.docId === selectedFile.id,
     );
 
+    // Update QnA Fields
+    const existingQnAFields = form.getValues("questionAnswer") ?? [];
+    console.log("matching", matchingExtractedData?.questionAnswer);
+    const updateQnAFields = existingQnAFields.map((field) => {
+      console.log("field question", field.question);
+      const match =
+        matchingExtractedData?.questionAnswer &&
+        matchingExtractedData?.questionAnswer.find((item) => {
+          return item.question === field.question;
+        });
+      return { ...field, answer: match?.answer ?? field.answer ?? "" };
+    });
+    console.log("updateQnaField", updateQnAFields);
+
+    // Update Extraction Fields and Tables
+    const existingExtractionFields = form.getValues("extraction.fields") ?? [];
+    const existingExtractionTables = form.getValues("extraction.tables") ?? [];
+
+    const updatedExtractionFields = existingExtractionFields.map((field) => {
+      const match =
+        matchingExtractedData?.extraction &&
+        matchingExtractedData?.extraction.fields.find(
+          (item) => item.name === field.name,
+        );
+
+      return {
+        ...field,
+        value: match?.value ?? field.value ?? "",
+        confidenceScore: match?.confidenceScore ?? field.confidenceScore ?? "",
+      };
+    });
+
+    const updatedExtractionTables = existingExtractionTables.map((table) => {
+      const matchedTable = matchingExtractedData?.extraction?.tables?.find(
+        (t) => t.name === table.name,
+      );
+
+      const updatedHeaders = table.headers.map((header) => {
+        const matchedHeader = matchedTable?.headers?.find(
+          (h) => h.name === header.name,
+        );
+
+        return {
+          ...header,
+          values: matchedHeader?.values ?? header.values ?? [],
+        };
+      });
+
+      return {
+        ...table,
+        headers: updatedHeaders,
+      };
+    });
+
+    // Update Classification Fields
+    const existingClassificationFields = form.getValues("classification") ?? [];
+    const updatedClassificationFields = existingClassificationFields.map(
+      (category) => {
+        const matchedCategory = matchingExtractedData?.classification?.find(
+          (item) => item.name === category.name,
+        );
+
+        const updatedSubCategories =
+          category.subCategories?.map((subCat) => {
+            const matchedSubCat = matchedCategory?.subCategories?.find(
+              (item) => item.name === subCat.name,
+            );
+
+            const updatedSubSubCategories =
+              subCat.subSubCategories?.map((subSubCat) => {
+                const matchedSubSubCat = matchedSubCat?.subSubCategories?.find(
+                  (item) => item.name === subSubCat.name,
+                );
+
+                return {
+                  ...subSubCat,
+                  value: matchedSubSubCat?.value ?? subSubCat.value ?? "false",
+                  confidenceScore:
+                    matchedSubSubCat?.confidenceScore ??
+                    subSubCat.confidenceScore ??
+                    "",
+                };
+              }) ?? subCat.subSubCategories;
+
+            return {
+              ...subCat,
+              value: matchedSubCat?.value ?? subCat.value ?? "false",
+              confidenceScore:
+                matchedSubCat?.confidenceScore ?? subCat.confidenceScore ?? "",
+              subSubCategories: updatedSubSubCategories,
+            };
+          }) ?? category.subCategories;
+
+        return {
+          ...category,
+          value: matchedCategory?.value ?? category.value ?? "false",
+          confidenceScore:
+            matchedCategory?.confidenceScore ?? category.confidenceScore ?? "",
+          subCategories: updatedSubCategories,
+        };
+      },
+    );
+
+    // Update Sentiment Analytics Fields
+    const existingSentimentAnalyticsFields =
+      form.getValues("sentimentAnalytics") ?? [];
+    const updatedSentimentAnalyticsFields =
+      existingSentimentAnalyticsFields.map((category) => {
+        const matchedCategory = matchingExtractedData?.sentimentAnalytics?.find(
+          (item) => item.name === category.name,
+        );
+
+        const updatedSubCategories =
+          category.subCategories?.map((subCat) => {
+            const matchedSubCat = matchedCategory?.subCategories?.find(
+              (item) => item.name === subCat.name,
+            );
+
+            const updatedSubSubCategories =
+              subCat.subSubCategories?.map((subSubCat) => {
+                const matchedSubSubCat = matchedSubCat?.subSubCategories?.find(
+                  (item) => item.name === subSubCat.name,
+                );
+
+                return {
+                  ...subSubCat,
+                  value: matchedSubSubCat?.value ?? subSubCat.value ?? "false",
+                  confidenceScore:
+                    matchedSubSubCat?.confidenceScore ??
+                    subSubCat.confidenceScore ??
+                    "",
+                };
+              }) ?? subCat.subSubCategories;
+
+            return {
+              ...subCat,
+              value: matchedSubCat?.value ?? subCat.value ?? "false",
+              confidenceScore:
+                matchedSubCat?.confidenceScore ?? subCat.confidenceScore ?? "",
+              subSubCategories: updatedSubSubCategories,
+            };
+          }) ?? category.subCategories;
+
+        return {
+          ...category,
+          value: matchedCategory?.value ?? category.value ?? "false",
+          confidenceScore:
+            matchedCategory?.confidenceScore ?? category.confidenceScore ?? "",
+          subCategories: updatedSubCategories,
+        };
+      });
+
     if (matchingExtractedData) {
       form.reset({
         id: matchingExtractedData.id ?? "",
         submitForFineTuning: matchingExtractedData.submitForFineTuning ?? false,
-        extraction:
-          matchingExtractedData?.extraction ?? form.getValues("extraction"),
+        extraction: matchingExtractedData?.extraction
+          ? {
+              fields:
+                updatedExtractionFields ?? form.getValues("extraction.fields"),
+              tables:
+                updatedExtractionTables ?? form.getValues("extraction.tables"),
+            }
+          : form.getValues("extraction"),
         summarization:
           matchingExtractedData?.summarization ??
           form.getValues("summarization"),
-        questionAnswer:
-          matchingExtractedData?.questionAnswer ??
-          form.getValues("questionAnswer"),
-
-        // To be done - Classification and Sentiment Analytics
-        classification: form.getValues("classification"),
-        sentimentAnalytics: form.getValues("sentimentAnalytics"),
+        questionAnswer: matchingExtractedData.questionAnswer
+          ? updateQnAFields
+          : form.getValues("questionAnswer"),
+        classification: matchingExtractedData?.classification
+          ? updatedClassificationFields
+          : form.getValues("classification"),
+        sentimentAnalytics: matchingExtractedData?.sentimentAnalytics
+          ? updatedSentimentAnalyticsFields
+          : form.getValues("sentimentAnalytics"),
       });
     }
   }, [form, selectedFile, fieldDataValues]);
@@ -143,10 +299,6 @@ export const useInferenceModelTestForm = () => {
 
     setupForm();
   }, [initializeFieldNames, populateFieldValues]);
-
-  // 2. Load TEST_FORM Field values
-
-  useEffect(() => {}, []);
 
   // 3. Load Executed data, when execute button is clicked
   useEffect(() => {
@@ -172,10 +324,10 @@ export const useInferenceModelTestForm = () => {
     form.reset({
       ...form.getValues(),
       classification: extractedData?.classification
-        ? { categories: extractedData?.classification }
+        ? extractedData?.classification
         : form.getValues("classification"),
       sentimentAnalytics: extractedData?.sentimentAnalytics
-        ? { categories: extractedData?.sentimentAnalytics }
+        ? extractedData?.sentimentAnalytics
         : form.getValues("sentimentAnalytics"),
       summarization: extractedData?.summarization
         ? { summary: extractedData.summarization.summary }

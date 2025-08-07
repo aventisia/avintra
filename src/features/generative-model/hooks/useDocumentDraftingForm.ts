@@ -10,18 +10,20 @@ export const useDocumentDraftingForm = () => {
   const form = useForm<z.infer<typeof documentDraftingZodSchema>>({
     resolver: zodResolver(documentDraftingZodSchema),
     defaultValues: {
-        taskName: "",
-        documentTitle: "",
-        documentType: "",
-        guidelines: "",
-        outputStructure: "",
-        localizationNeeded: "",
-        documents: null,
+        name: "DocumentDrafting",
         configurationType: "OnPrem",
         llm: "gemma",
         nodePrompt: "",
-        temperature: 0.2
-    },
+        temperature: 0.2,
+        setupObject:{
+          documentTitle: "",
+          documentType: "",
+          guidelines: "",
+          outputStructure: "",
+          localizationNeeded: "",
+          documents: null,
+        }
+      },
   });
 
   const {

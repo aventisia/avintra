@@ -1,7 +1,7 @@
 export enum SelectTaskEnum  {
-    "thought-leadership" = "Thought Leadership",
-    "company-deep-dives" = "Company Deep Dives",
-    "persona-research" = "Person Research",
-    "rpf-rfi-response-generator" = "RFP / RFI Response Generator",
-    "document-drafting" = "Document Drafting",
+    "ThoughtLeadership" = "Thought Leadership",
+    "CompanyDeepDive" = "Company Deep Dives",
+    "PersonaResearch" = "Persona Research",
+    "RFPResponseGenerator" = "RFP / RFI Response Generator",
+    "DocumentDrafting" = "Document Drafting",
 }

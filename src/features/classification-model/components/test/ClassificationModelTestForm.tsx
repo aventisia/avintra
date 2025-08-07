@@ -15,7 +15,7 @@ const ClassificationModelTestForm = ({
   const { control } = form;
   const { fields: categoryFields } = useFieldArray({
     control,
-    name: "classification.categories",
+    name: "classification",
   });
 
   return (

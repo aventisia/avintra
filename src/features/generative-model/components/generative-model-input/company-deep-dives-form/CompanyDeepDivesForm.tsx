@@ -57,7 +57,7 @@ const CompanyDeepDivesForm = () => {
       const setupFormDocuments = fileList.data.map(({ id, name, path }) => {
         return { id: id ?? "", name, instructions: "", filePath: path ?? "" };
       });
-      form.setValue("documents", setupFormDocuments);
+      form.setValue("setupObject.documents", setupFormDocuments);
     }
   }, [fileList, form]);
 
@@ -98,7 +98,11 @@ const CompanyDeepDivesForm = () => {
             <GenerativeInputLinks form={form} />
             <Separator />
 
-            <Documents form={form} name="documents" label="Documents" />
+            <Documents
+              form={form}
+              name="setupObject.documents"
+              label="Documents"
+            />
 
             <Separator />
             <SelectField {...summaryDepthProps} />

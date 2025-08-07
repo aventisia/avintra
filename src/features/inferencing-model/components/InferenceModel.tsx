@@ -1,5 +1,6 @@
 // import ErrorFetchingTemplate from "@/components/templates/ErrorFetchingTemplate";
 // import LoaderTemplate from "@/components/templates/LoaderTemplate";
+import ExtractViaLLMButton from "@/components/extract-via-llm/ExtractViaLLMButton";
 import LoaderTemplate from "@/components/templates/LoaderTemplate";
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-data-store";
@@ -53,21 +54,23 @@ const InferenceModel = () => {
             <p className="text-md font-medium">Inferencing Model</p>
             <SavingIndicator isSaving={isDataSaving} />
           </div>
-
-          <TabsList className="rounded-full">
-            <TabsTrigger
-              value="setup"
-              className="rounded-full data-[state=active]:text-primary"
-            >
-              Setup
-            </TabsTrigger>
-            <TabsTrigger
-              value="test"
-              className={`rounded-full data-[state=active]:text-primary ${isTestTabDisabled && "opacity-50 cursor-default"}`}
-            >
-              Test
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex items-center gap-1">
+            <ExtractViaLLMButton />
+            <TabsList className="rounded-full">
+              <TabsTrigger
+                value="setup"
+                className="rounded-full data-[state=active]:text-primary"
+              >
+                Setup
+              </TabsTrigger>
+              <TabsTrigger
+                value="test"
+                className={`rounded-full data-[state=active]:text-primary ${isTestTabDisabled && "opacity-50 cursor-default"}`}
+              >
+                Test
+              </TabsTrigger>
+            </TabsList>
+          </div>
         </div>
         {/* Scrollable content */}
         <ScrollArea className="h-[calc(100vh-7.6rem)]">

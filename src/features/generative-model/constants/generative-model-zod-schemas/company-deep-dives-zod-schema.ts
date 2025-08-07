@@ -10,10 +10,10 @@ const documentInstructionSchema = z.object({
   
 const linksSchema = z.object({
     id: z.string().readonly(),
-    link: z.string().min(1, {message: reqError("Link")})
+    url: z.string().min(1, {message: reqError("Link")})
 })
 
-export const companyDeepDivesZodSchema = llmConfigZodSchema.extend({
+const setupObjectSchema = z.object({
     taskName: z.string().readonly(),
     companyName: z.string().min(1, {message: reqError("Company Name")}),
     websiteLink: z.string().min(1, {message: reqError("Website Link")}),
@@ -22,4 +22,9 @@ export const companyDeepDivesZodSchema = llmConfigZodSchema.extend({
     links: z.array(linksSchema),
     documents: z.array(documentInstructionSchema).nullable(),
     summaryDepth: z.string().min(1, {message: reqError("Summary Depth")}),
+})
+
+export const companyDeepDivesZodSchema = llmConfigZodSchema.extend({
+    name: z.string().readonly().default("CompanyDeepDive"),
+    setupObject: setupObjectSchema
 })

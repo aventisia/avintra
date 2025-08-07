@@ -9,7 +9,7 @@ import { usePersonaResearchForm } from "@/features/generative-model/hooks/usePer
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { SelectField } from "@/shared/select-field/SelectField";
 
-import { Separator } from "@aventisia/ui";
+import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { AutosizeTextareaField, Form } from "@aventisia/ui/form";
 import { FormProvider } from "react-hook-form";
@@ -19,10 +19,21 @@ import LLMConfiguration from "../../llm-configuration/components/LLMConfiguratio
 import GenerativeInputLinks from "../generative-input-links/GenerativeInputLinks";
 
 const PersonaResearchForm = () => {
-  const { form, isSubmitting, refineFormData } = usePersonaResearchForm();
+  const {
+    form,
+    isSubmitting,
+    refineFormData,
+    isUpdatePending,
+    updateFormData,
+  } = usePersonaResearchForm();
   const { data: modelData, isLoading } = useFetchModel();
 
-  function submitHandler(formData: z.infer<typeof personaResearchZodSchema>) {
+  console.log(form.formState.errors);
+
+  async function submitHandler(
+    formData: z.infer<typeof personaResearchZodSchema>,
+  ) {
+    await updateFormData(formData);
     console.log(refineFormData(formData));
   }
   return (
@@ -36,13 +47,10 @@ const PersonaResearchForm = () => {
           <AutosizeTextareaField {...personaNameProps} />
           <AutosizeTextareaField {...companyNameProps} />
           <Separator />
-
-          <GenerativeInputLinks form={form} name="referenceURLs" />
+          <GenerativeInputLinks form={form} title="Reference URLs" />
           <Separator />
-
           <SelectField {...purposeOfResearchProps} />
           <SelectField {...desiredOutputsProps} />
-
           <Separator />
           <LLMConfiguration form={form} />
         </div>
@@ -52,12 +60,11 @@ const PersonaResearchForm = () => {
         <Separator className="h-[0.5px] w-full" />
         <div className="flex items-center justify-end self-end gap-2 px-4 py-3.5">
           <Button size="xs" type="submit" disabled={isSubmitting}>
-            {/* {isSubmitting || isUpdatePending ? (
-                    <LoadingSpinner className="h-4 w-4" />
-                    ) : (
-                      "Save"
-                      )} */}
-            Save & Execute
+            {isSubmitting || isUpdatePending ? (
+              <LoadingSpinner className="h-4 w-4" />
+            ) : (
+              "Save & Execute"
+            )}
           </Button>
         </div>
       </div>

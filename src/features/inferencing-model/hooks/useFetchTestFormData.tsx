@@ -24,6 +24,7 @@ export const useFetchTestFormData = () => {
     queryKey: ["INFERENCE_TEST_FORM_DATA"],
     queryFn: () => getInferenceModelExtractedDataById(modelId),
     enabled: !!modelId, // prevents query from running with empty modelId
+    staleTime: 0, // ✅ Treat data as immediately stale
   });
 
   // Show toast on fetch error

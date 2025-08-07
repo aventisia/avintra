@@ -10,11 +10,10 @@ const documentInstructionSchema = z.object({
   
 const linksSchema = z.object({
     id: z.string().readonly(),
-    link: z.string().min(1, {message: reqError("Link")})
+    url: z.string().min(1, {message: reqError("Link")})
 })
 
-export const thoughtLeadershipZodSchema = llmConfigZodSchema.extend({
-    taskName: z.string().readonly(),
+const setupObjectSchema = z.object({
     documentType: z.string().min(1, {message: reqError("Document Type")}),
     topic: z.string().min(1, {message: reqError("Topic")}),
     industry: z.string().min(1, {message: reqError("Industry")}),
@@ -26,4 +25,9 @@ export const thoughtLeadershipZodSchema = llmConfigZodSchema.extend({
     documents: z.array(documentInstructionSchema).nullable(),
     outputLength: z.string().min(1, {message: reqError("Output Length")}),
     outputStructure: z.string().min(1, {message: reqError("Output Structure")})
+})
+
+export const thoughtLeadershipZodSchema = llmConfigZodSchema.extend({
+    name: z.string().readonly(),
+    setupObject: setupObjectSchema
 })

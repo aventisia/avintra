@@ -15,7 +15,7 @@ const SentimentAnalyticsFormTestForm = ({
   const { control } = form;
   const { fields: categoryFields } = useFieldArray({
     control,
-    name: "sentimentAnalytics.categories",
+    name: "sentimentAnalytics",
   });
   return (
     <div className="space-y-10 px-4 pb-1">

@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { thoughtLeadershipZodSchema } from "../constants/generative-model-zod-schemas/thought-leadership-dto";
+import { thoughtLeadershipZodSchema } from "../constants/generative-model-zod-schemas/thought-leadership-zod-schema";
 import { useSelectedTaskStore } from "../store/selected-task-store";
 
 
@@ -10,7 +10,12 @@ export const useThoughtLeadershipForm = () => {
   const form = useForm<z.infer<typeof thoughtLeadershipZodSchema>>({
     resolver: zodResolver(thoughtLeadershipZodSchema),
     defaultValues: {
-        taskName: "",
+      name: "",
+      llm: "gemma",
+      nodePrompt: "",
+      temperature: 0.2,
+      configurationType: "OnPrem",
+      setupObject: {
         documentType: "",
         topic: "",
         industry: "",
@@ -18,14 +23,11 @@ export const useThoughtLeadershipForm = () => {
         toneAndStyle: "",
         targetAudience: "",
         dataAndStats: "",
-        links: [{id: "", link: ""}],
+        links: [{id: "", url: ""}],
         documents: null,
         outputLength: "",
         outputStructure: "",
-        configurationType: "OnPrem",
-        llm: "gemma",
-        nodePrompt: "",
-        temperature: 0.2
+      }
     },
   });
 

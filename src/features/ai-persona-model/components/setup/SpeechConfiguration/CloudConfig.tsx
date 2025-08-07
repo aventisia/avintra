@@ -109,7 +109,7 @@ const CloudConfig = ({ form }: CloudConfigFieldProps) => {
 
           <Controller
             control={control}
-            name="aiPersona.setupObject.speechConfiguration.language"
+            name="aiPersona.setupObject.speechConfiguration.cloudConfig.language"
             rules={{ required: true }}
             render={({ field }) => (
               <Select
@@ -146,7 +146,7 @@ const CloudConfig = ({ form }: CloudConfigFieldProps) => {
 
           <Controller
             control={control}
-            name="aiPersona.setupObject.speechConfiguration.speechToText"
+            name="aiPersona.setupObject.speechConfiguration.cloudConfig.speechToText.name"
             rules={{ required: true }}
             render={({ field }) => (
               <Select
@@ -197,7 +197,7 @@ const CloudConfig = ({ form }: CloudConfigFieldProps) => {
 
           <Controller
             control={control}
-            name="aiPersona.setupObject.speechConfiguration.textToSpeech"
+            name="aiPersona.setupObject.speechConfiguration.cloudConfig.textToSpeech.name"
             rules={{ required: true }}
             render={({ field }) => (
               <Select
@@ -246,7 +246,7 @@ const CloudConfig = ({ form }: CloudConfigFieldProps) => {
 
           <Controller
             control={control}
-            name="aiPersona.setupObject.speechConfiguration.voice"
+            name="aiPersona.setupObject.speechConfiguration.cloudConfig.voice"
             rules={{ required: true }}
             render={({ field }) => (
               <Select

@@ -1,9 +1,9 @@
 import { SelectFieldProps } from "@/shared/select-field/SelectField";
 import { AutosizeTextareaFieldProps } from "@aventisia/ui/form";
-import { enumToArray } from "@aventisia/ui/utils";
+// import { enumToArray } from "@aventisia/ui/utils";
 
 const personaNameProps: AutosizeTextareaFieldProps = {
-    name: "personaName",
+    name: "setupObject.personaName",
     label: "Persona Name",
     minHeight: 10,
     isRequired: true,
@@ -11,7 +11,7 @@ const personaNameProps: AutosizeTextareaFieldProps = {
 }
 
 const companyNameProps: AutosizeTextareaFieldProps = {
-    name: "companyName",
+    name: "setupObject.companyName",
     label: "Company Name",
     minHeight: 10,
     isRequired: true,
@@ -19,18 +19,20 @@ const companyNameProps: AutosizeTextareaFieldProps = {
 }
 
 const purposeOfResearchProps: SelectFieldProps = {
-    name: "purposeOfResearch",
+    name: "setupObject.purposeOfResearch",
     label: "Purpose of research",
-    selectOptions: enumToArray({}),
+    // selectOptions: enumToArray({}),
+    selectOptions: [{label: "Test POR 1", value: "test POR 1"}],
     placeholder: "Select",
     isRequired: true,
     className: "text-sm resize-none"
 }
 
 const desiredOutputsProps: SelectFieldProps = {
-    name: "desiredOutputs",
+    name: "setupObject.desiredOutput",
     label: "Desired Outputs",
-    selectOptions: enumToArray({}),
+    // selectOptions: enumToArray({}),
+    selectOptions: [{label: "Test DOP 1", value: "test DOP 1"}],
     placeholder: "Select",
     isRequired: true,
     className: "text-sm resize-none"

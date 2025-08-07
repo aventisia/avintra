@@ -8,13 +8,16 @@ const documentInstructionSchema = z.object({
     name: z.string().readonly(),
 })
 
-
-export const documentDraftingZodSchema = llmConfigZodSchema.extend({
-    taskName: z.string().readonly(),
+const setupObjectSchema = z.object({
     documentTitle: z.string().min(1, {message: reqError("Document Title")}),
     documentType: z.string().min(1, {message: reqError("Document Type")}),
     guidelines: z.string().min(1, {message: reqError("Guidelines")}),
     outputStructure: z.string().min(1, {message: reqError("Output Structure")}),
     localizationNeeded: z.string().min(1, {message: reqError("Localization Needed")}),
     documents: z.array(documentInstructionSchema).nullable(),
+})
+
+export const documentDraftingZodSchema = llmConfigZodSchema.extend({
+    name: z.string().readonly().default("DocumentDrafting"),
+    setupObject: setupObjectSchema,
 })

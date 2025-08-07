@@ -18,7 +18,7 @@ type FormSchema = z.infer<typeof inferenceModelTestFormZodSchema>;
 type SentimentAnalyticsSchema = z.infer<
   typeof sentimentalAnalyticsTestFormZodSchema
 >;
-type Field = SentimentAnalyticsSchema["categories"][number] & { id: string };
+type Field = SentimentAnalyticsSchema[number] & { id: string };
 
 type DataFieldsProps = {
   form: UseFormReturn<FormSchema>;
@@ -35,22 +35,33 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
       <div className="grid gap-4">
         {categoryFields.map((field, index) => {
           const label = field.name;
+          const hasChildren =
+            field.subCategories && field.subCategories?.length > 0;
 
           return (
-            <Collapsible key={field.id} defaultOpen>
+            <Collapsible key={field.id} defaultOpen className="relative group">
               <div className="flex items-center gap-2">
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant={"ghost"}
-                    size={"icon8"}
-                    className="!m-0 data-[state=closed]:rotate-[-90deg] w-auto h-auto bg-slate-200 !p-0.5 rounded-full"
-                  >
-                    <ChevronDown className="w-4 h-4 data-[state=closed]:rotate-[-90deg]" />
-                  </Button>
-                </CollapsibleTrigger>
+                {hasChildren && (
+                  <>
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        variant={"ghost"}
+                        size={"icon8"}
+                        className="!m-0 data-[state=closed]:rotate-[-90deg] w-auto h-auto bg-slate-200 !p-0.5 rounded-full"
+                      >
+                        <ChevronDown className="w-4 h-4 data-[state=closed]:rotate-[-90deg]" />
+                      </Button>
+                    </CollapsibleTrigger>
+                  </>
+                )}
+
+                {hasChildren && (
+                  <div className="h-full w-[2px] bg-slate-200 absolute left-[9.9px] top-[19px] group-data-[state=open]:block hidden"></div>
+                )}
+
                 <Controller
                   control={control}
-                  name={`sentimentAnalytics.categories.${index}.value`}
+                  name={`sentimentAnalytics.${index}.value`}
                   render={({ field }) => (
                     <CheckboxField
                       name={field.name}
@@ -59,6 +70,7 @@ const CategoryFields = ({ form, categoryFields }: DataFieldsProps) => {
                         field.onChange(checked ? "true" : "false")
                       }
                       label=""
+                      className={!hasChildren ? "ml-[1.5px]" : ""}
                     />
                   )}
                 />

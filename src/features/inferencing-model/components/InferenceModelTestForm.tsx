@@ -32,6 +32,7 @@ import { useTasksToExecuteStore } from "../store/tasks-to-execute";
 
 const InferenceModelTestForm = () => {
   const { data: setupFormData, isLoading } = useFetchSetupFormData();
+  const { data } = useFetchTestFormData();
   const modelNames = enumToArray(TaskNameEnum);
   const { listOfTasksId, toggleTaskId } = useTasksToExecuteStore();
   const { data: fileList } = useFetchUploadedFiles();
@@ -52,7 +53,6 @@ const InferenceModelTestForm = () => {
   } = useInferenceModelTestForm();
   const { setValue, watch } = form;
   const submitForFinetuningValue = watch("submitForFineTuning");
-  const { data } = useFetchTestFormData();
   const { data: modelData } = useFetchModel();
   const { setExtractedData } = useExtractedDataStore();
 

@@ -12,7 +12,7 @@ import {
   toneAndStyleProps,
   topicProps,
 } from "@/features/generative-model/constants/generative-model-field-props/thought-leadership-field-props";
-import { thoughtLeadershipZodSchema } from "@/features/generative-model/constants/generative-model-zod-schemas/thought-leadership-dto";
+import { thoughtLeadershipZodSchema } from "@/features/generative-model/constants/generative-model-zod-schemas/thought-leadership-zod-schema";
 import { useThoughtLeadershipForm } from "@/features/generative-model/hooks/useThoughtLeadershipForm";
 import { useToggleFileUploadDialogStore } from "@/features/generative-model/store/toggle-file-upload-store";
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
@@ -61,7 +61,7 @@ const ThoughtLeadershipForm = () => {
       const setupFormDocuments = fileList.data.map(({ id, name, path }) => {
         return { id: id ?? "", name, instructions: "", filePath: path ?? "" };
       });
-      form.setValue("documents", setupFormDocuments);
+      form.setValue("setupObject.documents", setupFormDocuments);
     }
   }, [fileList, form]);
 

@@ -1,3 +1,5 @@
+import { ILLMConfiguration } from "../components/llm-configuration/dtos/llm-configuration-dto";
+
 interface IDocumentInstruction {
     id: string;
     filePath: string;
@@ -5,11 +7,11 @@ interface IDocumentInstruction {
 }
 
 interface ILinks {
-    id: string;
-    link: string;
+    id?: string;
+    url: string;
 }
 
-export interface ThoughtLeadershipDTO { 
+interface ISetupObject {
     documentType: string;
     topic: string;
     industry: string;
@@ -21,4 +23,9 @@ export interface ThoughtLeadershipDTO {
     documents: IDocumentInstruction[] | null;
     outputLength: string;
     outputStructure: string;
+}
+
+export interface ThoughtLeadershipDTO extends ILLMConfiguration { 
+    name: string;
+    setupObject: ISetupObject;
 }

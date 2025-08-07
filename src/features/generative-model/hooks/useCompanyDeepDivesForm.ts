@@ -10,18 +10,22 @@ export const useCompanyDeepDivesForm = () => {
   const form = useForm<z.infer<typeof companyDeepDivesZodSchema>>({
     resolver: zodResolver(companyDeepDivesZodSchema),
     defaultValues: {
-        taskName: "",
-        companyName: "",
-        websiteLink: "",
-        focusAreas: "",
-        webData: "",
-        links: [{id: "", link: ""}],
-        documents: null,
-        summaryDepth: "",
+        name: "CompanyDeepDive",
+        temperature: 0.2,
         configurationType: "OnPrem",
         llm: "gemma",
         nodePrompt: "",
-        temperature: 0.2,
+        setupObject: {
+          taskName: "",
+          companyName: "",
+          websiteLink: "",
+          focusAreas: "",
+          webData: "",
+          links: [{id: "", url: ""}],
+          summaryDepth: "",
+          documents: null,
+        }
+
     },
   });
 

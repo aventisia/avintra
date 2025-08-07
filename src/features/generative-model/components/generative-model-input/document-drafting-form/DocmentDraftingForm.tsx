@@ -55,7 +55,7 @@ const DocumentDraftingForm = () => {
       const setupFormDocuments = fileList.data.map(({ id, name, path }) => {
         return { id: id ?? "", name, instructions: "", filePath: path ?? "" };
       });
-      form.setValue("documents", setupFormDocuments);
+      form.setValue("setupObject.documents", setupFormDocuments);
     }
   }, [fileList, form]);
 
