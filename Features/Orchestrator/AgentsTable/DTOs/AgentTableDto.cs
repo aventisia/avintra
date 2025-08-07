@@ -11,12 +11,17 @@ public class AgentTableDto
     /// Gets or sets the ID of the flow this version is associated with.
     /// </summary>
     [RequiredGuid]
-    public Guid FlowId { get; set; }
+    public Guid RefId { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the flow.
     /// </summary>
     public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of the flow.
+    /// </summary>
+    public required string Type { get; set; }
 
     /// <summary>
     /// Gets or sets the machines count which are associated with the version flow (agent).
