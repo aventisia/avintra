@@ -5,7 +5,7 @@
     "name": "EnvironmentVariableName",
     "label": "Environment variable name",
     "description": "The name of the environment variable to retrieve.",
-    "defaultValue": "",
+    "defaultValue": "USERNAME",
     "required": true,
     "selectOptions": [
       {
@@ -115,7 +115,7 @@
     "name": "Scope",
     "label": "Scope",
     "description": "Specifies the scope (User or System) to search for the environment variable.",
-    "defaultValue": "",
+    "defaultValue": "User",
     "required": false,
     "selectOptions": [
       {
@@ -146,18 +146,6 @@
     "description": "The retrieved value of the environment variable.",
     "defaultValue": {
       "value": "EnvironmentVariableValue",
-      "enabled": true
-    },
-    "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "StatusMessages",
-    "label": "StatusMessages",
-    "description": "",
-    "defaultValue": {
-      "value": "StatusMessages",
       "enabled": true
     },
     "required": false
