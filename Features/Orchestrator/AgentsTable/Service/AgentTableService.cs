@@ -32,9 +32,10 @@ public class AgentTableService : IAgentTableService
         {
             // Try to retrieve the flow versions from the repository.
             var publishedFlowVersions = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(v =>
-                    (flowId == null || v.FlowId == flowId) &&
-                    v.IsPublished
+                .GetByConditionAsync(w =>
+                    (flowId == null || w.FlowId == flowId) &&
+                    w.IsPublished &&
+                    !w.IsArchived
                 )
                 .Include(f => f.Flow)
                 .Include(mf => mf.MachineFlows)
