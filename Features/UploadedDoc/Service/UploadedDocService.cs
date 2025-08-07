@@ -283,12 +283,10 @@ public class UploadedDocService : IUploadedDocService
                 return serviceResponse;
             }
 
-            var fileName = pathParts.Last();  // The file name is the last part, e.g., "2290a6c2-74d4-4f37-8bac-e1befb2242ce.pdf"
+            var fileName = pathParts.Last();                     // The file name
+            var subDirectory = pathParts.Reverse().Skip(1).First();  // The sub directory
 
-            // Construct the full file path using the base upload directory, subdirectory, and file name
-            var fullDirectoryPath = Path.Combine(_fileUploadConfig.UploadDirectory);
-
-            var filePath = Path.Combine(fullDirectoryPath, fileName);
+            var filePath = Path.Combine(_fileUploadConfig.UploadDirectory, subDirectory, fileName);
 
             _logger.LogInformation("Resolved file path: {FilePath}.", filePath);
 
