@@ -59,6 +59,57 @@ public class AgentTableService : IAgentTableService
         return serviceResponse;
     }
 
+    // Updates the details of a specific flow version.
+    public async Task<ServiceResponse<AgentTableDto>> UpdateFlowVersionAsync(AgentTableDto agentTableDto)
+    {
+        var serviceResponse = new ServiceResponse<AgentTableDto>
+        {
+            Data = null,
+            Message = "Failed to update the flow version. Please try again"
+        };
+
+        try
+        {
+            // Retrieve the existing flow version by ID
+            var existingVersion = await _unitOfWork.FlowVersionRepo
+            .GetByConditionAsync(
+                w => w.Id == agentTableDto.Id
+            )
+            .SingleOrDefaultAsync();
+
+            if (existingVersion == null)
+            {
+                serviceResponse.Message = "Flow version not found.";
+                return serviceResponse;
+            }
+
+            // Map the updated fields from the DTO to the entity
+            existingVersion.IsArchived = agentTableDto.IsArchived;
+            existingVersion.IsDisabled = agentTableDto.IsDisabled;
+            existingVersion.LastModifiedByUserId = _userId;
+            // You can update more fields here as needed.
+
+            // Update and save changes
+            _unitOfWork.FlowVersionRepo.Update(existingVersion);
+            if (await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while updating existing flow version");
+                return serviceResponse;
+            };
+
+            // Map the updated entity back to DTO
+            serviceResponse.Data = existingVersion.Adapt<AgentTableDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Flow version updated successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while updating the flow version.");
+        }
+
+        return serviceResponse;
+    }
+
     // Retrieves a list of archived flow versions for a specific flow by its identifier.
     public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetArchiveFlowVersionsAsync(Guid? flowId)
     {

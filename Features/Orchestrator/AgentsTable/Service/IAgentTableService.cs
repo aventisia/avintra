@@ -9,6 +9,13 @@ public interface IAgentTableService
     Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetPublishFlowVersionsAsync(Guid? flowId);
 
     /// <summary>
+    /// Updates the details of a specific flow version.
+    /// </summary>
+    /// <param name="agentTableDto">The DTO containing updated flow version details.</param>
+    /// <returns>A service response containing the updated flow version data.</returns>
+    Task<ServiceResponse<AgentTableDto>> UpdateFlowVersionAsync(AgentTableDto agentTableDto);
+
+    /// <summary>
     /// Fetch the list of archived versions for a specific flow.
     /// </summary>
     /// <param name="flowId">Flow Id</param>
