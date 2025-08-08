@@ -40,6 +40,7 @@ import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
 import { TenantInfoPage } from "./pages/TenantsInfoPage";
 import { UsersPage } from "./pages/UsersPage";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { AchievesPage } from "./pages/AchievesPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -263,6 +264,12 @@ const routerConfig: RouteObject[] = [
       {
         path: "/supportticket/create",
         element: <STCreatePage />,
+      },
+      {
+        path: "/archive",
+        element: (
+          <ProtectedRoute persmissions={["SA", "GA"]} page={<AchievesPage />} />
+        ),
       },
       {
         path: "/page-not-found",

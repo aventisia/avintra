@@ -102,7 +102,10 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the flows row actions component
-      <FlowRowActions rowId={row.original.id || "rowId"} />
+      <FlowRowActions
+        rowId={row.original.id || "rowId"}
+        accessType={row.original.accessType}
+      />
     ),
   },
 ];
