@@ -32,6 +32,11 @@ public class AppSecretDto
     public required object Data { get; set; }
 
     /// <summary>
+    /// Gets or sets the unique identifier of the associated app integration.
+    /// </summary>
+    public Guid? AppIntegrationId { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the space is disabled.
     /// Nullable to distinguish between enabled, disabled, or undefined states.
     /// </summary>

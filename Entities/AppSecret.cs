@@ -30,4 +30,20 @@ public class AppSecret : BaseEntity, IMustHaveTenant
     /// Gets or sets the secret data in JSON format. Structure depends on the Type.
     /// </summary>
     public required string Data { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of times this secret has been used.
+    /// </summary>
+    public int UsageCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique identifier of the associated app integration.
+    /// </summary>
+    public Guid? AppIntegrationId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the navigation property referencing the related app integration entity.
+    /// </summary>
+    [ForeignKey("AppIntegrationId")]
+    public virtual AppIntegration? AppIntegration { get; set; }
 }
