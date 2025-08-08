@@ -31,7 +31,6 @@ export const FlowRowRemoveAction = ({ rowId }: FlowRowRemoveActionProps) => {
             size: "sm",
           }),
           "h-8",
-          "w-fit",
         )}
         // Icon={UserMinus2Icon}
         onClick={() => {

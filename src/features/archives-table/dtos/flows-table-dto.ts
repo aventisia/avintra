@@ -1,119 +1,54 @@
 /**
- * data transfer object for the agents table
+ * Data transfer object for the agents table
  * @export
- * @interface AgentsTableDto
+ * @interface ArchivesTableDto
  */
-export interface AgentsTableDto {
-  /**
-   *  Gets or sets the ID of the flow this version is associated with.
-   * @type {string}
-   * @memberof AgentsTableDto
-   */
+export interface ArchivesTableDto {
+  /** Unique identifier for the agent record */
   id: string;
 
-  /**
-   *  Gets or sets the ID of the flow this version is associated with.
-   * @type {string}
-   * @memberof AgentsTableDto
-   */
-  flowId: string;
+  /** Reference ID associated with the agent (e.g., flow or template ID) */
+  refId: string;
 
-  /**
-   *  Gets or sets the name of the flow.
-   * @type {string | null}
-   * @memberof AgentsTableDto
-   */
+  /** Name of the agent or flow */
   name: string | null;
 
-  /**
-   *  Gets or sets the license Type of the flow.
-   * @type {string | null}
-   * @memberof AgentsTableDto
-   */
-  licenseId: string | null;
+  /** Type of the agent (e.g., 'Agent') */
+  type: string;
 
-  /**
-   *  Gets or sets a value indicating whether the version is in locked state.
-   * @type {boolean}
-   * @memberof AgentsTableDto
-   */
-  isActive: boolean;
+  /** Count of machines using the agent */
+  machineCount?: number;
 
-  /**
-   *  Gets or sets a value indicating whether the version is in locked state.
-   * @type {boolean}
-   * @memberof AgentsTableDto
-   */
+  /** Indicates if the version is locked */
   isLocked: boolean;
 
-  /**
-   *  Gets or sets a value indicating whether the version is in draft state.
-   * @type {boolean}
-   * @memberof AgentsTableDto
-   */
+  /** Indicates if the version is in draft state */
   isDraft: boolean;
 
-  /**
-   *  Gets or sets a value indicating whether the version has been published.
-   * @type {boolean}
-   * @memberof AgentsTableDto
-   */
+  /** Indicates if the version has been published */
   isPublished: boolean;
 
-  /**
-   *  Gets or sets a value indicating whether the version has been archived.
-   * @type {boolean}
-   * @memberof AgentsTableDto
-   */
+  /** Indicates if the version has been archived */
   isArchived: boolean;
 
-  /**
-   *  Gets or sets the the user who created the record.
-   * @type {string | null}
-   * @memberof AgentsTableDto
-   */
+  /** Indicates if the version is disabled */
+  isDisabled: boolean;
+
+  /** Name of the user who created the record */
   createdBy: string | null;
 
-  /**
-   *  Gets or sets the the username who created the record.
-   * @type {string | null}
-   * @memberof AgentsTableDto
-   */
+  /** Username (email) of the user who created the record */
   createdByUsername: string | null;
 
-  /**
-   *  Gets or sets the date and time when the record was created.
-   * @type {Date}
-   * @memberof AgentsTableDto
-   */
-  createdOn: Date;
+  /** Date and time when the record was created */
+  createdOn: string | Date;
 
-  /**
-   *  Gets or sets initials of the user who created the record
-   * @type {string | null}
-   * @memberof AgentsTableDto
-   */
-  createdByUserInitials: string | null;
-
-  /**
-   *  Gets or sets the version number of a flow version record
-   * @type {number}
-   * @memberof AgentsTableDto
-   */
+  /** Version number of the record */
   versionNumber: number;
 
-  /**
-   * Gets or sets the username of the user who last agent the machine record. Max-254
-   */
-  lastModifiedBy?: string;
+  /** Username of the user who last modified the record */
+  lastModifiedBy?: string | null;
 
-  /**
-   * Gets or sets the date and time when the agent record was last modified.
-   */
-  lastModifiedOn?: Date;
-
-  /**
-   * Gets the count of the machines using the agent.
-   */
-  machineCount?: number;
+  /** Date and time when the record was last modified */
+  lastModifiedOn?: string | Date;
 }
