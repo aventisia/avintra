@@ -45,7 +45,15 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
     ),
   },
-
+  {
+    accessorKey: "type",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("type")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
+    ),
+  },
   {
     accessorKey: "machineCount",
     header: ({ column }) => (
@@ -53,19 +61,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("machineCount")}
-      </div>
-    ),
-  },
-
-  {
-    accessorKey: "isLocked",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("isLocked")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("isLocked") ? "Yes" : "No"}
+        {row.original.type == "Agent" ? row.getValue("machineCount") : "NA"}
       </div>
     ),
   },
@@ -81,6 +77,28 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     ),
   },
   {
+    accessorKey: "status",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("status")} />
+    ),
+    cell: ({ row }) => {
+      const { isDisabled, machineCount } = row.original;
+
+      let status = "";
+      const count = machineCount ?? 0; // fallback to 0 if undefined
+
+      if (isDisabled) {
+        status = "Disabled";
+      } else if (count > 0) {
+        status = "Deployed";
+      } else {
+        status = "Published";
+      }
+
+      return <div className="w-auto truncate font-medium">{status}</div>;
+    },
+  },
+  {
     accessorKey: "createdBy",
     header: ({ column }) => (
       <DTColumnHeader column={column} title={getColumnName("createdBy")} />
@@ -94,11 +112,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
-      <DTColumnHeader
-        className="w-[7rem]"
-        column={column}
-        title={getColumnName("createdOn")}
-      />
+      <DTColumnHeader column={column} title={getColumnName("createdOn")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -110,7 +124,11 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the agents row actions component
-      <TableActions rowId={row.original.id} />
+      <TableActions
+        count={row.original.machineCount || 0}
+        rowId={row.original.id}
+        isDisabled={row.original.isDisabled}
+      />
     ),
   },
 ];
