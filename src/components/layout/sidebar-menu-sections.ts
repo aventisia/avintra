@@ -99,13 +99,6 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       },
       {
         permissions: ["SA", "GA"],
-        Icon: ArchiveIcon,
-        name: "archive",
-        route: "/archive",
-      },
-
-      {
-        permissions: ["SA", "GA"],
         Icon: TbCertificate,
         name: "licenses & Credits",
         route: "/orchestrator/licenses",
@@ -121,6 +114,12 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: UsersIcon,
         name: "users",
         route: "/users",
+      },
+      {
+        permissions: ["SA", "GA"],
+        Icon: ArchiveIcon,
+        name: "archive",
+        route: "/archive",
       },
       {
         permissions: ["SA", "GA"],
