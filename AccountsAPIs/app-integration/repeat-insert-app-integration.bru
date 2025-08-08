@@ -1,0 +1,29 @@
+meta {
+  name: Repeat - Insert app integration
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/app-integration
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "ChatGPT",
+    "description": "ChatGPT is an AI language model developed by OpenAI, capable of understanding and generating human-like text responses. It can assist with a wide range of tasks including answering questions, providing recommendations, and engaging in general conversation."
+  }
+  
+}
+
+script:post-response {
+  if(res.getBody().message=== "TwoFA is enabled")
+  {
+      bru.setGlobalEnvVar(
+        "APP_INTEGRATION_ID", 
+        res.getBody().data.id
+      );
+  }
+}
