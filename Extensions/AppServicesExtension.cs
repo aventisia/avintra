@@ -41,6 +41,7 @@ public static class AppServicesExtension
         config.Apply(new AuditLogMappingProfile());
         config.Apply(new ActiveSessionMappingProfile());
         config.Apply(new SpaceTableMappingProfile());
+        config.Apply(new AppSecretMappingProfile());
         services.AddSingleton(config);
     }
 
@@ -111,6 +112,7 @@ public static class AppServicesExtension
         services.AddScoped<ITenantRoleManagementService, TenantRoleManagementService>();
         services.AddScoped<IAddressService, AddressService>();
         services.AddScoped<ISpaceTableService, SpaceTableService>();
+        services.AddScoped<IAppSecretService, AppSecretService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
