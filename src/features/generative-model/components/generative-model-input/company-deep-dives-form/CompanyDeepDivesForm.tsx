@@ -65,6 +65,8 @@ const CompanyDeepDivesForm = () => {
         "generativeModel.setupObject.documents",
         setupFormDocuments,
       );
+    } else {
+      form.setValue("generativeModel.setupObject.documents", []);
     }
   }, [fileList, form]);
 

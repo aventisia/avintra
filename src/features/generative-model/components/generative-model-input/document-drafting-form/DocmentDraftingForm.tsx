@@ -63,6 +63,8 @@ const DocumentDraftingForm = () => {
         "generativeModel.setupObject.preferenceDocuments",
         setupFormDocuments,
       );
+    } else {
+      form.setValue("generativeModel.setupObject.preferenceDocuments", []);
     }
   }, [fileList, form]);
 

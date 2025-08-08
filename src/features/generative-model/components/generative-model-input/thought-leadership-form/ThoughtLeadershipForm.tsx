@@ -69,6 +69,8 @@ const ThoughtLeadershipForm = () => {
         "generativeModel.setupObject.documents",
         setupFormDocuments,
       );
+    } else {
+      form.setValue("generativeModel.setupObject.documents", []);
     }
   }, [fileList, form]);
 
