@@ -19,7 +19,7 @@ export const useUpdateGenerativeModelForm = () => {
   } = useMutation({
     mutationFn: updateGenerativeModelSetupFormData,
     onSuccess: async (data) => {
-      setConversationMarkdown(data?.data?.message || "")
+      setConversationMarkdown([data?.data])
       queryClient.invalidateQueries({ queryKey: ["GENERATIVE_SETUP_FORM_DATA"] });
       queryClient.invalidateQueries({ queryKey: ["model", modelId] });
       toast.success("Data saved successfully");
