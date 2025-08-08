@@ -1,22 +1,25 @@
 import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
-import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { MonitorCheck } from "lucide-react";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { useAssignMachineStore } from "../../stores/assign-machine-store";
+
 interface DTEditRowActionProps {
   rowId: string;
   size?: "sm" | "md";
+  isDisabled: boolean;
 }
 
 export const AssignMachineRowAction: React.FC<DTEditRowActionProps> = ({
   rowId,
   size = "md",
+  isDisabled,
 }) => {
-  // Get store state and actions
-  const { setCrudDialogOptions } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      setCrudDialogOptions: state.setCrudDialogOptions,
+  const { setOpen, setFlowVersionId } = useAssignMachineStore(
+    useShallow((s) => ({
+      setOpen: s.setShowDialog,
+      setFlowVersionId: s.setFlowVersionId,
     })),
   );
 
@@ -24,14 +27,12 @@ export const AssignMachineRowAction: React.FC<DTEditRowActionProps> = ({
   return (
     <SimpleDDMenuItem
       size={size}
+      disabled={isDisabled}
       content="Assign Machine"
       Icon={MonitorCheck}
       onClick={() => {
-        setCrudDialogOptions({
-          showDialog: true,
-          rowId,
-          crudAction: "update",
-        });
+        setFlowVersionId(rowId);
+        setOpen(true);
       }}
     />
   );

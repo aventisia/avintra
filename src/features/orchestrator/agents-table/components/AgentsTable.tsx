@@ -6,17 +6,18 @@ import {
   DTSearchBox,
   DTViewOptions,
 } from "@aventisia/ui/data-table";
-import { useDataTable } from "@aventisia/ui/hooks";
+import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { SEARCH_COLUMN } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchAgents } from "../hooks/useFetchAgents";
 
-import { AgentCrudDialog } from "./agent-crud-dialog/AgentCrudDialog";
 import { agentsTableColumns } from "./AgentsTableColumns";
 import { AgentStats } from "./AgentStats";
+import AssignMachinesDialog from "./assign-machines/AssignMachinesDialog";
 import { AgentsBulkActions } from "./table-actions/AgentsBulkActions";
+import DisableAgentDialog from "./table-actions/DisableAgentDialog";
 
 /**
  * Renders a table of agents.
@@ -24,6 +25,9 @@ import { AgentsBulkActions } from "./table-actions/AgentsBulkActions";
  * @returns The rendered AgentsTable component.
  */
 export const AgentsTable = () => {
+  // Set the document title
+  useDocumentTitle("Published");
+
   // Fetch agents data
   const { data } = useFetchAgents();
 
@@ -40,32 +44,29 @@ export const AgentsTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Crud ops dialog */}
-          <AgentCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              {/* <AgentsTableHeading /> */}
-              <DTHeading heading="Published (Agents+ AI Models)" />
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            {/* <AgentsTableHeading /> */}
+            <DTHeading heading="Published (Agents + AI Models)" />
 
-              <div className="flex items-center gap-2">
-                <DTSearchBox
-                  table={table}
-                  searchColumn={SEARCH_COLUMN}
-                  placeholder="Search agents..."
-                />
-                <DTViewOptions {...{ table, columnDisplayNames }} />
-              </div>
-            </div>
-
-            {/* Data table to render data */}
-            <div className="flex flex-col gap-2">
-              <AgentStats data={data?.data} />
-              <DataTable
+            <div className="flex items-center gap-2">
+              <DTSearchBox
                 table={table}
-                columnsLength={agentsTableColumns.length}
+                searchColumn={SEARCH_COLUMN}
+                placeholder="Search agents..."
               />
+              <DTViewOptions {...{ table, columnDisplayNames }} />
             </div>
-          </AgentCrudDialog>
+          </div>
+
+          {/* Data table to render data */}
+          <div className="flex flex-col gap-2">
+            <AgentStats data={data?.data} />
+            <DataTable
+              table={table}
+              columnsLength={agentsTableColumns.length}
+            />
+          </div>
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />
@@ -77,6 +78,8 @@ export const AgentsTable = () => {
         // Show data table skeleton while fetching the agents data
         <DataTableSkeleton />
       )}
+      <AssignMachinesDialog />
+      <DisableAgentDialog />
     </>
   );
 };
