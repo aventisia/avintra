@@ -88,6 +88,12 @@ const deleteAgents = (ids: string[]) => {
     .then((res) => res.data);
 };
 
+export const disableMachines = (ids: string[]) => {
+  return axiosInstance
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/disable-multiple`, ids)
+    .then((res) => res.data);
+};
+
 /**
  * Performs an optimistic mutation on a Agent based on the provided CRUD action.
  *
