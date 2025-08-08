@@ -221,7 +221,7 @@ public class GenerativeModelService : IGenerativeModelService
     }
 
     // Updates an existing generative model setup and its associated AI persona configuration.
-    public async Task<ServiceResponse<string>> UpdateAndExecuteAsync(GenerativeModelDto generativeModelDto)
+    public async Task<ServiceResponse<string>> UpdateAndExecuteAsync(GenerativeModelDto generativeModelDto, Guid? conversationId)
     {
         // Initialize default failure response
         var serviceResponse = new ServiceResponse<string>
@@ -323,6 +323,26 @@ public class GenerativeModelService : IGenerativeModelService
                 generativeModel.LLM,
                 generativeModel.Temperature
             );
+
+
+            var conversationHistory = new ConversationHistory()
+            {
+                MLModelId = existingModel.Id,
+                Message = llmResponse.Data ?? string.Empty,
+                ParticipantType = ParticipantTypesEnum.Bot,
+                ParticipantName = nameof(ParticipantTypesEnum.Bot),
+                ConversationId = conversationId.HasValue ? conversationId : Guid.NewGuid(),
+                IsUserMessage = false,
+            };
+
+            await _unitOfWork.ConversationHistoryRepo.InsertAsync(conversationHistory);
+
+            // Save changes to the persona task
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save conversation history | Model ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
+                return serviceResponse;
+            }
 
             // Update the service response to indicate success
             serviceResponse.StatusCode = 200;

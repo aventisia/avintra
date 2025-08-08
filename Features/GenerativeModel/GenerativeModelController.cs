@@ -30,8 +30,8 @@ public class GenerativeModelController : BaseApiController
 
     // Updates the configuration of a generative model setup and executes the model with the new configuration
     [HttpPut("update-and-execute")]
-    public async Task<ActionResult<ServiceResponse<string>>> UpdateAndExecute([FromBody] GenerativeModelDto modelSetupDto)
+    public async Task<ActionResult<ServiceResponse<string>>> UpdateAndExecute([FromBody] GenerativeModelDto modelSetupDto, Guid? cid)
     {
-        return ResultHelper(await _generativeModelService.UpdateAndExecuteAsync(modelSetupDto));
+        return ResultHelper(await _generativeModelService.UpdateAndExecuteAsync(modelSetupDto, cid));
     }
 }
