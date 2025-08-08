@@ -76,9 +76,9 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
       return (
         <div
           className="w-28 truncate font-medium"
-          title={value.length > 0 ? value.join(", ") : ""}
+          title={value && value.length > 0 ? value.join(", ") : ""}
         >
-          {value.length > 0 ? value.join(", ") : "N/A"}
+          {value && value.length > 0 ? value.join(", ") : "N/A"}
         </div>
       );
     },

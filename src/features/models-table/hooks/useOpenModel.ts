@@ -37,7 +37,7 @@ export const useOpenModel = () => {
         break;
     }
 
-    window.open(url, "_blank");
+    window.location.href = url;
   };
 
   // Return the handle open model action function
