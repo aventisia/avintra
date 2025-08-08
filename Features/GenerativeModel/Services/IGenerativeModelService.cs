@@ -18,9 +18,10 @@ public interface IGenerativeModelService
 
     /// <summary>
     /// Updates the configuration of a generative model setup and executes the model with the new configuration.
+    /// Optionally associates the execution with a specific conversation using the provided conversation ID.
     /// </summary>
     /// <param name="modelSetupDto">The new configuration to be applied to the generative model.</param>
     /// <param name="conversationId">An optional identifier for the conversation to associate with the model execution.</param>
-    /// <returns>A task representing the asynchronous operation. It returns a service response containing the updated setup details.</returns>
-    Task<ServiceResponse<string>> UpdateAndExecuteAsync(GenerativeModelDto modelSetupDto, Guid? conversationId);
+    /// <returns>A task representing the asynchronous operation. It returns a service response containing the details of the conversation history after execution.</returns>
+    Task<ServiceResponse<ConversationHistoryDto>> UpdateAndExecuteAsync(GenerativeModelDto modelSetupDto, Guid? conversationId);
 }

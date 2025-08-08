@@ -221,10 +221,10 @@ public class GenerativeModelService : IGenerativeModelService
     }
 
     // Updates an existing generative model setup and its associated AI persona configuration.
-    public async Task<ServiceResponse<string>> UpdateAndExecuteAsync(GenerativeModelDto generativeModelDto, Guid? conversationId)
+    public async Task<ServiceResponse<ConversationHistoryDto>> UpdateAndExecuteAsync(GenerativeModelDto generativeModelDto, Guid? conversationId)
     {
         // Initialize default failure response
-        var serviceResponse = new ServiceResponse<string>
+        var serviceResponse = new ServiceResponse<ConversationHistoryDto>
         {
             Data = null,
             Message = "Failed to update generative model. Please try again later."
@@ -346,7 +346,7 @@ public class GenerativeModelService : IGenerativeModelService
 
             // Update the service response to indicate success
             serviceResponse.StatusCode = 200;
-            serviceResponse.Data = llmResponse.Data;
+            serviceResponse.Data = conversationHistory.Adapt<ConversationHistoryDto>();
             serviceResponse.Message = "Generative model updated and execution completed successfully.";
 
         }
