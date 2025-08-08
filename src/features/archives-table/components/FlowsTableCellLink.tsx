@@ -4,8 +4,11 @@ import { cn } from "@aventisia/ui/lib";
 import { useOpenFlow } from "../hooks/useOpenFlow";
 
 interface FlowsTableCellLinkProps {
-  /** The ID of the flow to open. */
+  /** The version ID of the flow to open. */
   rowId: string;
+
+  /** The ID of the flow to open. */
+  refId: string;
 
   /** The cell value to display. */
   cellValue: string;
@@ -13,6 +16,7 @@ interface FlowsTableCellLinkProps {
 
 export const FlowsTableCellLink = ({
   rowId,
+  refId,
   cellValue,
 }: FlowsTableCellLinkProps) => {
   // Get handle function to open flow
@@ -21,7 +25,7 @@ export const FlowsTableCellLink = ({
   // Return the component
   return (
     <Button
-      onClick={() => handleOpenFlowAction(rowId)}
+      onClick={() => handleOpenFlowAction(refId, rowId)}
       variant={"link"}
       className={cn(
         "!h-8 w-auto truncate font-medium text-foreground hover:text-primary",

@@ -2,17 +2,18 @@ import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
+
 import { getColumnName } from "../constants/column-display-names";
-import { AgentsTableDto } from "../dtos/flows-table-dto";
-// import { FlowRowActions } from "./flow-row-actions/FlowRowActions";
-import { FlowsTableCellLink } from "./FlowsTableCellLink";
+import { ArchivesTableDto } from "../dtos/flows-table-dto";
+
 import { FlowRowActions } from "./FlowRowActions";
+import { FlowsTableCellLink } from "./FlowsTableCellLink";
 
 /**
  * Array of table columns for the flows table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const flowsTableColumns: ColumnDef<AgentsTableDto>[] = [
+export const flowsTableColumns: ColumnDef<ArchivesTableDto>[] = [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -43,59 +44,55 @@ export const flowsTableColumns: ColumnDef<AgentsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <FlowsTableCellLink
-        rowId={row.original.id || "rowId"}
+        rowId={row.original.id}
+        refId={row.original.refId}
         cellValue={row.getValue("name")}
       />
     ),
   },
-  // {
-  //   accessorKey: "type",
-  //   header: ({ column }) => (
-  //     <DTColumnHeader column={column} title={getColumnName("type")} />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="w-auto truncate font-medium">
-  //       {getEnumValueByKey(FlowTypesEnum, row.getValue("type"))}
-  //     </div>
-  //   ),
-  // },
-  // {
-  //   accessorKey: "flowCommentCount",
-  //   header: ({ column }) => (
-  //     <DTColumnHeader
-  //       column={column}
-  //       title={getColumnName("flowCommentCount")}
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="w-auto truncate font-medium">
-  //       {row.getValue("flowCommentCount")}
-  //     </div>
-  //   ),
-  // },
   {
-    accessorKey: "createdBy",
+    accessorKey: "type",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
+      <DTColumnHeader column={column} title={getColumnName("type")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
+    ),
+  },
+  {
+    accessorKey: "versionNumber",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("versionNumber")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("createdBy")}
+        {row.getValue("versionNumber")}
       </div>
     ),
   },
   {
-    accessorKey: "createdOn",
+    accessorKey: "lastModifiedBy",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("lastModifiedBy")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("lastModifiedBy")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "lastModifiedOn",
     header: ({ column }) => (
       <DTColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("createdOn")}
+        title={getColumnName("lastModifiedOn")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("createdOn"))}
+        {dateFormatter(row.getValue("lastModifiedOn"))}
       </div>
     ),
   },
@@ -103,7 +100,7 @@ export const flowsTableColumns: ColumnDef<AgentsTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the flows row actions component
-      <FlowRowActions rowId={row.original.id || "rowId"} />
+      <FlowRowActions rowId={row.original.id} refId={row.original.refId} />
     ),
   },
 ];
