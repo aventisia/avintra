@@ -9,6 +9,7 @@ export const columnVisibilityState = {
   createdOn: true,
   versionNumber: true,
   machineCount: true,
+  status: true,
 };
 
 export const machineSelectTableColumnVisibilityState = {
