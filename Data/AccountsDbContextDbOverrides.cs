@@ -91,6 +91,7 @@ public partial class AccountsDbContext
         builder.Entity<BillingAccount>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<Invoice>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<Payment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        builder.Entity<AppSecret>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         builder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
@@ -111,6 +112,7 @@ public partial class AccountsDbContext
         builder.Entity<AccountUser>().Property(e => e.Gender).HasConversion(new EnumToStringConverter<GenderTypeEnum>());
         builder.Entity<Address>().Property(e => e.AddressType).HasConversion(new EnumToStringConverter<AddressTypeEnum>());
         builder.Entity<RolePermission>().Property(e => e.Access).HasConversion(new EnumToStringConverter<PermissionAccessTypesEnum>());
+        builder.Entity<AppSecret>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AppSecretTypesEnum>());
 
         // Configure One-to-One relationship between AccountUser and AccountUser
         builder.Entity<AccountUser>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
