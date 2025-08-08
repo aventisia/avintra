@@ -91,6 +91,7 @@ public partial class AccountsDbContext
         builder.Entity<BillingAccount>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<Invoice>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<Payment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        builder.Entity<AppIntegration>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<AppSecret>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
