@@ -95,7 +95,8 @@ public class AgentTableService : IAgentTableService
             {
                 _logger.LogInformation("Context SaveChanges failed while updating existing flow version");
                 return serviceResponse;
-            };
+            }
+            ;
 
             // Map the updated entity back to DTO
             serviceResponse.Data = existingVersion.Adapt<AgentTableDto>();
@@ -130,6 +131,7 @@ public class AgentTableService : IAgentTableService
                 .Include(f => f.Flow)
                 .Include(mf => mf.MachineFlows)
                 .Include(c => c.CreatedByUser)
+                .Include(c => c.LastModifiedByUser)
                 .OrderBy(o => o.VersionNumber)
                 .AsNoTracking()
                 .ToListAsync();
@@ -483,6 +485,55 @@ public class AgentTableService : IAgentTableService
         {
             // Log detailed error information for troubleshooting
             _logger.LogError($"[SearchPublishFlowVersionsAsync] Error occurred while searching published agents for key '{searchKey}': {ex}");
+        }
+
+        return serviceResponse;
+    }
+
+    // Archives multiple flow versions by updating their IsArchived status to true.
+    public async Task<ServiceResponse<bool>> ArchiveMultipleFlowVersionsAsync(IEnumerable<Guid> flowVersionIds)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to archive flow versions. Please try again"
+        };
+
+        try
+        {
+            // Retrieve the flow versions to be archived
+            var flowVersionsToArchive = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w => flowVersionIds.Contains(w.Id))
+                .ToListAsync();
+
+            if (!flowVersionsToArchive.Any())
+            {
+                serviceResponse.Message = "No flow versions found for the provided IDs.";
+                return serviceResponse;
+            }
+
+            // Archive each flow version by updating its IsArchived flag to true
+            foreach (var version in flowVersionsToArchive)
+            {
+                version.IsArchived = true;
+                version.LastModifiedByUserId = _userId;
+            }
+            _unitOfWork.FlowVersionRepo.Update(flowVersionsToArchive);
+
+            // Save the changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while archiving flow versions.");
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Flow versions archived successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while archiving the flow versions.");
         }
 
         return serviceResponse;

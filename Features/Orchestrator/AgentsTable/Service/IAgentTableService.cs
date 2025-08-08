@@ -60,4 +60,12 @@ public interface IAgentTableService
     /// A <see cref="ServiceResponse{T}"/> containing a list of <see cref="AgentTableDto"/> objects representing the published flow versions matching the search criteria.
     /// </returns>
     Task<ServiceResponse<IEnumerable<AgentTableDto>>> SearchPublishFlowVersionsAsync(string searchKey);
+    /// <summary>
+    /// Archives multiple flow versions based on the provided list of flow version IDs.
+    /// </summary>
+    /// <param name="flowVersionIds">A list of flow version IDs to be archived.</param>
+    /// <returns>
+    /// A <see cref="ServiceResponse{T}"/> containing a list of <see cref="bool"/> values boolean represents whether the corresponding flow version was successfully archived (true) or failed (false).
+    /// </returns>
+    Task<ServiceResponse<bool>> ArchiveMultipleFlowVersionsAsync(IEnumerable<Guid> flowVersionIds);
 }

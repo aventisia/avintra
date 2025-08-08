@@ -67,4 +67,11 @@ public class AgentTableController : BaseApiController
     {
         return ResultHelper(await _agentTableService.SearchPublishFlowVersionsAsync(seachKey));
     }
+
+    // Archives multiple flow versions based on the provided list of IDs.
+    [HttpPost("archive-multiple")]
+    public async Task<ActionResult<ServiceResponse<bool>>> ArchiveMultipleFlowVersions([FromBody] IEnumerable<Guid> flowVersionIds)
+    {
+        return ResultHelper(await _agentTableService.ArchiveMultipleFlowVersionsAsync(flowVersionIds));
+    }
 }
