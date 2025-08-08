@@ -23,6 +23,48 @@ namespace MLModelBuilderAPIs.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ConversationHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ConversationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsUserMessage")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("MLModelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ParticipantId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ParticipantName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ParticipantType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MLModelId");
+
+                    b.ToTable("ConversationHistories");
+                });
+
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ConversationalModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -849,6 +891,17 @@ namespace MLModelBuilderAPIs.Migrations
                     b.ToTable("UploadedDocs");
                 });
 
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ConversationHistory", b =>
+                {
+                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
+                        .WithMany("ConversationHistories")
+                        .HasForeignKey("MLModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MLModel");
+                });
+
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ConversationalModel", b =>
                 {
                     b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
@@ -1186,6 +1239,8 @@ namespace MLModelBuilderAPIs.Migrations
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModel", b =>
                 {
+                    b.Navigation("ConversationHistories");
+
                     b.Navigation("ConversationalModel");
 
                     b.Navigation("ExtractedData");
