@@ -15,16 +15,25 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/agent`;
 export const getPublishedAgents = () => {
   // Fetch agents from API
   return axiosInstance
-    .get<IHttpResponse<AgentsTableDto[]>>(`${baseAPIURL}/publish-flows/`)
+    .get<IHttpResponse<AgentsTableDto[]>>(`${baseAPIURL}/published`)
+    .then((res) => res.data);
+};
+
+export const getSearchPublishedAgents = (query: string) => {
+  // Fetch agents from API
+  return axiosInstance
+    .get<IHttpResponse<AgentsTableDto[]>>(`${baseAPIURL}/search/${query}`)
     .then((res) => res.data);
 };
 
 /**
  * Retrieves list of select options to assign a machine to agent.
  */
-export const getAssignableMachines = (agentId: string) => {
+export const getAssignedMachines = (flowVersionId: string) => {
   return axiosInstance
-    .get<IHttpResponse<AssignMachineDto[]>>(`${baseAPIURL}/${agentId}/machines`)
+    .get<
+      IHttpResponse<AssignMachineDto[]>
+    >(`${baseAPIURL}/${flowVersionId}/machines`)
     .then((res) => res.data);
 };
 
@@ -36,6 +45,17 @@ export const assignMachines = (assignMachineDto: AgentAssignMachineDto) => {
     .post<
       IHttpResponse<boolean>
     >(`${baseAPIURL}/${assignMachineDto.flowVersionId}/assign-machines`, assignMachineDto.machineIds)
+    .then((res) => res.data);
+};
+
+/**
+ * assign machines to the agent
+ */
+export const removeMachines = (assignMachineDto: AgentAssignMachineDto) => {
+  return axiosInstance
+    .post<
+      IHttpResponse<boolean>
+    >(`${baseAPIURL}/${assignMachineDto.flowVersionId}/remove-machines`, assignMachineDto.machineIds)
     .then((res) => res.data);
 };
 
