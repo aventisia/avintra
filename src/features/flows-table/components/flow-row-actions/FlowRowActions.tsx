@@ -1,14 +1,19 @@
 import { DataTableRowActions, DTRowAction } from "@aventisia/ui/data-table";
 import { DropdownMenuSeparator } from "@aventisia/ui/dropdown-menu";
 
+import { AccessTypeEnum } from "../../constants/access-type-enum";
+
 import { FlowRowDeleteAction } from "./FlowRowDeleteAction";
 import { FlowRowOpenAction } from "./FlowRowOpenAction";
+import { FlowRowRemoveAction } from "./FlowRowRemoveAction";
 
 interface FlowRowActionsProps {
   rowId: string;
+  accessType: AccessTypeEnum;
 }
 
-export const FlowRowActions = ({ rowId }: FlowRowActionsProps) => {
+export const FlowRowActions = ({ rowId, accessType }: FlowRowActionsProps) => {
+  console.log(accessType, rowId);
   return (
     // Dropdown menu for flow table row action */}
     <DataTableRowActions>
@@ -24,8 +29,12 @@ export const FlowRowActions = ({ rowId }: FlowRowActionsProps) => {
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />
 
-      {/* Triggers Flow delete alert dialog  */}
-      <FlowRowDeleteAction rowId={rowId} />
+      {/* Triggers Flow delete/remove alert dialog  */}
+      {accessType == "Owner" ? (
+        <FlowRowDeleteAction rowId={rowId} />
+      ) : (
+        <FlowRowRemoveAction rowId={rowId} />
+      )}
     </DataTableRowActions>
   );
 };
