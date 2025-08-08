@@ -1,0 +1,15 @@
+meta {
+  name: Archice mutiple flow versions
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/agent/archivr
+  body: json
+  auth: none
+}
+
+body:json {
+  ["{{FLOW_VERSION_ID}}"]
+}
