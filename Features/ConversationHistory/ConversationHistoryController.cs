@@ -14,9 +14,9 @@ public class ConversationHistoryController : BaseApiController
 
     // Gets list of conversation histories for a specific ML model using its mlModelId, optionally filtered by conversationId.
     [HttpGet("list/{mlModelId}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<ConversationHistoryDto>>>> GetConversationHistories(Guid mlModelId, Guid? conversationId)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ConversationHistoryDto>>>> GetConversationHistories(Guid mlModelId, Guid? cid)
     {
-        return ResultHelper(await _conversationHistoryService.GetConversationHistoriesByMLModelIdAsync(mlModelId, conversationId));
+        return ResultHelper(await _conversationHistoryService.GetConversationHistoriesByMLModelIdAsync(mlModelId, cid));
     }
 
     // Retrieves a specific conversation history entry by its unique identifier.
