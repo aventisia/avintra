@@ -2,7 +2,7 @@ import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import { getAssignableMachines } from "../apis/agents-table-apis";
+import { getAssignedMachines } from "../apis/agents-table-apis";
 
 /**
  * Custom hook to fetch associated machines.
@@ -12,7 +12,7 @@ export const useFetchMachines = (agentId: string) => {
   // Get agents using react query
   const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["machines-to-select", agentId],
-    queryFn: () => getAssignableMachines(agentId),
+    queryFn: () => getAssignedMachines(agentId),
   });
 
   // Show toast on fetch error

@@ -7,9 +7,6 @@ import { enumToArray } from "@aventisia/ui/utils";
 
 import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
 import { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
-import { AsyncSelectFieldProps } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
-
-import { getLicensesToSelect } from "../../licenses-table/apis/licenses-table-apis";
 
 // Machine Id
 export const idProps: InputFieldProps = {
@@ -56,17 +53,6 @@ export const environmentTypeProps: SelectFieldProps = {
   label: "Environment Type",
   isRequired: true,
   selectOptions: enumToArray(MachineEnvironmentTypesEnum),
-};
-
-export const licenseSelectProps: AsyncSelectFieldProps = {
-  name: "licenseId",
-  selectOptions: () => getLicensesToSelect().then((data) => data.data),
-  label: "License Type",
-  placeholder: "Select License",
-  className: "!w-[30rem]",
-  triggerClassName: "!w-full",
-  size: "base",
-  isRequired: true,
 };
 
 // Is Disabled

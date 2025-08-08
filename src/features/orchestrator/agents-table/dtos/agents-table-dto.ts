@@ -16,7 +16,9 @@ export interface AgentsTableDto {
    * @type {string}
    * @memberof AgentsTableDto
    */
-  flowId: string;
+  refId: string;
+
+  type: string;
 
   /**
    *  Gets or sets the name of the flow.
@@ -66,6 +68,13 @@ export interface AgentsTableDto {
    * @memberof AgentsTableDto
    */
   isArchived: boolean;
+
+  /**
+   *  Gets or sets a value indicating whether the version has been disabled.
+   * @type {boolean}
+   * @memberof AgentsTableDto
+   */
+  isDisabled: boolean;
 
   /**
    *  Gets or sets the the user who created the record.

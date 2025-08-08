@@ -1,41 +1,45 @@
 import { Separator } from "@aventisia/ui";
-import {
-  DTBulkActions,
-  DTBulkDeleteAction,
-  DTSelectionInfo,
-} from "@aventisia/ui/data-table";
-import {
-  useListOptimisticMutation,
-  useShowAlertHandler,
-} from "@aventisia/ui/hooks";
+import { Button } from "@aventisia/ui/buttons";
+import { DTBulkActions, DTSelectionInfo } from "@aventisia/ui/data-table";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { Table } from "@tanstack/react-table";
+import { CircleOff, Loader2 } from "lucide-react";
+import { useState } from "react";
 
-import { AgentOptimisticMutationFn } from "../../apis/agents-table-apis";
-import { DATA_QUERY_KEY } from "../../constants";
 import { AgentsTableDto } from "../../dtos/agents-table-dto";
+import useBulkDisableAgents from "../../hooks/useBulkDisableAgents";
 
 interface AgentsBulkActionsProps {
   table: Table<AgentsTableDto>;
 }
 
 export function AgentsBulkActions({ table }: Readonly<AgentsBulkActionsProps>) {
-  // Get showAlert handler
-  const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { showCustomAlertDialog } = useShowAlertHandler();
+  const { disableAgents } = useBulkDisableAgents();
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  // Get rowIds of selected rows
-  const selectedRowIds = table
+  const selectedAgents = table
     .getFilteredSelectedRowModel()
-    .rows.map((row) => row.original.id)
-    .filter((id): id is string => id !== undefined);
+    .rows.map((row) => row.original);
 
-  // Get mutation function to delete the machine
-  const { mutate: deleteMachines } = useListOptimisticMutation<
-    string[],
-    AgentsTableDto | boolean,
-    AgentsTableDto
-  >(selectedRowIds, AgentOptimisticMutationFn, DATA_QUERY_KEY);
+  const selectedRowIds = selectedAgents
+    .map((a) => a.id)
+    .filter(Boolean) as string[];
 
-  // TODO: Rollback selection if there is an error
+  const handleDisable = () => {
+    showCustomAlertDialog({
+      title: "Disable Agents",
+      description: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "agents" : "agent"} will be disabled`,
+      confirmBtnText: "Disable",
+      isDestructive: true,
+      confirmActionFn: async () => {
+        setIsProcessing(true);
+        await disableAgents(selectedRowIds);
+        table.toggleAllRowsSelected(false); // Clear selection
+        setIsProcessing(false);
+      },
+    });
+  };
 
   return (
     <>
@@ -43,24 +47,20 @@ export function AgentsBulkActions({ table }: Readonly<AgentsBulkActionsProps>) {
         <DTBulkActions>
           <DTSelectionInfo table={table} />
           <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <DTBulkDeleteAction
-            onClick={() => {
-              // Show alert dialog to confirm delete
-              showDefaultAlertDialog({
-                confirmActionFn: () => {
-                  // Delete selected machines
-                  deleteMachines({
-                    payload: selectedRowIds,
-                    crudAction: "delete-multiple",
-                  });
-                  // Remove selection
-                  table.toggleAllRowsSelected(false);
-                },
-                alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "agents" : "agent"}`,
-              });
-            }}
-          />
+          <Button
+            variant="ghost"
+            size="xs"
+            className="gap-2.5 text-sm tracking-wide"
+            onClick={handleDisable}
+            disabled={isProcessing}
+          >
+            {isProcessing ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-[--icon-color]" />
+            ) : (
+              <CircleOff className="h-3.5 w-3.5 text-[--icon-color]" />
+            )}
+            Disable
+          </Button>
         </DTBulkActions>
       )}
     </>
