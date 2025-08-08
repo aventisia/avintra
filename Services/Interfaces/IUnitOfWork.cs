@@ -42,6 +42,8 @@ public interface IUnitOfWork
     
     ISpaceUserRepo SpaceUserRepo { get; }
 
+    IAppIntegrationRepo AppIntegrationRepo { get; }
+
     IAppSecretRepo AppSecretRepo { get; }
 
     /// <summary>
