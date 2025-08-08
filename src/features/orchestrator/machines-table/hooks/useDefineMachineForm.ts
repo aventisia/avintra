@@ -98,7 +98,7 @@ export const useDefineMachineForm = () => {
       id: "",
       name: "",
       type: "",
-      licenseId: "",
+      // licenseId: "",
       environment: "",
       ipAddress: "",
       hostname: "",
@@ -135,7 +135,7 @@ export const useDefineMachineForm = () => {
       id: rowId,
       name: machineData?.name ?? "",
       type: machineData?.type ?? "",
-      licenseId: machineData?.licenseId ?? "",
+      // licenseId: machineData?.licenseId ?? "",
       environment: machineData?.environment,
       ipAddress: machineData?.ipAddress,
       hostname: machineData?.hostname,
@@ -176,7 +176,7 @@ export const useDefineMachineForm = () => {
     return {
       ...formData,
       lastModifiedBy: userSession?.email ?? "",
-      lastModifiedOn: new Date().toISOString(),
+      lastModifiedOn: new Date(),
     };
   };
 
