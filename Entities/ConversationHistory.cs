@@ -26,7 +26,6 @@ public class ConversationHistory : IMustHaveTenant
     /// <summary>
     /// Gets or sets the name displayed for the participant.
     /// </summary>
-    [Required]
     public string? ParticipantName { get; set; }
 
     /// <summary>
