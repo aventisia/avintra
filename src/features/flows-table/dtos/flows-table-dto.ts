@@ -1,5 +1,7 @@
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
+import { AccessTypeEnum } from "../constants/access-type-enum";
+
 /**
  * Represents a data transfer object (DTO) for a flow.
  */
@@ -44,6 +46,8 @@ export interface FlowsTableDto {
    * Its important to have this property nullable because we need to differentiate between true, false and null.
    */
   isDisabled?: boolean;
+
+  accessType: AccessTypeEnum;
 
   /**
    * Gets or sets the username of the user who created the flow record. Max-254
