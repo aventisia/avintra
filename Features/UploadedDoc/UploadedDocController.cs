@@ -14,7 +14,7 @@ public class UploadedDocController : BaseApiController
 
     //Upload files
     [HttpPost]
-    public async Task<ActionResult<ServiceResponse<FileDetailDto>>> UploadFiles(List<IFormFile> files, DocumentPurposeTypesEnum purpose= DocumentPurposeTypesEnum.Default)
+    public async Task<ActionResult<ServiceResponse<FileDetailDto>>> UploadFiles(List<IFormFile> files, DocumentPurposeTypesEnum purpose = DocumentPurposeTypesEnum.Default)
     {
         return ResultHelper(await _uploadedDocService.UploadFilesAsync(files, purpose));
     }
@@ -117,5 +117,19 @@ public class UploadedDocController : BaseApiController
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteUploadedDocAsync(Guid documentId)
     {
         return ResultHelper(await _uploadedDocService.DeleteUploadedDocAsync(documentId));
+    }
+
+    // Multi-delete uploaded documents
+    [HttpPost("delete-multiple")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteUploadedDocsAsync([FromBody] List<Guid> documentIds)
+    {
+        return ResultHelper(await _uploadedDocService.DeleteUploadedDocsAsync(documentIds));
+    }
+
+    // Multi-delete uploaded documents using a model
+    [HttpDelete("model/{mlModelId}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteUploadedDocsByModelAsync(Guid mlModelId)
+    {
+        return ResultHelper(await _uploadedDocService.DeleteUploadedDocsByModelAsync(mlModelId));
     }
 }

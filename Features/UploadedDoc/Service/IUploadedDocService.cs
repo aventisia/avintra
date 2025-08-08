@@ -52,4 +52,18 @@ public interface IUploadedDocService
     /// <param name="documentId">The unique identifier of the uploaded document to delete.</param>
     /// <returns>A <see cref="ServiceResponse{Boolean}"/> indicating the result of the deletion operation.</returns>
     Task<ServiceResponse<bool>> DeleteUploadedDocAsync(Guid documentId);
+
+    /// <summary>
+    /// Deletes multiple uploaded documents by their unique identifiers.
+    /// </summary>
+    /// <param name="documentIds">A list of unique identifiers for the uploaded documents to delete.</param>
+    /// <returns>A <see cref="ServiceResponse{Boolean}"/> indicating the result of the multi-deletion operation.</returns>
+    Task<ServiceResponse<bool>> DeleteUploadedDocsAsync(List<Guid> documentIds);
+
+    /// <summary>
+    /// Deletes uploaded documents based on a model (for example, documents associated with a specific ML model).
+    /// </summary>
+    /// <param name="mlModelId">The model identifier to filter documents for deletion.</param>
+    /// <returns>A <see cref="ServiceResponse{Boolean}"/> indicating the result of the deletion operation.</returns>
+    Task<ServiceResponse<bool>> DeleteUploadedDocsByModelAsync(Guid mlModelId);
 }

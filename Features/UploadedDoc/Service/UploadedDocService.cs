@@ -165,6 +165,7 @@ public class UploadedDocService : IUploadedDocService
     // Processes and saves metadata for a batch of uploaded data files.
     public async Task<ServiceResponse<IList<UploadedDocDto>>> UploadDataFilesAsync(UploadDataDto uploadDataDto)
     {
+        // Initialize ServiceResponse with a failed response
         var serviceResponse = new ServiceResponse<IList<UploadedDocDto>>
         {
             Data = null,
@@ -255,6 +256,7 @@ public class UploadedDocService : IUploadedDocService
     // Deletes a file from the server's storage based on the file URL.
     public ServiceResponse<bool> DeleteFileAsync(string fileUrl)
     {
+        // Initialize ServiceResponse with a failed response
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
@@ -491,6 +493,7 @@ public class UploadedDocService : IUploadedDocService
     // Downloads a file based on the provided file URL.
     public ServiceResponse<FileDetailDto> DownloadFileAsync(string fileUrl)
     {
+        // Initialize ServiceResponse with a failed response
         var serviceResponse = new ServiceResponse<FileDetailDto>
         {
             Data = null,
@@ -560,6 +563,7 @@ public class UploadedDocService : IUploadedDocService
     // Delete uploaded document
     public async Task<ServiceResponse<bool>> DeleteUploadedDocAsync(Guid documentId)
     {
+        // Initialize ServiceResponse with a failed response
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
@@ -581,6 +585,8 @@ public class UploadedDocService : IUploadedDocService
                 serviceResponse.Message = "Uploaded document does not exist.";
                 return serviceResponse;
             }
+            // Extract the file paths (URLs) of the documents to delete
+            var url = uploadedDocument.Path;
 
             // Delete the document
             _unitOfWork.UploadedDocRepo.Delete(uploadedDocument);
@@ -590,6 +596,12 @@ public class UploadedDocService : IUploadedDocService
             {
                 _logger.LogInformation("Context SaveChanges failed while deleting an uploaded document.");
                 return serviceResponse;
+            }
+
+            if (!DeleteFileByURL(url))
+            {
+                // If file deletion fails for a specific URL, log a warning
+                _logger.LogWarning($"Failed to delete file at URL: {url}. It may not exist or there was an issue during deletion.");
             }
 
             serviceResponse.Data = true;
@@ -602,5 +614,204 @@ public class UploadedDocService : IUploadedDocService
         }
 
         return serviceResponse;
+    }
+
+    // Delete multiple uploaded documents
+    public async Task<ServiceResponse<bool>> DeleteUploadedDocsAsync(List<Guid> documentIds)
+    {
+        // Initialize ServiceResponse with a failed response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to delete uploaded documents. Please try again."
+        };
+
+        try
+        {
+            // Try to get uploaded document record
+            var uploadedDocuments = await _unitOfWork.UploadedDocRepo
+                .GetByConditionAsync(w =>
+                    documentIds.Contains(w.Id)
+                )
+                .ToListAsync();
+
+            // If no documents match the given IDs, return an informative message
+            if (!uploadedDocuments.Any())
+            {
+                _logger.LogInformation($"No documents found for the provided IDs: {string.Join(", ", documentIds)}. Deletion skipped.");
+                serviceResponse.Message = "No documents found with the specified IDs.";
+                return serviceResponse;
+            }
+
+            // Log the number of documents found and about to be deleted
+            _logger.LogInformation($"Found {uploadedDocuments.Count} document(s) to be deleted. Proceeding with deletion.");
+
+            // Extract file paths (URLs) of the documents for later deletion from the file system
+            var urls = uploadedDocuments.Select(doc => doc.Path).ToList();
+
+            // Delete the documents from the database
+            _unitOfWork.UploadedDocRepo.Delete(uploadedDocuments);
+
+            // Persist the changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to commit document deletions to the database.");
+                return serviceResponse;
+            }
+
+            // Log the successful database deletion
+            _logger.LogInformation($"Successfully deleted {uploadedDocuments.Count} document(s) from the database.");
+
+            // If there are file paths to delete, attempt to delete each file from the file system
+            if (urls.Any())
+            {
+                foreach (var url in urls)
+                {
+                    if (!DeleteFileByURL(url))
+                    {
+                        // Log a warning if file deletion fails
+                        _logger.LogWarning($"Failed to delete file at URL: {url}. The file may not exist or there was an issue with the deletion.");
+                    }
+                }
+            }
+
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Uploaded document(s) deleted successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while deleting multiple uploaded documents.");
+        }
+
+        return serviceResponse;
+    }
+
+    // Deletes multiple uploaded documents associated with a specific ML model.
+    public async Task<ServiceResponse<bool>> DeleteUploadedDocsByModelAsync(Guid mlModelId)
+    {
+        // Initialize ServiceResponse with a failed response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to delete uploaded documents. Please try again."
+        };
+
+        try
+        {
+            // Fetch documents associated with the provided ML model ID
+            var uploadedDocuments = await _unitOfWork.UploadedDocRepo
+                .GetByConditionAsync(w => w.MLModelId == mlModelId)
+                .ToListAsync();
+
+            // Check if no documents were found for the given ML model ID
+            if (!uploadedDocuments.Any())
+            {
+                _logger.LogInformation($"No documents found for the ML model with ID: {mlModelId}. Deletion skipped.");
+                serviceResponse.Message = "No documents found for the specified ML model.";
+                return serviceResponse;
+            }
+
+            // Log how many documents are about to be deleted
+            _logger.LogInformation($"Found {uploadedDocuments.Count} document(s) associated with ML model ID: {mlModelId}. Proceeding with deletion.");
+
+            // Extract the file paths (URLs) of the documents to delete
+            var urls = uploadedDocuments.Select(s => s.Path).ToList();
+
+            // Delete the documents associated with the specified ML model
+            _unitOfWork.UploadedDocRepo.Delete(uploadedDocuments);
+
+            // Save the changes to persist the deletions in the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save changes after attempting to delete documents.");
+                return serviceResponse;
+            }
+
+            // Check if any URLs (file paths) were extracted to delete associated files from the file system
+            if (urls != null && urls.Any())
+            {
+                foreach (var url in urls)
+                {
+                    _logger.LogInformation($"Attempting to delete file associated with document at URL: {url}");
+
+                    if (!DeleteFileByURL(url))
+                    {
+                        // If file deletion fails for a specific URL, log a warning
+                        _logger.LogWarning($"Failed to delete file at URL: {url}. It may not exist or there was an issue during deletion.");
+                    }
+                }
+            }
+
+            // Log successful deletion and update the response with success message
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = $"{uploadedDocuments.Count} uploaded document(s) successfully deleted.";
+
+            _logger.LogInformation($"{uploadedDocuments.Count} document(s) deleted successfully for ML model ID: {mlModelId}.");
+        }
+        catch (Exception ex)
+        {
+            // Log the error if something goes wrong during the deletion process
+            _logger.LogError(ex, "An error occurred while deleting documents associated with the specified ML model.");
+        }
+
+        return serviceResponse;
+    }
+
+    // Attempts to delete a file from the specified url.
+    private bool DeleteFileByURL(string url)
+    {
+        try
+        {
+            // Ensure the file path is not null or empty
+            if (string.IsNullOrEmpty(url))
+            {
+                _logger.LogWarning("Provided file URL is null or empty. File deletion skipped.");
+                return false;
+            }
+
+            // Extract file name (last part of the URL) and subdirectory (second to last part)
+            // Assuming defaulUrl is in a format like "/subdirectory/filename"
+            var urlParts = url.Trim('/').Split('/');
+
+            if (urlParts.Length < 2)
+            {
+                _logger.LogWarning("URL does not contain a valid file path and subdirectory. File deletion skipped.");
+                return false;
+            }
+
+            var subDirectory = urlParts[urlParts.Length - 2];
+            var fileName = urlParts[urlParts.Length - 1];
+
+            // Combine to get the full file path
+            var filePath = Path.Combine(_fileUploadConfig.UploadDirectory, subDirectory, fileName);
+
+            // Check if the file exists at the specified location
+            if (File.Exists(filePath))
+            {
+                // Log the file deletion attempt
+                _logger.LogInformation($"Initiating deletion of the file at path: {filePath}");
+
+                // Proceed with deleting the file
+                File.Delete(filePath);
+
+                // Log successful file deletion
+                _logger.LogInformation($"File successfully deleted from path: {filePath}");
+                return true;
+            }
+            else
+            {
+                // Log that the file was not found at the specified location
+                _logger.LogWarning($"File not found at path: {filePath}. Deletion not performed.");
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log any errors encountered during the file deletion process
+            _logger.LogError(ex, "An error occurred while attempting to delete the file.");
+            return false;
+        }
     }
 }
