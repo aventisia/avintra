@@ -2,28 +2,39 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { rfpRpiResponseGeneratorZodSchema } from "../constants/generative-model-zod-schemas/rfp-rpi-response-generator-zod-schema";
-import { useSelectedTaskStore } from "../store/selected-task-store";
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+import { useShallow } from "zustand/react/shallow";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { RfpRpiResponseGeneratorDTO } from "../dtos/rfp-rpi-response-generator-dto";
 
 
 export const useRfpRpiResponseGeneratorForm = () => {
-    const {selectedTask} = useSelectedTaskStore();
+   const { modelId } = useLabelDataStore(
+      useShallow((state) => ({
+        modelId: state.modelId,
+      })),
+    );
     const form = useForm<z.infer<typeof rfpRpiResponseGeneratorZodSchema>>({
       resolver: zodResolver(rfpRpiResponseGeneratorZodSchema),
       defaultValues: {
+        id: modelId ?? "",
+        generativeModel: {
           name: "RFPResponseGenerator",
           configurationType: "OnPrem",
           llm: "gemma",
           nodePrompt: "",
-          temperature: 0.2,
+          temperature: 0.6,
           setupObject: {          
             clientName: "",
-            clientLink: "",
-            rfiRfpDocuments: null,
+            websiteLink: "",
+            rpfDocument: null,
             responseStrategy: "",
-            responseBoundaries: "",
-            links: [{id: "", url: ""}],
-            referenceDocuments: null,
+            responseBoundary: "",
+            links: [{ url: ""}],
+            preferDocument: null,
           }
+        }
       },
   });
 
@@ -31,16 +42,43 @@ export const useRfpRpiResponseGeneratorForm = () => {
     formState: { isDirty, isSubmitting },
   } = form;
 
-  const refineFormData = (
-    formData: z.infer<typeof rfpRpiResponseGeneratorZodSchema>,
-  ) => {
-    return {...formData, taskName : selectedTask};
-  };
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // Get models data from query client
+    const generativeModelData = queryClient.getQueryData<{
+      data: RfpRpiResponseGeneratorDTO;
+    }>(["GENERATIVE_SETUP_FORM_DATA"]);
+
+    if(generativeModelData?.data?.generativeModel?.name === "RFPResponseGenerator") {
+        form.reset({
+          id: generativeModelData?.data.id ?? modelId ?? "",
+          generativeModel: generativeModelData?.data.generativeModel ?? {
+            name: "RFPResponseGenerator",
+            configurationType: "OnPrem",
+            llm: "gemma",
+            temperature: 0.6,
+            nodePrompt: "",
+            setupObject: {
+              clientName: "",
+              websiteLink: "",
+              rpfDocument: null,
+              responseStrategy: "",
+              responseBoundary: "",
+              links: [{ url: ""}],
+              preferDocument: null,
+            },
+          }
+        })
+    }
+  }, [form, queryClient, modelId]);
+
+ 
 
   return {
     form,
     isDirty,
     isSubmitting,
-    refineFormData
   };
 };

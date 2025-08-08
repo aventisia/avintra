@@ -1,3 +1,4 @@
+import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import {
   Select,
   SelectContent,
@@ -9,6 +10,7 @@ import {
 
 import { ScrollArea } from "@aventisia/ui/scroll";
 
+import { useUpdateGenerativeModelForm } from "../../hooks/useUpdateGenerativeModelForm";
 import { useSelectedTaskStore } from "../../store/selected-task-store";
 import CompanyDeepDivesForm from "./company-deep-dives-form/CompanyDeepDivesForm";
 import DocumentDraftingForm from "./document-drafting-form/DocmentDraftingForm";
@@ -18,11 +20,14 @@ import ThoughtLeadershipForm from "./thought-leadership-form/ThoughtLeadershipFo
 
 const GenerativeModelInput = () => {
   const { selectedTask, setSelectedTask } = useSelectedTaskStore();
+  const { data: modelData, isLoading } = useFetchModel();
+  const { isUpdatePending } = useUpdateGenerativeModelForm();
+  const isSelectedTaskDisabled =
+    isLoading || modelData?.data.setupStatus === "Completed" || isUpdatePending;
 
   const handleValueChange = (value: string) => {
     setSelectedTask(value);
   };
-  console.log(selectedTask);
 
   return (
     <div className="rounded-lg bg-white shadow h-full flex flex-col max-w-screen-lg mx-auto self-center">
@@ -33,7 +38,11 @@ const GenerativeModelInput = () => {
       <ScrollArea className="mt-4 flex-grow">
         <div className="px-4 mt-2 mb-4">
           <p className="text-2xs px-1 py-1 font-medium">Select Task</p>
-          <Select value={selectedTask} onValueChange={handleValueChange}>
+          <Select
+            value={selectedTask}
+            onValueChange={handleValueChange}
+            disabled={isSelectedTaskDisabled}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select" />
             </SelectTrigger>

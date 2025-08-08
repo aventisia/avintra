@@ -10,6 +10,7 @@ import {
 } from "@/features/generative-model/constants/generative-model-field-props/document-drafting-field-props";
 import { documentDraftingZodSchema } from "@/features/generative-model/constants/generative-model-zod-schemas/document-drafting-zod-schema";
 import { useDocumentDraftingForm } from "@/features/generative-model/hooks/useDocumentDraftingForm";
+import { useUpdateGenerativeModelForm } from "@/features/generative-model/hooks/useUpdateGenerativeModelForm";
 import { useToggleFileUploadDialogStore } from "@/features/generative-model/store/toggle-file-upload-store";
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
@@ -33,7 +34,8 @@ import Documents from "../../documents";
 import LLMConfiguration from "../../llm-configuration/components/LLMConfiguration";
 
 const DocumentDraftingForm = () => {
-  const { form, isSubmitting, refineFormData } = useDocumentDraftingForm();
+  const { form, isSubmitting } = useDocumentDraftingForm();
+  const { isUpdatePending, updateFormData } = useUpdateGenerativeModelForm();
   const { data: modelData, isLoading } = useFetchModel();
   const { setShowFileUploadDialog, showFileUploadDialog } =
     useToggleFileUploadDialogStore();
@@ -46,16 +48,21 @@ const DocumentDraftingForm = () => {
   const [fileInsertLoading, setFileInsertLoading] = useState(false);
   const { data: fileList, refetch } = useFetchUploadedFiles("setup");
 
-  function submitHandler(formData: z.infer<typeof documentDraftingZodSchema>) {
-    console.log(refineFormData(formData));
+  async function submitHandler(
+    formData: z.infer<typeof documentDraftingZodSchema>,
+  ) {
+    await updateFormData(formData);
   }
 
   useEffect(() => {
     if (fileList && fileList.data.length > 0) {
       const setupFormDocuments = fileList.data.map(({ id, name, path }) => {
-        return { id: id ?? "", name, instructions: "", filePath: path ?? "" };
+        return { id: id ?? "", name, instructions: "", path: path ?? "" };
       });
-      form.setValue("setupObject.documents", setupFormDocuments);
+      form.setValue(
+        "generativeModel.setupObject.preferenceDocuments",
+        setupFormDocuments,
+      );
     }
   }, [fileList, form]);
 
@@ -94,7 +101,7 @@ const DocumentDraftingForm = () => {
             <Separator />
             <Documents
               form={form}
-              name="documents"
+              name="generativeModel.setupObject.preferenceDocuments"
               label="Add Reference Documents"
             />
             <Separator />
@@ -106,13 +113,17 @@ const DocumentDraftingForm = () => {
         <div className="sticky bottom-0 bg-white left-0 right-0 self-end">
           <Separator className="h-[0.5px] w-full" />
           <div className="flex items-center justify-end self-end gap-2 px-4 py-3.5">
-            <Button size="xs" type="submit" disabled={isSubmitting}>
-              {/* {isSubmitting || isUpdatePending ? (
-                    <LoadingSpinner className="h-4 w-4" />
-                    ) : (
-                      "Save"
-                      )} */}
-              Save & Execute
+            <Button
+              size="xs"
+              type="submit"
+              disabled={isSubmitting || isUpdatePending}
+              className="min-w-28"
+            >
+              {isSubmitting || isUpdatePending ? (
+                <LoadingSpinner className="h-4 w-4" />
+              ) : (
+                "Save & Execute"
+              )}
             </Button>
           </div>
         </div>

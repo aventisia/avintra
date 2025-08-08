@@ -115,6 +115,18 @@ const CloudConfig = ({ form }: CloudConfigFieldProps) => {
               <Select
                 value={selectedLanguage?.value || ""}
                 onValueChange={(val) => {
+                  form.setValue(
+                    "aiPersona.setupObject.speechConfiguration.cloudConfig.speechToText.name",
+                    "",
+                  );
+                  form.setValue(
+                    "aiPersona.setupObject.speechConfiguration.cloudConfig.textToSpeech.name",
+                    "",
+                  );
+                  form.setValue(
+                    "aiPersona.setupObject.speechConfiguration.cloudConfig.voice",
+                    "",
+                  );
                   field.onChange(val); // updates the form state
                   const selected =
                     cloudLanguages.find((lang) => lang.value === val) || null;

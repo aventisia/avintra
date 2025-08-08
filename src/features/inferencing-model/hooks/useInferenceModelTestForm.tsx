@@ -109,9 +109,7 @@ export const useInferenceModelTestForm = () => {
 
     // Update QnA Fields
     const existingQnAFields = form.getValues("questionAnswer") ?? [];
-    console.log("matching", matchingExtractedData?.questionAnswer);
     const updateQnAFields = existingQnAFields.map((field) => {
-      console.log("field question", field.question);
       const match =
         matchingExtractedData?.questionAnswer &&
         matchingExtractedData?.questionAnswer.find((item) => {
@@ -119,7 +117,6 @@ export const useInferenceModelTestForm = () => {
         });
       return { ...field, answer: match?.answer ?? field.answer ?? "" };
     });
-    console.log("updateQnaField", updateQnAFields);
 
     // Update Extraction Fields and Tables
     const existingExtractionFields = form.getValues("extraction.fields") ?? [];
@@ -149,9 +146,12 @@ export const useInferenceModelTestForm = () => {
           (h) => h.name === header.name,
         );
 
+        const rawValues = matchedHeader?.values ?? header.values ?? [];
+
         return {
           ...header,
-          values: matchedHeader?.values ?? header.values ?? [],
+          values:
+            Array.isArray(rawValues) && rawValues.length > 0 ? rawValues : [""], // Ensure at least one row
         };
       });
 

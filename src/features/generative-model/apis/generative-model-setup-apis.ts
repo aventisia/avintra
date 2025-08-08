@@ -21,7 +21,7 @@ const getGenerativeModelDataById = (modelId: string) => {
  */
 const updateGenerativeModelSetupFormData = (data: any) => {
   return axiosInstance
-    .put<IHttpResponse<any>>(`${baseAPIURL}/setup`, data)
+    .put<IHttpResponse<any>>(`${baseAPIURL}/update-and-execute`, data)
     .then((res) => res.data);
 };
 

@@ -1,18 +1,22 @@
 import { SelectFieldProps } from "@/shared/select-field/SelectField";
 import { AutosizeTextareaFieldProps } from "@aventisia/ui/form";
 import { enumToArray } from "@aventisia/ui/utils";
+import { DocumentTypeEnum } from "../../enums/thought-leadership/document-type-enum";
+import { PurposeOfArticleEnum } from "../../enums/thought-leadership/purpose-of-article-enum";
+import { ToneAndStyleEnum } from "../../enums/thought-leadership/tone-and-style-enum";
+import { DataAndStatsEnum } from "../../enums/thought-leadership/data-and-stats-enum";
 
 const documentTypeProps: SelectFieldProps = {
-    name: "documentType",
+    name: "generativeModel.setupObject.documentType",
     label: "Document Type",
-    selectOptions: enumToArray({}),
+    selectOptions: enumToArray(DocumentTypeEnum),
     placeholder: "Select",
     isRequired: true,
     className: "text-sm resize-none"
 }
 
 const topicProps: AutosizeTextareaFieldProps = {
-    name: "topic",
+    name: "generativeModel.setupObject.topic",
     label: "Topic",
     minHeight: 10,
     isRequired: true,
@@ -20,7 +24,7 @@ const topicProps: AutosizeTextareaFieldProps = {
 }
 
 const industryProps: AutosizeTextareaFieldProps = {
-    name: "industry",
+    name: "generativeModel.setupObject.industry",
     label: "Industry / Domain",
     minHeight: 10,
     isRequired: true,
@@ -28,25 +32,25 @@ const industryProps: AutosizeTextareaFieldProps = {
 }
 
 const purposeOfArticleProps: SelectFieldProps = {
-    name: "purposeOfArticle",
+    name: "generativeModel.setupObject.purpose",
     label: "Purpose of Article",
-    selectOptions: enumToArray({}),
+    selectOptions: enumToArray(PurposeOfArticleEnum),
     placeholder: "Select",
     isRequired: true,
     className: "text-sm resize-none"
 }
 
 const toneAndStyleProps: SelectFieldProps = {
-    name: "toneAndStyle",
+    name: "generativeModel.setupObject.toneStyle",
     label: "Tone and Style",
-    selectOptions: enumToArray({}),
+    selectOptions: enumToArray(ToneAndStyleEnum),
     placeholder: "Select",
     isRequired: true,
     className: "text-sm resize-none"
 }
 
 const targetAudienceProps: AutosizeTextareaFieldProps = {
-    name: "targetAudience",
+    name: "generativeModel.setupObject.audienceTarget",
     label: "Target Audience",
     minHeight: 10,
     isRequired: true,
@@ -54,16 +58,16 @@ const targetAudienceProps: AutosizeTextareaFieldProps = {
 }
 
 const dataAndStatsProps: SelectFieldProps = {
-    name: "dataAndStats",
+    name: "generativeModel.setupObject.dataAndStats",
     label: "Data and Stats",
-    selectOptions: enumToArray({}),
+    selectOptions: enumToArray(DataAndStatsEnum),
     placeholder: "Select",
     isRequired: true,
     className: "text-sm resize-none"
 }
 
 const outputLengthProps: AutosizeTextareaFieldProps = {
-    name: "outputLength",
+    name: "generativeModel.setupObject.contentLength",
     label: "Output Length (in words)",
     minHeight: 10,
     isRequired: true,
@@ -71,7 +75,7 @@ const outputLengthProps: AutosizeTextareaFieldProps = {
 }
 
 const outputStructureProps: AutosizeTextareaFieldProps = {
-    name: "outputStructure",
+    name: "generativeModel.setupObject.contentStructure",
     label: "Output Structure / Outline",
     minHeight: 10,
     isRequired: true,

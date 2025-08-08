@@ -1,8 +1,8 @@
 import { ILLMConfiguration } from "../components/llm-configuration/dtos/llm-configuration-dto";
 
 interface IDocumentInstruction {
-    id?: string;
-    filePath: string;
+    id: string;
+    path: string;
     name: string;
 }
 
@@ -13,16 +13,20 @@ interface ILinks {
 
 interface ISetupObject { 
     clientName: string;
-    clientLink: string;
-    rfiRfpDocuments: IDocumentInstruction[] | null;
+    websiteLink: string;
+    rpfDocument: IDocumentInstruction[] | null;
     responseStrategy: string;
-    responseBoundaries: string;
+    responseBoundary: string;
     links: ILinks[];
-    referenceDocuments: IDocumentInstruction[] | null;
+    preferDocument: IDocumentInstruction[] | null;
 }
 
-export interface RfpRpiResponseGeneratorDTO  extends ILLMConfiguration{
+interface IGenerativeModel extends ILLMConfiguration  {
     name: string;
     setupObject: ISetupObject;
+}
 
+export interface RfpRpiResponseGeneratorDTO {
+    id: string;
+    generativeModel: IGenerativeModel;
 }

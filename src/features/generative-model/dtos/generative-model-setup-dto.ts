@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface IModelInfo {
     createdOn?: string;
     createdByUserId?: string;
@@ -10,7 +11,5 @@ export interface GenerativeModelSetupDTO extends IModelInfo {
     id: string;
     name: string;
     description?: string;
-    generativeModel: {
-        name: string;
-    };
+    generativeModel: any;
 }

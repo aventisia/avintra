@@ -26,15 +26,13 @@ import { inferenceModelTestFormZodSchema } from "../constants/inference-model-te
 import { inferenceTestTaskComponentMap } from "../constants/inference-test-tasks-component";
 import { TaskNameEnum } from "../enum/tasks-name-enum";
 import { useFetchSetupFormData } from "../hooks/useFetchSetupFormData";
-import { useFetchTestFormData } from "../hooks/useFetchTestFormData";
 import { useInferenceModelTestForm } from "../hooks/useInferenceModelTestForm";
 import { useTasksToExecuteStore } from "../store/tasks-to-execute";
 
 const InferenceModelTestForm = () => {
   const { data: setupFormData, isLoading } = useFetchSetupFormData();
-  const { data } = useFetchTestFormData();
   const modelNames = enumToArray(TaskNameEnum);
-  const { listOfTasksId, toggleTaskId } = useTasksToExecuteStore();
+  const { toggleTaskId } = useTasksToExecuteStore();
   const { data: fileList } = useFetchUploadedFiles();
   const { selectedFile, setSelectedFile } = useFileListStore(
     useShallow((state) => ({
@@ -56,8 +54,6 @@ const InferenceModelTestForm = () => {
   const { data: modelData } = useFetchModel();
   const { setExtractedData } = useExtractedDataStore();
 
-  console.log("TEST FORM DATA", data?.data);
-
   const isLastFile =
     selectedFile?.id === fileList?.data[fileList.data.length - 1]?.id;
   const [userToggled, setUserToggled] = useState<boolean>(false);
@@ -77,8 +73,6 @@ const InferenceModelTestForm = () => {
     });
   };
 
-  console.log(listOfTasksId);
-
   if (isLoading) {
     return <LoaderTemplate />;
   }
@@ -93,8 +87,6 @@ const InferenceModelTestForm = () => {
       setSelectedFile(nextFile);
     }
   };
-
-  console.log("errors", form.formState.errors);
 
   // For reference later
   async function submitHandler(

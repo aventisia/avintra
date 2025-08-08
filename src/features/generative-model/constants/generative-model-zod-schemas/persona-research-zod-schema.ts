@@ -3,7 +3,7 @@ import { reqError } from "@aventisia/ui/utils";
 import { z } from "zod";
 
 const linksSchema = z.object({
-    id: z.string().readonly(),
+    id: z.string().readonly().optional(),
     url: z.string().min(1, {message: reqError("Link")})
 })
 
@@ -15,7 +15,12 @@ const setupObjectSchema = z.object({
     desiredOutput: z.string().min(1, {message: reqError("Desired Outputs")}),
 })
 
-export const personaResearchZodSchema = llmConfigZodSchema.extend({
+const generativeModelSchema = llmConfigZodSchema.extend({
     name: z.string().readonly().default("PersonaResearch"),
     setupObject: setupObjectSchema,
+})
+
+export const personaResearchZodSchema = z.object({
+    id: z.string().readonly(),
+    generativeModel: generativeModelSchema,
 })

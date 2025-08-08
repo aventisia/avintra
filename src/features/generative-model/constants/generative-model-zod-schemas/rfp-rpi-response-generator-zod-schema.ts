@@ -4,26 +4,31 @@ import { z } from "zod";
 
 const documentInstructionSchema = z.object({
     id: z.string().readonly(),
-    filePath: z.string().readonly(),
+    path: z.string().readonly(),
     name: z.string().readonly(),
 })
   
 const linksSchema = z.object({
-    id: z.string().readonly(),
+    id: z.string().readonly().optional(),
     url: z.string().min(1, {message: reqError("Link")})
 })
   
 const setupObjectSchema = z.object({
-    clientName:  z.string().min(1, {message: reqError("Client Name")}),
-    clientLink:  z.string().min(1, {message: reqError("Client Link")}),
-    rfiRfpDocuments: z.array(documentInstructionSchema).nullable(),
+    clientName:  z.string().min(1, {message: reqError("Client / Bidder Name")}),
+    websiteLink:  z.string().min(1, {message: reqError("Client / Bidder Website Link")}),
+    rpfDocument: z.array(documentInstructionSchema).nullable(),
     responseStrategy: z.string().min(1, {message: reqError("Response Strategy")}),
+    responseBoundary: z.string().min(1, {message: reqError("Response Boundaries")}),
     links: z.array(linksSchema),
-    responseBoundaries: z.string().min(1, {message: reqError("Response Boundaries")}),
-    referenceDocuments: z.array(documentInstructionSchema).nullable(),
+    preferDocument: z.array(documentInstructionSchema).nullable(),
 })
 
-export const rfpRpiResponseGeneratorZodSchema = llmConfigZodSchema.extend({
+const generativeModelSchema = llmConfigZodSchema.extend({
     name: z.string().readonly().default("RFPResponseGenerator"),
     setupObject: setupObjectSchema,
+})
+
+export const rfpRpiResponseGeneratorZodSchema = z.object({
+    id: z.string().readonly(),
+    generativeModel: generativeModelSchema,
 })

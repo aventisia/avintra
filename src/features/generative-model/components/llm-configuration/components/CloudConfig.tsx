@@ -44,7 +44,7 @@ const CloudConfig = ({ form }: CloudConfigProps) => {
       <SelectField
         name=""
         label="LLM"
-        isRequired={true}
+        isRequired={false}
         selectOptions={llmModelsList}
       />
 
@@ -56,7 +56,7 @@ const CloudConfig = ({ form }: CloudConfigProps) => {
         <Controller
           control={control}
           name=""
-          rules={{ required: true }}
+          rules={{ required: false }}
           render={({ field }) => (
             <Select
               value={field.value}
@@ -141,7 +141,7 @@ const CloudConfig = ({ form }: CloudConfigProps) => {
               </div>
               <Controller
                 control={form.control}
-                name={`temperature`}
+                name={``}
                 render={({ field }) => {
                   return (
                     <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-2">
@@ -162,7 +162,11 @@ const CloudConfig = ({ form }: CloudConfigProps) => {
                 }}
               />
             </FormItem>
-            <AutosizeTextareaField {...nodePromptProps} name={`nodePrompt`} />
+            <AutosizeTextareaField
+              {...nodePromptProps}
+              name={``}
+              isRequired={false}
+            />
           </AccordionContent>
         </AccordionItem>
       </Accordion>

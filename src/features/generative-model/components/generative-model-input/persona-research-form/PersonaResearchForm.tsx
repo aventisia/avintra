@@ -6,6 +6,7 @@ import {
 } from "@/features/generative-model/constants/generative-model-field-props/persona-research-field-props";
 import { personaResearchZodSchema } from "@/features/generative-model/constants/generative-model-zod-schemas/persona-research-zod-schema";
 import { usePersonaResearchForm } from "@/features/generative-model/hooks/usePersonaResearchForm";
+import { useUpdateGenerativeModelForm } from "@/features/generative-model/hooks/useUpdateGenerativeModelForm";
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { SelectField } from "@/shared/select-field/SelectField";
 
@@ -19,22 +20,14 @@ import LLMConfiguration from "../../llm-configuration/components/LLMConfiguratio
 import GenerativeInputLinks from "../generative-input-links/GenerativeInputLinks";
 
 const PersonaResearchForm = () => {
-  const {
-    form,
-    isSubmitting,
-    refineFormData,
-    isUpdatePending,
-    updateFormData,
-  } = usePersonaResearchForm();
+  const { form, isSubmitting } = usePersonaResearchForm();
+  const { isUpdatePending, updateFormData } = useUpdateGenerativeModelForm();
   const { data: modelData, isLoading } = useFetchModel();
-
-  console.log(form.formState.errors);
 
   async function submitHandler(
     formData: z.infer<typeof personaResearchZodSchema>,
   ) {
     await updateFormData(formData);
-    console.log(refineFormData(formData));
   }
   return (
     <Form
@@ -59,7 +52,12 @@ const PersonaResearchForm = () => {
       <div className="sticky bottom-0 bg-white">
         <Separator className="h-[0.5px] w-full" />
         <div className="flex items-center justify-end self-end gap-2 px-4 py-3.5">
-          <Button size="xs" type="submit" disabled={isSubmitting}>
+          <Button
+            size="xs"
+            type="submit"
+            disabled={isSubmitting || isUpdatePending}
+            className="min-w-28"
+          >
             {isSubmitting || isUpdatePending ? (
               <LoadingSpinner className="h-4 w-4" />
             ) : (

@@ -27,7 +27,7 @@ interface OnPremConfigProps {
 const OnPremConfig = ({ form }: OnPremConfigProps) => {
   return (
     <>
-      <SelectField {...baseLlmProps} name={`llm`} />
+      <SelectField {...baseLlmProps} name={`generativeModel.llm`} />
 
       {/* Advanced Options */}
       <Accordion type="single" collapsible className="w-full !p-0 mt-4">
@@ -80,7 +80,7 @@ const OnPremConfig = ({ form }: OnPremConfigProps) => {
               </div>
               <Controller
                 control={form.control}
-                name={`temperature`}
+                name={`generativeModel.temperature`}
                 render={({ field }) => {
                   return (
                     <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-2">
@@ -102,7 +102,10 @@ const OnPremConfig = ({ form }: OnPremConfigProps) => {
                 }}
               />
             </FormItem>
-            <AutosizeTextareaField {...nodePromptProps} name={`nodePrompt`} />
+            <AutosizeTextareaField
+              {...nodePromptProps}
+              name={`generativeModel.nodePrompt`}
+            />
           </AccordionContent>
         </AccordionItem>
       </Accordion>

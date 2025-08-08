@@ -19,7 +19,7 @@ type GenerativeInputLinksProps = {
 const GenerativeInputLinks = ({
   form,
   title = "Links",
-  name = "setupObject.links",
+  name = "generativeModel.setupObject.links",
 }: GenerativeInputLinksProps) => {
   const { control } = form;
   const {
@@ -38,7 +38,7 @@ const GenerativeInputLinks = ({
         <Button
           variant="ghost"
           size="icon8"
-          onClick={() => append({ id: "", url: "" })}
+          onClick={() => append({ url: "" })}
           type="button"
         >
           <PlusIcon className="h-5 w-5 stroke-2 text-primary" />
@@ -55,7 +55,7 @@ const GenerativeInputLinks = ({
               >
                 <Controller
                   control={control}
-                  name={`setupObject.links.${index}.url`}
+                  name={`generativeModel.setupObject.links.${index}.url`}
                   render={({ field }) => (
                     <InputField
                       {...linkProps}

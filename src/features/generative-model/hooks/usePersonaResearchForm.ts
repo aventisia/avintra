@@ -2,16 +2,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { personaResearchZodSchema } from "../constants/generative-model-zod-schemas/persona-research-zod-schema";
-import { useSelectedTaskStore } from "../store/selected-task-store";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateGenerativeModelSetupFormData } from "../apis/generative-model-setup-apis";
-import { toast } from "@aventisia/ui/sonner";
+import { useQueryClient } from "@tanstack/react-query";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
+import { useEffect } from "react";
+import { PersonaResearchDTO } from "../dtos/persona-research-dto";
 
 
 export const usePersonaResearchForm = () => {
-  const {selectedTask} = useSelectedTaskStore();
   const { modelId } = useLabelDataStore(
     useShallow((state) => ({
       modelId: state.modelId,
@@ -20,18 +18,21 @@ export const usePersonaResearchForm = () => {
   const form = useForm<z.infer<typeof personaResearchZodSchema>>({
     resolver: zodResolver(personaResearchZodSchema),
     defaultValues: {
+      id: modelId ?? "",
+      generativeModel: {
         name: "PersonaResearch",
         configurationType: "OnPrem",
         llm: "gemma",
-        temperature: 0.2,
+        temperature: 0.6,
         nodePrompt: "",
         setupObject: {
           personaName: "",
           companyName: "",
-          links: [{id: "", url: ""}],
+          links: [{url: ""}],
           purposeOfResearch: "",
           desiredOutput: "",
         },
+      }
     },
   });
 
@@ -39,39 +40,40 @@ export const usePersonaResearchForm = () => {
     formState: { isDirty, isSubmitting },
   } = form;
 
-  const refineFormData = (
-    formData: z.infer<typeof personaResearchZodSchema>,
-  ) => {
-    return {...formData, taskName : selectedTask};
-  };
-
-  // updateGenerativeModelSetupFormData
-  
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // Get models data from query client
+    const generativeModelData = queryClient.getQueryData<{
+      data: PersonaResearchDTO;
+    }>(["GENERATIVE_SETUP_FORM_DATA"]);
+
+    if(generativeModelData?.data?.generativeModel?.name === "PersonaResearch") {
+        form.reset({
+          id: generativeModelData?.data.id ?? modelId ?? "",
+          generativeModel: generativeModelData?.data.generativeModel ?? {
+            name: "PersonaResearch",
+            configurationType: "OnPrem",
+            llm: "gemma",
+            temperature: 0.6,
+            nodePrompt: "",
+            setupObject: {
+              personaName: "",
+              companyName: "",
+              links: [{url: ""}],
+              purposeOfResearch: "",
+              desiredOutput: "",
+            },
+          }
+        })
+    }
+  }, [form, queryClient, modelId]);
+  
  
-  // Mutation to update form data
-  const { mutate: updateFormData, isPending: isUpdatePending } = useMutation({
-    mutationFn: updateGenerativeModelSetupFormData,
-    onSuccess: async () => {
-      queryClient.invalidateQueries({
-        queryKey: ["GENERATIVE_SETUP_FORM_DATA"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["model", modelId],
-      });
-      toast.success("Data saved successfully");
-    },
-    onError: (error) => {
-      toast.error(error.toString());
-    },
-  });
 
   return {
     form,
     isDirty,
     isSubmitting,
-    refineFormData,
-    updateFormData,
-    isUpdatePending
   };
 };

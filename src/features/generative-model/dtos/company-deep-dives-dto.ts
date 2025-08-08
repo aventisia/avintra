@@ -2,7 +2,7 @@ import { ILLMConfiguration } from "../components/llm-configuration/dtos/llm-conf
 
 interface IDocumentInstruction {
     id?: string;
-    filePath: string;
+    path: string;
     name: string;
 }
 
@@ -14,14 +14,19 @@ interface ILinks {
 interface ISetupObject { 
     companyName: string;
     websiteLink: string;
-    focusAreas: string;
+    focusArea: string;
     webData: string;
     links: ILinks[];
     documents: IDocumentInstruction[] | null;
     summaryDepth: string;
 }
 
-export interface CompanyDeepDivesDTO extends ILLMConfiguration {
+interface IGenerativeModel extends ILLMConfiguration  {
     name: string;
     setupObject: ISetupObject;
+}
+
+export interface CompanyDeepDivesDTO {
+    id: string;
+    generativeModel: IGenerativeModel;
 }

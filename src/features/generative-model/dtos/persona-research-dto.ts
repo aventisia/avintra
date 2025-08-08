@@ -13,7 +13,12 @@ interface ISetupObject {
     desiredOutput: string;
 }
 
-export interface PersonaResearchDTO extends ILLMConfiguration { 
+interface IGenerativeModel extends ILLMConfiguration  {
     name: string;
     setupObject: ISetupObject;
+}
+
+export interface PersonaResearchDTO { 
+    id: string;
+    generativeModel: IGenerativeModel;
 }
