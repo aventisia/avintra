@@ -1,4 +1,5 @@
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 import {
   Select,
   SelectContent,
@@ -10,6 +11,7 @@ import {
 
 import { ScrollArea } from "@aventisia/ui/scroll";
 
+import { useDeleteInsertedFiles } from "../../hooks/useClearOutInsertedFiles";
 import { useUpdateGenerativeModelForm } from "../../hooks/useUpdateGenerativeModelForm";
 import { useSelectedTaskStore } from "../../store/selected-task-store";
 import CompanyDeepDivesForm from "./company-deep-dives-form/CompanyDeepDivesForm";
@@ -24,9 +26,20 @@ const GenerativeModelInput = () => {
   const { isUpdatePending } = useUpdateGenerativeModelForm();
   const isSelectedTaskDisabled =
     isLoading || modelData?.data.setupStatus === "Completed" || isUpdatePending;
+  const { data: fileList, refetch } = useFetchUploadedFiles("setup");
+  const { removeInsertedDocument } = useDeleteInsertedFiles();
 
   const handleValueChange = (value: string) => {
     setSelectedTask(value);
+
+    const documentPromises =
+      fileList?.data.map((file) =>
+        removeInsertedDocument({ id: file?.id ?? "" }),
+      ) ?? [];
+
+    Promise.all(documentPromises).finally(() => {
+      refetch();
+    });
   };
 
   return (

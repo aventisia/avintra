@@ -25,7 +25,7 @@ import {
 } from "@aventisia/ui/dialog";
 import { AutosizeTextareaField, Form } from "@aventisia/ui/form";
 import { toast } from "@aventisia/ui/sonner";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
@@ -39,7 +39,7 @@ const RfpRpiResponseGeneratorForm = () => {
   const { isUpdatePending, updateFormData } = useUpdateGenerativeModelForm();
 
   const { data: modelData, isLoading } = useFetchModel();
-  const { setShowFileUploadDialog, showFileUploadDialog } =
+  const { setShowFileUploadDialog, showFileUploadDialog, setName, name } =
     useToggleFileUploadDialogStore();
   const { filesToUpload, clearFiles } = useFileStore(
     useShallow((state) => ({
@@ -48,7 +48,7 @@ const RfpRpiResponseGeneratorForm = () => {
     })),
   );
   const [fileInsertLoading, setFileInsertLoading] = useState(false);
-  const { data: fileList, refetch } = useFetchUploadedFiles("setup");
+  const { refetch } = useFetchUploadedFiles("setup");
 
   async function submitHandler(
     formData: z.infer<typeof rfpRpiResponseGeneratorZodSchema>,
@@ -56,29 +56,62 @@ const RfpRpiResponseGeneratorForm = () => {
     await updateFormData(formData);
   }
 
-  useEffect(() => {
-    if (fileList && fileList.data.length > 0) {
-      const setupFormDocuments = fileList.data.map(({ id, name, path }) => {
-        return { id: id ?? "", name, instructions: "", path: path ?? "" };
-      });
-      form.setValue(
-        "generativeModel.setupObject.rpfDocument",
-        setupFormDocuments,
-      );
-      form.setValue(
-        "generativeModel.setupObject.preferDocument",
-        setupFormDocuments,
-      );
-    }
-  }, [fileList, form]);
+  // useEffect(() => {
+  //   if (fileList && fileList.data.length > 0) {
+  //     const setupFormDocuments = fileList.data.map(({ id, name, path }) => {
+  //       return { id: id ?? "", name, instructions: "", path: path ?? "" };
+  //     });
+  //     if (name === "generativeModel.setupObject.rpfDocument") {
+  //       form.setValue(
+  //         "generativeModel.setupObject.rpfDocument",
+  //         setupFormDocuments,
+  //       );
+  //       setName("");
+  //     } else if (name === "generativeModel.setupObject.preferDocument") {
+  //       form.setValue(
+  //         "generativeModel.setupObject.preferDocument",
+  //         setupFormDocuments,
+  //       );
+  //       setName("");
+  //     }
+  //   }
+  // }, [fileList, form, name, setName]);
 
   const handleInsertFiles = async () => {
     if (filesToUpload.length > 0) {
       setFileInsertLoading(true);
       try {
-        await submitFiles(filesToUpload);
+        const { data } = await submitFiles(filesToUpload);
         setShowFileUploadDialog(false);
         refetch();
+
+        if (data && data.length > 0) {
+          const setupFormDocuments = data.map(
+            ({
+              id,
+              name,
+              path,
+            }: {
+              id: string;
+              name: string;
+              path: string;
+            }) => {
+              return { id: id ?? "", name, instructions: "", path: path ?? "" };
+            },
+          );
+          if (name === "generativeModel.setupObject.rpfDocument") {
+            form.setValue(
+              "generativeModel.setupObject.rpfDocument",
+              setupFormDocuments,
+            );
+          } else if (name === "generativeModel.setupObject.preferDocument") {
+            form.setValue(
+              "generativeModel.setupObject.preferDocument",
+              setupFormDocuments,
+            );
+          }
+          setName("");
+        }
       } catch (error) {
         console.error("Error fetching data or mutating:", error);
       }

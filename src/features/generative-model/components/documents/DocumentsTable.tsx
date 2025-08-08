@@ -23,7 +23,7 @@ const DocumentsTable = ({
   name,
   label,
 }: DocumentsTableProps) => {
-  const { setShowFileUploadDialog } = useToggleFileUploadDialogStore();
+  const { setShowFileUploadDialog, setName } = useToggleFileUploadDialogStore();
 
   return (
     <div className="space-y-4 rounded-lg border">
@@ -38,7 +38,10 @@ const DocumentsTable = ({
           variant="ghost"
           size="icon8"
           // onClick={addCategory}
-          onClick={() => setShowFileUploadDialog(true)}
+          onClick={() => {
+            setShowFileUploadDialog(true);
+            setName(name);
+          }}
           type="button"
         >
           <PlusIcon className="h-5 w-5 stroke-2 text-primary" />
