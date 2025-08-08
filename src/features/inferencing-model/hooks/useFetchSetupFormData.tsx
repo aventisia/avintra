@@ -1,8 +1,8 @@
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 
-// import { toast } from "@aventisia/ui/sonner";
+import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
-// import { useEffect } from "react";
+import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { getInferenceModelDataById } from "../apis/inference-model-setup-apis";
@@ -20,20 +20,20 @@ export const useFetchSetupFormData = () => {
   );
 
   // Get models using react query
-  const { data, isError, refetch, isLoading } = useQuery({
+  const { data, isError, error, refetch, isLoading } = useQuery({
     queryKey: ["INFERENCE_SETUP_FORM_DATA"],
     queryFn: () => getInferenceModelDataById(modelId),
     enabled: !!modelId, // prevents query from running with empty modelId
   });
 
   // Show toast on fetch error
-  // useEffect(() => {
-  //   if (isError && error) {
-  //     toast.error(
-  //       `Failed to fetch setup form data: ${error.message || error.toString()}`,
-  //     );
-  //   }
-  // }, [isError, error]);
+  useEffect(() => {
+    if (isError && error) {
+      toast.error(
+        `Failed to fetch setup form data: ${error.message || error.toString()}`,
+      );
+    }
+  }, [isError, error]);
 
   return { data, refetch, isLoading, isError };
 };
