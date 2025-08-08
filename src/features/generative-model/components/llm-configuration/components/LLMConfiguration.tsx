@@ -52,7 +52,7 @@ const LLMConfiguration = ({ form }: LLMConfigurationProps) => {
           {!openItem && (
             <Controller
               control={form.control}
-              name={`llm`}
+              name={`generativeModel.llm`}
               render={({ field }) => (
                 <FormItem className="absolute left-40 top-[50%] translate-y-[-50%] w-[125px]">
                   <Select value={field.value} onValueChange={field.onChange}>

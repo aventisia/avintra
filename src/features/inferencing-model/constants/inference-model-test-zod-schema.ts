@@ -7,7 +7,6 @@ import { z } from 'zod';
 
 export const inferenceModelTestFormZodSchema = z.object({
   id: z.string().readonly(),
-  name: z.string().readonly(),
   submitForFineTuning: z.boolean(),
   extraction: infoExtractorTestFormZodSchema.nullable(),
   summarization: summarizationModelTestFormZodSchema.nullable(),

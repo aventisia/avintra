@@ -2,43 +2,79 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { companyDeepDivesZodSchema } from "../constants/generative-model-zod-schemas/company-deep-dives-zod-schema";
-import { useSelectedTaskStore } from "../store/selected-task-store";
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+import { useShallow } from "zustand/react/shallow";
+import {  useQueryClient } from "@tanstack/react-query";
+import { CompanyDeepDivesDTO } from "../dtos/company-deep-dives-dto";
+import { useEffect } from "react";
 
 
 export const useCompanyDeepDivesForm = () => {
-  const {selectedTask} = useSelectedTaskStore();
-  const form = useForm<z.infer<typeof companyDeepDivesZodSchema>>({
+const { modelId } = useLabelDataStore(
+      useShallow((state) => ({
+        modelId: state.modelId,
+      })),
+    );  const form = useForm<z.infer<typeof companyDeepDivesZodSchema>>({
     resolver: zodResolver(companyDeepDivesZodSchema),
     defaultValues: {
-        taskName: "",
-        companyName: "",
-        websiteLink: "",
-        focusAreas: "",
-        webData: "",
-        links: [{id: "", link: ""}],
-        documents: null,
-        summaryDepth: "",
+      id: modelId ?? "",
+     generativeModel: {
+        name: "CompanyDeepDive",
+        temperature: 0.2,
         configurationType: "OnPrem",
         llm: "gemma",
         nodePrompt: "",
-        temperature: 0.2,
-    },
+        setupObject: {
+          companyName: "",
+          websiteLink: "",
+          focusArea: "",
+          webData: "",
+          links: [{ url: ""}],
+          summaryDepth: "",
+          documents: null,
+        }   
+      },
+    }
   });
 
   const {
     formState: { isDirty, isSubmitting },
   } = form;
+  
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    // Get models data from query client
+    const generativeModelData = queryClient.getQueryData<{
+      data: CompanyDeepDivesDTO;
+    }>(["GENERATIVE_SETUP_FORM_DATA"]);
 
-  const refineFormData = (
-    formData: z.infer<typeof companyDeepDivesZodSchema>,
-  ) => {
-    return {...formData, taskName : selectedTask};
-  };
+    if(generativeModelData?.data?.generativeModel?.name === "CompanyDeepDive") {
+        form.reset({
+          id: generativeModelData?.data.id ?? modelId ?? "",
+          generativeModel: generativeModelData?.data.generativeModel  ?? {
+            name: "CompanyDeepDive",
+            temperature: 0.2,
+            configurationType: "OnPrem",
+            llm: "gemma",
+            nodePrompt: "",
+            setupObject: {
+              companyName: "",
+              websiteLink: "",
+              focusArea: "",
+              webData: "",
+              links: [{ url: ""}],
+              summaryDepth: "",
+              documents: null,
+          }
+        }
+        })
+    }
+  }, [form, queryClient, modelId]);
+
 
   return {
     form,
     isDirty,
     isSubmitting,
-    refineFormData
   };
 };

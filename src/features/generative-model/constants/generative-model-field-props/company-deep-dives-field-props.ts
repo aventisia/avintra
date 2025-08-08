@@ -1,9 +1,12 @@
 import { SelectFieldProps } from "@/shared/select-field/SelectField";
 import { AutosizeTextareaFieldProps } from "@aventisia/ui/form";
 import { enumToArray } from "@aventisia/ui/utils";
+import { FocusAreasEnum } from "../../enums/company-deep-dive/focus-areas-enum";
+import { WebDataEnum } from "../../enums/company-deep-dive/web-data-enum";
+import { SummaryDepthEnum } from "../../enums/company-deep-dive/summary-depth-enum";
 
 const companyNameProps: AutosizeTextareaFieldProps = {
-    name: "companyName",
+    name: "generativeModel.setupObject.companyName",
     label: "Company Name",
     minHeight: 10,
     isRequired: true,
@@ -11,7 +14,7 @@ const companyNameProps: AutosizeTextareaFieldProps = {
 }
 
 const websiteLinkProps: AutosizeTextareaFieldProps = {
-    name: "websiteLink",
+    name: "generativeModel.setupObject.websiteLink",
     label: "Website Link",
     minHeight: 10,
     isRequired: true,
@@ -19,27 +22,27 @@ const websiteLinkProps: AutosizeTextareaFieldProps = {
 }
 
 const focusAreaProps: SelectFieldProps = {
-    name: "focusAreas",
+    name: "generativeModel.setupObject.focusArea",
     label: "Focus Area",
-    selectOptions: enumToArray({}),
+    selectOptions: enumToArray(FocusAreasEnum),
     placeholder: "Select",
     isRequired: true,
     className: "text-sm resize-none"
 }
 
 const webDataProps: SelectFieldProps = {
-    name: "webData",
+    name: "generativeModel.setupObject.webData",
     label: "Web Data",
-    selectOptions: enumToArray({}),
+    selectOptions: enumToArray(WebDataEnum),
     placeholder: "Select",
     isRequired: true,
     className: "text-sm resize-none"
 }
 
 const summaryDepthProps: SelectFieldProps = {
-    name: "summaryDepth",
+    name: "generativeModel.setupObject.summaryDepth",
     label: "Summary Depth",
-    selectOptions: enumToArray({}),
+    selectOptions: enumToArray(SummaryDepthEnum),
     placeholder: "Select",
     isRequired: true,
     className: "text-sm resize-none"

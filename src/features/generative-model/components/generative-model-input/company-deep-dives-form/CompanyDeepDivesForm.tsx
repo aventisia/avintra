@@ -10,6 +10,7 @@ import {
 } from "@/features/generative-model/constants/generative-model-field-props/company-deep-dives-field-props";
 import { companyDeepDivesZodSchema } from "@/features/generative-model/constants/generative-model-zod-schemas/company-deep-dives-zod-schema";
 import { useCompanyDeepDivesForm } from "@/features/generative-model/hooks/useCompanyDeepDivesForm";
+import { useUpdateGenerativeModelForm } from "@/features/generative-model/hooks/useUpdateGenerativeModelForm";
 import { useToggleFileUploadDialogStore } from "@/features/generative-model/store/toggle-file-upload-store";
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
@@ -35,7 +36,8 @@ import LLMConfiguration from "../../llm-configuration/components/LLMConfiguratio
 import GenerativeInputLinks from "../generative-input-links/GenerativeInputLinks";
 
 const CompanyDeepDivesForm = () => {
-  const { form, isSubmitting, refineFormData } = useCompanyDeepDivesForm();
+  const { form, isSubmitting } = useCompanyDeepDivesForm();
+  const { isUpdatePending, updateFormData } = useUpdateGenerativeModelForm();
   const { data: modelData, isLoading } = useFetchModel();
   const { setShowFileUploadDialog, showFileUploadDialog } =
     useToggleFileUploadDialogStore();
@@ -48,16 +50,21 @@ const CompanyDeepDivesForm = () => {
   const [fileInsertLoading, setFileInsertLoading] = useState(false);
   const { data: fileList, refetch } = useFetchUploadedFiles("setup");
 
-  function submitHandler(formData: z.infer<typeof companyDeepDivesZodSchema>) {
-    console.log(refineFormData(formData));
+  async function submitHandler(
+    formData: z.infer<typeof companyDeepDivesZodSchema>,
+  ) {
+    await updateFormData(formData);
   }
 
   useEffect(() => {
     if (fileList && fileList.data.length > 0) {
       const setupFormDocuments = fileList.data.map(({ id, name, path }) => {
-        return { id: id ?? "", name, instructions: "", filePath: path ?? "" };
+        return { id: id ?? "", name, instructions: "", path: path ?? "" };
       });
-      form.setValue("documents", setupFormDocuments);
+      form.setValue(
+        "generativeModel.setupObject.documents",
+        setupFormDocuments,
+      );
     }
   }, [fileList, form]);
 
@@ -98,7 +105,11 @@ const CompanyDeepDivesForm = () => {
             <GenerativeInputLinks form={form} />
             <Separator />
 
-            <Documents form={form} name="documents" label="Documents" />
+            <Documents
+              form={form}
+              name="generativeModel.setupObject.documents"
+              label="Documents"
+            />
 
             <Separator />
             <SelectField {...summaryDepthProps} />
@@ -111,13 +122,17 @@ const CompanyDeepDivesForm = () => {
         <div className="sticky bottom-0 bg-white">
           <Separator className="h-[0.5px] w-full" />
           <div className="flex items-center justify-end self-end gap-2 px-4 py-3.5">
-            <Button size="xs" type="submit" disabled={isSubmitting}>
-              {/* {isSubmitting || isUpdatePending ? (
-                    <LoadingSpinner className="h-4 w-4" />
-                    ) : (
-                      "Save"
-                      )} */}
-              Save & Execute
+            <Button
+              size="xs"
+              type="submit"
+              disabled={isSubmitting || isUpdatePending}
+              className="min-w-28"
+            >
+              {isSubmitting || isUpdatePending ? (
+                <LoadingSpinner className="h-4 w-4" />
+              ) : (
+                "Save & Execute"
+              )}
             </Button>
           </div>
         </div>

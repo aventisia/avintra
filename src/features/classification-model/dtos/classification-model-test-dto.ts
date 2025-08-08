@@ -1,39 +1,26 @@
-interface IModelInfo {
-    createdOn?: string;
-    createdByUserId?: string;
-    lastModifiedByUserId?: string;
-    createdBy?: string;
-    createdByUsername?: string;
-}
-
-
 // Level 3
 export interface ISubSubCategoryDescriptor {
     id?: string;
     name: string;
     value: string;
-}
+    confidenceScore: string;
+  }
   
 // Level 2
-  export interface ISubCategoryDescriptor {
+export interface ISubCategoryDescriptor {
     id?: string;
     name: string;
     value: string;
-    subSubCategories?: ISubSubCategoryDescriptor[]; // optional, can default to []
+    confidenceScore: string;
+    subSubCategories: ISubSubCategoryDescriptor[] | null;
 }
-interface IExtractedData {
+  
+// Level 1
+  export interface ClassificationTestDTO {
+    id?: string;
     name: string;
     value: string;
-    subCategories?: ISubCategoryDescriptor[]; // optional, can default to []
-}
-
-export interface ClassificationTestDTO extends IModelInfo {
-    id: string;
-    mlModelId: string;
-    docId: string;
-    docName: string;
-    accuracy: number;
-    type: string;
-    submitForFineTuning: boolean;
-    extractedData: IExtractedData[]
-}
+    confidenceScore: string;
+    subCategories: ISubCategoryDescriptor[] | null;
+  }
+  

@@ -12,7 +12,11 @@ import { useShallow } from "zustand/react/shallow";
 
 import { updateAiPersonaSetupFormData } from "../apis/ai-persona-setup-api";
 import { aiPersonaSetupFormZodSchema } from "../constants/ai-persona-setup-zod-schema";
-import { AiPersonaSetupDTO } from "../dtos/ai-persona-setup-dto";
+import { useCloudLanguagesStore } from "../store/cloud-languages-store";
+import { useVoiceStore } from "../store/cloud-voices-store";
+import { useSttStore } from "../store/speech-to-text-store";
+import { useTtsStore } from "../store/text-to-speech-store";
+import { useFetchSetupFormData } from "./useFetchSetupFormData";
 
 export const useAIPersonaSetupForm = () => {
   const { modelId } = useLabelDataStore(
@@ -20,6 +24,10 @@ export const useAIPersonaSetupForm = () => {
       modelId: state.modelId,
     })),
   );
+  const { updateSelectedLanguage, cloudLanguages } = useCloudLanguagesStore();
+  const { updateSelectedSTTService, sttOptions } = useSttStore();
+  const { updateSelectedTTSService, ttsOptions } = useTtsStore();
+  const { updateSelectedVoice, voicesOptions } = useVoiceStore();
   const form = useForm<z.infer<typeof aiPersonaSetupFormZodSchema>>({
     resolver: zodResolver(aiPersonaSetupFormZodSchema),
     defaultValues: {
@@ -41,16 +49,18 @@ export const useAIPersonaSetupForm = () => {
           contextMemoryTimeframe: "",
           speechConfiguration: {
             configurationType: "OnPrem",
-            language: "",
-            speechToText: "",
-            textToSpeech: "",
-            voices: "",
+            onPremConfig: {
+              language: "",
+              voice: "",
+            },
+            cloudConfig: null,
           },
         },
       },
     },
   });
   const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { data, isLoading } = useFetchSetupFormData();
 
   const {
     formState: { isSubmitting, isDirty },
@@ -102,11 +112,7 @@ export const useAIPersonaSetupForm = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Get Setup Form Data
-    const data = queryClient.getQueryData<{
-      data: AiPersonaSetupDTO;
-    }>(["AI_PERSONA_SETUP_FORM_DATA"]);
-
+    if (isLoading) return;
     // Extract setupObject from fetched data
     const setupFormData = data?.data;
 
@@ -137,23 +143,79 @@ export const useAIPersonaSetupForm = () => {
             configurationType:
               setupFormData?.aiPersona?.setupObject?.speechConfiguration
                 ?.configurationType ?? "OnPrem",
-            language:
-              setupFormData?.aiPersona?.setupObject?.speechConfiguration
-                ?.language ?? "",
-            voices:
-              setupFormData?.aiPersona?.setupObject?.speechConfiguration
-                ?.voices ?? "",
-            textToSpeech:
-              setupFormData?.aiPersona?.setupObject?.speechConfiguration
-                ?.textToSpeech ?? "",
-            speechToText:
-              setupFormData?.aiPersona?.setupObject?.speechConfiguration
-                ?.speechToText ?? "",
+            onPremConfig: {
+              language:
+                setupFormData?.aiPersona?.setupObject?.speechConfiguration
+                  ?.onPremConfig?.language ?? "",
+              voice:
+                setupFormData?.aiPersona?.setupObject?.speechConfiguration
+                  ?.onPremConfig?.voice ?? "",
+            },
+            cloudConfig: {
+              language:
+                setupFormData?.aiPersona?.setupObject?.speechConfiguration
+                  ?.cloudConfig?.language ?? "",
+              voice:
+                setupFormData?.aiPersona?.setupObject?.speechConfiguration
+                  ?.cloudConfig?.voice ?? "",
+              speechToText: {
+                name:
+                  setupFormData?.aiPersona?.setupObject?.speechConfiguration
+                    ?.cloudConfig?.speechToText?.name ?? "",
+                secret:
+                  setupFormData?.aiPersona?.setupObject?.speechConfiguration
+                    ?.cloudConfig?.speechToText?.secret ?? "",
+              },
+              textToSpeech: {
+                name:
+                  setupFormData?.aiPersona?.setupObject?.speechConfiguration
+                    ?.cloudConfig?.textToSpeech?.name ?? "",
+                secret:
+                  setupFormData?.aiPersona?.setupObject?.speechConfiguration
+                    ?.cloudConfig?.textToSpeech?.secret ?? "",
+              },
+            },
           },
         },
       },
     });
-  }, [form, queryClient, modelId]);
+  }, [form, queryClient, modelId, isLoading, data?.data]);
+
+  useEffect(() => {
+    const configTypeValue = form.getValues(
+      "aiPersona.setupObject.speechConfiguration.configurationType",
+    );
+    if (configTypeValue === "OnPrem" || isLoading) return;
+
+    const langValue = form.getValues(
+      "aiPersona.setupObject.speechConfiguration.cloudConfig.language",
+    );
+    const sttServiceValue = form.getValues(
+      "aiPersona.setupObject.speechConfiguration.cloudConfig.speechToText.name",
+    );
+    const ttsServiceValue = form.getValues(
+      "aiPersona.setupObject.speechConfiguration.cloudConfig.textToSpeech.name",
+    );
+    const voiceValue = form.getValues(
+      "aiPersona.setupObject.speechConfiguration.cloudConfig.voice",
+    );
+
+    updateSelectedLanguage(
+      cloudLanguages.find((lang) => lang.value === langValue) ?? null,
+    );
+
+    updateSelectedSTTService(
+      sttOptions.find((stt) => stt.value === sttServiceValue) ?? null,
+    );
+
+    updateSelectedTTSService(
+      ttsOptions.find((tts) => tts.value === ttsServiceValue) ?? null,
+    );
+
+    updateSelectedVoice(
+      voicesOptions.find((voice) => voice.value === voiceValue) ?? null,
+    );
+  }, [cloudLanguages, sttOptions, ttsOptions, voicesOptions]);
 
   // Mutation to update form data
   const { mutate: updateFormData, isPending: isUpdatePending } = useMutation({
@@ -172,6 +234,37 @@ export const useAIPersonaSetupForm = () => {
     },
   });
 
+  const refineFormData = (
+    formData: z.infer<typeof aiPersonaSetupFormZodSchema>,
+  ) => {
+    const configType =
+      formData.aiPersona.setupObject.speechConfiguration.configurationType;
+
+    const refinedFormData = {
+      ...formData,
+      aiPersona: {
+        ...formData.aiPersona,
+        setupObject: {
+          ...formData.aiPersona.setupObject,
+          speechConfiguration: {
+            ...formData.aiPersona.setupObject.speechConfiguration,
+            ...(configType === "OnPrem"
+              ? {
+                  // Keep onPremConfig, nullify cloudConfig
+                  cloudConfig: null,
+                }
+              : {
+                  // Keep cloudConfig, nullify onPremConfig
+                  onPremConfig: null,
+                }),
+          },
+        },
+      },
+    };
+
+    return refinedFormData;
+  };
+
   return {
     form,
     isSubmitting,
@@ -180,6 +273,7 @@ export const useAIPersonaSetupForm = () => {
     addDocument,
     removeDocument,
     updateFormData,
+    refineFormData,
     isUpdatePending,
   };
 };

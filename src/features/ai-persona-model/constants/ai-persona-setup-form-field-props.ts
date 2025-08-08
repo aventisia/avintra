@@ -6,8 +6,6 @@ import { SliderFieldProps } from "@/shared/Slider/SliderField";
 import { ModelLLMEnum } from "@/features/model-library-table/enums/model-llm-enum";
 import { LanguageEnum } from "../enums/language-enum";
 import { VoiceEnum } from "../enums/voice-enum";
-import { TextToSpeechModelEnum } from "../enums/text-to-speech-model";
-import { SpeechToTextModelEnum } from "../enums/speech-to-text-model";
 
 
 const personaNameProps: AutosizeTextareaFieldProps = {
@@ -96,36 +94,21 @@ const temperatureProps: SliderFieldProps = {
     className: "text-sm resize-none",
 }
 
+// OnPrem Speech Config
 const languageProps: SelectFieldProps = {
-    name: "aiPersona.setupObject.speechConfiguration.language",
+    name: "aiPersona.setupObject.speechConfiguration.onPremConfig.language",
     label: "Language",
+    placeholder: "Select",
     className: "text-sm",
     selectOptions : enumToArray(LanguageEnum),
-    placeholder: "Select"
 }
 
 const voiceProps: SelectFieldProps = {
-    name: "aiPersona.setupObject.speechConfiguration.voices",
+    name: "aiPersona.setupObject.speechConfiguration.onPremConfig.voice",
     label: "Voices",
+    placeholder: "Select",
     className: "text-sm",
     selectOptions : enumToArray(VoiceEnum),
-    placeholder: "Select"
-}
-
-const textToSpeechProps: SelectFieldProps = {
-    name: "aiPersona.setupObject.speechConfiguration.textToSpeech",
-    label: "Text to Speech",
-    className: "text-sm",
-    selectOptions : enumToArray(TextToSpeechModelEnum),
-    placeholder: "Select"
-}
-
-const speechToTextProps: SelectFieldProps = {
-    name: "aiPersona.setupObject.speechConfiguration.speechToText",
-    label: "Speech to Text",
-    className: "text-sm",
-    selectOptions : enumToArray(SpeechToTextModelEnum),
-    placeholder: "Select"
 }
 
 export {
@@ -142,6 +125,4 @@ export {
     temperatureProps,
     languageProps,
     voiceProps,
-    textToSpeechProps,
-    speechToTextProps
 }

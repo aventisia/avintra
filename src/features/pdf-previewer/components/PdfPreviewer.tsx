@@ -53,17 +53,25 @@ export const PdfPreviewer: React.FC = () => {
     })),
   );
 
-  const { pageNumber, scale, rotate, setPageNumber, setNumPages, numPages } =
-    usePdfViewerStore(
-      useShallow((state) => ({
-        pageNumber: state.pageNumber,
-        scale: state.scale,
-        rotate: state.rotate,
-        setPageNumber: state.setPageNumber,
-        setNumPages: state.setNumPages,
-        numPages: state.numPages,
-      })),
-    );
+  const {
+    pageNumber,
+    scale,
+    rotate,
+    setPageNumber,
+    setNumPages,
+    numPages,
+    setRotate,
+  } = usePdfViewerStore(
+    useShallow((state) => ({
+      pageNumber: state.pageNumber,
+      scale: state.scale,
+      rotate: state.rotate,
+      setPageNumber: state.setPageNumber,
+      setNumPages: state.setNumPages,
+      setRotate: state.setRotate,
+      numPages: state.numPages,
+    })),
+  );
 
   const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -102,12 +110,13 @@ export const PdfPreviewer: React.FC = () => {
       downloadPdf(selectedPdf.path || "");
       setIsPdfLoading(false);
     }
-  }, [selectedPdf, downloadPdf, modelId]);
+  }, [selectedPdf, downloadPdf, modelId, setRotate]);
 
   const onDocumentLoadSuccess = ({ numPages }: DocumentLoadSuccess) => {
     setNumPages(numPages);
     setPageNumber(1);
     setIsPdfLoading(false);
+    setRotate(0);
   };
 
   if (isLoadingList || isPdfLoading) {

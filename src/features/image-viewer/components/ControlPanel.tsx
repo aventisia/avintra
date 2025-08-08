@@ -1,5 +1,3 @@
-import ExtractViaLLMButton from "@/components/extract-via-llm/ExtractViaLLMButton";
-
 import { Button } from "@aventisia/ui/buttons";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { Redo, RotateCcw, Undo, ZoomInIcon, ZoomOutIcon } from "lucide-react";
@@ -64,7 +62,6 @@ const ControlPanel = ({
         <Button variant="ghost" size="icon7" onClick={() => zoomInHandler()}>
           <ZoomInIcon className={`h-5 w-5 cursor-pointer stroke-[1.5] `} />
         </Button>
-        <ExtractViaLLMButton />
       </div>
     </div>
   );

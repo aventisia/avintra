@@ -1,14 +1,26 @@
+import { ILLMConfiguration } from "../components/llm-configuration/dtos/llm-configuration-dto";
+
 interface IDocumentInstruction {
     id: string;
-    filePath: string;
+    path: string;
     name: string;
 }
 
-export interface DocumentDraftingDTO{
+interface ISetupObject { 
     documentTitle: string;
     documentType: string;
-    guidelines: string;
+    guidelineInstruction: string;
     outputStructure: string;
     localizationNeeded: string;
-    documents: IDocumentInstruction[] | null;
+    preferenceDocuments: IDocumentInstruction[] | null;
+}
+
+interface IGenerativeModel extends ILLMConfiguration  {
+    name: string;
+    setupObject: ISetupObject;
+}
+
+export interface DocumentDraftingDTO {
+    id: string;
+    generativeModel: IGenerativeModel;
 }

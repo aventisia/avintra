@@ -1,24 +1,37 @@
+import { ILLMConfiguration } from "../components/llm-configuration/dtos/llm-configuration-dto";
+
 interface IDocumentInstruction {
     id: string;
-    filePath: string;
+    path: string;
     name: string;
 }
 
 interface ILinks {
-    id: string;
-    link: string;
+    id?: string;
+    url: string;
 }
 
-export interface ThoughtLeadershipDTO { 
+interface ISetupObject {
     documentType: string;
     topic: string;
     industry: string;
-    purposeOfArticle: string;
-    toneAndStyle: string;
-    targetAudience: string;
+    purpose: string;
+    toneStyle: string;
+    audienceTarget: string;
     dataAndStats: string;
     links: ILinks[];
     documents: IDocumentInstruction[] | null;
-    outputLength: string;
-    outputStructure: string;
+    contentLength: string;
+    contentStructure: string;
+}
+
+interface IGenerativeModel extends ILLMConfiguration  {
+    name: string;
+    setupObject: ISetupObject;
+}
+
+
+export interface ThoughtLeadershipDTO { 
+    id: string;
+    generativeModel: IGenerativeModel;
 }

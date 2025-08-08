@@ -1,24 +1,23 @@
 import * as z from "zod";
 
 const subSubCategorySchema = z.object({
-  name: z.string().optional(),
-  value: z.string().optional(),
+  name: z.string(),
+  value: z.string().default("false"),
+  confidenceScore: z.string().default(""),
 });
 
 const subCategorySchema = z.object({
-  name: z.string().optional(),
-  value: z.string().optional(),
-  subSubCategories: z.array(subSubCategorySchema).optional().default([]),
+  name: z.string(),
+  value: z.string().default("false"),
+  confidenceScore: z.string().default(""),
+  subSubCategories: z.array(subSubCategorySchema).default([]).nullable(),
 });
 
-const categoriesSchema = z.object({
-    name: z.string().optional(),
-    value: z.string().optional(),
-    subCategories: z.array(subCategorySchema).optional().default([]),
-    
-})
 
 export const sentimentalAnalyticsTestFormZodSchema = z
-  .object({
-    categories: z.array(categoriesSchema),
-})
+  .array(z.object({
+    name: z.string(),
+    value: z.string().default("false"),
+    confidenceScore: z.string().default(""),
+    subCategories: z.array(subCategorySchema).default([]).nullable()
+}))

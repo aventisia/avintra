@@ -51,13 +51,14 @@ const AIPersonaSetupForm = () => {
     removeDocument,
     isUpdatePending,
     updateFormData,
+    refineFormData,
   } = useAIPersonaSetupForm();
 
   // Submit handler
   function submitHandler(
     formData: z.infer<typeof aiPersonaSetupFormZodSchema>,
   ) {
-    updateFormData({ ...formData } as AiPersonaSetupDTO);
+    updateFormData(refineFormData(formData) as AiPersonaSetupDTO);
   }
 
   useEffect(() => {

@@ -4,7 +4,25 @@ interface IDocumentInstruction {
     id: string;
     filePath: string;
     name: string;
-    instructions: string;
+    instructions?: string;
+}
+
+interface IOnPremSpeechConfig {
+    language: string;
+    voice: string;
+}
+
+interface ICloudSpeechConfig {
+    language: string;
+    voice: string;
+    textToSpeech: {
+        name: string;
+        secret: string  | null;
+    };
+    speechToText: {
+        name: string;
+        secret: string  | null;
+    };
 }
 
 interface ISetupObject {
@@ -18,10 +36,8 @@ interface ISetupObject {
     contextMemoryTimeframe: string;
     speechConfiguration: {
         configurationType: "OnPrem" | "Cloud";
-        language: string;
-        voices: string;
-        textToSpeech: string;
-        speechToText: string;
+        onPremConfig: IOnPremSpeechConfig | null;
+        cloudConfig: ICloudSpeechConfig | null;
     }
 }
 

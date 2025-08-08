@@ -1,4 +1,16 @@
+import { submitFiles } from "@/features/file-uploader-viewer/apis/file-upload-apis";
+import FileUploader from "@/features/file-uploader-viewer/components/FileUploader";
+import { useFileStore } from "@/features/file-uploader-viewer/stores/file-uploader-store";
+import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
+
+import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
+import {
+  Dialog,
+  DialogContent,
+  DialogDefaultHeader,
+} from "@aventisia/ui/dialog";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import {
   Select,
   SelectContent,
@@ -6,18 +18,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@aventisia/ui/select";
-import { Tooltip } from "@aventisia/ui/tooltip";
+import { toast } from "@aventisia/ui/sonner";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronsLeftIcon,
   ChevronsRightIcon,
-  FolderOpen,
-  Trash2,
 } from "lucide-react";
 import { Image } from "lucide-react";
+import { useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { FileViewerDto } from "../../multi-format-viewer/dtos/file-list-dtos";
+import { useToggleFileUploadDialogStore } from "../stores/toggle-file-uploader-dialog-store";
 import pdfIcon from "/pdf-svgrepo-com.svg";
 
 interface PdfPaginatedSelectProps {
@@ -38,82 +51,138 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
   const handlePrev = () => onPdfSelect(pdfList[currentIndex - 1]);
   const handleNext = () => onPdfSelect(pdfList[currentIndex + 1]);
 
+  const { showFileUploadDialog, setShowFileUploadDialog } =
+    useToggleFileUploadDialogStore();
+  const { refetch } = useFetchUploadedFiles("viewer");
+  const { filesToUpload, clearFiles } = useFileStore(
+    useShallow((state) => ({
+      filesToUpload: state.filesToUpload,
+      clearFiles: state.clearFiles,
+    })),
+  );
+  const [fileInsertLoading, setFileInsertLoading] = useState(false);
+
+  const handleInsertFiles = async () => {
+    if (filesToUpload.length > 0) {
+      setFileInsertLoading(true);
+      try {
+        await submitFiles(filesToUpload);
+        setShowFileUploadDialog(false);
+        refetch();
+      } catch (error) {
+        console.error("Error fetching data or mutating:", error);
+      }
+      clearFiles();
+      // refetchList();
+      setFileInsertLoading(false);
+    } else {
+      toast.error("Please upload a file before submitting.");
+    }
+  };
+
   return (
-    <div className="flex w-full gap-4 rounded-b-lg border-t bg-white px-3 items-center py-2">
-      {import.meta.env.MODE !== "production" && (
-        <Tooltip side="right" content="Delete File">
-          <Button variant={"ghost"} size={"icon7"} className="text-destructive">
-            <Trash2 className="h-5 w-5 stroke-[1.5]" />
+    <>
+      <div className="flex w-full rounded-b-lg border-t bg-white px-3 items-center py-2">
+        <div className="flex items-center justify-center gap-1.5 w-full">
+          <Button
+            variant="outline"
+            size="icon7"
+            onClick={handleFirst}
+            disabled={currentIndex === 0}
+          >
+            <ChevronsLeftIcon className="h-5 w-5 stroke-[1.5]" />
           </Button>
-        </Tooltip>
-      )}
-      <div className="flex items-center justify-center gap-1.5 w-full">
-        <Button
-          variant="outline"
-          size="icon7"
-          onClick={handleFirst}
-          disabled={currentIndex === 0}
-        >
-          <ChevronsLeftIcon className="h-5 w-5 stroke-[1.5]" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon7"
-          onClick={handlePrev}
-          disabled={currentIndex === 0}
-        >
-          <ChevronLeftIcon className="h-5 w-5 stroke-[1.5]" />
-        </Button>
-        <Select
-          value={selectedPdf.id}
-          onValueChange={(id) => {
-            const pdf = pdfList.find((p) => p.id === id);
-            if (pdf) onPdfSelect(pdf);
-          }}
-        >
-          <SelectTrigger size="sm" className="w-96 gap-2 truncate">
-            <SelectValue placeholder="Select File" />
-          </SelectTrigger>
-          <SelectContent>
-            {pdfList.map((pdf) => (
-              <SelectItem key={pdf.id} value={pdf.id || ""}>
-                <div className="flex gap-2">
-                  {pdf.extension === "PDF" ? (
-                    <img src={pdfIcon} alt="pdf icon" className="h-4 w-4" />
-                  ) : (
-                    <Image className="h-4 w-4 text-info-foreground" />
-                  )}
-                  <p>{pdf.name}</p>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button
-          variant="outline"
-          size="icon7"
-          onClick={handleNext}
-          disabled={currentIndex === pdfList.length - 1}
-        >
-          <ChevronRightIcon className="h-5 w-5 stroke-[1.5]" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon7"
-          onClick={handleLast}
-          disabled={currentIndex === pdfList.length - 1}
-        >
-          <ChevronsRightIcon className="h-5 w-5 stroke-[1.5]" />
-        </Button>
+          <Button
+            variant="outline"
+            size="icon7"
+            onClick={handlePrev}
+            disabled={currentIndex === 0}
+          >
+            <ChevronLeftIcon className="h-5 w-5 stroke-[1.5]" />
+          </Button>
+          <Select
+            value={selectedPdf.id}
+            onValueChange={(id) => {
+              const pdf = pdfList.find((p) => p.id === id);
+              if (pdf) onPdfSelect(pdf);
+            }}
+          >
+            <SelectTrigger size="sm" className="w-96 gap-2 truncate">
+              <SelectValue placeholder="Select File" />
+            </SelectTrigger>
+            <SelectContent>
+              {pdfList.map((pdf) => (
+                <SelectItem key={pdf.id} value={pdf.id || ""}>
+                  <div className="flex gap-2">
+                    {pdf.extension === "PDF" ? (
+                      <img src={pdfIcon} alt="pdf icon" className="h-4 w-4" />
+                    ) : (
+                      <Image className="h-4 w-4 text-info-foreground" />
+                    )}
+                    <p>{pdf.name}</p>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="outline"
+            size="icon7"
+            onClick={handleNext}
+            disabled={currentIndex === pdfList.length - 1}
+          >
+            <ChevronRightIcon className="h-5 w-5 stroke-[1.5]" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon7"
+            onClick={handleLast}
+            disabled={currentIndex === pdfList.length - 1}
+          >
+            <ChevronsRightIcon className="h-5 w-5 stroke-[1.5]" />
+          </Button>
+        </div>
+        {import.meta.env.MODE !== "production" && (
+          <Button
+            variant={"ghost"}
+            className="text-primary"
+            onClick={() => setShowFileUploadDialog(true)}
+          >
+            Manage Files
+          </Button>
+        )}
       </div>
-      {import.meta.env.MODE !== "production" && (
-        <Tooltip side="left" content="Upload/Modify Files">
-          <Button variant={"ghost"} size={"icon7"} className="text-primary">
-            <FolderOpen className="h-5 w-5 stroke-[1.5]" />
-          </Button>
-        </Tooltip>
-      )}
-    </div>
+
+      {/* Temporary fix to handle manage files */}
+      <Dialog
+        open={showFileUploadDialog}
+        onOpenChange={setShowFileUploadDialog}
+      >
+        <DialogContent className="max-w-[50vw]">
+          <DialogDefaultHeader heading="Upload Files" />
+          <Separator />
+          <div className="p-4 gap-4 flex flex-col">
+            <ScrollArea className="!max-h-[calc(80vh)]">
+              <FileUploader />
+            </ScrollArea>
+            {filesToUpload.length > 0 && (
+              <Button
+                size="xs"
+                type="button"
+                className="self-end w-20"
+                onClick={handleInsertFiles}
+              >
+                {fileInsertLoading ? (
+                  <LoadingSpinner className="h-4 w-4" />
+                ) : (
+                  "Save"
+                )}
+              </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

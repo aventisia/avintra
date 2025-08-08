@@ -7,8 +7,9 @@ import {
   responseBoundariesProps,
   responseStrategyProps,
 } from "@/features/generative-model/constants/generative-model-field-props/rfp-rpi-response-generator-field-props";
-import { rfpRpiResponseGeneratorZodSchema } from "@/features/generative-model/constants/generative-model-zod-schemas/rfp-rpi-response-generator-dto";
+import { rfpRpiResponseGeneratorZodSchema } from "@/features/generative-model/constants/generative-model-zod-schemas/rfp-rpi-response-generator-zod-schema";
 import { useRfpRpiResponseGeneratorForm } from "@/features/generative-model/hooks/useRfpRpiResponseGeneratorForm";
+import { useUpdateGenerativeModelForm } from "@/features/generative-model/hooks/useUpdateGenerativeModelForm";
 import { useToggleFileUploadDialogStore } from "@/features/generative-model/store/toggle-file-upload-store";
 import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
@@ -34,8 +35,9 @@ import LLMConfiguration from "../../llm-configuration/components/LLMConfiguratio
 import GenerativeInputLinks from "../generative-input-links/GenerativeInputLinks";
 
 const RfpRpiResponseGeneratorForm = () => {
-  const { form, isSubmitting, refineFormData } =
-    useRfpRpiResponseGeneratorForm();
+  const { form, isSubmitting } = useRfpRpiResponseGeneratorForm();
+  const { isUpdatePending, updateFormData } = useUpdateGenerativeModelForm();
+
   const { data: modelData, isLoading } = useFetchModel();
   const { setShowFileUploadDialog, showFileUploadDialog } =
     useToggleFileUploadDialogStore();
@@ -48,19 +50,25 @@ const RfpRpiResponseGeneratorForm = () => {
   const [fileInsertLoading, setFileInsertLoading] = useState(false);
   const { data: fileList, refetch } = useFetchUploadedFiles("setup");
 
-  function submitHandler(
+  async function submitHandler(
     formData: z.infer<typeof rfpRpiResponseGeneratorZodSchema>,
   ) {
-    console.log(refineFormData(formData));
+    await updateFormData(formData);
   }
 
   useEffect(() => {
     if (fileList && fileList.data.length > 0) {
       const setupFormDocuments = fileList.data.map(({ id, name, path }) => {
-        return { id: id ?? "", name, instructions: "", filePath: path ?? "" };
+        return { id: id ?? "", name, instructions: "", path: path ?? "" };
       });
-      form.setValue("rfiRfpDocuments", setupFormDocuments);
-      form.setValue("referenceDocuments", setupFormDocuments);
+      form.setValue(
+        "generativeModel.setupObject.rpfDocument",
+        setupFormDocuments,
+      );
+      form.setValue(
+        "generativeModel.setupObject.preferDocument",
+        setupFormDocuments,
+      );
     }
   }, [fileList, form]);
 
@@ -97,7 +105,7 @@ const RfpRpiResponseGeneratorForm = () => {
             <Separator />
             <Documents
               form={form}
-              name="rfiRfpDocuments"
+              name="generativeModel.setupObject.rpfDocument"
               label="RFP / RFI Documents"
             />
 
@@ -112,7 +120,7 @@ const RfpRpiResponseGeneratorForm = () => {
 
             <Documents
               form={form}
-              name="referenceDocuments"
+              name="generativeModel.setupObject.preferDocument"
               label="Reference Documents"
             />
             <Separator />
@@ -124,13 +132,17 @@ const RfpRpiResponseGeneratorForm = () => {
         <div className="sticky bottom-0 bg-white">
           <Separator className="h-[0.5px] w-full" />
           <div className="flex items-center justify-end self-end gap-2 px-4 py-3.5">
-            <Button size="xs" type="submit" disabled={isSubmitting}>
-              {/* {isSubmitting || isUpdatePending ? (
-                    <LoadingSpinner className="h-4 w-4" />
-                    ) : (
-                      "Save"
-                      )} */}
-              Save & Execute
+            <Button
+              size="xs"
+              type="submit"
+              disabled={isSubmitting || isUpdatePending}
+              className="min-w-28"
+            >
+              {isSubmitting || isUpdatePending ? (
+                <LoadingSpinner className="h-4 w-4" />
+              ) : (
+                "Save & Execute"
+              )}
             </Button>
           </div>
         </div>

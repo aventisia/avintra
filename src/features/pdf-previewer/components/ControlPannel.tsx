@@ -1,13 +1,11 @@
 import { Input } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { Tooltip } from "@aventisia/ui/tooltip";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronsLeftIcon,
   ChevronsRightIcon,
   Redo,
-  RotateCcw,
   Undo,
   ZoomInIcon,
   ZoomOutIcon,
@@ -15,7 +13,6 @@ import {
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import ExtractViaLLMButton from "../../../components/extract-via-llm/ExtractViaLLMButton";
 import { usePdfViewerStore } from "../stores/pdf-previewer-store";
 
 interface PageControlProps {
@@ -68,36 +65,36 @@ const PageControl = (props: PageControlProps) => {
           className={`cursor-pointer ${props.lastPageClass} h-5 w-5 stroke-[1.5]`}
         />
       </Button>
-
-      {import.meta.env.MODE !== "production" && (
-        <div className="ml-1.5 space-x-1">
-          <Tooltip content="Rotate left" side="bottom" className="text-xs">
-            <Button variant="ghost" size="icon7" className="bg-accent">
-              <Undo className={`h-5 w-5 cursor-pointer stroke-[1.5] `} />
-            </Button>
-          </Tooltip>
-
-          <Tooltip content="Rotate right" side="bottom" className="text-xs">
-            <Button variant="ghost" size="icon7" className="bg-accent">
-              <Redo className={`h-5 w-5 cursor-pointer stroke-[1.5] `} />
-            </Button>
-          </Tooltip>
-        </div>
-      )}
     </div>
   );
 };
 
 interface PageRotateProps {
-  rotatePage: () => void;
+  rotatePageLeft: () => void;
+  rotatePageRight: () => void;
 }
 
-const PageRotate = (props: PageRotateProps) => {
+const PageRotate = ({ rotatePageLeft, rotatePageRight }: PageRotateProps) => {
   return (
-    <RotateCcw
-      className="hidden h-5 w-5 cursor-pointer"
-      onClick={props.rotatePage}
-    />
+    <div className="ml-1.5 space-x-1">
+      <Button
+        variant="ghost"
+        size="icon7"
+        className="bg-transparent"
+        onClick={rotatePageRight}
+      >
+        <Undo className={`h-5 w-5 cursor-pointer stroke-[1.5] `} />
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="icon7"
+        className="bg-transparent"
+        onClick={rotatePageLeft}
+      >
+        <Redo className={`h-5 w-5 cursor-pointer stroke-[1.5] `} />
+      </Button>
+    </div>
   );
 };
 
@@ -175,8 +172,12 @@ const ControlPanel = ({
     setPageNumber(Number(value));
   };
 
-  const rotatePage = () => {
+  const rotatePageLeft = () => {
     setRotate(rotate + 90);
+  };
+
+  const rotatePageRight = () => {
+    setRotate(rotate - 90);
   };
 
   const isMinZoom = scale < 0.2;
@@ -203,18 +204,23 @@ const ControlPanel = ({
 
   return (
     <div className="flex h-12 w-full items-center justify-between rounded-t-lg border-b p-2">
-      <PageControl
-        numPages={numPages}
-        pageNumber={pageNumber}
-        firstPageClass={firstPageClass}
-        lastPageClass={lastPageClass}
-        goToFirstPage={goToFirstPage}
-        goToPreviousPage={goToPreviousPage}
-        goToNextPage={goToNextPage}
-        goToLastPage={goToLastPage}
-        onPageChange={onPageChange}
-      />
-      <PageRotate rotatePage={rotatePage} />
+      <div className="flex items-center">
+        <PageControl
+          numPages={numPages}
+          pageNumber={pageNumber}
+          firstPageClass={firstPageClass}
+          lastPageClass={lastPageClass}
+          goToFirstPage={goToFirstPage}
+          goToPreviousPage={goToPreviousPage}
+          goToNextPage={goToNextPage}
+          goToLastPage={goToLastPage}
+          onPageChange={onPageChange}
+        />
+        <PageRotate
+          rotatePageLeft={rotatePageLeft}
+          rotatePageRight={rotatePageRight}
+        />
+      </div>
       <div className="flex items-center gap-5">
         <ZoomControl
           toFixed={(scale * 100).toFixed()}
@@ -223,7 +229,6 @@ const ControlPanel = ({
           zoomOut={zoomOut}
           zoomIn={zoomIn}
         />
-        <ExtractViaLLMButton />
       </div>
     </div>
   );

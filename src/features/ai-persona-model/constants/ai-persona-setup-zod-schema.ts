@@ -8,12 +8,28 @@ const documentInstructionSchema = z.object({
   instructions: z.string().optional(),
 })
 
+const onPremSpeechConfigSchema = z.object({
+    language: z.string().default(""),
+    voice: z.string().default(""),
+})
+
+const cloudSpeechConfigSchema = z.object({
+  language: z.string(),
+  voice: z.string(),
+  textToSpeech: z.object({
+    name: z.string(),
+    secret: z.string().nullable()
+  }),
+  speechToText: z.object({
+    name: z.string(),
+    secret: z.string().nullable()
+  }),
+})
+
 const speechConfigSchema = z.object({
     configurationType: z.enum(["OnPrem", "Cloud"]).default("OnPrem"),
-    language: z.string(),
-    voices: z.string(),
-    textToSpeech: z.string(),
-    speechToText: z.string(),
+    onPremConfig: onPremSpeechConfigSchema.nullable(),
+    cloudConfig: cloudSpeechConfigSchema.nullable(),
 })
 
 const setupObjectSchema = z.object({
