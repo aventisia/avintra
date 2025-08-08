@@ -42,6 +42,8 @@ public interface IUnitOfWork
     
     ISpaceUserRepo SpaceUserRepo { get; }
 
+    IAppSecretRepo AppSecretRepo { get; }
+
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
     /// </summary>
