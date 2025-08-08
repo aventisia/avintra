@@ -1,11 +1,15 @@
 import { create } from "zustand";
+import { GenerativeModelOutputDTO } from "../dtos/generative-model-output-dto";
 
 interface SelectedTaskState {
-  conversationMarkdown: string;
-  setConversationMarkdown: (conversation: string) => void;
+  conversationMarkdownList: GenerativeModelOutputDTO[];
+  setConversationMarkdown: (conversation: GenerativeModelOutputDTO[]) => void;
 }
 
 export const useGenerativeModelOutputStore = create<SelectedTaskState>((set) => ({
-    conversationMarkdown: "",
-    setConversationMarkdown: (conversation) => set({ conversationMarkdown: conversation }),
+  conversationMarkdownList: [],
+  setConversationMarkdown: (conversation) =>
+    set((state) => ({
+      conversationMarkdownList: [...state.conversationMarkdownList, ...conversation],
+    })),
 }));
