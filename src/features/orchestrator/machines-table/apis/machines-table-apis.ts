@@ -7,6 +7,7 @@ import {
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
+import { AssignMachineDto } from "../../agents-table/dtos/assign-machine-dto";
 import type { AssignAgentDto } from "../dtos/assign-agent-dto";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
 import type { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
@@ -19,6 +20,13 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/machine`;
 const getMachines = () => {
   return axiosInstance
     .get<IHttpResponse<MachinesTableDto[]>>(`${baseAPIURL}/list`)
+    .then((res) => res.data);
+};
+
+export const getSearchMachines = (query: string) => {
+  // Fetch agents from API
+  return axiosInstance
+    .get<IHttpResponse<AssignMachineDto[]>>(`${baseAPIURL}/search/${query}`)
     .then((res) => res.data);
 };
 

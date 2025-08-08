@@ -113,7 +113,7 @@ export const useDefineAgentForm = () => {
     // Set agent data to form
     form.reset({
       id: rowId,
-      flowId: agentData?.flowId,
+      flowId: agentData?.refId,
       name: agentData?.name ?? "",
       licenseId: agentData?.licenseId ?? "",
       versionNumber: agentData?.versionNumber,
