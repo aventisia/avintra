@@ -6,6 +6,7 @@ public class AppSecretMappingProfile : IRegister
     {
         // Mapping for app secret record or records.
         config.NewConfig<AppSecret, AppSecretDto>()
+            .Map(dest => dest.Data, src => JsonSerializer.Deserialize<object>(src.Data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }))
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
@@ -14,14 +15,14 @@ public class AppSecretMappingProfile : IRegister
                 src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
                     : null);
-        
+
         // Mapping for inserting or updating a app secret record.
         config.NewConfig<AppSecretDto, AppSecret>()
-                   .Ignore(dest => dest.Id)
-                   .Ignore(dest => dest.CreatedOn)
-                   .Ignore(dest => dest.LastModifiedOn)
-                   .Ignore(dest => dest.Data)
-                   .IgnoreNullValues(true);
+            .Map(dest => dest.Data, src => JsonSerializer.Serialize(src.Data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }))
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.CreatedOn)
+            .Ignore(dest => dest.LastModifiedOn)
+            .IgnoreNullValues(true);
 
         // Get app secret in SelectOptionDto format
         config.NewConfig<AppSecret, SelectOptionDto>()
