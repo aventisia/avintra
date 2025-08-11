@@ -14,10 +14,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class ReadFromExcelWorksheetActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
@@ -31,13 +27,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
 
         [DisplayName("Start Column")]
-        [Description("The starting column of the range to read (required if 'Retrieve Mode' is 'Range of Cells').")]
+        [Description("The starting column letter (e.g., 'A').")]
         [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
         public InArgument<string> StartColumn { get; set; }
 
+        [DisplayName("Start Column Index")]
+        [Description("The starting column index (e.g., 1 for 'A'). Takes precedence if greater than 0.")]
+        [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
+        public InArgument<int> StartColumnIndex { get; set; }
 
         [DisplayName("Start Row")]
-        [Description("The starting row of the range to read (required if 'Retrieve Mode' is 'Range of Cells').")]
+        [Description("The starting row of the range to read.")]
         [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
         public InArgument<int> StartRow { get; set; }
 
@@ -47,6 +47,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
         public InArgument<string> EndColumn { get; set; }
 
+        [DisplayName("End Column Index")]
+        [Description("The ending column index (e.g., 4 for 'D'). Takes precedence if greater than 0.")]
+        [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
+        public InArgument<int> EndColumnIndex { get; set; }
 
         [DisplayName("End Row")]
         [Description("The ending row of the range to read (required if 'Retrieve Mode' is 'Range of Cells').")]
@@ -55,7 +59,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
 
         [DisplayName("Name")]
-        [Description("The name of the named range to read (required if 'Retrieve Mode' is 'Values of Named Cells').")]
+        [Description("The name of the named range to read.")]
         [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.ValuesOfNamedCells)]
         public InArgument<string> Name { get; set; }
 
@@ -75,11 +79,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.ValuesOfNamedCells)]
         public InArgument<bool> OmitEmptyColumnsAndRows { get; set; }
 
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
         [DisplayName("Excel Data")]
         [Description("Returns the data read from the specified range as a DataTable.")]
         public OutArgument<DataTable> ExcelData { get; set; }
@@ -97,8 +96,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 var excelApp = ExcelApplication.Get(context);
                 var retrieveMode = RetrieveMode.Get(context);
                 var startCol = StartColumn.Get(context);
+                var startColIndex = StartColumnIndex.Get(context);
                 var startRow = StartRow.Get(context);
                 var endCol = EndColumn.Get(context);
+                var endColIndex = EndColumnIndex.Get(context);
                 var endRow = EndRow.Get(context);
                 var name = Name.Get(context);
                 var getContentsAsText = GetContentsAsText.Get(context);
@@ -115,7 +116,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 {
                     case ExcelRetrieveModeEnum.SingleCell:
                         {
-                            var cell = ws.Cells[startRow, GetColumnIndex(startCol)];
+                            int colIndex = startColIndex > 0 ? startColIndex : GetColumnIndex(startCol);
+                            var cell = ws.Cells[startRow, colIndex];
                             dataTable = new DataTable();
                             dataTable.Columns.Add("Value");
                             dataTable.Rows.Add(cell.Value);
@@ -124,8 +126,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                     case ExcelRetrieveModeEnum.RangeOfCells:
                         {
-                            var range = ws.Range[ws.Cells[startRow, GetColumnIndex(startCol)],
-                                ws.Cells[endRow, GetColumnIndex(endCol)]];
+                            int startIndex = startColIndex > 0 ? startColIndex : GetColumnIndex(startCol);
+                            int endIndex = endColIndex > 0 ? endColIndex : GetColumnIndex(endCol);
+
+                            var range = ws.Range[ws.Cells[startRow, startIndex], ws.Cells[endRow, endIndex]];
                             dataTable = ReadRange(range, getContentsAsText, firstLineContainsColumnNames);
                             break;
                         }
@@ -155,7 +159,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             dataTable = ReadRange(namedRange, getContentsAsText, firstLineContainsColumnNames);
 
                             if (omitEmptyColumnsAndRows)
-                                // Trim empty columns and rows
+                            // Trim empty columns and rows
                                 dataTable = TrimEmptyColumnsAndRows(dataTable);
 
                             break;
@@ -188,7 +192,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 var colCount = range.Columns.Count;
 
                 // Determine the starting row based on whether the first line contains column names
-                var startRow = firstLineContainsColumnNames ? 2 : 1;
+                int startRow = firstLineContainsColumnNames ? 2 : 1;
 
                 // If the range is empty, return an empty DataTable
                 if (rowCount < startRow || colCount < 1)
@@ -230,7 +234,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             for (var i = dataTable.Columns.Count - 1; i >= 0; i--)
                 if (dataTable.AsEnumerable().All(row => row.IsNull(i)))
                     dataTable.Columns.RemoveAt(i);
-
+            
             // Trim empty rows
             for (var i = dataTable.Rows.Count - 1; i >= 0; i--)
                 if (dataTable.Rows[i].ItemArray.All(item => item == DBNull.Value))

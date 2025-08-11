@@ -84,10 +84,10 @@ namespace CodeActivitiesLibrary.AIIntegrations.AIStudioActivities
             var contentType = ContentType.Get(context) ?? "application/json";
             var acceptType = AcceptHeader.Get(context) ?? "application/json";
             var headers = Headers.Get(context);
+            inputText = inputText?.ToString();
 
             // Create the request body based on template or default structure
             var body = CreateRequestBody(selectModel, inputText, bodyTemplate);
-
 
 
             if (string.IsNullOrWhiteSpace(url))

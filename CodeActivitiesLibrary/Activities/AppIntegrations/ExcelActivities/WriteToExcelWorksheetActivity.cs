@@ -1,4 +1,5 @@
 ﻿using CodeActivitiesLibrary.AppIntegrations.ExcelActivities.Enums;
+using CodeActivitiesLibrary.DataTransformations.DataTableActivities.Enums;
 using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
@@ -15,10 +16,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
     public class WriteToExcelWorksheetActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
         [DisplayName("Excel Application")]
         [Description("The Excel Application object containing the target worksheet.")]
@@ -38,14 +35,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Column")]
         [Description(
-            "The column letter (e.g., 'A', 'B') where the data should be written (required if 'Write Mode' is 'On Specified Cell').")]
+        "The column letter (e.g., 'A', 'B') where the data should be written (used if ColumnIndex is not provided).")]
         [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnSpecifiedCell)]
         public InArgument<string> Column { get; set; }
 
+        [DisplayName("Column Index")]
+        [Description("The index of the column (e.g., 1 for 'A'). Takes precedence if greater than 0.")]
+        [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnSpecifiedCell)]
+        public InArgument<int> ColumnIndex { get; set; }
 
         [DisplayName("Row")]
         [Description(
-            "The row number where the data should be written (required if 'Write Mode' is 'On Specified Cell').")]
+        "The row number where the data should be written (required if 'Write Mode' is 'On Specified Cell').")]
         [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnSpecifiedCell)]
         public InArgument<int> Row { get; set; }
 
@@ -58,18 +59,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [DisplayName("Populate Entire Range")]
         [Description("If true, populates the entire named range with the same value.")]
-        [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnNamedCells)]
         public InArgument<bool> PopulateEntireRange { get; set; }
 
-        // ----------------------
-        // Execution Logic
-        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             try
             {
                 var excelApp = ExcelApplication.Get(context);
-                var rawValue = ValueToWrite.Get(context); // Get as object
+                var rawValue = ValueToWrite.Get(context);
                 var writeMode = WriteMode.Get(context);
 
                 if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
@@ -81,17 +78,24 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 {
                     case ExcelCellWriteModeEnum.OnSpecifiedCell:
                         {
-                            var colLetter = Column.Get(context);
-                            var rowNumber = Row.Get(context);
+                            int rowNumber = Row.Get(context);
+                            int colIndex = ColumnIndex.Get(context);
+                            string colLetter = Column.Get(context);
 
-                            if (string.IsNullOrWhiteSpace(colLetter))
-                                throw new ArgumentException("Column cannot be empty when using 'On Specified Cell' mode.");
+                            if (colIndex <= 0)
+                            {
+                                if (string.IsNullOrWhiteSpace(colLetter))
+                                    throw new ArgumentException("Either 'Column Index' or 'Column' must be provided.");
 
-                            var colIndex = GetColumnIndex(colLetter);
+                                colIndex = GetColumnIndex(colLetter);
+                            }
+
+                            if (rowNumber <= 0)
+                                throw new ArgumentException("Row number must be greater than zero.");
 
                             Excel.Range targetCell = ws.Cells[rowNumber, colIndex];
                             if (targetCell == null)
-                                throw new ArgumentException($"Invalid cell reference: {colLetter}{rowNumber}");
+                                throw new ArgumentException($"Invalid cell reference at row {rowNumber} and column index {colIndex}.");
 
                             WriteValueToRange(targetCell, rawValue);
                             break;
@@ -185,7 +189,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                 range.Value = finalValue;
 
-                // Optional: Wrap text in Excel cell to show line breaks
+            // Optional: Wrap text in Excel cell to show line breaks
                 range.WrapText = true;
             }
         }
