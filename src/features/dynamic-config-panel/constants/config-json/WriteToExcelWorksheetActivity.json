@@ -48,7 +48,24 @@
     "type": "text",
     "name": "Column",
     "label": "Column",
-    "description": "The column letter (e.g., \u0027A\u0027, \u0027B\u0027) where the data should be written (required if \u0027Write Mode\u0027 is \u0027On Specified Cell\u0027).",
+    "description": "The column letter (e.g., \u0027A\u0027, \u0027B\u0027) where the data should be written (used if ColumnIndex is not provided).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "WriteMode",
+          "equals": "OnSpecifiedCell"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ColumnIndex",
+    "label": "Column Index",
+    "description": "The index of the column (e.g., 1 for \u0027A\u0027). Takes precedence if greater than 0.",
     "defaultValue": "",
     "required": false,
     "renderIf": {
@@ -101,14 +118,6 @@
     "label": "Populate Entire Range",
     "description": "If true, populates the entire named range with the same value.",
     "defaultValue": "",
-    "required": false,
-    "renderIf": {
-      "conditions": [
-        {
-          "field": "WriteMode",
-          "equals": "OnNamedCells"
-        }
-      ]
-    }
+    "required": false
   }
 ]

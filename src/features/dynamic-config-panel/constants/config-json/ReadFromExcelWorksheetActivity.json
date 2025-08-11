@@ -49,7 +49,24 @@
     "type": "text",
     "name": "StartColumn",
     "label": "Start Column",
-    "description": "The starting column of the range to read (required if \u0027Retrieve Mode\u0027 is \u0027Range of Cells\u0027).",
+    "description": "The starting column letter (e.g., \u0027A\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RetrieveMode",
+          "equals": "RangeOfCells"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "StartColumnIndex",
+    "label": "Start Column Index",
+    "description": "The starting column index (e.g., 1 for \u0027A\u0027). Takes precedence if greater than 0.",
     "defaultValue": "",
     "required": false,
     "renderIf": {
@@ -66,7 +83,7 @@
     "type": "text",
     "name": "StartRow",
     "label": "Start Row",
-    "description": "The starting row of the range to read (required if \u0027Retrieve Mode\u0027 is \u0027Range of Cells\u0027).",
+    "description": "The starting row of the range to read.",
     "defaultValue": "",
     "required": false,
     "renderIf": {
@@ -84,6 +101,23 @@
     "name": "EndColumn",
     "label": "End Column",
     "description": "The ending column of the range to read (required if \u0027Retrieve Mode\u0027 is \u0027Range of Cells\u0027).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RetrieveMode",
+          "equals": "RangeOfCells"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "EndColumnIndex",
+    "label": "End Column Index",
+    "description": "The ending column index (e.g., 4 for \u0027D\u0027). Takes precedence if greater than 0.",
     "defaultValue": "",
     "required": false,
     "renderIf": {
@@ -117,7 +151,7 @@
     "type": "text",
     "name": "Name",
     "label": "Name",
-    "description": "The name of the named range to read (required if \u0027Retrieve Mode\u0027 is \u0027Values of Named Cells\u0027).",
+    "description": "The name of the named range to read.",
     "defaultValue": "",
     "required": false,
     "renderIf": {

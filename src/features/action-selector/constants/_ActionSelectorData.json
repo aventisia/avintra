@@ -13,6 +13,15 @@
         "listType": "list",
         "actions": [
           {
+            "type": "breakLoopNode",
+            "name": "BreakLoopActivity",
+            "label": "Break Loop",
+            "description": "Breaks out of the current loop in the workflow execution.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
             "type": "activityNode",
             "name": "WaitActivity",
             "label": "Wait",
