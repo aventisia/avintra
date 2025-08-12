@@ -36,10 +36,8 @@ public class MLModelService : IMLModelService
             //Try to get model records created by the user
             var mlModels = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
-                    w.CreatedByUserId == _userId ||
-                    (
-                        w.Users != null && w.Users.Any(a => a.UserId == _userId)
-                    )
+                        w.CreatedByUserId == _userId ||
+                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
                 )
                 .Include(i => i.Users)
                 .Include(i => i.Tasks)
@@ -186,10 +184,9 @@ public class MLModelService : IMLModelService
                 .GetByConditionAsync(w =>
                    w.Id == mlModelDto.Id &&
                    (
-                    w.CreatedByUserId == _userId ||
-                    (
-                        w.Users != null && w.Users.Any(a => a.UserId == _userId))
-                    )
+                        w.CreatedByUserId == _userId ||
+                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
+                   )
                 )
                 .Include(i => i.Users)
                 .SingleOrDefaultAsync();
@@ -305,9 +302,7 @@ public class MLModelService : IMLModelService
                     w.Id == id &&
                     (
                         w.CreatedByUserId == _userId ||
-                        (
-                            w.Users != null && w.Users.Any(a => a.UserId == _userId)
-                        )
+                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
                     )
                 )
                 .Include(i => i.Users)

@@ -41,9 +41,9 @@ public class ConversationModelService : IConversationModelService
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
                     w.Id == mlModelId &&
-                    w.CreatedByUserId == _userId ||
                     (
-                        w.Users != null && w.Users.Any(a => a.UserId == _userId)
+                        w.CreatedByUserId == _userId ||
+                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
                     )
                 )
                 .Include(i => i.CreatedByUser)
@@ -105,9 +105,9 @@ public class ConversationModelService : IConversationModelService
             var existingModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
                     w.Id == conversationModelDto.Id &&
-                    w.CreatedByUserId == _userId ||
                     (
-                        w.Users != null && w.Users.Any(a => a.UserId == _userId)
+                        w.CreatedByUserId == _userId ||
+                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
                     )
                 )
                 .Include(i => i.Users)

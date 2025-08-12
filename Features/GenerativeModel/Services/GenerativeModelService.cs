@@ -41,9 +41,9 @@ public class GenerativeModelService : IGenerativeModelService
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
                     w.Id == mlModelId &&
-                    w.CreatedByUserId == _userId ||
                     (
-                        w.Users != null && w.Users.Any(a => a.UserId == _userId)
+                        w.CreatedByUserId == _userId ||
+                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
                     )
                 )
                 .Include(i => i.Users)
@@ -114,9 +114,9 @@ public class GenerativeModelService : IGenerativeModelService
             var existingModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
                     w.Id == generativeModelDto.Id &&
-                    w.CreatedByUserId == _userId ||
                     (
-                        w.Users != null && w.Users.Any(a => a.UserId == _userId)
+                        w.CreatedByUserId == _userId ||
+                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
                     )
                 )
                 .Include(i => i.Users)

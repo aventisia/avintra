@@ -40,9 +40,9 @@ public class InferencingModelService : IInferencingModelService
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
                     w.Id == mlModelId &&
-                    w.CreatedByUserId == _userId ||
                     (
-                        w.Users != null && w.Users.Any(a => a.UserId == _userId)
+                        w.CreatedByUserId == _userId ||
+                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
                     )
                 )
                 .Include(i => i.Users)
@@ -111,9 +111,9 @@ public class InferencingModelService : IInferencingModelService
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
                     w.Id == modelSetupDto.Id &&
-                    w.CreatedByUserId == _userId ||
                     (
-                        w.Users != null && w.Users.Any(a => a.UserId == _userId)
+                        w.CreatedByUserId == _userId ||
+                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
                     )
                 )
                 .Include(i => i.Users)
@@ -128,7 +128,7 @@ public class InferencingModelService : IInferencingModelService
                 serviceResponse.Message = "Model not found.";
                 return serviceResponse;
             }
-            
+
             // Check if the user is the creator or has the required access (Owner/Edit)
             var modelUserAccess = mlModel.Users?.FirstOrDefault(w =>
                 w.MLModelId == mlModel.Id &&
