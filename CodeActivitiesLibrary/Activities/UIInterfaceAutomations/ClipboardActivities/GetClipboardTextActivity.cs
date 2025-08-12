@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ClipboardActivities
     /// </summary>
     [DisplayName("Get Clipboard Text")]
     [Description("Retrieves the text currently stored in the system clipboard.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Clipboard.svg")]
     public class GetClipboardTextActivity : BaseCodeActivity
     {
         [DisplayName("Clipboard Text Output")]

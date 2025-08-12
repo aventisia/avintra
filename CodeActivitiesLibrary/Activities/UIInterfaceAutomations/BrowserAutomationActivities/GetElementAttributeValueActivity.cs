@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Get Element Attribute Value")]
     [Description("Retrieves the value of an element's attribute from a web page.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
     public class GetElementAttributeValueActivity : BaseCodeActivity
     {
         // ----------------------

@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Extract Data From Web Page")]
     [Description("Extracts data from a specified UI element on a web page using configurable parameters.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
     public class ExtractDataFromWebPageActivity : BaseCodeActivity
     {
         // ----------------------

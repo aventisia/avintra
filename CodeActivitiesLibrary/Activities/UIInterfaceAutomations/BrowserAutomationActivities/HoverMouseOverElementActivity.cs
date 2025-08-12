@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Hover Over Element on Web Page")]
     [Description("Moves the mouse cursor over a specified element on a web page.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
     public class HoverMouseOverElementActivity : BaseCodeActivity
     {
         // ----------------------

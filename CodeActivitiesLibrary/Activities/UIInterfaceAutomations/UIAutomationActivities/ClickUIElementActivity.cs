@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Click UI Element")]
     [Description("Invokes or clicks a UI element using UI Automation or mouse click.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/UIAutomation.svg")]
     public class ClickUIElementActivity : BaseCodeActivity
     {
         [RequiredArgument]

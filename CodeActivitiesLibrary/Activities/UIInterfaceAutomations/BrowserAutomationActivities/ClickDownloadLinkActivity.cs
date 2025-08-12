@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Click Download Link on Web Page")]
     [Description("Simulates clicking a download link on a web page and saves the file to the specified folder.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
     public class ClickDownloadLinkActivity : BaseCodeActivity
     {
         // ----------------------

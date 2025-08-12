@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
 {
     [DisplayName("Get Keyboard Identifier")]
     [Description("Retrieves the active keyboard identifier from the machine's registry.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MouseAndKeyboard.svg")]
     public class GetKeyboardIdentifierActivity : BaseCodeActivity
     {
         // ----------------------

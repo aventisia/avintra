@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
 {
     [DisplayName("Remove Credential Manager Credentials")]
     [Description("Removes stored credentials from Windows Credential Manager for a specified target.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/CredentialManager.svg")]
     public class RemoveCredentialsActivity : BaseCodeActivity
     {
         [RequiredArgument]

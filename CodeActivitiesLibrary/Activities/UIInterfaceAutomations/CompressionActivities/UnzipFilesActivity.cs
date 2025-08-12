@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 {
     [DisplayName("Unzip Files")]
     [Description("Extracts files from a ZIP archive to a specified destination folder.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Compression.svg")]
     public class UnzipFilesActivity : BaseCodeActivity
     {
 

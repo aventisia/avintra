@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Go To Web Page")]
     [Description("Navigates a web browser instance to a specified URL, back, forward, or reload.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
     public class GoToWebPageActivity : BaseCodeActivity
     {
         // ----------------------

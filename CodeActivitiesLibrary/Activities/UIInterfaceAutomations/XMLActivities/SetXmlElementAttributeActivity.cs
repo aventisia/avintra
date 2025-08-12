@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
     // Activity: Set XML Element Attribute
     [DisplayName("Set XML Element Attribute")]
     [Description("Sets the value of an attribute of an XML element.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/XML.svg")]
     public class SetXmlElementAttributeActivity : BaseCodeActivity
     {
         [RequiredArgument]

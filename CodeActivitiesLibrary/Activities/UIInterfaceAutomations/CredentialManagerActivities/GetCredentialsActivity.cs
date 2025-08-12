@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
 {
     [DisplayName("Get Credential Manager Credentials")]
     [Description("Retrieves stored credentials from Windows Credential Manager for a specified target.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/CredentialManager.svg")]
     public class GetCredentialsActivity : BaseCodeActivity
     {
       // Input Arguments

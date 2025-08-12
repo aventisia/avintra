@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
 {
     [DisplayName("Read from CMD Session")]
     [Description("Reads the output of a CMD session.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/CMDSession.svg")]
     public class ReadFromCmdSessionActivity : BaseCodeActivity
     {
         // ----------------------

@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
 {
     [DisplayName("Update Account Password in Credential Manager")]
     [Description("Updates the password for an existing credential in Windows Credential Manager.")]
-   
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/CredentialManager.svg")]
     public class UpdateAccountPasswordActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Check Element State")]
     [Description("Verifies if an element is visible, enabled, or selected.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
     public class CheckElementStateActivity : BaseCodeActivity
     {
         // ----------------------

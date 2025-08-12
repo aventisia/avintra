@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
 {
     [DisplayName("Open CMD Session")]
     [Description("Opens a new CMD session with optional encoding settings.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/CMDSession.svg")]
     public class OpenCmdSessionActivity : BaseCodeActivity
     {
         // ----------------------

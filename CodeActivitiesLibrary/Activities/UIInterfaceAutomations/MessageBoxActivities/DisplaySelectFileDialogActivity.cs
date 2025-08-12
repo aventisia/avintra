@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 {
     [DisplayName("Display Select File Dialog")]
     [Description("Displays a file selection dialog to let users choose one or more files.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MessageBox.svg")]
     public sealed class DisplaySelectFileDialog : BaseCodeActivity
     {
         [RequiredArgument]

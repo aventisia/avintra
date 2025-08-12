@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
 {
     [DisplayName("Write to CMD Session")]
     [Description("Executes a command on an open CMD session.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/CMDSession.svg")]
     public class WriteToCmdSessionActivity : BaseCodeActivity
     {
         // ----------------------

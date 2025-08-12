@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Select UI Element")]
     [Description("Selects the provided UI element, such as a list item, tab item or combo box option, using UI Automation.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/UIAutomation.svg")]
     public class SelectUIElementActivity : BaseCodeActivity
     {
         [RequiredArgument]

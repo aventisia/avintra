@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Get UI Element Details")]
     [Description("Get information like position, text, or state from a UI element in a window.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/UIAutomation.svg")]
     public class GetUiElementDetailsActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
 {
     [DisplayName("Get XML Element Value")]
     [Description("Gets the value of an XML element based on the provided XPath query.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/XML.svg")]
     public class GetXmlElementValueActivity : BaseCodeActivity
     {
         [RequiredArgument]

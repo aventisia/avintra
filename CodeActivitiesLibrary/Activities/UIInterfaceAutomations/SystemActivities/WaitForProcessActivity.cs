@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
     [DisplayName("Wait For Process")]
     [Description("Waits for a specific process to start or stop.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/System.svg")]
     public class WaitForProcessActivity : BaseCodeActivity
     {
         // ----------------------

@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 {
     //[DisplayName("Display Select From List Dialog")]
     //[Description("Displays a dialog box with options that lets the user select from a list.")]
+    //[ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MessageBox.svg")]
     public class DisplaySelectFromListDialogActivity : BaseCodeActivity
     {
 

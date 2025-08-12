@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
     [DisplayName("Ping")]
     [Description("Sends a message to determine whether a remote computer is accessible over the network.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/System.svg")]
     public class PingActivity : BaseCodeActivity
     {
         // ----------------------

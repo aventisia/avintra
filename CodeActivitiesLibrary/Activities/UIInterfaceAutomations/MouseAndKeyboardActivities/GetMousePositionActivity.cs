@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
 {
     [DisplayName("Get Mouse Position")]
     [Description("Retrieves the current position of the mouse cursor on the screen in pixel coordinates.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MouseAndKeyboard.svg")]
     public class GetMousePositionActivity : BaseCodeActivity
     {
         // Input property

@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 {
     //[DisplayName("Display Select Date Dialog")]
     //[Description("Displays a dialog box that prompts the user to enter a date or date range.")]
+    //[ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MessageBox.svg")]
     public class DisplaySelectDateDialogActivity : BaseCodeActivity
     {
         [DisplayName("Dialog Title")]

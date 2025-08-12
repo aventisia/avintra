@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
 {
     [DisplayName("Save Credential Manager Credentials")]
     [Description("Saves credentials to Windows Credential Manager for a specified target.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/CredentialManager.svg")]
     public class SetCredentialsActivity : BaseCodeActivity
     {
         // Input Arguments

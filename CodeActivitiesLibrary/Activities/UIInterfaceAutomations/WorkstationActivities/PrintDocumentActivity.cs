@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Print Document")]
     [Description("Prints documents with advanced options including printer selection and print settings.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Workstation.svg")]
     public class PrintDocumentActivity : BaseCodeActivity
     {
         [RequiredArgument]

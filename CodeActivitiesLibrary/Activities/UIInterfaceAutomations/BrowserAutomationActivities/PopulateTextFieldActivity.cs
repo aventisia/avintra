@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Populate Text Field on Web Page")]
     [Description(
         "Fills a specified text field in a web browser with provided text. Supports plain or encrypted input.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
     public class PopulateTextFieldActivity : BaseCodeActivity
     {
         // ----------------------

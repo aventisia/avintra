@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Get Temporary File")]
     [Description("Creates a uniquely named empty temporary file on disk and returns its FileInfo object.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/File.svg")]
     public class GetTemporaryFileActivity : BaseCodeActivity
     {
         [DisplayName("Temporary File")]

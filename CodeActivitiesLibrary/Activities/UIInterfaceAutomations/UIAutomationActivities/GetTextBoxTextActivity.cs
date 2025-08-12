@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Get Text from Text Box")]
     [Description("Reads and returns the text from a text box or editable field in a window using the UI element you provide.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/UIAutomation.svg")]
     public class GetTextBoxTextActivity : BaseCodeActivity
     {
         [RequiredArgument]

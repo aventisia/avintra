@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
     // Activity: Get XML Element Attribute
     [DisplayName("Get XML Element Attribute")]
     [Description("Gets the value of an attribute of an XML element.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/XML.svg")]
     public class GetXmlElementAttributeActivity : BaseCodeActivity
     {
         [RequiredArgument]

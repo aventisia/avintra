@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Show Desktop")]
     [Description("Minimizes or restores all windows to show/hide the desktop.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Workstation.svg")]
     public class ShowDesktopActivity : BaseCodeActivity
     {
 

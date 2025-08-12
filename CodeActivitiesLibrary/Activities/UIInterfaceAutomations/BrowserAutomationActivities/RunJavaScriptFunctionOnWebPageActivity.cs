@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Run JavaScript Function on Web Page")]
     [Description("Executes a custom JavaScript function in the context of the current web page.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
     public class RunJavaScriptFunctionOnWebPageActivity : BaseCodeActivity
     {
         // ----------------------

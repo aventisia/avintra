@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Set Checkbox State on Web Page")]
     [Description("Sets the state (checked/unchecked) of a checkbox element on a web page.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
     public class SetCheckboxStateOnWebPageActivity : BaseCodeActivity
     {
         // ----------------------

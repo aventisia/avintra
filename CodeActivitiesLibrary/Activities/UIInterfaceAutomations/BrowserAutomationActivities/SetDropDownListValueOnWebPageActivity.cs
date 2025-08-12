@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Set Drop-Down List Value on Web Page")]
     [Description("Sets or clears the value of a drop-down list element on a web page.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
     public class SetDropDownListValueOnWebPageActivity : BaseCodeActivity
     {
         // ----------------------

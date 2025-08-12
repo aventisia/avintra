@@ -2,6 +2,7 @@
 {
     // [DisplayName("Move Mouse to Text on Screen (OCR)")]
     // [Description("Moves the mouse over a text found on the screen or on the foreground window using OCR.")]
+    // [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MouseAndKeyboard.svg")]
     // public class MoveMouseToTextOnScreenActivity : BaseCodeActivity
     // {
     //     // ----------------------

@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
     [DisplayName("Terminate process")]
     [Description("Immediately stops a running process.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/System.svg")]
     public class TerminateProcessActivity : BaseCodeActivity
     {
         // ----------------------

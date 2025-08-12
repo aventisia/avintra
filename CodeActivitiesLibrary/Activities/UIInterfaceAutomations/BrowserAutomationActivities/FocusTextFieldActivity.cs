@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Focus on Web Page")]
     [Description("Focuses a specific text field in a web browser. Optionally waits for page load and handles dialogs.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
     public class FocusTextFieldActivity : BaseCodeActivity
     {
         // ----------------------

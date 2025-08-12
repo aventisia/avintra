@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
     [DisplayName("Play Sound")]
     [Description(
         "Plays a sound from a WAV file or system sound with options for sync/async playback and volume control.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Workstation.svg")]
     public class PlaySoundActivity : BaseCodeActivity
     {
         // ----------------------

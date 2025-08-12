@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run .NET Script")]
     [Description("Executes some custom .NET script and retrieves its output into a variable.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Scripting.svg")]
     public class RunDotNetScriptActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
 {
     [DisplayName("Wait for Mouse")]
     [Description("Suspends the execution of the flow until the mouse pointer changes to or from the specified cursor.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MouseAndKeyboard.svg")]
     public class WaitForMouseActivity : BaseCodeActivity
     {
         // ----------------------

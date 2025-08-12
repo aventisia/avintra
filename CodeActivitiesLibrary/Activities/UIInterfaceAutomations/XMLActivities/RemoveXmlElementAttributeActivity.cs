@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
     // Activity: Remove XML Element Attribute
     [DisplayName("Remove XML Element Attribute")]
     [Description("Removes an attribute from an XML element.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/XML.svg")]
     public class RemoveXmlElementAttributeActivity : BaseCodeActivity
     {
         [RequiredArgument]

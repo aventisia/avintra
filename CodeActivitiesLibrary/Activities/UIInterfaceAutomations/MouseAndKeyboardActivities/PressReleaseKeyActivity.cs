@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
 {
     [DisplayName("Press or Release Key")]
     [Description("Presses (and holds) or releases one or more modifier keys (Alt, Control, Shift, Win). Supports combinations like Ctrl+Alt.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MouseAndKeyboard.svg")]
     public class PressReleaseKeyActivity : BaseCodeActivity
     {
         // ----------------------

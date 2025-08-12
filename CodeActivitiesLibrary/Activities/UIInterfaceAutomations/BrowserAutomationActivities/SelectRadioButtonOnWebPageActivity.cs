@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Select Radio Button on Web Page")]
     [Description("Simulates selecting a radio button element on a web page.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
     public class SelectRadioButtonOnWebPageActivity : BaseCodeActivity
     {
         // ----------------------

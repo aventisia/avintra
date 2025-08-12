@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Get Details of Element on Web Page")]
     [Description("Retrieves the value of a specified attribute from a selected UI element in a web browser.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
     public class GetDetailsOfElementActivity : BaseCodeActivity
     {
         // ----------------------

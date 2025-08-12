@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Convert Binary Data to File")]
     [Description("Converts binary data (byte[] or Base64 string) to a file at the specified path.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/File.svg")]
     public class ConvertBinaryDataToFileActivity : BaseCodeActivity
     {
         [RequiredArgument]

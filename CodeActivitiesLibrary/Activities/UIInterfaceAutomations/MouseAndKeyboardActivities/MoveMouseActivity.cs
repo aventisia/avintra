@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
 {
     [DisplayName("Move Mouse")]
     [Description("Moves the mouse cursor to a specific position on the screen.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MouseAndKeyboard.svg")]
     public class MoveMouseActivity : BaseCodeActivity
     {
 

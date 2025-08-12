@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Convert Base64 to Text")]
     [Description("Converts a Base64-encoded string to plain text.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/File.svg")]
     public class ConvertBase64ToTextActivity : BaseCodeActivity
     {
         [RequiredArgument]

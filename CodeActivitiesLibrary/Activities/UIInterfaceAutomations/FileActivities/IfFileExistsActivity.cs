@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeActivitiesLibrary.Extensions;
+using System;
 using System.Activities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -8,6 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("If File Exists")]
     [Description("Checks if a file exists or does not exist and marks the beginning of a conditional block.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/File.svg")]
     public class IfFileExistsActivity : Extensions.BaseCodeActivity
     {
         // ----------------------

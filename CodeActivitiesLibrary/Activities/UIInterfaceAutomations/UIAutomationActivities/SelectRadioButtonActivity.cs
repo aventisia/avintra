@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Select Radio Button")]
     [Description("Selects a radio button in a group by its name or zero-based index.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/UIAutomation.svg")]
     public class SelectRadioButtonActivity : BaseCodeActivity
     {
         [RequiredArgument]

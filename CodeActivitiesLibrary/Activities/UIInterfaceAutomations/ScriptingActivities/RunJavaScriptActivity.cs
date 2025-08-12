@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run JavaScript")]
     [Description("Executes some custom JavaScript code and retrieves its output into a variable.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Scripting.svg")]
     public class RunJavaScriptActivity : BaseCodeActivity
     {
         [RequiredArgument]

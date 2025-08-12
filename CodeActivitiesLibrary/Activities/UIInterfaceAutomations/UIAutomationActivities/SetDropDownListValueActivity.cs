@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Select Option from Drop-Down or List")]
     [Description("Selects an option from a drop-down or list UI element by specifying the option's visible name or its zero-based index.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/UIAutomation.svg")]
     public class SetDropDownListValueActivity : BaseCodeActivity
     {
         [RequiredArgument]

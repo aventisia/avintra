@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Control Screensaver")]
     [Description("Enables, disables, starts, or stops the screensaver.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Workstation.svg")]
     public class ControlScreensaverActivity : BaseCodeActivity
     {
         [RequiredArgument]

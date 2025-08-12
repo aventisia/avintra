@@ -19,6 +19,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Launch Browser")]
     [Description("Launches a web browser instance of Microsoft Edge or Google Chrome.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
     public sealed class LaunchBrowserActivity : BaseCodeActivity
     {
         [RequiredArgument]

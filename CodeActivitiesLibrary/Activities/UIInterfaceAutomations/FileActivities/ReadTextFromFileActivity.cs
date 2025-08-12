@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Read Text from File")]
     [Description("Reads all text content from the specified file.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/File.svg")]
     public class ReadTextFromFileActivity : BaseCodeActivity
     {
         #region Arguments

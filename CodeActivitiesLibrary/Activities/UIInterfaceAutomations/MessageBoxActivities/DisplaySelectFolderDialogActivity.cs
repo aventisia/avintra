@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 {
     [DisplayName("Display Select Folder Dialog")]
     [Description("Displays a folder selection dialog to let users choose a folder.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MessageBox.svg")]
     public sealed class DisplaySelectFolderDialog : BaseCodeActivity
     {
         [RequiredArgument]

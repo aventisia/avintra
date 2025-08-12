@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Get Parent Element")]
     [Description("Finds and returns the parent element of the specified web element.")]
+    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
     public class GetParentElementActivity : BaseCodeActivity
     {
         // ----------------------
