@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WindowsServiceActivities
     // Activity to pause a running Windows service
     [DisplayName("Pause Service")]
     [Description("Pauses a running Windows service.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/WindowsService.svg")]
+    [ActivityMetaData(nodeImg: "/assets/WindowsService.svg")]
     public class PauseServiceActivity : BaseCodeActivity
     {
         // ----------------------

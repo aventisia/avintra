@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
     [DisplayName("Retrieve Files in Folder")]
     [Description(
         "This activity retrieves the list of files in a specified folder, with options to include subfolders and sort the results.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Folder.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Folder.svg")]
     public class GetFilesInFolderActivity : BaseCodeActivity
     {
         [DisplayName("Folder Path")]

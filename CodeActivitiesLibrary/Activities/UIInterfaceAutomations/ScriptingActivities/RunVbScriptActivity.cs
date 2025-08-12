@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run VBScript")]
     [Description("Executes custom VBScript code and retrieves its output.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Scripting.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Scripting.svg")]
     public class RunVbScriptActivity : BaseCodeActivity
     {
         [RequiredArgument]

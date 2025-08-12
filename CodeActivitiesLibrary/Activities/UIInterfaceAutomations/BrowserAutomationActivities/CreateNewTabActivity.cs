@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Create New Tab")]
     [Description("Creates a new tab in the web browser and optionally navigates to a specified URL.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/BrowserAutomation.svg")]
     public class CreateNewTabActivity : BaseCodeActivity
     {
         // ----------------------

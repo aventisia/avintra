@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Active Cell on Excel Worksheet")]
     [Description("Gets the address of the currently active cell in the active worksheet of an Excel instance.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class GetActiveCellOnExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

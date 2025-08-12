@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Get File Path Components")]
     [Description("Extracts various parts (directory, name, extension) from the given file path.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/File.svg")]
+    [ActivityMetaData(nodeImg: "/assets/File.svg")]
     public class GetFilePathPartsActivity : BaseCodeActivity
     {
         [RequiredArgument]

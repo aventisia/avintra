@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Reply to Email")]
     [Description("Replies to an email using Message ID.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Outlook.svg")]
     public class ReplyToEmailActivity : BaseCodeActivity
     {
         [RequiredArgument]

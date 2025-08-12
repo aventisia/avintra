@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Write Text to File")]
     [Description("Writes the given text to the specified file using either Replace or Append mode.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/File.svg")]
+    [ActivityMetaData(nodeImg: "/assets/File.svg")]
     public class WriteTextToFileActivity : BaseCodeActivity
     {
         #region Arguments

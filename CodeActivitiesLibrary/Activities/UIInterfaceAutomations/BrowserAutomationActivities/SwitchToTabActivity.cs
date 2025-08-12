@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Switch To Tab")]
     [Description("Switches control to a browser tab using index, title, or partial URL.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/BrowserAutomation.svg")]
     public class SwitchToTabActivity : BaseCodeActivity
     {
         // ----------------------

@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
 {
     [DisplayName("Launch Outlook Application")]
     [Description("Launches an Outlook application instance. Optionally connects to a specific profile.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Outlook.svg")]
     public class LaunchOutlookActivity : BaseCodeActivity
     {
         // ----------------------

@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 {
     [DisplayName("Find File in Folder")]
     [Description("Finds a single file in a folder (and optionally subfolders) based on criteria like largest, smallest, newest, oldest, etc.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Folder.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Folder.svg")]
     public class FindFileInFolderActivity : BaseCodeActivity
     {
         [RequiredArgument]

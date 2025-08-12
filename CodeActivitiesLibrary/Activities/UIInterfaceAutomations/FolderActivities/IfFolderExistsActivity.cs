@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 {
     [DisplayName("If Folder Exists")]
     [Description("Checks whether the specified folder exists or doesn't exist based on the selected condition.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Folder.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Folder.svg")]
     public class IfFolderExistsActivity : BaseCodeActivity
     {
         [RequiredArgument]

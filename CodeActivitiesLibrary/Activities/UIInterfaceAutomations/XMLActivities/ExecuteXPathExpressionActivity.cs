@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
 {
     [DisplayName("Execute XPath Expression")]
     [Description("Executes an XPath expression on the provided XML content and returns the result.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/XML.svg")]
+    [ActivityMetaData(nodeImg: "/assets/XML.svg")]
     public class ExecuteXPathExpressionActivity : BaseCodeActivity
     {
         [RequiredArgument]

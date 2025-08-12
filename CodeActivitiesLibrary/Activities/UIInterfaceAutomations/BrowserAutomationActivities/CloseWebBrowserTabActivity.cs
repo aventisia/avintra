@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Close Web Browser Tab")]
     [Description(
         "Closes web browser tabs based on various conditions (current, by title/URL, all except main, timeout-based).")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/BrowserAutomation.svg")]
     public class CloseWebBrowserTabActivity : BaseCodeActivity
     {
         // ----------------------

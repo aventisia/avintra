@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Close Web Browser")]
     [Description("Closes a web browser instance or all instances if needed.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/BrowserAutomation.svg")]
     public class CloseWebBrowserActivity : BaseCodeActivity
     {
         // ----------------------

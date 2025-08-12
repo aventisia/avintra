@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Expand or Collapse UI Element")]
     [Description("Expands or collapses a UI element (such as a tree item or combo box) by searching for it using a property and value.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/UIAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/UIAutomation.svg")]
     public class ExpandOrCollapseUIElementActivity : BaseCodeActivity
     {
         [RequiredArgument]
@@ -46,7 +46,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
             {
                 // Get the automation element for the UI element
                 var elementInstance = UIAutomationElementHelper.GetElementByPath(identificationObjectPath, maxWaitTime);
-                
+
                 if (elementInstance != null)
                 {
                     var expandCollapsePattern = elementInstance.Patterns.ExpandCollapse.PatternOrDefault;
@@ -69,7 +69,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
                         statusMessage = "Expand/Collapse pattern not supported on the element.";
                     }
                 }
-                
+
 
                 if (!result && string.IsNullOrEmpty(statusMessage))
                 {

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 {
     [DisplayName("Delete Folder")]
     [Description("Removes the specified folder and its contents from the file system.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Folder.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Folder.svg")]
     public class DeleteFolderActivity : BaseCodeActivity
     {
         [RequiredArgument]

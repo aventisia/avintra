@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 {
     [DisplayName("Display Message")]
     [Description("Displays a message box")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MessageBox.svg")]
+    [ActivityMetaData(nodeImg: "/assets/MessageBox.svg")]
     public class DisplayMessageActivity : BaseCodeActivity
     {
         [DisplayName("Message Box Title")]

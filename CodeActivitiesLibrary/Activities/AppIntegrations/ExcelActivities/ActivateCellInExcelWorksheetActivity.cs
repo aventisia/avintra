@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [DisplayName("Activate Cell in Excel Worksheet")]
     [Description(
         "Activates a specific cell in the active worksheet of an Excel instance based on absolute position, relative offset, or named range.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class ActivateCellInExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 {
     [DisplayName("Wait for File")]
     [Description("Suspends running the flow until a file is created or deleted.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Folder.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Folder.svg")]
     public class WaitForFileActivity : Extensions.BaseNativeActivity
     {
         [RequiredArgument]

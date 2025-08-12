@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Delete File(s)")]
     [Description("Deletes one or more files.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/File.svg")]
+    [ActivityMetaData(nodeImg: "/assets/File.svg")]
     public class DeleteFileActivity : BaseCodeActivity
     {
         [RequiredArgument]

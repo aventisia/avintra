@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     [DisplayName("Save Word")]
     [Description("Saves a previously launched Word instance.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Word.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Word.svg")]
     public class SaveWordActivity : BaseCodeActivity
     {
         [RequiredArgument]

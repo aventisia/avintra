@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Get Checkbox Value")]
     [Description("Retrieves the current value (checked/unchecked) of a checkbox element on a web page.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/BrowserAutomation.svg")]
     public class GetCheckboxValueActivity : BaseCodeActivity
     {
         // ----------------------

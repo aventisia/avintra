@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
     [DisplayName("Get windows environment variable")]
     [Description("Retrieves the value of an environment variable.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/System.svg")]
+    [ActivityMetaData(nodeImg: "/assets/System.svg")]
     public class GetWindowsEnvironmentVariableActivity : BaseCodeActivity
     {
         [RequiredArgument]

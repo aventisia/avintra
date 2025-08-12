@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
 {
     [DisplayName("Get Account Password from Credential Manager")]
     [Description("Retrieves the password for a stored credential from Windows Credential Manager.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/CredentialManager.svg")]
+    [ActivityMetaData(nodeImg: "/assets/CredentialManager.svg")]
     public class GetAccountPasswordActivity : BaseCodeActivity
     {
         //Input Arguments

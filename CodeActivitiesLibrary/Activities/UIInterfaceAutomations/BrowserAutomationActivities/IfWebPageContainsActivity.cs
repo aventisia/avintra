@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("If Web Page Contains")]
     [Description(
         "Checks if a web page contains a specific UI element or text. Optionally checks if the element is enabled or disabled.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/BrowserAutomation.svg")]
     public class IfWebPageContainsActivity : BaseCodeActivity
     {
         // ----------------------

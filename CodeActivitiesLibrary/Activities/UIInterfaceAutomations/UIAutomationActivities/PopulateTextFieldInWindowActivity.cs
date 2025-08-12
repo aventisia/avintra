@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Populate Text Field in Window")]
     [Description("Fills a text box or editable field in a window with the specified text using the method you choose.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/UIAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/UIAutomation.svg")]
     public class PopulateTextFieldInWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Move Window")]
     [Description("Moves a window to the position you choose on the screen.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/UIAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/UIAutomation.svg")]
     public class MoveWindowActivity : BaseCodeActivity
     {
         [RequiredArgument]

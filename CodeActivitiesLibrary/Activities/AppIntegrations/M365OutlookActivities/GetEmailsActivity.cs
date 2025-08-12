@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Get Emails")]
     [Description("Retrieves top 10 emails from the Inbox folder using Microsoft Graph API.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Outlook.svg")]
     public class GetEmailsActivity : BaseCodeActivity
     {
         [RequiredArgument]

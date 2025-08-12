@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Run Excel Macro")]
     [Description("Runs a specified VBA macro in the active Excel workbook.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class RunExcelMacroActivity : BaseCodeActivity
     {
         // ----------------------

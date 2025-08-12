@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MessageBoxActivities
 {
     [DisplayName("Display Input Dialog")]
     [Description("Displays a dialog box that prompts the user to enter text.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MessageBox.svg")]
+    [ActivityMetaData(nodeImg: "/assets/MessageBox.svg")]
     public class DisplayInputDialogActivity : BaseCodeActivity
     {
         [DisplayName("Input Dialog Title")]

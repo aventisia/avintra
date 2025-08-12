@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Set Window State")]
     [Description("Change the window to normal, maximized, or minimized state.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/UIAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/UIAutomation.svg")]
     public class SetWindowStateActivity : BaseCodeActivity
     {
         [RequiredArgument]

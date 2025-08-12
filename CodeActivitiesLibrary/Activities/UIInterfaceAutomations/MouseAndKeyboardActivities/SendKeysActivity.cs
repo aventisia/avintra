@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
 {
     [DisplayName("Send Keys")]
     [Description("Sends keys to the specified target (foreground window, UI element, window handle, or title/class).")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MouseAndKeyboard.svg")]
+    [ActivityMetaData(nodeImg: "/assets/MouseAndKeyboard.svg")]
     public class SendKeysActivity : BaseCodeActivity
     {
         // Input Arguments

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     //[DisplayName("Set Default Printer")]
     //[Description("Sets a printer as the default printer.")]
-    //[ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Workstation.svg")]
+    //[ActivityMetaData(nodeImg: "/assets/Workstation.svg")]
     public class SetDefaultPrinterActivity : BaseCodeActivity
     {
         [RequiredArgument]

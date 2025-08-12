@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
 {
     [DisplayName("Save Credential Manager Credentials")]
     [Description("Saves credentials to Windows Credential Manager for a specified target.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/CredentialManager.svg")]
+    [ActivityMetaData(nodeImg: "/assets/CredentialManager.svg")]
     public class SetCredentialsActivity : BaseCodeActivity
     {
         // Input Arguments
@@ -20,12 +20,12 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
 
         [RequiredArgument]
         [DisplayName("Account Name")]
-        [Description("The username to be saved in the Credential Manager.")]      
+        [Description("The username to be saved in the Credential Manager.")]
         public InArgument<string> AccountName { get; set; }
 
         [RequiredArgument]
         [DisplayName("Password")]
-        [Description("The password associated with the account to be stored securely.")]     
+        [Description("The password associated with the account to be stored securely.")]
         public InArgument<string> Password { get; set; }
 
 

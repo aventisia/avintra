@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Convert Base64 to File")]
     [Description("Converts a Base64 encoded string to a file and saves it at the specified path.")]
+    [ActivityMetaData(nodeImg: "/assets/File.svg")]
     public class ConvertBase64ToFileActivity : BaseCodeActivity
     {
         [RequiredArgument]

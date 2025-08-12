@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
     // Activity: Read XML from File
     [DisplayName("Read XML from File")]
     [Description("Reads the contents of an XML file into a variable.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/XML.svg")]
+    [ActivityMetaData(nodeImg: "/assets/XML.svg")]
     public class ReadXmlFromFileActivity : BaseCodeActivity
     {
         [RequiredArgument]

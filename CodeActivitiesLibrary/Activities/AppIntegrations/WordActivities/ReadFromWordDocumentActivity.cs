@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     [DisplayName("Read from Word Document")]
     [Description("Reads the text content from a document of a Word instance.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Word.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Word.svg")]
     public class ReadFromWordDocumentActivity : BaseCodeActivity
     {
         [RequiredArgument]

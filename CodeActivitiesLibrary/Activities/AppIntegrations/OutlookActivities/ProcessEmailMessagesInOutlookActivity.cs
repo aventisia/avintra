@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
 {
     [DisplayName("Process Email Messages in Outlook")]
     [Description("Moves or deletes a collection of email messages in Outlook.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Outlook.svg")]
     public class ProcessEmailMessagesInOutlookActivity : BaseCodeActivity
     {
         // ----------------------

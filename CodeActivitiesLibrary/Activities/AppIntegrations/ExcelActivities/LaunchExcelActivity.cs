@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Launch Excel Application")]
     [Description("Launches a new Excel application instance or opens an existing Excel document.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class LaunchExcelActivity : BaseCodeActivity
     {
         // ----------------------

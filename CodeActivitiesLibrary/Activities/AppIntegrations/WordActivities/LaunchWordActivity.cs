@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     [DisplayName("Launch Word")]
     [Description("Launches a new Word instance or opens a Word document.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Word.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Word.svg")]
     public class LaunchWordActivity : BaseCodeActivity
     {
         [DisplayName("Launch Mode")]

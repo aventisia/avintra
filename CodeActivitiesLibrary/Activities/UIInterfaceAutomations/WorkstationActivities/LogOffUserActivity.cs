@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Log Off User")]
     [Description("Logs off the current user with various methods and options.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Workstation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Workstation.svg")]
     public class LogOffUserActivity : BaseCodeActivity
     {
         [DisplayName("Logoff Method")]

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
 {
     [DisplayName("Insert XML Element")]
     [Description("Inserts a new XML element into an existing XML document.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/XML.svg")]
+    [ActivityMetaData(nodeImg: "/assets/XML.svg")]
     public class InsertXmlElementActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 {
     [DisplayName("Run .NET Script")]
     [Description("Executes some custom .NET script and retrieves its output into a variable.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Scripting.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Scripting.svg")]
     public class RunDotNetScriptActivity : BaseCodeActivity
     {
         [RequiredArgument]
@@ -30,7 +30,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
 
             try
             {
-                 // Validate input
+                // Validate input
                 if (string.IsNullOrWhiteSpace(scriptCode))
                 {
                     throw new ArgumentException(".NET Script code cannot be null or empty.");

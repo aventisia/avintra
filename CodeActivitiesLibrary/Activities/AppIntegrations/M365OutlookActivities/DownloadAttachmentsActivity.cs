@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Download Attachments")]
     [Description("Downloads all attachments for a specified email message using Microsoft Graph API.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Outlook.svg")]
     public class DownloadAttachmentsActivity : BaseCodeActivity
     {
         [RequiredArgument]

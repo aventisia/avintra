@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.Activities.AppIntegrations.OutlookActivities
 {
     [DisplayName("Send Email Message Through Outlook")]
     [Description("Sends an email message through Microsoft Outlook using real COM interop.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Outlook.svg")]
     public class SendEmailMessageThroughOutlookActivity : BaseCodeActivity
     {
         // ----------------------

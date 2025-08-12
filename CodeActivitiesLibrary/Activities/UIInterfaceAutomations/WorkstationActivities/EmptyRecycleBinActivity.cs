@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Empty Recycle Bin")]
     [Description("Deletes all files from the Windows recycle bin for all users or current user.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Workstation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Workstation.svg")]
     public class EmptyRecycleBinActivity : BaseCodeActivity
     {
         [DisplayName("Scope")]

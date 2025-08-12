@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
     [DisplayName("Delete Windows Environment Variable")]
     [Description("Deletes an environment variable from a given scope.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/System.svg")]
+    [ActivityMetaData(nodeImg: "/assets/System.svg")]
     public class DeleteWindowsEnvironmentVariableActivity : BaseCodeActivity
     {
         // Input: Environment Variable Name

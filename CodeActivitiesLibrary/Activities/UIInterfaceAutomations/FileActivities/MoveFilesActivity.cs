@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Move File(s)")]
     [Description("Moves one or more files into a destination folder.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/File.svg")]
+    [ActivityMetaData(nodeImg: "/assets/File.svg")]
     public class MoveFileActivity : BaseCodeActivity
     {
         [RequiredArgument]

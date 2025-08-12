@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
 {
     [DisplayName("Wait for Shortcut Key")]
     [Description("Pauses the flow run until a specific shortcut key is pressed.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MouseAndKeyboard.svg")]
+    [ActivityMetaData(nodeImg: "/assets/MouseAndKeyboard.svg")]
     public class WaitForShortcutKeyActivity : BaseCodeActivity
     {
         // Input Arguments

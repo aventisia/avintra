@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Set Screen Resolution")]
     [Description("Sets the width, height, bit count, and frequency of a selected monitor.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Workstation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Workstation.svg")]
     public class SetScreenResolutionActivity : BaseCodeActivity
     {
         private const int CdsUpdateregistry = 0x01;

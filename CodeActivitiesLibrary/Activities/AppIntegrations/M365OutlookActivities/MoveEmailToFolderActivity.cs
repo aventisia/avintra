@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Move Email To Folder")]
     [Description("Moves an email to a specified folder using Microsoft Graph API.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Outlook.svg")]
     public class MoveEmailToFolderActivity : BaseCodeActivity
     {
         [RequiredArgument]

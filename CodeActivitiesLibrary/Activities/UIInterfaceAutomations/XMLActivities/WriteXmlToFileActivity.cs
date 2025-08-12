@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.XmlActivities
 {
     [DisplayName("Write XML to File")]
     [Description("Writes the contents of an XML node or string into a file.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/XML.svg")]
+    [ActivityMetaData(nodeImg: "/assets/XML.svg")]
     public class WriteXmlToFileActivity : BaseCodeActivity
     {
         [RequiredArgument]

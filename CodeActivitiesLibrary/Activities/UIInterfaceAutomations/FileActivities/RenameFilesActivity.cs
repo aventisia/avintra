@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Rename File(s)")]
     [Description("Renames one or more files.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/File.svg")]
+    [ActivityMetaData(nodeImg: "/assets/File.svg")]
     public class RenameFileActivity : BaseCodeActivity
     {
         [RequiredArgument]

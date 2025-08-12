@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Get Selected Radio Button")]
     [Description("Retrieves the name of the selected radio button in a radio button group or the state of a specific radio button.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/UIAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/UIAutomation.svg")]
     public class GetSelectedRadioButtonActivity : BaseCodeActivity
     {
         [RequiredArgument]

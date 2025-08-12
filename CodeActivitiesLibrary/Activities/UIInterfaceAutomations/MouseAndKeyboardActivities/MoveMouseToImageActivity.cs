@@ -16,7 +16,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
 {
     [DisplayName("Move Mouse to Image")]
     [Description("Moves the mouse cursor to the center of a specified image on the screen using template matching.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MouseAndKeyboard.svg")]
+    [ActivityMetaData(nodeImg: "/assets/MouseAndKeyboard.svg")]
     public class MoveMouseToImageActivity : BaseCodeActivity
     {
         // ----------------------

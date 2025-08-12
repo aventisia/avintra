@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
 {
     [DisplayName("Close CMD Session")]
     [Description("Closes a previously opened CMD session.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/CMDSession.svg")]
+    [ActivityMetaData(nodeImg: "/assets/CMDSession.svg")]
     public class CloseCmdSessionActivity : BaseCodeActivity
     {
         // ----------------------
@@ -72,5 +72,5 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
             }
         }
     }
-    
+
 }

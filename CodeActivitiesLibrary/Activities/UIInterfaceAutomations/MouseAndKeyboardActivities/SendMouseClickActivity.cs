@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
 {
     [DisplayName("Send Mouse Click")]
     [Description("Sends a mouse click event to the specified location.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MouseAndKeyboard.svg")]
+    [ActivityMetaData(nodeImg: "/assets/MouseAndKeyboard.svg")]
     public class SendMouseClickActivity : BaseCodeActivity
     {
         // ----------------------

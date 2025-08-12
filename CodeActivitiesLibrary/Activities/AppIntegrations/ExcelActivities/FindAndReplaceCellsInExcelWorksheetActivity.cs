@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Find and Replace in Excel Worksheet")]
     [Description("Finds text and replaces it with another in the active worksheet of an Excel instance.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class FindAndReplaceCellsInExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

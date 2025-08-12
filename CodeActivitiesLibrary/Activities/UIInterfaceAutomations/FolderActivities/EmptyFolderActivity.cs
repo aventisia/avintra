@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 {
     [DisplayName("Empty Folder")]
     [Description("Removes all files and subdirectories within the specified folder, preserving the folder itself.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Folder.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Folder.svg")]
     public class EmptyFolderActivity : BaseCodeActivity
     {
         [RequiredArgument]

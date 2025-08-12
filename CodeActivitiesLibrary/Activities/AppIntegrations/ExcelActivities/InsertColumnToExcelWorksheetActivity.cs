@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Insert Column to Excel Worksheet")]
     [Description("Inserts a new column to the left of the specified column in the active Excel worksheet.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class InsertColumnToExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

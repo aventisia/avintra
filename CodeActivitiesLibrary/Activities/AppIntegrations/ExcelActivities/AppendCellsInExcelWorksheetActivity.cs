@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Append Range to Excel Worksheet")]
     [Description("Appends a range of data (e.g., from a DataTable) to the active worksheet of an Excel instance.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class AppendCellsInExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

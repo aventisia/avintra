@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Get Selected Item from Drop-Down List")]
     [Description("Reads and returns the selected item from a drop-down list in a window using the property you choose.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/UIAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/UIAutomation.svg")]
     public class GetDropDownSelectedItemActivity : BaseCodeActivity
     {
         [RequiredArgument]

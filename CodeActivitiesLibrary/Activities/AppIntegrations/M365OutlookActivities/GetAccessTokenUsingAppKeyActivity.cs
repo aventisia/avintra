@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Get Access Token Using App Key")]
     [Description("Acquires a Microsoft Graph API access token using client credentials (App Key flow).")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Outlook.svg")]
     public class GetAccessTokenUsingAppKeyActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 {
     [DisplayName("Create Folder")]
     [Description("Generates a new folder within the specified parent directory using a given folder name.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Folder.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Folder.svg")]
     public class CreateFolderActivity : BaseCodeActivity
     {
         [RequiredArgument]

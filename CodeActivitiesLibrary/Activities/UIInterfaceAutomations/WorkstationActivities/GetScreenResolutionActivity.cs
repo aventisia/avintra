@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Get Screen Resolution")]
     [Description("Gets the width, height, bit depth, and refresh rate of one or all monitors.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Workstation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Workstation.svg")]
     public class GetScreenResolutionActivity : BaseCodeActivity
     {
         [DisplayName("Monitor Selection")]

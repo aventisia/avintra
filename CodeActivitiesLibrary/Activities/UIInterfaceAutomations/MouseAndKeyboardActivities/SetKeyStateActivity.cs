@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
 
     [DisplayName("Set Key State")]
     [Description("Sets the state (on or off) for the keys Caps Lock, Num Lock, or Scroll Lock.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MouseAndKeyboard.svg")]
+    [ActivityMetaData(nodeImg: "/assets/MouseAndKeyboard.svg")]
     public class SetKeyStateActivity : BaseCodeActivity
     {
         // ----------------------

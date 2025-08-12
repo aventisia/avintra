@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     [DisplayName("Insert Image in Word Document")]
     [Description("Inserts an image into a Word file at a specified location.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Word.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Word.svg")]
     public class InsertImageInWordDocumentActivity : BaseCodeActivity
     {
         [RequiredArgument]

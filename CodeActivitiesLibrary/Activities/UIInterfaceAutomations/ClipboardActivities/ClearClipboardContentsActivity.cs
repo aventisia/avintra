@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ClipboardActivities
     // Activity to clear clipboard contents
     [DisplayName("Clear Clipboard Contents")]
     [Description("Clears all contents from the system clipboard.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Clipboard.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Clipboard.svg")]
     public class ClearClipboardContentsActivity : BaseCodeActivity
     {
         protected override void Execute(CodeActivityContext context)

@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Write to Excel Worksheet")]
     [Description("Writes a value to a specific cell or range of cells in an Excel worksheet.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class WriteToExcelWorksheetActivity : BaseCodeActivity
     {
         [RequiredArgument]
@@ -189,7 +189,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                 range.Value = finalValue;
 
-            // Optional: Wrap text in Excel cell to show line breaks
+                // Optional: Wrap text in Excel cell to show line breaks
                 range.WrapText = true;
             }
         }

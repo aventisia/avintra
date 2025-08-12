@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
     [DisplayName("Set windows environment variable")]
     [Description("Sets an environment variable to a given value.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/System.svg")]
+    [ActivityMetaData(nodeImg: "/assets/System.svg")]
     public class SetWindowsEnvironmentVariableActivity : BaseCodeActivity
     {
         // ----------------------

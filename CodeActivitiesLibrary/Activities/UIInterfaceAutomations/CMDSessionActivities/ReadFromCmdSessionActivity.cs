@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
 {
     [DisplayName("Read from CMD Session")]
     [Description("Reads the output of a CMD session.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/CMDSession.svg")]
+    [ActivityMetaData(nodeImg: "/assets/CMDSession.svg")]
     public class ReadFromCmdSessionActivity : BaseCodeActivity
     {
         // ----------------------
@@ -43,10 +43,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
         // Execution Logic
         // ----------------------
 
-    protected override void Execute(CodeActivityContext context)
-    {
-        
-        try
+        protected override void Execute(CodeActivityContext context)
+        {
+
+            try
             {
                 var cmdSession = CmdSession.Get(context);
                 var separateOutputFromError = SeparateOutputFromError.Get(context);
@@ -66,7 +66,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
                 }
 
                 CmdOutput.Set(context, stdout);
-                
+
                 if (separateOutputFromError)
                 {
                     CmdError.Set(context, stderr);
@@ -84,7 +84,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CmdSessionActivities
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error reading CMD session: {ex.Message}");
             }
-    }
+        }
     }
 
 }

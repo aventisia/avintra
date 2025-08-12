@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Lock Workstation")]
     [Description("Locks the workstation's display to protect it from unauthorized use. Optionally forces lock even if workstation doesn't support it.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Workstation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Workstation.svg")]
     public class LockWorkstationActivity : BaseCodeActivity
     {
 

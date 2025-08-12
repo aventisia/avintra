@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Select Cells in Excel Worksheet")]
     [Description("Selects a specific range of cells in the active Excel worksheet.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class SelectCellsInExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

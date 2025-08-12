@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Shutdown Computer")]
     [Description("Shuts down, restarts, sleeps, or hibernates the computer.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Workstation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Workstation.svg")]
     public class ShutdownComputerActivity : BaseCodeActivity
     {
         [RequiredArgument]

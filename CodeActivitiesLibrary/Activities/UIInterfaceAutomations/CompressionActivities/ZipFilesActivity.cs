@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 {
     [DisplayName("Zip Files")]
     [Description("Compress one or more files or folders into a zip archive.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Compression.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Compression.svg")]
     public class ZipFilesActivity : BaseCodeActivity
     {
         [RequiredArgument]

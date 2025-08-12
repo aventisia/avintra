@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Click on Web Page")]
     [Description("Simulates clicking a UI element (e.g., link, button) on a web page.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/BrowserAutomation.svg")]
     public class ClickLinkOnWebPageActivity : BaseCodeActivity
     {
         // ----------------------

@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
     [DisplayName("Wait For Process")]
     [Description("Waits for a specific process to start or stop.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/System.svg")]
+    [ActivityMetaData(nodeImg: "/assets/System.svg")]
     public class WaitForProcessActivity : BaseCodeActivity
     {
         // ----------------------
@@ -53,79 +53,79 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-                try
+            try
+            {
+                var processName = ProcessName.Get(context).ToString();
+                var fromUser = FromUser.Get(context);
+                var userName = fromUser ? UserName.Get(context) : null;
+                var waitForProcessTo = WaitForProcessTo.Get(context);
+                var failWithTimeout = FailWithTimeoutError.Get(context);
+                var duration = failWithTimeout ? Duration.Get(context) : 60; // Default timeout if not set
+
+                bool conditionMet = false;
+                var timeoutTimer = new TimeSpan(0, 0, duration);
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+                while (stopwatch.Elapsed < timeoutTimer)
                 {
-                    var processName = ProcessName.Get(context).ToString();
-                    var fromUser = FromUser.Get(context);
-                    var userName = fromUser ? UserName.Get(context) : null;
-                    var waitForProcessTo = WaitForProcessTo.Get(context);
-                    var failWithTimeout = FailWithTimeoutError.Get(context);
-                    var duration = failWithTimeout ? Duration.Get(context) : 60; // Default timeout if not set
+                    var processes = Process.GetProcessesByName(processName);
 
-                    bool conditionMet = false;
-                    var timeoutTimer = new TimeSpan(0, 0, duration);
-                    var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-
-                    while (stopwatch.Elapsed < timeoutTimer)
+                    if (fromUser && !string.IsNullOrEmpty(userName))
                     {
-                        var processes = Process.GetProcessesByName(processName);
-
-                        if (fromUser && !string.IsNullOrEmpty(userName))
+                        processes = processes.Where(p =>
                         {
-                            processes = processes.Where(p =>
+                            try
                             {
-                                try
-                                {
-                                    string owner = GetProcessOwner(p.Id);
-                                    return owner?.Equals(userName, StringComparison.OrdinalIgnoreCase) == true;
-                                }
-                                catch
-                                {
-                                    return false;
-                                }
-                            }).ToArray();
-                        }
-
-                        bool exists = processes.Length > 0;
-
-                        if ((waitForProcessTo == WaitForProcessEnum.Start && exists) ||
-                            (waitForProcessTo == WaitForProcessEnum.Stop && !exists))
-                        {
-                            conditionMet = true;
-                            break;
-                        }
-
-                        System.Threading.Thread.Sleep(500); // Poll every 0.5 seconds
+                                string owner = GetProcessOwner(p.Id);
+                                return owner?.Equals(userName, StringComparison.OrdinalIgnoreCase) == true;
+                            }
+                            catch
+                            {
+                                return false;
+                            }
+                        }).ToArray();
                     }
 
-                    stopwatch.Stop();
+                    bool exists = processes.Length > 0;
 
-                    if (conditionMet)
+                    if ((waitForProcessTo == WaitForProcessEnum.Start && exists) ||
+                        (waitForProcessTo == WaitForProcessEnum.Stop && !exists))
                     {
-                        StatusMessage.Set(context, $"Process '{processName}' {(waitForProcessTo == WaitForProcessEnum.Start ? "started" : "stopped")} successfully after {stopwatch.Elapsed.TotalSeconds:F1} seconds.");
-                        IsSuccess.Set(context, true);
+                        conditionMet = true;
+                        break;
+                    }
+
+                    System.Threading.Thread.Sleep(500); // Poll every 0.5 seconds
+                }
+
+                stopwatch.Stop();
+
+                if (conditionMet)
+                {
+                    StatusMessage.Set(context, $"Process '{processName}' {(waitForProcessTo == WaitForProcessEnum.Start ? "started" : "stopped")} successfully after {stopwatch.Elapsed.TotalSeconds:F1} seconds.");
+                    IsSuccess.Set(context, true);
+                }
+                else
+                {
+                    string message = $"Timed out waiting for process '{processName}' to {(waitForProcessTo == WaitForProcessEnum.Start ? "start" : "stop")}.";
+
+                    if (failWithTimeout)
+                    {
+                        StatusMessage.Set(context, message);
+                        IsSuccess.Set(context, false);
                     }
                     else
                     {
-                        string message = $"Timed out waiting for process '{processName}' to {(waitForProcessTo == WaitForProcessEnum.Start ? "start" : "stop")}.";
-
-                        if (failWithTimeout)
-                        {
-                            StatusMessage.Set(context, message);
-                            IsSuccess.Set(context, false);
-                        }
-                        else
-                        {
-                            StatusMessage.Set(context, message + " Proceeding without error.");
-                            IsSuccess.Set(context, true);
-                        }
+                        StatusMessage.Set(context, message + " Proceeding without error.");
+                        IsSuccess.Set(context, true);
                     }
                 }
-                catch (Exception ex)
-                {
-                    StatusMessage.Set(context, $"Error waiting for process: {ex.Message}");
-                    IsSuccess.Set(context, false);
-                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage.Set(context, $"Error waiting for process: {ex.Message}");
+                IsSuccess.Set(context, false);
+            }
         }
 
         private static string GetProcessOwner(int processId)

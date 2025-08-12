@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.Extensions
         public string NodeImg { get; }
         public string DocsLink { get; }
 
-        public ActivityMetaDataAttribute(string nodeType,
+        public ActivityMetaDataAttribute(string nodeType = "activityNode",
             string nodeIcon = null,
             string nodeImg = "/function.png",
             string docsLink = "https://docs.aventisia.com")

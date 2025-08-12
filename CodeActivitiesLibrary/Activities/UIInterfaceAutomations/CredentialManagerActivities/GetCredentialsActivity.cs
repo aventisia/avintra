@@ -10,10 +10,10 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
 {
     [DisplayName("Get Credential Manager Credentials")]
     [Description("Retrieves stored credentials from Windows Credential Manager for a specified target.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/CredentialManager.svg")]
+    [ActivityMetaData(nodeImg: "/assets/CredentialManager.svg")]
     public class GetCredentialsActivity : BaseCodeActivity
     {
-      // Input Arguments
+        // Input Arguments
 
         [RequiredArgument]
         [DisplayName("Target Name")]
@@ -67,7 +67,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
             }
         }
 
-      // Helper Methods
+        // Helper Methods
 
         private static SecureString ToSecureString(string password)
         {
@@ -81,6 +81,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
             }
             secure.MakeReadOnly();
             return secure;
-        }  
+        }
     }
 }

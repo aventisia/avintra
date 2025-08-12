@@ -14,7 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Create Draft Email")]
     [Description("Creates a draft email message in the user's mailbox using Microsoft Graph API.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Outlook.svg")]
     public class CreateDraftEmailActivity : BaseCodeActivity
     {
         [RequiredArgument]

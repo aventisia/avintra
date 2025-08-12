@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Read from Excel Worksheet")]
     [Description("Reads values from a specified cell range in the active Excel worksheet.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class ReadFromExcelWorksheetActivity : BaseCodeActivity
     {
         [RequiredArgument]
@@ -159,7 +159,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             dataTable = ReadRange(namedRange, getContentsAsText, firstLineContainsColumnNames);
 
                             if (omitEmptyColumnsAndRows)
-                            // Trim empty columns and rows
+                                // Trim empty columns and rows
                                 dataTable = TrimEmptyColumnsAndRows(dataTable);
 
                             break;
@@ -234,7 +234,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             for (var i = dataTable.Columns.Count - 1; i >= 0; i--)
                 if (dataTable.AsEnumerable().All(row => row.IsNull(i)))
                     dataTable.Columns.RemoveAt(i);
-            
+
             // Trim empty rows
             for (var i = dataTable.Rows.Count - 1; i >= 0; i--)
                 if (dataTable.Rows[i].ItemArray.All(item => item == DBNull.Value))

@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Delete Column from Excel Worksheet")]
     [Description("Deletes a specific column from the active worksheet of an Excel instance.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class DeleteColumnFromExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
     [DisplayName("Press Button on Web Page")]
     [Description(
         "Simulates clicking a UI button element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/BrowserAutomation.svg")]
     public class PressButtonOnWebPageActivity : BaseCodeActivity
     {
         // ----------------------

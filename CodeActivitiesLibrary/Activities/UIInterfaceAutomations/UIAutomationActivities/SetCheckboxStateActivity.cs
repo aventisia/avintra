@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Set Checkbox State")]
     [Description("Checks or unchecks a checkbox UI element by searching for it by name within a parent element.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/UIAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/UIAutomation.svg")]
     public class SetCheckboxStateActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
 {
     [DisplayName("Get Details of Web Page")]
     [Description("Retrieves specific information about a web page such as title, description, URL, or source code.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/BrowserAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/BrowserAutomation.svg")]
     public class GetDetailsOfWebPageActivity : BaseCodeActivity
     {
         // ----------------------

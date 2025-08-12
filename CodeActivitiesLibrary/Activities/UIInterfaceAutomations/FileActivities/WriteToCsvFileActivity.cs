@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 {
     [DisplayName("Write to CSV File")]
     [Description("Writes a data table, data row, or list to a CSV file.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/File.svg")]
+    [ActivityMetaData(nodeImg: "/assets/File.svg")]
     public class WriteToCsvFileActivity : BaseCodeActivity
     {
         // ----------------------

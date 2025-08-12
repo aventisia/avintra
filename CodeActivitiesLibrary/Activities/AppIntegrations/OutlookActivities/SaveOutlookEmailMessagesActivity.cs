@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
 {
     [DisplayName("Save Outlook Email Messages")]
     [Description("Saves selected Outlook email messages (.msg files) to a specified location.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Outlook.svg")]
     public class SaveOutlookEmailMessagesActivity : BaseCodeActivity
     {
         // ----------------------

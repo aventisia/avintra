@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get First Free Row on Column from Excel Worksheet")]
     [Description("Retrieves the first free row number for a specific column from the active worksheet.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class GetFirstFreeRowOnColumnFromExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

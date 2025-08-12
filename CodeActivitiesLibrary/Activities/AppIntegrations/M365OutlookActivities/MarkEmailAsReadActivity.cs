@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Mark Email as Read/Unread")]
     [Description("Marks an email as read or unread using Microsoft Graph API.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Outlook.svg")]
     public class MarkEmailAsReadActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
 {
     [DisplayName("Press or Release Key")]
     [Description("Presses (and holds) or releases one or more modifier keys (Alt, Control, Shift, Win). Supports combinations like Ctrl+Alt.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MouseAndKeyboard.svg")]
+    [ActivityMetaData(nodeImg: "/assets/MouseAndKeyboard.svg")]
     public class PressReleaseKeyActivity : BaseCodeActivity
     {
         // ----------------------
@@ -63,7 +63,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
                 var useShift = UseShift.Get(context);
                 var useWin = UseWin.Get(context);
                 var key = KeyToPress.Get(context);
-                var waitTime = WaitBeforeReleasing.Get(context);             
+                var waitTime = WaitBeforeReleasing.Get(context);
                 var keys = GetSelectedKeys(useControl, useAlt, useShift, useWin, key);
 
                 if (keys == null || keys.Length == 0)

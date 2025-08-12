@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
     [DisplayName("Take Screenshot")]
     [Description(
         "Takes a screenshot of all screens, primary screen, or a specific screen and saves it to clipboard or file.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Workstation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Workstation.svg")]
     public class TakeScreenshotActivity : BaseCodeActivity
     {
         // ----------------------

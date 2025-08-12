@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Column Name on Excel Worksheet")]
     [Description("Gets the name of a column by reading the first non-empty cell in the specified column.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class GetColumnNameOnExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

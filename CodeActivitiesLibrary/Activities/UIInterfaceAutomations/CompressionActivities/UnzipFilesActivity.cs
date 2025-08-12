@@ -13,7 +13,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
 {
     [DisplayName("Unzip Files")]
     [Description("Extracts files from a ZIP archive to a specified destination folder.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Compression.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Compression.svg")]
     public class UnzipFilesActivity : BaseCodeActivity
     {
 
@@ -96,9 +96,9 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
             try
             {
                 using (var archive = ZipArchive.Open(archivePath, new ReaderOptions()
-                       {
-                           Password = password
-                       }))
+                {
+                    Password = password
+                }))
                 {
                     foreach (var entry in archive.Entries)
                     {

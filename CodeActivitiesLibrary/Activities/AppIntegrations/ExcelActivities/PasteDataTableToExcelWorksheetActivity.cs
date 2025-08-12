@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Paste DataTable to Excel Worksheet")]
     [Description("Pastes a DataTable of data to the active Excel worksheet starting at the specified range.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class PasteDataTableToExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

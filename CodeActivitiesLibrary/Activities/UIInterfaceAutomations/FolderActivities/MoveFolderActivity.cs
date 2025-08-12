@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FolderActivities
 {
     [DisplayName("Move Folder")]
     [Description("This activity moves an existing folder to a specified destination folder.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Folder.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Folder.svg")]
     public class MoveFolderActivity : BaseCodeActivity
     {
         [DisplayName("Folder to Move")]

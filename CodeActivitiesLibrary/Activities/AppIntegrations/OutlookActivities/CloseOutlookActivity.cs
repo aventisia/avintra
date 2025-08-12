@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.OutlookActivities
 {
     [DisplayName("Close Outlook Application")]
     [Description("Closes an Outlook application instance and releases COM resources.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Outlook.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Outlook.svg")]
     public class CloseOutlookActivity : BaseCodeActivity
     {
         // ----------------------

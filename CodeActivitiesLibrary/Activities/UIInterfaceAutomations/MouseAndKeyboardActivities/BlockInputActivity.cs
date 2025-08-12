@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
     [DisplayName("Block Input")]
     [Description(
         "Blocks user mouse and keyboard input, so that the flow can perform mouse and keyboard actions without interference from the user.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/MouseAndKeyboard.svg")]
+    [ActivityMetaData(nodeImg: "/assets/MouseAndKeyboard.svg")]
     public class BlockInputActivity : BaseCodeActivity
     {
         // Input property

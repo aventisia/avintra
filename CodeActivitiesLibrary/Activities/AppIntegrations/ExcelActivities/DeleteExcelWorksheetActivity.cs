@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Delete Excel Worksheet")]
     [Description("Deletes a specific worksheet from the active Excel workbook.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class DeleteExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------

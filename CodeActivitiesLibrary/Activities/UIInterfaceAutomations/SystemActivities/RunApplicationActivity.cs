@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
 {
     [DisplayName("Run Application")]
     [Description("Executes an application or opens a document by executing the associated application.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/System.svg")]
+    [ActivityMetaData(nodeImg: "/assets/System.svg")]
     public class RunApplicationActivity : BaseCodeActivity
     {
         // ----------------------

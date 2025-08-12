@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 {
     [DisplayName("Close Word")]
     [Description("Closes a Word instance.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Word.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Word.svg")]
     public class CloseWordActivity : BaseCodeActivity
     {
         [RequiredArgument]

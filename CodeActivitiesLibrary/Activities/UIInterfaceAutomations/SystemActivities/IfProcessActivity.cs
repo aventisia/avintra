@@ -13,8 +13,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.SystemActivities
     [DisplayName("If process")]
     [Description(
         "Marks the beginning of a conditional block of actions depending on whether a process is running or not.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/System.svg")]
-    public class IfProcessActivity :BaseCodeActivity
+    [ActivityMetaData(nodeImg: "/assets/System.svg")]
+    public class IfProcessActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

@@ -8,7 +8,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
 {
     [DisplayName("Set Focus on UI Element")]
     [Description("Brings the specified UI element into focus, allowing further interaction.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/UIAutomation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/UIAutomation.svg")]
     public class SetFocusOnElementActivity : BaseCodeActivity
     {
         [RequiredArgument]

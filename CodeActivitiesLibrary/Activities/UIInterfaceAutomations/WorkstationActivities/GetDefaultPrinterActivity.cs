@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.WorkstationActivities
 {
     [DisplayName("Get Default Printer")]
     [Description("Gets the name of the default printer using multiple methods.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Workstation.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Workstation.svg")]
     public class GetDefaultPrinterActivity : BaseCodeActivity
     {
         [DisplayName("Retrieval Method")]

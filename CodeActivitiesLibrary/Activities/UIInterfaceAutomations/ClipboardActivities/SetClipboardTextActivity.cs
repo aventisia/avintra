@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ClipboardActivities
 {
     [DisplayName("Set Clipboard Text")]
     [Description("Sets the specified text to the system clipboard.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Clipboard.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Clipboard.svg")]
     public class SetClipboardTextActivity : BaseCodeActivity
     {
         [DisplayName("Clipboard Text")]

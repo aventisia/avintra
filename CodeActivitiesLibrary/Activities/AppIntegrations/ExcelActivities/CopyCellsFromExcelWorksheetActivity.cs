@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [DisplayName("Copy Cells from Excel Worksheet")]
     [Description(
         "Copies a specified range of cells from an Excel worksheet for later use or pasting into another worksheet.")]
-    [ActivityMetaData(nodeType: "activityNode", nodeIcon: null, nodeImg: "/assets/Excel.svg")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class CopyCellsFromExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
