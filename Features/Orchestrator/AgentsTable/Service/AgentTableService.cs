@@ -490,50 +490,50 @@ public class AgentTableService : IAgentTableService
         return serviceResponse;
     }
 
-    // Archives multiple flow versions by updating their IsArchived status to true.
-    public async Task<ServiceResponse<bool>> ArchiveMultipleFlowVersionsAsync(IEnumerable<Guid> flowVersionIds)
+    // Disables multiple flow versions by updating their IsDisabled status to true.
+    public async Task<ServiceResponse<bool>> DisableMultipleFlowVersionsAsync(IEnumerable<Guid> flowVersionIds)
     {
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
-            Message = "Failed to archive flow versions. Please try again"
+            Message = "Failed to disable flow versions. Please try again."
         };
 
         try
         {
-            // Retrieve the flow versions to be archived
-            var flowVersionsToArchive = await _unitOfWork.FlowVersionRepo
+            // Retrieve the flow versions to be disabled
+            var flowVersionsToDisable = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w => flowVersionIds.Contains(w.Id))
                 .ToListAsync();
 
-            if (!flowVersionsToArchive.Any())
+            if (!flowVersionsToDisable.Any())
             {
                 serviceResponse.Message = "No flow versions found for the provided IDs.";
                 return serviceResponse;
             }
 
-            // Archive each flow version by updating its IsArchived flag to true
-            foreach (var version in flowVersionsToArchive)
+            // Disable each flow version by updating its IsDisabled flag to true
+            foreach (var version in flowVersionsToDisable)
             {
-                version.IsArchived = true;
+                version.IsDisabled = true;
                 version.LastModifiedByUserId = _userId;
             }
-            _unitOfWork.FlowVersionRepo.Update(flowVersionsToArchive);
+            _unitOfWork.FlowVersionRepo.Update(flowVersionsToDisable);
 
             // Save the changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while archiving flow versions.");
+                _logger.LogInformation("Context SaveChanges failed while disabling flow versions.");
                 return serviceResponse;
             }
 
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Flow versions archived successfully";
+            serviceResponse.Message = "Flow versions disabled successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while archiving the flow versions.");
+            _logger.LogError(ex, "An error occurred while disabling the flow versions.");
         }
 
         return serviceResponse;
