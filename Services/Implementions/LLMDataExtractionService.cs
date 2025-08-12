@@ -30,7 +30,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             { "llama3.1", "llama3.1:8b" },
             { "llama3.2", "llama3.2:3b" },
             { "mistral", "mistral:7b" },
-            { "gemma", "gemma:7b" },
+            { "gemma", "gemma3:12b" },
         };
 
         try
