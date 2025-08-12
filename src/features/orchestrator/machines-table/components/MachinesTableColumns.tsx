@@ -93,17 +93,19 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
   },
 
   {
-    accessorKey: "lastCheckedIn",
+    accessorKey: "lastModifiedOn",
     header: ({ column }) => (
       <DTColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("lastCheckedIn")}
+        title={getColumnName("lastModifiedOn")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue<Date>("lastCheckedIn"))}
+        {row.getValue<Date>("lastModifiedOn")
+          ? dateFormatter(row.getValue<Date>("lastModifiedOn"))
+          : null}
       </div>
     ),
   },
