@@ -7,6 +7,7 @@ import { getColumnName } from "../constants/column-display-names";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
 
 import { TableActions } from "./table-actions/TableActions";
+import { Badge } from "@aventisia/ui/badge";
 
 /**
  * Array of table columns for the agents table.
@@ -84,7 +85,17 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     cell: ({ row }) => {
       const { isDisabled, machineCount } = row.original;
 
-      let status = "";
+      const statusColor: {
+        Deployed: string;
+        Disabled: string;
+        Published: string;
+      } = {
+        Deployed: "bg-green-100 text-green-800",
+        Disabled: "bg-gray-100 text-gray-800",
+        Published: "bg-blue-100 text-blue-800",
+      };
+
+      let status: "Disabled" | "Deployed" | "Published" = "Published";
       const count = machineCount ?? 0; // fallback to 0 if undefined
 
       if (isDisabled) {
@@ -95,7 +106,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
         status = "Published";
       }
 
-      return <div className="w-auto truncate font-medium">{status}</div>;
+      return <Badge  className={statusColor[status]}>{status}</Badge>;
     },
   },
   {

@@ -12,7 +12,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "environment", value: "Environment" },
   { key: "agentCount", value: "Agents" },
   { key: "status", value: "Status" },
-  { key: "lastCheckedIn", value: "Last Checked In" },
+  { key: "lastModifiedOn", value: "Last Checked In" },
   { key: "createdBy", value: "Added By" },
   { key: "createdOn", value: "Added On" },
 ];
