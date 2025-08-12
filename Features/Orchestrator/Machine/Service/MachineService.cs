@@ -103,20 +103,44 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
-            // Attempt to assign or update agents for the newly created machine, if any agent IDs exist
+            // If agent IDs are provided, proceed to assign them
             if (machineDto.AgentIds != null && machineDto.AgentIds.Any())
             {
-                var agentResponse = await AssignOrUpdateAgentsAsync(newMachine.Id, machineDto.AgentIds);
-                if (!agentResponse.Data)
-                {
-                    // If agent assignment fails, roll back the machine creation
-                    _unitOfWork.MachineRepo.Delete(newMachine);
+                var agentIds = machineDto.AgentIds.Distinct().ToList();
+                _logger.LogInformation("Assigning {Count} agents to new machine with ID: {MachineId}", agentIds.Count, newMachine.Id);
 
-                    // The delete will be saved in the next save operation
-                    serviceResponse.Message = agentResponse.Message;
+                // Create MachineFlow entries
+                var machineFlows = machineDto.AgentIds.Select(agentId => new MachineFlow
+                {
+                    MachineId = newMachine.Id,
+                    FlowVersionId = agentId,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId
+                }).ToList();
+
+                await _unitOfWork.MachineFlowRepo.InsertAsync(machineFlows);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save MachineFlow entries. Rolling back machine creation.");
                     return serviceResponse;
                 }
+
+                _logger.LogInformation("Assigned {Count} agents to machine ID: {MachineId}", machineFlows.Count, newMachine.Id);
             }
+
+            newMachine = await _unitOfWork.MachineRepo
+                            .GetByConditionAsync(m =>
+                                m.Id == newMachine.Id
+                            )
+                            .Include(a => a.CreatedByUser)
+                            .Include(a => a.LastModifiedByUser)
+                            .Include(a => a.MachineFlows)
+                                .ThenInclude(fv => fv.FlowVersion)
+                                .ThenInclude(f => f.Flow)
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync();
+
 
             // Task successful
             serviceResponse.Data = newMachine.Adapt<MachineDto>();
@@ -289,6 +313,8 @@ public class MachineService : IMachineService
                 .GetByConditionAsync(m =>
                     m.Id == machineDto.Id && m.CreatedByUserId == _userId
                 )
+                .Include(a => a.MachineFlows)
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
 
             // Machine does not exist
@@ -334,17 +360,82 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
-            // Attempt to assign or update agents for the machine, if any agent IDs exist
-            if (machineDto.AgentIds != null && machineDto.AgentIds.Any())
+            // Handle agent assignments
+            var existingMachineFlows = machine.MachineFlows.ToList();
+
+            if (machineDto.AgentIds == null || !machineDto.AgentIds.Any())
             {
-                var agentResponse = await AssignOrUpdateAgentsAsync(machine.Id, machineDto.AgentIds);
-                if (!agentResponse.Data)
+                // No agents provided => remove all existing flows
+                if (existingMachineFlows.Any())
                 {
-                    // If agent assignment fails, roll back the machine update
-                    serviceResponse.Message = agentResponse.Message;
-                    return serviceResponse;
+                    _unitOfWork.MachineFlowRepo.Delete(existingMachineFlows);
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogError("Failed to remove agent assignments for machine ID {MachineId}", machine.Id);
+                    }
+
+                    _logger.LogInformation("Removed all agent assignments from machine ID {MachineId}", machine.Id);
                 }
             }
+            else
+            {
+                var requestedAgentIds = machineDto.AgentIds.Distinct().ToList();
+
+                var existingAgentIds = existingMachineFlows.Select(mf => mf.FlowVersionId).ToList();
+                var newAgentIds = requestedAgentIds.Except(existingAgentIds).ToList();
+                var removedAgentIds = existingAgentIds.Except(requestedAgentIds).ToList();
+
+                var machineFlowsToAdd = newAgentIds.Select(agentId => new MachineFlow
+                {
+                    MachineId = machine.Id,
+                    FlowVersionId = agentId,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId
+                }).ToList();
+
+                var machineFlowsToRemove = existingMachineFlows
+                    .Where(mf => removedAgentIds.Contains(mf.FlowVersionId))
+                    .ToList();
+
+                // Insert new assignments
+                if (machineFlowsToAdd.Any())
+                {
+                    await _unitOfWork.MachineFlowRepo.InsertAsync(machineFlowsToAdd);
+
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogError("Failed to update agent assignments for machine ID {MachineId}", machine.Id);
+                        return serviceResponse;
+                    }
+                }
+
+                // Remove unassigned agents
+                if (machineFlowsToRemove.Any())
+                {
+                    _unitOfWork.MachineFlowRepo.Delete(machineFlowsToRemove);
+
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogError("Failed to update agent assignments for machine ID {MachineId}", machine.Id);
+                        return serviceResponse;
+                    }
+                }
+
+                _logger.LogInformation("Updated agent assignments for machine ID {MachineId}: {Added} added, {Removed} removed",
+                    machine.Id, machineFlowsToAdd.Count, machineFlowsToRemove.Count);
+            }
+
+            machine = await _unitOfWork.MachineRepo
+                            .GetByConditionAsync(m =>
+                                m.Id == machine.Id
+                            )
+                            .Include(a => a.CreatedByUser)
+                            .Include(a => a.LastModifiedByUser)
+                            .Include(a => a.MachineFlows)
+                                .ThenInclude(fv => fv.FlowVersion)
+                                .ThenInclude(f => f.Flow)
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync();
 
             // Task successful
             serviceResponse.Data = machine.Adapt<MachineDto>();
