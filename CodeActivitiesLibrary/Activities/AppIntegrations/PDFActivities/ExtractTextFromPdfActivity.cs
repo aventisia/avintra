@@ -25,11 +25,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
         [RequiredArgument]
         [DisplayName("Page Selection Mode")]
         [Description("Select how to choose pages for extraction: All, Single, or Range.")]
+        [DefaultValue(PdfPageSelectionModeEnum.All)]
         public InArgument<PdfPageSelectionModeEnum> PageSelection { get; set; }
 
         [RequiredArgument]
         [DisplayName("Extraction Type")]
         [Description("Select the type of extraction: Text, Images, or Both.")]
+        [DefaultValue(PdfExtractionTypeEnum.Text)]
         public InArgument<PdfExtractionTypeEnum> ExtractionType { get; set; }
 
         [DisplayName("Page Number (for Single)")]
@@ -56,6 +58,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
         [DisplayName("Output Folder Path")]
         [Description("The folder where extracted images will be saved.")]
         [RenderIfCondition(nameof(ExtractionType), PdfExtractionTypeEnum.Images)]
+        [RenderIfOperator("OR")]
         [RenderIfCondition(nameof(ExtractionType), PdfExtractionTypeEnum.Both)]
 
         public InArgument<string> OutputFolderPath { get; set; }
@@ -64,6 +67,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
         [DisplayName("Extracted Text")]
         [Description("Returns the extracted text from the PDF.")]
         [RenderIfCondition(nameof(ExtractionType), PdfExtractionTypeEnum.Text)]
+        [RenderIfOperator("OR")]
         [RenderIfCondition(nameof(ExtractionType), PdfExtractionTypeEnum.Both)]
         public OutArgument<string> ExtractedText { get; set; }
 
