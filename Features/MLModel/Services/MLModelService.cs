@@ -376,9 +376,9 @@ public class MLModelService : IMLModelService
             var mlModel = await _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
                     w.Id == modelId &&
-                    w.CreatedByUserId == _userId ||
                     (
-                        w.Users != null && w.Users.Any(a => a.UserId == _userId)
+                        w.CreatedByUserId == _userId ||
+                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
                     )
                 )
                 .Include(i => i.Users)
