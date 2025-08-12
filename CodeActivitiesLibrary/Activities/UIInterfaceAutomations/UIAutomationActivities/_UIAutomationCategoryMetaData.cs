@@ -5,6 +5,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.UiAutomationActivities
     [ActivityCategoryMetadata(
         primaryCategory: "UI Interface Automations",
         label: "UI Automation",
-        description: "Automate user interface interactions in windows and applications.")]
+        description: "Automate user interface interactions in windows and applications.",
+        img: "/assets/UIAutomation.svg")]
     internal sealed class _UIAutomationCategoryMetaData { }
 }

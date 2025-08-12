@@ -5,7 +5,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.BrowserAutomationActiviti
     [ActivityCategoryMetadata(
         primaryCategory: "UI Interface Automations",
         label: "Browser Automation",
-        description: "Automate web browser interactions.")]
+        description: "Automate web browser interactions.",
+        img: "/assets/BrowserAutomation.svg")]
     internal sealed class _BrowserAutomationCategoryMetaData
     {
     }

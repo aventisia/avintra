@@ -5,7 +5,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.MouseAndKeyboardActivitie
     [ActivityCategoryMetadata(
         primaryCategory: "UI Interface Automations",
         label: "Mouse and Keyboard",
-        description: "Automate mouse and keyboard actions.")]
+        description: "Automate mouse and keyboard actions.",
+        img: "/assets/MouseAndKeyboard.svg")]
     internal sealed class _MouseAndKeyboardCategoryMetaData
     {
     }

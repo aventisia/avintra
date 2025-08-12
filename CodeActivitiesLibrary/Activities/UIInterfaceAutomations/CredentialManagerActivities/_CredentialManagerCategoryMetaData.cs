@@ -10,7 +10,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
     [ActivityCategoryMetadata(
         primaryCategory: "UI Interface Automations",
         label: "Credential Manager",
-        description: "Manage credentials such as usernames and passwords securely using windows credential manager.")]
+        description: "Manage credentials such as usernames and passwords securely using windows credential manager.",
+        img: "/assets/CredentialManager.svg")]
     internal sealed class _CredentialManagerCategoryMetaData
     {
     }

@@ -5,7 +5,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ClipboardActivities
     [ActivityCategoryMetadata(
         primaryCategory: "UI Interface Automations",
         label: "Clipboard",
-        description: "Clipboard operations and automation.")]
+        description: "Clipboard operations and automation.",
+        img: "/assets/Clipboard.svg")]
     internal sealed class _ClipboardCategoryMetaData
     {
     }

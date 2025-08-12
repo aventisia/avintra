@@ -5,6 +5,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.ScriptingActivities
     [ActivityCategoryMetadata(
         primaryCategory: "UI Interface Automations",
         label: "Scripting",
-        description: "Run scripts and automate tasks using scripting languages.")]
+        description: "Run scripts and automate tasks using scripting languages.",
+        img: "/assets/Scripting.svg")]
     internal sealed class _ScriptingCategoryMetaData { }
 }
