@@ -20,6 +20,7 @@ if (!builder.Environment.IsEnvironment("Localhost"))
     var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), "DB_HOST cannot be null");
     var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), "DB_CREDENTIALS cannot be null");
     var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), "JWT_SECRET_KEY cannot be null");
+    var OPENAI_API_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("OPENAI_API_KEY"), "OPENAI_API_KEY cannot be null");
 
     // Update sensitive data in configuration
     config = new ConfigurationBuilder().AddConfiguration(config).AddInMemoryCollection(new Dictionary<string, string?>
@@ -28,7 +29,8 @@ if (!builder.Environment.IsEnvironment("Localhost"))
         { "ConnectionStringConfig:AppDb:Host", DB_HOST },
         { "ConnectionStringConfig:TenantDb:Credentials", DB_CREDENTIALS },
         { "ConnectionStringConfig:TenantDb:Host", DB_HOST },
-        { "JwtConfig:SecretKey", JWT_SECRET_KEY }
+        { "JwtConfig:SecretKey", JWT_SECRET_KEY },
+        { "ExtractViaLLMConfig:OpenAIAPIKey", OPENAI_API_KEY }
     }).Build();
 }
 
