@@ -84,11 +84,16 @@ namespace CodeActivitiesLibrary.AIIntegrations.AIStudioActivities
             var contentType = ContentType.Get(context) ?? "application/json";
             var acceptType = AcceptHeader.Get(context) ?? "application/json";
             var headers = Headers.Get(context);
-            inputText = inputText?.ToString();
 
-            // Create the request body based on template or default structure
-            var body = CreateRequestBody(selectModel, inputText, bodyTemplate);
+            // Build the request body as an object, not a string
+            inputText = inputText?.ToString()?.Trim() ?? "";
+            object requestBodyObj = new
+            {
+                modelId = selectModel,
+                content = inputText,
+            };
 
+            var body = System.Text.Json.JsonSerializer.Serialize(requestBodyObj);
 
             if (string.IsNullOrWhiteSpace(url))
                 throw new ArgumentException("Endpoint URL must be specified.");
@@ -169,25 +174,6 @@ namespace CodeActivitiesLibrary.AIIntegrations.AIStudioActivities
                 StatusMessage.Set(context, status);
                 AIModelResult.Set(context, responseContent);
                 ResponseCode.Set(context, responseCode);
-            }
-        }
-
-        private string CreateRequestBody(string selectModel, string inputText, string bodyTemplate)
-        {
-            if (!string.IsNullOrWhiteSpace(bodyTemplate))
-            {
-                // Replace placeholders in the provided template
-                return bodyTemplate
-                    .Replace("{SelectModel}", selectModel ?? "")
-                    .Replace("{InputText}", inputText ?? "");
-            }
-            else
-            {
-                // Default JSON structure - adjust based on your specific model API requirements
-                // Example for OpenAI-like Completions API:
-                // return $"{{\"model\": \"{selectModel}\", \"prompt\": \"{inputText}\"}}";
-                // Example for OpenAI-like Chat API (more common now):
-                return $"{{\"model\": \"{selectModel}\", \"messages\": [{{\"role\": \"user\", \"content\": \"{inputText}\"}}]}}";
             }
         }
 
