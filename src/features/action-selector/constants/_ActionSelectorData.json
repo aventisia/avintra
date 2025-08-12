@@ -2103,7 +2103,7 @@
         "label": "Word",
         "description": "Automate Microsoft Word document operations.",
         "icon": null,
-        "img": "/assets/Word.svg",
+        "img": null,
         "listType": null,
         "actions": [
           {
@@ -2184,7 +2184,7 @@
         "label": "Windows Service",
         "description": "Manage and interact with Windows Services.",
         "icon": null,
-        "img": "/assets/WindowsService.svg",
+        "img": null,
         "listType": null,
         "actions": [
           {
@@ -2373,7 +2373,7 @@
         "label": "Outlook",
         "description": "Automate Microsoft Outlook operations.",
         "icon": null,
-        "img": "/assets/Outlook.svg",
+        "img": null,
         "listType": null,
         "actions": [
           {
@@ -2643,7 +2643,7 @@
         "label": "Excel",
         "description": "Automate Excel file operations.",
         "icon": null,
-        "img": "/assets/Excel.svg",
+        "img": null,
         "listType": null,
         "actions": [
           {
