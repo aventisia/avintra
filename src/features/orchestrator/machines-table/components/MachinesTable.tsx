@@ -17,6 +17,7 @@ import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchMachines } from "../hooks/useFetchMachines";
 
+import AssignAgentsDialog from "./assign-agents/AssignAgentsDialog";
 import { MachineCrudDialog } from "./machine-crud-dialog/MachineCrudDialog";
 import { MachinesBulkActions } from "./machine-row-actions/MachinesBulkActions";
 import { machinesTableColumns } from "./MachinesTableColumns";
@@ -82,6 +83,7 @@ export const MachinesTable = () => {
 
           {/* Bulk actions for data table */}
           <MachinesBulkActions table={table} />
+          <AssignAgentsDialog />
         </div>
       ) : (
         // Show data table skeleton while fetching the machines data
