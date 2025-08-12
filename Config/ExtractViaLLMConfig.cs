@@ -24,4 +24,19 @@ public class ExtractViaLLMConfig
     /// The API key used to authenticate with the Ollama API.
     /// </summary>
     public required string OllamaAPIKey { get; set; }
+
+    /// <summary>
+    /// The base URL or endpoint of the Open AI API.
+    /// </summary>
+    public required string OpenAIAPI { get; set; }
+
+    /// <summary>
+    /// The API key used to authenticate with the OpenAI API.
+    /// </summary>
+    public required string OpenAIAPIKey { get; set; }
+
+    /// <summary>
+    /// The model to be used for OpenAI API requests.
+    /// </summary>
+    public required string OpenAIModel { get; set; }
 }
