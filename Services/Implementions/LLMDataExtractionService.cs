@@ -129,51 +129,20 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                         _logger.LogInformation($"Loaded models: '{string.Join(", ", loadedModels?.Models.Select(s => s.Model) ?? Enumerable.Empty<string>())}'");
                     }
 
-                    // -----------------------------Local LLM Start------------------------------------
-
                     // Step 5: Send the generation request to the model with the prompt and temperature
-                    // var requestDto = new
-                    // {
-                    //     stream = false,
-                    //     temperature = modelTemperature,
-                    //     prompt = prompt,
-                    //     model = mappedModel
-                    // };
+                    var requestDto = new
+                    {
+                        stream = false,
+                        temperature = modelTemperature,
+                        prompt = prompt,
+                        model = mappedModel
+                    };
 
-                    //var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(requestDto), Encoding.UTF8, "application/json");
-                    //_logger.LogInformation("Sending request to LLM model: {MappedModel}", mappedModel);
+                    var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(requestDto), Encoding.UTF8, "application/json");
+                    _logger.LogInformation("Sending request to LLM model: {MappedModel}", mappedModel);
 
                     // Step 6: Send POST request to generate the data from the LLM
-                    //HttpResponseMessage response = await client.PostAsync($"{baseUri}/{OllamaApiRoutes.Generate}", content);
-
-                    // --------------------------Local LLM Ends-----------------------------------
-
-                    // --------------------Open AI Start------------------------------------
-
-                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_extractViaLLMConfig.OpenAIAPIKey}");
-
-                    var messageList = new List<Dictionary<string, string>>()
-                    {
-                        new Dictionary<string, string>
-                        {
-                            { "role", "user" },
-                            { "content", $"{prompt}" }
-                        }
-                    };
-
-                    var requestBody = new
-                    {
-                        model = _extractViaLLMConfig.OpenAIModel, // or "gpt-4o-mini"
-                        messages = messageList,
-                        max_tokens = 10000 // adjust depending on expected output
-                    };
-
-                    var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
-
-                    var response = await client.PostAsync(_extractViaLLMConfig.OpenAIAPI, content);
-
-
-                    // ---------------------Open AI Ends-----------------------------------
+                    HttpResponseMessage response = await client.PostAsync($"{baseUri}/{OllamaApiRoutes.Generate}", content);
 
                     // Step 7: Handle the response from the API
                     if (!response.IsSuccessStatusCode)
