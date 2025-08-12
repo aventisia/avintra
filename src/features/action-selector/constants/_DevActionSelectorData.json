@@ -844,7 +844,7 @@
         "label": "XML",
         "description": "Read, write, and manipulate XML data.",
         "icon": null,
-        "img": null,
+        "img": "/assets/XML.svg",
         "listType": null,
         "actions": [
           {
@@ -943,7 +943,7 @@
         "label": "Workstation",
         "description": "Automate workstation and desktop environment tasks.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Workstation.svg",
         "listType": null,
         "actions": [
           {
@@ -1060,7 +1060,7 @@
         "label": "UI Automation",
         "description": "Automate user interface interactions in windows and applications.",
         "icon": null,
-        "img": null,
+        "img": "/assets/UIAutomation.svg",
         "listType": null,
         "actions": [
           {
@@ -1240,7 +1240,7 @@
         "label": "System",
         "description": "Perform system-level operations and checks.",
         "icon": null,
-        "img": null,
+        "img": "/assets/System.svg",
         "listType": null,
         "actions": [
           {
@@ -1321,7 +1321,7 @@
         "label": "Scripting",
         "description": "Run scripts and automate tasks using scripting languages.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Scripting.svg",
         "listType": null,
         "actions": [
           {
@@ -1384,7 +1384,7 @@
         "label": "Mouse and Keyboard",
         "description": "Automate mouse and keyboard actions.",
         "icon": null,
-        "img": null,
+        "img": "/assets/MouseAndKeyboard.svg",
         "listType": null,
         "actions": [
           {
@@ -1492,7 +1492,7 @@
         "label": "Message Box",
         "description": "Display message boxes and dialogs.",
         "icon": null,
-        "img": null,
+        "img": "/assets/MessageBox.svg",
         "listType": null,
         "actions": [
           {
@@ -1537,7 +1537,7 @@
         "label": "Folder",
         "description": "Folder operations such as create, delete, move, and list.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Folder.svg",
         "listType": null,
         "actions": [
           {
@@ -1645,7 +1645,7 @@
         "label": "File",
         "description": "File operations such as copy, move, and conversion.",
         "icon": null,
-        "img": null,
+        "img": "/assets/File.svg",
         "listType": null,
         "actions": [
           {
@@ -1789,7 +1789,7 @@
         "label": "Credential Manager",
         "description": "Manage credentials such as usernames and passwords securely using windows credential manager.",
         "icon": null,
-        "img": null,
+        "img": "/assets/CredentialManager.svg",
         "listType": null,
         "actions": [
           {
@@ -1843,7 +1843,7 @@
         "label": "Compression",
         "description": "Compress and decompress files and folders.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Compression.svg",
         "listType": null,
         "actions": [
           {
@@ -1870,7 +1870,7 @@
         "label": "CMD Session",
         "description": "Automate command prompt session operations.",
         "icon": null,
-        "img": null,
+        "img": "/assets/CMDSession.svg",
         "listType": null,
         "actions": [
           {
@@ -1924,7 +1924,7 @@
         "label": "Clipboard",
         "description": "Clipboard operations and automation.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Clipboard.svg",
         "listType": null,
         "actions": [
           {
@@ -1960,7 +1960,7 @@
         "label": "Browser Automation",
         "description": "Automate web browser interactions.",
         "icon": null,
-        "img": null,
+        "img": "/assets/BrowserAutomation.svg",
         "listType": null,
         "actions": [
           {
@@ -2220,7 +2220,7 @@
         "label": "Word",
         "description": "Automate Microsoft Word document operations.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Word.svg",
         "listType": null,
         "actions": [
           {
@@ -2301,7 +2301,7 @@
         "label": "Windows Service",
         "description": "Manage and interact with Windows Services.",
         "icon": null,
-        "img": null,
+        "img": "/assets/WindowsService.svg",
         "listType": null,
         "actions": [
           {
@@ -2544,7 +2544,7 @@
         "label": "Outlook",
         "description": "Automate Microsoft Outlook operations.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Outlook.svg",
         "listType": null,
         "actions": [
           {
@@ -2598,7 +2598,7 @@
         "label": "M365 Outlook",
         "description": "Activities for integrating with Microsoft 365 Outlook services.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Outlook.svg",
         "listType": null,
         "actions": [
           {
@@ -2931,7 +2931,7 @@
         "label": "Excel",
         "description": "Automate Excel file operations.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Excel.svg",
         "listType": null,
         "actions": [
           {
