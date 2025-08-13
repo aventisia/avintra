@@ -71,6 +71,9 @@ public class LLMDataExtractionService : ILLMDataExtractionService
 
                 using (HttpClient client = new HttpClient())
                 {
+                    // Set timeout to 3 minutes
+                    client.Timeout = TimeSpan.FromMinutes(3);
+
                     client.DefaultRequestHeaders.Add("API_KEY", _extractViaLLMConfig.OllamaAPIKey);
                     var baseUri = _extractViaLLMConfig.OllamaAPI; // Get the base URI for the API
 
