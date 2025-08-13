@@ -47,6 +47,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Job>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<KeyStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Vault>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<AppSecret>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         modelBuilder.Entity<Triggers>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TriggersFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -73,6 +74,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Triggers>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<TriggerFrequencyTypesEnum>());
         modelBuilder.Entity<FlowUser>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AgentAccessTypesEnum>());
         modelBuilder.Entity<Block>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AccessTypesEnum>());
+        modelBuilder.Entity<AppSecret>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AppSecretTypesEnum>());
 
         modelBuilder.Entity<Triggers>().Property(e => e.RepeateOn).HasColumnType("TEXT[]");
         modelBuilder.Entity<Triggers>().Property(e => e.NonWorkingDays).HasColumnType("TIMESTAMP[]").HasConversion(v => v, v => v);
@@ -182,4 +184,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<Vault> Vaults { get; set; }
     public DbSet<FlowUser> FlowUsers { get; set; }
     public DbSet<Block> Blocks { get; set; }
+
+    public DbSet<AppSecret> AppSecrets { get; set; }
+    public DbSet<EncryptedKeyValue> EncryptedKeyValues { get; set; }
 }
