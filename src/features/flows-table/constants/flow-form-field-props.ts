@@ -25,6 +25,7 @@ const typeProps: SelectFieldProps = {
 
 // Name
 const nameProps: InputFieldProps = {
+  autoFocus: true,
   name: "name",
   label: "Name",
   isRequired: true,

@@ -46,6 +46,7 @@ const llmProps: SelectFieldProps = {
 
 // Name
 const nameProps: InputFieldProps = {
+  autoFocus: true,
   name: "name",
   label: "Model Name",
   isRequired: true,
