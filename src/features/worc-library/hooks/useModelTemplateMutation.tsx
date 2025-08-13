@@ -28,7 +28,7 @@ export const useModelTemplateMutation = () => {
 
     // Handle successful application: open Model in new tab with template ID and name
     onSuccess: (data) => {
-      const url = `${import.meta.env.VITE_MODEL_STUDIO_URL}/setup-test?mid=${data.data.id}&mn=${data.data.name}`;
+      const url = `${import.meta.env.VITE_AISTUDIO_URL}/setup-test?mid=${data.data.id}&mn=${data.data.name}`;
       window.open(url, "_blank");
     },
   });
