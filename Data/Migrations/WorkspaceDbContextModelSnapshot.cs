@@ -63,6 +63,63 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("ActionExecutionLogs");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.AppSecret", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UsageCount")
+                        .HasColumnType("integer");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.ToTable("AppSecrets");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.Block", b =>
                 {
                     b.Property<Guid>("Id")
@@ -125,6 +182,30 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("LastModifiedByUserId");
 
                     b.ToTable("Blocks");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.EncryptedKeyValue", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AppSecretId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppSecretId");
+
+                    b.ToTable("EncryptedKeyValues");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Flow", b =>
@@ -1497,6 +1578,25 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("FlowExecutionLog");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.AppSecret", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.Block", b =>
                 {
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
@@ -1522,6 +1622,17 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("FlowVersion");
 
                     b.Navigation("LastModifiedByUser");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.EncryptedKeyValue", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.AppSecret", "AppSecret")
+                        .WithMany("EncryptedKeyValues")
+                        .HasForeignKey("AppSecretId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppSecret");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Flow", b =>
@@ -2049,6 +2160,11 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastModifiedByUser");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.AppSecret", b =>
+                {
+                    b.Navigation("EncryptedKeyValues");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Flow", b =>
