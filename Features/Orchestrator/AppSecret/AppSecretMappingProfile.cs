@@ -1,0 +1,34 @@
+namespace WorkspaceAPIs.MappingProfiles;
+
+public class AppSecretMappingProfile : IRegister
+{
+    public void Register(TypeAdapterConfig config)
+    {
+        // Mapping for app secret record or records.
+        config.NewConfig<AppSecret, AppSecretDto>()
+            .Map(dest => dest.Data, src => System.Text.Json.JsonSerializer.Deserialize<object>(src.Data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }))
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                    ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                    : null)
+            .Map(dest => dest.LastModifiedBy,
+                src => src.LastModifiedByUser != null
+                    ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
+                    : null);
+
+        // Mapping for inserting or updating a app secret record.
+        config.NewConfig<AppSecretDto, AppSecret>()
+            .Map(dest => dest.Data, src => System.Text.Json.JsonSerializer.Serialize(src.Data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }))
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.CreatedOn)
+            .Ignore(dest => dest.LastModifiedOn)
+            .IgnoreNullValues(true);
+
+        // Get app secret in SelectOptionDto format
+        config.NewConfig<AppSecret, SelectOptionDto>()
+            .Map(dest => dest.Value, src => src.Id)
+            .Map(dest => dest.Label, src => src.Name)
+            .Map(dest => dest.Description, src => src.Description)
+            .Map(dest => dest.Disabled, src => src.IsDisabled);
+    }
+}
