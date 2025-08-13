@@ -1,3 +1,5 @@
+using AccountsAPIs.Repos;
+
 namespace WorkspaceAPIs.Services;
 
 public class UnitOfWork : IUnitOfWork
@@ -47,6 +49,8 @@ public class UnitOfWork : IUnitOfWork
     public ITriggerFlowRepo TriggerFlowRepo => new TriggerFlowRepo(_workspaceDbContext);
     public IFlowUserRepo FlowUserRepo => new FlowUserRepo(_workspaceDbContext);
     public IBlockRepo BlockRepo => new BlockRepo(_workspaceDbContext);
+    public IAppSecretRepo AppSecretRepo => new AppSecretRepo(_workspaceDbContext);
+    public IEncryptedKeyValueRepo EncryptedKeyValueRepo => new EncryptedKeyValueRepo(_workspaceDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {
