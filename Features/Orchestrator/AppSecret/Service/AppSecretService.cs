@@ -503,7 +503,7 @@ public class AppSecretService : IAppSecretService
         // Switch statement based on the type of credential
         switch (type)
         {
-            case "openAiApi":
+            case nameof(AppSecretTypesEnum.OpenAiApi):
                 {
                     // Deserialize JSON into OpenAiApiCredentialsDto
                     var openAiCredentials = System.Text.Json.JsonSerializer.Deserialize<OpenAiApiCredentialsDto>(rawJson, jsonOptions);
@@ -515,6 +515,70 @@ public class AppSecretService : IAppSecretService
                     }
                     else
                         validationResult.Remark = "Invalid data: The input might be missing required fields or have incorrect data format";
+                    break;
+                }
+
+            case nameof(AppSecretTypesEnum.Aws):
+                {
+                    // Deserialize JSON into AwsCredentialsDto
+                    var awsCredentials = System.Text.Json.JsonSerializer.Deserialize<AwsCredentialsDto>(rawJson, jsonOptions);
+                    if (awsCredentials != null)
+                    {
+                        validationResult.EncryptedValues["AccessKeyId"] = _encryptionService.EncryptString(awsCredentials.AccessKeyId);
+                        awsCredentials.AccessKeyId = $"__BLANK_VALUE__{validationResult.Id}"; ;
+                        if (awsCredentials.TemporarySecurityCredentials)
+                        {
+                            validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(awsCredentials.SessionToken);
+                            awsCredentials.AccessKeyId = $"__BLANK_VALUE__{validationResult.Id}";
+                        }
+                        else
+                            awsCredentials.AccessKeyId = string.Empty;
+
+                        if (!awsCredentials.CustomEndpoints)
+                        {
+                            awsCredentials.Endpoints = new AwsServiceEndpointsDto();
+                        }
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(awsCredentials, jsonOptions);
+                    }
+                    break;
+                }
+
+            case nameof(AppSecretTypesEnum.TwilioApi):
+                {
+                    // Deserialize JSON into TwilioCredentialsDto
+                    var twilioCredentials = System.Text.Json.JsonSerializer.Deserialize<TwilioCredentialsDto>(rawJson, jsonOptions);
+                    if (twilioCredentials != null)
+                    {
+                        if (twilioCredentials.AuthType == AuthenticationType.ApiKey)
+                        {
+                            validationResult.EncryptedValues["ApiKeySid"] = _encryptionService.EncryptString(twilioCredentials.ApiKeySid);
+                            validationResult.EncryptedValues["ApiKeySecret"] = _encryptionService.EncryptString(twilioCredentials.ApiKeySecret);
+                            twilioCredentials.ApiKeySid = $"__BLANK_VALUE__{validationResult.Id}";
+                            twilioCredentials.ApiKeySecret = $"__BLANK_VALUE__{validationResult.Id}";
+                            twilioCredentials.AuthToken = string.Empty;
+                        }
+                        else
+                        {
+                            validationResult.EncryptedValues["AuthToken"] = _encryptionService.EncryptString(twilioCredentials.AuthToken);
+                            twilioCredentials.AuthToken = $"__BLANK_VALUE__{validationResult.Id}";
+                            twilioCredentials.ApiKeySid = string.Empty;
+                            twilioCredentials.ApiKeySecret = string.Empty;
+                        }
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(twilioCredentials, jsonOptions);
+                    }
+                    break;
+                }
+
+            case nameof(AppSecretTypesEnum.SendGridApi):
+                {
+                    // Deserialize JSON into SendGridCredentialsDto
+                    var sendGridCredentials = System.Text.Json.JsonSerializer.Deserialize<SendGridCredentialsDto>(rawJson, jsonOptions);
+                    if (sendGridCredentials != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(sendGridCredentials.ApiKey);
+                        sendGridCredentials.ApiKey = $"__BLANK_VALUE__{validationResult.Id}";
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(sendGridCredentials, jsonOptions);
+                    }
                     break;
                 }
 

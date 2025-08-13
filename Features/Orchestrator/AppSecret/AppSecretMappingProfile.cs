@@ -18,7 +18,7 @@ public class AppSecretMappingProfile : IRegister
 
         // Mapping for inserting or updating a app secret record.
         config.NewConfig<AppSecretDto, AppSecret>()
-            .Map(dest => dest.Data, src => System.Text.Json.JsonSerializer.Serialize(src.Data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }))
+            .Ignore(dest => dest.Data)
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
