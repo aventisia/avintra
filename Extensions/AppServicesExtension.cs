@@ -42,6 +42,7 @@ public static class AppServicesExtension
         config.Apply(new VaultMappingProfile());
         config.Apply(new FlowUserMappingProfile());
         config.Apply(new BlockMappingProfile());
+        config.Apply(new AppSecretMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -83,6 +84,7 @@ public static class AppServicesExtension
         services.AddScoped<IFileUploadService, FileUploadService>();
         services.AddScoped<IFlowUserService, FlowUserService>();
         services.AddScoped<IBlockService, BlockService>();
+        services.AddScoped<IAppSecretService, AppSecretService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
