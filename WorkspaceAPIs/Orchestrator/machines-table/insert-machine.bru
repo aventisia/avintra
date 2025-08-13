@@ -1,13 +1,17 @@
 meta {
   name: Insert machine
   type: http
-  seq: 5
+  seq: 4
 }
 
 post {
   url: {{WORKSPACE_APIS_BASE_URL}}/machine
-  body: none
+  body: json
   auth: none
+}
+
+body:json {
+  {}
 }
 
 script:pre-request {
@@ -23,7 +27,7 @@ script:pre-request {
     currentTask: "FlowActivity",
     lastCheckedIn: faker.date.anytime(), 
     isAvailable: false,
-    agentIds: JSON.parse(`["${bru.getGlobalEnvVar("FLOW_VERSION_ID")}"]`)
+    agentIds: []//JSON.parse(`["${bru.getGlobalEnvVar("FLOW_VERSION_ID")}"]`)
   })
 }
 

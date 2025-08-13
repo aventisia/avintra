@@ -1,13 +1,19 @@
 meta {
   name: Is machine name available
   type: http
-  seq: 4
+  seq: 3
 }
 
 post {
   url: {{WORKSPACE_APIS_BASE_URL}}/machine/is-available
-  body: none
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "userInput": "Test_Machine"
+  }
 }
 
 script:pre-request {
