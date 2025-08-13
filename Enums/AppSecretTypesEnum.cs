@@ -6,14 +6,26 @@ namespace AspNetToolkit.Entities;
 public enum AppSecretTypesEnum
 {
     /// <summary>
-    /// API key or token used to authenticate requests to the Qdrant vector database service.
-    /// </summary>
-    [Description("Qdrant API Key")]
-    QdrantApi,
-
-    /// <summary>
     /// API key used to access OpenAI services like GPT models, embeddings, or image generation.
     /// </summary>
     [Description("OpenAI API Key")]
     OpenAiApi,
+
+    /// <summary>
+    /// AWS credentials used to access services like S3, Lambda, Rekognition, etc.
+    /// </summary>
+    [Description("AWS Credentials")]
+    Aws,
+
+    /// <summary>
+    /// Twilio credentials for messaging, voice, or other communication services.
+    /// </summary>
+    [Description("Twilio API Credentials")]
+    TwilioApi,
+
+    /// <summary>
+    /// API key used to authenticate with SendGrid for sending emails.
+    /// </summary>
+    [Description("SendGrid API Key")]
+    SendGridApi
 }
