@@ -6,6 +6,7 @@ import { relaunch } from "@tauri-apps/plugin-process";
 import { LazyStore } from "@tauri-apps/plugin-store";
 import { check } from "@tauri-apps/plugin-updater";
 import { useState } from "react";
+
 import { TAURI_RELAUNCH_URL_KEY, TAURI_UPDATE_STORE, killBinaries } from "..";
 
 // Create a lazy store instance to manage the update state

@@ -46,24 +46,24 @@ export const ArchivesTable = () => {
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Crud ops dialog */}
           {/* <FlowCrudDialog> */}
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            <DTHeading heading={TABLE_HEADING} />
 
-              <div className="flex items-center gap-2">
-                <DTSearchBox
-                  table={table}
-                  searchColumn={SEARCH_COLUMN}
-                  placeholder="Search agents..."
-                />
-                <DTViewOptions {...{ table, columnDisplayNames }} />
-                <Separator orientation="vertical" className="mx-2 h-6" />
-                {/* <DTCreateButton buttonText="Create Agent" /> */}
-              </div>
+            <div className="flex items-center gap-2">
+              <DTSearchBox
+                table={table}
+                searchColumn={SEARCH_COLUMN}
+                placeholder="Search agents..."
+              />
+              <DTViewOptions {...{ table, columnDisplayNames }} />
+              <Separator orientation="vertical" className="mx-2 h-6" />
+              {/* <DTCreateButton buttonText="Create Agent" /> */}
             </div>
+          </div>
 
-            {/* Data table to render data */}
-            <DataTable table={table} columnsLength={flowsTableColumns.length} />
+          {/* Data table to render data */}
+          <DataTable table={table} columnsLength={flowsTableColumns.length} />
           {/* </FlowCrudDialog> */}
 
           {/* Data table Pagination component */}

@@ -14,5 +14,5 @@ export const columnVisibilityState = {
   failedCount: false,
   executionTime: false,
   isPublished: false,
-  publishedOn: false
+  publishedOn: false,
 };

@@ -31,7 +31,7 @@ const WorcLibrary = () => {
               <h1 className="text-[4rem] font-semibold text-[#1E1B4B]">
                 Worc <span className="text-primary">Library</span>
               </h1>
-              <h2 className=" text-muted-foreground">
+              <h2 className="text-muted-foreground">
                 The Library of Worc brings together a rich catalog of
                 ready-to-use automations and AI blueprints, empowering teams to
                 build faster, smarter, and at scale — no need to start from

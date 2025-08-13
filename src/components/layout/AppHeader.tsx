@@ -1,13 +1,16 @@
-import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
-import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 import {
   Header,
   HeaderContainer,
   SearchBox,
   SidebarOnDialog,
 } from "@aventisia/ui/layout";
-import { AppLogo } from "./AppLogo";
+
 import { IS_TAURI } from "@/constants/constants";
+import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
+import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
+
+import { AppLogo } from "./AppLogo";
+
 
 const AppHeader: React.FC = () => {
   return (

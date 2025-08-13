@@ -93,7 +93,7 @@ export const DeactivationVerifyEmailForm = () => {
         </div>
         <div className="mt-6 flex flex-wrap border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
           <Button
-            className="text-sm me-auto font-normal"
+            className="me-auto text-sm font-normal"
             variant="link"
             type="reset"
             onClick={() => setStepNo(1)}
@@ -101,7 +101,7 @@ export const DeactivationVerifyEmailForm = () => {
             <Lucide icon="ArrowLeft" className="h-6 w-6" />
             <span className="ml-1">Cancel</span>
           </Button>
-          <div className="text-sm me-2 flex flex-row flex-wrap items-center gap-2">
+          <div className="me-2 flex flex-row flex-wrap items-center gap-2 text-sm">
             <p>Did not receive the code?</p>
             <ResendCodeButton
               isPending={isResendCodePending}

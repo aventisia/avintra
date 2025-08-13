@@ -31,7 +31,7 @@ export const TableActions = ({
         <PlayIcon className={cn("text-green-500/80", "h-4 w-4")} />
         Execute
       </DropdownMenuItem>
-      <AssignMachineRowAction rowId={rowId} isDisabled={isDisabled}/>
+      <AssignMachineRowAction rowId={rowId} isDisabled={isDisabled} />
       {/* <SimpleDDMenuItem content="Archive" Icon={ArchiveIcon} /> */}
       <Separator />
       {isDisabled ? (

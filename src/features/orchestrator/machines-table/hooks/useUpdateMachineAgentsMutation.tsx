@@ -7,7 +7,7 @@ import { useAssignAgentsStore } from "../stores/assign-agents-store";
 
 export const useUpdateMachineAgentsMutation = () => {
   const queryClient = useQueryClient();
-  
+
   const { machineId } = useAssignAgentsStore((state) => ({
     machineId: state.machineId,
   }));

@@ -12,11 +12,11 @@ import { Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
+import { IS_TAURI } from "@/constants/constants";
 import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import Lucide from "@/react-toolkit/ui/Lucide";
-import { IS_TAURI } from "@/constants/constants";
 
 interface UserAccountModalProps {
   /** Additional class name to override popover content container style */

@@ -1,11 +1,12 @@
 // components/MultiSelector.tsx
-import { useState, useRef, useEffect } from "react";
-import { X, ChevronDown, ChevronUp } from "lucide-react";
+import { Input, LoadingSpinner } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
-import { Input, LoadingSpinner } from "@aventisia/ui";
 import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
+import { X, ChevronDown, ChevronUp } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+
 import { AgentsTableDto } from "@/features/orchestrator/agents-table/dtos/agents-table-dto";
 
 interface MultiSelectorProps {

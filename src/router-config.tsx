@@ -16,6 +16,7 @@ import {
 } from "./features/my-account/components";
 import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
 import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
+import { AchievesPage } from "./pages/AchievesPage";
 import { BillingPage } from "./pages/BillingPage";
 import ComingSoon from "./pages/CommingSoon";
 import { FlowsPage } from "./pages/FlowsPage";
@@ -40,7 +41,6 @@ import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
 import { TenantInfoPage } from "./pages/TenantsInfoPage";
 import { UsersPage } from "./pages/UsersPage";
 import { ProtectedRoute } from "./ProtectedRoute";
-import { AchievesPage } from "./pages/AchievesPage";
 
 const routerConfig: RouteObject[] = [
   {

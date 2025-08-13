@@ -1,5 +1,6 @@
-import { IS_TAURI } from "@/constants/constants";
 import { toast } from "@aventisia/ui/sonner";
+
+import { IS_TAURI } from "@/constants/constants";
 
 export async function killBinaries(): Promise<boolean> {
   // Not running in Tauri, skip killing binaries

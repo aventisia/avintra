@@ -34,25 +34,25 @@ export interface ModelsTableDto {
    */
   setupStatus?: string;
 
-   /**
+  /**
    * token count.
    */
-   tokenCount?: number;
+  tokenCount?: number;
 
-    /**
+  /**
    * Execution count.
    */
-    executionCount?: number;
+  executionCount?: number;
 
   /**
    * Failed count.
    */
-    failedCount?: number;
+  failedCount?: number;
 
   /**
    * Total execution time.
    */
-    executionTime?: number;
+  executionTime?: number;
 
   /**
    * Gets or sets the accuracy of the model.

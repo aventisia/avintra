@@ -1,4 +1,5 @@
 import { Checkbox } from "@aventisia/ui";
+import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
@@ -7,7 +8,6 @@ import { getColumnName } from "../constants/column-display-names";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
 
 import { TableActions } from "./table-actions/TableActions";
-import { Badge } from "@aventisia/ui/badge";
 
 /**
  * Array of table columns for the agents table.
@@ -106,7 +106,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
         status = "Published";
       }
 
-      return <Badge  className={statusColor[status]}>{status}</Badge>;
+      return <Badge className={statusColor[status]}>{status}</Badge>;
     },
   },
   {
