@@ -185,6 +185,7 @@ public class AppSecretService : IAppSecretService
 
             // Create a new AppSecret entity
             var newAppSecret = appSecretDto.Adapt<AppSecret>();
+            newAppSecret.Data = validateData.SanitizedDataJson;
             newAppSecret.CreatedByUserId = _userId;
             newAppSecret.LastModifiedByUserId = _userId;
 
@@ -197,7 +198,7 @@ public class AppSecretService : IAppSecretService
                 _logger.LogError("Failed to save newly created app secret: {AppSecretName}", appSecretDto.Name);
                 return serviceResponse;
             }
-            
+
             // Add new entries
             foreach (var kv in validateData.EncryptedValues)
             {
@@ -307,47 +308,51 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Get existing encrypted key-values from the database
-            var existingKeyValues = existingAppSecret.EncryptedKeyValues;
+            // TODO: Uncomment this section if updating encrypted data is required
+            // // Get existing encrypted key-values from the database
+            // var existingKeyValues = existingAppSecret.EncryptedKeyValues;
 
-            // Prepare keys from request
-            var incomingKeys = validateData.EncryptedValues;
+            // // Prepare keys from request
+            // var incomingKeys = validateData.EncryptedValues;
 
-            // Update or add new entries
-            foreach (var kv in incomingKeys)
-            {
-                var existing = existingKeyValues.FirstOrDefault(e => e.Name == kv.Key);
-                if (existing != null)
-                {
-                    existing.Value = kv.Value;
-                    _unitOfWork.EncryptedKeyValueRepo.Update(existing);
-                }
-                else
-                {
-                    // Create new key-value entry
-                    var newEncryptedValue = new EncryptedKeyValue
-                    {
-                        Name = kv.Key,
-                        Value = kv.Value,
-                        AppSecretId = existingAppSecret.Id
-                    };
-                    await _unitOfWork.EncryptedKeyValueRepo.InsertAsync(newEncryptedValue);
-                }
-            }
+            // // Update or add new entries
+            // foreach (var kv in incomingKeys)
+            // {
+            //     var existing = existingKeyValues?.FirstOrDefault(e => e.Name == kv.Key);
+            //     if (existing != null)
+            //     {
+            //         existing.Value = kv.Value;
+            //         _unitOfWork.EncryptedKeyValueRepo.Update(existing);
+            //     }
+            //     else
+            //     {
+            //         // Create new key-value entry
+            //         var newEncryptedValue = new EncryptedKeyValue
+            //         {
+            //             Name = kv.Key,
+            //             Value = kv.Value,
+            //             AppSecretId = existingAppSecret.Id
+            //         };
+            //         await _unitOfWork.EncryptedKeyValueRepo.InsertAsync(newEncryptedValue);
+            //     }
+            // }
 
-            // Delete keys in DB but not in incoming request
-            var keysToDelete = existingKeyValues
-                .Where(e => !incomingKeys.ContainsKey(e.Name))
-                .ToList();
+            // // Delete keys in DB but not in incoming request
+            // var keysToDelete = existingKeyValues?
+            //     .Where(e => !incomingKeys.ContainsKey(e.Name))
+            //     .ToList();
 
-            _unitOfWork.EncryptedKeyValueRepo.Delete(keysToDelete);
+            // if (keysToDelete != null)
+            // {
+            //     _unitOfWork.EncryptedKeyValueRepo.Delete(keysToDelete);
 
-            // Save changes (including updates/adds/deletes)
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Failed to update encrypted key-values for AppSecret ID: {AppSecretId}", appSecretDto.Id);
-                return serviceResponse;
-            }
+            //     // Save changes (including updates/adds/deletes)
+            //     if (!await _unitOfWork.SaveAsync())
+            //     {
+            //         _logger.LogError("Failed to update encrypted key-values for AppSecret ID: {AppSecretId}", appSecretDto.Id);
+            //         return serviceResponse;
+            //     }
+            // }
 
             // Return success response
             serviceResponse.Data = existingAppSecret.Adapt<AppSecretDto>();
@@ -505,10 +510,11 @@ public class AppSecretService : IAppSecretService
                     if (openAiCredentials != null)
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(openAiCredentials.ApiKey);
-                        openAiCredentials.ApiKey = $"__BLANK_VALUE__{validationResult.Id}";
+                        openAiCredentials.ApiKey = string.Empty;
                         sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(openAiCredentials, jsonOptions);
                     }
-                    validationResult.Remark = "Invalid data: The input might be missing required fields or have incorrect data format";
+                    else
+                        validationResult.Remark = "Invalid data: The input might be missing required fields or have incorrect data format";
                     break;
                 }
 
