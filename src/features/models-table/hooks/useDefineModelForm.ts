@@ -98,7 +98,12 @@ export const useDefineModelForm = () => {
         ? new Date(modelData?.trainedOn)
         : new Date(),
     });
-  }, [rowId, form, queryClient, userSession]);
+
+    // Focus the name field after reset.
+    setTimeout(() => {
+      form.setFocus("name", { shouldSelect: false });
+    }, 0);
+  }, [rowId, form, userSession, queryClient]);
 
   // Get check availability state and methods
   const {
@@ -144,7 +149,6 @@ export const useDefineModelForm = () => {
     refineFormData,
     isAvailable,
     availabilityMessage,
-    setAvailabilityMessage,
     isCheckPending,
     handleInputChange,
   };

@@ -1,4 +1,4 @@
-import { Button } from "@aventisia/ui/buttons";
+import { SubmitButton } from "@aventisia/ui/buttons";
 import {
   Form,
   InputField,
@@ -6,7 +6,7 @@ import {
   TextareaField,
 } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
-// import { AutherCard } from "@aventisia/ui/form";
+import { useEffect } from "react";
 import { z } from "zod";
 
 import { modelOptimisticMutationFn } from "../../apis/models-table-apis";
@@ -30,7 +30,6 @@ export const ModelCrudForm = () => {
     crudAction,
     isAvailable,
     availabilityMessage,
-    setAvailabilityMessage,
     isCheckPending,
     handleInputChange,
     setShowDialog,
@@ -38,7 +37,11 @@ export const ModelCrudForm = () => {
   } = useDefineModelForm();
 
   // Define optimistic mutation to crete or update the model
-  const { mutate: mutateModel } = useListOptimisticMutation<
+  const {
+    mutate: mutateModel,
+    isPending,
+    isSuccess,
+  } = useListOptimisticMutation<
     ModelsTableDto,
     ModelsTableDto | boolean,
     ModelsTableDto
@@ -52,12 +55,14 @@ export const ModelCrudForm = () => {
       crudAction: crudAction,
     });
 
-    // Reset the availability message
-    setAvailabilityMessage(null);
-
-    // Close the dialog
-    setShowDialog(false);
+    // Close the dialog if not creating the record
+    if (crudAction !== "create") setShowDialog(false);
   };
+
+  // Close dialog and reset form when mutation is successful
+  useEffect(() => {
+    if (crudAction === "create" && isSuccess) setShowDialog(false);
+  }, [isSuccess, crudAction, setShowDialog]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";
@@ -86,25 +91,18 @@ export const ModelCrudForm = () => {
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
 
-      {/* AutherCard */}
-      {/* {isReadMode && (
-        <AutherCard
-          createdBy={form.getValues("createdBy")}
-          createdOn={form.getValues("createdOn")}
-          lastModifiedBy={form.getValues("lastModifiedBy")}
-          lastModifiedOn={form.getValues("lastModifiedOn")}
-        />
-      )} */}
+      {/* TODO: Implement AutherCard */}
+
       {/* Submit button */}
       {!isReadMode && (
         <div className="!mt-5 flex w-full justify-end">
-          <Button
-            type="submit"
-            disabled={!isDirty || !isAvailable || isCheckPending}
+          <SubmitButton
             className="min-w-[5rem]"
-          >
-            {crudAction === "create" ? "Create" : "Save changes"}
-          </Button>
+            primaryText={crudAction === "create" ? "Create" : "Save changes"}
+            secondaryText="Creating..."
+            isPending={isPending}
+            disabled={!isDirty || !isAvailable || isCheckPending}
+          />
         </div>
       )}
     </Form>
