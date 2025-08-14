@@ -308,51 +308,75 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // TODO: Uncomment this section if updating encrypted data is required
-            // // Get existing encrypted key-values from the database
-            // var existingKeyValues = existingAppSecret.EncryptedKeyValues;
+            // Get existing encrypted key-values from the database
+            var existingKeyValues = existingAppSecret.EncryptedKeyValues;
 
-            // // Prepare keys from request
-            // var incomingKeys = validateData.EncryptedValues;
+            // Prepare keys from request
+            var incomingKeys = validateData.EncryptedValues;
 
-            // // Update or add new entries
-            // foreach (var kv in incomingKeys)
-            // {
-            //     var existing = existingKeyValues?.FirstOrDefault(e => e.Name == kv.Key);
-            //     if (existing != null)
-            //     {
-            //         existing.Value = kv.Value;
-            //         _unitOfWork.EncryptedKeyValueRepo.Update(existing);
-            //     }
-            //     else
-            //     {
-            //         // Create new key-value entry
-            //         var newEncryptedValue = new EncryptedKeyValue
-            //         {
-            //             Name = kv.Key,
-            //             Value = kv.Value,
-            //             AppSecretId = existingAppSecret.Id
-            //         };
-            //         await _unitOfWork.EncryptedKeyValueRepo.InsertAsync(newEncryptedValue);
-            //     }
-            // }
+            var hasChanges = false;
+            var keysToInsert = new List<EncryptedKeyValue>();
 
-            // // Delete keys in DB but not in incoming request
-            // var keysToDelete = existingKeyValues?
-            //     .Where(e => !incomingKeys.ContainsKey(e.Name))
-            //     .ToList();
+            // Update existing entries or collect new ones for insertion
+            foreach (var kv in incomingKeys)
+            {
+                // Skip if the value is null or empty
+                if (string.IsNullOrEmpty(kv.Value))
+                    continue;
 
-            // if (keysToDelete != null)
-            // {
-            //     _unitOfWork.EncryptedKeyValueRepo.Delete(keysToDelete);
+                // Try to find an existing key-value pair by name
+                var existing = existingKeyValues?.FirstOrDefault(e => e.Name == kv.Key);
+                if (existing != null)
+                {
+                    // Update only if the value has actually changed
+                    if (existing.Value != kv.Value)
+                    {
+                        existing.Value = kv.Value;
+                        _unitOfWork.EncryptedKeyValueRepo.Update(existing);
+                        hasChanges = true;
+                    }
+                }
+                else
+                {
+                    // Prepare a new key-value entry for insertion
+                    var newEncryptedValue = new EncryptedKeyValue
+                    {
+                        Name = kv.Key,
+                        Value = kv.Value,
+                        AppSecretId = existingAppSecret.Id
+                    };
 
-            //     // Save changes (including updates/adds/deletes)
-            //     if (!await _unitOfWork.SaveAsync())
-            //     {
-            //         _logger.LogError("Failed to update encrypted key-values for AppSecret ID: {AppSecretId}", appSecretDto.Id);
-            //         return serviceResponse;
-            //     }
-            // }
+                    keysToInsert.Add(newEncryptedValue);
+                    hasChanges = true;
+                }
+            }
+
+            // Insert new entries, if any
+            if (keysToInsert.Any())
+            {
+                await _unitOfWork.EncryptedKeyValueRepo.InsertAsync(keysToInsert);
+            }
+
+            // Identify keys that exist in DB but not in the incoming request (to be deleted)
+            var keysToDelete = existingKeyValues?
+                .Where(e => e != null && !incomingKeys.ContainsKey(e.Name))
+                .ToList() ?? new List<EncryptedKeyValue>();
+
+            if (keysToDelete.Any())
+            {
+                _unitOfWork.EncryptedKeyValueRepo.Delete(keysToDelete);
+                hasChanges = true;
+            }
+
+            // Save changes if any insert, update, or delete occurred
+            if (hasChanges)
+            {
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to update encrypted key-values for AppSecret ID: {AppSecretId}", appSecretDto.Id);
+                    return serviceResponse;
+                }
+            }
 
             // Return success response
             serviceResponse.Data = existingAppSecret.Adapt<AppSecretDto>();
@@ -525,11 +549,11 @@ public class AppSecretService : IAppSecretService
                     if (awsCredentials != null)
                     {
                         validationResult.EncryptedValues["AccessKeyId"] = _encryptionService.EncryptString(awsCredentials.AccessKeyId);
-                        awsCredentials.AccessKeyId = $"__BLANK_VALUE__{validationResult.Id}"; ;
+                        awsCredentials.AccessKeyId = string.Empty; ;
                         if (awsCredentials.TemporarySecurityCredentials)
                         {
                             validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(awsCredentials.SessionToken);
-                            awsCredentials.AccessKeyId = $"__BLANK_VALUE__{validationResult.Id}";
+                            awsCredentials.AccessKeyId = string.Empty;
                         }
                         else
                             awsCredentials.AccessKeyId = string.Empty;
@@ -553,14 +577,14 @@ public class AppSecretService : IAppSecretService
                         {
                             validationResult.EncryptedValues["ApiKeySid"] = _encryptionService.EncryptString(twilioCredentials.ApiKeySid);
                             validationResult.EncryptedValues["ApiKeySecret"] = _encryptionService.EncryptString(twilioCredentials.ApiKeySecret);
-                            twilioCredentials.ApiKeySid = $"__BLANK_VALUE__{validationResult.Id}";
-                            twilioCredentials.ApiKeySecret = $"__BLANK_VALUE__{validationResult.Id}";
+                            twilioCredentials.ApiKeySid = string.Empty;
+                            twilioCredentials.ApiKeySecret = string.Empty;
                             twilioCredentials.AuthToken = string.Empty;
                         }
                         else
                         {
                             validationResult.EncryptedValues["AuthToken"] = _encryptionService.EncryptString(twilioCredentials.AuthToken);
-                            twilioCredentials.AuthToken = $"__BLANK_VALUE__{validationResult.Id}";
+                            twilioCredentials.AuthToken = string.Empty;
                             twilioCredentials.ApiKeySid = string.Empty;
                             twilioCredentials.ApiKeySecret = string.Empty;
                         }
@@ -576,7 +600,7 @@ public class AppSecretService : IAppSecretService
                     if (sendGridCredentials != null)
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(sendGridCredentials.ApiKey);
-                        sendGridCredentials.ApiKey = $"__BLANK_VALUE__{validationResult.Id}";
+                        sendGridCredentials.ApiKey = string.Empty;
                         sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(sendGridCredentials, jsonOptions);
                     }
                     break;
