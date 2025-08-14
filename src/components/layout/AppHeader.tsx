@@ -11,7 +11,6 @@ import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAcco
 
 import { AppLogo } from "./AppLogo";
 
-
 const AppHeader: React.FC = () => {
   return (
     <HeaderContainer>
