@@ -1,4 +1,4 @@
-import { Button } from "@aventisia/ui/buttons";
+import { SubmitButton } from "@aventisia/ui/buttons";
 import {
   AutherCard,
   Form,
@@ -7,6 +7,7 @@ import {
   TextareaField,
 } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { useEffect } from "react";
 import { z } from "zod";
 
 import { flowOptimisticMutationFn } from "../../apis/flows-table-apis";
@@ -30,7 +31,6 @@ export const FlowCrudForm = () => {
     crudAction,
     isAvailable,
     availabilityMessage,
-    setAvailabilityMessage,
     isCheckPending,
     handleInputChange,
     setShowDialog,
@@ -38,7 +38,11 @@ export const FlowCrudForm = () => {
   } = useDefineFlowForm();
 
   // Define optimistic mutation to crete or update the flow
-  const { mutate: mutateFlow } = useListOptimisticMutation<
+  const {
+    mutate: mutateFlow,
+    isPending,
+    isSuccess,
+  } = useListOptimisticMutation<
     FlowsTableDto,
     FlowsTableDto | boolean,
     FlowsTableDto
@@ -52,12 +56,14 @@ export const FlowCrudForm = () => {
       crudAction: crudAction,
     });
 
-    // Reset the availability message
-    setAvailabilityMessage(null);
-
-    // Close the dialog
-    setShowDialog(false);
+    // Close the dialog if not creating the record
+    if (crudAction !== "create") setShowDialog(false);
   };
+
+  // Close dialog and reset form when mutation is successful
+  useEffect(() => {
+    if (crudAction === "create" && isSuccess) setShowDialog(false);
+  }, [isSuccess, crudAction, setShowDialog]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";
@@ -93,26 +99,28 @@ export const FlowCrudForm = () => {
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
 
-      {/* AutherCard */}
-      {crudAction === "read" && (
-        <AutherCard
-          createdBy={form.getValues("createdBy")}
-          createdOn={form.getValues("createdOn")}
-          lastModifiedBy={form.getValues("lastModifiedBy")}
-          lastModifiedOn={form.getValues("lastModifiedOn")}
-        />
-      )}
+      {/* AutherCard: TODO: Hiding till the time we don't have a good design for this */}
+      <div className="hidden">
+        {crudAction === "read" && (
+          <AutherCard
+            createdBy={form.getValues("createdBy")}
+            createdOn={form.getValues("createdOn")}
+            lastModifiedBy={form.getValues("lastModifiedBy")}
+            lastModifiedOn={form.getValues("lastModifiedOn")}
+          />
+        )}
+      </div>
 
       {/* Submit button */}
       {!isReadMode && (
         <div className="!mt-5 flex w-full justify-end">
-          <Button
-            type="submit"
-            disabled={!isDirty || !isAvailable || isCheckPending}
+          <SubmitButton
             className="min-w-[5rem]"
-          >
-            {crudAction === "create" ? "Create agent" : "Save changes"}
-          </Button>
+            primaryText={crudAction === "create" ? "Create" : "Save changes"}
+            secondaryText="Creating..."
+            isPending={isPending}
+            disabled={!isDirty || !isAvailable || isCheckPending}
+          />
         </div>
       )}
     </Form>

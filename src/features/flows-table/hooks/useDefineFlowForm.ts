@@ -104,6 +104,11 @@ export const useDefineFlowForm = () => {
         ? new Date(flowData?.lastModifiedOn)
         : new Date(),
     });
+
+    // Focus the name field after reset.
+    setTimeout(() => {
+      form.setFocus("name", { shouldSelect: false });
+    }, 0);
   }, [rowId, form, queryClient, userSession]);
 
   // Get check availability state and methods
@@ -150,7 +155,6 @@ export const useDefineFlowForm = () => {
     refineFormData,
     isAvailable,
     availabilityMessage,
-    setAvailabilityMessage,
     isCheckPending,
     handleInputChange,
   };
