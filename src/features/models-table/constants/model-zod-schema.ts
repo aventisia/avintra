@@ -1,6 +1,6 @@
 import {
-  alphaNumericError,
-  alphaNumericRegex,
+  flexibleNameError,
+  flexibleNameRegex,
   maxLenError,
   reqError,
 } from "@aventisia/ui/utils";
@@ -13,8 +13,8 @@ export const modelNameSchema = z
   .string()
   .min(1, { message: reqError("Model name") })
   .max(255, { message: maxLenError("Model name", 255) })
-  .regex(alphaNumericRegex, {
-    message: alphaNumericError("Model name"),
+  .regex(flexibleNameRegex, {
+    message: flexibleNameError("Model name"),
   });
 
 /**

@@ -1,6 +1,6 @@
 import {
-  alphaNumericError,
-  alphaNumericRegex,
+  flexibleNameError,
+  flexibleNameRegex,
   maxLenError,
   reqError,
 } from "@aventisia/ui/utils";
@@ -13,8 +13,8 @@ export const flowNameSchema = z
   .string()
   .min(1, { message: reqError("Agent name") })
   .max(255, { message: maxLenError("Agent name", 255) })
-  .regex(alphaNumericRegex, {
-    message: alphaNumericError("Agent name"),
+  .regex(flexibleNameRegex, {
+    message: flexibleNameError("Agent name"),
   });
 
 /**
