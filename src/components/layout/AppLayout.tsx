@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
+import { DotPattern } from "@/components/layout/DotPattern";
 import { IS_TAURI } from "@/constants/constants";
 import {
   useCheckForUpdate,
@@ -63,6 +64,11 @@ export const AppLayout = () => {
         <AppRedirectPage />
       ) : (
         <div className="relative min-h-screen overflow-hidden">
+          <DotPattern
+            className={cn(
+              "z-[-10] mt-2 [mask-image:linear-gradient(to_bottom_left,white,transparent,transparent)]",
+            )}
+          />
           <AppBanner />
           <AppHeader />
           {!IS_TAURI && <Sidebar />}
