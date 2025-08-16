@@ -1,4 +1,3 @@
-import { Separator } from "@aventisia/ui";
 import {
   DataTable,
   DataTableSkeleton,
@@ -56,7 +55,6 @@ export const ModelsTable = () => {
                   placeholder="Search model..."
                 />
                 <DTViewOptions {...{ table, columnDisplayNames }} />
-                <Separator orientation="vertical" className="mx-2 h-6" />
                 <DTCreateButton buttonText="Create Model" />
               </div>
             </div>

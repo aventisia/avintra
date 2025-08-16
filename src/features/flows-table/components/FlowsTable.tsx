@@ -1,4 +1,3 @@
-import { Separator } from "@aventisia/ui";
 import {
   DataTable,
   DataTableSkeleton,
@@ -57,7 +56,6 @@ export const FlowsTable = () => {
                   placeholder="Search agents..."
                 />
                 <DTViewOptions {...{ table, columnDisplayNames }} />
-                <Separator orientation="vertical" className="mx-2 h-6" />
                 <DTCreateButton buttonText="Create Agent" />
               </div>
             </div>
