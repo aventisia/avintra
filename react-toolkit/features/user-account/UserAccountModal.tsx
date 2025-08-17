@@ -69,7 +69,7 @@ const UserAccountModal = ({
         )}
       >
         <Avatar className={cn("flex", sizeClassName)}>
-          <AvatarFallback className="bg-[#aba7e7] font-bold capitalize tracking-wider text-secondary">
+          <AvatarFallback className="border-none bg-primary-200 font-bold capitalize tracking-wider text-secondary">
             {userSession ? userSession?.userInitials : "--"}
           </AvatarFallback>
         </Avatar>
