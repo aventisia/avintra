@@ -1,6 +1,7 @@
 import { Input } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { Search } from "lucide-react";
+import { cn } from "@aventisia/ui/lib";
+import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 
 import TemplateDialog from "./TemplateDialog";
@@ -22,66 +23,69 @@ const WorcLibrary = () => {
   ];
 
   return (
-    <>
-      <div>
-        {/* Header section with title and subtitle */}
-        <div className="">
-          <div className="mx-auto max-w-7xl px-4 py-8">
-            <div className="mx-auto mb-8 max-w-3xl text-center">
-              <h1 className="text-[4rem] font-semibold text-[#1E1B4B]">
-                Worc <span className="text-primary">Library</span>
-              </h1>
-              <h2 className="text-muted-foreground">
-                The Library of Worc brings together a rich catalog of
-                ready-to-use automations and AI blueprints, empowering teams to
-                build faster, smarter, and at scale — no need to start from
-                scratch.
-              </h2>
-            </div>
+    <div>
+      {/* Header section with title and subtitle */}
+      <div className="">
+        <div className="mx-auto max-w-7xl px-4 py-8">
+          <div className="mx-auto mb-6 max-w-3xl text-center">
+            <h2 className="text-[4rem] font-semibold tracking-wide">
+              Worc <span className="text-primary">Library</span>
+            </h2>
+            <p className="text-base text-muted-foreground">
+              The Library of Worc brings together a rich catalog of ready-to-use
+              automations and AI blueprints, empowering teams to build faster,
+              smarter, and at scale — no need to start from scratch.
+            </p>
+          </div>
 
-            {/* Search Bar for filtering templates */}
-            <div className="relative mx-auto mb-8 max-w-2xl">
-              <Input
-                type="text"
-                placeholder="Search..."
-                // Uncomment and implement search functionality as needed
-                // value={searchQuery}
-                // onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-full px-4 py-3"
-              />
+          {/* Search Bar for filtering templates */}
+          <div className="relative mx-auto mb-8 max-w-2xl">
+            <Input
+              className="rounded-lg pe-9 ps-3.5 text-[0.86rem]"
+              placeholder="Search..."
+              type="text"
+              // Uncomment and implement search functionality as needed
+              // value={searchQuery}
+              // onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <Button
+              variant="ghost"
+              size="icon10"
+              className="absolute inset-y-0 end-0 rounded-none rounded-e-lg focus-visible:ring-[3px]"
+              aria-label="Search"
+            >
+              <SearchIcon size={18} aria-hidden="true" />
+            </Button>
+          </div>
+
+          {/* Category Filters to select templates by category */}
+          <div className="flex flex-wrap justify-center gap-3">
+            {categories.map((category) => (
               <Button
-                size={"icon8"}
-                className="absolute right-2 top-1/2 -translate-y-1/2 transform rounded-full text-white transition-colors hover:bg-blue-700"
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                variant="outline"
+                className={cn(
+                  "rounded-full px-4 py-2 text-sm font-medium ring-1 ring-white",
+                  {
+                    "border-primary text-primary ring-primary":
+                      selectedCategory === category,
+                  },
+                )}
               >
-                <Search className="h-4 w-4" />
+                {category}
               </Button>
-            </div>
-
-            {/* Category Filters to select templates by category */}
-            <div className="flex flex-wrap justify-center gap-3">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  variant={
-                    selectedCategory === category ? "default" : "outline"
-                  }
-                  className="rounded-full px-4 py-2 text-sm font-medium"
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
+            ))}
           </div>
         </div>
-
-        {/* Dialog component for template interactions */}
-        <TemplateDialog />
-
-        {/* Displays templates filtered by the selected category */}
-        <WorcLibraryTemplates selectedCategory={selectedCategory} />
       </div>
-    </>
+
+      {/* Dialog component for template interactions */}
+      <TemplateDialog />
+
+      {/* Displays templates filtered by the selected category */}
+      <WorcLibraryTemplates selectedCategory={selectedCategory} />
+    </div>
   );
 };
 

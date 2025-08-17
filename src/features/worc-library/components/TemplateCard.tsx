@@ -1,7 +1,6 @@
 import { Separator } from "@aventisia/ui";
 import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
 import { Badge } from "@aventisia/ui/badge";
-import { Button } from "@aventisia/ui/buttons";
 import {
   Card,
   CardContent,
@@ -29,7 +28,7 @@ export const TemplateCard = ({ template, onClick }: TemplateCardProps) => {
   return (
     <Card
       key={template.id}
-      className="cursor-pointer rounded-3xl border-primary-100 shadow-none hover:shadow-md"
+      className="cursor-pointer rounded-2xl border-primary-50 shadow-none transition-all hover:border-primary-200 hover:bg-slate-50"
       onClick={() => onClick(template)}
     >
       <CardHeader className="pb-4">
@@ -50,29 +49,30 @@ export const TemplateCard = ({ template, onClick }: TemplateCardProps) => {
         </div>
 
         {/* Template title */}
-        <CardTitle className="!mt-5 text-base font-semibold capitalize">
+        <CardTitle className="!mt-5 text-[0.9rem] font-semibold capitalize">
           {template.name}
         </CardTitle>
 
         {/* Template description (fallback if empty) */}
-        <CardDescription className="line-clamp-4 min-h-[5rem] text-muted-foreground">
+        <CardDescription className="line-clamp-4 text-muted-foreground">
           {template.description || "No description available"}
         </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-3 pb-1">
         {/* Type badge */}
-        <Badge className="border-primary text-primary" variant="outline">
+        <Badge className="bg-slate-100" variant="outline">
           {template.type}
         </Badge>
-        <Separator />
       </CardContent>
 
-      <CardFooter className="flex items-center justify-between !pb-3.5">
+      <Separator className="mx-4 mb-3 mt-2.5 h-[0.5px] w-auto" />
+
+      <CardFooter className="flex items-center justify-between !pb-4">
         {/* Creator badge and name */}
         <div className="flex items-center gap-2">
           <Avatar className="flex h-7 w-7 items-center justify-center">
-            <AvatarFallback className="bg-[#aba7e7] text-xs font-medium capitalize leading-7 tracking-wider text-secondary">
+            <AvatarFallback className="flex items-center justify-center border border-primary-100 bg-accent text-2xs font-medium">
               {template?.createdBy
                 ? template?.createdBy
                     ?.split(" ")
@@ -87,17 +87,8 @@ export const TemplateCard = ({ template, onClick }: TemplateCardProps) => {
         </div>
 
         {/* Usage count with clipboard copy button */}
-        <div className="flex items-center text-sm text-muted-foreground">
-          <Button
-            variant="ghost"
-            className="p-0 px-2"
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent card click
-              navigator.clipboard.writeText(`${template.usagesCount}`);
-            }}
-          >
-            <Copy className="h-4 w-4" />
-          </Button>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Copy className="h-4 w-4" />
           <p>{template.usagesCount}</p>
         </div>
       </CardFooter>

@@ -9,9 +9,9 @@ import { DesktopIcon } from "@radix-ui/react-icons";
 import {
   ArchiveIcon,
   BotIcon,
-  Columns3Icon,
   FileBoxIcon,
   Library,
+  LibraryIcon,
   MonitorPlayIcon,
   Shield,
   TagIcon,
@@ -35,7 +35,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         route: "/ai-models",
       },
       {
-        Icon: Columns3Icon,
+        Icon: LibraryIcon,
         name: "Library",
         route: "/library",
       },

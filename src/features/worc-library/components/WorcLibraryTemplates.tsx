@@ -18,7 +18,7 @@ const WorcLibraryTemplates = ({
   const { setOpen, setTemplateToUse } = useWorcLibraryDialogStore();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(6);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
 
   const { data: agentData, isLoading: isAgentDataLoading } =
     useFetchAgentTemplates();
@@ -91,7 +91,7 @@ const WorcLibraryTemplates = ({
   // Show skeletons while loading
   if (isAgentDataLoading || isModelDataLoading) {
     return (
-      <div className="mt-2 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-2 grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
         {[1, 2, 3].map((i) => (
           <TemplateCardSkeleton key={i} />
         ))}
@@ -100,9 +100,9 @@ const WorcLibraryTemplates = ({
   }
 
   return (
-    <div className="mt-8 pb-4">
+    <div className="mt-2 pb-4">
       {/* Template Cards Grid */}
-      <div className="mt-2 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-2 grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
         {currentItems.length > 0 ? (
           currentItems.map((item) => (
             <TemplateCard
