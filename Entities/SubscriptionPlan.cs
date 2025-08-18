@@ -7,37 +7,37 @@ namespace AccountsAPIs.Entities;
 public class SubscriptionPlan : BaseEntity
 {
     /// <summary>
-    /// The display name of the subscription plan (e.g., Free, Pro, Enterprise).
+    /// Gets or sets the display name of the subscription plan (e.g., Free, Pro, Enterprise).
     /// </summary>
     public required string Name { get; set; }
 
     /// <summary>
-    /// The number of usage credits allocated per month.
+    /// Gets or sets the maximum number of credits allocated.
     /// </summary>
-    public int MonthlyCredits { get; set; }
+    public int MaxCredits { get; set; }
 
     /// <summary>
-    /// The maximum number of agents or AI models that can be published under this plan.
+    /// Gets or sets the maximum number of agents or AI models that can be published under this plan.
     /// </summary>
     public int MaxPublishedItems { get; set; }
 
     /// <summary>
-    /// The duration (in days) for which workflow execution history is retained.
+    /// Gets or sets the duration (in days) for which workflow execution history is retained.
     /// </summary>
     public int HistoryRetentionDays { get; set; }
 
     /// <summary>
-    /// The maximum number of spaces (e.g., workspaces or environments) that can be created.
+    /// Gets or sets the maximum number of spaces (e.g., workspaces) that can be created.
     /// </summary>
     public int MaxSpaces { get; set; }
 
     /// <summary>
-    /// The maximum storage capacity available under this plan, in megabytes.
+    /// Gets or sets the maximum storage capacity available under this plan, in megabytes.
     /// </summary>
     public int StorageLimitMB { get; set; }
 
     /// <summary>
-    /// The maximum number of users permitted for this subscription.
+    /// Gets or sets the maximum number of users permitted for this subscription.
     /// </summary>
     public int MaxUsers { get; set; }
 }
