@@ -1,17 +1,43 @@
 namespace AccountsAPIs.Enums;
 
 /// <summary>
-/// Represents the different types of units for the pricing plan.
+/// Defines the various unit types used in credit-based pricing plans.
 /// </summary>
 public enum UnitTypesEnum
 {
     /// <summary>
-    /// Indicates the unit type is measured in credits.
+    /// Unit is measured in credits.
     /// </summary>
+    [Description("Credits")]
     Credit,
 
     /// <summary>
-    /// Indicates the unit type is measured in licenses.
+    /// Unit is measured in licenses.
     /// </summary>
-    License
+    [Description("Licenses")]
+    License,
+
+    /// <summary>
+    /// Unit is measured in seconds.
+    /// </summary>
+    [Description("Seconds")]
+    Seconds,
+
+    /// <summary>
+    /// Unit is measured in tokens.
+    /// </summary>
+    [Description("Tokens")]
+    Tokens,
+
+    /// <summary>
+    /// Unit is measured in transactions.
+    /// </summary>
+    [Description("Transactions")]
+    Transactions,
+
+    /// <summary>
+    /// Unit is measured in messages.
+    /// </summary>
+    [Description("Message")]
+    Message
 }
