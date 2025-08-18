@@ -46,6 +46,8 @@ public interface IUnitOfWork
 
     IAppSecretRepo AppSecretRepo { get; }
 
+    ISubscriptionPlanRepo SubscriptionPlanRepo { get; }
+
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
     /// </summary>

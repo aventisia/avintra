@@ -31,6 +31,7 @@ public class UnitOfWork : IUnitOfWork
     public ISpaceUserRepo SpaceUserRepo => new SpaceUserRepo(_accountsDbContext);
     public IAppIntegrationRepo AppIntegrationRepo => new AppIntegrationRepo(_accountsDbContext);
     public IAppSecretRepo AppSecretRepo => new AppSecretRepo(_accountsDbContext);
+    public ISubscriptionPlanRepo SubscriptionPlanRepo => new SubscriptionPlanRepo(_accountsDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false) => checkHasChanges && (!_accountsDbContext.ChangeTracker.HasChanges() || await _accountsDbContext.SaveChangesAsync() > 0) || await _accountsDbContext.SaveChangesAsync() > 0;
 
