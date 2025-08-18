@@ -46,6 +46,17 @@ export const vaultsTableColumns: ColumnDef<VaultsTableDto>[] = [
     ),
   },
   {
+    accessorKey: "type",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("type")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        { row.getValue("type")}
+      </div>
+    ),
+  },
+  {
     accessorKey: "createdBy",
     header: ({ column }) => (
       <DTColumnHeader column={column} title={getColumnName("createdBy")} />

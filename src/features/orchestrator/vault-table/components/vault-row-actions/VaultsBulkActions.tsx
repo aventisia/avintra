@@ -28,7 +28,7 @@ export function VaultsBulkActions({ table }: Readonly<VaultsBulkActionsProps>) {
     .rows.map((row) => row.original.id)
     .filter((id): id is string => id !== undefined);
 
-  // Get mutation function to delete the config
+  // Get mutation function to delete the credential
   const { mutate: deleteConfigs } = useListOptimisticMutation<
     string[],
     VaultsTableDto | boolean,
@@ -48,7 +48,7 @@ export function VaultsBulkActions({ table }: Readonly<VaultsBulkActionsProps>) {
               // Show alert dialog to confirm delete
               showDefaultAlertDialog({
                 confirmActionFn: () => {
-                  // Delete selected configs
+                  // Delete selected credentials
                   deleteConfigs({
                     payload: selectedRowIds,
                     crudAction: "delete-multiple",
@@ -58,7 +58,7 @@ export function VaultsBulkActions({ table }: Readonly<VaultsBulkActionsProps>) {
                   table.toggleAllRowsSelected(false);
                 },
                 alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "configs" : "config"}`,
+                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "credentials" : "credential"}`,
               });
             }}
           />

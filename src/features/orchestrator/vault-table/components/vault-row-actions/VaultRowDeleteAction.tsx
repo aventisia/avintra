@@ -34,7 +34,7 @@ export const VaultRowDeleteAction = ({ rowId }: VaultRowDeleteActionProps) => {
               crudAction: "delete",
             }),
           alertType: "delete-record",
-          additionalText: "config",
+          additionalText: "credential",
         });
       }}
     />
