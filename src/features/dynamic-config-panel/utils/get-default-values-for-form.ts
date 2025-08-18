@@ -6,10 +6,12 @@ export function getDefaultValuesForForm(
   inputs?: NodeInputType[],
   outputs?: NodeOutputType[],
 ): Record<string, unknown> {
-  // eslint-disable-next-line no-debugger
-  debugger
-  const inputMap = inputs? Object.fromEntries(inputs?.map((i) => [i.key, i.value])):{};
-  const outputMap =outputs? Object.fromEntries(outputs?.map((o) => [o.key, o.value])):{};
+  const inputMap = inputs
+    ? Object.fromEntries(inputs?.map((i) => [i.key, i.value]))
+    : {};
+  const outputMap = outputs
+    ? Object.fromEntries(outputs?.map((o) => [o.key, o.value]))
+    : {};
 
   const defaultValues: Record<string, unknown> = {};
 
