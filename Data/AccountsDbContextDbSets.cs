@@ -24,4 +24,5 @@ public partial class AccountsDbContext
     public DbSet<SpaceUser> SpaceUsers { get; set; }
     public DbSet<AppIntegration> AppIntegrations { get; set; }
     public DbSet<AppSecret> AppSecrets { get; set; }
+    public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
 }
