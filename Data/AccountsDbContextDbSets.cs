@@ -26,4 +26,5 @@ public partial class AccountsDbContext
     public DbSet<AppSecret> AppSecrets { get; set; }
     public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
     public DbSet<TenantSubscription> TenantSubscriptions { get; set; }
+    public DbSet<CreditPlan> CreditPlans { get; set; }
 }
