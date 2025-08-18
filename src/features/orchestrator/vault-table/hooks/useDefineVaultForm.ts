@@ -85,8 +85,8 @@ export const useDefineVaultForm = () => {
       id: rowId,
       name: configData?.name ?? "",
 
-      username: configData?.username,
-      password: configData?.password,
+      // username: configData?.username,
+      // password: configData?.password,
       description: configData?.description,
 
       isDisabled: configData?.isDisabled ?? false,
