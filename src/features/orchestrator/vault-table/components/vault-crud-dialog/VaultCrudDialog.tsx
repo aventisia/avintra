@@ -1,39 +1,48 @@
-import { DTCrudDialogWrapper } from "@aventisia/ui/data-table";
-import { DialogContent, DialogDefaultHeader } from "@aventisia/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDefaultHeader,
+} from "@aventisia/ui/dialog";
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { useShallow } from "zustand/react/shallow";
 
 import { getDialogHeadingDescription } from "../../constants";
+import { useVaultDialogStore } from "../../stores/vault-dialog-store";
+import CallAgentConfigForm from "../../vault-config/components/VaultDynamicForm";
 
-import { VaultCrudForm } from "./VaultCrudForm";
-
-export const VaultCrudDialog = ({ children }: React.PropsWithChildren) => {
+export const VaultCrudDialog = () => {
   // Get crud dialog store state
-  const {
-    crudDialogOptions: { crudAction },
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-    })),
-  );
-
-  // Get dialog heading and description
-  const dialogHeaderOptions = getDialogHeadingDescription(crudAction);
+  const { showDialog, action, setShowDialog, setType, setRowId, setAction } =
+    useVaultDialogStore(
+      useShallow((state) => ({
+        showDialog: state.showDialog,
+        action: state.action,
+        setShowDialog: state.setShowDialog,
+        setType: state.setType,
+        setAction: state.setAction,
+        setRowId: state.setRowId,
+      })),
+    );
 
   // Return dialog
   return (
-    <DTCrudDialogWrapper>
-      {children}
+    <Dialog
+      open={showDialog}
+      onOpenChange={(open: boolean) => {
+        if (!open) {
+          setType("");
+          setRowId("");
+          setAction("");
+        }
+        setShowDialog(open);
+      }}
+    >
       <DialogContent side={"right"} className="!max-w-[32rem]">
-        <DialogDefaultHeader
-          heading={dialogHeaderOptions.heading}
-          description={dialogHeaderOptions.description}
-        />
+        <DialogDefaultHeader {...getDialogHeadingDescription(action)} />
         <ScrollArea className="h-[calc(100vh-4rem)] px-2.5 pb-0 pt-4">
-          <VaultCrudForm />
+          <CallAgentConfigForm />
         </ScrollArea>
       </DialogContent>
-    </DTCrudDialogWrapper>
+    </Dialog>
   );
 };

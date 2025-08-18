@@ -9,7 +9,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { VaultsTableDto } from "../dtos/vaults-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/vault`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/app-secret`;
 
 /**
  * Retrieves list of configs.

@@ -10,29 +10,25 @@ export interface VaultsTableDto {
   id?: string;
 
   /**
-   * Gets or sets the tenant id.
-   */
-  tenantId?: string;
-
-  /**
    * Gets or sets the name of the credentials. Max-255
    */
   name: string;
 
   /**
-   * Gets or sets the name of the credentials. Max-255
+   * Gets or sets the type of the credentials. Max-255
    */
-  username: string;
+  type: string;
 
   /**
-   * Gets or sets the name of the credentials. Max-255
+   * Gets or sets dynamic input fields as key-value pairs.
+   * Values must be scalar types (string, number, boolean, or null).
    */
-  password: string;
+  data?: { [key: string]: string | number | boolean | null };
 
   /**
    * Gets or sets the description of the credentials. Max-255
    */
-  description: string;
+  description?: string;
 
   /**
    * Gets or sets a flag indicating whether the credentials record is disabled.

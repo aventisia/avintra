@@ -1,0 +1,81 @@
+[
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "AuthType",
+    "label": "Auth Type",
+    "description": "Select the authentication method to use with Twilio: either Auth Token or API Key.",
+    "defaultValue": "authToken",
+    "required": true,
+    "selectOptions": [
+      {
+        "label": "Auth Token",
+        "value": "authToken"
+      },
+      {
+        "label": "API Key",
+        "value": "apiKey"
+      }
+    ]
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "AccountSid",
+    "label": "Account SID",
+    "description": "Your Twilio Account SID. Required for both authentication methods.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "ApiKeySid",
+    "label": "API Key SID",
+    "description": "Your Twilio API Key SID. Used when authenticating with API Key.",
+    "defaultValue": "",
+    "required": true,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "AuthType",
+          "equals": "apiKey"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "ApiKeySecret",
+    "label": "API Key Secret",
+    "description": "Your Twilio API Key Secret. Used when authenticating with API Key.",
+    "defaultValue": "",
+    "required": true,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "AuthType",
+          "equals": "apiKey"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "AuthToken",
+    "label": "Auth Token",
+    "description": "Your Twilio Auth Token. Used when authenticating with Account SID + Auth Token.",
+    "defaultValue": "",
+    "required": true,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "AuthType",
+          "equals": "authToken"
+        }
+      ]
+    }
+  }
+]

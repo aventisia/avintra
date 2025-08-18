@@ -1,5 +1,15 @@
-import { DataTableRowActions, DTRowAction } from "@aventisia/ui/data-table";
-import { DropdownMenuSeparator } from "@aventisia/ui/dropdown-menu";
+import { DataTableRowActions } from "@aventisia/ui/data-table";
+import {
+  DropdownMenuSeparator,
+  SimpleDDMenuItem,
+} from "@aventisia/ui/dropdown-menu";
+import {
+  ArrowUpRightIcon,
+  PencilSquareIcon,
+} from "@heroicons/react/24/outline";
+import { useShallow } from "zustand/react/shallow";
+
+import { useVaultDialogStore } from "../../stores/vault-dialog-store";
 
 import { VaultRowDeleteAction } from "./VaultRowDeleteAction";
 
@@ -8,14 +18,35 @@ interface VaultRowActionsProps {
 }
 
 export const VaultRowActions = ({ rowId }: VaultRowActionsProps) => {
+  const { setRowId, setAction, setShowDialog } = useVaultDialogStore(
+    useShallow((state) => ({
+      setRowId: state.setRowId,
+      setAction: state.setAction,
+      setShowDialog: state.setShowDialog,
+    })),
+  );
+
   return (
     // Dropdown menu for config table row action */}
     <DataTableRowActions>
-      {/* View the config details */}
-      <DTRowAction rowId={rowId} crudAction="read" />
-
-      {/* Edit config details */}
-      <DTRowAction rowId={rowId} crudAction="update" />
+      <SimpleDDMenuItem
+        Icon={ArrowUpRightIcon}
+        onClick={() => {
+          setShowDialog(true);
+          setRowId(rowId);
+          setAction("View");
+        }}
+        content="View"
+      />
+      <SimpleDDMenuItem
+        Icon={PencilSquareIcon}
+        onClick={() => {
+          setShowDialog(true);
+          setRowId(rowId);
+          setAction("Edit");
+        }}
+        content="Edit"
+      />
 
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />
