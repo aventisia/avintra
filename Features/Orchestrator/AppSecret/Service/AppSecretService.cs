@@ -560,7 +560,13 @@ public class AppSecretService : IAppSecretService
 
                         if (!awsCredentials.CustomEndpoints)
                         {
-                            awsCredentials.Endpoints = new AwsServiceEndpointsDto();
+                            awsCredentials.RekognitionEndpoint = string.Empty;
+                            awsCredentials.LambdaEndpoint = string.Empty;
+                            awsCredentials.SnsEndpoint = string.Empty;
+                            awsCredentials.SesEndpoint = string.Empty;
+                            awsCredentials.SqsEndpoint = string.Empty;
+                            awsCredentials.S3Endpoint = string.Empty;
+                            awsCredentials.SsmEndpoint = string.Empty;
                         }
                         sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(awsCredentials, jsonOptions);
                     }

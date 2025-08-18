@@ -62,31 +62,38 @@ public class AwsCredentialsDto
     public bool CustomEndpoints { get; set; }
 
     /// <summary>
-    /// Gets or sets the custom endpoint URLs for AWS services.
+    /// Gets or sets the custom endpoint URL for the Amazon Rekognition service.
     /// </summary>
-    public AwsServiceEndpointsDto? Endpoints { get; set; } = new AwsServiceEndpointsDto();
-}
-
-// -------------------- AwsServiceEndpointsDto --------------------
-
-/// <summary>
-/// Defines custom endpoint URLs for various AWS services.
-/// Use the "{region}" placeholder to dynamically inject the configured AWS region.
-/// </summary>
-public class AwsServiceEndpointsDto
-{
     public string RekognitionEndpoint { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the custom endpoint URL for the AWS Lambda service.
+    /// </summary>
     public string LambdaEndpoint { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the custom endpoint URL for the Amazon SNS (Simple Notification Service).
+    /// </summary>
     public string SnsEndpoint { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the custom endpoint URL for the Amazon SES (Simple Email Service).
+    /// </summary>
     public string SesEndpoint { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the custom endpoint URL for the Amazon SQS (Simple Queue Service).
+    /// </summary>
     public string SqsEndpoint { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the custom endpoint URL for the Amazon S3 (Simple Storage Service).
+    /// </summary>
     public string S3Endpoint { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the custom endpoint URL for the AWS Systems Manager (SSM) service.
+    /// </summary>
     public string SsmEndpoint { get; set; } = string.Empty;
 }
 
