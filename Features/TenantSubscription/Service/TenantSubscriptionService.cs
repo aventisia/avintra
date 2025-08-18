@@ -32,8 +32,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Fetch all tenant subscriptions with their related plan and creator user
             var subscriptions = await _unitOfWork.TenantSubscriptionRepo
                 .GetAllAsync()
-                .Include(s => s.Plan)
-                .Include(s => s.CreatedByUser)
+                .Include(i => i.Plan)
+                .Include(i => i.CreatedByUser)
                 .ToListAsync();
 
             _logger.LogInformation("Retrieved {Count} tenant subscriptions.", subscriptions.Count);
@@ -67,9 +67,9 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Query tenant subscription by ID with related plan and creator
             var subscription = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(s => s.Id == tenantSubscriptionId)
-                .Include(s => s.Plan)
-                .Include(s => s.CreatedByUser)
+                .GetByConditionAsync(w => w.Id == tenantSubscriptionId)
+                .Include(i => i.Plan)
+                .Include(i => i.CreatedByUser)
                 .SingleOrDefaultAsync();
 
             if (subscription == null)
@@ -109,7 +109,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Check if subscription already exists for tenant (assuming you have tenant info in DTO or context)
             var existingSubscription = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(s => s.PlanId == tenantSubscriptionDto.PlanId && s.Id == tenantSubscriptionDto.Id)
+                .GetByConditionAsync(w => w.PlanId == tenantSubscriptionDto.PlanId && w.Id == tenantSubscriptionDto.Id)
                 .SingleOrDefaultAsync();
 
             if (existingSubscription != null)
@@ -170,7 +170,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Retrieve existing subscription from DB
             var existingSubscription = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(s => s.Id == tenantSubscriptionDto.Id)
+                .GetByConditionAsync(w => w.Id == tenantSubscriptionDto.Id)
                 .SingleOrDefaultAsync();
 
             if (existingSubscription == null)
@@ -227,7 +227,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Fetch subscription to ensure existence
             var subscription = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(s => s.Id == tenantSubscriptionId)
+                .GetByConditionAsync(w => w.Id == tenantSubscriptionId)
                 .SingleOrDefaultAsync();
 
             if (subscription == null)
@@ -277,7 +277,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Fetch subscriptions to delete
             var subscriptions = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(s => tenantSubscriptionIds.Contains(s.Id))
+                .GetByConditionAsync(w => tenantSubscriptionIds.Contains(w.Id))
                 .ToListAsync();
 
             if (subscriptions == null || subscriptions.Count == 0)

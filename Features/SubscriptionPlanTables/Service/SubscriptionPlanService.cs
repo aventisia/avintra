@@ -30,7 +30,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             // Fetch all plans with their creators included
             var plans = await _unitOfWork.SubscriptionPlanRepo
                 .GetAllAsync()
-                .Include(p => p.CreatedByUser)
+                .Include(i => i.CreatedByUser)
                 .ToListAsync();
 
             // Map the plans to DTOs for safe transfer
@@ -95,8 +95,8 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
             // Query the database for the plan and include the creator
             var plan = await _unitOfWork.SubscriptionPlanRepo
-                .GetByConditionAsync(p => p.Id == subscriptionPlanId)
-                .Include(p => p.CreatedByUser)
+                .GetByConditionAsync(w => w.Id == subscriptionPlanId)
+                .Include(i => i.CreatedByUser)
                 .SingleOrDefaultAsync();
 
             // If plan not found, return warning
@@ -137,7 +137,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
             // Check if plan name already exists (case-insensitive)
             var existingPlan = await _unitOfWork.SubscriptionPlanRepo
-                .GetByConditionAsync(p => p.Name.ToLower() == subscriptionPlanDto.Name.ToLower())
+                .GetByConditionAsync(w => w.Name.ToLower() == subscriptionPlanDto.Name.ToLower())
                 .SingleOrDefaultAsync();
 
             if (existingPlan != null)
@@ -205,7 +205,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
             // Check if subscription plan with the same name exists (case-insensitive)
             var existingPlan = await _unitOfWork.SubscriptionPlanRepo
-                .GetByConditionAsync(p => p.Name.ToLower() == subscriptionPlanName.ToLower())
+                .GetByConditionAsync(w => w.Name.ToLower() == subscriptionPlanName.ToLower())
                 .SingleOrDefaultAsync();
 
             // Subscription plan name already exists
@@ -245,7 +245,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
             // Check if the plan to update exists
             var existingPlan = await _unitOfWork.SubscriptionPlanRepo
-                .GetByConditionAsync(p => p.Id == subscriptionPlanDto.Id)
+                .GetByConditionAsync(w => w.Id == subscriptionPlanDto.Id)
                 .SingleOrDefaultAsync();
 
             if (existingPlan == null)
@@ -257,7 +257,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
             // Check for duplicate name (excluding itself)
             var duplicatePlan = await _unitOfWork.SubscriptionPlanRepo
-                .GetByConditionAsync(p => p.Name.ToLower() == subscriptionPlanDto.Name.ToLower() && p.Id != subscriptionPlanDto.Id)
+                .GetByConditionAsync(w => w.Name.ToLower() == subscriptionPlanDto.Name.ToLower() && w.Id != subscriptionPlanDto.Id)
                 .SingleOrDefaultAsync();
 
             if (duplicatePlan != null)
@@ -312,7 +312,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
             // Fetch plan to ensure it exists
             var plan = await _unitOfWork.SubscriptionPlanRepo
-                .GetByConditionAsync(p => p.Id == subscriptionPlanId)
+                .GetByConditionAsync(w => w.Id == subscriptionPlanId)
                 .SingleOrDefaultAsync();
 
             if (plan == null)
@@ -360,7 +360,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
             // Fetch all matching plans
             var plans = await _unitOfWork.SubscriptionPlanRepo
-                .GetByConditionAsync(p => subscriptionPlanIds.Contains(p.Id))
+                .GetByConditionAsync(w => subscriptionPlanIds.Contains(w.Id))
                 .ToListAsync();
 
             if (plans == null || plans.Count == 0)
