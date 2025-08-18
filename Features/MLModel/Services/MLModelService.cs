@@ -34,18 +34,19 @@ public class MLModelService : IMLModelService
         try
         {
             //Try to get model records created by the user
-            var mlModels = await _unitOfWork.MLModelRepo
+            var mlModels = _unitOfWork.MLModelRepo
                 .GetByConditionAsync(w =>
                         w.CreatedByUserId == _userId ||
                         (w.Users != null && w.Users.Any(a => a.UserId == _userId))
                 )
+                .AsNoTracking()
+                .OrderByDescending(o => o.CreatedOn)
+                .Include(i => i.CreatedByUser)
                 .Include(i => i.Users)
                 .Include(i => i.Tasks)
                 .Include(i => i.ConversationalModel)
                 .Include(i => i.GenerativeModel)
-                .OrderByDescending(o => o.CreatedOn)
-                .ProjectToType<MLModelDto>()
-                .ToListAsync();
+                .AsQueryable();
 
             // Task successful
             serviceResponse.Data = mlModels.Adapt<IEnumerable<MLModelDto>>();
