@@ -43,6 +43,7 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<Payment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<AppIntegration>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<AppSecret>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        builder.Entity<TenantSubscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         builder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
