@@ -44,6 +44,7 @@ public static class AppServicesExtension
         config.Apply(new AppIntegrationMappingProfile());
         config.Apply(new AppSecretMappingProfile());
         config.Apply(new SubscriptionPlanMappingProfile());
+        config.Apply(new TenantSubscriptionMappingProfile());
         services.AddSingleton(config);
     }
 
@@ -117,6 +118,7 @@ public static class AppServicesExtension
         services.AddScoped<IAppIntegrationService, AppIntegrationService>();
         services.AddScoped<IAppSecretService, AppSecretService>();
         services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
+        services.AddScoped<ITenantSubscriptionService, TenantSubscriptionService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
