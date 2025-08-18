@@ -12,37 +12,37 @@ public class SubscriptionPlanDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// The display name of the subscription plan (e.g., Free, Pro, Enterprise).
+    /// Gets or sets the display name of the subscription plan (e.g., Free, Pro, Enterprise).
     /// </summary>
     public required string Name { get; set; }
 
     /// <summary>
-    /// Number of usage credits allocated per month.
+    /// Gets or sets the maximum number of credits allocated.
     /// </summary>
-    public int MonthlyCredits { get; set; }
+    public int MaxCredits { get; set; }
 
     /// <summary>
-    /// Maximum number of agents or AI models that can be published under this plan.
+    /// Gets or sets the maximum number of agents or AI models that can be published under this plan.
     /// </summary>
     public int MaxPublishedItems { get; set; }
 
     /// <summary>
-    /// Number of days for which workflow execution history is retained.
+    /// Gets or sets the duration (in days) for which workflow execution history is retained.
     /// </summary>
     public int HistoryRetentionDays { get; set; }
 
     /// <summary>
-    /// Maximum number of spaces (e.g., workspaces or environments) allowed.
+    /// Gets or sets the maximum number of spaces (e.g., workspaces) that can be created.
     /// </summary>
     public int MaxSpaces { get; set; }
 
     /// <summary>
-    /// Maximum available storage capacity, in megabytes.
+    /// Gets or sets the maximum storage capacity available under this plan, in megabytes.
     /// </summary>
     public int StorageLimitMB { get; set; }
 
     /// <summary>
-    /// Maximum number of users allowed under this subscription.
+    /// Gets or sets the maximum number of users permitted for this subscription.
     /// </summary>
     public int MaxUsers { get; set; }
 

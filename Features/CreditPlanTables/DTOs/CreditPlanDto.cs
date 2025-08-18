@@ -12,30 +12,25 @@ public class CreditPlanDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the credit plan.
-    /// e.g. "On-prem GPU-text".
+    /// Gets or sets the type of service this plan applies to, like OnPremGpuText.
     /// </summary>
-    public required string Name { get; set; }
+    public required CreditServiceTypesEnum ServiceType { get; set; }
 
     /// <summary>
-    /// Gets or sets the service type associated with this credit plan. e.g. CreditServiceTypesEnum.OnPremGpuText.
-    /// </summary>
-    public CreditServiceTypesEnum ServiceType { get; set; }
-
-    /// <summary>
-    /// Gets or sets the unit type used to measure consumption for this plan. e.g. UnitTypesEnum.Seconds, Tokens, or Message.
+    /// Gets or sets the type of unit used to measure usage, like seconds, tokens, or messages.
     /// </summary>
     public required UnitTypesEnum UnitType { get; set; }
 
     /// <summary>
-    /// Gets or sets the quantity represented by a single unit. e.g. 30 (seconds), 1000 (tokens), or 1 (message).
+    /// Gets or sets how much usage is in one unit, like 30 seconds or 1000 tokens.
     /// </summary>
     public int OneUnit { get; set; }
 
     /// <summary>
-    /// Gets or sets the number of credits consumed per unit. e.g. 15, 3, or 0 if usage is included in the plan.
+    /// Gets or sets how many credits are used for each unit.
     /// </summary>
     public int Credits { get; set; }
+
 
     /// <summary>
     /// Gets or sets a value indicating whether the credit plan is currently disabled.
