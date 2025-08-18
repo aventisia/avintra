@@ -39,7 +39,7 @@ public interface IUnitOfWork
     ILicenseCreditRepo LicenseCreditRepo { get; }
 
     ISpaceRepo SpaceRepo { get; }
-    
+
     ISpaceUserRepo SpaceUserRepo { get; }
 
     IAppIntegrationRepo AppIntegrationRepo { get; }
@@ -49,6 +49,8 @@ public interface IUnitOfWork
     ISubscriptionPlanRepo SubscriptionPlanRepo { get; }
 
     ITenantSubscriptionRepo TenantSubscriptionRepo { get; }
+
+    ICreditPlanRepo CreditPlanRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
