@@ -32,7 +32,7 @@ export const VaultCrudDialog = () => {
         if (!open) {
           setType("");
           setRowId("");
-          setAction("");
+          setAction("create");
         }
         setShowDialog(open);
       }}

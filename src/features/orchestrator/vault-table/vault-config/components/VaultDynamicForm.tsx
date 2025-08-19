@@ -52,12 +52,14 @@ const VaultDynamicForm = () => {
   }, [isFormReady, vaultConfig, watchedValues]);
 
   const { mutate } = useAddCredMutation();
+
   const { mutate: updateMutation, isPending: isUpdating } =
     useUpdateCredMutation();
+
   const isType = watch("selectedType")?.value;
+
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof vaultConfigZodSchema>) => {
-    console.log(formData);
     // Extract node inputs and outputs from formData
     const { inputs } = refineSubmittedIO(
       "nodeUniqueName",
@@ -65,7 +67,7 @@ const VaultDynamicForm = () => {
       inputKeys,
       outputKeys,
     );
-    if (action == "") {
+    if (action == "create") {
       // Create or update the config
       mutate({
         type: formData.selectedType?.value,
@@ -75,7 +77,7 @@ const VaultDynamicForm = () => {
           [key: string]: string | number | boolean | null;
         },
       });
-    } else if (action == "Edit") {
+    } else if (action == "update") {
       updateMutation({
         id: rowId,
         type: formData.selectedType?.value,
@@ -88,8 +90,8 @@ const VaultDynamicForm = () => {
     }
   };
 
-  console.log(form.formState.errors);
-  const isReadOnly = action == "View";
+  const isReadOnly = action == "read";
+
   return (
     <>
       <Form
@@ -98,7 +100,7 @@ const VaultDynamicForm = () => {
         className="px-2.5 pb-5"
         disabled={isReadOnly || isUpdating}
       >
-        {action == "" && (
+        {action == "create" && (
           <>
             <Controller
               name="selectedType"
@@ -188,7 +190,7 @@ const VaultDynamicForm = () => {
                 ) : null}
               </>
             )}
-            {action !== "" && (
+            {action !== "create" && (
               <SwitchField
                 name="isDisabled"
                 label="Disable Record"
