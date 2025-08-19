@@ -8,6 +8,9 @@ import {
   DTViewOptions,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
+import { useBaseLayoutStore } from "@aventisia/ui/stores";
+import { useShallow } from "zustand/react/shallow";
 
 import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
@@ -26,6 +29,13 @@ import { subPlansTableColumns } from "./SubPlansTableColumns";
 export const SubPlansTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
+
+  // Get the state and actions from the base layout store
+  const { sidebarExpand } = useBaseLayoutStore(
+    useShallow((state) => ({
+      sidebarExpand: state.sidebarExpand,
+    })),
+  );
 
   // Fetch subscription plans data
   const { data } = useFetchSubPlans();
@@ -60,11 +70,20 @@ export const SubPlansTable = () => {
               </div>
             </div>
 
-            {/* Data table to render data */}
-            <DataTable
-              table={table}
-              columnsLength={subPlansTableColumns.length}
-            />
+            <ScrollArea
+              className={
+                sidebarExpand
+                  ? "md:w-[calc(100vw-var(--sidebar-max-width)-3.5rem)]"
+                  : "md:w-[calc(100vw-var(--sidebar-min-width)-3.5rem)]"
+              }
+            >
+              {/* Data table to render data */}
+              <DataTable
+                table={table}
+                columnsLength={subPlansTableColumns.length}
+              />
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
           </SubPlansCrudDialog>
 
           {/* Data table Pagination component */}
