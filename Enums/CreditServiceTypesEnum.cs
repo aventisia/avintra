@@ -1,91 +1,67 @@
 namespace AccountsAPIs.Enums;
 
 /// <summary>
-/// Defines the available credit-based services for AI processing, communication, and execution tasks.
+/// Defines available service types for AI processing, communication, speech tasks, and automated agent execution.
 /// </summary>
 public enum CreditServiceTypesEnum
 {
     /// <summary>
-    /// GPU-accelerated text processing service hosted on-premises.
+    /// Local service for running LLM workloads on-premises.
     /// </summary>
-    [Description("On-prem GPU-text")]
-    OnPremGpuText,
+    [Description("On-prem LLM")]
+    OnPremLLM,
 
     /// <summary>
-    /// Input token processing for the GPT-4o Mini model.
+    /// Local speech-to-text conversion service.
     /// </summary>
-    [Description("GPT 4o mini-input")]
-    Gpt4oMiniInput,
+    [Description("On-prem STT")]
+    OnPremSTT,
 
     /// <summary>
-    /// Output token generation for the GPT-4o Mini model.
+    /// Local text-to-speech generation service.
     /// </summary>
-    [Description("GPT 4o mini-output")]
-    Gpt4oMiniOutput,
+    [Description("On-prem TTS")]
+    OnPremTTS,
 
     /// <summary>
-    /// Input token processing for the Gemini 2.5 Flash model.
+    /// Efficient AI processing using OpenAI 4o-mini model.
     /// </summary>
-    [Description("Gemini 2.5 Flash-input")]
-    Gemini25FlashInput,
+    [Description("OpenAI 4o-mini")]
+    OpenAI4oMini,
 
     /// <summary>
-    /// Output token generation for the Gemini 2.5 Flash model.
+    /// Email delivery and management via SendGrid.
     /// </summary>
-    [Description("Gemini 2.5 Flash-output")]
-    Gemini25FlashOutput,
-
-    /// <summary>
-    /// Service for executing autonomous agent workflows.
-    /// </summary>
-    [Description("Agent Executions")]
-    AgentExecution,
-
-    /// <summary>
-    /// Service for executing AI model inference tasks.
-    /// </summary>
-    [Description("AI Model Executions")]
-    AiModelExecution,
-
-    /// <summary>
-    /// Email communication service using SendGrid.
-    /// </summary>
-    [Description("SendGrid-Emails")]
+    [Description("SendGrid Email")]
     SendGridEmail,
 
     /// <summary>
-    /// WhatsApp messaging service powered by Twilio.
+    /// WhatsApp messaging service via Twilio.
     /// </summary>
-    [Description("Twilio-Whatsapp")]
+    [Description("Twilio WhatsApp")]
     TwilioWhatsApp,
 
     /// <summary>
-    /// SMS messaging service powered by Twilio.
+    /// SMS sending and receiving via Twilio.
     /// </summary>
-    [Description("Twilio-SMS")]
-    TwilioSms,
+    [Description("Twilio SMS")]
+    TwilioSMS,
 
     /// <summary>
-    /// Speech-to-text service hosted on-premises.
-    /// </summary>
-    [Description("On-prem STT")]
-    OnPremSpeechToText,
-
-    /// <summary>
-    /// Text-to-speech service hosted on-premises.
-    /// </summary>
-    [Description("On-prem TTS")]
-    OnPremTextToSpeech,
-
-    /// <summary>
-    /// Speech-to-text service provided by ElevenLabs.
-    /// </summary>
-    [Description("ElevenLabs STT")]
-    ElevenLabsSpeechToText,
-
-    /// <summary>
-    /// Text-to-speech service provided by ElevenLabs.
+    /// Text-to-speech generation using ElevenLabs.
     /// </summary>
     [Description("ElevenLabs TTS")]
-    ElevenLabsTextToSpeech
+    ElevenLabsTTS,
+
+    /// <summary>
+    /// Speech-to-text and TTS using Whisper.
+    /// </summary>
+    [Description("Whisper TTS")]
+    WhisperTTS,
+
+    /// <summary>
+    /// Runs automated tasks using AI agents.
+    /// </summary>
+    [Description("Agent Execution")]
+    AgentExecution
 }
