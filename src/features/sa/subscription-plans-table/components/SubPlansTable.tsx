@@ -63,10 +63,10 @@ export const SubPlansTable = () => {
                 <DTSearchBox
                   table={table}
                   searchColumn={SEARCH_COLUMN}
-                  placeholder="Search agents..."
+                  placeholder="Search plans..."
                 />
                 <DTViewOptions {...{ table, columnDisplayNames }} />
-                <DTCreateButton buttonText="Create Agent" />
+                <DTCreateButton buttonText="Create Plan" />
               </div>
             </div>
 
