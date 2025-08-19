@@ -3,7 +3,7 @@ namespace AccountsAPIs.Entities;
 /// <summary>
 /// Represents a tenant's subscription to a specific plan, including start and end dates.
 /// </summary>
-public class TenantSubscription : BaseEntity, IMustHaveTenant
+public class TenantSubscription : BaseEntity
 {
     /// <summary>
     /// Gets or sets the ID of the tenant using the subscription.
@@ -11,14 +11,14 @@ public class TenantSubscription : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the date the subscription becomes active.
+    /// Gets or sets the date when the subscription becomes active.
     /// </summary>
-    public DateTime StartDate { get; set; }
+    public DateTimeOffset StartDate { get; set; }
 
     /// <summary>
-    /// Gets or sets the date the subscription ends.
+    /// Gets or sets the date when the subscription ends or expires.
     /// </summary>
-    public DateTime EndDate { get; set; }
+    public DateTimeOffset EndDate { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the subscription plan assigned to the tenant.

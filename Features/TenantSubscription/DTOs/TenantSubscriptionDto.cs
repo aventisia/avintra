@@ -12,14 +12,19 @@ public class TenantSubscriptionDto
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the ID of the tenant using the subscription.
+    /// </summary>
+    public Guid? TenantId { get; set; }
+
+    /// <summary>
     /// Gets or sets the date when the subscription becomes active.
     /// </summary>
-    public DateTime? StartDate { get; set; }
+    public DateTimeOffset StartDate { get; set; }
 
     /// <summary>
     /// Gets or sets the date when the subscription ends or expires.
     /// </summary>
-    public DateTime? EndDate { get; set; }
+    public DateTimeOffset EndDate { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the subscription is currently active.
