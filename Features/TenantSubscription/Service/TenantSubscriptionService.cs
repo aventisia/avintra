@@ -5,6 +5,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<TenantSubscriptionService> _logger;
     private readonly Guid _userId;
+    private readonly Guid _tenantId;
 
     public TenantSubscriptionService(IUnitOfWork unitOfWork, ILogger<TenantSubscriptionService> logger, IHttpContextAccessor httpContextAccessor)
     {
@@ -13,6 +14,9 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         // Extract user ID from JWT token claims for audit purposes
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        // Extract tenant ID from JWT token claims
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
     }
 
     // Retrieves all tenant subscriptions from the database including the creator user.
@@ -120,8 +124,14 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 return serviceResponse;
             }
 
-            // Clean up string properties if needed
+            // Ensure string properties in the DTO are trimmed
             tenantSubscriptionDto = TrimDtoStringPropsUtil.TrimDtoStringProps(tenantSubscriptionDto);
+
+            // If TenantId is not provided, set it to the default tenant ID
+            if (tenantSubscriptionDto.TenantId == Guid.Empty || tenantSubscriptionDto.TenantId == null)
+            {
+                tenantSubscriptionDto.TenantId = _tenantId;
+            }
 
             // Map DTO to entity
             var newSubscription = tenantSubscriptionDto.Adapt<TenantSubscription>();
@@ -180,8 +190,16 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 return serviceResponse;
             }
 
-            // Clean string props and map updated data onto existing entity
+            // Ensure string properties in the DTO are trimmed
             tenantSubscriptionDto = TrimDtoStringPropsUtil.TrimDtoStringProps(tenantSubscriptionDto);
+
+            // If TenantId is not provided, set it to the default tenant ID
+            if (tenantSubscriptionDto.TenantId == Guid.Empty || tenantSubscriptionDto.TenantId == null)
+            {
+                tenantSubscriptionDto.TenantId = _tenantId;
+            }
+
+            // Map updated data onto existing entity
             tenantSubscriptionDto.Adapt(existingSubscription);
 
             // Update audit fields
