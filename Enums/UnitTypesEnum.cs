@@ -39,5 +39,11 @@ public enum UnitTypesEnum
     /// Unit is measured in messages.
     /// </summary>
     [Description("Message")]
-    Message
+    Message,
+
+    /// <summary>
+    /// Unit is measured in emails.
+    /// </summary>
+    [Description("Emails")]
+    Email
 }
