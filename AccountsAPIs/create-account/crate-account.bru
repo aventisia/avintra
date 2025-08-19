@@ -6,34 +6,20 @@ meta {
 
 post {
   url: {{ACCOUNTS_APIS_BASE_URL}}/auth/create-account
-  body: none
+  body: json
   auth: none
 }
 
 body:json {
   {
-      "email": "accounts@aventisia.com",
-      "firstName": "Aventisia",
-      "lastName": "Account",
-      "pwd": "Password@13",
-      "verificationCodeId": "{{VERIFICATION_CODE_ID}}",
-      "secretCode": "432187",
+      "email": "{{MY_EMAIL}}",
+      "firstName": "Rahmat",
+      "lastName": "Ali",
+      "pwd": "Post@123",
+      "verificationCodeId": "5ed87a20-3610-4f17-95f0-3d209970d8db",
+      "secretCode": "996971",
       "isSocialSignUp": false
   }
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    email: faker.internet.email(),
-    firstName: faker.person.firstName(),
-    lastName: faker.person.lastName(),
-    verificationCodeId: bru.getGlobalEnvVar("VERIFICATION_CODE_ID"),
-    isSocialSignUp: false,
-    pwd: "Password@01",
-    secretCode: "000000",
-  })
 }
 
 docs {

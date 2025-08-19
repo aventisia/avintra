@@ -6,13 +6,13 @@ meta {
 
 post {
   url: {{ACCOUNTS_APIS_BASE_URL}}/auth/is-email-available
-  body: none
+  body: json
   auth: none
 }
 
 body:json {
   {
-    
+    "userInput": "{{MY_EMAIL}}"
   }
 }
 
