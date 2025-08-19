@@ -216,8 +216,8 @@ public class CreditPlanService : ICreditPlanService
 
             // Check if a plan with the same name exists
             var existingPlan = await _unitOfWork.CreditPlanRepo
-                .GetByConditionAsync(w => w.ServiceType.ToString().ToLower() == creditPlanName.ToLower())
-                .SingleOrDefaultAsync();
+                .GetByConditionAsync(w => w.ServiceType == Enum.Parse<CreditServiceTypesEnum>(creditPlanName))
+                .FirstOrDefaultAsync();
 
             if (existingPlan != null)
             {
@@ -270,7 +270,7 @@ public class CreditPlanService : ICreditPlanService
 
             // Check if another plan with the same name exists (excluding current plan)
             var duplicatePlan = await _unitOfWork.CreditPlanRepo
-                .GetByConditionAsync(w => w.ServiceType.ToString().ToLower() == creditPlanDto.ServiceType.ToString().ToLower() && w.Id != creditPlanDto.Id)
+                .GetByConditionAsync(w => w.ServiceType == creditPlanDto.ServiceType && w.Id != creditPlanDto.Id)
                 .SingleOrDefaultAsync();
 
             if (duplicatePlan != null)
