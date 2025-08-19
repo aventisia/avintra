@@ -1,6 +1,6 @@
 import {
-  alphaNumericError,
-  alphaNumericRegex,
+  flexibleNameError,
+  flexibleNameRegex,
   maxLenError,
   reqError,
 } from "@aventisia/ui/utils";
@@ -13,8 +13,8 @@ export const vaultNameSchema = z
   .string()
   .min(1, { message: reqError("Credential name") })
   .max(255, { message: maxLenError("Credential name", 255) })
-  .regex(alphaNumericRegex, {
-    message: alphaNumericError("Credential name"),
+  .regex(flexibleNameRegex, {
+    message: flexibleNameError("Credential name"),
   });
 
 /**

@@ -1,3 +1,4 @@
+import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { reqError } from "@aventisia/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -14,12 +15,17 @@ import {
 } from "@/features/dynamic-config-panel";
 import { NodeInputType } from "@/features/dynamic-config-panel/types/input-output-types";
 
+import { isVaultNameAvailable } from "../../apis/vaults-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
+import { vaultNameSchema } from "../../constants/vault-zod-schema";
 import { VaultsTableDto } from "../../dtos/vaults-table-dto";
 import { useVaultDialogStore } from "../../stores/vault-dialog-store";
 import { appList } from "../constants/app-list";
 
 export const useVaultDynamicForm = () => {
+  // Set credential name state (required for availability check)
+  const [credName, setCredName] = useState("");
+
   // Local state for vault config and zod schema
   const [vaultConfig, setVaultConfig] = useState<DCPFieldSchemaType[]>([]);
 
@@ -32,15 +38,17 @@ export const useVaultDynamicForm = () => {
   >(() => z.object({}));
 
   // Get vault unique name state (required to get config panel data)
-  const { action, type, rowId, setShowDialog } = useVaultDialogStore(
-    useShallow((state) => ({
-      type: state.type,
-      rowId: state.rowId,
-      action: state.action,
-      setShowDialog: state.setShowDialog,
-      setType: state.setType,
-    })),
-  );
+  const { showDialog, action, type, rowId, setShowDialog } =
+    useVaultDialogStore(
+      useShallow((state) => ({
+        type: state.type,
+        showDialog: state.showDialog,
+        rowId: state.rowId,
+        action: state.action,
+        setShowDialog: state.setShowDialog,
+        setType: state.setType,
+      })),
+    );
 
   // Get query client
   const queryClient = useQueryClient();
@@ -120,6 +128,21 @@ export const useVaultDynamicForm = () => {
       {} as Record<string, T>,
     );
   }
+  // Get check availability state and methods
+  const {
+    isAvailable,
+    isCheckPending,
+    handleInputChange,
+    availabilityMessage,
+    setAvailabilityMessage,
+    checkAvailabilityMutation,
+  } = useCheckAvailability<z.infer<typeof vaultConfigZodSchema>, z.ZodString>({
+    defaultInputValue: credName,
+    fieldName: "name",
+    form,
+    fieldSchema: vaultNameSchema,
+    checkAvailabilityAPIFn: isVaultNameAvailable,
+  });
 
   // Reset form values when vaultConfig or inputs/outputs change
   useEffect(() => {
@@ -128,11 +151,18 @@ export const useVaultDynamicForm = () => {
       Object.keys(vaultConfigZodSchema.shape).length > 0
     ) {
       const savedData = vaultData?.data || {};
+
+      const name = vaultData?.name ?? form.watch("selectedType").label;
+
+      setCredName(name);
+
+      if (action == "create") checkAvailabilityMutation({ userInput: name });
+
       form.reset({
         selectedType:
           appList.find((v) => v.value == vaultData?.type) ??
           form.watch("selectedType"),
-        name: vaultData?.name ?? form.watch("selectedType").label,
+        name: name,
         isDisabled: vaultData?.isDisabled,
         ...getDefaultValuesForForm(
           vaultConfig,
@@ -151,6 +181,10 @@ export const useVaultDynamicForm = () => {
     watch,
   } = form;
 
+  useEffect(() => {
+    if (!showDialog) setAvailabilityMessage(null);
+  }, [setAvailabilityMessage, showDialog]);
+
   return {
     form,
     isDirty,
@@ -167,5 +201,9 @@ export const useVaultDynamicForm = () => {
     isLoading,
     convertToObject,
     action,
+    isAvailable,
+    isCheckPending,
+    handleInputChange,
+    availabilityMessage,
   };
 };
