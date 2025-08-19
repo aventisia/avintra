@@ -35,7 +35,10 @@ public class CreditUsageService : ICreditUsageService
                 creditServiceType, startDate, endDate);
 
             // Build the query for CreditUsage with optional filters
-            var creditUsageQuery = _unitOfWork.CreditUsageRepo.GetAllAsync().AsQueryable();
+            var creditUsageQuery = _unitOfWork.CreditUsageRepo
+                    .GetAllAsync()
+                    .Include(i => i.UsageByUser)
+                    .AsQueryable();
 
             // Filter by service type if specified
             if (creditServiceType.HasValue)
@@ -114,7 +117,19 @@ public class CreditUsageService : ICreditUsageService
                                 .ToList()
                         };
                     })
-                    .ToList()
+                    .ToList(),
+                Users = creditUsages.Where(c => c.UsageByUser != null).GroupBy(c => c.UsageByUserId).Select(group =>
+                {
+                    var user = group.First().UsageByUser;
+                    return new UserUsageDto
+                    {
+                        Username = user.UserName,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        TransactionsCount = group.Count()
+                    }; 
+                })
+                .ToList()
             };
 
             // Step 5: Populate the response object with success data
@@ -137,10 +152,11 @@ public class CreditUsageService : ICreditUsageService
     // Inserts a new credit usage record for a user and service type.
     public async Task<ServiceResponse<bool>> InsertCreditUsageAsync(CreditsUsageDto creditUsageDto)
     {
+        // Initialize the default service response in case of failure
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
-            Message = "Unable to record credit usage at this time. Please try again later."
+            Message = "Failed to insert credit usage. Please try again later."
         };
 
         try

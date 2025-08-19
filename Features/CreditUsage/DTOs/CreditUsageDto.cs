@@ -54,7 +54,7 @@ public class CreditsUsageSummaryDto
     /// <summary>
     /// Gets or sets the usage data grouped by individual users.
     /// </summary>
-    public List<UserUsageDto>? Usage { get; set; }
+    public List<UserUsageDto>? Users { get; set; }
 
     /// <summary>
     /// Gets or sets the usage count for each AI model.
