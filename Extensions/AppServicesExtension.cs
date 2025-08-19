@@ -45,6 +45,7 @@ public static class AppServicesExtension
         config.Apply(new AppSecretMappingProfile());
         config.Apply(new SubscriptionPlanMappingProfile());
         config.Apply(new TenantSubscriptionMappingProfile());
+        config.Apply(new CreditPlanMappingProfile());
         services.AddSingleton(config);
     }
 
@@ -119,6 +120,7 @@ public static class AppServicesExtension
         services.AddScoped<IAppSecretService, AppSecretService>();
         services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
         services.AddScoped<ITenantSubscriptionService, TenantSubscriptionService>();
+        services.AddScoped<ICreditPlanService, CreditPlanService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
