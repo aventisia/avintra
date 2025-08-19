@@ -1,0 +1,23 @@
+meta {
+  name: Delete multiple tenant subscription
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant-subscriptions/delete-multiple
+  body: json
+  auth: none
+}
+
+body:json {
+  ["{{TENANT_SUBSCRIPTION_ID}}"]
+}
+
+script:post-response {
+  if (res.getStatus() == 200)
+  {
+      bru.setGlobalEnvVar("TENANT_SUBSCRIPTION_ID", "00000000000000000000000000");
+  }
+  
+}

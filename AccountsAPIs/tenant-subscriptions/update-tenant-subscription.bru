@@ -1,0 +1,22 @@
+meta {
+  name: Update tenant subscription
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant-subscriptions
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id":"{{TENANT_SUBSCRIPTION_ID}}",
+    "planId": "{{SUBSCRIPTION_PLAN_ID}}",
+    "startDate": "2025-08-20",
+    "endDate": "2026-08-20",
+    "isDisabled": false
+  }
+  
+}
