@@ -34,6 +34,7 @@ public class UnitOfWork : IUnitOfWork
     public ISubscriptionPlanRepo SubscriptionPlanRepo => new SubscriptionPlanRepo(_accountsDbContext);
     public ITenantSubscriptionRepo TenantSubscriptionRepo => new TenantSubscriptionRepo(_accountsDbContext);
     public ICreditPlanRepo CreditPlanRepo => new CreditPlanRepo(_accountsDbContext);
+    public ICreditUsageRepo CreditUsageRepo => new CreditUsageRepo(_accountsDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false) => checkHasChanges && (!_accountsDbContext.ChangeTracker.HasChanges() || await _accountsDbContext.SaveChangesAsync() > 0) || await _accountsDbContext.SaveChangesAsync() > 0;
 
