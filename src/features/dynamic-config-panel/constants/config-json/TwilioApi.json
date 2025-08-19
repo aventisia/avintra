@@ -5,16 +5,16 @@
     "name": "AuthType",
     "label": "Auth Type",
     "description": "Select the authentication method to use with Twilio: either Auth Token or API Key.",
-    "defaultValue": "authToken",
+    "defaultValue": "AuthToken",
     "required": true,
     "selectOptions": [
       {
         "label": "Auth Token",
-        "value": "authToken"
+        "value": "AuthToken"
       },
       {
         "label": "API Key",
-        "value": "apiKey"
+        "value": "ApiKey"
       }
     ]
   },
@@ -39,7 +39,7 @@
       "conditions": [
         {
           "field": "AuthType",
-          "equals": "apiKey"
+          "equals": "ApiKey"
         }
       ]
     }
@@ -56,7 +56,7 @@
       "conditions": [
         {
           "field": "AuthType",
-          "equals": "apiKey"
+          "equals": "ApiKey"
         }
       ]
     }
@@ -73,7 +73,7 @@
       "conditions": [
         {
           "field": "AuthType",
-          "equals": "authToken"
+          "equals": "AuthToken"
         }
       ]
     }
