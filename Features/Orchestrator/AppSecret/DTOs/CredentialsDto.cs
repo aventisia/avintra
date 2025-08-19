@@ -110,7 +110,7 @@ public class TwilioCredentialsDto
     /// <summary>
     /// Gets or sets the authentication method to use (AuthToken or ApiKey).
     /// </summary>
-    public AuthenticationType AuthType { get; set; }
+    public string AuthType { get; set; } = nameof(AuthenticationType.AuthToken);
 
     /// <summary>
     /// Gets or sets the Twilio Account SID. Required for all authentication types.

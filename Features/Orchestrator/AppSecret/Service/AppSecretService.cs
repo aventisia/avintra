@@ -630,7 +630,7 @@ public class AppSecretService : IAppSecretService
                     var twilioCredentials = System.Text.Json.JsonSerializer.Deserialize<TwilioCredentialsDto>(rawJson, jsonOptions);
                     if (twilioCredentials != null)
                     {
-                        if (twilioCredentials.AuthType == AuthenticationType.ApiKey)
+                        if (twilioCredentials.AuthType == nameof(AuthenticationType.ApiKey))
                         {
                             validationResult.EncryptedValues["ApiKeySid"] = _encryptionService.EncryptString(twilioCredentials.ApiKeySid);
                             validationResult.EncryptedValues["ApiKeySecret"] = _encryptionService.EncryptString(twilioCredentials.ApiKeySecret);
@@ -644,6 +644,7 @@ public class AppSecretService : IAppSecretService
                             twilioCredentials.AuthToken = string.Empty;
                             twilioCredentials.ApiKeySid = string.Empty;
                             twilioCredentials.ApiKeySecret = string.Empty;
+                            twilioCredentials.AuthType = nameof(AuthenticationType.AuthToken);
                         }
                         sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(twilioCredentials, jsonOptions);
                     }
