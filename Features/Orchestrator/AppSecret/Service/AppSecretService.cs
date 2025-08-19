@@ -58,6 +58,57 @@ public class AppSecretService : IAppSecretService
         return serviceResponse;
     }
 
+    // Checks the availability of a app secret name.
+    public async Task<ServiceResponse<TrueFalseResultDto>> IsAppSecretNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<TrueFalseResultDto>
+        {
+            Data = null,
+            Message = "Failed to check App secret name availability. Please try again."
+        };
+
+        try
+        {
+            // Trim and normalize the app secret name input
+            var appSecretName = checkAvailabilityDto.UserInput?.Trim();
+
+            if (string.IsNullOrWhiteSpace(appSecretName))
+            {
+                serviceResponse.Data = new TrueFalseResultDto { Result = false };
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "App secret name cannot be empty. Please provide a valid name.";
+                return serviceResponse;
+            }
+
+            // Check if app secret with the same name exists (case-insensitive)
+            var existingAppSecret = await _unitOfWork.AppSecretRepo
+                .GetByConditionAsync(w => w.Name.ToLower() == appSecretName.ToLower())
+                .SingleOrDefaultAsync();
+
+            // App secret name already exists
+            if (existingAppSecret != null)
+            {
+                serviceResponse.Data = new TrueFalseResultDto { Result = false };
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = $"A app secret with the name '{appSecretName}' already exists. Please try a different name.";
+                return serviceResponse;
+            }
+
+            // Name is available
+            serviceResponse.Data = new TrueFalseResultDto { Result = true };
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = $"The app secret name '{appSecretName}' is available.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while checking app secret name availability.");
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Retrieve app secrets as selectable options (e.g., for a dropdown)
     public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableAppSecretOptionsAsync()
     {
@@ -548,7 +599,7 @@ public class AppSecretService : IAppSecretService
                     var awsCredentials = System.Text.Json.JsonSerializer.Deserialize<AwsCredentialsDto>(rawJson, jsonOptions);
                     if (awsCredentials != null)
                     {
-                        validationResult.EncryptedValues["AccessKeyId"] = _encryptionService.EncryptString(awsCredentials.AccessKeyId);
+                        validationResult.EncryptedValues["SecretAccessKey"] = _encryptionService.EncryptString(awsCredentials.SecretAccessKey);
                         awsCredentials.AccessKeyId = string.Empty; ;
                         if (awsCredentials.TemporarySecurityCredentials)
                         {

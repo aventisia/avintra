@@ -14,6 +14,13 @@ public interface IAppSecretService
     Task<ServiceResponse<IEnumerable<AppSecretDto>>> GetAllAppSecretsAsync();
 
     /// <summary>
+    /// Checks if a app secret name is available (not already taken).
+    /// </summary>
+    /// <param name="checkAvailabilityDto">DTO containing the app secret name to check.</param>
+    /// <returns>A service response indicating whether the name is available.</returns>
+    Task<ServiceResponse<TrueFalseResultDto>> IsAppSecretNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto);
+
+    /// <summary>
     /// Retrieves app secrets formatted as selectable options, typically used in dropdowns.
     /// </summary>
     /// <returns>
