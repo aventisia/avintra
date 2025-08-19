@@ -635,6 +635,38 @@ namespace AccountsAPIs.Data.Migrations
                     b.ToTable("CreditPlans");
                 });
 
+            modelBuilder.Entity("AccountsAPIs.Entities.CreditUsage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Credits")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("RefId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ServiceType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("UsageByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("UsageOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsageByUserId");
+
+                    b.ToTable("CreditUsages");
+                });
+
             modelBuilder.Entity("AccountsAPIs.Entities.Invoice", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1772,6 +1804,15 @@ namespace AccountsAPIs.Data.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastModifiedByUser");
+                });
+
+            modelBuilder.Entity("AccountsAPIs.Entities.CreditUsage", b =>
+                {
+                    b.HasOne("AccountsAPIs.Entities.AccountUser", "UsageByUser")
+                        .WithMany()
+                        .HasForeignKey("UsageByUserId");
+
+                    b.Navigation("UsageByUser");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.Invoice", b =>
