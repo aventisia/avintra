@@ -1,5 +1,5 @@
 import { LoadingSpinner, Separator } from "@aventisia/ui";
-import { Button } from "@aventisia/ui/buttons";
+import { SubmitButton } from "@aventisia/ui/buttons";
 import { Form, InputField, SwitchField } from "@aventisia/ui/form";
 import { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
@@ -35,6 +35,11 @@ const VaultDynamicForm = () => {
     convertToObject,
     action,
     rowId,
+    availabilityMessage,
+    handleInputChange,
+    isAvailable,
+    isCheckPending,
+    isDirty,
   } = useVaultDynamicForm();
 
   // Watch all form values
@@ -133,6 +138,10 @@ const VaultDynamicForm = () => {
                   description="Name"
                   autoFocus
                   isRequired
+                  onChangeCapture={(e) =>
+                    handleInputChange(e.currentTarget.value)
+                  }
+                  nonErrorMessage={availabilityMessage}
                 />
 
                 {/* Input fields */}
@@ -200,12 +209,13 @@ const VaultDynamicForm = () => {
             {/* Save button */}
             {!isReadOnly && (
               <div className="!mt-5 flex w-full justify-end">
-                <Button type="submit" className="min-w-[5rem]">
-                  {isUpdating ? (
-                    <LoadingSpinner className="mr-1 h-4 w-4" />
-                  ) : null}{" "}
-                  Save
-                </Button>
+                <SubmitButton
+                  className="min-w-[5rem]"
+                  primaryText={action === "create" ? "Save" : "Save changes"}
+                  secondaryText="Saving..."
+                  isPending={isUpdating}
+                  disabled={!isDirty || !isAvailable || isCheckPending}
+                />
               </div>
             )}
           </>
