@@ -37,6 +37,7 @@ public class AppSecretService : IAppSecretService
             // Attempt to retrieve all app secrets from the repository
             var appSecrets = await _unitOfWork.AppSecretRepo
                 .GetAllAsync()
+                .OrderByDescending(w => w.CreatedOn)
                 .Include(i => i.CreatedByUser)
                 .ToListAsync();
 
@@ -600,15 +601,13 @@ public class AppSecretService : IAppSecretService
                     if (awsCredentials != null)
                     {
                         validationResult.EncryptedValues["SecretAccessKey"] = _encryptionService.EncryptString(awsCredentials.SecretAccessKey);
-                        awsCredentials.AccessKeyId = string.Empty; ;
+                        awsCredentials.SecretAccessKey = string.Empty; ;
                         if (awsCredentials.TemporarySecurityCredentials)
                         {
                             validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(awsCredentials.SessionToken);
-                            awsCredentials.AccessKeyId = string.Empty;
+                            awsCredentials.SessionToken = string.Empty;
                         }
-                        else
-                            awsCredentials.AccessKeyId = string.Empty;
-
+                        
                         if (!awsCredentials.CustomEndpoints)
                         {
                             awsCredentials.RekognitionEndpoint = string.Empty;
