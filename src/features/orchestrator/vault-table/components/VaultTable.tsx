@@ -30,9 +30,12 @@ export const VaultTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  const { setShowDialog } = useVaultDialogStore(
+  const { setShowDialog, setAction, setRowId, setType } = useVaultDialogStore(
     useShallow((state) => ({
       setShowDialog: state.setShowDialog,
+      setType: state.setType,
+      setAction: state.setAction,
+      setRowId: state.setRowId,
     })),
   );
 
@@ -64,7 +67,14 @@ export const VaultTable = () => {
               />
               <DTViewOptions {...{ table, columnDisplayNames }} />
               <Separator orientation="vertical" className="mx-2 h-6" />
-              <Button onClick={() => setShowDialog(true)}>
+              <Button
+                onClick={() => {
+                  setShowDialog(true);
+                  setAction("create");
+                  setRowId("");
+                  setType("");
+                }}
+              >
                 Add Credential
               </Button>{" "}
             </div>

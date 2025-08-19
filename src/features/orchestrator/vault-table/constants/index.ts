@@ -1,3 +1,5 @@
+import { CrudActionType } from "@aventisia/ui/types";
+
 /**
  * The unique key for the configs query to be used in the query client. ["configs"]
  */
@@ -13,13 +15,13 @@ const TABLE_HEADING = "Vault";
  */
 const SEARCH_COLUMN = "name";
 
-const getDialogHeadingDescription = (action: "View" | "Edit" | "") => {
+const getDialogHeadingDescription = (action: CrudActionType) => {
   switch (action) {
-    case "":
+    case "create":
       return { heading: "Add Credential", description: "" };
-    case "View":
+    case "read":
       return { heading: "Credential", description: "" };
-    case "Edit":
+    case "update":
       return { heading: "Edit Credential", description: "" };
     default:
       return { heading: "", description: "" };

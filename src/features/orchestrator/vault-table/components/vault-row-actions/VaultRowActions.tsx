@@ -34,7 +34,7 @@ export const VaultRowActions = ({ rowId }: VaultRowActionsProps) => {
         onClick={() => {
           setShowDialog(true);
           setRowId(rowId);
-          setAction("View");
+          setAction("read");
         }}
         content="View"
       />
@@ -43,7 +43,7 @@ export const VaultRowActions = ({ rowId }: VaultRowActionsProps) => {
         onClick={() => {
           setShowDialog(true);
           setRowId(rowId);
-          setAction("Edit");
+          setAction("update");
         }}
         content="Edit"
       />
