@@ -1,0 +1,19 @@
+meta {
+  name: Terminate sessions
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/me/refresh-session
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "sessionEndReason": "SessionExpired",
+    "activeSessionIds": ["{{SESSION_ID}}"]
+  }
+  
+}
