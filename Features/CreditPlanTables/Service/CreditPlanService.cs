@@ -31,6 +31,7 @@ public class CreditPlanService : ICreditPlanService
             var creditPlans = await _unitOfWork.CreditPlanRepo
                 .GetAllAsync()
                 .Include(i => i.CreatedByUser)
+                .OrderByDescending(o => o.CreatedOn)
                 .ToListAsync();
 
             // Map entities to DTOs for returning to client

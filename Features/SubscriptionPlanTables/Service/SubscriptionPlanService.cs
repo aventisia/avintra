@@ -31,6 +31,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             var plans = await _unitOfWork.SubscriptionPlanRepo
                 .GetAllAsync()
                 .Include(i => i.CreatedByUser)
+                .OrderByDescending(o => o.CreatedOn)
                 .ToListAsync();
 
             // Map the plans to DTOs for safe transfer
