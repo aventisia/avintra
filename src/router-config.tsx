@@ -35,6 +35,7 @@ import { TriggersPage } from "./pages/orchestrator/TriggersPage";
 import { VaultPage } from "./pages/orchestrator/VaultPage";
 import { PricingPage } from "./pages/sa/PricingPage";
 import { SaLicensesPage } from "./pages/sa/SaLicensesPage";
+import { SubscriptionPlansPage } from "./pages/sa/SubscriptionPlansPage";
 import { TenantsPage } from "./pages/sa/TenantsPage";
 import { SupportTicketsPage } from "./pages/SupportTicketsPage";
 import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
@@ -225,6 +226,16 @@ const routerConfig: RouteObject[] = [
               <ProtectedRoute
                 persmissions={["SA", "GA"]}
                 page={<TenantsPage />}
+              />
+            ),
+            index: true,
+          },
+          {
+            path: "/sa/subscription-plans",
+            element: (
+              <ProtectedRoute
+                persmissions={["SA"]}
+                page={<SubscriptionPlansPage />}
               />
             ),
             index: true,

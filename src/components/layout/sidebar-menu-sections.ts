@@ -8,6 +8,7 @@ import {
 import { DesktopIcon } from "@radix-ui/react-icons";
 import {
   ArchiveIcon,
+  BadgeDollarSignIcon,
   BotIcon,
   FileBoxIcon,
   Library,
@@ -144,6 +145,12 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: UsersIcon,
         name: "users",
         route: "/users",
+      },
+      {
+        permissions: ["SA"],
+        Icon: BadgeDollarSignIcon,
+        name: "subscription plans",
+        route: "sa/subscription-plans",
       },
       {
         permissions: ["SA"],
