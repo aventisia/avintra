@@ -46,14 +46,14 @@ const maxSpacesProps: InputFieldProps = {
 // Storage Limit MB
 const storageLimitMBProps: InputFieldProps = {
   name: "storageLimitMB",
-  label: "Storage (in MB)",
+  label: "Storage Limit(in MB)",
   isRequired: true,
 };
 
 // Max Users
 const maxUsersProps: InputFieldProps = {
   name: "maxUsers",
-  label: "Users",
+  label: "No of Users",
   isRequired: true,
 };
 
