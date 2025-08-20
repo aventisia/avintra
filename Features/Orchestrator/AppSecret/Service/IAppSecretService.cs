@@ -72,4 +72,13 @@ public interface IAppSecretService
     /// A task representing the asynchronous operation. The result indicates whether the batch deletion was successful.
     /// </returns>
     Task<ServiceResponse<bool>> DeleteAppSecretsAsync(List<Guid> appSecretIds);
+
+    /// <summary>
+    /// Retrieves the details of a specific App Secret by its unique identifier.
+    /// </summary>
+    /// <param name="appSecretId">The unique identifier of the App Secret.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{AppSecretDto}"/> with the App Secret details.
+    /// </returns>
+    Task<ServiceResponse<AppSecretDto>> GetAppSecretDetailAsync(Guid appSecretId);
 }

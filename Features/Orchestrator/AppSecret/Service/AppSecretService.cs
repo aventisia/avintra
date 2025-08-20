@@ -559,6 +559,58 @@ public class AppSecretService : IAppSecretService
         // Return the service response (could be success or failure)
         return serviceResponse;
     }
+    // Retrieves the details of a specific App Secret, including decrypted key-value data.
+    public async Task<ServiceResponse<AppSecretDto>> GetAppSecretDetailAsync(Guid appSecretId)
+    {
+        // Prepare default response in case of failure
+        var serviceResponse = new ServiceResponse<AppSecretDto>
+        {
+            Data = null,
+            Message = "Unable to load app secret. Please try again later.",
+        };
+
+        try
+        {
+            // Fetch the AppSecret entity along with its encrypted key-value pairs
+            var appSecret = await _unitOfWork.AppSecretRepo
+                .GetByConditionAsync(w => w.Id == appSecretId)
+                .AsNoTracking()
+                .Include(i => i.EncryptedKeyValues)
+                .SingleOrDefaultAsync();
+
+            if (appSecret == null)
+            {
+                _logger.LogWarning("No AppSecret found with ID: {AppSecretId}", appSecretId);
+                serviceResponse.Message = "App secret not found.";
+                return serviceResponse;
+            }
+
+            // Map entity to DTO
+            var appSecretDto = appSecret.Adapt<AppSecretDto>();
+
+            // Decrypt and merge key-value pairs into the DTO's data object
+            var encryptedValues = appSecret.EncryptedKeyValues?.ToList();
+            if (encryptedValues != null && encryptedValues.Any())
+            {
+                var decryptedMap = encryptedValues.ToDictionary(
+                    kv => kv.Name,
+                    kv => _encryptionService.DecryptString(kv.Value));
+
+                appSecretDto.Data = UpdateObjectProperties(appSecretDto.Data, decryptedMap);
+            }
+
+            // Prepare successful response
+            serviceResponse.Data = appSecretDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "App secret retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving AppSecret with ID: {AppSecretId}", appSecretId);
+        }
+
+        return serviceResponse;
+    }
 
     // Validates and sanitizes credential data, encrypting sensitive information like API keys.
     private CredentialValidationResult ValidateData(string type, object data)
@@ -607,7 +659,7 @@ public class AppSecretService : IAppSecretService
                             validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(awsCredentials.SessionToken);
                             awsCredentials.SessionToken = string.Empty;
                         }
-                        
+
                         if (!awsCredentials.CustomEndpoints)
                         {
                             awsCredentials.RekognitionEndpoint = string.Empty;
@@ -676,5 +728,35 @@ public class AppSecretService : IAppSecretService
 
         // Return the result containing both the encrypted value, sanitized JSON, and remark
         return validationResult;
+    }
+
+    // Updates the properties of an object using a dictionary of key-value pairs, where the keys are property names and the values are their new values.
+    private object UpdateObjectProperties(object data, Dictionary<string, string> updatedProperties)
+    {
+        // Convert the object to JSON string
+        string jsonString = System.Text.Json.JsonSerializer.Serialize(data);
+
+        // Parse the JSON into JsonNode
+        var jsonObject = System.Text.Json.Nodes.JsonNode.Parse(jsonString)?.AsObject();
+        if (jsonObject == null) return data;
+
+        // Apply updates
+        foreach (var kv in updatedProperties)
+        {
+            if (jsonObject.ContainsKey(kv.Key))
+            {
+                jsonObject[kv.Key] = kv.Value;
+            }
+            else
+            {
+                jsonObject.Add(kv.Key, kv.Value);
+            }
+        }
+
+        // Deserialize the updated JSON back into an object
+        var updatedObject = System.Text.Json.JsonSerializer.Deserialize<object>(jsonObject.ToJsonString());
+
+        // Return the updated object, or original if deserialization failed
+        return updatedObject ?? data;
     }
 }

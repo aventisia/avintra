@@ -19,7 +19,7 @@ public class AppSecretController : BaseApiController
         return ResultHelper(await _appSecretService.GetAllAppSecretsAsync());
     }
 
-     // Checks the availability of a app secret.
+    // Checks the availability of a app secret.
     [HttpPost("is-available")]
     public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsAppSecretNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)
     {
@@ -65,5 +65,12 @@ public class AppSecretController : BaseApiController
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteAppSecrets([FromBody] List<Guid> appSecretIds)
     {
         return ResultHelper(await _appSecretService.DeleteAppSecretsAsync(appSecretIds));
+    }
+
+    // Get app secret with actual data.
+    [HttpGet("decryted-data/{appSecretId}")]
+    public async Task<ActionResult<ServiceResponse<AppSecretDto>>> GetAppSecretDetailAsync(Guid appSecretId)
+    {
+        return ResultHelper(await _appSecretService.GetAppSecretDetailAsync(appSecretId));
     }
 }
