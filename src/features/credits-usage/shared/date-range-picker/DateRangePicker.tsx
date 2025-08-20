@@ -1,4 +1,4 @@
-import React, { type FC, useState, useEffect, useRef } from "react";
+import { type FC, useState, useEffect, useRef } from "react";
 import { Button } from "@aventisia/ui/buttons";
 import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
 
