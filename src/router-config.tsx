@@ -42,6 +42,9 @@ import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
 import { TenantInfoPage } from "./pages/TenantsInfoPage";
 import { UsersPage } from "./pages/UsersPage";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { AppIntegrationsPage } from "./pages/IntegrationsPage";
+import { CreditPlansPage } from "./pages/sa/CreditPlansPage";
+import { CreditsUsagePage } from "./pages/CreditsUsagePage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -124,6 +127,24 @@ const routerConfig: RouteObject[] = [
         path: "/billing",
         element: (
           <ProtectedRoute persmissions={["SA", "GA"]} page={<BillingPage />} />
+        ),
+      },
+      {
+        path: "/integrations",
+        element: (
+          <ProtectedRoute
+            persmissions={["SA", "GA"]}
+            page={<AppIntegrationsPage />}
+          />
+        ),
+      },
+      {
+        path: "/credits-usage",
+        element: (
+          <ProtectedRoute
+            persmissions={["SA", "GA"]}
+            page={<CreditsUsagePage />}
+          />
         ),
       },
       {
@@ -255,6 +276,15 @@ const routerConfig: RouteObject[] = [
               <ProtectedRoute
                 persmissions={["SA", "GA"]}
                 page={<PricingPage />}
+              />
+            ),
+          },
+          {
+            path: "/sa/credit-plans",
+            element: (
+              <ProtectedRoute
+                persmissions={["SA", "GA"]}
+                page={<CreditPlansPage />}
               />
             ),
           },

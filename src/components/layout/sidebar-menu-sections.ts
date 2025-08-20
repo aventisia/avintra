@@ -1,5 +1,6 @@
 import { SidebarMenuSectionType } from "@aventisia/ui/types";
 import {
+  BanknotesIcon,
   IdentificationIcon,
   QuestionMarkCircleIcon,
   QueueListIcon,
@@ -17,6 +18,8 @@ import {
   ServerIcon,
   Shield,
   TagIcon,
+  Wallet,
+  Workflow,
 } from "lucide-react";
 import { AiOutlineThunderbolt } from "react-icons/ai";
 import { PiScrollLight } from "react-icons/pi";
@@ -101,6 +104,18 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       },
       {
         permissions: ["SA", "GA"],
+        Icon: Workflow,
+        name: "integrations",
+        route: "/integrations",
+      },
+      {
+        permissions: ["SA", "GA"],
+        Icon: Wallet,
+        name: "credits Usage",
+        route: "/credits-usage",
+      },
+      {
+        permissions: ["SA", "GA"],
         Icon: TbCertificate,
         name: "licenses & Credits",
         route: "/orchestrator/licenses",
@@ -169,6 +184,12 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: TbCertificate,
         name: "licenses & Credits",
         route: "sa/licenses",
+      },
+      {
+        permissions: ["SA"],
+        Icon: BanknotesIcon,
+        name: "Credit Plans",
+        route: "sa/credit-plans",
       },
     ],
   },

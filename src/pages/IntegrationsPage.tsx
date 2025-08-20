@@ -1,0 +1,23 @@
+import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { lazy, Suspense } from "react";
+
+// Lazy load the Integrations component.
+const AppIntegrationsComponent = lazy(() =>
+  import("@/features/app-integrations/components/AppIntegrations").then(
+    (module) => ({
+      default: module.AppIntegrations,
+    }),
+  ),
+);
+
+/**
+ * Renders the Integrations component.
+ * @returns JSX element representing the LicensesPage component.
+ */
+export const AppIntegrationsPage = () => {
+  return (
+    <Suspense fallback={<DataTableSkeleton />}>
+      <AppIntegrationsComponent />
+    </Suspense>
+  );
+};
