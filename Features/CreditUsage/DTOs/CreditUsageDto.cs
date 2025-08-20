@@ -49,12 +49,12 @@ public class CreditsUsageSummaryDto
     /// <summary>
     /// Gets or sets the list of credit usage records over time.
     /// </summary>
-    public List<CreditUsageDataPointDto>? CreditUsages { get; set; }
+    public List<DataUsageDataPointDto>? CreditUsages { get; set; }
 
     /// <summary>
     /// Gets or sets the list of transaction records over time.
     /// </summary>
-    public List<TransactionUsageDataPointDto>? TransactionUsages { get; set; }
+    public List<DataUsageDataPointDto>? TransactionUsages { get; set; }
 
     /// <summary>
     /// Gets or sets the resource-wise usage breakdown, including cost and consumption history.
@@ -94,35 +94,19 @@ public class UsageSummaryDto
 }
 
 /// <summary>
-/// Represents a single data point of credit usage at a specific timestamp.
+/// Represents a record of total credit usage for a specific date.
 /// </summary>
-public class CreditUsageDataPointDto
+public class DataUsageDataPointDto
 {
     /// <summary>
-    /// Gets or sets the timestamp of the credit usage record.
+    /// Gets or sets the date for which the credit usage is recorded.
     /// </summary>
-    public DateTimeOffset Timestamp { get; set; }
+    public DateTimeOffset Date { get; set; }
 
     /// <summary>
-    /// Gets or sets the number of credits used at this timestamp.
+    /// Gets or sets the total number of credits used on the specified date.
     /// </summary>
-    public int CreditsUsed { get; set; }
-}
-
-/// <summary>
-/// Represents a single data point of transaction activity at a specific timestamp.
-/// </summary>
-public class TransactionUsageDataPointDto
-{
-    /// <summary>
-    /// Gets or sets the timestamp of the transaction record.
-    /// </summary>
-    public DateTimeOffset Timestamp { get; set; }
-
-    /// <summary>
-    /// Gets or sets the number of transactions that occurred at this timestamp.
-    /// </summary>
-    public int TransactionsCount { get; set; }
+    public int Value { get; set; }
 }
 
 /// <summary>
@@ -148,7 +132,7 @@ public class ResourceUsageDetailDto
     /// <summary>
     /// Gets or sets the historical usage data points for this resource.
     /// </summary>
-    public List<ResourceUsageDataPointDto>? UsageTimeline { get; set; }
+    public List<DataUsageDataPointDto>? UsageTimeline { get; set; }
 }
 
 /// <summary>

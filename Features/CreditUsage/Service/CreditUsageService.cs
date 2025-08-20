@@ -72,23 +72,23 @@ public class CreditUsageService : ICreditUsageService
                 // Grouped credits usage per day (for usage trends)
                 CreditUsages = creditUsages
                     .GroupBy(g => g.UsedAt.Date)
-                    .Select(s => new CreditUsageDataPointDto
+                    .Select(s => new DataUsageDataPointDto
                     {
-                        Timestamp = s.Key,
-                        CreditsUsed = s.Sum(x => x.CreditsUsed)
+                        Date = s.Key,
+                        Value = s.Sum(x => x.CreditsUsed)
                     })
-                    .OrderBy(o => o.Timestamp)
+                    .OrderBy(o => o.Date)
                     .ToList(),
 
                 // Grouped transaction counts per day
                 TransactionUsages = creditUsages
                     .GroupBy(g => g.UsedAt.Date)
-                    .Select(s => new TransactionUsageDataPointDto
+                    .Select(s => new DataUsageDataPointDto
                     {
-                        Timestamp = s.Key,
-                        TransactionsCount = s.Count()
+                        Date = s.Key,
+                        Value = s.Count()
                     })
-                    .OrderBy(o => o.Timestamp)
+                    .OrderBy(o => o.Date)
                     .ToList(),
 
                 // Resource-specific usage breakdown
@@ -108,12 +108,12 @@ public class CreditUsageService : ICreditUsageService
                             // Usage over time for that resource
                             UsageTimeline = s
                                 .GroupBy(g1 => g1.UsedAt.Date)
-                                .Select(s1 => new ResourceUsageDataPointDto
+                                .Select(s1 => new DataUsageDataPointDto
                                 {
-                                    Timestamp = s1.Key,
-                                    UsageValue = s1.Sum(x => x.CreditsUsed)
+                                    Date = s1.Key,
+                                    Value = s1.Sum(x => x.CreditsUsed)
                                 })
-                                .OrderBy(x => x.Timestamp)
+                                .OrderBy(x => x.Date)
                                 .ToList()
                         };
                     })
