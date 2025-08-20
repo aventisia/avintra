@@ -37,7 +37,7 @@ public class CreditUsageService : ICreditUsageService
             // Build the query for CreditUsage with optional filters
             var creditUsageQuery = _unitOfWork.CreditUsageRepo
                     .GetAllAsync()
-                    .Include(i => i.UsageByUser)
+                    .Include(i => i.UsedByUser)
                     .AsQueryable();
 
             // Filter by service type if specified
@@ -46,11 +46,11 @@ public class CreditUsageService : ICreditUsageService
 
             // Filter by start date if specified (records from this date forward)
             if (startDate.HasValue)
-                creditUsageQuery = creditUsageQuery.Where(c => c.UsageOn >= startDate.Value);
+                creditUsageQuery = creditUsageQuery.Where(c => c.UsedAt.Date >= startDate.Value.Date);
 
             // Filter by end date if specified (records up to this date)
             if (endDate.HasValue)
-                creditUsageQuery = creditUsageQuery.Where(c => c.UsageOn <= endDate.Value);
+                creditUsageQuery = creditUsageQuery.Where(c => c.UsedAt.Date >= endDate.Value.Date);
 
             // Execute the query and retrieve filtered credit usage data
             var creditUsages = await creditUsageQuery.ToListAsync();
@@ -65,24 +65,24 @@ public class CreditUsageService : ICreditUsageService
                 // Summary metrics: total credits and total transactions
                 UsageSummary = new UsageSummaryDto
                 {
-                    TotalCreditsConsumed = creditUsages.Sum(c => c.Credits),
+                    TotalCreditsConsumed = creditUsages.Sum(c => c.CreditsUsed),
                     TotalTransactionsCount = creditUsages.Count
                 },
 
                 // Grouped credits usage per day (for usage trends)
                 CreditUsages = creditUsages
-                    .GroupBy(g => g.UsageOn.Date)
+                    .GroupBy(g => g.UsedAt.Date)
                     .Select(s => new CreditUsageDataPointDto
                     {
                         Timestamp = s.Key,
-                        CreditsUsed = s.Sum(x => x.Credits)
+                        CreditsUsed = s.Sum(x => x.CreditsUsed)
                     })
                     .OrderBy(o => o.Timestamp)
                     .ToList(),
 
                 // Grouped transaction counts per day
                 TransactionUsages = creditUsages
-                    .GroupBy(g => g.UsageOn.Date)
+                    .GroupBy(g => g.UsedAt.Date)
                     .Select(s => new TransactionUsageDataPointDto
                     {
                         Timestamp = s.Key,
@@ -107,29 +107,47 @@ public class CreditUsageService : ICreditUsageService
 
                             // Usage over time for that resource
                             UsageTimeline = s
-                                .GroupBy(g1 => g1.UsageOn.Date)
+                                .GroupBy(g1 => g1.UsedAt.Date)
                                 .Select(s1 => new ResourceUsageDataPointDto
                                 {
                                     Timestamp = s1.Key,
-                                    UsageValue = s1.Sum(x => x.Credits)
+                                    UsageValue = s1.Sum(x => x.CreditsUsed)
                                 })
                                 .OrderBy(x => x.Timestamp)
                                 .ToList()
                         };
                     })
                     .ToList(),
-                Users = creditUsages.Where(c => c.UsageByUser != null).GroupBy(c => c.UsageByUserId).Select(group =>
+                Users = creditUsages.Where(c => c.UsedByUser != null).GroupBy(c => c.UsedByUserId).Select(group =>
                 {
-                    var user = group.First().UsageByUser;
+                    var user = group.First().UsedByUser;
                     return new UserUsageDto
                     {
                         Username = user.UserName,
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         TransactionsCount = group.Count()
-                    }; 
+                    };
                 })
-                .ToList()
+                .ToList(),
+                AiModels = creditUsages.Where(w => w.RefType.HasValue && w.RefType == UsageSourceTypesEnum.AIModel).GroupBy(g => g.RefId).Select(s =>
+                {
+                    return new AiModelUsageDto
+                    {
+                        ModelName = s.First().RefName,
+                        UsageCount = s.Count()
+                    };
+                })
+                    .ToList(),
+                Agents = creditUsages.Where(w => w.RefType.HasValue && w.RefType == UsageSourceTypesEnum.Agent).GroupBy(g => g.RefId).Select(s =>
+                {
+                    return new AgentUsageDto
+                    {
+                        AgentName = s.First().RefName,
+                        UsageCount = s.Count()
+                    };
+                })
+                    .ToList()
             };
 
             // Step 5: Populate the response object with success data
@@ -180,7 +198,7 @@ public class CreditUsageService : ICreditUsageService
 
             // Adapt DTO to entity and assign current user ID
             var creditUsage = creditUsageDto.Adapt<CreditUsage>();
-            creditUsage.UsageByUserId = _userId;
+            creditUsage.UsedByUserId = _userId;
 
             // Insert the new usage record
             await _unitOfWork.CreditUsageRepo.InsertAsync(creditUsage);
