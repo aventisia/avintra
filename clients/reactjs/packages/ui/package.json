@@ -1,5 +1,5 @@
 {
-  "name": "@repo/ui",
+  "name": "@worc/ui",
   "version": "0.0.0",
   "exports": {
     "./counter": "./components/counter.ts",
