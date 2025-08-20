@@ -641,11 +641,17 @@ namespace AccountsAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Credits")
+                    b.Property<int>("CreditsUsed")
                         .HasColumnType("integer");
 
                     b.Property<Guid?>("RefId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("RefName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RefType")
+                        .HasColumnType("text");
 
                     b.Property<string>("ServiceType")
                         .IsRequired()
@@ -654,15 +660,15 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("UsageByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("UsageOn")
+                    b.Property<DateTimeOffset>("UsedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UsedByUserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UsageByUserId");
+                    b.HasIndex("UsedByUserId");
 
                     b.ToTable("CreditUsages");
                 });
@@ -1808,11 +1814,11 @@ namespace AccountsAPIs.Data.Migrations
 
             modelBuilder.Entity("AccountsAPIs.Entities.CreditUsage", b =>
                 {
-                    b.HasOne("AccountsAPIs.Entities.AccountUser", "UsageByUser")
+                    b.HasOne("AccountsAPIs.Entities.AccountUser", "UsedByUser")
                         .WithMany()
-                        .HasForeignKey("UsageByUserId");
+                        .HasForeignKey("UsedByUserId");
 
-                    b.Navigation("UsageByUser");
+                    b.Navigation("UsedByUser");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.Invoice", b =>
