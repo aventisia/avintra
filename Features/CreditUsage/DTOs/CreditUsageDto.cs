@@ -34,11 +34,6 @@ public class CreditsUsageDto
     /// Gets or sets the identifier of the user who consumed the credits.
     /// </summary>
     public Guid? UsedByUserId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the ID of the user who consumed the credits.
-    /// </summary>
-    public Guid? UsageByUserId { get; set; }
 }
 
 /// <summary>
