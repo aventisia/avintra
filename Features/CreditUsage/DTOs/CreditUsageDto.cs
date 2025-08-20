@@ -6,19 +6,34 @@ namespace AccountsAPIs.DTOs;
 public class CreditsUsageDto
 {
     /// <summary>
-    /// Gets or sets the type of service where credits were consumed (e.g., OnPremGpuText).
+    /// Gets or sets the type of service for which the credits were consumed.
     /// </summary>
-    public required CreditServiceTypesEnum ServiceType { get; set; }
+    public CreditServiceTypesEnum ServiceType { get; set; }
 
     /// <summary>
-    /// Gets or sets the number of credits consumed.
+    /// Gets or sets the number of credits that were consumed.
     /// </summary>
-    public int Credits { get; set; }
+    public int CreditsUsed { get; set; }
 
     /// <summary>
-    /// Gets or sets the reference ID associated with the usage context (e.g., AgentId, ModelId).
+    /// Gets or sets the type of the entity or operation the credits were used for (e.g., Agent, Model).
+    /// </summary>
+    public UsageSourceTypesEnum? RefType { get; set; } = null;
+
+    /// <summary>
+    /// Gets or sets the identifier of the specific reference associated with the usage context (e.g., AgentId, ModelId).
     /// </summary>
     public Guid? RefId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the display name or description of the reference entity associated with the usage.
+    /// </summary>
+    public string? RefName { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the identifier of the user who consumed the credits.
+    /// </summary>
+    public Guid? UsedByUserId { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the user who consumed the credits.
