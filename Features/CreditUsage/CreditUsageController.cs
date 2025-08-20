@@ -28,4 +28,16 @@ public class CreditUsageController : BaseApiController
     {
         return ResultHelper(await _creditUsageService.InsertCreditUsageAsync(creditUsageDto));
     }
+
+    // Exports credit usage data into a CSV file
+    [HttpGet("export")]
+    public async Task<ActionResult> ExportCreditUsage([FromQuery] CreditServiceTypesEnum? serviceType, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+    {
+        var exportedData = await _creditUsageService.ExportCreditUsageAsync(serviceType, startDate, endDate);
+        if (exportedData.StatusCode == 200)
+        {
+            return exportedData.Data;
+        }
+        return ResultHelper(exportedData);
+    }
 }

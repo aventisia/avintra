@@ -181,7 +181,7 @@ public class CreditUsageService : ICreditUsageService
         {
             // Log the attempt to insert credit usage
             _logger.LogInformation("Initiating credit usage insertion for User ID: {UserId}, Service Type: {ServiceType}",
-                creditUsageDto.UsageByUserId, creditUsageDto.ServiceType);
+                creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
 
             // Verify that the specified service type exists in the credit plan repository
             var existingCreditPlan = await _unitOfWork.CreditPlanRepo
@@ -207,7 +207,7 @@ public class CreditUsageService : ICreditUsageService
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Database save failed during credit usage insertion for User ID: {UserId}, Service Type: {ServiceType}.",
-                    creditUsageDto.UsageByUserId, creditUsageDto.ServiceType);
+                    creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
                 return serviceResponse;
             }
 
@@ -217,12 +217,74 @@ public class CreditUsageService : ICreditUsageService
 
             // Log success
             _logger.LogInformation("Credit usage successfully recorded for User ID: {UserId}, Service Type: {ServiceType}.",
-                creditUsageDto.UsageByUserId, creditUsageDto.ServiceType);
+                creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while recording credit usage for User ID: {UserId}, Service Type: {ServiceType}.",
-                creditUsageDto.UsageByUserId, creditUsageDto.ServiceType);
+                creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
+        }
+
+        return serviceResponse;
+    }
+
+    // Exports credit usage data for a given user/service into a CSV file.
+    public async Task<ServiceResponse<FileStreamResult>> ExportCreditUsageAsync(
+        CreditServiceTypesEnum? creditServiceType,
+        DateTime? startDate,
+        DateTime? endDate)
+    {
+        var serviceResponse = new ServiceResponse<FileStreamResult>
+        {
+            Data = null,
+            Message = "Failed to export credit usage data. Please try again."
+        };
+
+        try
+        {
+            _logger.LogInformation("Exporting credit usage. Filters - ServiceType: {ServiceType}, StartDate: {Start}, EndDate: {End}",
+                creditServiceType, startDate, endDate);
+
+            // Prepare credit usage query with optional filters
+            var creditUsageQuery = _unitOfWork.CreditUsageRepo
+                .GetAllAsync()
+                .Include(i => i.UsedByUser)
+                .AsQueryable();
+
+            if (creditServiceType.HasValue)
+                creditUsageQuery = creditUsageQuery.Where(c => c.ServiceType == creditServiceType);
+
+            if (startDate.HasValue)
+                creditUsageQuery = creditUsageQuery.Where(c => c.UsedAt.Date >= startDate.Value.Date);
+
+            if (endDate.HasValue)
+                creditUsageQuery = creditUsageQuery.Where(c => c.UsedAt.Date <= endDate.Value.Date);
+
+            // Project to DTOs for export
+            var creditUsages = await creditUsageQuery
+                .ProjectToType<CreditsUsageDto>()
+                .ToListAsync();
+
+            _logger.LogInformation("Retrieved {Count} credit usage records for export.", creditUsages.Count);
+
+            // Convert data to CSV byte stream
+            var csvBytes = CsvDataExporterUtil.ExportToCsvBytes(creditUsages);
+
+            var stream = new MemoryStream(csvBytes);
+            var fileResult = new FileStreamResult(stream, "text/csv")
+            {
+                FileDownloadName = $"credit-usage-{DateTime.UtcNow:yyyyMMddHHmmss}.csv"
+            };
+
+            serviceResponse.Data = fileResult;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Credit usage data exported successfully.";
+
+            _logger.LogInformation("Credit usage export completed successfully.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred during credit usage export.");
         }
 
         return serviceResponse;
