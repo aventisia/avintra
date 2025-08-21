@@ -111,6 +111,35 @@ public class AuthService : IAuthService
                 return serviceResponse;
             }
 
+            // Check if the user is associated with a tenant
+            if (user.TenantId == null)
+            {
+                // If not, return a message indicating that registration is incomplete due to missing tenant setup
+                serviceResponse.Message = "Tenant not set up. Please complete registration.";
+                return serviceResponse;
+            }
+
+            // If user's name is already set, assume update was done before
+            if (!string.IsNullOrEmpty(user.FirstName) || !string.IsNullOrEmpty(user.LastName))
+            {
+                serviceResponse.Message = "User already updated.";
+                return serviceResponse;
+            }
+
+            // Check if the user is associated with a tenant
+            if (user.TenantId == null)
+            {
+                serviceResponse.Message = "Organization details are missing. Please continue your setup.";
+                return serviceResponse;
+            }
+
+            // Check if the user's name fields are missing
+            if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))
+            {
+                serviceResponse.Message = "Your profile is incomplete. Please finish setting it up.";
+                return serviceResponse;
+            }
+
             // Tenant is null/disabled/expired
             if (!_authHelperService.IsUserTenantValid(user.Tenant, user.UserName))
             {
