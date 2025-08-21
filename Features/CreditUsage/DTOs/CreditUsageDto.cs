@@ -13,7 +13,7 @@ public class CreditsUsageDto
     /// <summary>
     /// Gets or sets the number of credits consumed for the specified service.
     /// </summary>
-    public int ConsumptionUnit { get; set; }
+    public int ConsumedUnit { get; set; }
 
     /// <summary>
     /// Gets or sets the type of reference entity or operation where the credits were applied (e.g., Agent, AI Model).

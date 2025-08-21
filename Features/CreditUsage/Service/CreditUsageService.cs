@@ -196,8 +196,36 @@ public class CreditUsageService : ICreditUsageService
                 return serviceResponse;
             }
 
+            int creditUsed = (int)Math.Ceiling((decimal)creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit) * existingCreditPlan.Credits;
+
+            // // Determine credit usage based on the unit type defined in the credit plan
+            // if (existingCreditPlan.UnitType == UnitTypesEnum.Credit)
+            //     // If unit type is 'Credit', use the consumed units directly
+            //     creditUsed = creditUsageDto.ConsumedUnit;
+
+            // if (existingCreditPlan.UnitType == UnitTypesEnum.Transactions)
+            //     // If unit type is 'Transactions', use the consumed units directly
+            //     creditUsed = creditUsageDto.ConsumedUnit;
+
+            // if (existingCreditPlan.UnitType == UnitTypesEnum.Message)
+            //     // If unit type is 'Message', use the consumed units directly
+            //     creditUsed = creditUsageDto.ConsumedUnit;
+
+            // if (existingCreditPlan.UnitType == UnitTypesEnum.Seconds)
+            //     // If unit type is 'Seconds', calculate credits based on configured unit and credit values
+            //     // Formula: ceil(seconds / OneUnit) * Credits
+            //     creditUsed = (int)Math.Ceiling((decimal)creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit)
+            //                  * existingCreditPlan.Credits;
+
+            // if (existingCreditPlan.UnitType == UnitTypesEnum.Tokens)
+            //     // If unit type is 'Tokens', calculate credits based on configured unit and credit values
+            //     // Formula: ceil(tokens / OneUnit) * Credits
+            //     creditUsed = (int)Math.Ceiling((decimal)creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit)
+            //                  * existingCreditPlan.Credits;
+
             // Adapt DTO to entity and assign current user ID
             var creditUsage = creditUsageDto.Adapt<CreditUsage>();
+            creditUsage.CreditsUsed = creditUsed;
             creditUsage.UsedByUserId = _userId;
 
             // Insert the new usage record
