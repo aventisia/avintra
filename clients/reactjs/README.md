@@ -16,11 +16,11 @@ This Turborepo includes the following packages and apps:
 
 ### Apps and Packages
 
-- `docs`: a vanilla [vite](https://vitejs.dev) ts app
-- `web`: another vanilla [vite](https://vitejs.dev) ts app
-- `@repo/ui`: a stub component & utility library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: shared `eslint` configurations
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- `@worc/ui`: a stub component & utility library shared with all applications
+- `@worc/eslint-config`: shared `eslint` configurations
+- `@worc/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- `@worc/vite-config`: `vite.config.ts` files used throughout the monorepo
+- `@worc/tailwind-config`: `tailwind.config.ts` files used throughout the monorepo
 
 Each package and app is 100% [TypeScript](https://www.typescriptlang.org/).
 
