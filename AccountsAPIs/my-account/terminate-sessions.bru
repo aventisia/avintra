@@ -5,15 +5,15 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/me/refresh-session
+  url: {{ACCOUNTS_APIS_BASE_URL}}/me/terminate-sessions
   body: json
   auth: none
 }
 
 body:json {
   {
-    "sessionEndReason": "SessionExpired",
-    "activeSessionIds": ["{{SESSION_ID}}"]
+    "howSessionEnded": "SessionHasExpired",
+    "sessionIdList": ["{{SESSION_ID}}"]
   }
   
 }
