@@ -25,11 +25,9 @@ public interface ICreditUsageService
     Task<ServiceResponse<bool>> InsertCreditUsageAsync(CreditsUsageDto creditUsageDto);
 
     /// <summary>
-    /// Exports the credit usage data as a CSV file based on optional filters like service type and date range.
+    /// Exports the credit usage data as a CSV file based on the provided filters encapsulated in the request DTO.
     /// </summary>
-    /// <param name="creditServiceType">Optional filter to specify the type of credit service.</param>
-    /// <param name="startDate">Optional start date to filter usage records.</param>
-    /// <param name="endDate">Optional end date to filter usage records.</param>
+    /// <param name="exportCreditUsageRequestDto">A DTO containing optional filters like service type, user IDs, agent IDs, AI model IDs, and date range to filter the credit usage data.</param>
     /// <returns>A service response containing the CSV file stream of the filtered credit usage data.</returns>
-    Task<ServiceResponse<FileStreamResult>> ExportCreditUsageAsync(CreditServiceTypesEnum? creditServiceType, DateTime? startDate, DateTime? endDate);
+    Task<ServiceResponse<FileStreamResult>> ExportCreditUsageAsync(ExportCreditUsageRequestDto exportCreditUsageRequestDto);
 }

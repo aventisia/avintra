@@ -228,12 +228,10 @@ public class CreditUsageService : ICreditUsageService
         return serviceResponse;
     }
 
-    // Exports credit usage data for a given user/service into a CSV file.
-    public async Task<ServiceResponse<FileStreamResult>> ExportCreditUsageAsync(
-        CreditServiceTypesEnum? creditServiceType,
-        DateTime? startDate,
-        DateTime? endDate)
+    // Exports credit usage data based on the provided filters into a downloadable CSV file.
+    public async Task<ServiceResponse<FileStreamResult>> ExportCreditUsageAsync(ExportCreditUsageRequestDto exportCreditUsageRequestDto)
     {
+        // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<FileStreamResult>
         {
             Data = null,
@@ -242,49 +240,83 @@ public class CreditUsageService : ICreditUsageService
 
         try
         {
-            _logger.LogInformation("Exporting credit usage. Filters - ServiceType: {ServiceType}, StartDate: {Start}, EndDate: {End}",
-                creditServiceType, startDate, endDate);
-
-            // Prepare credit usage query with optional filters
+            // Initialize base query and include related user information
             var creditUsageQuery = _unitOfWork.CreditUsageRepo
                 .GetAllAsync()
                 .Include(i => i.UsedByUser)
                 .AsQueryable();
 
-            if (creditServiceType.HasValue)
-                creditUsageQuery = creditUsageQuery.Where(c => c.ServiceType == creditServiceType);
+            // Filter by Service Types if any are specified in the request
+            if (exportCreditUsageRequestDto.ServiceTypes.Any())
+            {
+                creditUsageQuery = creditUsageQuery
+                    .Where(w => exportCreditUsageRequestDto.ServiceTypes.Contains(w.ServiceType));
+            }
 
-            if (startDate.HasValue)
-                creditUsageQuery = creditUsageQuery.Where(c => c.UsedAt.Date >= startDate.Value.Date);
+            // Filter by User IDs if provided (ensure UsedByUserId is not null)
+            if (exportCreditUsageRequestDto.UserIds.Any())
+            {
+                creditUsageQuery = creditUsageQuery
+                    .Where(w => w.UsedByUserId != null && exportCreditUsageRequestDto.UserIds.Contains(w.UsedByUserId.Value));
+            }
 
-            if (endDate.HasValue)
-                creditUsageQuery = creditUsageQuery.Where(c => c.UsedAt.Date <= endDate.Value.Date);
+            // Filter by Agent IDs if provided (ensure RefId is not null and RefType is Agent)
+            if (exportCreditUsageRequestDto.AgentIds.Any())
+            {
+                creditUsageQuery = creditUsageQuery
+                    .Where(w => w.RefId != null &&
+                                w.RefType == UsageSourceTypesEnum.Agent &&
+                                exportCreditUsageRequestDto.AgentIds.Contains(w.RefId.Value));
+            }
 
-            // Project to DTOs for export
+            // Filter by AI Model IDs if provided (ensure RefId is not null and RefType is AIModel)
+            if (exportCreditUsageRequestDto.AIModelIds.Any())
+            {
+                creditUsageQuery = creditUsageQuery
+                    .Where(w => w.RefId != null &&
+                                w.RefType == UsageSourceTypesEnum.AIModel &&
+                                exportCreditUsageRequestDto.AIModelIds.Contains(w.RefId.Value));
+            }
+
+            // Filter records to include only those with UsedAt date on or after the specified start date
+            if (exportCreditUsageRequestDto.StartDate.HasValue)
+            {
+                creditUsageQuery = creditUsageQuery
+                    .Where(c => c.UsedAt.Date >= exportCreditUsageRequestDto.StartDate.Value.Date);
+            }
+
+            // Filter records to include only those with UsedAt date on or before the specified end date
+            if (exportCreditUsageRequestDto.EndDate.HasValue)
+            {
+                creditUsageQuery = creditUsageQuery
+                    .Where(c => c.UsedAt.Date <= exportCreditUsageRequestDto.EndDate.Value.Date);
+            }
+
+            // Fetch and map filtered credit usage records to DTOs for export
             var creditUsages = await creditUsageQuery
-                .ProjectToType<CreditsUsageDto>()
+                .ProjectToType<ExportCreditUsageResponseDto>()
                 .ToListAsync();
 
-            _logger.LogInformation("Retrieved {Count} credit usage records for export.", creditUsages.Count);
+            _logger.LogInformation("Exporting {Count} credit usage record(s) based on applied filters.", creditUsages.Count);
 
-            // Convert data to CSV byte stream
+            // Convert the retrieved data to CSV byte array for file export
             var csvBytes = CsvDataExporterUtil.ExportToCsvBytes(creditUsages);
-
             var stream = new MemoryStream(csvBytes);
+
             var fileResult = new FileStreamResult(stream, "text/csv")
             {
-                FileDownloadName = $"credit-usage-{DateTime.UtcNow:yyyyMMddHHmmss}.csv"
+                FileDownloadName = $"credit-usage-{DateTime.UtcNow:dd/MM/yyyy}.csv"
             };
 
             serviceResponse.Data = fileResult;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credit usage data exported successfully.";
 
-            _logger.LogInformation("Credit usage export completed successfully.");
+            _logger.LogInformation("Credit usage export completed. File generated: {FileName}", fileResult.FileDownloadName);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred during credit usage export.");
+            _logger.LogError(ex, "An error occurred while exporting credit usage data.");
         }
 
         return serviceResponse;

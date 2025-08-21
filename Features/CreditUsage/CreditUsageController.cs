@@ -31,9 +31,9 @@ public class CreditUsageController : BaseApiController
 
     // Exports credit usage data into a CSV file
     [HttpGet("export")]
-    public async Task<ActionResult> ExportCreditUsage([FromQuery] CreditServiceTypesEnum? serviceType, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+    public async Task<ActionResult> ExportCreditUsage(ExportCreditUsageRequestDto exportCreditUsageRequestDto)
     {
-        var exportedData = await _creditUsageService.ExportCreditUsageAsync(serviceType, startDate, endDate);
+        var exportedData = await _creditUsageService.ExportCreditUsageAsync(exportCreditUsageRequestDto);
         if (exportedData.StatusCode == 200)
         {
             return exportedData.Data;
