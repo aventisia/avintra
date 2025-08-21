@@ -12,9 +12,19 @@ public class SubscriptionPlan : BaseEntity
     public required string Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the monthly price of the subscription plan.
+    /// </summary>
+    public required decimal MonthlyPrice { get; set; }
+
+    /// <summary>
+    /// Gets or sets the yearly price of the subscription plan.
+    /// </summary>
+    public required decimal YearlyPrice { get; set; }
+
+    /// <summary>
     /// Gets or sets the maximum number of credits allocated.
     /// </summary>
-    public int MaxCredits { get; set; }
+    public ulong MaxCredits { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum number of agents or AI models that can be published under this plan.
