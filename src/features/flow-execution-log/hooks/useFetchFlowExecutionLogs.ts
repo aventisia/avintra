@@ -1,11 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "@aventisia/ui/sonner";
-import { DATA_QUERY_KEY, executions } from "../constants";
+import { DATA_QUERY_KEY } from "../constants";
 import { Execution } from "@/features/flow-execution-log/types/execution-types";
 import { useFlowExecutionLogStore } from "../stores/flow-execution-lof-store";
 import { useShallow } from "zustand/react/shallow";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { getLocalExecutionLog } from "../apis/get-version-execution-log";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
@@ -15,13 +14,6 @@ export const useFetchExecutionLogs = () => {
     useShallow((state) => ({
       showDialog: state.showDialog,
       resetSelections: state.resetSelections,
-    })),
-  );
-
-  // Get ReactFlowExt store state & actions
-  const { isPublished } = useReactFlowExtStore(
-    useShallow((state) => ({
-      isPublished: state.isPublished,
     })),
   );
 
@@ -35,13 +27,12 @@ export const useFetchExecutionLogs = () => {
   const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
     queryKey: DATA_QUERY_KEY,
     queryFn: async (): Promise<Execution[]> => {
-      if (!isPublished) {
-        // Fetch from local storage if not published
-        const localLogs = await getLocalExecutionLog(currentFlow.versionId);
-        return localLogs ?? [];
-      }
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      return executions;
+      // TODO: When isPublished is true, fetch data from the API instead of local storage
+      const localLogs = await getLocalExecutionLog(currentFlow.versionId);
+
+      const fetchedData: Execution[] = localLogs ?? [];
+
+      return fetchedData;
     },
     enabled: showDialog,
   });
