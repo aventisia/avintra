@@ -93,6 +93,7 @@ public static class AppServicesExtension
 
         // Feature services
         services.AddScoped<ICreateAccountService, CreateAccountService>();
+        services.AddScoped<IUserRegistrationService, UserRegistrationService>();
         services.AddScoped<IVerificationCodeService, VerificationCodeService>();
         services.AddScoped<IContactUsService, ContactUsService>();
         services.AddScoped<IResetPwdService, ResetPwdService>();
