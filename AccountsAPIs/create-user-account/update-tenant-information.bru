@@ -1,0 +1,22 @@
+meta {
+  name: Update tenant information
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/auth/tenant-info
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "userId": "{{USER_ID}}",
+    "organizationName": "Organization name",
+    "domain": "domain.com",
+    "numberOfEmployees": "123",
+    "industry": "Technology",
+    "country": "India"
+  }
+}

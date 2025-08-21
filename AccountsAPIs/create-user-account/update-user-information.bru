@@ -1,0 +1,20 @@
+meta {
+  name: Update user information
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/auth/user-info
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "userId": "{{USER_ID}}",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "Pwd": "Password@01"
+  }
+}
