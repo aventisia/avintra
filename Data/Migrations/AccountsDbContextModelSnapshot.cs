@@ -1251,8 +1251,8 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("MaxCredits")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("MaxCredits")
+                        .HasColumnType("numeric(20,0)");
 
                     b.Property<int>("MaxPublishedItems")
                         .HasColumnType("integer");
@@ -1262,6 +1262,9 @@ namespace AccountsAPIs.Data.Migrations
 
                     b.Property<int>("MaxUsers")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("MonthlyPrice")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1275,6 +1278,9 @@ namespace AccountsAPIs.Data.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
+
+                    b.Property<decimal>("YearlyPrice")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
