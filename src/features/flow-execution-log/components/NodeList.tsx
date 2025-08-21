@@ -50,12 +50,13 @@ export const NodeList = () => {
           <CommandList key="nodeList" className="">
             {exec.nodes.map((node) => (
               <CommandItem
-                key={node.nodeId}
-                value={`${node.nodeName} ${node.nodeId}`}
-                onSelect={() => setNodeId(node.nodeId)}
+                key={node?.uniqueNodeId || node.nodeId}
+                value={`${node.nodeName} ${node?.uniqueNodeId || node.nodeId}`}
+                onSelect={() => setNodeId(node?.uniqueNodeId || node.nodeId)}
                 className={cn(
                   "flex cursor-pointer items-center gap-2 rounded-lg p-2",
-                  node.nodeId == selectedNodeId && "bg-accent",
+                  selectedNodeId === (node?.uniqueNodeId || node.nodeId) &&
+                    "bg-accent",
                 )}
               >
                 {node.isSuccess ? (
@@ -64,7 +65,7 @@ export const NodeList = () => {
                   <XCircleIcon className="h-4 w-4 text-red-500" />
                 )}
                 <div className="flex flex-1 items-center justify-between">
-                  <span className="w-40 truncate text-xs">{node.nodeName}</span>
+                  <span className="line-clamp-1 text-xs">{node.nodeName}</span>
                   <div className="text-2xs text-muted-foreground">
                     {formatDuration(node.duration)}
                   </div>
