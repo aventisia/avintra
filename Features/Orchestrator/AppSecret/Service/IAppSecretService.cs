@@ -23,10 +23,11 @@ public interface IAppSecretService
     /// <summary>
     /// Retrieves app secrets formatted as selectable options, typically used in dropdowns.
     /// </summary>
+    /// <param name="type"> An optional <see cref="AppSecretTypesEnum"/> value to filter the secrets by type. If not provided, all secret types are included. </param>
     /// <returns>
     /// A task representing the asynchronous operation. The result contains a collection of <see cref="SelectOptionDto"/> representing available app secrets.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableAppSecretOptionsAsync();
+    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableAppSecretOptionsAsync(AppSecretTypesEnum? type);
 
     /// <summary>
     /// Retrieves details of a specific app secret by its ID.

@@ -111,7 +111,7 @@ public class AppSecretService : IAppSecretService
     }
 
     // Retrieve app secrets as selectable options (e.g., for a dropdown)
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableAppSecretOptionsAsync()
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableAppSecretOptionsAsync(AppSecretTypesEnum? type)
     {
         // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
@@ -124,12 +124,12 @@ public class AppSecretService : IAppSecretService
         {
             // Attempt to fetch the selectable app secret options from the repository
             var options = await _unitOfWork.AppSecretRepo
-                .GetAllAsync()
+                .GetByConditionAsync(w => !type.HasValue || w.Type == type)
                 .ProjectToType<SelectOptionDto>()
                 .ToListAsync();
 
             // Assign the options to the service response
-            serviceResponse.Data = options.Adapt<IEnumerable<SelectOptionDto>>();
+            serviceResponse.Data = options;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "App secret options fetched successfully.";
 
