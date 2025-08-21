@@ -70,6 +70,28 @@ public class AuthService : IAuthService
                 return serviceResponse;
             }
 
+
+            // Extract the domain from the user's email input and check if a tenant with this domain exists,
+            // excluding default tenants like Aventisia and IndividualUsers
+            // TODO: Uncomment the following code block when email domain validation against existing tenants (excluding default tenants) is needed
+            // var domain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(checkAvailabilityDto.UserInput);
+            // var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w =>
+            //     w.Domain.ToLower() == domain &&
+            //     (
+            //         w.Name.ToLower() != GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia) &&
+            //         w.Name.ToLower() != GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers)
+            //     )
+            // )
+            // .FirstOrDefaultAsync();
+
+            // if (tenant != null)
+            // {
+            //     serviceResponse.Data = new TrueFalseResultDto { Result = false };
+            //     serviceResponse.StatusCode = 200;
+            //     serviceResponse.Message = "An organization with this email domain already exists. Please contact support team.";
+            //     return serviceResponse;
+            // }
+
             // Task successful
             serviceResponse.Data = new TrueFalseResultDto { Result = true };
             serviceResponse.StatusCode = 200;
