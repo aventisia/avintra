@@ -1,40 +1,41 @@
 namespace AccountsAPIs.DTOs;
 
 /// <summary>
-/// Represents a record of credit usage, capturing details about the service type, amount used, and the user or reference entity involved.
+/// Represents a credit usage record, including information about the service type, usage amount, associated entity, and the user who consumed the credits.
 /// </summary>
 public class CreditsUsageDto
 {
     /// <summary>
-    /// Gets or sets the type of service for which the credits were consumed.
+    /// Gets or sets the type of service for which the credits were used.
     /// </summary>
     public CreditServiceTypesEnum ServiceType { get; set; }
 
     /// <summary>
-    /// Gets or sets the number of credits that were consumed.
+    /// Gets or sets the number of credits consumed for the specified service.
     /// </summary>
-    public int CreditsUsed { get; set; }
+    public int ConsumptionUnit { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of the entity or operation the credits were used for (e.g., Agent, Model).
+    /// Gets or sets the type of reference entity or operation where the credits were applied (e.g., Agent, AI Model).
     /// </summary>
-    public UsageSourceTypesEnum? RefType { get; set; } = null;
+    public UsageSourceTypesEnum? RefType { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the specific reference associated with the usage context (e.g., AgentId, ModelId).
+    /// Gets or sets the unique identifier of the reference entity related to the credit usage (e.g., Agent ID, Model ID).
     /// </summary>
     public Guid? RefId { get; set; }
 
     /// <summary>
-    /// Gets or sets the display name or description of the reference entity associated with the usage.
+    /// Gets or sets the display name or description of the reference entity associated with the credit usage.
     /// </summary>
     public string? RefName { get; set; }
-    
+
     /// <summary>
-    /// Gets or sets the identifier of the user who consumed the credits.
+    /// Gets or sets the unique identifier of the user who consumed the credits.
     /// </summary>
     public Guid? UsedByUserId { get; set; }
 }
+
 
 /// <summary>
 /// Represents the overall credit usage summary for a given period, including aggregated data, usage breakdowns, and activity details.
