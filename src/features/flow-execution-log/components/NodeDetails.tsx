@@ -16,7 +16,7 @@ export const NodeDetail = () => {
 
   const node = executions
     ?.find((e) => e.executionId === selectedExecutionId)
-    ?.nodes.find((n) => n.nodeId === selectedNodeId);
+    ?.nodes.find((n) => (n?.uniqueNodeId || n.nodeId) === selectedNodeId);
 
   if (!node) return null;
 

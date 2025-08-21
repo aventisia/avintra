@@ -18,7 +18,10 @@ type Actions = {
   setNodeId: (id: string) => void;
 
   resetSelections: (
-    executions: { executionId: string; nodes: { nodeId: string }[] }[],
+    executions: {
+      executionId: string;
+      nodes: { nodeId: string; uniqueNodeId?: string }[];
+    }[],
   ) => void;
 
   setShowDialog: (showDialog: boolean) => void;
@@ -49,7 +52,10 @@ export const useFlowExecutionLogStore = create<State & Actions>((set) => ({
     if (executions.length > 0) {
       set({
         selectedExecutionId: executions[0].executionId,
-        selectedNodeId: executions[0].nodes[0]?.nodeId ?? null,
+        selectedNodeId:
+          (executions[0].nodes[0]?.uniqueNodeId ||
+            executions[0].nodes[0]?.nodeId) ??
+          null,
       });
     }
   },
