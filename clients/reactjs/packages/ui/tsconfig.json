@@ -1,5 +1,12 @@
 {
-  "extends": "@repo/typescript-config/base.json",
-  "include": ["."],
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "composite": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/ui/*": ["./src/*"]
+    }
+  },
+  "include": ["src"],
   "exclude": ["node_modules"]
 }
