@@ -6,5 +6,9 @@ public class CreditUsageMappingProfile : IRegister
     {
         // Map CreditsUsageDto to CreditUsage entity for data insertion
         config.NewConfig<CreditsUsageDto, CreditUsage>();
+        config.NewConfig<CreditUsage, ExportCreditUsageResponseDto>()
+            .Map(dest => dest.UsedOn, src => src.UsedAt.Date.ToString("dd/MM/yyyy"))
+            .Map(dest => dest.Username, src => src.UsedByUser != null ? src.UsedByUser.UserName : null)
+            .Map(dest => dest.FullName, src => src.UsedByUser != null ? $"{src.UsedByUser.FirstName} {src.UsedByUser.LastName}" : null); ;
     }
 }
