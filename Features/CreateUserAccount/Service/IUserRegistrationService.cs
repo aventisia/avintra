@@ -6,13 +6,11 @@ namespace AccountsAPIs.Services;
 public interface IUserRegistrationService
 {
     /// <summary>
-    /// Registers a new user or employee by creating their account.
+    /// Creates a new account for an individual user (IU) or Aventisia employee.
     /// </summary>
-    /// <param name="createUserAccountDto">Contains the registration details of the user.</param>
-    /// <returns>
-    /// A task that represents the asynchronous operation. The result contains a <see cref="ServiceResponse{AccountUsersTableDto}"/> with the outcome.
-    /// </returns>
-    Task<ServiceResponse<AccountUsersTableDto>> RegisterUserAsync(CreateUserAccountDto createUserAccountDto);
+    /// <param name="createAccountDto">The data transfer object containing the account information.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a service response with the created account user.</returns>
+    Task<ServiceResponse<AccountUser>> CreateAccountAsync(CreateAccountDto createAccountDto);
 
     /// <summary>
     /// Updates the tenant organization details.
@@ -21,14 +19,5 @@ public interface IUserRegistrationService
     /// <returns>
     /// A task representing the operation, returning a <see cref="ServiceResponse{AccountUsersTableDto}"/> with the outcome.
     /// </returns>
-    Task<ServiceResponse<AccountUsersTableDto>> UpdateTenantOrganizationAsync(TenantOrganizationDto tenantOrganizationDto);
-
-    /// <summary>
-    /// Updates user information such as name and password.
-    /// </summary>
-    /// <param name="updateUserInformationDto">Contains the user's updated details.</param>
-    /// <returns>
-    /// A service response with the updated <see cref="AccountUser"/> or an error message if the operation fails.
-    /// </returns>
-    Task<ServiceResponse<AccountUser>> UpdateUserInformationAsync(UpdateUserInformationDto updateUserInformationDto);
+    Task<ServiceResponse<AccountUser>> UpdateTenantOrganizationAsync(TenantOrganizationDto tenantOrganizationDto);
 }

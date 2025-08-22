@@ -8,6 +8,7 @@ public class UserRegistrationService : IUserRegistrationService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
     private readonly GeneralConfig _generalConfig;
+    private readonly Guid _userId;
 
     public UserRegistrationService(
         UserManager<AccountUser> userManager,
@@ -15,7 +16,8 @@ public class UserRegistrationService : IUserRegistrationService
         ILogger<UserRegistrationService> logger,
         IUnitOfWork unitOfWork,
         IAuthHelperService authHelperService,
-        GeneralConfig generalConfig)
+        GeneralConfig generalConfig,
+        IHttpContextAccessor httpContextAccessor)
     {
         _userManager = userManager;
         _emailService = emailService;
@@ -23,123 +25,145 @@ public class UserRegistrationService : IUserRegistrationService
         _unitOfWork = unitOfWork;
         _authHelperService = authHelperService;
         _generalConfig = generalConfig;
+
+        // Extract user ID from the claims
+        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
     }
 
-    // Registers a new user or employee account.
-    public async Task<ServiceResponse<AccountUsersTableDto>> RegisterUserAsync(CreateUserAccountDto createUserAccountDto)
+    // Creates a new account for an individual user (IU) or Aventisia employee.
+    public async Task<ServiceResponse<AccountUser>> CreateAccountAsync(CreateAccountDto createAccountDto)
     {
-        // Default failure response
-        var serviceResponse = new ServiceResponse<AccountUsersTableDto>
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<AccountUser>()
         {
             Data = null,
-            Message = "Account registration failed. Please try again later."
+            Message = "Failed to create your account. Please try again later"
         };
 
         try
         {
-            // Check if the user already exists
-            var existingUser = await _unitOfWork.AccountUserRepo
-                .GetByConditionAsync(w => EF.Functions.ILike(createUserAccountDto.Email, w.UserName))
-                .AsNoTracking()
-                .SingleOrDefaultAsync();
+            // Get user (Includes Tenant and Roles)
+            var user = await _unitOfWork.AccountUserRepo
+                    .GetByConditionAsync(w => EF.Functions.ILike(createAccountDto.Email, w.UserName))
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync();
 
-            if (existingUser != null)
+            // User already exists
+            if (user != null)
             {
-                _logger.LogInformation("Registration failed: User already exists for {Email}.", createUserAccountDto.Email);
-                serviceResponse.Message = "An account with this email already exists.";
+                _logger.LogInformation($"User account already exists for email {createAccountDto.Email}");
+                serviceResponse.Message = "User account already exists";
                 return serviceResponse;
             }
 
-            // Validate verification code
+            // Get Verification secret code
             var verificationCode = await _unitOfWork.VerificationCodeRepo
-                .GetByConditionAsync(w => w.Id == createUserAccountDto.VerificationCodeId)
-                .SingleOrDefaultAsync();
+                       .GetByConditionAsync(w => w.Id == createAccountDto.VerificationCodeId)
+                       .SingleOrDefaultAsync();
 
+            // Verification secret code not found
             if (verificationCode == null)
             {
-                _logger.LogInformation("Registration failed: No verification code found for {Email}.", createUserAccountDto.Email);
-                serviceResponse.Message = "Verification failed. Please check your code and try again.";
+                _logger.LogInformation($"Verification code not found for email {createAccountDto.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
                 return serviceResponse;
             }
 
-            var verificationCodeMatches = verificationCode.SecretCode.Equals(createUserAccountDto.SecretCode)
-                                          && DateTimeOffset.UtcNow < verificationCode.ExpiresOn;
+            // Match Verification secret code
+            var verificationCodeMatches = verificationCode.SecretCode.Equals(createAccountDto.SecretCode)
+                && DateTimeOffset.UtcNow < verificationCode.ExpiresOn;
 
-            // Delete the code regardless of match
+            // Delete Verification secret Code
             _unitOfWork.VerificationCodeRepo.Delete(verificationCode);
             await _unitOfWork.SaveAsync();
 
+            // Secret code did not match
             if (!verificationCodeMatches)
             {
-                _logger.LogInformation("Registration failed: Invalid or expired code for {Email}.", createUserAccountDto.Email);
-                serviceResponse.Message = "Verification failed. Please check your code and try again.";
+                _logger.LogInformation($"Invalid verification code for email {createAccountDto.Email}");
+                serviceResponse.Message = "Failed to verify code. Please try again";
                 return serviceResponse;
             }
 
-            // Create new user
+            // Create new User instacne
+            var newPwdSetOn = DateTimeOffset.UtcNow;
             var newUserId = Guid.NewGuid();
-            var newUser = new AccountUser
+            var newUser = new AccountUser()
             {
                 Id = newUserId,
-                UserName = createUserAccountDto.Email.ToLower(),
-                Email = createUserAccountDto.Email.ToLower(),
+                UserName = createAccountDto.Email.ToLower(),
                 EmailConfirmed = true,
-                FirstName = string.Empty,
-                LastName = string.Empty,
+                Email = createAccountDto.Email.ToLower(),
+                FirstName = CapitalizeFirstLetterUtil.CapitalizeFirstLetter(createAccountDto.FirstName),
+                LastName = CapitalizeFirstLetterUtil.CapitalizeFirstLetter(createAccountDto.LastName),
                 CreatedByUserId = newUserId,
                 LastModifiedByUserId = newUserId,
-                IsDefault = false,
-                IsEditable = true,
-                // Add any other initial property setup here
+                PwdSetOn = newPwdSetOn,
+                IsDefault = false, // DO NOT CHANGE THIS
+                IsEditable = true, // DO NOT CHANGE THIS
             };
 
-            var createUserResult = await _userManager.CreateAsync(newUser);
+            // Create new user in AccountsDb
+            var createUserResult = await _userManager.CreateAsync(newUser, createAccountDto.Pwd);
 
+            // New user creation failed
             if (!createUserResult.Succeeded)
             {
+                // Log create user errors
                 foreach (var error in createUserResult.Errors)
-                {
-                    _logger.LogError("User creation failed. Code: {Code}, Description: {Description}", error.Code, error.Description);
-                }
+                    _logger.LogError($"New user creation failed. ErrorCode: {error.Code}, Description: {error.Description}");
 
-                serviceResponse.Message = "Account creation failed. Please try again later.";
+                // Return common error for both
+                serviceResponse.Message = "Failed to create your account. Please try again later";
                 return serviceResponse;
             }
 
-            // Send welcome email (non-blocking)
-            var placeholderValues = new Dictionary<string, string>();
-
-            var emailSent = await _emailService.SendEmailUsingTemplate(
-                emailType: EmailTypesEnum.AccountCreated,
-                toEmailAddress: createUserAccountDto.Email,
-                placeholderValues: placeholderValues,
-                bccEmailAddresses: _generalConfig.SalesEmails);
-
-            if (!emailSent)
+            // Saving pwd (if available) in ObsoletePwd failed
+            if (!await _authHelperService.SavePwdInObsoletePwdList(newUser, createAccountDto.Pwd, newPwdSetOn))
             {
-                _logger.LogError("Account created, but failed to send confirmation email to {Email}.", createUserAccountDto.Email);
+                _logger.LogInformation($"Not able to save new pwd in ObsoletePwd list. Tried to create account for email {createAccountDto.Email}");
+                return serviceResponse;
             }
 
-            _logger.LogInformation("User registered successfully: {Email}", createUserAccountDto.Email);
+            // Create placeholder values for email template
+            var placeholderValues = new Dictionary<string, string>() { { "{{userFirstName}}", newUser.FirstName } };
 
-            // Return final response
-            serviceResponse.Data = newUser.Adapt<AccountUsersTableDto>();
+            // Failed to send AccountCreated email
+            if (!await _emailService.SendEmailUsingTemplate(emailType: EmailTypesEnum.AccountCreated, toEmailAddress: createAccountDto.Email, placeholderValues: placeholderValues,
+                bccEmailAddresses: _generalConfig.SalesEmails))
+            {
+                _logger.LogError($"Error occurred while sending account creation confirmation email to {createAccountDto.Email}");
+                /*Still moving forward as account is already saved in the database*/
+            }
+
+            // New user created
+            _logger.LogInformation($"{createAccountDto.Email} account has been created successfully");
+
+            /*Fetching again to get newUser with Tenant and Roles details*/
+            var newlyAddedUser = await _unitOfWork.AccountUserRepo
+                .GetByConditionAsync(w => EF.Functions.ILike(createAccountDto.Email, w.UserName))
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
+
+            // Task successful
+            serviceResponse.Data = newlyAddedUser;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Your account has been created successfully.";
+            serviceResponse.Message = "New user has been created successfully";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred during registration for {Email}.", createUserAccountDto.Email);
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
         }
 
         return serviceResponse;
     }
 
     // Updates the tenant organization details for a specified user.
-    public async Task<ServiceResponse<AccountUsersTableDto>> UpdateTenantOrganizationAsync(TenantOrganizationDto tenantOrganizationDto)
+    public async Task<ServiceResponse<AccountUser>> UpdateTenantOrganizationAsync(TenantOrganizationDto tenantOrganizationDto)
     {
         // Default failure response
-        var serviceResponse = new ServiceResponse<AccountUsersTableDto>
+        var serviceResponse = new ServiceResponse<AccountUser>
         {
             Data = null,
             Message = "Failed to update tenant organization. Please try again later."
@@ -169,7 +193,7 @@ public class UserRegistrationService : IUserRegistrationService
             var cleanDomain = domain.StartsWith("www.") ? domain.Substring(4) : domain;
 
             // Get the user by ID
-            var user = await _userManager.FindByIdAsync(tenantOrganizationDto.UserId.ToString());
+            var user = await _userManager.FindByIdAsync(_userId.ToString());
             if (user == null)
             {
                 serviceResponse.Message = "User not found.";
@@ -188,8 +212,10 @@ public class UserRegistrationService : IUserRegistrationService
             // Case: Individual Users tenant
             var isIndividualUser = tenantOrganizationDto.OrganizationName.Equals(
                 GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers),
+                StringComparison.InvariantCultureIgnoreCase) ||
+            tenantOrganizationDto.OrganizationName.Equals(
+                GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia),
                 StringComparison.InvariantCultureIgnoreCase);
-
             if (isIndividualUser)
             {
                 // Assign existing 'Individual Users' tenant
@@ -212,7 +238,7 @@ public class UserRegistrationService : IUserRegistrationService
                 if (existingTenant != null)
                 {
                     _logger.LogInformation("Tenant update blocked: '{TenantName}' already exists. Requested by user {UserId}.",
-                        existingTenant.Name, tenantOrganizationDto.UserId);
+                        existingTenant.Name, _userId);
 
                     serviceResponse.Message = $"Tenant '{existingTenant.Name}' already exists. Please contact support.";
                     return serviceResponse;
@@ -225,13 +251,15 @@ public class UserRegistrationService : IUserRegistrationService
                     Name = tenantOrganizationDto.OrganizationName,
                     Type = TenantTypesEnum.Shared,
                     Currency = CurrencyTypesEnum.USD,
+                    ExpiresOn = DateTimeOffset.UtcNow.AddYears(1),
                     // Optional initial properties
                     // Domain = cleanDomain,
+                    // Role = tenantOrganizationDto.Role,
                     // NumberOfEmployees = tenantOrganizationDto.EmployeeCount,
                     // Industry = tenantOrganizationDto.Industry,
                     // Country = tenantOrganizationDto.Country.ToString(),
-                    CreatedByUserId = tenantOrganizationDto.UserId,
-                    LastModifiedByUserId = tenantOrganizationDto.UserId
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId
                 };
 
                 await _unitOfWork.TenantRepo.InsertAsync(userTenant);
@@ -246,7 +274,7 @@ public class UserRegistrationService : IUserRegistrationService
                 userRoles.Add(CustomRolesEnum.TA.ToString());
 
                 _logger.LogInformation("New tenant '{TenantName}' (ID: {TenantId}) created by user {UserId}.",
-                    userTenant.Name, userTenant.Id, tenantOrganizationDto.UserId);
+                    userTenant.Name, userTenant.Id, _userId);
             }
 
             // Assign roles to user
@@ -279,96 +307,24 @@ public class UserRegistrationService : IUserRegistrationService
             _logger.LogInformation("User {UserId} successfully updated with tenant '{TenantName}' (ID: {TenantId}).",
                 user.Id, userTenant.Name, userTenant.Id);
 
+            /*Fetching again to get newUser with Tenant and Roles details*/
+            var newlyAddedUser = await _unitOfWork.AccountUserRepo
+                .GetByConditionAsync(w => EF.Functions.ILike(user.Email, w.UserName))
+                .Include(i => i.UserRoles)
+                        .ThenInclude(i1 => i1.Role)
+                            .ThenInclude(i2 => i2.RolePermissions)
+                                .ThenInclude(i3 => i3.Permission)
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
+
             // Prepare response
-            serviceResponse.Data = user.Adapt<AccountUsersTableDto>();
+            serviceResponse.Data = user;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Tenant organization updated successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error while updating tenant for user {UserId}.", tenantOrganizationDto.UserId);
-        }
-
-        return serviceResponse;
-    }
-
-    // Updates a user's basic information such as first name, last name, and password.
-    public async Task<ServiceResponse<AccountUser>> UpdateUserInformationAsync(UpdateUserInformationDto updateUserInformationDto)
-    {
-        // Default failure response
-        var serviceResponse = new ServiceResponse<AccountUser>
-        {
-            Data = null,
-            Message = "Failed to update user information. Please try again later."
-        };
-
-        try
-        {
-            // Get the user by ID
-            var user = await _userManager.FindByIdAsync(updateUserInformationDto.UserId.ToString());
-
-            if (user == null)
-            {
-                serviceResponse.Message = "User not found.";
-                return serviceResponse;
-            }
-
-            // If user's name is already set, assume update was done before
-            if (!string.IsNullOrEmpty(user.FirstName) || !string.IsNullOrEmpty(user.LastName))
-            {
-                serviceResponse.Message = "User already updated.";
-                return serviceResponse;
-            }
-
-            // Update user details
-            user.FirstName = updateUserInformationDto.FirstName;
-            user.LastName = updateUserInformationDto.LastName;
-            user.PwdSetOn = DateTimeOffset.UtcNow;
-            user.LastModifiedByUserId = updateUserInformationDto.UserId;
-
-            _unitOfWork.AccountUserRepo.Update(user);
-
-            // Save changes
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogWarning("Could not save updated details for user {UserId}.", user.Id);
-                return serviceResponse;
-            }
-
-            _logger.LogInformation("User {UserId} details updated successfully.", user.Id);
-
-            // Set password for the user
-            var addPasswordResult = await _userManager.AddPasswordAsync(user, updateUserInformationDto.Pwd);
-
-            if (!addPasswordResult.Succeeded)
-            {
-                foreach (var error in addPasswordResult.Errors)
-                {
-                    _logger.LogError("Error setting password for user {UserId}. Code: {ErrorCode}, Description: {ErrorDescription}",
-                        user.Id, error.Code, error.Description);
-                }
-
-                serviceResponse.Message = "Failed to set password. Please try again.";
-                return serviceResponse;
-            }
-
-            // Reload user with related roles and permissions
-            user = await _unitOfWork.AccountUserRepo
-                .GetByConditionAsync(w => EF.Functions.ILike(user.Email, w.UserName))
-                .Include(i => i.UserRoles)
-                    .ThenInclude(i1 => i1.Role)
-                        .ThenInclude(i2 => i2.RolePermissions)
-                            .ThenInclude(i3 => i3.Permission)
-                .AsNoTracking()
-                .SingleOrDefaultAsync();
-
-            serviceResponse.Data = user;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "User information updated successfully.";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred while updating user information for user {UserId}.", updateUserInformationDto.UserId);
+            _logger.LogError(ex, "Unexpected error while updating tenant for user {UserId}.", _userId);
         }
 
         return serviceResponse;
