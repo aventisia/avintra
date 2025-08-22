@@ -232,15 +232,18 @@ public class UserRegistrationService : IUserRegistrationService
             {
                 // Check if tenant name already exists
                 var existingTenant = await _unitOfWork.TenantRepo
-                    .GetByConditionAsync(w => w.Name.ToLower() == tenantOrganizationDto.OrganizationName.ToLower())
-                    .SingleOrDefaultAsync();
+                .GetByConditionAsync(w =>
+                    w.Domain.ToLower() == domain.ToLower() ||
+                    w.Name.ToLower() == tenantOrganizationDto.OrganizationName.ToLower()
+                )
+                .SingleOrDefaultAsync();
 
                 if (existingTenant != null)
                 {
                     _logger.LogInformation("Tenant update blocked: '{TenantName}' already exists. Requested by user {UserId}.",
                         existingTenant.Name, _userId);
 
-                    serviceResponse.Message = $"Tenant '{existingTenant.Name}' already exists. Please contact support.";
+                    serviceResponse.Message = $"Tenant or domain already exists. Please contact support.";
                     return serviceResponse;
                 }
 
