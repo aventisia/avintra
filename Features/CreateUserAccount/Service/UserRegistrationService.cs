@@ -252,12 +252,11 @@ public class UserRegistrationService : IUserRegistrationService
                     Type = TenantTypesEnum.Shared,
                     Currency = CurrencyTypesEnum.USD,
                     ExpiresOn = DateTimeOffset.UtcNow.AddYears(1),
-                    // Optional initial properties
-                    // Domain = cleanDomain,
-                    // Role = tenantOrganizationDto.Role,
-                    // NumberOfEmployees = tenantOrganizationDto.EmployeeCount,
-                    // Industry = tenantOrganizationDto.Industry,
-                    // Country = tenantOrganizationDto.Country.ToString(),
+                    Domain = cleanDomain,
+                    Role = tenantOrganizationDto.Role,
+                    NumberOfEmployees = tenantOrganizationDto.NumberOfEmployees,
+                    Industry = tenantOrganizationDto.Industry,
+                    Country = tenantOrganizationDto.Country,
                     CreatedByUserId = _userId,
                     LastModifiedByUserId = _userId
                 };
