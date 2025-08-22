@@ -299,7 +299,7 @@ public class WorkspaceUserService : IWorkspaceUserService
     }
 
     // Searches workspace users whose first name, last name, or username contains the given search key.
-    public async Task<ServiceResponse<IEnumerable<WorkspaceUserDto>>> SearchWorkspaceUserAsync(string searchKey)
+    public async Task<ServiceResponse<IEnumerable<WorkspaceUserDto>>> SearchWorkspaceUserAsync(string searchKey, bool includeCurrentUser)
     {
         // Initialize the response with a default "Bad Request" status
         var serviceResponse = new ServiceResponse<IEnumerable<WorkspaceUserDto>>
@@ -334,7 +334,7 @@ public class WorkspaceUserService : IWorkspaceUserService
                 // Search workspace users by FirstName, LastName, or UserName
                 workspaceUsers = await _unitOfWork.WorkspaceUserRepo
                 .GetByConditionAsync(w =>
-                    w.Id != _userId &&
+                    (includeCurrentUser || w.Id != _userId) &&
                     (
                         w.FirstName.ToLower().Contains(searchKey.ToLower()) ||
                         w.LastName.ToLower().Contains(searchKey.ToLower()) ||

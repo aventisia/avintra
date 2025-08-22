@@ -46,8 +46,8 @@ public class WorkspaceUserController : BaseApiController
 
     // Searches for workspace users matching the specified key.
     [HttpGet("search/{searchKey}")]
-    public async Task<ActionResult<ServiceResponse<bool>>> SearchWorkspaceUser(string searchKey)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<WorkspaceUserDto>>>> SearchWorkspaceUser(string searchKey, [FromQuery] bool includeCurrentUser = false)
     {
-        return ResultHelper(await _userService.SearchWorkspaceUserAsync(searchKey));
+        return ResultHelper(await _userService.SearchWorkspaceUserAsync(searchKey, includeCurrentUser));
     }
 }
