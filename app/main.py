@@ -3,6 +3,7 @@
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.Extraction import router as pdf_extraction_router
+from app.api.extract_file_text import router as extract_file_text_router
 from app.api.SpeechToText import router as speech_to_text_router
 from app.api.KokoroTTS import router as kokoro_text_to_speech_router
 from app.api.AIModelDocument import router as ai_model_document_router
@@ -18,6 +19,7 @@ initialize_qdrant_collections()
 
 # Register API routes with tags for automatic documentation
 app.include_router(pdf_extraction_router, tags=["PDF Extraction"])
+app.include_router(extract_file_text_router, tags=["Extract text from file"])
 app.include_router(speech_to_text_router, tags=["Speech-to-Text"])
 app.include_router(kokoro_text_to_speech_router, tags=["Kokoro TTS"])
 app.include_router(ai_model_document_router, tags=["AI Model Documents"])
