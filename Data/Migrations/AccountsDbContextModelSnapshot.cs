@@ -1297,6 +1297,10 @@ namespace AccountsAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
 
@@ -1324,6 +1328,11 @@ namespace AccountsAPIs.Data.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("character varying(15)");
 
+                    b.Property<string>("Domain")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<DateTimeOffset>("EffectiveDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -1332,6 +1341,9 @@ namespace AccountsAPIs.Data.Migrations
 
                     b.Property<int>("IdleSessionTimeoutMinutes")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Industry")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsDefault")
                         .HasColumnType("boolean");
@@ -1368,8 +1380,14 @@ namespace AccountsAPIs.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<int>("NumberOfEmployees")
+                        .HasColumnType("integer");
+
                     b.Property<DateTimeOffset>("RenewalDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Role")
+                        .HasColumnType("text");
 
                     b.Property<string>("SSOConfigJson")
                         .HasColumnType("text");
