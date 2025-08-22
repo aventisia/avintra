@@ -44,4 +44,5 @@ export type DCPControlType =
   | "condition-groups"
   | "config-panel-output"
   | "model-select"
+  | "credentials-select"
   | "config-panel-model-output";
