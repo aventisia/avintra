@@ -1,6 +1,6 @@
 namespace AccountsAPIs.Controllers;
 
-[Route("billing-account")]
+[Route("billing-detail")]
 [ApiController]
 [Authorize]
 public class BillingDetailController : BaseApiController
@@ -34,9 +34,9 @@ public class BillingDetailController : BaseApiController
     }
 
     // Deletes a billing account permanently
-    [HttpDelete("delete/{id}")]
-    public async Task<ActionResult<ServiceResponse<bool>>> DeleteBillingDetail(Guid id)
+    [HttpDelete("{billingDetailId}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteBillingDetail(Guid billingDetailId)
     {
-        return ResultHelper(await _BillingDetailService.DeleteBillingDetailAsync(id));
+        return ResultHelper(await _BillingDetailService.DeleteBillingDetailAsync(billingDetailId));
     }
 }

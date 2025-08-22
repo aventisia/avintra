@@ -32,7 +32,10 @@ public class BillingDetailService : IBillingDetailService
         {
             //Try to get billing account details
             var BillingDetails = await _unitOfWork.BillingDetailRepo
-            .GetAllAsync().OrderByDescending(o => o.Id).ToListAsync();
+            .GetAllAsync()
+            .Include(i => i.Plan)
+            .OrderByDescending(o => o.Id)
+            .ToListAsync();
 
             // Task successful
             serviceResponse.Data = BillingDetails.Adapt<IEnumerable<BillingDetailDto>>();
