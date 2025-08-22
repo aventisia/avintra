@@ -30,7 +30,7 @@ public class CreditUsageController : BaseApiController
     }
 
     // Exports credit usage data into a CSV file
-    [HttpGet("export")]
+    [HttpPost("export")]
     public async Task<ActionResult> ExportCreditUsage(ExportCreditUsageRequestDto exportCreditUsageRequestDto)
     {
         var exportedData = await _creditUsageService.ExportCreditUsageAsync(exportCreditUsageRequestDto);
