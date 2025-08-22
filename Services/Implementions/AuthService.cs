@@ -133,21 +133,37 @@ public class AuthService : IAuthService
                 return serviceResponse;
             }
 
-            // Tenant is null/disabled/expired
-            if (!_authHelperService.IsUserTenantValid(user.Tenant, user.UserName))
+            TenantInfoDto? tenantInfoDto = null;
+            // Check if the user is associated with an organization (tenant)
+            if (user.TenantId != null)
             {
-                serviceResponse.Message = "Not able to retrieve your tenant's details. Please contact support adminstrator";
-                return serviceResponse;
-            }
+                // Tenant is null/disabled/expired
+                if (!_authHelperService.IsUserTenantValid(user.Tenant, user.UserName))
+                {
+                    serviceResponse.Message = "Not able to retrieve your tenant's details. Please contact support adminstrator";
+                    return serviceResponse;
+                }
 
-            // Create TenantInfoDto instance
-            var tenantInfoDto = new TenantInfoDto()
+                // Create TenantInfoDto instance
+                tenantInfoDto = new TenantInfoDto()
+                {
+                    UserName = user.UserName,
+                    Name = user.Tenant.IsDefault ? "default" : user.Tenant.Name,
+                    TenantId = user.Tenant.Id,
+                    SSOConfigJson = user.Tenant.IsSSOEnabled ? user.Tenant.SSOConfigJson : null
+                };
+            }
+            else
             {
-                UserName = user.UserName,
-                Name = user.Tenant.IsDefault ? "default" : user.Tenant.Name,
-                TenantId = user.Tenant.Id,
-                SSOConfigJson = user.Tenant.IsSSOEnabled ? user.Tenant.SSOConfigJson : null
-            };
+                tenantInfoDto = new TenantInfoDto()
+                {
+                    UserName = user.UserName,
+                    Name = "NA",
+                    TenantId = Guid.Empty,
+                    SSOConfigJson = null
+
+                };
+            }
 
             // Task successful
             serviceResponse.Data = tenantInfoDto;
