@@ -133,20 +133,6 @@ public class AuthService : IAuthService
                 return serviceResponse;
             }
 
-            // Check if the user is associated with a tenant
-            if (user.TenantId == null)
-            {
-                serviceResponse.Message = "Organization details are missing. Please continue your setup.";
-                return serviceResponse;
-            }
-
-            // Check if the user's name fields are missing
-            if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))
-            {
-                serviceResponse.Message = "Your profile is incomplete. Please finish setting it up.";
-                return serviceResponse;
-            }
-
             // Tenant is null/disabled/expired
             if (!_authHelperService.IsUserTenantValid(user.Tenant, user.UserName))
             {
@@ -251,7 +237,7 @@ public class AuthService : IAuthService
             await _unitOfWork.ActiveSessionRepo.InsertAsync(activeSession);
 
             // User is not created in other databases yet.
-            if (user.IsCreatedInOtherDbs == false)
+            if (user.IsCreatedInOtherDbs == false && user.Tenant != null)
             {
                 try
                 {
@@ -290,7 +276,7 @@ public class AuthService : IAuthService
             // Create UserSessionDto
             var userSessionDto = new UserSessionDto()
             {
-                TenantName = user.Tenant.Name,
+                TenantName = user.Tenant != null ? user.Tenant.Name : "NA",
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 UserInitials = GetUserInitialsUtil.GetUserInitials(user.FirstName, user.LastName),
@@ -299,11 +285,20 @@ public class AuthService : IAuthService
                 RTExpiresOn = refreshTokenExpiresOn
             };
 
+            // Check if the user is associated with an organization (tenant)
+            if (user.TenantId == null)
+            {
+                serviceResponse.Message = "Complete organization setup to continue.";
+            }
+            else
+            {
+                serviceResponse.Message = "New session has been created successfully";
+            }
+
             // UserSessionDto is ready
             _logger.LogInformation($"New session has been created successfully for {user.UserName}");
             serviceResponse.Data = userSessionDto;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "New session has been created successfully";
         }
         catch (Exception ex)
         {
