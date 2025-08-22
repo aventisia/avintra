@@ -171,7 +171,6 @@ public class CreateAccountService : ICreateAccountService
                             .ThenInclude(i2 => i2.RolePermissions)
                                 .ThenInclude(i3 => i3.Permission)
                 .AsNoTracking()
-                .AsNoTracking()
                 .SingleOrDefaultAsync();
 
             // Task successful
