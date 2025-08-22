@@ -15,35 +15,39 @@ public class UserRegistrationController : BaseApiController
         _authService = authService;
     }
 
-    // Creates a new user or employee account.
-    [HttpPost("register")]
-    public async Task<ActionResult<ServiceResponse<UserSessionDto>>> RegisterUser([FromBody] CreateUserAccountDto createUserAccountDto)
+    // Creates a new account for an individual user (IU) or Aventisia employee.
+    [HttpPost("create-user-account")]
+    public async Task<ActionResult<ServiceResponse<UserSessionDto>>> CreateNewUser([FromBody] CreateAccountDto createAccountDto)
     {
-        return ResultHelper(await _userRegistrationService.RegisterUserAsync(createUserAccountDto));
+        // Create new user
+        var newUser = await _userRegistrationService.CreateAccountAsync(createAccountDto);
+
+        // New user creation failed
+        if (newUser.StatusCode == 400 || newUser.Data == null)
+            return BadRequest(newUser.Message);
+
+        // Create UserSessionDto
+        var userSessionDto = await _authService.CreateUserSessionAsync(newUser.Data);
+
+        // Returns userSessionDto
+        return ResultHelper(userSessionDto);
     }
 
     // Sets or updates the user's tenant organization.
     [HttpPut("tenant-info")]
-    public async Task<ActionResult<ServiceResponse<bool>>> UpdateTenantOrganization([FromBody] TenantOrganizationDto tenantOrganizationDto)
+    public async Task<ActionResult<ServiceResponse<UserSessionDto>>> UpdateTenantOrganization([FromBody] TenantOrganizationDto tenantOrganizationDto)
     {
-        return ResultHelper(await _userRegistrationService.UpdateTenantOrganizationAsync(tenantOrganizationDto));
-    }
+        // Update ogranization detail
+        var updatedUser = await _userRegistrationService.UpdateTenantOrganizationAsync(tenantOrganizationDto);
 
-    // Updates user's profile details like first name, last name, and password.
-    [HttpPut("user-info")]
-    public async Task<ActionResult<ServiceResponse<AccountUser>>> UpdateUserInformation([FromBody] UpdateUserInformationDto updateUserInformationDto)
-    {
-        // Attempt to update user information
-        var newUser = await _userRegistrationService.UpdateUserInformationAsync(updateUserInformationDto);
+        // New user creation failed
+        if (updatedUser.StatusCode == 400 || updatedUser.Data == null)
+            return BadRequest(updatedUser.Message);
 
-        // Return error if update failed
-        if (newUser.StatusCode == 400 || newUser.Data == null)
-            return BadRequest(newUser.Message);
+        // Create UserSessionDto
+        var userSessionDto = await _authService.CreateUserSessionAsync(updatedUser.Data);
 
-        // Generate session data for the updated user
-        var userSessionDto = await _authService.CreateUserSessionAsync(newUser.Data);
-
-        // Return session info
+        // Returns userSessionDto
         return ResultHelper(userSessionDto);
     }
 }
