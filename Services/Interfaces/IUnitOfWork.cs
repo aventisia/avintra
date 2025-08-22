@@ -32,7 +32,7 @@ public interface IUnitOfWork
 
     IPricingPlanRepo PricingPlanRepo { get; }
 
-    IBillingAccountRepo BillingAccountRepo { get; }
+    IBillingDetailRepo BillingDetailRepo { get; }
 
     IAddressRepo AddressRepo { get; }
 

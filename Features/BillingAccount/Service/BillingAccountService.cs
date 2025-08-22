@@ -31,7 +31,7 @@ public class BillingAccountService : IBillingAccountService
         try
         {
             //Try to get billing account details
-            var billingAccounts = await _unitOfWork.BillingAccountRepo
+            var billingAccounts = await _unitOfWork.BillingDetailRepo
             .GetAllAsync().OrderByDescending(o => o.Id).ToListAsync();
 
             // Task successful
@@ -61,12 +61,12 @@ public class BillingAccountService : IBillingAccountService
         try
         {
             // Default mapping
-            var newBillingAccount = billingAccountDto.Adapt<BillingAccount>();
+            var newBillingAccount = billingAccountDto.Adapt<BillingDetail>();
             newBillingAccount.CreatedByUserId = _userId;
             newBillingAccount.LastModifiedByUserId = _userId;
 
             //Insert a billing account
-            await _unitOfWork.BillingAccountRepo.InsertAsync(newBillingAccount);
+            await _unitOfWork.BillingDetailRepo.InsertAsync(newBillingAccount);
 
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -103,7 +103,7 @@ public class BillingAccountService : IBillingAccountService
         try
         {
             // Validate billing account existence
-            var billingAccount = await _unitOfWork.BillingAccountRepo
+            var billingAccount = await _unitOfWork.BillingDetailRepo
                 .GetByConditionAsync(v => v.Id == billingAccountDto.Id)
                 .SingleOrDefaultAsync();
 
@@ -119,7 +119,7 @@ public class BillingAccountService : IBillingAccountService
             var newBillingAccount = billingAccountDto.Adapt(billingAccount);
 
             //create an updated billing account
-            _unitOfWork.BillingAccountRepo.Update(newBillingAccount);
+            _unitOfWork.BillingDetailRepo.Update(newBillingAccount);
             newBillingAccount.CreatedByUserId = _userId;
             newBillingAccount.LastModifiedByUserId = _userId;
 
@@ -158,7 +158,7 @@ public class BillingAccountService : IBillingAccountService
         try
         {
             //Try to get billing account using identifier
-            var billingAccount = await _unitOfWork.BillingAccountRepo
+            var billingAccount = await _unitOfWork.BillingDetailRepo
             .GetByConditionAsync(v => v.Id == id)
             .SingleOrDefaultAsync();
 
@@ -171,7 +171,7 @@ public class BillingAccountService : IBillingAccountService
             }
 
             //Delete billing account
-            _unitOfWork.BillingAccountRepo.Delete(billingAccount);
+            _unitOfWork.BillingDetailRepo.Delete(billingAccount);
 
             //Delete-job failed
             if (!await _unitOfWork.SaveAsync())
