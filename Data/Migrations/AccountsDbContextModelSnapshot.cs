@@ -496,17 +496,28 @@ namespace AccountsAPIs.Data.Migrations
                     b.ToTable("AuditLogs");
                 });
 
-            modelBuilder.Entity("AccountsAPIs.Entities.BillingAccount", b =>
+            modelBuilder.Entity("AccountsAPIs.Entities.BillingDetail", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("BillingEmail")
+                    b.Property<string>("AddressLine1")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ContactPerson")
+                    b.Property<string>("AddressLine2")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("CreatedByUserId")
@@ -515,7 +526,17 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Frequency")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("GstNumber")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsWillingToFileGst")
                         .HasColumnType("boolean");
 
                     b.Property<Guid>("LastModifiedByUserId")
@@ -524,9 +545,19 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("PhoneNumber")
+                    b.Property<Guid>("PlanId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PostalCode")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("TaxRate")
+                        .HasColumnType("numeric");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -543,7 +574,9 @@ namespace AccountsAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.ToTable("BillingAccounts");
+                    b.HasIndex("PlanId");
+
+                    b.ToTable("BillingDetails");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.ContactUs", b =>
@@ -1437,6 +1470,9 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("integer");
+
                     b.Property<Guid>("PlanId")
                         .HasColumnType("uuid");
 
@@ -1798,7 +1834,7 @@ namespace AccountsAPIs.Data.Migrations
                     b.Navigation("LastModifiedByUser");
                 });
 
-            modelBuilder.Entity("AccountsAPIs.Entities.BillingAccount", b =>
+            modelBuilder.Entity("AccountsAPIs.Entities.BillingDetail", b =>
                 {
                     b.HasOne("AccountsAPIs.Entities.AccountUser", "CreatedByUser")
                         .WithMany()
@@ -1812,9 +1848,17 @@ namespace AccountsAPIs.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("AccountsAPIs.Entities.SubscriptionPlan", "Plan")
+                        .WithMany("BillingDetails")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastModifiedByUser");
+
+                    b.Navigation("Plan");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.CreditPlan", b =>
@@ -2263,6 +2307,11 @@ namespace AccountsAPIs.Data.Migrations
             modelBuilder.Entity("AccountsAPIs.Entities.Subscription", b =>
                 {
                     b.Navigation("Invoice");
+                });
+
+            modelBuilder.Entity("AccountsAPIs.Entities.SubscriptionPlan", b =>
+                {
+                    b.Navigation("BillingDetails");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.Tenant", b =>
