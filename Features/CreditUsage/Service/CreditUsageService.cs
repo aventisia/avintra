@@ -16,10 +16,7 @@ public class CreditUsageService : ICreditUsageService
     }
 
     // Retrieves the credit usage for a given user or service.
-    public async Task<ServiceResponse<CreditsUsageSummaryDto>> GetCreditUsageAsync(
-    CreditServiceTypesEnum? creditServiceType,
-    DateTime? startDate,
-    DateTime? endDate)
+    public async Task<ServiceResponse<CreditsUsageSummaryDto>> GetCreditUsageAsync(DateTimeOffset? startDate, DateTimeOffset? endDate)
     {
         // Initialize the default service response in case of failure
         var serviceResponse = new ServiceResponse<CreditsUsageSummaryDto>
@@ -31,8 +28,8 @@ public class CreditUsageService : ICreditUsageService
         try
         {
             // Log the incoming request and filters for traceability
-            _logger.LogInformation("Starting credit usage fetch. Filters - ServiceType: {ServiceType}, StartDate: {Start}, EndDate: {End}",
-                creditServiceType, startDate, endDate);
+            _logger.LogInformation("Starting credit usage fetch. Filters - StartDate: {Start}, EndDate: {End}",
+                startDate, endDate);
 
             // Build the query for CreditUsage with optional filters
             var creditUsageQuery = _unitOfWork.CreditUsageRepo
@@ -40,17 +37,13 @@ public class CreditUsageService : ICreditUsageService
                     .Include(i => i.UsedByUser)
                     .AsQueryable();
 
-            // Filter by service type if specified
-            if (creditServiceType.HasValue)
-                creditUsageQuery = creditUsageQuery.Where(c => c.ServiceType == creditServiceType);
-
             // Filter by start date if specified (records from this date forward)
             if (startDate.HasValue)
                 creditUsageQuery = creditUsageQuery.Where(c => c.UsedAt.Date >= startDate.Value.Date);
 
             // Filter by end date if specified (records up to this date)
             if (endDate.HasValue)
-                creditUsageQuery = creditUsageQuery.Where(c => c.UsedAt.Date >= endDate.Value.Date);
+                creditUsageQuery = creditUsageQuery.Where(c => c.UsedAt.Date <= endDate.Value.Date);
 
             // Execute the query and retrieve filtered credit usage data
             var creditUsages = await creditUsageQuery.ToListAsync();

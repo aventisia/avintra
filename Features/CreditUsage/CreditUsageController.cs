@@ -15,11 +15,10 @@ public class CreditUsageController : BaseApiController
     // Retrieves a summary of credit usage filtered by service type and date range.
     [HttpGet("summary")]
     public async Task<ActionResult<ServiceResponse<CreditsUsageSummaryDto>>> GetCreditUsageSummary(
-        [FromQuery] CreditServiceTypesEnum? serviceType,
-        [FromQuery] DateTime? startDate,
-        [FromQuery] DateTime? endDate)
+        [FromQuery] DateTimeOffset? startDate,
+        [FromQuery] DateTimeOffset? endDate)
     {
-        return ResultHelper(await _creditUsageService.GetCreditUsageAsync(serviceType, startDate, endDate));
+        return ResultHelper(await _creditUsageService.GetCreditUsageAsync(startDate, endDate));
     }
 
     // Inserts a new credit usage entry.
