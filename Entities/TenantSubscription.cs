@@ -21,6 +21,11 @@ public class TenantSubscription : BaseEntity
     public DateTimeOffset EndDate { get; set; }
 
     /// <summary>
+    /// Gets or sets the status of the payment.
+    /// </summary>
+    public PaymentStatusEnum PaymentStatus { get; set; } = PaymentStatusEnum.Pending;
+
+    /// <summary>
     /// Gets or sets the ID of the subscription plan assigned to the tenant.
     /// </summary>
     public required Guid PlanId { get; set; }

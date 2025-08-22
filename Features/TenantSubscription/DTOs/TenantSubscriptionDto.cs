@@ -27,6 +27,11 @@ public class TenantSubscriptionDto
     public DateTimeOffset EndDate { get; set; }
 
     /// <summary>
+    /// Gets or sets the status of the payment.
+    /// </summary>
+    public PaymentStatusEnum PaymentStatus { get; set; } = PaymentStatusEnum.Pending;
+
+    /// <summary>
     /// Gets or sets a value indicating whether the subscription is currently active.
     /// </summary>
     public bool IsActive { get; set; }
