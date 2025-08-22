@@ -1,13 +1,13 @@
 namespace AccountsAPIs.Services;
 
-public class BillingAccountService : IBillingAccountService
+public class BillingDetailService : IBillingDetailService
 {
-    private readonly ILogger<BillingAccountService> _logger;
+    private readonly ILogger<BillingDetailService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
 
-    public BillingAccountService(
-        ILogger<BillingAccountService> logger,
+    public BillingDetailService(
+        ILogger<BillingDetailService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor)
     {
@@ -19,10 +19,10 @@ public class BillingAccountService : IBillingAccountService
     }
 
     //Get a list of billing accounts
-    public async Task<ServiceResponse<IEnumerable<BillingAccountDto>>> GetBillingAccountListAsync()
+    public async Task<ServiceResponse<IEnumerable<BillingDetailDto>>> GetBillingDetailListAsync()
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<IEnumerable<BillingAccountDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<BillingDetailDto>>
         {
             Data = null,
             StatusCode = 400
@@ -31,11 +31,11 @@ public class BillingAccountService : IBillingAccountService
         try
         {
             //Try to get billing account details
-            var billingAccounts = await _unitOfWork.BillingDetailRepo
+            var BillingDetails = await _unitOfWork.BillingDetailRepo
             .GetAllAsync().OrderByDescending(o => o.Id).ToListAsync();
 
             // Task successful
-            serviceResponse.Data = billingAccounts.Adapt<IEnumerable<BillingAccountDto>>();
+            serviceResponse.Data = BillingDetails.Adapt<IEnumerable<BillingDetailDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Billing accounts retrieved successfully";
         }
@@ -49,10 +49,10 @@ public class BillingAccountService : IBillingAccountService
     }
 
     //Creates a billing account
-    public async Task<ServiceResponse<BillingAccountDto>> InsertBillingAccountAsync(BillingAccountDto billingAccountDto)
+    public async Task<ServiceResponse<BillingDetailDto>> InsertBillingDetailAsync(BillingDetailDto BillingDetailDto)
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<BillingAccountDto>
+        var serviceResponse = new ServiceResponse<BillingDetailDto>
         {
             Data = null,
             StatusCode = 400
@@ -61,12 +61,12 @@ public class BillingAccountService : IBillingAccountService
         try
         {
             // Default mapping
-            var newBillingAccount = billingAccountDto.Adapt<BillingDetail>();
-            newBillingAccount.CreatedByUserId = _userId;
-            newBillingAccount.LastModifiedByUserId = _userId;
+            var newBillingDetail = BillingDetailDto.Adapt<BillingDetail>();
+            newBillingDetail.CreatedByUserId = _userId;
+            newBillingDetail.LastModifiedByUserId = _userId;
 
             //Insert a billing account
-            await _unitOfWork.BillingDetailRepo.InsertAsync(newBillingAccount);
+            await _unitOfWork.BillingDetailRepo.InsertAsync(newBillingDetail);
 
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -76,7 +76,7 @@ public class BillingAccountService : IBillingAccountService
             }
 
             // Task successful
-            serviceResponse.Data = newBillingAccount.Adapt<BillingAccountDto>();
+            serviceResponse.Data = newBillingDetail.Adapt<BillingDetailDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Billing account added successfully";
 
@@ -91,10 +91,10 @@ public class BillingAccountService : IBillingAccountService
     }
 
     //Updates a billing account
-    public async Task<ServiceResponse<BillingAccountDto>> UpdateBillingAccountAsync(BillingAccountDto billingAccountDto)
+    public async Task<ServiceResponse<BillingDetailDto>> UpdateBillingDetailAsync(BillingDetailDto BillingDetailDto)
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<BillingAccountDto>
+        var serviceResponse = new ServiceResponse<BillingDetailDto>
         {
             Data = null,
             StatusCode = 400
@@ -103,12 +103,12 @@ public class BillingAccountService : IBillingAccountService
         try
         {
             // Validate billing account existence
-            var billingAccount = await _unitOfWork.BillingDetailRepo
-                .GetByConditionAsync(v => v.Id == billingAccountDto.Id)
+            var BillingDetail = await _unitOfWork.BillingDetailRepo
+                .GetByConditionAsync(v => v.Id == BillingDetailDto.Id)
                 .SingleOrDefaultAsync();
 
             // Billing account does not exist
-            if (billingAccount == null)
+            if (BillingDetail == null)
             {
                 _logger.LogInformation($"Billing account does not exist");
                 serviceResponse.Message = "Billing account does not exist";
@@ -116,12 +116,12 @@ public class BillingAccountService : IBillingAccountService
             }
 
             // Auto mapping 
-            var newBillingAccount = billingAccountDto.Adapt(billingAccount);
+            var newBillingDetail = BillingDetailDto.Adapt(BillingDetail);
 
             //create an updated billing account
-            _unitOfWork.BillingDetailRepo.Update(newBillingAccount);
-            newBillingAccount.CreatedByUserId = _userId;
-            newBillingAccount.LastModifiedByUserId = _userId;
+            _unitOfWork.BillingDetailRepo.Update(newBillingDetail);
+            newBillingDetail.CreatedByUserId = _userId;
+            newBillingDetail.LastModifiedByUserId = _userId;
 
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
@@ -131,7 +131,7 @@ public class BillingAccountService : IBillingAccountService
             }
 
             // Task successful
-            serviceResponse.Data = newBillingAccount.Adapt<BillingAccountDto>();
+            serviceResponse.Data = newBillingDetail.Adapt<BillingDetailDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Billing account updated successfully";
 
@@ -146,7 +146,7 @@ public class BillingAccountService : IBillingAccountService
 
 
     //Deletes a billing account 
-    public async Task<ServiceResponse<bool>> DeleteBillingAccountAsync(Guid id)
+    public async Task<ServiceResponse<bool>> DeleteBillingDetailAsync(Guid id)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<bool>
@@ -158,12 +158,12 @@ public class BillingAccountService : IBillingAccountService
         try
         {
             //Try to get billing account using identifier
-            var billingAccount = await _unitOfWork.BillingDetailRepo
+            var BillingDetail = await _unitOfWork.BillingDetailRepo
             .GetByConditionAsync(v => v.Id == id)
             .SingleOrDefaultAsync();
 
             //Check if billing account not exists
-            if (billingAccount == null)
+            if (BillingDetail == null)
             {
                 _logger.LogInformation($"Billing account does not exist");
                 serviceResponse.Message = "Billing account does not exist";
@@ -171,7 +171,7 @@ public class BillingAccountService : IBillingAccountService
             }
 
             //Delete billing account
-            _unitOfWork.BillingDetailRepo.Delete(billingAccount);
+            _unitOfWork.BillingDetailRepo.Delete(BillingDetail);
 
             //Delete-job failed
             if (!await _unitOfWork.SaveAsync())

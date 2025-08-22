@@ -32,7 +32,7 @@ public static class AppServicesExtension
         config.Apply(new AddressMappingProfile());
         config.Apply(new PaymentMappingProfile());
         config.Apply(new PlanTableMappingProfile());
-        config.Apply(new BillingAccountMappingProfile());
+        config.Apply(new BillingDetailMappingProfile());
         config.Apply(new LicenseCreditMappingProfile());
         config.Apply(new PricingPlanManagementMappingProfile());
         config.Apply(new LicenseCreditManagementMappingProfile());
@@ -106,7 +106,7 @@ public static class AppServicesExtension
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IAccountRoleService, AccountRoleService>();
         services.AddScoped<IPermissionService, PermissionService>();
-        services.AddScoped<IBillingAccountService, BillingAccountService>();
+        services.AddScoped<IBillingDetailService, BillingDetailService>();
         services.AddScoped<IPricingPlanManagementService, PricingPlanManagementService>();
         services.AddScoped<ILicenseCreditManagementService, LicenseCreditManagementService>();
         services.AddScoped<IInvoiceService, InvoiceService>();
