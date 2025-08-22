@@ -417,14 +417,13 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Map the newly created subscription entity to a DTO and return a successful response
             serviceResponse.Data = newSubscription.Adapt<TenantSubscriptionDto>();
-            serviceResponse.StatusCode = 201; // Created
-            serviceResponse.Message = "Tenant subscription successfully created.";
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Tenant subscription completed successfully.";
         }
         catch (Exception ex)
         {
             // Log any unexpected errors that occur during the subscription creation process
             _logger.LogError(ex, "An unexpected error occurred while purchasing tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
-            serviceResponse.Message = "An unexpected error occurred. Please try again later.";
         }
 
         return serviceResponse;

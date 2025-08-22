@@ -320,7 +320,7 @@ public class UserRegistrationService : IUserRegistrationService
                 .SingleOrDefaultAsync();
 
             // Prepare response
-            serviceResponse.Data = user;
+            serviceResponse.Data = newlyAddedUser;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Tenant organization updated successfully.";
         }
