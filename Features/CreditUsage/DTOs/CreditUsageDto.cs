@@ -116,19 +116,24 @@ public class DataUsageDataPointDto
 public class ResourceUsageDetailDto
 {
     /// <summary>
-    /// Gets or sets the display name of the resource (e.g., "GPU", "GPT-4").
+    /// Gets or sets the type of service this plan applies to, like OnPremGpuText.
     /// </summary>
-    public string? ResourceName { get; set; }
+    public CreditServiceTypesEnum ServiceType { get; set; }
 
     /// <summary>
-    /// Gets or sets the credit cost per unit of resource usage.
+    /// Gets or sets the type of unit used to measure usage, like seconds, tokens, or messages.
     /// </summary>
-    public decimal CreditCostPerUnit { get; set; }
+    public UnitTypesEnum UnitType { get; set; }
 
     /// <summary>
-    /// Gets or sets the unit of measurement for this resource (e.g., "Second", "Token").
+    /// Gets or sets how much usage is in one unit, like 30 seconds or 1000 tokens.
     /// </summary>
-    public string? MeasurementUnit { get; set; }
+    public int OneUnit { get; set; }
+
+    /// <summary>
+    /// Gets or sets how many credits are used for each unit.
+    /// </summary>
+    public int Credits { get; set; }
 
     /// <summary>
     /// Gets or sets the historical usage data points for this resource.

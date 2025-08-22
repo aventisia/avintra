@@ -101,10 +101,10 @@ public class CreditUsageService : ICreditUsageService
 
                         return new ResourceUsageDetailDto
                         {
-                            ResourceName = s.Key.ToString(),
-                            CreditCostPerUnit = matchingPlan?.OneUnit ?? 0,
-                            MeasurementUnit = matchingPlan?.UnitType.ToString() ?? "N/A",
-
+                            ServiceType = s.Key,
+                            OneUnit = matchingPlan.OneUnit,
+                            UnitType = matchingPlan.UnitType,
+                            Credits = matchingPlan.Credits,
                             // Usage over time for that resource
                             UsageTimeline = s
                                 .GroupBy(g1 => g1.UsedAt.Date)
