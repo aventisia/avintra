@@ -39,4 +39,5 @@ export type DCPFieldSchemaType = {
   minLength?: number;
   maxLength?: number;
   renderIf?: RenderIfType; // Not a html attribute
+  serviceType?: string;
 };
