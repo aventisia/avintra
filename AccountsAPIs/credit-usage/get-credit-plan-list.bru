@@ -5,7 +5,12 @@ meta {
 }
 
 get {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/credit-usage/summary
+  url: {{ACCOUNTS_APIS_BASE_URL}}/credit-usage/summary?startDate=2025-08-15&endDate=2025-08-20
   body: none
   auth: none
+}
+
+params:query {
+  startDate: 2025-08-15
+  endDate: 2025-08-20
 }

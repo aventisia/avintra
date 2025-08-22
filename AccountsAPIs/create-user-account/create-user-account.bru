@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/auth/register
+  url: {{ACCOUNTS_APIS_BASE_URL}}/auth/create-user-account
   body: json
   auth: none
 }
@@ -17,7 +17,7 @@ body:json {
       "lastName": "Ali",
       "pwd": "Post@123",
       "verificationCodeId": "{{VERIFICATION_CODE_ID}}",
-      "secretCode": "996971",
+      "secretCode": "337476",
       "isSocialSignUp": false
   }
 }
