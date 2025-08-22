@@ -17,7 +17,7 @@ public partial class AccountsDbContext
     public DbSet<RolePermission> RolePermissions { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
     public DbSet<Payment> Payments { get; set; }
-    public DbSet<BillingAccount> BillingAccounts { get; set; }
+    public DbSet<BillingDetail> BillingDetails { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
     public DbSet<Address> Addresses { get; set; }
     public DbSet<Space> Spaces { get; set; }

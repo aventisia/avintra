@@ -38,7 +38,7 @@ public partial class AccountsDbContext : IdentityDbContext<
 
         // Global TenantId filters
         builder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        builder.Entity<BillingAccount>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        builder.Entity<BillingDetail>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<Invoice>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<Payment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<AppIntegration>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -71,6 +71,8 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<CreditPlan>().Property(e => e.UnitType).HasConversion(new EnumToStringConverter<UnitTypesEnum>());
         builder.Entity<CreditUsage>().Property(e => e.ServiceType).HasConversion(new EnumToStringConverter<CreditServiceTypesEnum>());
         builder.Entity<CreditUsage>().Property(e => e.RefType).HasConversion(new EnumToStringConverter<UsageSourceTypesEnum>());
+        builder.Entity<BillingDetail>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<SubscriptionFrequenciesEnum>());
+        builder.Entity<BillingDetail>().Property(e => e.Country).HasConversion(new EnumToStringConverter<CountriesEnum>());
 
         // Configure One-to-One relationship between AccountUser and AccountUser
         builder.Entity<AccountUser>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -99,8 +101,8 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<Invoice>().HasMany(i => i.Payment).WithOne(p => p.Invoice).HasForeignKey(p => p.InvoiceId);
 
         // Configure One-to-One relationship between BillingAccount and AccountUser
-        builder.Entity<BillingAccount>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
-        builder.Entity<BillingAccount>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<BillingDetail>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<BillingDetail>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
     }
 

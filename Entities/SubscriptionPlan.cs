@@ -50,4 +50,9 @@ public class SubscriptionPlan : BaseEntity
     /// Gets or sets the maximum number of users permitted for this subscription.
     /// </summary>
     public int MaxUsers { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of users associated with the space.
+    /// </summary>
+    public virtual ICollection<BillingDetail>? BillingDetails { get; set; }
 }
