@@ -139,4 +139,30 @@ public class Tenant : BaseEntity
     /// Gets or sets the currency for the pricing plan, defaulting to USD.
     /// </summary>
     public required CurrencyTypesEnum Currency { get; set; }
+
+    /// <summary>
+    /// Gets or sets the email domain associated with this tenant.
+    /// </summary>
+    [StringLength(100)]
+    public string Domain { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the number of employees in the organization.
+    /// </summary>
+    public int NumberOfEmployees { get; set; }
+
+    /// <summary>
+    /// Gets or sets the industry in which the organization operates.
+    /// </summary>
+    public string? Industry { get; set; }
+
+    /// <summary>
+    /// Gets or sets the country where the tenant is located.
+    /// </summary>
+    public CountriesEnum Country { get; set; }
+
+    /// <summary>
+    /// Gets or sets the role of the user who registered or manages the tenant.
+    /// </summary>
+    public string? Role { get; set; }
 }

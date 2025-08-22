@@ -53,6 +53,7 @@ public partial class AccountsDbContext : IdentityDbContext<
         // Enum to string conversion
         builder.Entity<Tenant>().Property(e => e.DbOption).HasConversion(new EnumToStringConverter<DatabaseOptionsEnum>());
         builder.Entity<Tenant>().Property(e => e.Currency).HasConversion(new EnumToStringConverter<CurrencyTypesEnum>());
+        builder.Entity<Tenant>().Property(e => e.Country).HasConversion(new EnumToStringConverter<CountriesEnum>());
         builder.Entity<SessionLog>().Property(e => e.HowSessionEnded).HasConversion(new EnumToStringConverter<TerminateSessionReasonsEnum>());
         builder.Entity<VerificationCode>().Property(e => e.RequestType).HasConversion(new EnumToStringConverter<VerificationCodeRequestTypesEnum>());
         builder.Entity<PlanPricing>().Property(e => e.Currency).HasConversion(new EnumToStringConverter<CurrencyTypesEnum>());
