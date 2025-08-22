@@ -46,8 +46,8 @@ public class ModelBuilderUserController : BaseApiController
 
     // Searches for model build users matching the specified key.
     [HttpGet("search/{searchKey}")]
-    public async Task<ActionResult<ServiceResponse<bool>>> SearchModelBuilderUser(string searchKey)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ModelBuilderUserDto>>>> SearchModelBuilderUser(string searchKey, [FromQuery] bool includeCurrentUser = false)
     {
-        return ResultHelper(await _userService.SearchModelBuilderUserAsync(searchKey));
+        return ResultHelper(await _userService.SearchModelBuilderUserAsync(searchKey, includeCurrentUser));
     }
 }

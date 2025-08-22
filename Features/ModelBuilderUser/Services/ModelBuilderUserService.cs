@@ -7,7 +7,7 @@ public class ModelBuilderUserService : IModelBuilderUserService
     private readonly ILogger<ModelBuilderUserService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserManagementGuardService _userManagementGuardService;
-     private readonly DefaultTenantConfig _defaultTenantConfig;
+    private readonly DefaultTenantConfig _defaultTenantConfig;
     private readonly Guid _userId;
     private readonly string _userName;
     private readonly Guid _tenantId;
@@ -301,7 +301,7 @@ public class ModelBuilderUserService : IModelBuilderUserService
     }
 
     // Searches model builder users whose first name, last name, or username contains the given search key.
-    public async Task<ServiceResponse<IEnumerable<ModelBuilderUserDto>>> SearchModelBuilderUserAsync(string searchKey)
+    public async Task<ServiceResponse<IEnumerable<ModelBuilderUserDto>>> SearchModelBuilderUserAsync(string searchKey, bool includeCurrentUser)
     {
         // Initialize the response with a default "Bad Request" status
         var serviceResponse = new ServiceResponse<IEnumerable<ModelBuilderUserDto>>
@@ -336,7 +336,7 @@ public class ModelBuilderUserService : IModelBuilderUserService
                 // Search model builder users by FirstName, LastName, or UserName
                 modelBuilderUsers = await _unitOfWork.ModelBuilderUserRepo
                     .GetByConditionAsync(w =>
-                        w.Id != _userId &&
+                        (includeCurrentUser || w.Id != _userId) &&
                         (
                             w.FirstName.ToLower().Contains(searchKey.ToLower()) ||
                             w.LastName.ToLower().Contains(searchKey.ToLower()) ||

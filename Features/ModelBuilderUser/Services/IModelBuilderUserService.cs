@@ -38,6 +38,7 @@ public interface IModelBuilderUserService
     /// Retrieves a list of model builder users whose properties match the provided search key.
     /// </summary>
     /// <param name="searchKey">The keyword to search model builder users by.</param>
+    /// <param name="includeCurrentUser">A flag indicating whether to include the current user in the results.</param>
     /// <returns>A task that returns a service response with an enumerable collection of matching model builder user DTOs.</returns>
-    Task<ServiceResponse<IEnumerable<ModelBuilderUserDto>>> SearchModelBuilderUserAsync(string searchKey);
+    Task<ServiceResponse<IEnumerable<ModelBuilderUserDto>>> SearchModelBuilderUserAsync(string searchKey, bool includeCurrentUser);
 }
