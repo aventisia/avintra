@@ -8,6 +8,8 @@ export const columnVisibilityState = {
   maxSpaces: true,
   storageLimitMB: true,
   maxUsers: true,
+  yearlyPrice: false,
+  monthlyPrice: true,
   isDisabled: false,
   createdBy: false,
   createdOn: false,

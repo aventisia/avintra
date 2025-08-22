@@ -28,6 +28,16 @@ export interface SubPlansTableDto {
   historyRetentionDays: number;
 
   /**
+   * Gets or sets the monthly price.
+   */
+  monthlyPrice: number;
+
+  /**
+   * Gets or sets the yearly price.
+   */
+  yearlyPrice: number;
+
+  /**
    * Gets or sets the maximum number of spaces allowed.
    */
   maxSpaces: number;

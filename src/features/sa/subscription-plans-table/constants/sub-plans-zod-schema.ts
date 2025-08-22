@@ -17,18 +17,45 @@ export const subPlanNameSchema = z
     message: flexibleNameError("Plan Name"),
   });
 
+//To use Text field for numbers schema
+const numberTextFieldSchema = z
+  .string({ coerce: true })
+  .min(1, { message: "Field is required" })
+  .refine((num) => !isNaN(Number(num)), {
+    message: "Only number allowed",
+  })
+  .transform((val) => Number(val));
+
 /**
  * Represents the Zod schema for a Subscription Plans.
  */
 export const subPlansZodSchema = z.object({
   id: z.string(), // UUID format validation
   name: subPlanNameSchema,
-  maxCredits: z.number().min(1, { message: reqError("No of credits") }),
-  maxPublishedItems: z.number().min(1, { message: reqError("Field") }),
-  historyRetentionDays: z.number().min(1, { message: reqError("No of Days") }),
-  maxSpaces: z.number().min(1, { message: reqError("Spaces") }),
-  storageLimitMB: z.number().min(1, { message: reqError("Storage Limit") }),
-  maxUsers: z.number().min(1, { message: reqError("No of Users") }),
+  maxCredits: numberTextFieldSchema.refine((num) => num >= -1, {
+    message: "Value must be greater than or equal to -1",
+  }),
+  maxPublishedItems: numberTextFieldSchema.refine((num) => num >= 0, {
+    message: "Value must be greater than or equal to 0",
+  }),
+  historyRetentionDays: numberTextFieldSchema.refine((num) => num >= 0, {
+    message: "Value must be greater than or equal to 0",
+  }),
+  maxSpaces: numberTextFieldSchema.refine((num) => num >= -1, {
+    message: "Value must be greater than or equal to -1",
+  }),
+  storageLimitMB: numberTextFieldSchema.refine((num) => num >= -1, {
+    message: "Value must be greater than or equal to -1",
+  }),
+  maxUsers: numberTextFieldSchema.refine((num) => num >= -1, {
+    message: "Value must be greater than or equal to -1",
+  }),
+  monthlyPrice: numberTextFieldSchema.refine((num) => num >= 0, {
+    message: "Value must be greater than or equal to 0",
+  }),
+  yearlyPrice: numberTextFieldSchema.refine((num) => num >= 0, {
+    message: "Value must be greater than or equal to 0",
+  }),
   isDisabled: z.boolean().default(false),
   // Read (view) only fields
   createdBy: z.string(),

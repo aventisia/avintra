@@ -16,6 +16,8 @@ import {
   maxSpacesProps,
   maxUsersProps,
   storageLimitMBProps,
+  monthlyPriceProps,
+  yearlyPriceProps,
 } from "../../constants/sub-plans-form-field-props";
 import { subPlansZodSchema } from "../../constants/sub-plans-zod-schema";
 import { SubPlansTableDto } from "../../dtos/sub-plans-table-dto";
@@ -84,6 +86,12 @@ export const SubPlansCrudForm = () => {
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
       />
+
+      {/* Storage Limit */}
+      <InputField {...monthlyPriceProps} />
+
+      {/* Users */}
+      <InputField {...yearlyPriceProps} />
 
       {/* No of Credits */}
       <InputField {...maxCreditsProps} />

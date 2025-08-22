@@ -57,6 +57,18 @@ const maxUsersProps: InputFieldProps = {
   isRequired: true,
 };
 
+// Yearly Charge
+const yearlyPriceProps: InputFieldProps = {
+  name: "yearlyPrice",
+  label: "Yearly Charge",
+  isRequired: true,
+};
+// Monthly Charge
+const monthlyPriceProps: InputFieldProps = {
+  name: "monthlyPrice",
+  label: "Monthly Charge",
+  isRequired: true,
+};
 // Is Disabled
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
@@ -74,4 +86,6 @@ export {
   storageLimitMBProps,
   maxUsersProps,
   isDisabledProps,
+  yearlyPriceProps,
+  monthlyPriceProps,
 };

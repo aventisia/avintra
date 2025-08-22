@@ -60,6 +60,8 @@ export const useDefineSubPlansForm = () => {
       maxUsers: 0,
       maxSpaces: 0,
       storageLimitMB: 0,
+      monthlyPrice: 0,
+      yearlyPrice: 0,
       isDisabled: false,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
@@ -96,6 +98,8 @@ export const useDefineSubPlansForm = () => {
       historyRetentionDays: subPlanData?.historyRetentionDays ?? 0,
       storageLimitMB: subPlanData?.storageLimitMB ?? 0,
       maxSpaces: subPlanData?.maxSpaces ?? 0,
+      monthlyPrice: subPlanData?.monthlyPrice ?? 0,
+      yearlyPrice: subPlanData?.yearlyPrice ?? 0,
       isDisabled: subPlanData?.isDisabled ?? false,
       // Read (view) only fields
       createdBy:
