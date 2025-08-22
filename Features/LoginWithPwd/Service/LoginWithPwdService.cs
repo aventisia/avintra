@@ -86,12 +86,6 @@ public class LoginWithPwdService : ILoginWithPwdService
                     .AsNoTracking()
                     .SingleOrDefaultAsync();
 
-            // Tenant is null/disabled/expired
-            if (!_authHelperService.IsUserTenantValid(user.Tenant, user.UserName))
-            {
-                serviceResponse.Message = "Not able to retrieve your tenant's details. Please contact support adminstrator";
-                return serviceResponse;
-            }
 
             // Account is disabled
             if (user.IsDisabled)
@@ -109,37 +103,47 @@ public class LoginWithPwdService : ILoginWithPwdService
                 return serviceResponse;
             }
 
-            // Password has expired
-            if (user.Tenant.IsPwdNeverExpiresEnabled == false && (DateTimeOffset.UtcNow - user.PwdSetOn)?.Days > user.Tenant.DaysBeforePwdExpires)
+            // Check if the user is linked to a valid tenant
+            if (user.TenantId != null)
             {
-                _logger.LogInformation($"{pwdLoginDto.Email} account's password has been expired");
-                serviceResponse.StatusCode = 200;
+                // Tenant is null/disabled/expired
+                if (!_authHelperService.IsUserTenantValid(user.Tenant, user.UserName))
+                {
+                    serviceResponse.Message = "Unable to retrieve your tenant's details. Please contact your support administrator.";
+                    return serviceResponse;
+                }
 
-                /********IMPORTANCT NOTE********
-                DO NOT CHANGE the message's part "Your password has
-                been expired" as it has to match on frontend side
-                ********IMPORTANCT NOTE********/
+                // Password has expired
+                if (user?.Tenant.IsPwdNeverExpiresEnabled == false && (DateTimeOffset.UtcNow - user.PwdSetOn)?.Days > user?.Tenant.DaysBeforePwdExpires)
+                {
+                    _logger.LogInformation($"{pwdLoginDto.Email} account's password has been expired");
+                    serviceResponse.StatusCode = 200;
 
-                serviceResponse.Message = "Your password has been expired. Please reset it to use your account";
-                return serviceResponse;
+                    /********IMPORTANCT NOTE********
+                    DO NOT CHANGE the message's part "Your password has
+                    been expired" as it has to match on frontend side
+                    ********IMPORTANCT NOTE********/
+
+                    serviceResponse.Message = "Your password has been expired. Please reset it to use your account";
+                    return serviceResponse;
+                }
+
+                // TwoFA enabled
+                if (user.Tenant.IsTwoFAEnabled || user.TwoFactorEnabled)
+                {
+                    // log information
+                    _logger.LogInformation($"Returning TwoFA is enabled for account {pwdLoginDto.Email}");
+
+                    /********IMPORTANCT NOTE********
+                    DO NOT CHANGE the message's part "TwoFA is enabled" 
+                    as it has to match in Controller and frontend side
+                    ********IMPORTANCT NOTE********/
+
+                    serviceResponse.StatusCode = 200;
+                    serviceResponse.Message = "TwoFA is enabled";
+                    return serviceResponse;
+                }
             }
-
-            // TwoFA enabled
-            if (user.Tenant.IsTwoFAEnabled || user.TwoFactorEnabled)
-            {
-                // log information
-                _logger.LogInformation($"Returning TwoFA is enabled for account {pwdLoginDto.Email}");
-
-                /********IMPORTANCT NOTE********
-                DO NOT CHANGE the message's part "TwoFA is enabled" 
-                as it has to match in Controller and frontend side
-                ********IMPORTANCT NOTE********/
-
-                serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "TwoFA is enabled";
-                return serviceResponse;
-            }
-
             // User is authenticated
             serviceResponse.Data = user;
             serviceResponse.StatusCode = 200;
