@@ -7,11 +7,6 @@
 public class TenantOrganizationDto
 {
     /// <summary>
-    /// Gets or sets the ID of the user associated with this tenant.
-    /// </summary>
-    public Guid UserId { get; set; }
-
-    /// <summary>
     /// Gets or sets the name of the organization.
     /// </summary>
     [StringLength(50)]
@@ -37,4 +32,9 @@ public class TenantOrganizationDto
     /// Gets or sets the country where the organization is based.
     /// </summary>
     public CountriesEnum Country { get; set; }
+
+    /// <summary>
+    /// Gets or sets the role of the user within the organization (e.g., Administrator, Manager, Employee).
+    /// </summary>
+    public string? Role { get; set; }
 }
