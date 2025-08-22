@@ -53,4 +53,11 @@ public class TenantSubscriptionController : BaseApiController
     {
         return ResultHelper(await _tenantSubscriptionService.DeleteTenantSubscriptionsAsync(tenantSubscriptionIds));
     }
+
+    // Purchase of a tenant subscription based on the provided details.
+    [HttpPost("purchase-subscription")]
+    public async Task<ActionResult<ServiceResponse<TenantSubscriptionDto>>> PurchaseTenantSubscriptions([FromBody] TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto)
+    {
+        return ResultHelper(await _tenantSubscriptionService.PurchaseTenantSubscriptionPlanAsync(tenantSubscriptionPurchaseDto));
+    }
 }

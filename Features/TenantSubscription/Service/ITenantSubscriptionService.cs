@@ -57,4 +57,11 @@ public interface ITenantSubscriptionService
     /// A task representing the asynchronous operation. The result indicates the success of the batch deletion.
     /// </returns>
     Task<ServiceResponse<bool>> DeleteTenantSubscriptionsAsync(List<Guid> tenantSubscriptionIds);
+
+    /// <summary>
+    /// Purchases a subscription plan for a tenant.
+    /// </summary>
+    /// <param name="tenantSubscriptionPurchaseDto">Details of the subscription purchase.</param>
+    /// <returns>A task with the purchased subscription details.</returns>
+    Task<ServiceResponse<TenantSubscriptionDto>> PurchaseTenantSubscriptionPlanAsync(TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto);
 }

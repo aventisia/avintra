@@ -328,4 +328,105 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         return serviceResponse;
     }
+
+    // Creates a new tenant subscription if it doesn't already exist for the tenant and plan.
+    public async Task<ServiceResponse<TenantSubscriptionDto>> PurchaseTenantSubscriptionPlanAsync(TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto)
+    {
+        // Initialize ServiceResponse with Failed response
+        var serviceResponse = new ServiceResponse<TenantSubscriptionDto>
+        {
+            Data = null,
+            Message = "Failed to process tenant subscription purchase. Please try again later.",
+        };
+
+        try
+        {
+            // Check if the tenant has indicated willingness to file GST but has not provided a GST number
+            if (tenantSubscriptionPurchaseDto.IsWillingToFileGst && string.IsNullOrEmpty(tenantSubscriptionPurchaseDto.GstNumber))
+            {
+                _logger.LogWarning("GST number is missing for the tenant subscription purchase. TenantId: {TenantId}, PlanId: {PlanId}. The tenant has indicated willingness to file GST but no GST number was provided.",
+                                    tenantSubscriptionPurchaseDto.TenantId, tenantSubscriptionPurchaseDto.PlanId);
+                serviceResponse.Message = "A GST number is required to proceed with the subscription purchase, as the tenant is willing to file GST.";
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("Attempting to purchase a new tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
+
+            // Retrieve the subscription plan by its ID and return an error if not found
+            var subscriptionPlan = await _unitOfWork.SubscriptionPlanRepo
+                .GetByConditionAsync(w => w.Id == tenantSubscriptionPurchaseDto.PlanId)
+                .SingleOrDefaultAsync();
+
+            if (subscriptionPlan == null)
+            {
+                _logger.LogWarning("Subscription plan not found for PlanId: {PlanId}.", tenantSubscriptionPurchaseDto.PlanId);
+                serviceResponse.Message = "Subscription plan not found.";
+                return serviceResponse;
+            }
+
+            // Trim string properties in the DTO to eliminate any unnecessary whitespace
+            tenantSubscriptionPurchaseDto = TrimDtoStringPropsUtil.TrimDtoStringProps(tenantSubscriptionPurchaseDto);
+
+            // If TenantId is not provided, set it to the default tenant ID
+            tenantSubscriptionPurchaseDto.TenantId = tenantSubscriptionPurchaseDto.TenantId == Guid.Empty ? _tenantId : tenantSubscriptionPurchaseDto.TenantId;
+
+            // Map the DTO to the subscription entity
+            var newSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
+
+            // Set the subscription's start and end dates
+            newSubscription.StartDate = DateTimeOffset.UtcNow.Date;
+            newSubscription.EndDate = tenantSubscriptionPurchaseDto.Frequency switch
+            {
+                SubscriptionFrequenciesEnum.Monthly => DateTimeOffset.UtcNow.Date.AddMonths(1),
+                SubscriptionFrequenciesEnum.Yearly => DateTimeOffset.UtcNow.Date.AddYears(1),
+                _ => throw new ArgumentException("Invalid subscription frequency.")
+            };
+
+            // Set audit fields for tracking user actions
+            newSubscription.CreatedByUserId = _userId;
+            newSubscription.LastModifiedByUserId = _userId;
+
+            // Insert the new subscription into the repository
+            await _unitOfWork.TenantSubscriptionRepo.InsertAsync(newSubscription);
+
+            // Save changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to persist new tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
+                serviceResponse.Message = "Failed to save the subscription.";
+                return serviceResponse;
+            }
+
+            var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
+            billingDetail.CreatedByUserId = _userId;
+            billingDetail.LastModifiedByUserId = _userId;
+
+            // Insert the new address into the repository
+            await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
+
+            // Save changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to persist new address for BillingDetail: {BillingDetailId}", billingDetail.Id);
+                serviceResponse.Message = "Failed to save the billing address.";
+                return serviceResponse;
+            }
+
+            // Log the successful creation of the tenant subscription
+            _logger.LogInformation("Tenant subscription successfully created with ID: {TenantSubscriptionId}", newSubscription.Id);
+
+            // Map the newly created subscription entity to a DTO and return a successful response
+            serviceResponse.Data = newSubscription.Adapt<TenantSubscriptionDto>();
+            serviceResponse.StatusCode = 201; // Created
+            serviceResponse.Message = "Tenant subscription successfully created.";
+        }
+        catch (Exception ex)
+        {
+            // Log any unexpected errors that occur during the subscription creation process
+            _logger.LogError(ex, "An unexpected error occurred while purchasing tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
+            serviceResponse.Message = "An unexpected error occurred. Please try again later.";
+        }
+
+        return serviceResponse;
+    }
 }
