@@ -19,13 +19,11 @@ public class SubscriptionPlanDto
     /// <summary>
     /// Gets or sets the monthly price of the subscription plan.
     /// </summary>
-    [Range(1, 99999)]
     public required int MonthlyPrice { get; set; }
 
     /// <summary>
     /// Gets or sets the yearly price of the subscription plan.
     /// </summary>
-    [Range(1, 99999)]
     public required int YearlyPrice { get; set; }
 
     /// <summary>
@@ -36,31 +34,26 @@ public class SubscriptionPlanDto
     /// <summary>
     /// Gets or sets the maximum number of agents or AI models that can be published under this plan.
     /// </summary>
-    [Range(-1, 99999)]
     public int MaxPublishedItems { get; set; }
 
     /// <summary>
     /// Gets or sets the duration (in days) for which workflow execution history is retained.
     /// </summary>
-    [Range(-1, 99999)]
     public int HistoryRetentionDays { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum number of spaces (e.g., workspaces) that can be created.
     /// </summary>
-    [Range(-1, 99999)]
     public int MaxSpaces { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum storage capacity available under this plan, in megabytes.
     /// </summary>
-    [Range(-1, 99999)]
     public int StorageLimitMB { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum number of users permitted for this subscription.
     /// </summary>
-    [Range(-1, 99999)]
     public int MaxUsers { get; set; }
 
     /// <summary>
