@@ -4,12 +4,17 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<TenantSubscriptionService> _logger;
+    private readonly DefaultTenantConfig _defaultTenantConfig;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
 
-    public TenantSubscriptionService(IUnitOfWork unitOfWork, ILogger<TenantSubscriptionService> logger, IHttpContextAccessor httpContextAccessor)
+    public TenantSubscriptionService(IUnitOfWork unitOfWork,
+    ILogger<TenantSubscriptionService> logger,
+    IHttpContextAccessor httpContextAccessor,
+    DefaultTenantConfig defaultTenantConfig)
     {
         _unitOfWork = unitOfWork;
+        _defaultTenantConfig = defaultTenantConfig;
         _logger = logger;
 
         // Extract user ID from JWT token claims for audit purposes
@@ -33,9 +38,13 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         {
             _logger.LogInformation("Attempting to retrieve all tenant subscriptions.");
 
+            var isDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
+            
             // Fetch all tenant subscriptions with their related plan and creator user
             var subscriptions = await _unitOfWork.TenantSubscriptionRepo
-                .GetAllAsync()
+                .GetByConditionAsync(w =>
+                    isDefaultTenant || w.CreatedByUserId == _userId
+                )
                 .Include(i => i.Plan)
                 .Include(i => i.CreatedByUser)
                 .ToListAsync();
