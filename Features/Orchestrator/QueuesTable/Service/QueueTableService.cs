@@ -4,7 +4,6 @@ public class QueueTableService : IQueueTableService
 {
     private readonly ILogger<QueueTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IUploadFileService _uploadFileService;
     private readonly Guid _userId;
 
     public QueueTableService(
@@ -18,7 +17,6 @@ public class QueueTableService : IQueueTableService
 
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _uploadFileService = uploadFileService;
     }
 
     // Checks the availability of a queue name.
@@ -136,7 +134,7 @@ public class QueueTableService : IQueueTableService
     }
 
     // Creates a new queue
-    public async Task<ServiceResponse<QueuesTableDto>> InsertQueueAsync(CreateOrUpdateQueuesTableDto createQueuesTableDto)
+    public async Task<ServiceResponse<QueuesTableDto>> InsertQueueAsync(QueuesTableDto queuesTableDto)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<QueuesTableDto>
@@ -149,7 +147,7 @@ public class QueueTableService : IQueueTableService
         {
             // Validate queue uniqueness
             var queueAlreadyExists = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == createQueuesTableDto.Name.ToLower() && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Name.ToLower() == queuesTableDto.Name.ToLower() && w.CreatedByUserId == _userId)
                 .FirstOrDefaultAsync();
 
             // Queue already exists
@@ -160,46 +158,12 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
-            createQueuesTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(createQueuesTableDto);
+            queuesTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(queuesTableDto);
 
             // Default mapping
-            var newQueue = createQueuesTableDto.Adapt<Queue>();
+            var newQueue = queuesTableDto.Adapt<Queue>();
             newQueue.CreatedByUserId = _userId;
             newQueue.LastModifiedByUserId = _userId;
-
-            // Check if the specific data schema file is provided
-            if (createQueuesTableDto.SpecificDataSchemaFile != null)
-            {
-                // Upload the specific data schema file
-                var specificDataSchemaUploadResponse = await _uploadFileService.UploadSingleFileAsync(createQueuesTableDto.SpecificDataSchemaFile);
-
-                // Check if the upload was successful; if not, set the error message and return
-                if (specificDataSchemaUploadResponse.StatusCode != 200)
-                {
-                    serviceResponse.Message = specificDataSchemaUploadResponse.Message;
-                    return serviceResponse;
-                }
-
-                // If successful, assign the file path to the newQueue's SpecificDataSchemaPath
-                newQueue.SpecificDataSchemaPath = specificDataSchemaUploadResponse.Data.Path;
-            }
-
-            // Check if the output data schema file is provided
-            if (createQueuesTableDto.OutputDataSchemaFile != null)
-            {
-                // Upload the output data schema file
-                var outputDataSchemaUploadResponse = await _uploadFileService.UploadSingleFileAsync(createQueuesTableDto.OutputDataSchemaFile);
-
-                // Check if the upload was successful; if not, set the error message and return
-                if (outputDataSchemaUploadResponse.StatusCode != 200)
-                {
-                    serviceResponse.Message = outputDataSchemaUploadResponse.Message;
-                    return serviceResponse;
-                }
-
-                // If successful, assign the file path to the newQueue's OutputDataSchemaPath
-                newQueue.OutputDataSchemaPath = outputDataSchemaUploadResponse.Data.Path;
-            }
 
             // Insert queue 
             await _unitOfWork.QueueRepo.InsertAsync(newQueue);
@@ -226,7 +190,7 @@ public class QueueTableService : IQueueTableService
     }
 
     // Updates an existing queue
-    public async Task<ServiceResponse<QueuesTableDto>> UpdateQueueAsync(CreateOrUpdateQueuesTableDto updateQueuesTableDto)
+    public async Task<ServiceResponse<QueuesTableDto>> UpdateQueueAsync(QueuesTableDto queuesTableDto)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<QueuesTableDto>
@@ -239,7 +203,7 @@ public class QueueTableService : IQueueTableService
         {
             // Validate queue existence
             var queue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Id == updateQueuesTableDto.Id && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Id == queuesTableDto.Id && w.CreatedByUserId == _userId)
                 .SingleOrDefaultAsync();
 
             // Queue does not exist
@@ -252,8 +216,8 @@ public class QueueTableService : IQueueTableService
             // Validate queue name uniqueness
             var queueAlreadyExists = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
-                    w.Name.ToLower() == updateQueuesTableDto.Name.ToLower() &&
-                    w.Id != updateQueuesTableDto.Id
+                    w.Name.ToLower() == queuesTableDto.Name.ToLower() &&
+                    w.Id != queuesTableDto.Id
                 )
                 .FirstOrDefaultAsync();
 
@@ -266,50 +230,13 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
-            //TODO: Add file upload logic here
-
             // Trim dto's string properties
-            updateQueuesTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(updateQueuesTableDto);
+            queuesTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(queuesTableDto);
 
             // Update queue
-            updateQueuesTableDto.Adapt(queue);
+            queuesTableDto.Adapt(queue);
             queue.LastModifiedByUserId = _userId;
             queue.LastModifiedOn = DateTimeOffset.UtcNow;
-
-            // Check if the specific data schema file is provided
-            if (updateQueuesTableDto.SpecificDataSchemaFile != null)
-            {
-                // Upload the specific data schema file
-                var specificDataSchemaUploadResponse = await _uploadFileService.UploadSingleFileAsync(updateQueuesTableDto.SpecificDataSchemaFile);
-
-                // Check if the upload was successful; if not, set the error message and return
-                if (specificDataSchemaUploadResponse.StatusCode != 200)
-                {
-                    serviceResponse.Message = specificDataSchemaUploadResponse.Message;
-                    return serviceResponse;
-                }
-
-                // If successful, assign the file path to the newQueue's SpecificDataSchemaPath
-                queue.SpecificDataSchemaPath = specificDataSchemaUploadResponse.Data.Path;
-            }
-
-            // Check if the output data schema file is provided
-            if (updateQueuesTableDto.OutputDataSchemaFile != null)
-            {
-                // Upload the output data schema file
-                var outputDataSchemaUploadResponse = await _uploadFileService.UploadSingleFileAsync(updateQueuesTableDto.OutputDataSchemaFile);
-
-                // Check if the upload was successful; if not, set the error message and return
-                if (outputDataSchemaUploadResponse.StatusCode != 200)
-                {
-                    serviceResponse.Message = outputDataSchemaUploadResponse.Message;
-                    return serviceResponse;
-                }
-
-                // If successful, assign the file path to the newQueue's OutputDataSchemaPath
-                queue.OutputDataSchemaPath = outputDataSchemaUploadResponse.Data.Path;
-            }
-
 
             _unitOfWork.QueueRepo.Update(queue);
 

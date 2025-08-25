@@ -6,39 +6,19 @@ public class QueueTableMappingProfile : IRegister
     {
         // Mapping for queue record or records.
         config.NewConfig<Queue, QueuesTableDto>()
-            .Map(dest => dest.TotalPendingItems,
-                src => src.QueueTransactions != null
-                    ? src.QueueTransactions.Count(q => q.Status == QueueTransactionStatusTypesEnum.Pending)
-                    : 0)
-
-            .Map(dest => dest.CreatedBy,
-                src => src.CreatedByUser != null
-                    ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
-                    : null)
-
-            // .Map(dest => dest.SpecificDataSchemaJsonString,
-            //     src => src.SpecificDataSchemaPath != null
-            //         ? File.ReadAllText(src.SpecificDataSchemaPath)
-            //         : null)
-            // .Map(dest => dest.OutputDataSchemaJsonString,
-            //     src => src.OutputDataSchemaPath != null
-            //         ? File.ReadAllText(src.OutputDataSchemaPath)
-            //         : null)
-
-            .Map(dest => dest.LastModifiedBy,
-                src => src.LastModifiedByUser != null
-                    ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
-                    : null);
+            .Map(dest => dest.InProgress, src => src.QueueTransactions != null ? src.QueueTransactions.Count(c => c.Status == QueueTransactionStatusTypesEnum.InProgress) : 0)
+            .Map(dest => dest.Completed, src => src.QueueTransactions != null ? src.QueueTransactions.Count(c => c.Status == QueueTransactionStatusTypesEnum.Failed) : 0)
+            .Map(dest => dest.Failed, src => src.QueueTransactions != null ? src.QueueTransactions.Count(c => c.Status == QueueTransactionStatusTypesEnum.Completed) : 0)
+            .Map(dest => dest.Pending, src => src.QueueTransactions != null ? src.QueueTransactions.Count(c => c.Status == QueueTransactionStatusTypesEnum.Pending) : 0)
+            .Map(dest => dest.Total, src => src.QueueTransactions != null ? src.QueueTransactions.Count() : 0)
+            .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName : null)
+            .Map(dest => dest.LastModifiedBy, src => src.LastModifiedByUser != null ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName : null);
 
         // Mapping for inserting or updating a queue record.
         config.NewConfig<QueuesTableDto, Queue>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
-            .IgnoreNullValues(true);
-
-        config.NewConfig<CreateOrUpdateQueuesTableDto, Queue>()
-            .Ignore(dest => dest.Id)
             .IgnoreNullValues(true);
 
         // Mapping to get agent list

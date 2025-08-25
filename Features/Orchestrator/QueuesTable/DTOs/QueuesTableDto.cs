@@ -6,11 +6,8 @@ namespace WorkspaceAPIs.DTOs;
 public class QueuesTableDto
 {
     /// <summary>
-    /// Gets or sets the flow record's primary key.
+    /// Gets or sets the unique identifier of the queue.
     /// </summary>
-    /// <remarks>
-    /// Note: Not making it required because the same DTO is used for insert and update.
-    /// </remarks>
     public Guid Id { get; set; }
 
     /// <summary>
@@ -18,11 +15,6 @@ public class QueuesTableDto
     /// </summary>
     [StringLength(255)]
     public required string Name { get; set; }
-
-    /// <summary>
-    /// Gets or sets the count of pending items associated with the queue.
-    /// </summary>
-    public int? TotalPendingItems { get; set; }
 
     /// <summary>
     /// Gets or sets the description of the queue.
@@ -55,7 +47,6 @@ public class QueuesTableDto
     /// Gets or sets the maximum number of retry attempts for processing items.
     /// This value must be non-negative.
     /// </summary>
-    [Required]
     [Range(0, int.MaxValue)]
     public int MaximumRetryAttempts { get; set; }
 
@@ -68,6 +59,31 @@ public class QueuesTableDto
     /// Gets or sets the output data schema in JSON format.
     /// </summary>
     public string? OutputSchema { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of queue items currently in progress.
+    /// </summary>
+    public int InProgress { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of queue items that are pending.
+    /// </summary>
+    public int Pending { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of completed queue items.
+    /// </summary>
+    public int Completed { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of failed queue items.
+    /// </summary>
+    public int Failed { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of items in the queue items.
+    /// </summary>
+    public int Total { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.

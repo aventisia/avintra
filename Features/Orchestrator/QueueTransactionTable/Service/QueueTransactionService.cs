@@ -189,14 +189,14 @@ public class QueueTransactionService : IQueueTransactionService
             newTransaction.CreatedByUserId = _userId;
             newTransaction.LastModifiedByUserId = _userId;
 
-            if (string.IsNullOrWhiteSpace(queue.SpecificDataSchemaPath))
+            if (string.IsNullOrWhiteSpace(queue.InputSchema))
             {
                 _logger.LogWarning("specific data for queue work not found for QueueId {QueueId}.", queueTransactionDto.QueueId);
                 response.Message = $"specific data for queue work not found for QueueId {queueTransactionDto.QueueId}.";
                 return response;
             }
 
-            var inputJson = await File.ReadAllTextAsync(Path.Combine(_fileUploadConfig.UploadDirectory, queue.SpecificDataSchemaPath));
+            var inputJson = await File.ReadAllTextAsync(Path.Combine(_fileUploadConfig.UploadDirectory, queue.InputSchema));
             if (string.IsNullOrWhiteSpace(inputJson))
             {
                 _logger.LogWarning("specific data for queue work not found for QueueId {QueueId}.", queueTransactionDto.QueueId);
@@ -283,14 +283,14 @@ public class QueueTransactionService : IQueueTransactionService
             }
 
 
-            if (string.IsNullOrWhiteSpace(queueTransaction.Queue.SpecificDataSchemaPath))
+            if (string.IsNullOrWhiteSpace(queueTransaction.Queue.InputSchema))
             {
                 _logger.LogWarning("specific data for queue work not found for QueueId {QueueId}.", queueTransactionDto.QueueId);
                 response.Message = $"specific data for queue work not found for QueueId {queueTransactionDto.QueueId}.";
                 return response;
             }
 
-            var inputJson = await File.ReadAllTextAsync(Path.Combine(_fileUploadConfig.UploadDirectory, queueTransaction.Queue.SpecificDataSchemaPath));
+            var inputJson = await File.ReadAllTextAsync(Path.Combine(_fileUploadConfig.UploadDirectory, queueTransaction.Queue.InputSchema));
             if (string.IsNullOrWhiteSpace(inputJson))
             {
                 _logger.LogWarning("specific data for queue work not found for QueueId {QueueId}.", queueTransactionDto.QueueId);
