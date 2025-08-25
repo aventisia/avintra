@@ -5,6 +5,7 @@ public class QueueTransactionService : IQueueTransactionService
     private readonly ILogger<QueueTransactionService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly string _username;
     private readonly IStringEncryptionService _stringEncryptionService;
     private readonly FileUploadConfig _fileUploadConfig;
 
@@ -16,6 +17,7 @@ public class QueueTransactionService : IQueueTransactionService
     {
         // Extract the user ID from the HTTP context (user's UID)
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _username = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? string.Empty;
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -37,11 +39,9 @@ public class QueueTransactionService : IQueueTransactionService
             // Query the transactions for the specified queue
             var queueTransactions = await _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(w =>
-                    w.QueueId == queueId && w.CreatedByUserId == _userId
+                    w.QueueId == queueId
                 )
                 .Include(i => i.Queue)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.LastModifiedByUser)
                 .OrderBy(o => o.CreatedOn)
                 .AsNoTracking()
                 .ToListAsync();
@@ -75,8 +75,6 @@ public class QueueTransactionService : IQueueTransactionService
             var queueTransaction = await _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(w => w.Id == queueTransactionId)
                 .Include(i => i.Queue)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.LastModifiedByUser)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -98,50 +96,6 @@ public class QueueTransactionService : IQueueTransactionService
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while retrieving the queue transaction with ID {QueueTransactionId}.", queueTransactionId);
-        }
-
-        return serviceResponse;
-    }
-
-
-    // Retrieves a specific queue transaction by its ID.
-    public async Task<ServiceResponse<QueueTransactionDto>> GetQueueWorkItemByQueueIdAsync(Guid queueId)
-    {
-        var serviceResponse = new ServiceResponse<QueueTransactionDto>
-        {
-            Data = null,
-            Message = "Failed to retrieve queue work item. Please try again later."
-        };
-
-        try
-        {
-            // Retrieve the specific queue transaction including related data
-            var queueTransaction = await _unitOfWork.QueueTransactionRepo
-                .GetByConditionAsync(w => w.QueueId == queueId)
-                .Include(i => i.Queue)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.LastModifiedByUser)
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
-
-            // Check if the transaction was found
-            if (queueTransaction == null)
-            {
-                _logger.LogInformation("Queue work item with Q ID {QueueId} not found.", queueId);
-                serviceResponse.Message = "Queue transaction not found.";
-                return serviceResponse;
-            }
-
-            // Map entity to DTO and update response
-            serviceResponse.Data = queueTransaction.Adapt<QueueTransactionDto>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Queue work item retrieved successfully.";
-
-            _logger.LogInformation("Queue work item with Q ID {QueueId} retrieved successfully.", queueId);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while retrieving the queue work item with Q ID {QueueId}.", queueId);
         }
 
         return serviceResponse;
@@ -184,10 +138,11 @@ public class QueueTransactionService : IQueueTransactionService
             //     return response;
             // }
 
+            if (string.IsNullOrEmpty(queueTransactionDto.CreatedBy))
+                queueTransactionDto.CreatedBy = _username;
+                
             // Map the DTO to an entity and set necessary properties
             var newTransaction = queueTransactionDto.Adapt<QueueTransaction>();
-            newTransaction.CreatedByUserId = _userId;
-            newTransaction.LastModifiedByUserId = _userId;
 
             if (string.IsNullOrWhiteSpace(queue.InputSchema))
             {
@@ -254,6 +209,15 @@ public class QueueTransactionService : IQueueTransactionService
         return response;
     }
 
+    private void UpdateCreateBy(QueueTransactionDto queueTransactionDto)
+    {
+        queueTransactionDto.CreatedOn = DateTimeOffset.UtcNow;
+        if (string.IsNullOrEmpty(queueTransactionDto.CreatedBy))
+        {
+
+        }
+    }
+
     // Update the status of an existing transaction
     public async Task<ServiceResponse<QueueTransactionDto>> UpdateTransactionStatusAsync(QueueTransactionDto queueTransactionDto)
     {
@@ -271,8 +235,6 @@ public class QueueTransactionService : IQueueTransactionService
             var queueTransaction = await _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(w => w.Id == queueTransactionDto.Id)
                 .Include(i => i.Queue)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.LastModifiedByUser)
                 .SingleOrDefaultAsync();
 
             if (queueTransaction == null)
@@ -340,8 +302,8 @@ public class QueueTransactionService : IQueueTransactionService
 
             // Update the queue transaction
             queueTransactionDto.Adapt(queueTransaction);
-            queueTransaction.LastModifiedByUserId = _userId;
             queueTransaction.PayloadData = _stringEncryptionService.EncryptString(queuePayloadData ?? string.Empty);
+            queueTransaction.LastModifiedOn = DateTimeOffset.UtcNow;
 
             _unitOfWork.QueueTransactionRepo.Update(queueTransaction);
 

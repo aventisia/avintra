@@ -34,11 +34,6 @@ public class QueueTransactionDto
     public string? CreatedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the the username who created the record.
-    /// </summary>
-    public string? CreatedByUsername { get; set; }
-
-    /// <summary>
     /// Gets or sets the date and time when the record was created.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; }
