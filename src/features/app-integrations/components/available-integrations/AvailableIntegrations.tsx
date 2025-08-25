@@ -9,7 +9,7 @@ import {
 
 import { availableIntegrations } from "../../constants/available-integrations";
 import { AvailableIntegrationListDTO } from "../../dto/available-integration-list-dto";
-import { useAvailableIntegrationsDialogStore } from "../../hooks/use-available-integrations-dialog";
+import { useAvailableIntegrationsDialogStore } from "../../store/available-integrations-dialog";
 
 const AvailableIntegrations = () => {
   const { setIntegrationInfo, setOpen } = useAvailableIntegrationsDialogStore();
@@ -46,6 +46,7 @@ const AvailableIntegrations = () => {
                   variant={"ghost"}
                   className="bg-transparent font-normal text-primary"
                   onClick={() => handleOpenIntegrationsDialog(item)}
+                  disabled={item.disabled}
                 >
                   Connect
                 </Button>

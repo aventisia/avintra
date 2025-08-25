@@ -15,7 +15,7 @@ import {
 } from "../constants/onedrive-field-props";
 import { Copy } from "lucide-react";
 import { toast } from "@aventisia/ui/sonner";
-import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/hooks/use-available-integrations-dialog";
+import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
 
 const OneDriveForm = () => {
   const { form, isDirty, isSubmitting } = useOneDriveIntegrationForm();

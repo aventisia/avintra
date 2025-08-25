@@ -4,4 +4,5 @@ export interface AvailableIntegrationListDTO {
     value: string;
     icon: string;
     description: string;
+    disabled?: boolean;
 }

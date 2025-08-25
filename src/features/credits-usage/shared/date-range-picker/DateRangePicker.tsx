@@ -1,9 +1,8 @@
+import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
 import { type FC, useState, useEffect, useRef } from "react";
 import { Button } from "@aventisia/ui/buttons";
-import { Popover, PopoverContent, PopoverTrigger } from "@aventisia/ui/popover";
 
 import { Calendar } from "./Calendar";
-import { DateInput } from "./DateInput";
 
 import {
   Select,
@@ -76,14 +75,11 @@ interface Preset {
 // Define presets
 const PRESETS: Preset[] = [
   { name: "today", label: "Today" },
-  { name: "yesterday", label: "Yesterday" },
+  { name: "weekToDate", label: "Week to Date" },
+  { name: "monthToDate", label: "Month to Date" },
   { name: "last7", label: "Last 7 days" },
-  { name: "last14", label: "Last 14 days" },
+  { name: "last15", label: "Last 15 days" },
   { name: "last30", label: "Last 30 days" },
-  { name: "thisWeek", label: "This Week" },
-  { name: "lastWeek", label: "Last Week" },
-  { name: "thisMonth", label: "This Month" },
-  { name: "lastMonth", label: "Last Month" },
 ];
 
 /** The DateRangePicker component allows a user to select a range of dates */
@@ -146,59 +142,49 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
   const getPresetRange = (presetName: string): DateRange => {
     const preset = PRESETS.find(({ name }) => name === presetName);
     if (!preset) throw new Error(`Unknown date range preset: ${presetName}`);
+
     const from = new Date();
     const to = new Date();
-    const first = from.getDate() - from.getDay();
+    const today = new Date();
 
     switch (preset.name) {
       case "today":
         from.setHours(0, 0, 0, 0);
         to.setHours(23, 59, 59, 999);
         break;
-      case "yesterday":
-        from.setDate(from.getDate() - 1);
+
+      case "weekToDate":
+        from.setDate(today.getDate() - today.getDay()); // Start of week (Sunday)
         from.setHours(0, 0, 0, 0);
-        to.setDate(to.getDate() - 1);
         to.setHours(23, 59, 59, 999);
         break;
+
+      case "monthToDate":
+        from.setDate(1); // Start of month
+        from.setHours(0, 0, 0, 0);
+        to.setHours(23, 59, 59, 999);
+        break;
+
       case "last7":
-        from.setDate(from.getDate() - 6);
+        from.setDate(today.getDate() - 6);
         from.setHours(0, 0, 0, 0);
         to.setHours(23, 59, 59, 999);
         break;
-      case "last14":
-        from.setDate(from.getDate() - 13);
+
+      case "last15":
+        from.setDate(today.getDate() - 14);
         from.setHours(0, 0, 0, 0);
         to.setHours(23, 59, 59, 999);
         break;
+
       case "last30":
-        from.setDate(from.getDate() - 29);
+        from.setDate(today.getDate() - 29);
         from.setHours(0, 0, 0, 0);
         to.setHours(23, 59, 59, 999);
         break;
-      case "thisWeek":
-        from.setDate(first);
-        from.setHours(0, 0, 0, 0);
-        to.setHours(23, 59, 59, 999);
-        break;
-      case "lastWeek":
-        from.setDate(from.getDate() - 7 - from.getDay());
-        to.setDate(to.getDate() - to.getDay() - 1);
-        from.setHours(0, 0, 0, 0);
-        to.setHours(23, 59, 59, 999);
-        break;
-      case "thisMonth":
-        from.setDate(1);
-        from.setHours(0, 0, 0, 0);
-        to.setHours(23, 59, 59, 999);
-        break;
-      case "lastMonth":
-        from.setMonth(from.getMonth() - 1);
-        from.setDate(1);
-        from.setHours(0, 0, 0, 0);
-        to.setDate(0);
-        to.setHours(23, 59, 59, 999);
-        break;
+
+      default:
+        throw new Error(`Unhandled preset: ${preset.name}`);
     }
 
     return { from, to };
@@ -375,98 +361,40 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
       <PopoverContent align={align} className="w-auto">
         <div className="flex py-2">
           <div className="flex">
-            <div className="flex flex-col">
-              <div className="flex flex-col items-center justify-end gap-2 px-3 pb-4 lg:flex-row lg:items-start lg:pb-0">
-                <div className="flex flex-col gap-2">
-                  <div className="flex gap-2">
-                    <DateInput
-                      value={range.from}
-                      onChange={(date) => {
-                        const toDate =
-                          range.to == null || date > range.to ? date : range.to;
-                        setRange((prevRange) => ({
-                          ...prevRange,
-                          from: date,
-                          to: toDate,
-                        }));
-                      }}
+            {isSmallScreen && (
+              <Select
+                defaultValue={selectedPreset}
+                onValueChange={(value) => {
+                  setPreset(value);
+                }}
+              >
+                <SelectTrigger className="mx-auto mb-2 w-[180px]">
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {PRESETS.map((preset) => (
+                    <SelectItem key={preset.name} value={preset.name}>
+                      {preset.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            {!isSmallScreen && (
+              <div className="flex flex-col items-end gap-1 px-0 pb-6">
+                <div className="flex w-full flex-col items-start gap-1 pb-6 pr-2">
+                  {PRESETS.map((preset) => (
+                    <PresetButton
+                      key={preset.name}
+                      preset={preset.name}
+                      label={preset.label}
+                      isSelected={selectedPreset === preset.name}
                     />
-                    <div className="py-1">-</div>
-                    <DateInput
-                      value={range.to}
-                      onChange={(date) => {
-                        const fromDate = date < range.from ? date : range.from;
-                        setRange((prevRange) => ({
-                          ...prevRange,
-                          from: fromDate,
-                          to: date,
-                        }));
-                      }}
-                    />
-                  </div>
-                  {rangeCompare != null && (
-                    <div className="flex gap-2">
-                      <DateInput
-                        value={rangeCompare?.from}
-                        onChange={(date) => {
-                          if (rangeCompare) {
-                            const compareToDate =
-                              rangeCompare.to == null || date > rangeCompare.to
-                                ? date
-                                : rangeCompare.to;
-                            setRangeCompare((prevRangeCompare) => ({
-                              ...prevRangeCompare,
-                              from: date,
-                              to: compareToDate,
-                            }));
-                          } else {
-                            setRangeCompare({
-                              from: date,
-                              to: new Date(),
-                            });
-                          }
-                        }}
-                      />
-                      <div className="py-1">-</div>
-                      <DateInput
-                        value={rangeCompare?.to}
-                        onChange={(date) => {
-                          if (rangeCompare && rangeCompare.from) {
-                            const compareFromDate =
-                              date < rangeCompare.from
-                                ? date
-                                : rangeCompare.from;
-                            setRangeCompare({
-                              ...rangeCompare,
-                              from: compareFromDate,
-                              to: date,
-                            });
-                          }
-                        }}
-                      />
-                    </div>
-                  )}
+                  ))}
                 </div>
               </div>
-              {isSmallScreen && (
-                <Select
-                  defaultValue={selectedPreset}
-                  onValueChange={(value) => {
-                    setPreset(value);
-                  }}
-                >
-                  <SelectTrigger className="mx-auto mb-2 w-[180px]">
-                    <SelectValue placeholder="Select..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PRESETS.map((preset) => (
-                      <SelectItem key={preset.name} value={preset.name}>
-                        {preset.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
+            )}
+            <div className="flex flex-col">
               <div>
                 <Calendar
                   mode="range"
@@ -488,20 +416,6 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
               </div>
             </div>
           </div>
-          {!isSmallScreen && (
-            <div className="flex flex-col items-end gap-1 pb-6 pl-6 pr-2">
-              <div className="flex w-full flex-col items-end gap-1 pb-6 pl-6 pr-2">
-                {PRESETS.map((preset) => (
-                  <PresetButton
-                    key={preset.name}
-                    preset={preset.name}
-                    label={preset.label}
-                    isSelected={selectedPreset === preset.name}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
         </div>
         <div className="flex justify-end gap-2 py-2 pr-4">
           <Button

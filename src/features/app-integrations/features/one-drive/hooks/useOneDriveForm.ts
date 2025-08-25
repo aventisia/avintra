@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { oneDriveIntegrationZodSchema } from "../constants/onedrive-zod-schema";
 import { useEffect } from "react";
-import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/hooks/use-available-integrations-dialog";
+import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
 
 
 export const useOneDriveIntegrationForm = () => {

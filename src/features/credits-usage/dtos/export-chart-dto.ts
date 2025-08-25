@@ -1,8 +1,8 @@
 export interface ExportChartDTO {
-    serviceType: string;
+    serviceType: string[];
     users: string[];
     agents: string[];
     aiModels: string[];
-    startDate: string;
-    endDate: string
+    startDate: Date | null;
+    endDate: Date | null;
 }

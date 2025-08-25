@@ -10,14 +10,20 @@ import {
 } from "@aventisia/ui/select";
 import { enumToArray } from "@aventisia/ui/utils";
 import { Download } from "lucide-react";
+import { format } from "date-fns";
 
 import { ServiceTypeEnum } from "@/features/sa/credit-plans-table/enums/service-type-enum";
 
 import { DateRangePicker } from "../shared/date-range-picker/DateRangePicker";
 import { useExportDialogStore } from "../store/export-dialog-store";
+import { useDateRangePickerStore } from "../store/date-range-store";
+// import { useFetchCreditUsageSummary } from "../hooks/useFetchCreditUsageSummary";
 
 const ChartsHeader = () => {
   const { setOpen } = useExportDialogStore();
+  const { setStartEndDate } = useDateRangePickerStore();
+  // const { refetch } = useFetchCreditUsageSummary();
+
   const avaialbleCredits = 20000;
   return (
     <div className="flex items-center justify-between">
@@ -30,8 +36,9 @@ const ChartsHeader = () => {
 
       <div className="flex items-center gap-4">
         {/* Select Services */}
+        {/* To be removed/replaced later */}
         <Select>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="hidden w-[180px]">
             <SelectValue placeholder="All Service" />
           </SelectTrigger>
 
@@ -46,9 +53,17 @@ const ChartsHeader = () => {
 
         {/* Calendar */}
         <DateRangePicker
-          onUpdate={(values) => console.log(values)}
-          initialDateFrom="2023-01-01"
-          initialDateTo="2023-12-31"
+          onUpdate={(values) => {
+            const from = format(values.range.from, "yyyy-MM-dd");
+            const to = format(
+              values.range.to ?? values.range.from,
+              "yyyy-MM-dd",
+            );
+
+            setStartEndDate(from, to);
+          }}
+          initialDateFrom={format(new Date(), "yyyy-MM-dd")}
+          initialDateTo={format(new Date(), "yyyy-MM-dd")}
           align="start"
           locale="en-GB"
           showCompare={false}

@@ -201,7 +201,7 @@ function ChartTooltipContent({
                     !hideIndicator && (
                       <div
                         className={cn(
-                          "border-(--color-border) bg-(--color-bg) shrink-0 rounded-[2px]",
+                          "shrink-0 rounded-[2px] border-primary bg-primary",
                           {
                             "h-2.5 w-2.5": indicator === "dot",
                             "w-1": indicator === "line",
@@ -221,7 +221,7 @@ function ChartTooltipContent({
                   )}
                   <div
                     className={cn(
-                      "flex flex-1 justify-between leading-none",
+                      "flex gap-2 leading-none",
                       nestLabel ? "items-end" : "items-center",
                     )}
                   >

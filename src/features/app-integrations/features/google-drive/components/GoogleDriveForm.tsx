@@ -1,4 +1,4 @@
-import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/hooks/use-available-integrations-dialog";
+import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
 import { useGoogleDriveForm } from "../hooks/useGoogleDriveForm";
 import { Form, InputField, SelectField, SwitchField } from "@aventisia/ui/form";
 import { googleDriveIntegrationZodSchema } from "../constants/google-drive-zod-schema";
