@@ -3,9 +3,10 @@ namespace WorkspaceAPIs.MappingProfiles;
 public class QueueTransactionMappingProfile : IRegister
 {
 
-    private readonly IStringEncryptionService _encryptionService;
+    private readonly IStringEncryptionService? _encryptionService;
 
     public QueueTransactionMappingProfile() { }
+
     public QueueTransactionMappingProfile(IStringEncryptionService encryptionService)
     {
         _encryptionService = encryptionService;
@@ -22,7 +23,7 @@ public class QueueTransactionMappingProfile : IRegister
 
         .Map(dest => dest.PayloadData,
             src => src.Queue != null && src.Queue.IsStoredEncrypted
-            ? _encryptionService.DecryptString(src.PayloadData)
+            ? _encryptionService.DecryptString(src.PayloadData ?? string.Empty)
             : src.PayloadData)
 
         .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null

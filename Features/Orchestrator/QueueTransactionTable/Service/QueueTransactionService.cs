@@ -299,7 +299,7 @@ public class QueueTransactionService : IQueueTransactionService
             }
 
 
-            var queuePayloadData = queueTransaction.Queue.IsStoredEncrypted ? _stringEncryptionService.DecryptString(queueTransaction.PayloadData) : queueTransaction.PayloadData;
+            var queuePayloadData = queueTransaction.Queue.IsStoredEncrypted ? _stringEncryptionService.DecryptString(queueTransaction.PayloadData ?? string.Empty) : queueTransaction.PayloadData;
             if (!string.IsNullOrWhiteSpace(queueTransactionDto.PayloadData))
             {
                 // Validate object
@@ -341,7 +341,7 @@ public class QueueTransactionService : IQueueTransactionService
             // Update the queue transaction
             queueTransactionDto.Adapt(queueTransaction);
             queueTransaction.LastModifiedByUserId = _userId;
-            queueTransaction.PayloadData = _stringEncryptionService.EncryptString(queuePayloadData);
+            queueTransaction.PayloadData = _stringEncryptionService.EncryptString(queuePayloadData ?? string.Empty);
 
             _unitOfWork.QueueTransactionRepo.Update(queueTransaction);
 
