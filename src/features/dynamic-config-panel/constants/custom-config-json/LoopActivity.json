@@ -236,5 +236,24 @@
         }
       ]
     }
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ItemIndexVariableName",
+    "label": "Current Item Index Variable Name",
+    "description": "The name of the variable that will hold the current item index in the list during each iteration.",
+    "defaultValue": {
+      "value": "CurrentItemIndex",
+      "enabled": true
+    },
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "LoopType",
+          "equals": "ForEachLoop"
+        }
+      ]
+    }
   }
 ]

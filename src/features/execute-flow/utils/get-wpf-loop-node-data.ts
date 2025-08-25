@@ -27,6 +27,11 @@ export function getWpfLoopNodeData(
     (output: NodeOutputType) => output.key === "ItemVariableName",
   )?.value.value as string;
 
+  // Find the input with key "ItemIndexVariableName"
+  const itemIndexVariableName = nodeObj?.data?.outputs?.find(
+    (output: NodeOutputType) => output.key === "ItemIndexVariableName",
+  )?.value.value as string;
+
   return {
     id: nodeObj?.id ?? "",
     type: nodeObj?.type ?? "",
@@ -36,6 +41,7 @@ export function getWpfLoopNodeData(
     conditions: conditions ?? [],
     listVariableName: listVariableName ?? "",
     itemVariableName: itemVariableName ?? "",
+    itemIndexVariableName: itemIndexVariableName ?? "",
     nextNodeId: nextNodeId,
   };
 }

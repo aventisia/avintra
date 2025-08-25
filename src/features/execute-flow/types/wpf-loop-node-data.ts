@@ -9,6 +9,7 @@ interface WpfLoopNodeData {
   conditions?: ConditionType[][];
   listVariableName?: string;
   itemVariableName?: string;
+  itemIndexVariableName?: string;
   nextNodeId: string;
 }
 
