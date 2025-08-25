@@ -286,10 +286,10 @@ namespace NodeExecutor.Services
             }
         }
 
-        public static (bool, string) MoveNextListItem(string listVarName, string currentItemVarName, ExecutionContext executionContext)
+        public static (bool, string) MoveNextListItem(string listVarName, string currentItemVarName, string currentItemIndexVarName, ExecutionContext executionContext)
         {
             // If listVarName or currentItemVarName is null or empty, return false
-            if (string.IsNullOrEmpty(listVarName) || string.IsNullOrEmpty(currentItemVarName) || executionContext == null)
+            if (string.IsNullOrEmpty(listVarName) || string.IsNullOrEmpty(currentItemVarName) || string.IsNullOrEmpty(currentItemIndexVarName) || executionContext == null)
                 return (false, "");
 
             //// Initiaze the return object
@@ -349,7 +349,8 @@ namespace NodeExecutor.Services
 
                 // Set current item and index in executionContext
                 executionContext.Set(currentItemVarName, items[currentIndex]);
-                executionContext.Set(indexKey, currentIndex);
+                executionContext.Set(currentItemIndexVarName, currentIndex); // Expose the current index to the user as well
+                executionContext.Set(indexKey, currentIndex); // hidden/internal index
 
                 return (true, "");
             }

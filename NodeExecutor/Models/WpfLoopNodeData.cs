@@ -12,6 +12,7 @@ namespace NodeExecutor.Models
         public List<List<ConditionGroup>> Conditions { get; set; }
         public string ListVariableName { get; set; }
         public string ItemVariableName { get; set; }
+        public string ItemIndexVariableName { get; set; }
         public string NextNodeId { get; set; }
     }
 }

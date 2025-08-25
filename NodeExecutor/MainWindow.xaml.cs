@@ -216,8 +216,11 @@ namespace NodeExecutor
             }
             else if (loopNodeData.LoopType == "ForEachLoop")
             {
-                result = ActivityExecutorService.MoveNextListItem(loopNodeData.ListVariableName,
-                    loopNodeData.ItemVariableName, _executionContext);
+                result = ActivityExecutorService.MoveNextListItem(
+                    loopNodeData.ListVariableName,
+                    loopNodeData.ItemVariableName,
+                    loopNodeData.ItemIndexVariableName,
+                    _executionContext);
             }
 
             // Process next node
