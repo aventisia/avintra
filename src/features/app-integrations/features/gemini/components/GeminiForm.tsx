@@ -1,5 +1,5 @@
 import { useGeminiIntegrationForm } from "../hooks/useGeminiForm";
-import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/hooks/use-available-integrations-dialog";
+import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
 import { z } from "zod";
 import { geminiIntegrationZodSchema } from "../constants/gemini-zod-schema";
 import { Form, InputField } from "@aventisia/ui/form";

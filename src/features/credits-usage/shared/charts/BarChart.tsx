@@ -17,15 +17,15 @@ import {
 
 export const description = "An interactive bar chart";
 
-const chartConfig = {
-  views: {
-    label: "Page Views",
-  },
-  value: {
-    label: "Value",
-    color: "var(--chart-2)",
-  },
-} satisfies ChartConfig;
+// const chartConfig = {
+//   views: {
+//     label: "Page Views",
+//   },
+//   value: {
+//     label: "Value",
+//     color: "var(--chart-2)",
+//   },
+// } satisfies ChartConfig;
 
 interface IData {
   date: string;
@@ -34,17 +34,24 @@ interface IData {
 
 interface ChartBarInteractiveProps {
   title: string;
+  label?: string;
   data: IData[];
+  chartConfig?: ChartConfig;
 }
 
-export function ChartBarInteractive({ title, data }: ChartBarInteractiveProps) {
+export function ChartBarInteractive({
+  title,
+  label,
+  data,
+  chartConfig = {},
+}: ChartBarInteractiveProps) {
   const [activeChart] = React.useState<keyof typeof chartConfig>("value");
 
   return (
     <Card className="py-0">
-      <CardHeader className="!px-8 !pb-0 !pt-4">
-        <CardDescription>{title}</CardDescription>
-        <CardTitle>{data.length}</CardTitle>
+      <CardHeader className="!px-8 !pb-0 !pt-6">
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{label || data.length}</CardDescription>
       </CardHeader>
       <CardContent className="px-2 sm:p-6">
         <ChartContainer
@@ -79,6 +86,7 @@ export function ChartBarInteractive({ title, data }: ChartBarInteractiveProps) {
                 <ChartTooltipContent
                   className="w-[150px]"
                   nameKey="views"
+                  hideIndicator={true}
                   labelFormatter={(value) => {
                     return new Date(value).toLocaleDateString("en-US", {
                       month: "short",

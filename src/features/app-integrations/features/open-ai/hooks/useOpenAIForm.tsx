@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/hooks/use-available-integrations-dialog";
+import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
 
 import { openAIIntegrationZodSchema } from "../constants/openai-zod-schema";
 

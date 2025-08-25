@@ -1,32 +1,16 @@
 import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 
-const usersDummyData = [
-  {
-    id: window.crypto.randomUUID(),
-    name: "Gaurav Kumar",
-    creditsUsed: 10,
-  },
-  {
-    id: window.crypto.randomUUID(),
-    name: "Rahmat Ali",
-    creditsUsed: 20,
-  },
-  {
-    id: window.crypto.randomUUID(),
-    name: "Chirag Agrawal",
-    creditsUsed: 22,
-  },
-  {
-    id: window.crypto.randomUUID(),
-    name: "Kaushal Agrawal",
-    creditsUsed: 30,
-  },
-];
+import { useFetchCreditUsageSummary } from "../hooks/useFetchCreditUsageSummary";
 
 const UsageTabs = () => {
+  const { data } = useFetchCreditUsageSummary();
+  const users = data?.data.users || [];
+  const aiModels = data?.data.aiModels || [];
+  const agents = data?.data.agents || [];
+
   return (
-    <div className="border-l bg-white py-2">
+    <div className="rounded-lg border-l bg-white py-2">
       <Tabs defaultValue="users">
         <TabsList className="grid w-full grid-cols-3 rounded-none border-b bg-white px-3 text-base">
           <TabsTrigger
@@ -51,21 +35,25 @@ const UsageTabs = () => {
 
         {/* Tabs Content for Users */}
         <TabsContent value="users" className="space-y-4 px-4 py-2">
-          {usersDummyData.map((user) => {
+          {users.map((user) => {
+            const fullName = user.firstName + " " + user.lastName;
             return (
-              <div className="flex items-center justify-between" key={user.id}>
+              <div
+                className="flex items-center justify-between"
+                key={user.username}
+              >
                 <div className="flex items-center gap-3">
                   <Avatar className="flex h-7 w-7">
                     <AvatarFallback className="border-none bg-primary-200 text-2xs capitalize tracking-wider text-secondary">
-                      {user.name
+                      {fullName
                         .split(" ")
                         .map((word) => word[0])
                         .join("") ?? "--"}
                     </AvatarFallback>
                   </Avatar>
-                  <p className="text-sm">{user.name}</p>
+                  <p className="text-sm">{fullName}</p>
                 </div>
-                <p className="text-sm">{user.creditsUsed}</p>
+                <p className="text-sm">{user.transactionsCount}</p>
               </div>
             );
           })}
@@ -73,21 +61,14 @@ const UsageTabs = () => {
 
         {/* Tabs Content for AI Models */}
         <TabsContent value="aiModels" className="space-y-4 px-4 py-2">
-          {usersDummyData.map((user) => {
+          {aiModels.map((user) => {
             return (
-              <div className="flex items-center justify-between" key={user.id}>
-                <div className="flex items-center gap-3">
-                  <Avatar className="flex h-7 w-7">
-                    <AvatarFallback className="border-none bg-primary-200 text-2xs capitalize tracking-wider text-secondary">
-                      {user.name
-                        .split(" ")
-                        .map((word) => word[0])
-                        .join("") ?? "--"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <p className="text-sm">{user.name}</p>
-                </div>
-                <p className="text-sm">{user.creditsUsed}</p>
+              <div
+                className="flex items-center justify-between"
+                key={user.modelName + user.usageCount}
+              >
+                <p className="text-sm">{user.modelName}</p>
+                <p className="text-sm">{user.usageCount}</p>
               </div>
             );
           })}
@@ -95,21 +76,14 @@ const UsageTabs = () => {
 
         {/* Tabs Content for Agents */}
         <TabsContent value="agents" className="space-y-4 px-4 py-2">
-          {usersDummyData.map((user) => {
+          {agents.map((user) => {
             return (
-              <div className="flex items-center justify-between" key={user.id}>
-                <div className="flex items-center gap-3">
-                  <Avatar className="flex h-7 w-7">
-                    <AvatarFallback className="border-none bg-primary-200 text-2xs capitalize tracking-wider text-secondary">
-                      {user.name
-                        .split(" ")
-                        .map((word) => word[0])
-                        .join("") ?? "--"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <p className="text-sm">{user.name}</p>
-                </div>
-                <p className="text-sm">{user.creditsUsed}</p>
+              <div
+                className="flex items-center justify-between"
+                key={user.agentName + user.usageCount}
+              >
+                <p className="text-sm">{user.agentName}</p>
+                <p className="text-sm">{user.usageCount}</p>
               </div>
             );
           })}

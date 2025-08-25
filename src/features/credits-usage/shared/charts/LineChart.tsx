@@ -43,15 +43,15 @@ export const description = "An interactive line chart";
 //   { date: "2024-04-23", desktop: 138, mobile: 230 },
 // ];
 
-const chartConfig = {
-  views: {
-    label: "Page Views",
-  },
-  value: {
-    label: "Value",
-    color: "var(--chart-1)",
-  },
-} satisfies ChartConfig;
+// const chartConfig = {
+//   views: {
+//     label: "Page Views",
+//   },
+//   value: {
+//     label: "Value",
+//     color: "var(--chart-1)",
+//   },
+// } satisfies ChartConfig;
 
 interface IData {
   date: string;
@@ -61,26 +61,22 @@ interface IData {
 interface ChartLineInteractiveProps {
   title: string;
   data: IData[];
+  chartConfig?: ChartConfig;
 }
 
 export function ChartLineInteractive({
   title,
   data,
+  chartConfig = {},
 }: ChartLineInteractiveProps) {
   const [activeChart] = React.useState<keyof typeof chartConfig>("value");
-  const [isHovered, setIsHovered] = React.useState<boolean>(false);
-  console.log(isHovered);
   const total = React.useMemo(
     () => data.reduce((acc, curr) => acc + curr.value, 0),
     [data],
   );
 
   return (
-    <Card
-      className="py-4 sm:py-0"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <Card className="py-4 sm:py-0">
       <CardHeader className="!px-8 !pb-0 !pt-4">
         <CardDescription>{title}</CardDescription>
         <CardTitle>{total.toLocaleString()}</CardTitle>
@@ -99,19 +95,16 @@ export function ChartLineInteractive({
               right: 12,
             }}
           >
-            <CartesianGrid
-              vertical={false}
-              // strokeOpacity={isHovered ? 1 : 0}
-              strokeDasharray="3 3"
-            />
+            <CartesianGrid vertical={false} strokeDasharray="3 3" />
 
             <XAxis
               dataKey="date"
               tickLine={false}
               axisLine={false}
-              // opacity={isHovered ? 1 : 0}
               tickMargin={8}
               minTickGap={32}
+              padding={{ left: 18, right: 18 }}
+              interval={0}
               tickFormatter={(value) => {
                 const date = new Date(value);
                 return date.toLocaleDateString("en-US", {
@@ -125,6 +118,7 @@ export function ChartLineInteractive({
                 <ChartTooltipContent
                   className="w-[150px]"
                   nameKey="views"
+                  hideIndicator={true}
                   labelFormatter={(value) => {
                     return new Date(value).toLocaleDateString("en-US", {
                       month: "short",

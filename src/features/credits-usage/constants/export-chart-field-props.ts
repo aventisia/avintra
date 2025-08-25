@@ -1,9 +1,9 @@
-import {  DatePickerFieldProps, MultiSelectFieldProps, SelectFieldProps } from "@aventisia/ui/form";
+import {  DatePickerFieldProps, MultiSelectFieldProps } from "@aventisia/ui/form";
 import { enumToArray } from "@aventisia/ui/utils";
 
 import { ServiceTypeEnum } from "@/features/sa/credit-plans-table/enums/service-type-enum";
 
-const serviceTypeProps: SelectFieldProps = {
+const serviceTypeProps: MultiSelectFieldProps = {
     name: "serviceType",
     isRequired: true,
     className: "text-sm",
@@ -39,14 +39,14 @@ const aiModelsProps: MultiSelectFieldProps = {
 const startDateProps: DatePickerFieldProps = {
     name: "startDate",
     label: "Start Date",
-    isRequired: true,
+    // isRequired: true,
     placeholder: "DD/MM/YYYY"
 }
 
 const endDateProps: DatePickerFieldProps = {
     name: "endDate",
     label: "End Date",
-    isRequired: true,
+    // isRequired: true,
     placeholder: "DD/MM/YYYY"
 }
 

@@ -13,7 +13,7 @@ import { useShallow } from "zustand/react/shallow";
 import { buttonVariants } from "@aventisia/ui/buttons";
 import { Separator } from "@aventisia/ui";
 import { X } from "lucide-react";
-import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/hooks/use-available-integrations-dialog";
+import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
 import SendgridForm from "@/features/app-integrations/features/sendgrid/components/SendgridForm";
 import OneDriveForm from "@/features/app-integrations/features/one-drive/components/OneDriveForm";
 import OpenAIForm from "@/features/app-integrations/features/open-ai/components/OpenAIForm";

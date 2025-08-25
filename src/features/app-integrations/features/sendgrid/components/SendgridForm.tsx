@@ -7,7 +7,7 @@ import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { apiKeyProps } from "../constants/sendgrid-field-props";
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/hooks/use-available-integrations-dialog";
+import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
 
 const SendgridForm = () => {
   const { form, isDirty, isSubmitting } = useSendgridIntegrationForm();

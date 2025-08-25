@@ -40,7 +40,7 @@ const ExportDialog = ({ children }: React.PropsWithChildren) => {
       }}
     >
       {children}
-      <DialogContent className="!max-w-[40rem] space-y-2 px-1">
+      <DialogContent className="!max-w-[35rem] space-y-2 px-1" side={"right"}>
         <DialogDefaultHeader
           heading="Export"
           className="px-3.5 py-3 text-lg tracking-wide"

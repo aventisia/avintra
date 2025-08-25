@@ -1,50 +1,151 @@
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import {
-  DatePickerField,
-  Form,
-  MultiSelectField,
-  SelectField,
-} from "@aventisia/ui/form";
+import { DatePickerField, Form, MultiSelectField } from "@aventisia/ui/form";
+import { Label } from "@aventisia/ui/label";
 import { ScrollArea } from "@aventisia/ui/scroll";
+import React from "react";
 import { FormProvider } from "react-hook-form";
-import { z } from "zod";
 
 import {
-  agentsProps,
-  aiModelsProps,
   endDateProps,
   serviceTypeProps,
   startDateProps,
-  usersProps,
 } from "../../constants/export-chart-field-props";
-import { exportChartZodSchema } from "../../constants/export-chart-zod-schema";
+import { useAgentSearchMultiSelect } from "../../hooks/agents/useAgentSearchMultiSelect";
+import { useModelSearchMultiSelect } from "../../hooks/models/useModelSearchMultiSelect";
 import { useExportChartForm } from "../../hooks/useExportChartForm";
+import { useSearchMultiSelect } from "../../hooks/users/useSearchMultiSelect";
 import { useExportDialogStore } from "../../store/export-dialog-store";
+
+import { AgentsModelsMultiSelector } from "./AgentsModelsMultiSelector";
+import { UsersMultiSelector } from "./UsersMultiSelector";
 
 const ExportDialogForm = () => {
   const { setOpen } = useExportDialogStore();
-  const { form, isSubmitting, isDirty } = useExportChartForm();
+  const { form, isSubmitting, isDirty, mutateExportChartCSV, isPending } =
+    useExportChartForm();
+  // Users Search
+  const {
+    searchTerm,
+    setSearchTerm,
+    selectedItems,
+    handleItemSelect,
+    handleItemRemove,
+    searchData,
+    isLoading,
+    isError,
+  } = useSearchMultiSelect();
 
-  async function submitHandler(formData: z.infer<typeof exportChartZodSchema>) {
-    // await publishModelTemplate(formData);
-    console.log(formData);
+  // Agents Search
+  const {
+    searchTerm: agentSearchTerm,
+    setSearchTerm: agentSetSearchTerm,
+    selectedItems: agentSelectedItems,
+    handleItemSelect: agentHandleItemSelect,
+    handleItemRemove: agentHandleItemRemove,
+    searchData: agentSearchData,
+    isLoading: agentIsLoading,
+    isError: agentIsError,
+  } = useAgentSearchMultiSelect();
+
+  // Models Search
+  const {
+    searchTerm: modelSearchTerm,
+    setSearchTerm: modelSetSearchTerm,
+    selectedItems: modelSelectedItems,
+    handleItemSelect: modelHandleItemSelect,
+    handleItemRemove: modelHandleItemRemove,
+    searchData: modelSearchData,
+    isLoading: modelIsLoading,
+    isError: modelIsError,
+  } = useModelSearchMultiSelect();
+
+  async function submitHandler(
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) {
+    e.preventDefault();
+    const formData = {
+      ...form.getValues(),
+      users: selectedItems.map((item) => item.id),
+      agents: agentSelectedItems.map((item) => item.id),
+      aiModels: modelSelectedItems.map((item) => item.id),
+    };
+    await mutateExportChartCSV(formData);
     setOpen(false);
   }
   return (
     <Form
       methods={form}
-      onSubmit={form.handleSubmit(submitHandler)}
+      // onSubmit={form.handleSubmit(submitHandler)}
       disabled={isSubmitting}
     >
       <FormProvider {...form}>
-        <ScrollArea className="h-[calc(100vh-26.5rem)]">
+        <ScrollArea className="h-[calc(100vh-8.5rem)]">
           <div className="space-y-4 px-5 py-4">
-            <SelectField {...serviceTypeProps} />
+            <MultiSelectField {...serviceTypeProps} />
             <Separator />
-            <MultiSelectField {...usersProps} />
-            <MultiSelectField {...agentsProps} />
-            <MultiSelectField {...aiModelsProps} />
+            {/* Users */}
+            <div className="space-y-1">
+              <Label className="ml-1 flex items-center gap-0.5 text-2xs">
+                Users
+                {/* <span className="text-destructive">*</span> */}
+              </Label>
+              <UsersMultiSelector
+                searchResults={searchData?.data || []}
+                selectedItems={selectedItems}
+                onItemSelect={handleItemSelect}
+                onItemRemove={handleItemRemove}
+                onSearchChange={setSearchTerm}
+                searchQuery={searchTerm}
+                isLoading={isLoading}
+                isError={isError}
+                placeholder="Search for users..."
+                maxHeight="300px"
+              />
+              {/* {form.formState.errors.} */}
+            </div>
+
+            {/* Agents */}
+            <div className="space-y-1">
+              <Label className="ml-1 flex items-center gap-0.5 text-2xs">
+                Agents
+                {/* <span className="text-destructive">*</span> */}
+              </Label>
+              <AgentsModelsMultiSelector
+                searchResults={agentSearchData?.data || []}
+                selectedItems={agentSelectedItems}
+                onItemSelect={agentHandleItemSelect}
+                onItemRemove={agentHandleItemRemove}
+                onSearchChange={agentSetSearchTerm}
+                searchQuery={agentSearchTerm}
+                isLoading={agentIsLoading}
+                isError={agentIsError}
+                placeholder="Search for Agents..."
+                maxHeight="300px"
+              />
+            </div>
+
+            {/* AI Models */}
+            <div className="space-y-1">
+              <Label className="ml-1 flex items-center gap-0.5 text-2xs">
+                Models
+                {/* <span className="text-destructive">*</span> */}
+              </Label>
+              <AgentsModelsMultiSelector
+                searchResults={modelSearchData?.data || []}
+                selectedItems={modelSelectedItems}
+                onItemSelect={modelHandleItemSelect}
+                onItemRemove={modelHandleItemRemove}
+                onSearchChange={modelSetSearchTerm}
+                searchQuery={modelSearchTerm}
+                isLoading={modelIsLoading}
+                isError={modelIsError}
+                placeholder="Search for AI Models..."
+                maxHeight="300px"
+              />
+            </div>
+
+            {/* Date Picker */}
             <div className="grid grid-cols-2 gap-4">
               <DatePickerField {...startDateProps} />
               <DatePickerField {...endDateProps} />
@@ -57,10 +158,15 @@ const ExportDialogForm = () => {
       <div className="flex items-center justify-end px-6 pb-4">
         <Button
           type="submit"
-          disabled={isSubmitting || !isDirty}
+          disabled={isSubmitting || !isDirty || isPending}
           className="w-28"
+          onClick={(e) => submitHandler(e)}
         >
-          {isSubmitting ? <LoadingSpinner className="h-4 w-4" /> : "Download"}
+          {isSubmitting || isPending ? (
+            <LoadingSpinner className="h-4 w-4" />
+          ) : (
+            "Download"
+          )}
         </Button>
       </div>
     </Form>
