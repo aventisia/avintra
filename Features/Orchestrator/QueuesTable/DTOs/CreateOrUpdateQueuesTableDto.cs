@@ -12,7 +12,7 @@ public class CreateOrUpdateQueuesTableDto
     /// Note: Not making it required because the same DTO is used for insert and update.
     /// </remarks>
     public Guid Id { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the name of the queue.
     /// This field is required and must not exceed 255 characters.
@@ -56,16 +56,14 @@ public class CreateOrUpdateQueuesTableDto
     public int MaximumRetryAttempts { get; set; }
 
     /// <summary>
-    /// Gets or sets the file containing the specific data JSON schema.
-    /// Actual files are stored separately.
+    /// Gets or sets the input data schema in JSON format.
     /// </summary>
-    public IFormFile? SpecificDataSchemaFile { get; set; }
+    public string? InputSchema { get; set; }
 
     /// <summary>
-    /// Gets or sets the file containing the output data JSON schema.
-    /// Actual files are stored separately.
+    /// Gets or sets the output data schema in JSON format.
     /// </summary>
-    public IFormFile? OutputDataSchemaFile { get; set; }
+    public string? OutputSchema { get; set; }
 
     /// <summary>
     /// Indicates whether the user record is disabled.

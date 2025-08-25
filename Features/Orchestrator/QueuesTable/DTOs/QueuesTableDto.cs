@@ -60,28 +60,14 @@ public class QueuesTableDto
     public int MaximumRetryAttempts { get; set; }
 
     /// <summary>
-    /// Gets or sets the file path for the specific data JSON schema.
-    /// Actual files are stored separately.
+    /// Gets or sets the input data schema in JSON format.
     /// </summary>
-    public string? SpecificDataSchemaPath { get; set; }
+    public string? InputSchema { get; set; }
 
     /// <summary>
-    /// Gets or sets the file containing the specific data JSON schema in string format.
-    /// Actual files are stored separately.
+    /// Gets or sets the output data schema in JSON format.
     /// </summary>
-    public string? SpecificDataSchemaJsonString { get; set; }
-
-    /// <summary>
-    /// Gets or sets the file path for the output data JSON schema.
-    /// Actual files are stored separately.
-    /// </summary>
-    public string? OutputDataSchemaPath { get; set; }
-
-    /// <summary>
-    /// Gets or sets the file containing the output data JSON schema.
-    /// Actual files are stored separately.
-    /// </summary>
-    public string? OutputDataSchemaJsonString { get; set; }
+    public string? OutputSchema { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
