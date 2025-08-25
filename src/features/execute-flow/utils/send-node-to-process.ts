@@ -15,6 +15,7 @@ import {
 } from "..";
 import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
 import { deepParse } from "@/features/react-flow/utils/deepParse";
+import { getFlowBlock } from "@/features/flow-block/apis/flow-block-apis";
 
 // Get nodes from local storage
 const getNodesFromLS = () => {
@@ -296,6 +297,56 @@ async function executeSubflow(
   }
 }
 
+async function executeBlock(
+  node: Node,
+  sendCommand: (command: WebSocketCommandType, data?: string) => void,
+) {
+  const selectedBlock = node.data?.selectedBlock as { [key: string]: string };
+
+  if (!selectedBlock?.id) {
+    toast.error("Block data is missing.");
+    return sendCommand("error");
+  }
+
+  const returnNodeId = getEdgesFromLS().find(
+    (e) => e.source === node.id,
+  )?.target;
+
+  try {
+    const data = await getFlowBlock(selectedBlock.id);
+    const { nodes: subNodes, edges: subEdges } = deepParse(
+      data?.data.reactFlowObject ?? "{}",
+    ) as unknown as { nodes: Node[]; edges: Edge[] };
+
+    // Push current execution context to stack
+    const executionStack = JSON.parse(
+      localStorage.getItem("flowExecutionStack") || "[]",
+    );
+
+    executionStack.push({
+      nodes: getNodesFromLS(),
+      edges: getEdgesFromLS(),
+      conditionalExecutionGroup: getConditionalExecutionGroupFromLS(),
+      loopExecutionGroup: getLoopExecutionGroupFromLS(),
+      returnNodeId: returnNodeId ?? "",
+    });
+
+    localStorage.setItem("flowExecutionStack", JSON.stringify(executionStack));
+
+    // Load subflow context
+    localStorage.setItem("nodes", JSON.stringify(subNodes));
+    localStorage.setItem("edges", JSON.stringify(subEdges));
+    localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
+    localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
+
+    // Start subflow
+    sendNextNodeToProcess(sendCommand);
+  } catch (error) {
+    toast.error("Failed to execute subflow: " + error);
+    sendCommand("error");
+  }
+}
+
 // Function to find the node and send its data
 const sendNodeToProcess = (
   nodeId: string,
@@ -416,6 +467,10 @@ const sendNodeToProcess = (
       return;
     }
 
+    case "blockNode": {
+      executeBlock(nodeToProcess, sendCommand);
+      return;
+    }
     default: // If unknown node type, show an error message
       toast.error(
         `Unknown node type: ${nodeToProcess.type}. Please check the flow.`,
