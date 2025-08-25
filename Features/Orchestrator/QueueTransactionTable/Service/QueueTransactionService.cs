@@ -112,7 +112,11 @@ public class QueueTransactionService : IQueueTransactionService
 
         try
         {
-            var queue = await _unitOfWork.QueueRepo.GetByConditionAsync(w => w.Id == queueTransactionDto.QueueId).SingleOrDefaultAsync();
+            // Retrieve queue with related transactions from the database
+            var queue = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(w => w.Id == queueTransactionDto.QueueId)
+                .Include(i => i.QueueTransactions)
+                .SingleOrDefaultAsync();
 
             if (queue == null)
             {
@@ -123,67 +127,101 @@ public class QueueTransactionService : IQueueTransactionService
 
             _logger.LogInformation("Attempting to add a new transaction to the queue.");
 
-            //TODO: Add here validation to check uniqueness
-            // Check if a transaction with the specified queue I exists
-            // var existingTransaction = await _unitOfWork.QueueTransactionRepo
-            //     .GetByConditionAsync(w =>
-            //         w.QueueID == queueTransactionDto.QueueId
-            //     )
-            //     .SingleOrDefaultAsync();
+            // Deserialize schema from JSON (case-insensitive), fallback to empty list if null/invalid
+            var inputSchema = System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(
+                queue.InputSchema ?? "[]",
+                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            ) ?? new List<QueueSchemaDefinitionDto>();
 
-            // if (existingTransaction != null)
-            // {
-            //     _logger.LogWarning("Queue transaction {TransactionId} not found for status update.", queueTransactionDto.Id);
-            //     response.Message = "Queue transaction already exists.";
-            //     return response;
-            // }
+            var errors = new List<string>();
 
+            // Parse incoming payload to JObject; fallback to empty JObject if null or empty
+            var data = Newtonsoft.Json.Linq.JObject.Parse(queueTransactionDto.PayloadData ?? "{}");
+
+            // Use HashSet to efficiently store existing unique keys and allow fast lookup for duplicates
+            var existingUniqueKeys = new HashSet<string>();
+
+            if (queue.QueueTransactions != null)
+            {
+                foreach (var transaction in queue.QueueTransactions)
+                {
+                    var payload = transaction.PayloadData;
+                    if (string.IsNullOrWhiteSpace(payload))
+                        continue;
+
+                    if (queue.IsStoredEncrypted)
+                        payload = _stringEncryptionService.DecryptString(transaction.PayloadData ?? string.Empty);
+
+                    var obj = Newtonsoft.Json.Linq.JObject.Parse(payload);
+
+                    // Build composite unique key based on fields flagged as unique in schema
+                    var keyParts = inputSchema
+                        .Where(w => w.IsUsedForUniqueData)
+                        .Select(s =>
+                        {
+                            obj.TryGetValue(s.Name, out var val);
+                            return val?.ToString() ?? string.Empty;
+                        });
+
+                    var uniqueKey = string.Join("|", keyParts);
+
+                    existingUniqueKeys.Add(uniqueKey);
+                }
+            }
+
+            // Validate incoming payload: required fields and uniqueness
+            var uniqueKeyParts = new List<string>();
+
+            foreach (var field in inputSchema)
+            {
+                var hasValue = data.TryGetValue(field.Name, out var value) && value != null && !string.IsNullOrWhiteSpace(value.ToString());
+
+                // Check required fields and report errors if missing or empty
+                if (field.IsRequired && !hasValue)
+                {
+                    var label = string.IsNullOrWhiteSpace(field.Label) ? field.Name : field.Label;
+                    errors.Add($"Missing or empty required field: {label}");
+                }
+
+                // Collect parts for composite unique key if the field is marked unique and has a value
+                if (field.IsUsedForUniqueData && hasValue)
+                {
+                    uniqueKeyParts.Add(value!.ToString()!);
+                }
+            }
+
+            // Check if the new unique key already exists
+            if (uniqueKeyParts.Any())
+            {
+                var newUniqueKey = string.Join("|", uniqueKeyParts);
+
+                if (existingUniqueKeys.Contains(newUniqueKey))
+                {
+                    errors.Add("A transaction with the same unique field values already exists.");
+                }
+            }
+
+            // Return accumulated errors immediately to avoid unnecessary processing
+            if (errors.Any())
+            {
+                response.Message = string.Join("; ", errors);
+                return response;
+            }
+
+            // Set created by if missing
             if (string.IsNullOrEmpty(queueTransactionDto.CreatedBy))
+            {
                 queueTransactionDto.CreatedBy = _username;
-                
-            // Map the DTO to an entity and set necessary properties
+            }
+
+            // Encrypt payload if queue requires encrypted storage
+            if (queue.IsStoredEncrypted)
+            {
+                queueTransactionDto.PayloadData = _stringEncryptionService.EncryptString(queueTransactionDto.PayloadData ?? string.Empty);
+            }
+
+            // Map DTO to entity for persistence
             var newTransaction = queueTransactionDto.Adapt<QueueTransaction>();
-
-            if (string.IsNullOrWhiteSpace(queue.InputSchema))
-            {
-                _logger.LogWarning("specific data for queue work not found for QueueId {QueueId}.", queueTransactionDto.QueueId);
-                response.Message = $"specific data for queue work not found for QueueId {queueTransactionDto.QueueId}.";
-                return response;
-            }
-
-            var inputJson = await File.ReadAllTextAsync(Path.Combine(_fileUploadConfig.UploadDirectory, queue.InputSchema));
-            if (string.IsNullOrWhiteSpace(inputJson))
-            {
-                _logger.LogWarning("specific data for queue work not found for QueueId {QueueId}.", queueTransactionDto.QueueId);
-                response.Message = $"specific data for queue work not found for QueueId {queueTransactionDto.QueueId}.";
-                return response;
-            }
-
-            if (!string.IsNullOrWhiteSpace(queueTransactionDto.PayloadData))
-            {
-                // Validate object
-                var isValidArray = inputJson.ValidateJsonArrayWithFromShema(queueTransactionDto.PayloadData, out var errors);
-
-                if (errors.Count > 0 || !isValidArray)
-                {
-                    _logger.LogWarning("errors occured while validating the work items array for QueueId {QueueId}. errors {Errors}.", queueTransactionDto.QueueId, string.Join(", ", errors));
-                    response.Message = $"errors occured while validating the work items array for QueueId {queueTransactionDto.QueueId}.errors {string.Join(", ", errors)}";
-                    return response;
-                }
-
-                if (queue.IsUniqueReferencesEnforced && !queueTransactionDto.PayloadData.AreJsonObjectsUnique(out var duplicates))
-                {
-                    _logger.LogWarning("duplicate work items are not allowed for QueueId {QueueId}. errors {Errors}.", queueTransactionDto.QueueId, string.Join(", ", duplicates.Select(k => $"{k.Key} found {k.Value} time(s)")));
-                    response.Message = $"duplicate work items are not allowed for QueueId {queueTransactionDto.QueueId}.errors {string.Join(", ", duplicates.Select(k => $"{k.Key} found {k.Value} time(s)"))}";
-                    return response;
-                }
-
-                if (queue.IsStoredEncrypted)
-                {
-                    newTransaction.PayloadData = _stringEncryptionService.EncryptString(queueTransactionDto.PayloadData);
-                }
-            }
-
 
             // Insert the new transaction into the repository
             await _unitOfWork.QueueTransactionRepo.InsertAsync(newTransaction);
@@ -207,15 +245,6 @@ public class QueueTransactionService : IQueueTransactionService
         }
 
         return response;
-    }
-
-    private void UpdateCreateBy(QueueTransactionDto queueTransactionDto)
-    {
-        queueTransactionDto.CreatedOn = DateTimeOffset.UtcNow;
-        if (string.IsNullOrEmpty(queueTransactionDto.CreatedBy))
-        {
-
-        }
     }
 
     // Update the status of an existing transaction
@@ -245,64 +274,109 @@ public class QueueTransactionService : IQueueTransactionService
             }
 
 
-            if (string.IsNullOrWhiteSpace(queueTransaction.Queue.InputSchema))
+            _logger.LogInformation("Attempting to add a new transaction to the queue.");
+
+            // Deserialize schema from JSON (case-insensitive), fallback to empty list if null/invalid
+            var inputSchema = System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(
+                queueTransaction.Queue.InputSchema ?? "[]",
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            ) ?? new List<QueueSchemaDefinitionDto>();
+
+            var errors = new List<string>();
+
+            // Parse incoming payload to JObject; fallback to empty JObject if null or empty
+            var data = Newtonsoft.Json.Linq.JObject.Parse(queueTransactionDto.PayloadData ?? "{}");
+
+            var queue = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(w => w.Id == queueTransaction.QueueId)
+                .AsNoTracking()
+                .Include(i => i.QueueTransactions)
+                .FirstOrDefaultAsync();
+
+            // Use HashSet to efficiently store existing unique keys and allow fast lookup for duplicates
+            var existingUniqueKeys = new HashSet<string>();
+
+            if (queue.QueueTransactions != null)
             {
-                _logger.LogWarning("specific data for queue work not found for QueueId {QueueId}.", queueTransactionDto.QueueId);
-                response.Message = $"specific data for queue work not found for QueueId {queueTransactionDto.QueueId}.";
+                foreach (var transaction in queue.QueueTransactions)
+                {
+                    var payload = transaction.PayloadData;
+                    if (string.IsNullOrWhiteSpace(payload))
+                        continue;
+
+                    if (queue.IsStoredEncrypted)
+                        payload = _stringEncryptionService.DecryptString(transaction.PayloadData ?? string.Empty);
+
+                    var obj = Newtonsoft.Json.Linq.JObject.Parse(payload);
+
+                    // Build composite unique key based on fields flagged as unique in schema
+                    var keyParts = inputSchema
+                        .Where(w => w.IsUsedForUniqueData)
+                        .Select(s =>
+                        {
+                            obj.TryGetValue(s.Name, out var val);
+                            return val?.ToString() ?? string.Empty;
+                        });
+
+                    var uniqueKey = string.Join("|", keyParts);
+
+                    existingUniqueKeys.Add(uniqueKey);
+                }
+            }
+
+            // Validate incoming payload: required fields and uniqueness
+            var uniqueKeyParts = new List<string>();
+
+            foreach (var field in inputSchema)
+            {
+                var hasValue = data.TryGetValue(field.Name, out var value) && value != null && !string.IsNullOrWhiteSpace(value.ToString());
+
+                // Check required fields and report errors if missing or empty
+                if (field.IsRequired && !hasValue)
+                {
+                    var label = string.IsNullOrWhiteSpace(field.Label) ? field.Name : field.Label;
+                    errors.Add($"Missing or empty required field: {label}");
+                }
+
+                // Collect parts for composite unique key if the field is marked unique and has a value
+                if (field.IsUsedForUniqueData && hasValue)
+                {
+                    uniqueKeyParts.Add(value!.ToString()!);
+                }
+            }
+
+            // Check if the new unique key already exists
+            if (uniqueKeyParts.Any())
+            {
+                var newUniqueKey = string.Join("|", uniqueKeyParts);
+
+                if (existingUniqueKeys.Contains(newUniqueKey))
+                {
+                    errors.Add("A transaction with the same unique field values already exists.");
+                }
+            }
+
+            // Return accumulated errors immediately to avoid unnecessary processing
+            if (errors.Any())
+            {
+                response.Message = string.Join("; ", errors);
                 return response;
             }
 
-            var inputJson = await File.ReadAllTextAsync(Path.Combine(_fileUploadConfig.UploadDirectory, queueTransaction.Queue.InputSchema));
-            if (string.IsNullOrWhiteSpace(inputJson))
+            // Set created by if missing
+            if (string.IsNullOrEmpty(queueTransactionDto.CreatedBy))
             {
-                _logger.LogWarning("specific data for queue work not found for QueueId {QueueId}.", queueTransactionDto.QueueId);
-                response.Message = $"specific data for queue work not found for QueueId {queueTransactionDto.QueueId}.";
-                return response;
+                queueTransactionDto.CreatedBy = _username;
             }
 
-
-            var queuePayloadData = queueTransaction.Queue.IsStoredEncrypted ? _stringEncryptionService.DecryptString(queueTransaction.PayloadData ?? string.Empty) : queueTransaction.PayloadData;
-            if (!string.IsNullOrWhiteSpace(queueTransactionDto.PayloadData))
+            // Encrypt payload if queue requires encrypted storage
+            if (queueTransaction.Queue.IsStoredEncrypted)
             {
-                // Validate object
-                var isValidArray = inputJson.ValidateJsonArrayWithFromShema(queueTransactionDto.PayloadData, out var errors);
-
-                if (errors.Count > 0 || !isValidArray)
-                {
-                    _logger.LogWarning("errors occured while validating the work items array for QueueId {QueueId}. errors {Errors}.", queueTransactionDto.QueueId, string.Join(", ", errors));
-                    response.Message = $"errors occured while validating the work items array for QueueId {queueTransactionDto.QueueId}.errors {string.Join(", ", errors)}";
-                    return response;
-                }
-
-                if (string.IsNullOrWhiteSpace(queuePayloadData))
-                {
-                    queuePayloadData = queueTransactionDto.PayloadData;
-                }
-                else
-                {
-                    var mergedPayloadData = inputJson.ValidateAndJoinJsonArrays(queueTransactionDto.PayloadData, queuePayloadData, out var combinedErrors);
-
-                    if (combinedErrors.Count > 0 || string.IsNullOrWhiteSpace(mergedPayloadData))
-                    {
-                        _logger.LogWarning("errors occured while merging and validating the work items array for QueueId {QueueId}. errors {Errors}.", queueTransactionDto.QueueId, string.Join(", ", combinedErrors));
-                        response.Message = $"errors occured while merging and validating the work items array for QueueId {queueTransactionDto.QueueId}.errors {string.Join(", ", combinedErrors)}";
-                        return response;
-                    }
-                    queuePayloadData = queueTransaction.Queue.IsStoredEncrypted ? _stringEncryptionService.EncryptString(mergedPayloadData) : mergedPayloadData;
-                }
-
-                if (queueTransaction.Queue.IsUniqueReferencesEnforced && !queueTransactionDto.PayloadData.AreJsonObjectsUnique(out var duplicates))
-                {
-                    _logger.LogWarning("duplicate work items are not allowed for QueueId {QueueId}. errors {Errors}.", queueTransactionDto.QueueId, string.Join(", ", duplicates.Select(k => $"{k.Key} found {k.Value} time(s)")));
-                    response.Message = $"duplicate work items are not allowed for QueueId {queueTransactionDto.QueueId}.errors {string.Join(", ", duplicates.Select(k => $"{k.Key} found {k.Value} time(s)"))}";
-                    return response;
-                }
+                queueTransactionDto.PayloadData = _stringEncryptionService.EncryptString(queueTransactionDto.PayloadData ?? string.Empty);
             }
-
 
             // Update the queue transaction
             queueTransactionDto.Adapt(queueTransaction);
-            queueTransaction.PayloadData = _stringEncryptionService.EncryptString(queuePayloadData ?? string.Empty);
             queueTransaction.LastModifiedOn = DateTimeOffset.UtcNow;
 
             _unitOfWork.QueueTransactionRepo.Update(queueTransaction);
