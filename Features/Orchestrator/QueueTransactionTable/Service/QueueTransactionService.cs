@@ -155,7 +155,7 @@ public class QueueTransactionService : IQueueTransactionService
                     var obj = Newtonsoft.Json.Linq.JObject.Parse(payload);
 
                     var keyParts = inputSchema
-                        .Where(w => w.IsUsedForUniqueData)
+                        .Where(w => w.IsUsedForUniqueIdentifier)
                         .Select(s =>
                         {
                             obj.TryGetValue(s.Name, out var val);
@@ -184,7 +184,7 @@ public class QueueTransactionService : IQueueTransactionService
                 }
 
                 // Build the new unique key if applicable
-                if (field.IsUsedForUniqueData && hasValue)
+                if (field.IsUsedForUniqueIdentifier && queue.IsUniqueReferencesEnforced && hasValue)
                 {
                     uniqueKeyParts.Add(value!.ToString()!);
                 }
@@ -194,7 +194,7 @@ public class QueueTransactionService : IQueueTransactionService
             }
 
             // Check if a transaction with the same unique fields already exists
-            if (uniqueKeyParts.Any())
+            if (queue.IsUniqueReferencesEnforced && uniqueKeyParts.Any())
             {
                 var newUniqueKey = string.Join("|", uniqueKeyParts);
 
@@ -322,7 +322,7 @@ public class QueueTransactionService : IQueueTransactionService
                     var obj = Newtonsoft.Json.Linq.JObject.Parse(payload);
 
                     var keyParts = inputSchema
-                        .Where(w => w.IsUsedForUniqueData)
+                        .Where(w => w.IsUsedForUniqueIdentifier)
                         .Select(s =>
                         {
                             obj.TryGetValue(s.Name, out var val);
@@ -351,7 +351,7 @@ public class QueueTransactionService : IQueueTransactionService
                 }
 
                 // Build the composite unique key
-                if (field.IsUsedForUniqueData && hasValue)
+                if (field.IsUsedForUniqueIdentifier && queue.IsUniqueReferencesEnforced && hasValue)
                 {
                     uniqueKeyParts.Add(value!.ToString()!);
                 }
@@ -361,7 +361,7 @@ public class QueueTransactionService : IQueueTransactionService
             }
 
             // Check if the constructed unique key already exists in the queue
-            if (uniqueKeyParts.Any())
+            if (queue.IsUniqueReferencesEnforced && uniqueKeyParts.Any())
             {
                 var newUniqueKey = string.Join("|", uniqueKeyParts);
 

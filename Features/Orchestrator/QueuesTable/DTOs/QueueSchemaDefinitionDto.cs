@@ -31,7 +31,7 @@ public class QueueSchemaDefinitionDto
     public bool IsRequired { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating if the field must be unique.
+    /// Gets or sets a value indicating whether the field is used as a unique identifier.
     /// </summary>
-    public bool IsUsedForUniqueData { get; set; }
+    public bool IsUsedForUniqueIdentifier { get; set; }
 }
