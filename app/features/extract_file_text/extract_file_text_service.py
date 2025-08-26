@@ -7,17 +7,18 @@ import pdfplumber
 import pytesseract
 import chardet
 import pandas as pd
+import pypandoc
 
 def extract_text_from_file(file_path: str) -> str:
     """Extract text from various file types."""
     logger.info("Extracting text from file: %s", file_path)
     try:
         ext = Path(file_path).suffix.lower()
-        if ext == '.pdf':
+        if ext == '.pdf':  # PDF Document
             return extract_text_from_pdf(file_path)
-        elif ext == '.docx':
+        elif ext == '.docx':  # Word Document
             return docx2txt.process(file_path)
-        elif ext == '.xlsx':
+        elif ext == '.xlsx':  # Excel Spreadsheet
             wb = openpyxl.load_workbook(file_path, data_only=True)
             text = []
             for ws in wb.worksheets:
@@ -29,7 +30,7 @@ def extract_text_from_file(file_path: str) -> str:
                     if any(cell for cell in cleaned_row):
                         text.append('\t'.join(cleaned_row))
             return '\n'.join(text)
-        elif ext == '.txt':
+        elif ext == '.txt':  # Plain Text
             with open(file_path, 'rb') as f:
                 raw = f.read()
                 result = chardet.detect(raw)
@@ -38,9 +39,11 @@ def extract_text_from_file(file_path: str) -> str:
                     return raw.decode(encoding, errors='replace')
                 except Exception:
                     raise HTTPException(status_code=500, detail=f"Could not decode file with detected encoding: {encoding}")
-        elif ext == '.csv':
+        elif ext == '.csv':  # Comma-Separated Values
             df = pd.read_csv(file_path)
             return df.to_csv(index=False)
+        elif ext in ['.rtf', '.odt', '.md']:  # Rich Text Format, OpenDocument Text Document, Markdown
+            return pypandoc.convert_file(file_path, 'plain')
         else:
             raise HTTPException(status_code=400, detail=f"Unsupported file type: {ext}")
     except Exception as e:

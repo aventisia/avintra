@@ -24,7 +24,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: {{contentType}}
 
 {
-  "file_url": "{{testFilesPath}}/sample-invoice.pdf"
+  "file_url": "{{testFilesPath}}/pdf-file.pdf"
 }
 
 ### PDF: electronic pdf with images
@@ -32,7 +32,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: {{contentType}}
 
 {
-  "file_url": "{{testFilesPath}}/electronic-pdf-with-images.pdf"
+  "file_url": "{{testFilesPath}}/pdf-with-images.pdf"
 }
 
 ### DOCX: simple document with docx extension
@@ -40,7 +40,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: {{contentType}}
 
 {
-  "file_url": "{{testFilesPath}}/document-with-docx-ext.docx"
+  "file_url": "{{testFilesPath}}/docx-file.docx"
 }
 
 ### XLSX: simple document with xlsx extension
@@ -48,7 +48,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: {{contentType}}
 
 {
-  "file_url": "{{testFilesPath}}/document-with-xlsx-ext.xlsx"
+  "file_url": "{{testFilesPath}}/xlsx-file.xlsx"
 }
 
 ### TXT: simple text file
@@ -56,7 +56,7 @@ POST {{extractFileTextEndpoint}}
 Content-Type: {{contentType}}
 
 {
-  "file_url": "{{testFilesPath}}/simple-text-file.txt"
+  "file_url": "{{testFilesPath}}/text-file.txt"
 }
 
 ### CSV: simple comma-separated csv file
@@ -64,5 +64,29 @@ POST {{extractFileTextEndpoint}}
 Content-Type: {{contentType}}
 
 {
-  "file_url": "{{testFilesPath}}/simple-csv-file.csv"
+  "file_url": "{{testFilesPath}}/csv-file.csv"
+}
+
+### RTF: simple rich text format file
+POST {{extractFileTextEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "file_url": "{{testFilesPath}}/rich-text-format-file.rtf"
+}
+
+### ODT: simple OpenDocument text file
+POST {{extractFileTextEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "file_url": "{{testFilesPath}}/opendocument-text-file.odt"
+}
+
+### MD: simple markdown file
+POST {{extractFileTextEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "file_url": "{{testFilesPath}}/markdown-file.md"
 }
