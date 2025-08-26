@@ -50,3 +50,11 @@ Content-Type: {{contentType}}
 {
   "file_url": "{{testFilesPath}}/document-with-xlsx-ext.xlsx"
 }
+
+### TXT: simple text file
+POST {{extractFileTextEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "file_url": "{{testFilesPath}}/simple-text-file.txt"
+}

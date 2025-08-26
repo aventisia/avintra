@@ -5,6 +5,7 @@ import docx2txt
 import openpyxl
 import pdfplumber
 import pytesseract
+import chardet
 
 def extract_text_from_file(file_path: str) -> str:
     """Extract text from various file types."""
@@ -27,6 +28,15 @@ def extract_text_from_file(file_path: str) -> str:
                     if any(cell for cell in cleaned_row):
                         text.append('\t'.join(cleaned_row))
             return '\n'.join(text)
+        elif ext == '.txt':
+            with open(file_path, 'rb') as f:
+                raw = f.read()
+                result = chardet.detect(raw)
+                encoding = result['encoding'] or 'utf-8'
+                try:
+                    return raw.decode(encoding, errors='replace')
+                except Exception:
+                    raise HTTPException(status_code=500, detail=f"Could not decode file with detected encoding: {encoding}")
         else:
             raise HTTPException(status_code=400, detail=f"Unsupported file type: {ext}")
     except Exception as e:
