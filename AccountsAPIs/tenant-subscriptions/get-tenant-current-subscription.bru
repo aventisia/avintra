@@ -1,0 +1,17 @@
+meta {
+  name: Get tenant current subscription
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant-subscriptions/current-plan
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "{{$randomCompanyName}}"
+  }
+}
