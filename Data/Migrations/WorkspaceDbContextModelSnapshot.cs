@@ -898,6 +898,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("InputSchema")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
@@ -921,7 +924,7 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("OutputDataSchemaPath")
+                    b.Property<string>("OutputSchema")
                         .HasColumnType("text");
 
                     b.Property<bool>("ShouldRetryAbandonedItems")
@@ -929,9 +932,6 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<bool>("ShouldRetryFailedItems")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("SpecificDataSchemaPath")
-                        .HasColumnType("text");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -1006,8 +1006,8 @@ namespace WorkspaceAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
@@ -1017,9 +1017,6 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
@@ -1037,19 +1034,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedByUserId");
-
                     b.HasIndex("FlowVersionId");
-
-                    b.HasIndex("LastModifiedByUserId");
 
                     b.HasIndex("QueueId");
 
@@ -1970,31 +1957,15 @@ namespace WorkspaceAPIs.Data.Migrations
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.QueueTransaction", b =>
                 {
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("WorkspaceAPIs.Entities.FlowVersion", null)
                         .WithMany("QueueTransactions")
                         .HasForeignKey("FlowVersionId");
-
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.HasOne("WorkspaceAPIs.Entities.Queue", "Queue")
                         .WithMany("QueueTransactions")
                         .HasForeignKey("QueueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastModifiedByUser");
 
                     b.Navigation("Queue");
                 });
