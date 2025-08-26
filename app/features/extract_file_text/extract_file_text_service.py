@@ -6,6 +6,7 @@ import openpyxl
 import pdfplumber
 import pytesseract
 import chardet
+import pandas as pd
 
 def extract_text_from_file(file_path: str) -> str:
     """Extract text from various file types."""
@@ -37,6 +38,9 @@ def extract_text_from_file(file_path: str) -> str:
                     return raw.decode(encoding, errors='replace')
                 except Exception:
                     raise HTTPException(status_code=500, detail=f"Could not decode file with detected encoding: {encoding}")
+        elif ext == '.csv':
+            df = pd.read_csv(file_path)
+            return df.to_csv(index=False)
         else:
             raise HTTPException(status_code=400, detail=f"Unsupported file type: {ext}")
     except Exception as e:

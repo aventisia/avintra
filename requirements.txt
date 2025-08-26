@@ -87,6 +87,7 @@ openai-whisper==20240930
 opencv-python-headless==4.11.0.86
 openpyxl==3.1.5
 packaging==24.2
+pandas==2.3.2
 pdf2image==1.17.0
 pdfminer.six==20231228
 pdfplumber==0.11.5
@@ -115,6 +116,7 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-jose==3.5.0
 python-multipart==0.0.20
+pytz==2025.2
 PyYAML==6.0.2
 qdrant-client==1.14.3
 rdflib==7.1.4
@@ -162,6 +164,7 @@ typer==0.16.1
 typing==3.7.4.3
 typing-inspection==0.4.1
 typing_extensions==4.12.2
+tzdata==2025.2
 uritemplate==4.2.0
 urllib3==2.3.0
 uvicorn==0.34.0

@@ -58,3 +58,11 @@ Content-Type: {{contentType}}
 {
   "file_url": "{{testFilesPath}}/simple-text-file.txt"
 }
+
+### CSV: simple comma-separated csv file
+POST {{extractFileTextEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "file_url": "{{testFilesPath}}/simple-csv-file.csv"
+}
