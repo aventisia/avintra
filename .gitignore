@@ -28,9 +28,13 @@ var/
 
 # IDE
 .idea/
-.vscode/
 *.swp
 *.swo
 
 # OS specific
 .DS_Store
+
+# Ignore extra temporary files
+TO-DELETE-*
+sample-*
+test-*
