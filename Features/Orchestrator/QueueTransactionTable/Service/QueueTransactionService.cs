@@ -7,13 +7,11 @@ public class QueueTransactionService : IQueueTransactionService
     private readonly Guid _userId;
     private readonly string _username;
     private readonly IStringEncryptionService _stringEncryptionService;
-    private readonly FileUploadConfig _fileUploadConfig;
 
     public QueueTransactionService(
         ILogger<QueueTransactionService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor, IStringEncryptionService stringEncryptionService,
-        FileUploadConfig fileUploadConfig)
+        IHttpContextAccessor httpContextAccessor, IStringEncryptionService stringEncryptionService)
     {
         // Extract the user ID from the HTTP context (user's UID)
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -22,7 +20,6 @@ public class QueueTransactionService : IQueueTransactionService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _stringEncryptionService = stringEncryptionService;
-        _fileUploadConfig = fileUploadConfig;
     }
 
     // Retrieve all transactions for a specific queue
