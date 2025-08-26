@@ -1,0 +1,1 @@
+from .extract_file_text_routes import router

@@ -25,6 +25,7 @@ docx2txt==0.9
 easyocr==1.7.2
 ecdsa==0.19.1
 espeakng-loader==0.2.4
+et_xmlfile==2.0.0
 fastapi==0.115.9
 filelock==3.17.0
 fsspec==2025.2.0
@@ -83,6 +84,7 @@ nvidia-nvjitlink-cu12==12.4.127
 nvidia-nvtx-cu12==12.4.127
 openai-whisper==20240930
 opencv-python-headless==4.11.0.86
+openpyxl==3.1.5
 packaging==24.2
 pdf2image==1.17.0
 pdfminer.six==20231228
