@@ -35,6 +35,54 @@ Content-Type: {{contentType}}
   "file_url": "{{testFilesPath}}/pdf-with-images.pdf"
 }
 
+### PNG: simple portable network graphics (png) file
+POST {{extractFileTextEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "file_url": "{{testFilesPath}}/png-image-file.png"
+}
+
+### JPG: simple joint photographic experts group (jpg) file
+POST {{extractFileTextEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "file_url": "{{testFilesPath}}/jpg-image-file.jpg"
+}
+
+### JPEG: simple joint photographic experts group (jpeg) file
+POST {{extractFileTextEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "file_url": "{{testFilesPath}}/jpeg-image-file.jpeg"
+}
+
+### BMP: simple bitmap (bmp) file
+POST {{extractFileTextEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "file_url": "{{testFilesPath}}/bmp-image-file.bmp"
+}
+
+### TIFF: simple tagged image file format (tiff) file
+POST {{extractFileTextEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "file_url": "{{testFilesPath}}/tiff-image-file.tiff"
+}
+
+### TIF: simple tagged image file (tif) file
+POST {{extractFileTextEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "file_url": "{{testFilesPath}}/tif-image-file.tif"
+}
+
 ### DOCX: simple document with docx extension
 POST {{extractFileTextEndpoint}}
 Content-Type: {{contentType}}

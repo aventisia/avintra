@@ -8,6 +8,7 @@ import pytesseract
 import chardet
 import pandas as pd
 import pypandoc
+from PIL import Image
 
 def extract_text_from_file(file_path: str) -> str:
     """Extract text from various file types."""
@@ -16,6 +17,13 @@ def extract_text_from_file(file_path: str) -> str:
         ext = Path(file_path).suffix.lower()
         if ext == '.pdf':  # PDF Document
             return extract_text_from_pdf(file_path)
+        elif ext in ['.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.tif']:
+            try:
+                image = Image.open(file_path)
+                return pytesseract.image_to_string(image)
+            except Exception as e:
+                logger.error(f'Error extracting text from image: {e}')
+                raise HTTPException(status_code=500, detail="Error extracting text from image file.")
         elif ext == '.docx':  # Word Document
             return docx2txt.process(file_path)
         elif ext == '.xlsx':  # Excel Spreadsheet
