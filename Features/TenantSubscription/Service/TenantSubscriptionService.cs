@@ -39,7 +39,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             _logger.LogInformation("Attempting to retrieve all tenant subscriptions.");
 
             var isDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
-            
+
             // Fetch all tenant subscriptions with their related plan and creator user
             var subscriptions = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
@@ -433,6 +433,54 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         {
             // Log any unexpected errors that occur during the subscription creation process
             _logger.LogError(ex, "An unexpected error occurred while purchasing tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieves the current subscription plan for a tenant.
+    public async Task<ServiceResponse<TenantSubscriptionDto>> GetCurrentTenantSubscriptionPlanAsync()
+    {
+        // Initialize ServiceResponse with a failure message
+        var serviceResponse = new ServiceResponse<TenantSubscriptionDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve the current tenant subscription plan. Please try again."
+        };
+
+        try
+        {
+            _logger.LogInformation("Fetching current tenant subscription plan for tenant ID: {TenantId}", _tenantId);
+
+            var isDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
+
+            // Query the current tenant's subscription, including related plan and creator details
+            var subscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w =>
+                    isDefaultTenant || w.CreatedByUserId == _userId &&
+                    w.StartDate.Date >= DateTimeOffset.UtcNow.Date &&
+                    w.EndDate.Date <= DateTimeOffset.UtcNow.Date
+                )
+                .Include(i => i.Plan)
+                .Include(i => i.CreatedByUser)
+                .SingleOrDefaultAsync();
+
+            if (subscription == null)
+            {
+                _logger.LogWarning("No current subscription plan found for tenant ID: {TenantId}", _tenantId);
+                serviceResponse.Message = "No subscription plan found for the current tenant.";
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("Current tenant subscription plan retrieved successfully for tenant ID: {TenantId}", _tenantId);
+
+            serviceResponse.Data = subscription.Adapt<TenantSubscriptionDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Current tenant subscription plan retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while retrieving the current tenant subscription plan for tenant ID: {TenantId}", _tenantId);
         }
 
         return serviceResponse;

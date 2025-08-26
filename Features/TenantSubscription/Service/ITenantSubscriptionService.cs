@@ -64,4 +64,11 @@ public interface ITenantSubscriptionService
     /// <param name="tenantSubscriptionPurchaseDto">Details of the subscription purchase.</param>
     /// <returns>A task with the purchased subscription details.</returns>
     Task<ServiceResponse<TenantSubscriptionDto>> PurchaseTenantSubscriptionPlanAsync(TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto);
+
+
+    /// <summary>
+    /// Retrieves the current subscription plan for a tenant.
+    /// </summary>
+    /// <returns>A task with the tenant's current subscription details.</returns>
+    Task<ServiceResponse<TenantSubscriptionDto>> GetCurrentTenantSubscriptionPlanAsync();
 }

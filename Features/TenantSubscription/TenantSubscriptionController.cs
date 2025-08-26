@@ -55,9 +55,16 @@ public class TenantSubscriptionController : BaseApiController
     }
 
     // Purchase of a tenant subscription based on the provided details.
-    [HttpPost("purchase-subscription")]
+    [HttpPost("purchase-plan")]
     public async Task<ActionResult<ServiceResponse<TenantSubscriptionDto>>> PurchaseTenantSubscriptions([FromBody] TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto)
     {
         return ResultHelper(await _tenantSubscriptionService.PurchaseTenantSubscriptionPlanAsync(tenantSubscriptionPurchaseDto));
+    }
+
+    // Retrieve current subscription plan details.
+    [HttpGet("current-plan")]
+    public async Task<ActionResult<ServiceResponse<TenantSubscriptionDto>>> CurrentTenantSubscriptions()
+    {
+        return ResultHelper(await _tenantSubscriptionService.GetCurrentTenantSubscriptionPlanAsync());
     }
 }
