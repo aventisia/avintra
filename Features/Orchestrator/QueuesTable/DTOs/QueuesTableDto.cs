@@ -53,7 +53,7 @@ public class QueuesTableDto
     /// <summary>
     /// Gets or sets the input data schema in JSON format.
     /// </summary>
-    public string? InputSchema { get; set; }
+    public List<QueueSchemaDefinitionDto>? InputSchema { get; set; }
 
     /// <summary>
     /// Gets or sets the output data schema in JSON format.

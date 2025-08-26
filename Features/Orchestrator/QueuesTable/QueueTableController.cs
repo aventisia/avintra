@@ -35,14 +35,14 @@ public class QueueTableController : BaseApiController
 
     // Inserts a new queue.
     [HttpPost]
-    public async Task<ActionResult<ServiceResponse<QueuesTableDto>>> InsertQueueAsync([FromForm] QueuesTableDto queuesTableDto)
+    public async Task<ActionResult<ServiceResponse<QueuesTableDto>>> InsertQueueAsync([FromBody] QueuesTableDto queuesTableDto)
     {
         return ResultHelper(await _queueTableService.InsertQueueAsync(queuesTableDto));
     }
 
     // Updates an existing queue.
     [HttpPut]
-    public async Task<ActionResult<ServiceResponse<QueuesTableDto>>> UpdateQueueAsync([FromForm] QueuesTableDto queuesTableDto)
+    public async Task<ActionResult<ServiceResponse<QueuesTableDto>>> UpdateQueueAsync([FromBody] QueuesTableDto queuesTableDto)
     {
         return ResultHelper(await _queueTableService.UpdateQueueAsync(queuesTableDto));
     }
