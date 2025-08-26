@@ -1,0 +1,33 @@
+meta {
+  name: Add queue transaction
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue-transaction/insert
+  body: json
+  auth: none
+}
+
+headers {
+  x-api-key: custom-api-key
+  tntid: bdbbbae6-6335-4838-8bff-14240906d698
+}
+
+body:json {
+  {
+    "queueId": "{{QUEUE_ID}}",
+    "status": "Pending",
+    "payloadData": " {  \n      \"Id\": 2,  \n      \"Name\": \"Nazy\",  \n      \"Date\": \"2025-08-01\",  \n      \"Location\": \"New York\"  \n    }"
+  }
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "QUEUE_TRANSACTION_ID",
+          res.getBody().data.id
+      );
+  }
+}
