@@ -54,6 +54,7 @@ public static class AppServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("SmtpConfig").Get<SmtpConfig>(), "SmtpConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("AesEncryptionConfig").Get<AesEncryptionConfig>(), "AesEncryptionConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("DefaultTenantConfig").Get<DefaultTenantConfig>(), message: "DefaultTenantConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("APIKeyConfig").Get<APIKeyConfig>(), "APIKeyConfig cannot be null"));
 
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
