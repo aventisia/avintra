@@ -1,0 +1,52 @@
+###
+# API Collection: Extract File Text
+#
+# This file contains example HTTP requests for testing the `/extract-file-text` API endpoint.
+#
+# Purpose:
+#   - To extract text content from various file types (PDF, DOCX, XLSX) by providing their URLs.
+#
+# Usage:
+#   - Each section demonstrates a POST request for a different file type.
+#   - The API expects a JSON body with a `file_url` parameter.
+#
+# Example file types covered:
+#   - PDF (simple, with images)
+#   - DOCX
+#   - XLSX
+###
+
+### Local variables
+@extractFileTextEndpoint = {{host}}/extract-file-text
+
+### PDF: simple electronic pdf
+POST {{extractFileTextEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "file_url": "{{testFilesPath}}/sample-invoice.pdf"
+}
+
+### PDF: electronic pdf with images
+POST {{extractFileTextEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "file_url": "{{testFilesPath}}/electronic-pdf-with-images.pdf"
+}
+
+### DOCX: simple document with docx extension
+POST {{extractFileTextEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "file_url": "{{testFilesPath}}/document-with-docx-ext.docx"
+}
+
+### XLSX: simple document with xlsx extension
+POST {{extractFileTextEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "file_url": "{{testFilesPath}}/document-with-xlsx-ext.xlsx"
+}
