@@ -6,18 +6,16 @@ meta {
 
 post {
   url: {{WORKSPACE_APIS_BASE_URL}}/queue-transaction
-  body: none
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    queueId: "f8e814af-16ef-45bb-82de-60a5d49645f8",//bru.getGlobalEnvVar("QUEUE_ID"),
-    status: "Pending",
-    payloadData: "[{}]"
-  })
+body:json {
+  {
+    "queueId": "{{QUEUE_ID}}",
+    "status": "Pending",
+    "payloadData": " {  \n      \"Id\": 1,  \n      \"Name\": \"Alice\",  \n      \"Date\": \"2025-08-01\",  \n      \"Location\": \"New York\"  \n    }"
+  }
 }
 
 script:post-response {

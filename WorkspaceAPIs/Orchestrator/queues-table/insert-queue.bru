@@ -6,24 +6,54 @@ meta {
 
 post {
   url: {{WORKSPACE_APIS_BASE_URL}}/queue
-  body: multipartForm
+  body: json
   auth: none
 }
 
-headers {
-  : 
-}
-
-body:multipart-form {
-  Name: test
-  Description: This is test
-  IsUniqueReferencesEnforced: true
-  IsStoredEncrypted: true
-  ShouldRetryFailedItems: true
-  ShouldRetryAbandonedItems: true
-  MaximumRetryAttempts: 10
-  SpecificDataSchemaFile: @file(/home/rahmat15/Gitea/Test/Text File.pdf)
-  OutputDataSchemaFile: @file(/home/rahmat15/Gitea/Test/Text File.pdf)
+body:json {
+  {
+    "name": "test",
+    "description": "",
+    "isUniqueReferencesEnforced": false,
+    "isStoredEncrypted": false,
+    "shouldRetryFailedItems": false,
+    "shouldRetryAbandonedItems": false,
+    "maximumRetryAttempts": 5,
+    "inputSchema": [
+      {
+        "name": "Id",
+        "description": "",
+        "lebel": "",
+        "type": "int",
+        "isRequired": true,
+        "isUsedForUniqueData": true
+      },
+      {
+        "name": "Name",
+        "description": "",
+        "lebel": "",
+        "type": "string",
+        "isRequired": true,
+        "isUsedForUniqueData": true
+      },
+      {
+        "name": "Date",
+        "description": "",
+        "lebel": "",
+        "type": "Date",
+        "isRequired": true,
+        "isUsedForUniqueData": false
+      },
+      {
+        "name": "Location",
+        "description": "",
+        "lebel": "",
+        "type": "string",
+        "isRequired": false,
+        "isUsedForUniqueData": false
+      }
+    ]
+  }
 }
 
 script:post-response {
