@@ -34,6 +34,13 @@ public class QueueTransactionController : BaseApiController
         return ResultHelper(await _queueTransactionService.InsertTransactionAsync(queueTransactionDto));
     }
 
+    // Add multiple transactions (work items) to the specified queue
+    [HttpPost("multiple")]
+    public async Task<ActionResult<ServiceResponse<bool>>> InsertMultipleTransactionsAsync([FromBody] QueueTransactionDto queueTransactionDto)
+    {
+        return ResultHelper(await _queueTransactionService.InsertMultipleTransactionsAsync(queueTransactionDto));
+    }
+
     // Add a new transaction (work item) to the specified queue
     [AllowAnonymous, CustomAuthorize]
     [HttpPost("insert")]
@@ -41,7 +48,6 @@ public class QueueTransactionController : BaseApiController
     {
         return ResultHelper(await _queueTransactionService.InsertTransactionAsync(queueTransactionDto));
     }
-
     // Modify the status of an existing transaction (e.g., Pending → In Progress → Completed/Failed)
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<QueueTransactionDto>>> UpdateTransactionStatus([FromBody] QueueTransactionDto queueTransactionDto)
