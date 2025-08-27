@@ -122,7 +122,7 @@ public class ExtractViaLLMService : IExtractViaLLMService
                     var jsonRequest = JsonSerializer.Serialize(requestDto);
                     var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response = await client.PostAsync(_extractViaLLMConfig.LLMPipelineAPI, content);
+                    HttpResponseMessage response = await client.PostAsync($"{_extractViaLLMConfig.LLMPipelineAPI}/extract-file-text", content);
 
                     if (!response.IsSuccessStatusCode)
                     {
