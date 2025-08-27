@@ -226,15 +226,14 @@ public class LLMDataExtractionService : ILLMDataExtractionService
 
                 var requestDto = new
                 {
-                    pdf_url = fileUrl,
-                    download = false
+                    file_url = fileUrl
                 };
 
                 var jsonRequest = System.Text.Json.JsonSerializer.Serialize(requestDto);
                 var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
                 _logger.LogInformation("Requesting file text extraction from pipeline for file URL: {fileUrl}", fileUrl);
-                HttpResponseMessage response = await client.PostAsync(_extractViaLLMConfig.LLMPipelineAPI, content);
+                HttpResponseMessage response = await client.PostAsync($"{_extractViaLLMConfig.LLMPipelineAPI}/extract-file-text", content);
 
                 // If the response is unsuccessful, log the error and return an empty string
                 if (!response.IsSuccessStatusCode)
