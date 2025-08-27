@@ -1,11 +1,14 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 const config = {
   darkMode: ["class"],
   content: [
-    "./index.html",
-    "./src/**/*.{html,js,jsx,ts,tsx}",
-    "./react-toolkit/**/*.{html,js,jsx,ts,tsx}",
+    "./pages/**/*.{html,js,jsx,ts,tsx,md,mdx}",
+    "./components/**/*.{html,js,jsx,ts,tsx,md,mdx}",
+    "./app/**/*.{html,js,jsx,ts,tsx,md,mdx}",
+    "./src/**/*.{html,js,jsx,ts,tsx,md,mdx}",
+    "./react-toolkit/**/*.{html,js,jsx,ts,tsx,md,mdx}",
     "./node_modules/@aventisia/ui/**/*.js",
   ],
   prefix: "",
@@ -14,16 +17,15 @@ const config = {
       center: true,
       padding: "2rem",
       screens: {
-        sm: "640px",
-        md: "768px",
-        lg: "1024px",
-        xl: "1280px",
-        "2xl": "1440px",
+        sm: "640px", // small => @media (min-width: 640px) { ... }
+        md: "768px", // medium => @media (min-width: 768px) { ... }
+        lg: "1024px", // large => @media (min-width: 1024px) { ... }
+        xl: "1280px", // extra-large => @media (min-width: 1280px) { ... }
+        "2xl": "1440px", // 2-extra-large => @media (min-width: 1440px) { ... }
       },
     },
     fontSize: {
       sm: ["0.8rem", "1.25rem"],
-      md: ["0.9rem", "1.35rem"],
       base: ["0.95rem", "1.5rem"],
       lg: ["1.1rem", "1.6rem"],
       xl: ["1.2rem", "1.75rem"],
@@ -34,6 +36,7 @@ const config = {
     },
     extend: {
       fontFamily: {
+        // Primary font
         sans: ["Inter", "sans-serif"],
       },
       fontSize: {
@@ -42,68 +45,69 @@ const config = {
         xs: ["0.75rem", "1.1rem"],
       },
       screens: {
-        mxs: "280px", // mobile-extra-small
-        msm: "320px", // mobile-small
-        mmd: "375px", // mobile-medium
-        mlg: "425px", // mobile-large
-        xs: "500px", // extra-small
-        "2md": "868px", // 2-medium
-        "3md": "968px", // 3-medium
-        "2lg": "1124px", // 2-large
-        "3lg": "1224px", // 3-large
+        mxs: "280px", // mobile-extra-small => @media (min-width: 280px) { ... }
+        msm: "320px", // mobile-small => @media (min-width: 320px) { ... }
+        mmd: "375px", // mobile-medium => @media (min-width: 375px) { ... }
+        mlg: "425px", // mobile-large => @media (min-width: 425px) { ... }
+        xs: "500px", // extra-small => @media (min-width: 500px) { ... }
+        "2md": "868px", // 2-medium => @media (min-width: 868px) { ... }
+        "3md": "968px", // 3-medium => @media (min-width: 968px) { ... }
+        "2lg": "1124px", // 2-large => @media (min-width: 1124px) { ... }
+        "3lg": "1224px", // 3-large => @media (min-width: 1224px) { ... }
       },
       colors: {
-        icon: "var(--icon)",
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
         background: "var(--background)",
         foreground: "var(--foreground)",
-        popover: {
-          DEFAULT: "var(--popover)",
-          foreground: "var(--popover-foreground)",
-        },
-        accent: {
-          DEFAULT: "var(--accent)",
-          foreground: "var(--accent-foreground)",
-        },
         primary: {
           DEFAULT: "var(--primary)",
           foreground: "var(--primary-foreground)",
-          50:  '#eaeafd',
-          100: '#cbc9f8',
-          200: '#a7a7f4',
-          300: '#8283f0',
-          400: '#6765ec',
-          500: '#4e46e5', // base color
-          600: '#493dd9',
-          700: '#4031cd',
-          800: '#3923c1',
-          900: '#2b00b0',
+          50: "hsl(240, 83%, 95%)",
+          100: "hsl(243, 77%, 88%)",
+          200: "hsl(240, 78%, 81%)",
+          300: "hsl(239, 79%, 73%)",
+          400: "hsl(241, 78%, 66%)",
+          500: "hsl(243, 75%, 59%)", // Primary color
+          600: "hsl(245, 67%, 55%)",
+          700: "hsl(246, 61%, 50%)",
+          800: "hsl(248, 69%, 45%)",
+          900: "hsl(255, 100%, 35%)",
         },
         secondary: {
           DEFAULT: "var(--secondary)",
           foreground: "var(--secondary-foreground)",
-        },
-        muted: {
-          DEFAULT: "var(--muted)",
-          foreground: "var(--muted-foreground)",
+          50: "hsl(227, 22%, 92%)",
+          100: "hsl(232, 24%, 80%)",
+          200: "hsl(233, 22%, 67%)",
+          300: "hsl(233, 21%, 55%)",
+          400: "hsl(235, 24%, 46%)",
+          500: "hsl(236, 35%, 38%)",
+          600: "hsl(237, 35%, 35%)",
+          700: "hsl(238, 38%, 31%)",
+          800: "hsl(240, 40%, 27%)",
+          900: "hsl(244, 47%, 20%)", // Secondary color
         },
         destructive: {
           DEFAULT: "var(--destructive)",
           foreground: "var(--destructive-foreground)",
         },
-        success: {
-          DEFAULT: "var(--success)",
-          foreground: "var(--success-foreground)",
+        muted: {
+          DEFAULT: "var(--muted)",
+          foreground: "var(--muted-foreground)",
         },
-        warning: {
-          DEFAULT: "var(--warning)",
-          foreground: "var(--warning-foreground)",
+        accent: {
+          DEFAULT: "var(--accent)",
+          foreground: "var(--accent-foreground)",
         },
-        info: {
-          DEFAULT: "var(--info)",
-          foreground: "var(--info-foreground)",
+        popover: {
+          DEFAULT: "var(--popover)",
+          foreground: "var(--popover-foreground)",
+        },
+        card: {
+          DEFAULT: "var(--card)",
+          foreground: "var(--card-foreground)",
         },
       },
       borderRadius: {
@@ -112,17 +116,27 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
         "caret-blink": {
           "0%,70%,100%": { opacity: "1" },
           "20%,50%": { opacity: "0" },
         },
       },
       animation: {
-        "caret-blink": "caret-blink 1.25s ease-out infinite",
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+        "caret-blink": "caret-blink 1.25s ease-out infinite", // Required for OTP field
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;
 
 export default config;
