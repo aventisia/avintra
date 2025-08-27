@@ -1,9 +1,11 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "../constants";
-import { uploadFile } from "../apis/file-upload-apis";
 import { toast } from "@aventisia/ui/sonner";
-import { FileUploadDto } from "../dtos/file-upload-dto";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+
+import { uploadFile } from "../apis/file-upload-apis";
+import { ALLOWED_FILE_TYPES } from "../constants";
+import { FileUploadDto } from "../dtos/file-upload-dto";
+
 interface FileUploadParams {
   modelId: string;
   addFileToUpload: (file: FileUploadDto) => void;
@@ -24,13 +26,18 @@ export const useFileUpload = ({
 
   const mutation = useMutation({
     mutationFn: async (file: File) => {
-      if (file.size > MAX_FILE_SIZE) {
-        throw new Error(
-          `File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`,
-        );
-      }
-      if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      // Find the allowed type config for this file
+      const allowedType = ALLOWED_FILE_TYPES.find((fileType) =>
+        fileType.extensions.includes(file.type),
+      );
+
+      if (!allowedType) {
         throw new Error("File type not supported");
+      }
+      if (file.size > allowedType.maxSizeMB * 1024 * 1024) {
+        throw new Error(
+          `File size for ${allowedType.category} must be less than ${allowedType.maxSizeMB}MB`,
+        );
       }
 
       try {
@@ -45,7 +52,9 @@ export const useFileUpload = ({
       }
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["UploadedFiles", "viewer", modelId] });
+      queryClient.invalidateQueries({
+        queryKey: ["UploadedFiles", "viewer", modelId],
+      });
       addFileToUpload({
         ...(data.data[0] as FileUploadDto),
         mlModelId: modelId,

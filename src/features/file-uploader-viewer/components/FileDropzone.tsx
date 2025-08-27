@@ -47,16 +47,30 @@ const FileDropzone = ({
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     accept: {
+      // Document formats
       "application/pdf": [".pdf"],
-      "image/jpeg": [".jpeg", ".jpg"],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        [".docx"],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+        ".xlsx",
+      ],
+      "text/csv": [".csv"],
+      "application/msword": [".rtf"],
+      "application/vnd.oasis.opendocument.text": [".odt"],
+      "text/markdown": [".md"],
+      "text/plain": [".txt"],
+      // Audio formats
+      "audio/mpeg": [".mp3"],
+      "audio/aac": [".aac"],
+      "audio/wav": [".wav"],
+      "audio/ogg": [".ogg", ".oga"],
+      "audio/opus": [".opus"],
+      // Image formats
+      "image/jpeg": [".jpg", ".jpeg"],
       "image/png": [".png"],
-      "image/gif": [".gif"],
+      "image/bmp": [".bmp"],
+      "image/tiff": [".tiff", ".tif"],
       "image/webp": [".webp"],
-      "audio/mpeg": [".mp3"], // MP3
-      "audio/wav": [".wav"], // WAV
-      "audio/ogg": [".ogg", ".oga"], // OGG (Vorbis)
-      "audio/aac": [".aac"], // AAC
-      "audio/opus": [".opus"], // Opus
     },
     noClick: true,
   });
@@ -85,8 +99,30 @@ const FileDropzone = ({
               </p>
             </div>
             <p className="text-muted-foreground">
-              Documents, text, audio, and images (pdf, jpg, jpeg, png, webp,
-              mp3, wav, ogg, aac, opus )
+              Documents, audio, and images <br /> (
+              {/* Document formats (prettier-ignore) */}
+              <span title="Portable Document Format">pdf</span>,{" "}
+              <span title="Microsoft Word Document">docx</span>,{" "}
+              <span title="Microsoft Excel Spreadsheet">xlsx</span>,{" "}
+              <span title="Comma-Separated Values">csv</span>,{" "}
+              <span title="Rich Text Format">rtf</span>,{" "}
+              <span title="OpenDocument Text">odt</span>,{" "}
+              <span title="Markdown">md</span>,{" "}
+              <span title="Plain Text">txt</span>,
+              {/* Audio formats (prettier-ignore) */}
+              <span title="MP3 Audio">mp3</span>,{" "}
+              <span title="Advanced Audio Coding">aac</span>,{" "}
+              <span title="WAV Audio">wav</span>,{" "}
+              <span title="Ogg Vorbis Audio">ogg</span>,{" "}
+              <span title="Ogg Vorbis Audio">ogg</span>,{" "}
+              <span title="Opus Audio">opus</span>,
+              {/* Image formats (prettier-ignore) */}
+              <span title="JPEG Image">jpg</span>,{" "}
+              <span title="JPEG Image">jpeg</span>,{" "}
+              <span title="Portable Network Graphics">png</span>,{" "}
+              <span title="Bitmap Image">bmp</span>,{" "}
+              <span title="Tagged Image File Format">tiff</span>,{" "}
+              <span title="Tagged Image File Format">tif</span>)
             </p>
           </div>
         )}

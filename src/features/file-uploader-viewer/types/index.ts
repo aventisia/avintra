@@ -6,6 +6,12 @@ export interface FileInfo {
   path: string;
 }
 
+export type AllowedFileType = {
+  category: string;
+  extensions: string[];
+  maxSizeMB: number;
+};
+
 export interface UploadProgress {
   uploadId: string;
   fileName: string;

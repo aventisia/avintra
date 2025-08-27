@@ -1,21 +1,45 @@
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+import { AllowedFileType } from "../types";
 
-const ALLOWED_FILE_TYPES = [
-  // Documents
-  "application/pdf",
-
-  // Images
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-
-  // Audio
-  "audio/mpeg",     // MP3
-  "audio/wav",      // WAV
-  "audio/ogg",      // OGG / OGA
-  "audio/aac",      // AAC
-  "audio/opus",     // Opus
+export const ALLOWED_FILE_TYPES: AllowedFileType[] = [
+  {
+    category: "documents",
+    extensions: [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "text/csv",
+      "application/msword",
+      "application/vnd.oasis.opendocument.text",
+      "text/markdown",
+      "text/plain",
+    ],
+    maxSizeMB: 20,
+  },
+  {
+    category: "audio",
+    extensions: [
+      "audio/mpeg",
+      "audio/aac",
+      "audio/wav",
+      "audio/ogg",
+      "audio/opus",
+    ],
+    maxSizeMB: 50,
+  },
+  {
+    category: "images",
+    extensions: [
+      "image/jpeg",
+      "image/png",
+      "image/bmp",
+      "image/tiff",
+      "image/webp",
+    ],
+    maxSizeMB: 50,
+  },
+  {
+    category: "videos",
+    extensions: ["video/avi", "video/mp4", "video/mpeg", "video/webm"],
+    maxSizeMB: 100,
+  },
 ];
-
-export { MAX_FILE_SIZE, ALLOWED_FILE_TYPES };
