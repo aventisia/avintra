@@ -1,6 +1,6 @@
 import { CrudActionType } from "@aventisia/ui/types";
 
-const RUN_REIVEW_TABLE_QUERY_KEY =["runReviewRecords"];
+const RUN_REIVEW_TABLE_QUERY_KEY = ["runReviewRecords"];
 
 const TABLE_HEADING = "Records";
 
@@ -23,7 +23,7 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
 };
 
 export {
-    RUN_REIVEW_TABLE_QUERY_KEY,
+  RUN_REIVEW_TABLE_QUERY_KEY,
   TABLE_HEADING,
   getDialogHeadingDescription,
   SEARCH_COLUMN,

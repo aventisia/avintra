@@ -1,22 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ISelectOption } from "@aventisia/ui/types";
+import { create } from "zustand";
 
-import { create } from 'zustand';
-import { getAiPersonaSpeechToTextServicesList } from '../apis/ai-persona-setup-api';
-import { ISelectOption } from '@aventisia/ui/types';
+import { getAiPersonaSpeechToTextServicesList } from "../apis/ai-persona-setup-api";
 
 type SttState = {
   sttOptions: ISelectOption[];
   loading: boolean;
   error: string | null;
   selectedSTTService: ISelectOption | null;
-
 };
 
 type SttActions = {
-    fetchSttOptions: (lang: string) => Promise<void>;
-    updateSelectedSTTService: (sttService: ISelectOption | null) => void;
-
-}
+  fetchSttOptions: (lang: string) => Promise<void>;
+  updateSelectedSTTService: (sttService: ISelectOption | null) => void;
+};
 
 export const useSttStore = create<SttState & SttActions>((set) => ({
   sttOptions: [],
@@ -35,6 +33,6 @@ export const useSttStore = create<SttState & SttActions>((set) => ({
   },
 
   updateSelectedSTTService: (sttService) => {
-    set({ selectedSTTService: sttService })
-  }
+    set({ selectedSTTService: sttService });
+  },
 }));

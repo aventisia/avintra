@@ -10,9 +10,11 @@ interface FileUploaderDialogActions {
   setName: (name: string) => void;
 }
 
-export const useToggleFileUploadDialogStore = create<FileUploaderDialogState & FileUploaderDialogActions>((set) => ({
+export const useToggleFileUploadDialogStore = create<
+  FileUploaderDialogState & FileUploaderDialogActions
+>((set) => ({
   showFileUploadDialog: false, // default state
   name: "",
   setShowFileUploadDialog: (show) => set({ showFileUploadDialog: show }),
-  setName: (name) => set({name: name})
+  setName: (name) => set({ name: name }),
 }));

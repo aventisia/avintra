@@ -1,8 +1,9 @@
 import { Checkbox, LoadingSpinner } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
+
 import { useSearchMultiSelect } from "../../hooks/useSearchMultiSelect";
 import { MultiSelector } from "./MultiSelector";
 import { SelectType } from "./SelectType";
-import { Button } from "@aventisia/ui/buttons";
 
 export const SearchMultiSelect: React.FC = () => {
   const {

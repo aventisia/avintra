@@ -1,6 +1,7 @@
-import { useOpenModelLabelData } from "../hooks/useOpenModelLabelData";
-import { cn } from "@aventisia/ui/lib";
 import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
+
+import { useOpenModelLabelData } from "../hooks/useOpenModelLabelData";
 
 interface ModelTableCellLinkProps {
   /** The ID of the model to open. */

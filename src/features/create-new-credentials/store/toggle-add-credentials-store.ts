@@ -10,9 +10,12 @@ interface CreateNewCredentialsActions {
   toggleFormDirty: (isDirty: boolean) => void;
 }
 
-export const useToggleCreateNewCredentialsDialogStore = create<CreateNewCredentialsState & CreateNewCredentialsActions>((set) => ({
+export const useToggleCreateNewCredentialsDialogStore = create<
+  CreateNewCredentialsState & CreateNewCredentialsActions
+>((set) => ({
   showCreateNewCredentialsDialog: false, // default state
   isFormDirty: false,
-  toggleFormDirty: (isDirty) => set({isFormDirty : isDirty}),
-  setShowCreateNewCredentialsDialog: (show) => set({ showCreateNewCredentialsDialog: show }),
+  toggleFormDirty: (isDirty) => set({ isFormDirty: isDirty }),
+  setShowCreateNewCredentialsDialog: (show) =>
+    set({ showCreateNewCredentialsDialog: show }),
 }));

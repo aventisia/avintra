@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
+
 import { ExtractedDataDto } from "../../dtos/ extracted-data-dto";
 import { ExtractedDataTableCellLink } from "./DataTableCellLink";
 

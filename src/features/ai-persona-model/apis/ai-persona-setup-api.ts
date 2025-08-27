@@ -1,9 +1,9 @@
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { IHttpResponse } from "@aventisia/ui/dtos";
+import { ISelectOption } from "@aventisia/ui/types";
 
 import { AiPersonaSetupDTO } from "../dtos/ai-persona-setup-dto";
-import { ISelectOption } from "@aventisia/ui/types";
 
 const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/conversation-model`;
 
@@ -12,9 +12,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/conversatio
  */
 const getAiPersonaSetupFormDataById = (modelId: string) => {
   return axiosInstance
-    .get<
-      IHttpResponse<AiPersonaSetupDTO>
-    >(`${baseAPIURL}/setup/${modelId}`)
+    .get<IHttpResponse<AiPersonaSetupDTO>>(`${baseAPIURL}/setup/${modelId}`)
     .then((res) => res.data);
 };
 
@@ -32,20 +30,16 @@ const updateAiPersonaSetupFormData = (data: AiPersonaSetupDTO) => {
  */
 const getAiPersonaLanguageList = () => {
   return axiosInstance
-    .get<
-      IHttpResponse<ISelectOption[]>
-    >(`${baseAPIURL}/available-languages`)
+    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/available-languages`)
     .then((res) => res.data);
 };
 
 /**
  * Get list of available text to speech services.
  */
-const getAiPersonaTextToSpeechServicesList = (lang:string) => {
+const getAiPersonaTextToSpeechServicesList = (lang: string) => {
   return axiosInstance
-    .get<
-      IHttpResponse<ISelectOption[]>
-    >(`${baseAPIURL}/text-to-speech/${lang}`)
+    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/text-to-speech/${lang}`)
     .then((res) => res.data);
 };
 
@@ -54,9 +48,7 @@ const getAiPersonaTextToSpeechServicesList = (lang:string) => {
  */
 const getAiPersonaSpeechToTextServicesList = (lang: string) => {
   return axiosInstance
-    .get<
-      IHttpResponse<ISelectOption[]>
-    >(`${baseAPIURL}/speech-to-text/${lang}`)
+    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/speech-to-text/${lang}`)
     .then((res) => res.data);
 };
 
@@ -71,11 +63,11 @@ const getAiPersonaVoicesList = (ttsService: string) => {
     .then((res) => res.data);
 };
 
-export {  
-      getAiPersonaSetupFormDataById, 
-      updateAiPersonaSetupFormData, 
-      getAiPersonaLanguageList, 
-      getAiPersonaTextToSpeechServicesList, 
-      getAiPersonaSpeechToTextServicesList, 
-      getAiPersonaVoicesList
-  };
+export {
+  getAiPersonaSetupFormDataById,
+  updateAiPersonaSetupFormData,
+  getAiPersonaLanguageList,
+  getAiPersonaTextToSpeechServicesList,
+  getAiPersonaSpeechToTextServicesList,
+  getAiPersonaVoicesList,
+};

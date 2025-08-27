@@ -1,13 +1,14 @@
 // components/MultiSelector.tsx
-import { useState, useRef, useEffect } from "react";
-import { X, ChevronDown, ChevronUp } from "lucide-react";
-import { WorkspaceUserDto } from "../../dtos/workspace-user-dto";
-import { Badge } from "@aventisia/ui/badge";
-import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
-import { Button } from "@aventisia/ui/buttons";
 import { Input, LoadingSpinner } from "@aventisia/ui";
+import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
+import { Badge } from "@aventisia/ui/badge";
+import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+
+import { WorkspaceUserDto } from "../../dtos/workspace-user-dto";
 
 interface MultiSelectorProps {
   searchResults: WorkspaceUserDto[];
@@ -93,7 +94,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
           onClick={() => {
             inputRef.current?.focus();
           }}
-          className={cn("grow", selectedItems.length > 2 && "h-16" )}
+          className={cn("grow", selectedItems.length > 2 && "h-16")}
         >
           <div className="flex flex-wrap items-center gap-1">
             {/* Selected Items */}

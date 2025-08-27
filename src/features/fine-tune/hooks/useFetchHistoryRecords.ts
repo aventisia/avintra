@@ -1,12 +1,14 @@
+import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+import { ModelNamesEnum } from "@/features/pdf-previewer/enums/model-name-enum";
+
+import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "@aventisia/ui/sonner";
-import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
-import { ModelNamesEnum } from "@/features/pdf-previewer/enums/model-name-enum";
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
-import {  HISTORY_TABLE_QUERY_KEY } from "../constants";
+
 import { getHistoryRecords } from "../apis/history-table-apis";
+import { HISTORY_TABLE_QUERY_KEY } from "../constants";
 
 /**
  * Custom hook to fetch records using react query.
@@ -26,7 +28,8 @@ export const useFetchHistoryRecords = () => {
     !isModelLoading &&
     !!modelId &&
     !!modelData?.data?.type &&
-    ModelNamesEnum[modelData.data.type as keyof typeof ModelNamesEnum] !== undefined;
+    ModelNamesEnum[modelData.data.type as keyof typeof ModelNamesEnum] !==
+      undefined;
 
   const { data, isError, error, isLoading, refetch } = useQuery({
     queryKey: HISTORY_TABLE_QUERY_KEY,

@@ -6,8 +6,8 @@ interface TemplateToUse {
   description: string;
   type: string;
   accessType: string;
-  icons: string[],
-  tags: string[],
+  icons: string[];
+  tags: string[];
   refId: string;
   createdBy?: string;
   usagesCount: number;
@@ -15,7 +15,7 @@ interface TemplateToUse {
 
 interface ModelLibraryDialogState {
   isOpen: boolean;
-  templateToUse: TemplateToUse
+  templateToUse: TemplateToUse;
 }
 
 interface ModelLibraryDialogActions {
@@ -23,7 +23,9 @@ interface ModelLibraryDialogActions {
   setTemplateToUse: (template: TemplateToUse) => void;
 }
 
-export const useModelLibraryDialogStore = create<ModelLibraryDialogState & ModelLibraryDialogActions>((set) => ({
+export const useModelLibraryDialogStore = create<
+  ModelLibraryDialogState & ModelLibraryDialogActions
+>((set) => ({
   isOpen: false,
   templateToUse: {
     id: "",
@@ -34,10 +36,11 @@ export const useModelLibraryDialogStore = create<ModelLibraryDialogState & Model
     tags: [],
     icons: [],
     description: "",
-    accessType:"",
-    usagesCount: 0
+    accessType: "",
+    usagesCount: 0,
   },
 
   setOpen: (open) => set({ isOpen: open }),
-  setTemplateToUse: (template : TemplateToUse) => set({ templateToUse: template }),
+  setTemplateToUse: (template: TemplateToUse) =>
+    set({ templateToUse: template }),
 }));

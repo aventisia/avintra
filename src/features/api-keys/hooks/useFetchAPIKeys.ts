@@ -1,7 +1,9 @@
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
-import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
+
 import { getAPIKeysList } from "../apis/api-keys-api";
 
 /**
@@ -11,18 +13,16 @@ import { getAPIKeysList } from "../apis/api-keys-api";
 export const useFetchApiKeys = () => {
   // Get modelId (mid) from query params
   const { modelId: mlModelId } = useLabelDataStore(
-      useShallow((state) => ({
-        modelId: state.modelId,
-      })),
-    );
+    useShallow((state) => ({
+      modelId: state.modelId,
+    })),
+  );
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const modelId = queryParams.get("mid") || mlModelId || "";
 
   // Get models using react query
-  const { data, 
-    isLoading,
-    refetch } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["api-keys", modelId],
     queryFn: () => getAPIKeysList(modelId),
   });

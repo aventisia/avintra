@@ -12,11 +12,14 @@ interface AddCredentailsActions {
   toggleFormDirty: (isDirty: boolean) => void;
 }
 
-export const useToggleCredentailsDialogStore = create<AddCredentailsState & AddCredentailsActions>((set) => ({
-    showAddCredentailsDialog: false, // default state
-    cloudServiceName: "",
-    isFormDirty: false,
-    setShowAddCredentailsDialog: (show) => set({ showAddCredentailsDialog: show }),
-    setCloudServiceName: (name) =>set({ cloudServiceName: name }),
-    toggleFormDirty: (isDirty) => set({isFormDirty : isDirty})
+export const useToggleCredentailsDialogStore = create<
+  AddCredentailsState & AddCredentailsActions
+>((set) => ({
+  showAddCredentailsDialog: false, // default state
+  cloudServiceName: "",
+  isFormDirty: false,
+  setShowAddCredentailsDialog: (show) =>
+    set({ showAddCredentailsDialog: show }),
+  setCloudServiceName: (name) => set({ cloudServiceName: name }),
+  toggleFormDirty: (isDirty) => set({ isFormDirty: isDirty }),
 }));

@@ -6,23 +6,22 @@ import { toast } from "@aventisia/ui/sonner";
  * @returns A function to handle opening the model
  */
 export const useOpenRunReviewRecord = () => {
-    const handleOpenRunReviewAction = (fileId: string) => {
-      if(!fileId) {
-        return toast.error("Failed to open record. Please try again")
-      }
+  const handleOpenRunReviewAction = (fileId: string) => {
+    if (!fileId) {
+      return toast.error("Failed to open record. Please try again");
+    }
 
-      const currentUrl = new URL(window.location.href);
+    const currentUrl = new URL(window.location.href);
 
-      // Force pathname to /run-review
-      currentUrl.pathname = "/view";
+    // Force pathname to /run-review
+    currentUrl.pathname = "/view";
 
-      currentUrl.searchParams.set("fid", fileId)
-      currentUrl.searchParams.set("source", "run-reveiew");
-  
-      // Open in new tab
-      window.open(currentUrl.toString(), "_blank");
-    };
-  
-    return handleOpenRunReviewAction;
+    currentUrl.searchParams.set("fid", fileId);
+    currentUrl.searchParams.set("source", "run-reveiew");
+
+    // Open in new tab
+    window.open(currentUrl.toString(), "_blank");
   };
-  
+
+  return handleOpenRunReviewAction;
+};

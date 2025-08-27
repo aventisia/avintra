@@ -6,6 +6,6 @@ interface SelectedTaskState {
 }
 
 export const useSelectedTaskStore = create<SelectedTaskState>((set) => ({
-    selectedTask: "",
-    setSelectedTask: (task) => set({ selectedTask: task }),
+  selectedTask: "",
+  setSelectedTask: (task) => set({ selectedTask: task }),
 }));

@@ -1,5 +1,5 @@
 export interface UpdateAPIKeyDTO {
-    id: string;
-    name: string;
-    mlModelId: string;
+  id: string;
+  name: string;
+  mlModelId: string;
 }

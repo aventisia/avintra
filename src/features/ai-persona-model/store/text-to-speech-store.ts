@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { create } from 'zustand';
-import { getAiPersonaTextToSpeechServicesList } from '../apis/ai-persona-setup-api';
-import { ISelectOption } from '@aventisia/ui/types';
+import { ISelectOption } from "@aventisia/ui/types";
+import { create } from "zustand";
+
+import { getAiPersonaTextToSpeechServicesList } from "../apis/ai-persona-setup-api";
 
 type TtsState = {
   ttsOptions: ISelectOption[];
@@ -11,10 +12,9 @@ type TtsState = {
 };
 
 type TtsActions = {
-    fetchTtsOptions: (lang: string) => Promise<void>;
-    updateSelectedTTSService: (ttsService: ISelectOption | null) => void;
-}
-
+  fetchTtsOptions: (lang: string) => Promise<void>;
+  updateSelectedTTSService: (ttsService: ISelectOption | null) => void;
+};
 
 export const useTtsStore = create<TtsState & TtsActions>((set) => ({
   ttsOptions: [],
@@ -32,6 +32,6 @@ export const useTtsStore = create<TtsState & TtsActions>((set) => ({
     }
   },
   updateSelectedTTSService: (ttsService) => {
-    set({ selectedTTSService: ttsService })
-  }
+    set({ selectedTTSService: ttsService });
+  },
 }));

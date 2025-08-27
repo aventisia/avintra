@@ -3,22 +3,21 @@ import { QuestionAnswersTestDTO } from "@/features/question-answer-model/dtos/qu
 import { SummarizationTestDTO } from "@/features/summarization-model/dtos/summarization-test-dto";
 
 interface IExtractedData {
-    id?: string;
-    fileId?: string;
-    remarks: string;
-    tokenCount: number;
-    executionCount: number;
-    failedCount: number;
-    executionTime: number;
-    extraction : InfoExtractorTestDTO | null;
-    summarization: SummarizationTestDTO | null;
-    questionAnswer: QuestionAnswersTestDTO[] | null;
-    classification: null;
-    sentimentAnalytics: null;
-
+  id?: string;
+  fileId?: string;
+  remarks: string;
+  tokenCount: number;
+  executionCount: number;
+  failedCount: number;
+  executionTime: number;
+  extraction: InfoExtractorTestDTO | null;
+  summarization: SummarizationTestDTO | null;
+  questionAnswer: QuestionAnswersTestDTO[] | null;
+  classification: null;
+  sentimentAnalytics: null;
 }
 
 export interface ExtractedDataResponseDto {
-    modelId: string;
-    extractedData: IExtractedData[];
+  modelId: string;
+  extractedData: IExtractedData[];
 }

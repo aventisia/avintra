@@ -3,9 +3,8 @@
  *
  */
 export enum ToneOfVoiceEnum {
-    formal = "Formal",
-    friendly = "Friendly",
-    concise = "Concise",
-    Empathetic = "Empathetic",
-  }
-  
+  formal = "Formal",
+  friendly = "Friendly",
+  concise = "Concise",
+  Empathetic = "Empathetic",
+}

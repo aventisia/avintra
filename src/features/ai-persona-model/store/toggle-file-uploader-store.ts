@@ -8,7 +8,9 @@ interface TabActions {
   setShowFileUploadDialog: (show: boolean) => void;
 }
 
-export const useToggleFileUploadDialogStore = create<TabState & TabActions>((set) => ({
-  showFileUploadDialog: false, // default state
-  setShowFileUploadDialog: (show) => set({ showFileUploadDialog: show }),
-}));
+export const useToggleFileUploadDialogStore = create<TabState & TabActions>(
+  (set) => ({
+    showFileUploadDialog: false, // default state
+    setShowFileUploadDialog: (show) => set({ showFileUploadDialog: show }),
+  }),
+);

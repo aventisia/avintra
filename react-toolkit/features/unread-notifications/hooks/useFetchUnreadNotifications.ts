@@ -2,9 +2,9 @@ import { getUnreadNotifications } from "@/react-toolkit/features/unread-notifica
 import { UN_QUERY_KEY } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
 
+import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "@aventisia/ui/sonner";
 import { useShallow } from "zustand/react/shallow";
 
 /**

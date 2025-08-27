@@ -1,4 +1,5 @@
 import { create } from "zustand";
+
 import { FileViewerDto } from "../dtos/file-list-dtos";
 
 export interface FileState {

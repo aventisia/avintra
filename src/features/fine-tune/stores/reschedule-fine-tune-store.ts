@@ -13,6 +13,6 @@ export const useRescheduleFineTuneStore = create<State & Actions>((set) => ({
 
   setRescheduleId: (id) =>
     set(() => ({
-        id: id,
+      id: id,
     })),
 }));

@@ -1,19 +1,21 @@
-import { create } from "zustand"
+import { create } from "zustand";
 
 interface TasksState {
-  listOfTasksId: string[]
+  listOfTasksId: string[];
 }
 
 interface TasksActions {
-  toggleTaskId: (id: string, checked: boolean) => void
+  toggleTaskId: (id: string, checked: boolean) => void;
 }
 
-export const useTasksToExecuteStore = create<TasksState & TasksActions>((set) => ({
-  listOfTasksId: [],
-  toggleTaskId: (id, checked) =>
-    set((state) => ({
-      listOfTasksId: checked
-        ? [...state.listOfTasksId, id] // Add if checked
-        : state.listOfTasksId.filter(taskId => taskId !== id), // Remove if unchecked
-    })),
-}))
+export const useTasksToExecuteStore = create<TasksState & TasksActions>(
+  (set) => ({
+    listOfTasksId: [],
+    toggleTaskId: (id, checked) =>
+      set((state) => ({
+        listOfTasksId: checked
+          ? [...state.listOfTasksId, id] // Add if checked
+          : state.listOfTasksId.filter((taskId) => taskId !== id), // Remove if unchecked
+      })),
+  }),
+);

@@ -11,7 +11,6 @@ const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/extracted-d
  * Retrieves list of annotations.
  */
 const getAnnotationList = (modelId: string) => {
-
   return axiosInstance
     .get<
       IHttpResponse<AnnotationDataDto[]>

@@ -1,8 +1,9 @@
+import { getModel } from "@/features/model-library-table/apis/model-library-table-apis";
+
 import { useQuery } from "@tanstack/react-query";
 //import { useEffect } from "react";
 //import { toast } from "@aventisia/ui/sonner";
 import { useLocation } from "react-router-dom";
-import { getModel } from "@/features/model-library-table/apis/model-library-table-apis";
 
 /**
  * Custom hook to fetch model using react query.
@@ -15,10 +16,12 @@ export const useFetchModel = () => {
   const modelId = queryParams.get("mid") || "";
 
   // Get models using react query
-  const { data, 
-    // isError, error, 
+  const {
+    data,
+    // isError, error,
     isLoading,
-    refetch } = useQuery({
+    refetch,
+  } = useQuery({
     queryKey: ["model", modelId],
     queryFn: () => getModel(modelId),
   });

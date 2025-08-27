@@ -1,7 +1,8 @@
 import { FilterFn } from "@tanstack/react-table";
-import { ModelLibraryTableDto } from "../dtos/model-library-table-dto";
-import { DateRange } from "react-day-picker";
 import { isWithinInterval } from "date-fns";
+import { DateRange } from "react-day-picker";
+
+import { ModelLibraryTableDto } from "../dtos/model-library-table-dto";
 
 // Define the date range filter function
 const dateRangeFilter: FilterFn<ModelLibraryTableDto> = (row, _, value) => {

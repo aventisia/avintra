@@ -7,9 +7,11 @@ interface SaveAsTemplateDialogState {
   toggleFormDirty: (isDirty: boolean) => void;
 }
 
-export const useSaveAsTemplateDialogStore = create<SaveAsTemplateDialogState>((set) => ({
-  isOpen: false,
-  isFormDirty: false,
-  setOpen: (open) => set({ isOpen: open }),
-  toggleFormDirty: (isDirty) => set({isFormDirty : isDirty})
-}));
+export const useSaveAsTemplateDialogStore = create<SaveAsTemplateDialogState>(
+  (set) => ({
+    isOpen: false,
+    isFormDirty: false,
+    setOpen: (open) => set({ isOpen: open }),
+    toggleFormDirty: (isDirty) => set({ isFormDirty: isDirty }),
+  }),
+);

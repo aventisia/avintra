@@ -3,8 +3,9 @@ import { SelectFieldProps } from "@aventisia/ui/form";
 import { SwitchFieldProps } from "@aventisia/ui/form";
 import { TextareaFieldProps } from "@aventisia/ui/form";
 import { enumToArray } from "@aventisia/ui/utils";
-import { ModelTypesEnum } from "../enums/model-type-enum";
+
 import { ModelLLMEnum } from "../enums/model-llm-enum";
+import { ModelTypesEnum } from "../enums/model-type-enum";
 
 // Model Id
 const idProps: InputFieldProps = {

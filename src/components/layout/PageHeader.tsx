@@ -1,5 +1,5 @@
-import { cn } from "@aventisia/ui/lib";
 import { Skeleton } from "@aventisia/ui";
+import { cn } from "@aventisia/ui/lib";
 
 interface PageHeaderProps {
   isLoading?: boolean;

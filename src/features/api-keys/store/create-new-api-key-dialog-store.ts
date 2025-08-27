@@ -8,9 +8,11 @@ interface CreateNewApiKeyDialogState {
   toggleFormDirty: (isDirty: boolean) => void;
 }
 
-export const useCreateNewApiKeyDialogStore = create<CreateNewApiKeyDialogState>((set) => ({
-  isOpen: false,
-  isFormDirty: false,
-  setOpen: (open) => set({ isOpen: open }),
-  toggleFormDirty: (isDirty) => set({isFormDirty : isDirty})
-}));
+export const useCreateNewApiKeyDialogStore = create<CreateNewApiKeyDialogState>(
+  (set) => ({
+    isOpen: false,
+    isFormDirty: false,
+    setOpen: (open) => set({ isOpen: open }),
+    toggleFormDirty: (isDirty) => set({ isFormDirty: isDirty }),
+  }),
+);

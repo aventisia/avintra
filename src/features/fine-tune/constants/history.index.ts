@@ -1,6 +1,5 @@
 import { CrudActionType } from "@aventisia/ui/types";
 
-
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
@@ -14,6 +13,4 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   }
 };
 
-export {
-  getDialogHeadingDescription,
-};
+export { getDialogHeadingDescription };

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { create } from 'zustand';
-import {  getAiPersonaVoicesList } from '../apis/ai-persona-setup-api';
-import { ISelectOption } from '@aventisia/ui/types';
+import { ISelectOption } from "@aventisia/ui/types";
+import { create } from "zustand";
+
+import { getAiPersonaVoicesList } from "../apis/ai-persona-setup-api";
 
 type VoicesState = {
   voicesOptions: ISelectOption[];
@@ -11,11 +12,10 @@ type VoicesState = {
 };
 
 type VoicesActions = {
-    fetchVoiceOptions: (ttsService: string) => Promise<void>;
-    updateSelectedVoice: (voice: ISelectOption | null) => void;
-    setVoicesOptions: (options: ISelectOption[]) => void;
-}
-
+  fetchVoiceOptions: (ttsService: string) => Promise<void>;
+  updateSelectedVoice: (voice: ISelectOption | null) => void;
+  setVoicesOptions: (options: ISelectOption[]) => void;
+};
 
 export const useVoiceStore = create<VoicesState & VoicesActions>((set) => ({
   voicesOptions: [],
@@ -33,7 +33,7 @@ export const useVoiceStore = create<VoicesState & VoicesActions>((set) => ({
     }
   },
   updateSelectedVoice: (voice) => {
-    set({ selectedVoice: voice })
+    set({ selectedVoice: voice });
   },
   setVoicesOptions: (options) => {
     set({ voicesOptions: options });

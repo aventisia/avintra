@@ -1,6 +1,7 @@
+import { DeleteDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
-import { DeleteDDMenuItem } from "@aventisia/ui/dropdown-menu";
+
 import { modelOptimisticMutationFn } from "../../apis/model-library-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { ModelLibraryTableDto } from "../../dtos/model-library-table-dto";

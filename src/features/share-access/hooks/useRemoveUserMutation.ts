@@ -1,17 +1,17 @@
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteFlowUser } from "../apis/share-flow-apis";
 import { useLocation } from "react-router-dom";
+
+import { deleteFlowUser } from "../apis/share-flow-apis";
 import { FLOWS_USER_KEY } from "../constants";
 
 export const useRemoveUserMutation = () => {
   // Get query client
   const queryClient = useQueryClient();
 
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
-    const modelId = queryParams.get("mid") || "";
-  
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const modelId = queryParams.get("mid") || "";
 
   const { isPending, mutate } = useMutation({
     mutationFn: deleteFlowUser,

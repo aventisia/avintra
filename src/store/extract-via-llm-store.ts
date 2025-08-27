@@ -9,7 +9,9 @@ interface ExtractedDataAction {
   setExtractedData: (data: Record<string, any>) => void;
 }
 
-export const useExtractedDataStore = create<ExtractedDataState & ExtractedDataAction>((set) => ({
+export const useExtractedDataStore = create<
+  ExtractedDataState & ExtractedDataAction
+>((set) => ({
   extractedData: {},
   setExtractedData: (data) => set({ extractedData: data }),
 }));

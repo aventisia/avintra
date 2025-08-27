@@ -1,10 +1,11 @@
-import { useListOptimisticMutation } from "@aventisia/ui/hooks";
-import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import { Separator } from "@aventisia/ui";
 import { DTBulkActions } from "@aventisia/ui/data-table";
 import { DTBulkDeleteAction } from "@aventisia/ui/data-table";
 import { DTSelectionInfo } from "@aventisia/ui/data-table";
-import { Separator } from "@aventisia/ui";
+import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { Table } from "@tanstack/react-table";
+
 import { modelOptimisticMutationFn } from "../apis/model-library-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import { ModelLibraryTableDto } from "../dtos/model-library-table-dto";

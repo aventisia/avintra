@@ -1,8 +1,9 @@
 import { DataTableRowActions } from "@aventisia/ui/data-table";
 import { DTRowAction } from "@aventisia/ui/data-table";
 import { DropdownMenuSeparator } from "@aventisia/ui/dropdown-menu";
-import { ModelRowDeleteAction } from "./ModelRowDeleteAction";
+
 import { ModelLabelDataAction } from "./ModelLabelDataAction";
+import { ModelRowDeleteAction } from "./ModelRowDeleteAction";
 import { ModelTestAction } from "./ModelTestAction";
 
 interface ModelRowActionsProps {

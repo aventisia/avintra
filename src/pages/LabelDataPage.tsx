@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { Suspense, lazy } from "react";
 
 // Lazy load the ModelLibraryTable component.
 const LabelDataContainer = lazy(() =>

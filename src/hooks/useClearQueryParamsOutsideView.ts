@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 /**
  * Removes `fid` and `source` query parameters when the route is not `/view`
@@ -25,7 +25,7 @@ export const useClearQueryParamsOutsideView = () => {
           pathname: location.pathname,
           search: newParams.toString(),
         },
-        { replace: true }
+        { replace: true },
       );
     }
   }, [location.pathname, searchParams, navigate]);

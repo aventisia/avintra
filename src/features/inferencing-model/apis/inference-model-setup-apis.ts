@@ -1,19 +1,21 @@
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import { IHttpResponse } from "@aventisia/ui/dtos";
+
 import { InferenceModelSetupDTO } from "../dtos/inference-model-setup-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/inferencing-model`;
-
 
 /**
  * Get Form Data by id.
  */
 const getInferenceModelDataById = (modelId: string) => {
   return axiosInstance
-    .get<IHttpResponse<InferenceModelSetupDTO>>(`${baseAPIURL}/setup/${modelId}`)
+    .get<
+      IHttpResponse<InferenceModelSetupDTO>
+    >(`${baseAPIURL}/setup/${modelId}`)
     .then((res) => res.data);
 };
-
 
 /**
  * Updates form data.
@@ -24,5 +26,4 @@ const updateInferenceModelSetupFormData = (data: InferenceModelSetupDTO) => {
     .then((res) => res.data);
 };
 
-
-export { getInferenceModelDataById, updateInferenceModelSetupFormData}
+export { getInferenceModelDataById, updateInferenceModelSetupFormData };

@@ -1,5 +1,5 @@
-import * as z from "zod";
 import { reqError } from "@aventisia/ui/utils";
+import * as z from "zod";
 
 export const storageConnectFormZodSchema = z
   .object({
@@ -17,7 +17,10 @@ export const storageConnectFormZodSchema = z
       });
     }
 
-    if (data.scope === "Folder" && (!data.folderId || data.folderId.trim() === "")) {
+    if (
+      data.scope === "Folder" &&
+      (!data.folderId || data.folderId.trim() === "")
+    ) {
       ctx.addIssue({
         path: ["folderId"],
         message: reqError("Folder Id"),

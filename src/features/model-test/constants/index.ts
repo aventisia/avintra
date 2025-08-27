@@ -1,4 +1,5 @@
 import { VisibilityState } from "@tanstack/react-table";
+
 import { ExtractedDataDto } from "../dtos/ extracted-data-dto";
 
 // Function to generate initial visibility state for the columns

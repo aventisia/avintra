@@ -6,8 +6,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@aventisia/ui/select";
-import { selectOptions } from "../../constants";
 import { Edit2Icon, EyeIcon } from "lucide-react";
+
+import { selectOptions } from "../../constants";
 
 type Props = {
   value: string;

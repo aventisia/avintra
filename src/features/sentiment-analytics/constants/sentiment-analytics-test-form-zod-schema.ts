@@ -13,11 +13,11 @@ const subCategorySchema = z.object({
   subSubCategories: z.array(subSubCategorySchema).default([]).nullable(),
 });
 
-
-export const sentimentalAnalyticsTestFormZodSchema = z
-  .array(z.object({
+export const sentimentalAnalyticsTestFormZodSchema = z.array(
+  z.object({
     name: z.string(),
     value: z.string().default("false"),
     confidenceScore: z.string().default(""),
-    subCategories: z.array(subCategorySchema).default([]).nullable()
-}))
+    subCategories: z.array(subCategorySchema).default([]).nullable(),
+  }),
+);

@@ -1,8 +1,9 @@
+import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "@aventisia/ui/sonner";
-import { getExtractedDataList } from "../apis/extraction-data--table-apis";
 import { useLocation } from "react-router-dom";
+
+import { getExtractedDataList } from "../apis/extraction-data--table-apis";
 
 /**
  * Custom hook to fetch extracted data using react query.

@@ -1,3 +1,4 @@
+import { Button } from "@aventisia/ui/buttons";
 import {
   Dialog,
   DialogClose,
@@ -6,12 +7,12 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@aventisia/ui/dialog";
-import React, { ReactNode } from "react";
-import { useLabelDataStore } from "../stores/label-data-store";
-import { useShallow } from "zustand/react/shallow";
 import { FilePieChartIcon } from "lucide-react";
-import { Button } from "@aventisia/ui/buttons";
+import React, { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+
+import { useLabelDataStore } from "../stores/label-data-store";
 
 // Define the props interface
 interface TrainingDialogProps {

@@ -1,9 +1,11 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "../constants";
-import { uploadFile } from "../apis/file-upload-apis";
 import { toast } from "@aventisia/ui/sonner";
-import { FileUploadDto } from "../dtos/file-upload-dto";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+
+import { uploadFile } from "../apis/file-upload-apis";
+import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "../constants";
+import { FileUploadDto } from "../dtos/file-upload-dto";
+
 interface FileUploadParams {
   modelId: string;
   addFileToUpload: (file: FileUploadDto) => void;
@@ -45,7 +47,9 @@ export const useFileUpload = ({
       }
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["UploadedFiles", "setup", modelId] });
+      queryClient.invalidateQueries({
+        queryKey: ["UploadedFiles", "setup", modelId],
+      });
       addFileToUpload({
         ...(data.data[0] as FileUploadDto),
         mlModelId: modelId,

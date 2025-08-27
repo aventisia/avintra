@@ -1,3 +1,3 @@
 export interface SummarizationTestDTO {
-    summary: string;
+  summary: string;
 }

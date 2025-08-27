@@ -1,5 +1,5 @@
-export enum ResponseStrategyEnum { 
-    Conservative = "Conservative",
-    Competitive = "Competitive",
-    Differentiated = "Differentiated"
+export enum ResponseStrategyEnum {
+  Conservative = "Conservative",
+  Competitive = "Competitive",
+  Differentiated = "Differentiated",
 }

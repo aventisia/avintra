@@ -1,15 +1,16 @@
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useLocation } from "react-router-dom";
 import { useMemo } from "react";
-import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+import { useLocation } from "react-router-dom";
+
 import { publishModel } from "../apis/publish-model-apis";
 
 export const usePublishModelMutation = () => {
   const queryClient = useQueryClient();
   const location = useLocation();
-  const {modelId: mlModelId} = useLabelDataStore();
-
+  const { modelId: mlModelId } = useLabelDataStore();
 
   // Get flow id and version id from url
   const queryParams = useMemo(

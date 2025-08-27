@@ -1,9 +1,10 @@
-import { useShowAlertHandler } from "@aventisia/ui/hooks";
-import { DropdownMenuItem } from "@aventisia/ui/dropdown-menu";
-import { UserMinus2Icon } from "lucide-react";
-import { cn } from "@aventisia/ui/lib";
-import { buttonVariants } from "@aventisia/ui/buttons";
 import { useRemoveUserMutation } from "@/features/share-access/hooks/useRemoveUserMutation";
+
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { DropdownMenuItem } from "@aventisia/ui/dropdown-menu";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import { cn } from "@aventisia/ui/lib";
+import { UserMinus2Icon } from "lucide-react";
 
 interface RemoveUserActionProps {
   id: string;

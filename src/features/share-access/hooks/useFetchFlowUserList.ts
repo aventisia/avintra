@@ -1,7 +1,8 @@
+import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "@aventisia/ui/sonner";
 import { useLocation } from "react-router-dom";
+
 import { getFlowUser } from "../apis/share-flow-apis";
 import { FLOWS_USER_KEY } from "../constants";
 
@@ -10,11 +11,9 @@ import { FLOWS_USER_KEY } from "../constants";
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchFlowUserList = () => {
-
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const modelId = queryParams.get("mid") || "";
-
 
   // Get flow versions using react query
   const { data, isFetching, isLoading, isError, error, refetch } = useQuery({

@@ -7,13 +7,17 @@ import SummarizationModelSetupForm from "@/features/summarization-model/componen
 
 import type { FC } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { inferenceModelFormZodSchema } from "./inference-model-zod-schema";
 import { z } from "zod";
+
+import { inferenceModelFormZodSchema } from "./inference-model-zod-schema";
 
 export const inferenceTaskComponentMap: Record<
   string,
-  { label: string; 
-    component: FC<{ form: UseFormReturn<z.infer<typeof inferenceModelFormZodSchema>> }>;
+  {
+    label: string;
+    component: FC<{
+      form: UseFormReturn<z.infer<typeof inferenceModelFormZodSchema>>;
+    }>;
   }
 > = {
   classification: {

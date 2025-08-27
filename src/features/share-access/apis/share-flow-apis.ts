@@ -1,5 +1,7 @@
-import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { IHttpResponse } from "@aventisia/ui/dtos";
+
 import { FlowUserDto } from "../dtos/flow-user-dto";
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 

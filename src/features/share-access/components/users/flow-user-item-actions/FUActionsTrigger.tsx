@@ -1,6 +1,6 @@
-import { cn } from "@aventisia/ui/lib";
 import { buttonVariants } from "@aventisia/ui/buttons";
 import { DropdownMenuTrigger } from "@aventisia/ui/dropdown-menu";
+import { cn } from "@aventisia/ui/lib";
 import { EditIcon } from "lucide-react";
 
 export const FUActionsTrigger = () => {

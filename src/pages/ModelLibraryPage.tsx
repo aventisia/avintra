@@ -1,5 +1,5 @@
 import { DataTableSkeleton } from "@aventisia/ui/data-table";
-import { lazy, Suspense } from "react";
+import { Suspense, lazy } from "react";
 
 // Lazy load the ModelLibraryTable component.
 const ModelLibraryTable = lazy(() =>

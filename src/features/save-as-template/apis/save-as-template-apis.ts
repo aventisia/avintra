@@ -1,6 +1,7 @@
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { IHttpResponse } from "@aventisia/ui/dtos";
+
 import { SaveAsTemplateDTO } from "../dtos/save-as-template-dto";
 import { TemplateListDTO } from "../dtos/template-list-dto";
 import { UseTemplateDTO } from "../dtos/use-template-dto";
@@ -11,7 +12,7 @@ const getTemplateList = () => {
   return axiosInstance
     .get<IHttpResponse<TemplateListDTO[]>>(`${baseAPIURL}/trending`)
     .then((res) => res.data);
-}
+};
 
 const publishTemplate = (data: SaveAsTemplateDTO) => {
   return axiosInstance
@@ -25,4 +26,4 @@ const applyTemplate = (data: UseTemplateDTO) => {
     .then((res) => res.data);
 };
 
-export {publishTemplate, getTemplateList, applyTemplate};
+export { publishTemplate, getTemplateList, applyTemplate };

@@ -1,11 +1,12 @@
 // hooks/useDeleteInsertedFile.ts
-import { useMutation } from "@tanstack/react-query";
-// import { toast } from "@aventisia/ui/sonner"; 
+// import { toast } from "@aventisia/ui/sonner";
 import { deleteInsertedFileById } from "@/features/file-uploader-setup/apis/file-upload-apis";
 
+import { useMutation } from "@tanstack/react-query";
+
 type MutationParams = {
-    id: string;
-  };
+  id: string;
+};
 
 export const useDeleteInsertedFiles = () => {
   const { mutateAsync: removeInsertedDocument } = useMutation({
@@ -16,6 +17,6 @@ export const useDeleteInsertedFiles = () => {
   });
 
   return {
-    removeInsertedDocument
+    removeInsertedDocument,
   };
 };

@@ -1,13 +1,14 @@
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { personaResearchZodSchema } from "../constants/generative-model-zod-schemas/persona-research-zod-schema";
-import { useQueryClient } from "@tanstack/react-query";
-import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
-import { useEffect } from "react";
-import { PersonaResearchDTO } from "../dtos/persona-research-dto";
 
+import { personaResearchZodSchema } from "../constants/generative-model-zod-schemas/persona-research-zod-schema";
+import { PersonaResearchDTO } from "../dtos/persona-research-dto";
 
 export const usePersonaResearchForm = () => {
   const { modelId } = useLabelDataStore(
@@ -28,11 +29,11 @@ export const usePersonaResearchForm = () => {
         setupObject: {
           personaName: "",
           companyName: "",
-          links: [{url: ""}],
+          links: [{ url: "" }],
           purposeOfResearch: "",
           desiredOutput: "",
         },
-      }
+      },
     },
   });
 
@@ -48,28 +49,28 @@ export const usePersonaResearchForm = () => {
       data: PersonaResearchDTO;
     }>(["GENERATIVE_SETUP_FORM_DATA"]);
 
-    if(generativeModelData?.data?.generativeModel?.name === "PersonaResearch") {
-        form.reset({
-          id: generativeModelData?.data.id ?? modelId ?? "",
-          generativeModel: generativeModelData?.data.generativeModel ?? {
-            name: "PersonaResearch",
-            configurationType: "OnPrem",
-            llm: "gemma",
-            temperature: 0.6,
-            nodePrompt: "",
-            setupObject: {
-              personaName: "",
-              companyName: "",
-              links: [{url: ""}],
-              purposeOfResearch: "",
-              desiredOutput: "",
-            },
-          }
-        })
+    if (
+      generativeModelData?.data?.generativeModel?.name === "PersonaResearch"
+    ) {
+      form.reset({
+        id: generativeModelData?.data.id ?? modelId ?? "",
+        generativeModel: generativeModelData?.data.generativeModel ?? {
+          name: "PersonaResearch",
+          configurationType: "OnPrem",
+          llm: "gemma",
+          temperature: 0.6,
+          nodePrompt: "",
+          setupObject: {
+            personaName: "",
+            companyName: "",
+            links: [{ url: "" }],
+            purposeOfResearch: "",
+            desiredOutput: "",
+          },
+        },
+      });
     }
   }, [form, queryClient, modelId]);
-  
- 
 
   return {
     form,

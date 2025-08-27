@@ -1,8 +1,9 @@
+import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "@aventisia/ui/sonner";
-import { DATA_QUERY_KEY } from "../constants";
+
 import { getModels } from "../apis/model-library-table-apis";
+import { DATA_QUERY_KEY } from "../constants";
 
 /**
  * Custom hook to fetch models using react query.

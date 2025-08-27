@@ -1,4 +1,5 @@
 import { FileUploadDto } from "@/features/file-uploader-viewer/dtos/file-upload-dto";
+
 import { create } from "zustand";
 
 export interface FileState extends FileUploadDto {

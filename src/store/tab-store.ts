@@ -6,7 +6,7 @@ interface TabState {
 }
 
 interface TabActions {
-    setActiveTab: (tab: string) => void;
+  setActiveTab: (tab: string) => void;
 }
 
 export const useTabStore = create<TabState & TabActions>((set) => ({

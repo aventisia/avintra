@@ -23,6 +23,6 @@ export const useUpdateApiKeyDialogStore = create<
   isFormDirty: false,
 
   setOpen: (open) => set({ isOpen: open }),
-  toggleFormDirty: (isDirty) => set({isFormDirty : isDirty}),
+  toggleFormDirty: (isDirty) => set({ isFormDirty: isDirty }),
   setUpdateFields: (id, apiKeyName) => set({ id, apiKeyName }),
 }));

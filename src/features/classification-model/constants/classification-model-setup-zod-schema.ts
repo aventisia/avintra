@@ -1,6 +1,7 @@
-import * as z from "zod";
-import { reqError } from "@aventisia/ui/utils";
 import { llmConfigZodSchema } from "@/features/llm-configuration/constants/llm-config-zod-schema";
+
+import { reqError } from "@aventisia/ui/utils";
+import * as z from "zod";
 
 const subSubCategorySchema = z.object({
   name: z.string().min(1, { message: reqError("Sub-Category") }),

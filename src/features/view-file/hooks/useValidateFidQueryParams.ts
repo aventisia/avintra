@@ -1,18 +1,23 @@
-import { useSearchParams } from "react-router-dom";
-import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
-import { useMemo } from "react";
 import { FileViewerDto } from "@/features/multi-format-viewer/dtos/file-list-dtos";
+import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
+
+import { useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 export const useValidateFidQueryParam = () => {
   const [searchParams] = useSearchParams();
-  const { data: fileListData, isLoading, error: fetchError } = useFetchUploadedFiles();
+  const {
+    data: fileListData,
+    isLoading,
+    error: fetchError,
+  } = useFetchUploadedFiles();
   const { setSelectedFile } = useFileListStore(
-      useShallow((state) => ({
-        setSelectedFile: state.setSelectedFile,
-      })),
-    );
+    useShallow((state) => ({
+      setSelectedFile: state.setSelectedFile,
+    })),
+  );
 
   const result = useMemo(() => {
     const fid = searchParams.get("fid");

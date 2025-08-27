@@ -1,12 +1,13 @@
-import { useMemo } from "react";
-import { useDataTable } from "@aventisia/ui/hooks";
 import { DTHeading } from "@aventisia/ui/data-table";
 import { DataTable } from "@aventisia/ui/data-table";
 import { DTPagination } from "@aventisia/ui/data-table";
-import { ExtractedDataDto } from "../../dtos/ extracted-data-dto";
-import { generateDynamicColumns } from "./ExtractedDataTableColumns";
-import { useGetExtractedDataList } from "../../hooks/useFetchExtractedDataList";
+import { useDataTable } from "@aventisia/ui/hooks";
+import { useMemo } from "react";
+
 import { generateVisibility, refactorData } from "../../constants";
+import { ExtractedDataDto } from "../../dtos/ extracted-data-dto";
+import { useGetExtractedDataList } from "../../hooks/useFetchExtractedDataList";
+import { generateDynamicColumns } from "./ExtractedDataTableColumns";
 
 export const ExtractedDataTable = () => {
   const { data } = useGetExtractedDataList();

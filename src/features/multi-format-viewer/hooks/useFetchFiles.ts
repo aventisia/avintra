@@ -1,19 +1,22 @@
+import { getUploadedFiles as getSetupUploadedFiles } from "@/features/file-uploader-setup/apis/file-upload-apis";
+import { getUploadedFiles } from "@/features/file-uploader-viewer/apis/file-upload-apis";
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+
+import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "@aventisia/ui/sonner";
-import { getUploadedFiles } from "@/features/file-uploader-viewer/apis/file-upload-apis";
-import { getUploadedFiles as getSetupUploadedFiles } from "@/features/file-uploader-setup/apis/file-upload-apis";
+import { useLocation } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 
 import { useFileListStore } from "../store/file-list-store";
-import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
-import { useShallow } from "zustand/react/shallow";
-import { useLocation } from "react-router-dom";
 
 /**
  * Custom hook to fetch data fields using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
-export const useFetchUploadedFiles = ( viewerType: "setup" | "viewer" = "viewer") => {
+export const useFetchUploadedFiles = (
+  viewerType: "setup" | "viewer" = "viewer",
+) => {
   const { selectedFile, setSelectedFile } = useFileListStore(
     useShallow((state) => ({
       selectedFile: state.selectedFile,
@@ -43,7 +46,10 @@ export const useFetchUploadedFiles = ( viewerType: "setup" | "viewer" = "viewer"
   // Get models using react query
   const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["UploadedFiles", viewerType, modelId],
-    queryFn: () => viewerType === "viewer" ? getUploadedFiles(modelId) : getSetupUploadedFiles(modelId),
+    queryFn: () =>
+      viewerType === "viewer"
+        ? getUploadedFiles(modelId)
+        : getSetupUploadedFiles(modelId),
     refetchOnMount: true,
   });
 

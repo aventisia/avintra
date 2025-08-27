@@ -1,6 +1,5 @@
 export enum ModelNamesEnum {
-    inferencing = "Inferencing",
-    conversation = "Conversation",
-    generative = "Generative"
-  }
-  
+  inferencing = "Inferencing",
+  conversation = "Conversation",
+  generative = "Generative",
+}

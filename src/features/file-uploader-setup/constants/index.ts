@@ -11,11 +11,11 @@ const ALLOWED_FILE_TYPES = [
   "image/webp",
 
   // Audio
-  "audio/mpeg",     // MP3
-  "audio/wav",      // WAV
-  "audio/ogg",      // OGG / OGA
-  "audio/aac",      // AAC
-  "audio/opus",     // Opus
+  "audio/mpeg", // MP3
+  "audio/wav", // WAV
+  "audio/ogg", // OGG / OGA
+  "audio/aac", // AAC
+  "audio/opus", // Opus
 ];
 
 export { MAX_FILE_SIZE, ALLOWED_FILE_TYPES };

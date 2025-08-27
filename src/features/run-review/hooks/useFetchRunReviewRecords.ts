@@ -1,12 +1,14 @@
+import { ModelNamesEnum } from "@/components/enums/model-name-enum";
+import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+import { getRunReviewRecords } from "@/features/run-review/apis/run-review-table-apis";
+
+import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "@aventisia/ui/sonner";
-import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useShallow } from "zustand/react/shallow";
-import { getRunReviewRecords } from "@/features/run-review/apis/run-review-table-apis";
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+
 import { RUN_REIVEW_TABLE_QUERY_KEY } from "../constants";
-import { ModelNamesEnum } from "@/components/enums/model-name-enum";
 
 /**
  * Custom hook to fetch records using react query.
@@ -26,7 +28,9 @@ export const useFetchRunReviewRecords = () => {
     !isModelLoading &&
     !!modelId &&
     !!modelData?.data?.type &&
-    ModelNamesEnum[modelData.data.type.toLowerCase() as keyof typeof ModelNamesEnum] !== undefined;
+    ModelNamesEnum[
+      modelData.data.type.toLowerCase() as keyof typeof ModelNamesEnum
+    ] !== undefined;
 
   const { data, isError, error, isLoading, refetch } = useQuery({
     queryKey: RUN_REIVEW_TABLE_QUERY_KEY,
