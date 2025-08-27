@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3007",
+    "pregit": "prettier --write . && eslint --fix . && tsc -b",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "format": "prettier --write . && eslint --fix .",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
