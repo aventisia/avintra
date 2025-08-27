@@ -37,13 +37,9 @@ def extract_text_from_file(file_path: str) -> str:
 
         # Extract text from images
         elif ext in ['.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.tif']:
-            try:
-                image = Image.open(local_path)
-                return pytesseract.image_to_string(image)
-            except Exception as e:
-                logger.error(f'Error extracting text from image: {e}')
-                raise HTTPException(status_code=500, detail="Error extracting text from image file.")
-        
+            image = Image.open(local_path)
+            return pytesseract.image_to_string(image)
+
         # Extract text from Word document
         elif ext == '.docx':
             return docx2txt.process(local_path)
@@ -68,10 +64,7 @@ def extract_text_from_file(file_path: str) -> str:
                 raw = f.read()
                 result = chardet.detect(raw)
                 encoding = result['encoding'] or 'utf-8'
-                try:
-                    return raw.decode(encoding, errors='replace')
-                except Exception:
-                    raise HTTPException(status_code=500, detail=f"Could not decode file with detected encoding: {encoding}")
+                return raw.decode(encoding, errors='replace')
 
         # Extract text from CSV files
         elif ext == '.csv':
