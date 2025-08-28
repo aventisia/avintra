@@ -1306,6 +1306,10 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<int>("StorageLimitMB")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
