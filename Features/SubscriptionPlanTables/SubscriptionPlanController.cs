@@ -14,16 +14,16 @@ public class SubscriptionPlanController : BaseApiController
 
     // Retrieves all subscription plans.
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SubscriptionPlanDto>>>> GetAllSubscriptionPlans()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SubscriptionPlanDto>>>> GetAllSubscriptionPlans(SubscriptionPlanTypeEnum? type)
     {
-        return ResultHelper(await _subscriptionPlanService.GetAllSubscriptionPlansAsync());
+        return ResultHelper(await _subscriptionPlanService.GetAllSubscriptionPlansAsync(type));
     }
 
     // Gets a list of subscription plans for selection options.
     [HttpGet("option-to-select")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetSelectableSubscriptionPlanOptions()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetSelectableSubscriptionPlanOptions(SubscriptionPlanTypeEnum? type)
     {
-        return ResultHelper(await _subscriptionPlanService.GetSelectableSubscriptionPlanOptionsAsync());
+        return ResultHelper(await _subscriptionPlanService.GetSelectableSubscriptionPlanOptionsAsync(type));
     }
 
     // Retrieves a specific subscription plan by its unique identifier.

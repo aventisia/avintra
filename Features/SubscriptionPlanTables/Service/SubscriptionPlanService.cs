@@ -16,7 +16,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
     }
 
     // Retrieves all subscription plans from the database including the creator user.
-    public async Task<ServiceResponse<IEnumerable<SubscriptionPlanDto>>> GetAllSubscriptionPlansAsync()
+    public async Task<ServiceResponse<IEnumerable<SubscriptionPlanDto>>> GetAllSubscriptionPlansAsync(SubscriptionPlanTypeEnum? subscriptionPlanType)
     {
         // Initialize a default failure response
         var serviceResponse = new ServiceResponse<IEnumerable<SubscriptionPlanDto>>
@@ -28,18 +28,21 @@ public class SubscriptionPlanService : ISubscriptionPlanService
         try
         {
             // Fetch all plans with their creators included
-            var plans = await _unitOfWork.SubscriptionPlanRepo
+            var subscriptionPlans = await _unitOfWork.SubscriptionPlanRepo
                 .GetAllAsync()
                 .Include(i => i.CreatedByUser)
                 .OrderByDescending(o => o.CreatedOn)
                 .ToListAsync();
 
+            // If a subscription plan type filter is provided, apply it to the list
+            if (subscriptionPlanType.HasValue) subscriptionPlans = subscriptionPlans.Where(w => w.Type == subscriptionPlanType).ToList();
+
             // Map the plans to DTOs for safe transfer
-            serviceResponse.Data = plans.Adapt<IEnumerable<SubscriptionPlanDto>>();
+            serviceResponse.Data = subscriptionPlans.Adapt<IEnumerable<SubscriptionPlanDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Subscription plans retrieved successfully.";
 
-            _logger.LogInformation("Retrieved {Count} subscription plan(s).", plans.Count);
+            _logger.LogInformation("Retrieved {Count} subscription plan(s).", subscriptionPlans.Count);
         }
         catch (Exception ex)
         {
@@ -50,7 +53,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
     }
 
     // Retrieves all subscription plans as selectable options for UI components.
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableSubscriptionPlanOptionsAsync()
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableSubscriptionPlanOptionsAsync(SubscriptionPlanTypeEnum? subscriptionPlanType)
     {
         // Initialize response with default failure message
         var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
@@ -62,16 +65,19 @@ public class SubscriptionPlanService : ISubscriptionPlanService
         try
         {
             // Retrieve all subscription plans without including related entities (lightweight fetch)
-            var plans = await _unitOfWork.SubscriptionPlanRepo
+            var subscriptionPlans = await _unitOfWork.SubscriptionPlanRepo
                 .GetAllAsync()
                 .ToListAsync();
 
+            // If a subscription plan type filter is provided, apply it to the list
+            if (subscriptionPlanType.HasValue) subscriptionPlans = subscriptionPlans.Where(w => w.Type == subscriptionPlanType).ToList();
+
             // Convert subscription plans to SelectOptionDto for UI consumption
-            serviceResponse.Data = plans.Adapt<IEnumerable<SelectOptionDto>>();
+            serviceResponse.Data = subscriptionPlans.Adapt<IEnumerable<SelectOptionDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Subscription plan options retrived successfully.";
 
-            _logger.LogInformation("Retrived {Count} subscription plan option(s) for selection.", plans.Count);
+            _logger.LogInformation("Retrived {Count} subscription plan option(s) for selection.", subscriptionPlans.Count);
         }
         catch (Exception ex)
         {
