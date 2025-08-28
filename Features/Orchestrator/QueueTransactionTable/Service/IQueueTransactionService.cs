@@ -17,13 +17,6 @@ public interface IQueueTransactionService
     Task<ServiceResponse<QueueTransactionDto>> GetQueueTransactionByIdAsync(Guid queueTransactionId);
 
     /// <summary>
-    /// Create a new work item within the queue.
-    /// </summary>
-    /// <param name="queueTransactionDto">Details of the transaction to be added</param>
-    /// <returns>The transaction that was successfully added to the queue</returns>
-    Task<ServiceResponse<QueueTransactionDto>> InsertTransactionAsync(QueueTransactionDto queueTransactionDto);
-
-    /// <summary>
     /// Inserts multiple transactions into the queue.
     /// </summary>
     /// <param name="queueTransactionDto">Details of the transactions to be added to the queue (PayloadData contains a list of transactions)</param>
@@ -36,6 +29,13 @@ public interface IQueueTransactionService
     /// <param name="queueTransactionDto">The updated transaction details, including the new status</param>
     /// <returns>The updated transaction after status change</returns>
     Task<ServiceResponse<QueueTransactionDto>> UpdateTransactionStatusAsync(QueueTransactionDto queueTransactionDto);
+
+    /// <summary>
+    /// Modify the payload data of an existing transaction.
+    /// </summary>
+    /// <param name="queueTransactionDto">The updated transaction details, including the new status</param>
+    /// <returns>The updated transaction after status change</returns>
+    Task<ServiceResponse<QueueTransactionDto>> UpdateTransactionDataAsync(QueueTransactionDto queueTransactionDto);
 
     /// <summary>
     /// Delete a transaction (work item) from the queue.

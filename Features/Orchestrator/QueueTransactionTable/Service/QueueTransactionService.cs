@@ -109,9 +109,13 @@ public class QueueTransactionService : IQueueTransactionService
 
         try
         {
-            // Attempt to retrieve the queue, including its existing transactions
+            // Retrieve the queue by ID or name (case-insensitive), including its associated transactions
             var queue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Id == queueTransactionDto.QueueId)
+                .GetByConditionAsync(w =>
+                    string.IsNullOrEmpty(queueTransactionDto.QueueName)
+                        ? w.Id == queueTransactionDto.QueueId
+                        : w.Name.ToLower() == queueTransactionDto.QueueName.ToLower()
+                )
                 .Include(i => i.QueueTransactions)
                 .SingleOrDefaultAsync();
 
@@ -200,7 +204,7 @@ public class QueueTransactionService : IQueueTransactionService
                         uniqueKeyParts.Add(value!.ToString()!);
 
                         // Add field name and value to the list
-                        uniqueFields.Add($"{field.Name}: {value}"); 
+                        uniqueFields.Add($"{field.Name}: {value}");
                     }
 
                     // Populate the dynamic object with provided values
@@ -245,6 +249,7 @@ public class QueueTransactionService : IQueueTransactionService
 
                 // Map the DTO to an entity for database insertion
                 var newTransaction = queueTransactionDto.Adapt<QueueTransaction>();
+                newTransaction.Status = QueueTransactionStatusTypesEnum.InProgress;
                 newTransactions.Add(newTransaction);
             }
 
@@ -275,162 +280,6 @@ public class QueueTransactionService : IQueueTransactionService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error occurred while adding transactions to queue {QueueId}.", queueTransactionDto.QueueId);
-        }
-
-        return serviceResponse;
-    }
-
-    // Inserts a new transaction (work item) into a specified queue, validating against the schema, enforcing uniqueness, and handling encryption if necessary.
-    public async Task<ServiceResponse<QueueTransactionDto>> InsertTransactionAsync(QueueTransactionDto queueTransactionDto)
-    {
-        var serviceResponse = new ServiceResponse<QueueTransactionDto>
-        {
-            Data = null,
-            Message = "Failed to add the transaction. Please try again later."
-        };
-
-        try
-        {
-            // Attempt to retrieve the queue, including its existing transactions
-            var queue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Id == queueTransactionDto.QueueId)
-                .Include(i => i.QueueTransactions)
-                .SingleOrDefaultAsync();
-
-            if (queue == null)
-            {
-                _logger.LogWarning("Insert failed: Queue with ID {QueueId} was not found.", queueTransactionDto.QueueId);
-                serviceResponse.Message = "Specified queue does not exist.";
-                return serviceResponse;
-            }
-
-            _logger.LogInformation("Initiating transaction insertion into queue with ID {QueueId}.", queueTransactionDto.QueueId);
-
-            // Deserialize the queue's input schema from JSON; use an empty list if schema is missing or invalid
-            var inputSchema = System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(
-                queue.InputSchema ?? "[]",
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-            ) ?? new List<QueueSchemaDefinitionDto>();
-
-            // Dynamically generate an object based on the schema with default values
-            dynamic dynamicObject = CreateDynamicObjectFromSchema(inputSchema);
-
-            var errors = new List<string>();
-
-            // Parse the incoming payload into a JObject; fall back to an empty object if null or malformed
-            var data = Newtonsoft.Json.Linq.JObject.Parse(queueTransactionDto.PayloadData ?? "{}");
-
-            // Collect existing unique keys from stored transactions for duplicate detection
-            var existingUniqueKeys = new HashSet<string>();
-
-            if (queue.QueueTransactions != null)
-            {
-                foreach (var transaction in queue.QueueTransactions)
-                {
-                    var payload = transaction.PayloadData;
-                    if (string.IsNullOrWhiteSpace(payload))
-                        continue;
-
-                    if (queue.IsStoredEncrypted)
-                        payload = _stringEncryptionService.DecryptString(transaction.PayloadData ?? string.Empty);
-
-                    var obj = Newtonsoft.Json.Linq.JObject.Parse(payload);
-
-                    var keyParts = inputSchema
-                        .Where(w => w.IsUsedForUniqueIdentifier)
-                        .Select(s =>
-                        {
-                            obj.TryGetValue(s.Name, out var val);
-                            return val?.ToString() ?? string.Empty;
-                        });
-
-                    var uniqueKey = string.Join("|", keyParts);
-                    existingUniqueKeys.Add(uniqueKey);
-                }
-            }
-
-            // Prepare to construct the new unique key for this incoming transaction
-            var uniqueKeyParts = new List<string>();
-
-            foreach (var field in inputSchema)
-            {
-                var hasValue = data.TryGetValue(field.Name, out var value) &&
-                               value != null &&
-                               !string.IsNullOrWhiteSpace(value.ToString());
-
-                // Validate required fields
-                if (field.IsRequired && !hasValue)
-                {
-                    var label = string.IsNullOrWhiteSpace(field.Label) ? field.Name : field.Label;
-                    errors.Add($"Missing required field: {label}");
-                }
-
-                // Build the new unique key if applicable
-                if (field.IsUsedForUniqueIdentifier && queue.IsUniqueReferencesEnforced && hasValue)
-                {
-                    uniqueKeyParts.Add(value!.ToString()!);
-                }
-
-                // Populate the dynamic object with provided values
-                ((IDictionary<string, object>)dynamicObject)[field.Name] = value!;
-            }
-
-            // Check if a transaction with the same unique fields already exists
-            if (queue.IsUniqueReferencesEnforced && uniqueKeyParts.Any())
-            {
-                var newUniqueKey = string.Join("|", uniqueKeyParts);
-
-                if (existingUniqueKeys.Contains(newUniqueKey, StringComparer.InvariantCultureIgnoreCase))
-                {
-                    errors.Add("A transaction with the same unique values already exists in the queue.");
-                }
-            }
-
-            // Serialize the validated dynamic object back into JSON
-            queueTransactionDto.PayloadData = JsonConvert.SerializeObject(dynamicObject, Formatting.Indented);
-
-            // Return immediately if any validation errors were encountered
-            if (errors.Any())
-            {
-                serviceResponse.Message = string.Join("; ", errors);
-                _logger.LogWarning("Transaction validation failed: {Errors}", serviceResponse.Message);
-                return serviceResponse;
-            }
-
-            // Assign the creator if not already provided
-            if (string.IsNullOrEmpty(queueTransactionDto.CreatedBy))
-            {
-                queueTransactionDto.CreatedBy = _username;
-            }
-
-            // Encrypt the payload if the queue requires secure storage
-            if (queue.IsStoredEncrypted)
-            {
-                queueTransactionDto.PayloadData = _stringEncryptionService.EncryptString(queueTransactionDto.PayloadData ?? string.Empty);
-            }
-
-            // Map the DTO to an entity for database insertion
-            var newTransaction = queueTransactionDto.Adapt<QueueTransaction>();
-
-            // Insert the new transaction
-            await _unitOfWork.QueueTransactionRepo.InsertAsync(newTransaction);
-
-            // Persist changes to the database
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Database commit failed after inserting transaction into queue {QueueId}.", queueTransactionDto.QueueId);
-                return serviceResponse;
-            }
-
-            // Successful insertion
-            serviceResponse.Data = newTransaction.Adapt<QueueTransactionDto>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Transaction added to the queue successfully.";
-            _logger.LogInformation("Transaction successfully added to queue {QueueId} by user {UserId}.", queueTransactionDto.QueueId, _userId);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unexpected error occurred while adding a transaction to queue {QueueId}.", queueTransactionDto.QueueId);
         }
 
         return serviceResponse;
@@ -576,8 +425,176 @@ public class QueueTransactionService : IQueueTransactionService
                 queueTransactionDto.PayloadData = _stringEncryptionService.EncryptString(queueTransactionDto.PayloadData ?? string.Empty);
             }
 
-            // Apply the updated DTO values to the existing transaction entity
-            queueTransactionDto.Adapt(queueTransaction);
+            // Update the existing queue transaction entity with values from the DTO
+            queueTransaction.Status = queueTransactionDto.Status;
+            queueTransaction.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            // Mark the transaction as updated
+            _unitOfWork.QueueTransactionRepo.Update(queueTransaction);
+
+            // Persist changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to persist transaction status update for ID {TransactionId}.", queueTransactionDto.Id);
+                return serviceResponse;
+            }
+
+            // Return successful response
+            serviceResponse.Data = queueTransaction.Adapt<QueueTransactionDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Transaction status updated successfully.";
+            _logger.LogInformation("Transaction ID {TransactionId} successfully updated. New status: {Status}.", queueTransactionDto.Id, queueTransactionDto.Status);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while updating transaction ID {TransactionId}.", queueTransactionDto.Id);
+        }
+
+        return serviceResponse;
+    }
+
+    // Updates the status and payload of an existing queue transaction, including validation, uniqueness checks, encryption handling, and database persistence.
+    public async Task<ServiceResponse<QueueTransactionDto>> UpdateTransactionDataAsync(QueueTransactionDto queueTransactionDto)
+    {
+        var serviceResponse = new ServiceResponse<QueueTransactionDto>
+        {
+            Data = null,
+            Message = "Failed to update queue transaction status. Please try again."
+        };
+
+        try
+        {
+            _logger.LogInformation("Initiating update for transaction ID {TransactionId}.", queueTransactionDto.Id);
+
+            // Retrieve the transaction with its associated queue
+            var queueTransaction = await _unitOfWork.QueueTransactionRepo
+                .GetByConditionAsync(w => w.Id == queueTransactionDto.Id)
+                .Include(i => i.Queue)
+                .SingleOrDefaultAsync();
+
+            if (queueTransaction == null)
+            {
+                _logger.LogWarning("Transaction ID {TransactionId} not found. Update aborted.", queueTransactionDto.Id);
+                serviceResponse.Message = "Transaction not found.";
+                return serviceResponse;
+            }
+
+            // Retrieve the full queue details including all transactions for uniqueness validation
+            var queue = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(w => w.Id == queueTransaction.QueueId)
+                .Include(i => i.QueueTransactions)
+                .FirstOrDefaultAsync();
+
+            if (queue == null)
+            {
+                _logger.LogWarning("Queue ID {QueueId} associated with transaction {TransactionId} not found.", queueTransaction.QueueId, queueTransactionDto.Id);
+                serviceResponse.Message = "Associated queue not found.";
+                return serviceResponse;
+            }
+
+            // Deserialize the queue's input schema; fall back to empty list if schema is invalid or null
+            var inputSchema = System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(
+                queue.InputSchema ?? "[]",
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            ) ?? new List<QueueSchemaDefinitionDto>();
+
+            // Generate a dynamic object based on the schema
+            dynamic dynamicObject = CreateDynamicObjectFromSchema(inputSchema);
+
+            var errors = new List<string>();
+
+            // Parse the incoming payload; fall back to an empty object if null or malformed
+            var data = Newtonsoft.Json.Linq.JObject.Parse(queueTransactionDto.PayloadData ?? "{}");
+
+            // Extract existing unique keys from the queue's transactions to ensure uniqueness
+            var existingUniqueKeys = new HashSet<string>();
+            if (queue.QueueTransactions != null)
+            {
+                foreach (var transaction in queue.QueueTransactions.Where(w => w.Id != queueTransaction.Id).ToList())
+                {
+                    var payload = transaction.PayloadData;
+                    if (string.IsNullOrWhiteSpace(payload)) continue;
+
+                    if (queue.IsStoredEncrypted)
+                        payload = _stringEncryptionService.DecryptString(payload);
+
+                    var obj = Newtonsoft.Json.Linq.JObject.Parse(payload);
+
+                    var keyParts = inputSchema
+                        .Where(w => w.IsUsedForUniqueIdentifier)
+                        .Select(s =>
+                        {
+                            obj.TryGetValue(s.Name, out var val);
+                            return val?.ToString() ?? string.Empty;
+                        });
+
+                    var uniqueKey = string.Join("|", keyParts);
+                    existingUniqueKeys.Add(uniqueKey);
+                }
+            }
+
+            // Construct the unique key from the incoming payload and validate fields
+            var uniqueKeyParts = new List<string>();
+
+            foreach (var field in inputSchema)
+            {
+                var hasValue = data.TryGetValue(field.Name, out var value) &&
+                               value != null &&
+                               !string.IsNullOrWhiteSpace(value.ToString());
+
+                // Check for missing required fields
+                if (field.IsRequired && !hasValue)
+                {
+                    var label = string.IsNullOrWhiteSpace(field.Label) ? field.Name : field.Label;
+                    errors.Add($"Missing required field: {label}");
+                }
+
+                // Build the composite unique key
+                if (field.IsUsedForUniqueIdentifier && queue.IsUniqueReferencesEnforced && hasValue)
+                {
+                    uniqueKeyParts.Add(value!.ToString()!);
+                }
+
+                // Populate the dynamic object with payload values
+                ((IDictionary<string, object>)dynamicObject)[field.Name] = value!;
+            }
+
+            // Check if the constructed unique key already exists in the queue
+            if (queue.IsUniqueReferencesEnforced && uniqueKeyParts.Any())
+            {
+                var newUniqueKey = string.Join("|", uniqueKeyParts);
+
+                if (existingUniqueKeys.Contains(newUniqueKey, StringComparer.InvariantCultureIgnoreCase))
+                {
+                    errors.Add("A transaction with the same unique field values already exists in the queue.");
+                }
+            }
+
+            // Serialize the validated dynamic object back to JSON
+            queueTransactionDto.PayloadData = JsonConvert.SerializeObject(dynamicObject, Formatting.Indented);
+
+            // If validation errors were found, return early
+            if (errors.Any())
+            {
+                serviceResponse.Message = string.Join("; ", errors);
+                _logger.LogWarning("Transaction update validation failed: {Errors}", serviceResponse.Message);
+                return serviceResponse;
+            }
+
+            // Set the creator username if not already set
+            if (string.IsNullOrEmpty(queueTransactionDto.CreatedBy))
+            {
+                queueTransactionDto.CreatedBy = _username;
+            }
+
+            // Encrypt payload if required
+            if (queue.IsStoredEncrypted)
+            {
+                queueTransactionDto.PayloadData = _stringEncryptionService.EncryptString(queueTransactionDto.PayloadData ?? string.Empty);
+            }
+
+            // Update the existing queue transaction entity with values from the DTO
+            queueTransaction.PayloadData = queueTransactionDto.PayloadData;
             queueTransaction.LastModifiedOn = DateTimeOffset.UtcNow;
 
             // Mark the transaction as updated

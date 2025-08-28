@@ -22,35 +22,36 @@ public class QueueTransactionController : BaseApiController
 
     // Retrieves a specific queue transaction by its ID.
     [HttpGet("{queueTransactionId}")]
-    public async Task<ActionResult<ServiceResponse<QueuesTableDto>>> GetQueueByIdAsync(Guid queueTransactionId)
+    public async Task<ActionResult<ServiceResponse<QueuesTableDto>>> GetQueueTransactionById(Guid queueTransactionId)
     {
         return ResultHelper(await _queueTransactionService.GetQueueTransactionByIdAsync(queueTransactionId));
     }
 
-    // Add a new transaction (work item) to the specified queue
-    [HttpPost]
-    public async Task<ActionResult<ServiceResponse<QueueTransactionDto>>> InsertTransactionAsync([FromBody] QueueTransactionDto queueTransactionDto)
-    {
-        return ResultHelper(await _queueTransactionService.InsertTransactionAsync(queueTransactionDto));
-    }
-
     // Add multiple transactions (work items) to the specified queue
-    [HttpPost("multiple")]
+    [HttpPost("multiple-data")]
     public async Task<ActionResult<ServiceResponse<bool>>> InsertMultipleTransactionsAsync([FromBody] QueueTransactionDto queueTransactionDto)
     {
         return ResultHelper(await _queueTransactionService.InsertMultipleTransactionsAsync(queueTransactionDto));
     }
 
-    // Add a new transaction (work item) to the specified queue
+    // Add multiple transactions (work item) to the specified queue
     [AllowAnonymous, CustomAuthorize]
     [HttpPost("insert")]
     public async Task<ActionResult<ServiceResponse<QueueTransactionDto>>> AddTransactionAsync([FromBody] QueueTransactionDto queueTransactionDto)
     {
-        return ResultHelper(await _queueTransactionService.InsertTransactionAsync(queueTransactionDto));
+        return ResultHelper(await _queueTransactionService.InsertMultipleTransactionsAsync(queueTransactionDto));
     }
+
     // Modify the status of an existing transaction (e.g., Pending → In Progress → Completed/Failed)
-    [HttpPut]
+    [HttpPut("status")]
     public async Task<ActionResult<ServiceResponse<QueueTransactionDto>>> UpdateTransactionStatus([FromBody] QueueTransactionDto queueTransactionDto)
+    {
+        return ResultHelper(await _queueTransactionService.UpdateTransactionStatusAsync(queueTransactionDto));
+    }
+
+    // Modify the payload data of an existing transaction
+    [HttpPut("data")]
+    public async Task<ActionResult<ServiceResponse<QueueTransactionDto>>> UpdateTransactionDatas([FromBody] QueueTransactionDto queueTransactionDto)
     {
         return ResultHelper(await _queueTransactionService.UpdateTransactionStatusAsync(queueTransactionDto));
     }
