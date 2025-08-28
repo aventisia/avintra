@@ -1,6 +1,5 @@
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
-import { DotSeparator } from "@aventisia/ui";
 import { useLocation } from "react-router-dom";
 
 import { ModelNamesEnum } from "../enums/model-name-enum";
@@ -10,14 +9,14 @@ const ModelInfo = () => {
   const queryParams = new URLSearchParams(location.search);
   const modelName = queryParams.get("pn") || "";
   const modelType = queryParams.get("ml") || "";
-  const { data } = useFetchModel();
+  const { data } = useFetchProjectMetaData();
   const badgeName =
     ModelNamesEnum[data?.data.type as keyof typeof ModelNamesEnum] ||
     ModelNamesEnum[modelType as keyof typeof ModelNamesEnum] ||
     "";
   return (
-    <>
-      <DotSeparator className="-mt-4 text-[2rem]" />
+    <div className="flex items-center ml-3 gap-3">
+      <span className="rotate-12 text-white/50">/</span>
       <span
         className="mr-[0.6rem] truncate text-sm font-medium text-white mt-1 md:max-w-[50px] lg:max-w-[100px] xl:max-w-[182px]"
         title={modelName}
@@ -29,7 +28,7 @@ const ModelInfo = () => {
           {badgeName}
         </span>
       ) : null}
-    </>
+    </div>
   );
 };
 

@@ -34,7 +34,7 @@ const AppLogo = ({
 
   // Return logo with app name
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-3">
       <Tooltip content="Back">
         <Button
           size="icon8"
