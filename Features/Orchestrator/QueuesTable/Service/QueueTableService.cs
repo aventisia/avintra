@@ -75,12 +75,13 @@ public class QueueTableService : IQueueTableService
             // Get queues for the current user
             var queues = await _unitOfWork.QueueRepo
                 .GetAllAsync()
+                .Include(i => i.QueueTransactions)
+                .Include(i => i.CreatedByUser)
                 .OrderByDescending(o => o.CreatedOn)
-                .ProjectToType<QueuesTableDto>()
                 .ToListAsync();
 
             // Task successful
-            serviceResponse.Data = queues;
+            serviceResponse.Data = queues.Adapt<IEnumerable<QueuesTableDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Queues retrieved successfully";
         }
