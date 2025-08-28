@@ -4,8 +4,19 @@ meta {
   seq: 6
 }
 
-get {
-  url: {{WORKSPACE_APIS_BASE_URL}}/queue-transaction/list/{{QUEUE_ID}}
-  body: none
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue-transaction/list
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "queueId": "{{QUEUE_ID}}",
+    "queueName": "",
+    "status": "InProgress",
+    "date": "2025-08-28",
+    "priority": 2
+  }
+  
 }
