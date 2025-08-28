@@ -15,6 +15,7 @@ import {
 } from "..";
 import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
 import { deepParse } from "@/features/react-flow/utils/deepParse";
+import { getFlowBlock } from "@/features/flow-block/apis/flow-block-apis";
 
 // Get nodes from local storage
 const getNodesFromLS = () => {
@@ -296,6 +297,103 @@ async function executeSubflow(
   }
 }
 
+async function executeBlock(
+  node: Node,
+  sendCommand: (command: WebSocketCommandType, data?: string) => void,
+) {
+  const selectedBlock = node.data?.selectedBlock as { [key: string]: string };
+
+  if (!selectedBlock?.id) {
+    toast.error("Block data is missing.");
+    return sendCommand("error");
+  }
+
+  // The node we should resume after block finishes
+  const returnNodeId = getEdgesFromLS().find(
+    (e) => e.source === node.id,
+  )?.target;
+
+  try {
+    const data = await getFlowBlock(selectedBlock.id);
+    const { nodes: blockNodes, edges: blockEdges } = deepParse(
+      data?.data.reactFlowObject ?? "{}",
+    ) as unknown as { nodes: Node[]; edges: Edge[] };
+
+    // 🧠 Find entry (no incoming edges) and exit (no outgoing edges) nodes
+    const entryNode = blockNodes.find(
+      (n) => !blockEdges.some((e) => e.target === n.id),
+    );
+    const exitNode = blockNodes.find(
+      (n) => !blockEdges.some((e) => e.source === n.id),
+    );
+
+    if (!entryNode || !exitNode) {
+      toast.error("Block must have an entry and exit node.");
+      return sendCommand("error");
+    }
+
+    // ⚙️ Create dummy triggerNode and flowEndNode
+    const triggerNode = {
+      id: "block-trigger-" + selectedBlock.id,
+      type: "triggerNode",
+      data: { label: "Block Trigger" },
+      position: { x: entryNode.position.x - 200, y: entryNode.position.y },
+    };
+
+    const flowEndNode = {
+      id: "block-end-" + selectedBlock.id,
+      type: "flowEndNode",
+      data: { label: "Block End" },
+      position: { x: exitNode.position.x + 200, y: exitNode.position.y },
+    };
+
+    // ➕ Add connecting edges
+    const injectedEdges: Edge[] = [
+      {
+        id: `edge-${triggerNode.id}-${entryNode.id}`,
+        source: triggerNode.id,
+        target: entryNode.id,
+      },
+      {
+        id: `edge-${exitNode.id}-${flowEndNode.id}`,
+        source: exitNode.id,
+        target: flowEndNode.id,
+      },
+    ];
+
+    //  Final flow to execute
+    const mergedNodes = [triggerNode, flowEndNode, ...blockNodes];
+    const mergedEdges = [...blockEdges, ...injectedEdges];
+
+    //  Push current flow to execution stack
+    const executionStack = JSON.parse(
+      localStorage.getItem("flowExecutionStack") || "[]",
+    );
+
+    executionStack.push({
+      nodes: getNodesFromLS(),
+      edges: getEdgesFromLS(),
+      conditionalExecutionGroup: getConditionalExecutionGroupFromLS(),
+      loopExecutionGroup: getLoopExecutionGroupFromLS(),
+      returnNodeId: returnNodeId ?? "",
+    });
+
+    localStorage.setItem("flowExecutionStack", JSON.stringify(executionStack));
+
+    // 💾 Set block as current flow
+    localStorage.setItem("nodes", JSON.stringify(mergedNodes));
+    localStorage.setItem("edges", JSON.stringify(mergedEdges));
+    localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
+    localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
+
+    // ▶️ Start execution at block triggerNode (your normal flow handles this)
+    sendNextNodeToProcess(sendCommand);
+  } catch (error) {
+    toast.error("Failed to execute block: " + error);
+    sendCommand("error");
+  }
+}
+
 // Function to find the node and send its data
 const sendNodeToProcess = (
   nodeId: string,
@@ -416,6 +514,10 @@ const sendNodeToProcess = (
       return;
     }
 
+    case "blockNode": {
+      executeBlock(nodeToProcess, sendCommand);
+      return;
+    }
     default: // If unknown node type, show an error message
       toast.error(
         `Unknown node type: ${nodeToProcess.type}. Please check the flow.`,
