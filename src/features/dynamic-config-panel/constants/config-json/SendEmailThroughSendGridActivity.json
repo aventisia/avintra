@@ -85,10 +85,10 @@
   },
   {
     "direction": "Input",
-    "type": "text",
-    "name": "SendGridApiKey",
-    "label": "SendGrid API Key",
-    "description": "The SendGrid API Key.",
+    "type": "credentials-select",
+    "name": "SendGridServiceVaultId",
+    "label": "SendGrid Credential",
+    "description": "SendGrid Credential",
     "defaultValue": "",
     "required": true
   }
