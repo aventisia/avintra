@@ -1,5 +1,5 @@
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
-import { ModelLibraryTableDto } from "@/features/model-library-table/dtos/model-library-table-dto";
+import { ProjectMetaDataDto } from "@/dtos/project-meta-data-dto";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import { toast } from "@aventisia/ui/sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +15,7 @@ import { saveAsTemplateZodSchema } from "../constants/save-as-template-zod-schem
 import { useSaveAsTemplateDialogStore } from "../store/useSaveAsTemplateDialog";
 
 export const useSaveAsTemplateForm = () => {
-  const { data } = useFetchModel();
+  const { data } = useFetchProjectMetaData();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const modelId = data?.data.id || queryParams.get("pid") || "";
@@ -38,7 +38,7 @@ export const useSaveAsTemplateForm = () => {
 
   useEffect(() => {
     const modelData = queryClient.getQueryData<{
-      data: ModelLibraryTableDto;
+      data: ProjectMetaDataDto;
     }>(["model", modelId]);
 
     form.reset({

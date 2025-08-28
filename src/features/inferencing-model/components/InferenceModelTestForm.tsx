@@ -1,8 +1,8 @@
 import LoaderTemplate from "@/components/templates/LoaderTemplate";
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useSourceParam } from "@/features/label-data/hooks/useSourceParam";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 
 import { Checkbox, LoadingSpinner, Separator } from "@aventisia/ui";
@@ -51,7 +51,7 @@ const InferenceModelTestForm = () => {
   } = useInferenceModelTestForm();
   const { setValue, watch } = form;
   const submitForFinetuningValue = watch("submitForFineTuning");
-  const { data: modelData } = useFetchModel();
+  const { data: modelData } = useFetchProjectMetaData();
   const { setExtractedData } = useExtractedDataStore();
 
   const isLastFile =

@@ -1,4 +1,4 @@
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import {
@@ -38,7 +38,7 @@ const InferenceModelSetupForm = () => {
     updateFormData,
     refineFormData,
   } = useInferenceModelSetupForm();
-  const { data: modelData, isLoading } = useFetchModel();
+  const { data: modelData, isLoading } = useFetchProjectMetaData();
   const { showDefaultAlertDialog } = useShowAlertHandler();
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
 

@@ -1,4 +1,4 @@
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,7 +11,7 @@ import { addRecordsFormZodSchema } from "../constants/add-records-zod-schema";
 import { RunReviewRecordsMutatedDTO } from "../dtos/run-review-records-mutate";
 
 export const useAddRunReviewRecordsTestForm = () => {
-  const { data: modelData } = useFetchModel();
+  const { data: modelData } = useFetchProjectMetaData();
 
   const form = useForm<z.infer<typeof addRecordsFormZodSchema>>({
     resolver: zodResolver(addRecordsFormZodSchema),

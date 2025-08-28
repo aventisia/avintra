@@ -1,8 +1,8 @@
 import { useApiKeyDialogStore } from "@/features/api-keys/store/api-key-dialog-store";
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { usePublishModelMutation } from "@/features/publish-model/hooks/usePublishModel";
 import { usePublishDialogStore } from "@/features/publish-model/stores/usePublishDialogStore";
 import { useSaveAsTemplateDialogStore } from "@/features/save-as-template/store/useSaveAsTemplateDialog";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import {
   DropdownMenu,
@@ -18,7 +18,7 @@ const HeaderMenuActions = () => {
   const { setOpen: setOpenSaveAsTemplateDialog } =
     useSaveAsTemplateDialogStore();
   const { setOpen: setApiKeyDialogStore } = useApiKeyDialogStore();
-  const { data: modelData, isLoading } = useFetchModel();
+  const { data: modelData, isLoading } = useFetchProjectMetaData();
   const { isPending } = usePublishModelMutation();
   const isPublishButtonDisabled =
     isPending ||

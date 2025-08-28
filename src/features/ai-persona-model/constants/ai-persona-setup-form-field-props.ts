@@ -1,4 +1,4 @@
-import { ModelLLMEnum } from "@/features/model-library-table/enums/model-llm-enum";
+import { LLMsEnum } from "@/enums/llms-enum";
 import { SliderFieldProps } from "@/shared/Slider/SliderField";
 import { SelectFieldProps } from "@/shared/select-field/SelectField";
 
@@ -69,7 +69,7 @@ const contextMemoryProps: AutosizeTextareaFieldProps = {
 const modelTypeProps: SelectFieldProps = {
   name: "aiPersona.llm",
   label: "Model",
-  selectOptions: enumToArray(ModelLLMEnum),
+  selectOptions: enumToArray(LLMsEnum),
   placeholder: "Select",
   isRequired: true,
   className: "text-sm resize-none",

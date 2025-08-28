@@ -1,4 +1,4 @@
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +14,7 @@ import { HistoryTableDTO } from "../dtos/history-table-dto";
 import { useRescheduleFineTuneStore } from "../stores/reschedule-fine-tune-store";
 
 export const useRescheduleFineTuneForm = () => {
-  const { data: modelData } = useFetchModel();
+  const { data: modelData } = useFetchProjectMetaData();
   const { id: rowId } = useRescheduleFineTuneStore();
   const queryClient = useQueryClient();
 

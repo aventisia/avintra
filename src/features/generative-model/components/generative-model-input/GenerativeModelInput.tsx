@@ -1,5 +1,5 @@
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import {
   Select,
   SelectContent,
@@ -22,7 +22,7 @@ import ThoughtLeadershipForm from "./thought-leadership-form/ThoughtLeadershipFo
 
 const GenerativeModelInput = () => {
   const { selectedTask, setSelectedTask } = useSelectedTaskStore();
-  const { data: modelData, isLoading } = useFetchModel();
+  const { data: modelData, isLoading } = useFetchProjectMetaData();
   const { isUpdatePending } = useUpdateGenerativeModelForm();
   const isSelectedTaskDisabled =
     isLoading || modelData?.data.setupStatus === "Completed" || isUpdatePending;

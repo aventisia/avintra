@@ -1,4 +1,4 @@
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
@@ -12,7 +12,7 @@ import { getGenerativeModelDataById } from "../apis/generative-model-setup-apis"
 export const useFetchGenerativeModel = () => {
   // Get modelId (mid) from query params
   const location = useLocation();
-  const { data: modelData } = useFetchModel();
+  const { data: modelData } = useFetchProjectMetaData();
   const queryParams = new URLSearchParams(location.search);
   const modelId = modelData?.data?.id || queryParams.get("pid") || "";
 

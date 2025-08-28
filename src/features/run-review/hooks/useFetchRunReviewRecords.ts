@@ -1,7 +1,7 @@
 import { ModelNamesEnum } from "@/components/enums/model-name-enum";
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { getRunReviewRecords } from "@/features/run-review/apis/run-review-table-apis";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
@@ -21,7 +21,8 @@ export const useFetchRunReviewRecords = () => {
     })),
   );
 
-  const { data: modelData, isLoading: isModelLoading } = useFetchModel();
+  const { data: modelData, isLoading: isModelLoading } =
+    useFetchProjectMetaData();
 
   // Enable query only when modelData has loaded and both modelId and modelData are available
   const isQueryEnabled =

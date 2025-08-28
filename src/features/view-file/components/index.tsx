@@ -1,10 +1,10 @@
 import InferenceModelTestForm from "@/features/inferencing-model/components/InferenceModelTestForm";
 import Nav from "@/features/label-data/components/Header/Nav";
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
 import MultiFormatViewer from "@/features/multi-format-viewer/MultiFormatViewer";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
 import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -23,7 +23,8 @@ export const ViewFile = () => {
   useLabelDataQueryKey();
   const { isValid, isLoading: isFileListLoading } = useValidateFidQueryParam();
   const { data: fileList, refetch, isLoading } = useFetchUploadedFiles();
-  const { data: modelData, isLoading: isModelDataLoading } = useFetchModel();
+  const { data: modelData, isLoading: isModelDataLoading } =
+    useFetchProjectMetaData();
   const { setActiveTab } = useTabStore();
   const [searchParams, setSearchParams] = useSearchParams();
   const { selectedFile } = useFileListStore(

@@ -1,7 +1,7 @@
 import ErrorFetchingTemplate from "@/components/templates/ErrorFetchingTemplate";
 import LoaderTemplate from "@/components/templates/LoaderTemplate";
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-data-store";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import { useTabStore } from "@/store/tab-store";
 
 import { ScrollArea } from "@aventisia/ui/scroll";
@@ -23,7 +23,7 @@ const AIPersonaModel = () => {
     })),
   );
   const { activeTab, setActiveTab } = useTabStore();
-  const { data: modelData } = useFetchModel();
+  const { data: modelData } = useFetchProjectMetaData();
 
   // Disable "Test" tab when setupStatus is "Pending"
   const isTestTabDisabled = modelData?.data?.setupStatus === "Pending";

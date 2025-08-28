@@ -1,9 +1,9 @@
 import { submitFiles } from "@/features/file-uploader-setup/apis/file-upload-apis";
 import FileUploader from "@/features/file-uploader-setup/components/FileUploader";
 import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import LLMConfiguration from "@/features/llm-configuration/components/LLMConfiguration";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
@@ -41,7 +41,7 @@ const AIPersonaSetupForm = () => {
     })),
   );
   const [fileInsertLoading, setFileInsertLoading] = useState(false);
-  const { data: modelData, isLoading } = useFetchModel();
+  const { data: modelData, isLoading } = useFetchProjectMetaData();
 
   const {
     form,

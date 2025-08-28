@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import { useFetchUserSession } from "@/hooks/useUserSession";
 
 import { Button } from "@aventisia/ui/buttons";
@@ -37,7 +37,7 @@ function LLMChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { data: modelData } = useFetchModel();
+  const { data: modelData } = useFetchProjectMetaData();
 
   const {
     transcript,

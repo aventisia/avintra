@@ -11,6 +11,7 @@ import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQu
 import PublishModel from "@/features/publish-model/components/PublishModel";
 import SaveAsTemplateDialog from "@/features/save-as-template/components/SaveAsTemplateDialog";
 import ShareAccessDialog from "@/features/share-access/components";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -22,7 +23,6 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { useFetchModel } from "../hooks/useFetchModel";
 import { useLabelDataStore } from "../stores/label-data-store";
 
 export const LabelDataContainer = () => {
@@ -35,7 +35,7 @@ export const LabelDataContainer = () => {
     })),
   );
 
-  const { data: modelData, isLoading } = useFetchModel();
+  const { data: modelData, isLoading } = useFetchProjectMetaData();
   const modelTypeFromAPI = modelData?.data.type?.toLowerCase();
   const [searchParams, setSearchParams] = useSearchParams();
 

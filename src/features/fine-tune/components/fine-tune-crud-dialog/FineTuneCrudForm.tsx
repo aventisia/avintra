@@ -1,5 +1,5 @@
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { ModelNamesEnum } from "@/features/pdf-previewer/enums/model-name-enum";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import { AsyncSelectField } from "@/react-toolkit/ui/form/fields/AsyncSelectField";
 import { DateTimePickerField } from "@/shared/date-time-picker/DateTimePickerField";
 
@@ -29,7 +29,7 @@ const FineTuneCrudForm = () => {
     formState: { isSubmitting, isDirty },
   } = form;
 
-  const { data: modelData } = useFetchModel();
+  const { data: modelData } = useFetchProjectMetaData();
   const modelName =
     ModelNamesEnum[modelData!.data.type as keyof typeof ModelNamesEnum];
 

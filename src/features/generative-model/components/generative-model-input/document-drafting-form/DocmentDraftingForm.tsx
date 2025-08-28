@@ -12,8 +12,8 @@ import { documentDraftingZodSchema } from "@/features/generative-model/constants
 import { useDocumentDraftingForm } from "@/features/generative-model/hooks/useDocumentDraftingForm";
 import { useUpdateGenerativeModelForm } from "@/features/generative-model/hooks/useUpdateGenerativeModelForm";
 import { useToggleFileUploadDialogStore } from "@/features/generative-model/store/toggle-file-upload-store";
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
@@ -36,7 +36,7 @@ import LLMConfiguration from "../../llm-configuration/components/LLMConfiguratio
 const DocumentDraftingForm = () => {
   const { form, isSubmitting } = useDocumentDraftingForm();
   const { isUpdatePending, updateFormData } = useUpdateGenerativeModelForm();
-  const { data: modelData, isLoading } = useFetchModel();
+  const { data: modelData, isLoading } = useFetchProjectMetaData();
   const { setShowFileUploadDialog, showFileUploadDialog } =
     useToggleFileUploadDialogStore();
   const { filesToUpload, clearFiles } = useFileStore(

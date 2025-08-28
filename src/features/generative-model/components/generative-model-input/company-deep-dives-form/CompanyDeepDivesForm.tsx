@@ -12,8 +12,8 @@ import { companyDeepDivesZodSchema } from "@/features/generative-model/constants
 import { useCompanyDeepDivesForm } from "@/features/generative-model/hooks/useCompanyDeepDivesForm";
 import { useUpdateGenerativeModelForm } from "@/features/generative-model/hooks/useUpdateGenerativeModelForm";
 import { useToggleFileUploadDialogStore } from "@/features/generative-model/store/toggle-file-upload-store";
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import { SelectField } from "@/shared/select-field/SelectField";
 
 import { LoadingSpinner, Separator } from "@aventisia/ui";
@@ -38,7 +38,7 @@ import GenerativeInputLinks from "../generative-input-links/GenerativeInputLinks
 const CompanyDeepDivesForm = () => {
   const { form, isSubmitting } = useCompanyDeepDivesForm();
   const { isUpdatePending, updateFormData } = useUpdateGenerativeModelForm();
-  const { data: modelData, isLoading } = useFetchModel();
+  const { data: modelData, isLoading } = useFetchProjectMetaData();
   const { setShowFileUploadDialog, showFileUploadDialog } =
     useToggleFileUploadDialogStore();
   const { filesToUpload, clearFiles } = useFileStore(

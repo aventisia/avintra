@@ -1,5 +1,5 @@
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
@@ -10,7 +10,7 @@ import { applyTemplate } from "../apis/save-as-template-apis";
 import { UseTemplateDTO } from "../dtos/use-template-dto";
 
 export const useUseTemplateMutation = () => {
-  const { data: modelData, refetch } = useFetchModel();
+  const { data: modelData, refetch } = useFetchProjectMetaData();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const modelId = queryParams.get("pid") || modelData?.data.id || "";

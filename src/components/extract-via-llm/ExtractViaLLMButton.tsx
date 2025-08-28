@@ -1,5 +1,5 @@
 import { useTasksToExecuteStore } from "@/features/inferencing-model/store/tasks-to-execute";
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 import { useTabStore } from "@/store/tab-store";
 import { formatSeconds } from "@/utils/formatSeconds";
@@ -27,7 +27,7 @@ function ExtractViaLLMButton() {
     })),
   );
   const { activeTab } = useTabStore();
-  const { isLoading: isModelLoading } = useFetchModel();
+  const { isLoading: isModelLoading } = useFetchProjectMetaData();
   const { extractedData } = useExtractedDataStore(
     useShallow((state) => ({
       extractedData: state.extractedData,

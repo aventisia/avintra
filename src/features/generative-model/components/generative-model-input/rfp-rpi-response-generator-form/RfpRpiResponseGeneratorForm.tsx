@@ -11,8 +11,8 @@ import { rfpRpiResponseGeneratorZodSchema } from "@/features/generative-model/co
 import { useRfpRpiResponseGeneratorForm } from "@/features/generative-model/hooks/useRfpRpiResponseGeneratorForm";
 import { useUpdateGenerativeModelForm } from "@/features/generative-model/hooks/useUpdateGenerativeModelForm";
 import { useToggleFileUploadDialogStore } from "@/features/generative-model/store/toggle-file-upload-store";
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import { SelectField } from "@/shared/select-field/SelectField";
 
 import { LoadingSpinner, Separator } from "@aventisia/ui";
@@ -38,7 +38,7 @@ const RfpRpiResponseGeneratorForm = () => {
   const { form, isSubmitting } = useRfpRpiResponseGeneratorForm();
   const { isUpdatePending, updateFormData } = useUpdateGenerativeModelForm();
 
-  const { data: modelData, isLoading } = useFetchModel();
+  const { data: modelData, isLoading } = useFetchProjectMetaData();
   const { setShowFileUploadDialog, showFileUploadDialog, setName, name } =
     useToggleFileUploadDialogStore();
   const { filesToUpload, clearFiles } = useFileStore(

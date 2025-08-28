@@ -1,5 +1,5 @@
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { ModelNamesEnum } from "@/features/pdf-previewer/enums/model-name-enum";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import { DeleteDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import {
@@ -21,7 +21,7 @@ export const HistoryTableRowDeleteAction = ({
   disabled,
 }: HistoryTableRowDeleteActionProps) => {
   const { showDefaultAlertDialog } = useShowAlertHandler();
-  const { data: modelData } = useFetchModel();
+  const { data: modelData } = useFetchProjectMetaData();
 
   const modelName =
     ModelNamesEnum[modelData!.data.type as keyof typeof ModelNamesEnum];

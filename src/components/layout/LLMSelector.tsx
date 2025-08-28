@@ -1,6 +1,7 @@
-import { updateModel } from "@/features/model-library-table/apis/model-library-table-apis";
-import { ModelLibraryTableDto } from "@/features/model-library-table/dtos/model-library-table-dto";
-import { ModelLLMEnum } from "@/features/model-library-table/enums/model-llm-enum";
+import { updateProjectMetaData } from "@/apis/project-apis";
+import { ProjectMetaDataDto } from "@/dtos/project-meta-data-dto";
+import { LLMsEnum } from "@/enums/llms-enum";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import {
   Select,
@@ -14,20 +15,18 @@ import { enumToArray } from "@aventisia/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-import { useFetchModel } from "../../features/label-data/hooks/useFetchModel";
-
 export function LLMSelector() {
   //Get set model data
-  const [modelData, setModelData] = useState<ModelLibraryTableDto>();
+  const [modelData, setModelData] = useState<ProjectMetaDataDto>();
 
   //To disable Selection on llm update
   const [isUpdating, setIsUpdating] = useState(false);
 
   //Fetch model data
-  const { data, refetch } = useFetchModel();
+  const { data, refetch } = useFetchProjectMetaData();
 
   //Create array for llm list
-  const llmList = enumToArray(ModelLLMEnum);
+  const llmList = enumToArray(LLMsEnum);
 
   //Set model data
   useEffect(() => {
@@ -36,7 +35,7 @@ export function LLMSelector() {
 
   // Mutation for lmm update using PUT
   const llmMutation = useMutation({
-    mutationFn: updateModel,
+    mutationFn: updateProjectMetaData,
     onSuccess: () => {
       refetch();
       setIsUpdating(false);
@@ -58,7 +57,7 @@ export function LLMSelector() {
             llmMutation.mutate({
               ...modelData,
               llm: val,
-            } as ModelLibraryTableDto);
+            } as ProjectMetaDataDto);
         }}
       >
         <SelectTrigger

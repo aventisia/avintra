@@ -7,7 +7,7 @@ import {
 import { personaResearchZodSchema } from "@/features/generative-model/constants/generative-model-zod-schemas/persona-research-zod-schema";
 import { usePersonaResearchForm } from "@/features/generative-model/hooks/usePersonaResearchForm";
 import { useUpdateGenerativeModelForm } from "@/features/generative-model/hooks/useUpdateGenerativeModelForm";
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import { SelectField } from "@/shared/select-field/SelectField";
 
 import { LoadingSpinner, Separator } from "@aventisia/ui";
@@ -22,7 +22,7 @@ import GenerativeInputLinks from "../generative-input-links/GenerativeInputLinks
 const PersonaResearchForm = () => {
   const { form, isSubmitting } = usePersonaResearchForm();
   const { isUpdatePending, updateFormData } = useUpdateGenerativeModelForm();
-  const { data: modelData, isLoading } = useFetchModel();
+  const { data: modelData, isLoading } = useFetchProjectMetaData();
 
   async function submitHandler(
     formData: z.infer<typeof personaResearchZodSchema>,

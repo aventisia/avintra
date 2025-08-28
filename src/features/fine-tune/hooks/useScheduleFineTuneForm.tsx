@@ -1,4 +1,4 @@
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,7 +11,7 @@ import { scheduleFineTuneFormZodSchema } from "../constants/schedule-fine-tune-z
 import { useScheduleFineTuneStore } from "../stores/schedule-fine-tune-store";
 
 export const useScheduleFineTuneForm = () => {
-  const { data: modelData } = useFetchModel();
+  const { data: modelData } = useFetchProjectMetaData();
   const { fileIds } = useScheduleFineTuneStore();
 
   const form = useForm<z.infer<typeof scheduleFineTuneFormZodSchema>>({

@@ -1,8 +1,8 @@
 import { submitFiles } from "@/features/file-uploader-viewer/apis/file-upload-apis";
 import FileUploader from "@/features/file-uploader-viewer/components/FileUploader";
 import { useFileStore } from "@/features/file-uploader-viewer/stores/file-uploader-store";
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { ModelNamesEnum } from "@/features/pdf-previewer/enums/model-name-enum";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
@@ -31,7 +31,7 @@ const RunReviewCrudForm = () => {
       clearFiles: state.clearFiles,
     })),
   );
-  const { data: modelData } = useFetchModel();
+  const { data: modelData } = useFetchProjectMetaData();
   const modelName =
     ModelNamesEnum[modelData!.data.type as keyof typeof ModelNamesEnum];
 

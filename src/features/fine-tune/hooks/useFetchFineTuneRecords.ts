@@ -1,6 +1,6 @@
-import { useFetchModel } from "@/features/label-data/hooks/useFetchModel";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { ModelNamesEnum } from "@/features/pdf-previewer/enums/model-name-enum";
+import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
@@ -21,7 +21,8 @@ export const useFetchFineTuneRecords = () => {
     })),
   );
 
-  const { data: modelData, isLoading: isModelLoading } = useFetchModel();
+  const { data: modelData, isLoading: isModelLoading } =
+    useFetchProjectMetaData();
 
   // Enable query only when modelData has loaded and both modelId and modelData are available
   const isQueryEnabled =

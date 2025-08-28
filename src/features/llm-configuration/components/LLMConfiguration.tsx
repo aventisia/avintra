@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ModelLLMEnum } from "@/features/model-library-table/enums/model-llm-enum";
+import { LLMsEnum } from "@/enums/llms-enum";
 import {
   Select,
   SelectContent,
@@ -72,14 +72,12 @@ const LLMConfiguration = ({
                       <SelectTrigger className="text-primary rounded-full bg-slate-200 h-6 text-xs text-left">
                         <span className="w-full">
                           {(field.value &&
-                            ModelLLMEnum[
-                              field.value as keyof typeof ModelLLMEnum
-                            ]) ||
+                            LLMsEnum[field.value as keyof typeof LLMsEnum]) ||
                             "Select LLM"}
                         </span>
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(ModelLLMEnum).map(([value, label]) => (
+                        {Object.entries(LLMsEnum).map(([value, label]) => (
                           <SelectItem key={value} value={value}>
                             {label}
                           </SelectItem>
