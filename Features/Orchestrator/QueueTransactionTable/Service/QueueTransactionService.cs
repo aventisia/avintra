@@ -57,6 +57,88 @@ public class QueueTransactionService : IQueueTransactionService
         return serviceResponse;
     }
 
+    // Retrieve all transactions for a specific queue using provided filter criteria
+    public async Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> FindAllTransactionsAsync(FindQueueTransactionQuery queueTransactionQuery)
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<QueueTransactionDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve queue transactions. Please try again later."
+        };
+
+        try
+        {
+            Queue? queue = null;
+
+            // Determine whether to search by queue name or ID
+            if (!string.IsNullOrEmpty(queueTransactionQuery.QueueName))
+            {
+                queue = await _unitOfWork.QueueRepo
+                    .GetByConditionAsync(q => q.Name.ToLower() == queueTransactionQuery.QueueName.ToLower())
+                    .FirstOrDefaultAsync();
+
+                _logger.LogInformation("Looking up queue by name: {QueueName}", queueTransactionQuery.QueueName);
+            }
+            else
+            {
+                queue = await _unitOfWork.QueueRepo
+                    .GetByConditionAsync(q => q.Id == queueTransactionQuery.QueueId)
+                    .FirstOrDefaultAsync();
+
+                _logger.LogInformation("Looking up queue by ID: {QueueId}", queueTransactionQuery.QueueId);
+            }
+
+            // If queue not found, return with error
+            if (queue == null)
+            {
+                serviceResponse.Message = "Queue not found with the specified identifier.";
+                _logger.LogWarning("Queue not found for Name: {QueueName}, ID: {QueueId}", queueTransactionQuery.QueueName, queueTransactionQuery.QueueId);
+                return serviceResponse;
+            }
+
+            // Build query for queue transactions
+            var query = _unitOfWork.QueueTransactionRepo
+                .GetByConditionAsync(t => t.QueueId == queue.Id);
+
+            // Apply optional filters
+            if (queueTransactionQuery.Status.HasValue)
+            {
+                query = query.Where(t => t.Status == queueTransactionQuery.Status.Value);
+            }
+
+            if (queueTransactionQuery.Date.HasValue)
+            {
+                query = query.Where(t => t.CreatedOn.Date == queueTransactionQuery.Date.Value.Date);
+            }
+
+            // if (queueTransactionQuery.Priority.HasValue)
+            // {
+            //     query = query.Where(t => t.Priority == queueTransactionQuery.Priority.Value);
+            // }
+
+            // Execute query
+            var queueTransactions = await query
+                .Include(t => t.Queue)
+                .OrderBy(t => t.CreatedOn)
+                .AsNoTracking()
+                .ToListAsync();
+
+            // Success response
+            serviceResponse.Data = queueTransactions.Adapt<IEnumerable<QueueTransactionDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Successfully retrieved queue transactions.";
+
+            _logger.LogInformation("Retrieved {Count} transactions for Queue ID: {QueueId}", queueTransactions.Count, queue.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while fetching transactions for queue. Name: {QueueName}, ID: {QueueId}",
+                queueTransactionQuery.QueueName, queueTransactionQuery.QueueId);
+        }
+
+        return serviceResponse;
+    }
+
     // Retrieves a specific queue transaction by its ID.
     public async Task<ServiceResponse<QueueTransactionDto>> GetQueueTransactionByIdAsync(Guid queueTransactionId)
     {

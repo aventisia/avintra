@@ -10,6 +10,13 @@ public interface IQueueTransactionService
     Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> GetAllTransactionsAsync(Guid queueId);
 
     /// <summary>
+    /// Retrieves all queue transactions that match the specified query parameters.
+    /// </summary>
+    /// <param name="queueTransactionQuery">The query object containing filter criteria such as queue ID, name, status, date, and priority.</param>
+    /// <returns>A service response containing a collection of matching queue transactions.</returns>
+    Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> FindAllTransactionsAsync(FindQueueTransactionQuery queueTransactionQuery);
+
+    /// <summary>
     /// Retrieves the details of a specific queue transaction by its unique identifier.
     /// </summary>
     /// <param name="queueTransactionId">The ID of the queue transaction to fetch.</param>
@@ -22,7 +29,7 @@ public interface IQueueTransactionService
     /// <param name="queueTransactionDto">Details of the transactions to be added to the queue (PayloadData contains a list of transactions)</param>
     /// <returns>A service response indicating whether the transactions were successfully inserted</returns>
     Task<ServiceResponse<bool>> InsertMultipleTransactionsAsync(QueueTransactionDto queueTransactionDto);
-    
+
     /// <summary>
     /// Modify the status of an existing transaction (e.g., Pending → In Progress → Completed/Failed).
     /// </summary>
