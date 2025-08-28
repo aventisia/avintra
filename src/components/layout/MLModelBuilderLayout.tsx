@@ -11,7 +11,7 @@ import { Outlet } from "react-router-dom";
 
 // import { LLMSelector } from "./LLMSelector";
 import ModelInfo from "./ModelInfo";
-import { NavigationTabs } from "./NavigationTabs";
+import { SetupTestTabs } from "./SetupTestTabs";
 import HeaderMenuActions from "./header-menu-actions";
 
 export const MLModelBuilderLayout = () => {
@@ -35,7 +35,7 @@ export const MLModelBuilderLayout = () => {
                 <HeaderMenuActions />
               </>
             }
-            extraContentCenter={<NavigationTabs />}
+            extraContentCenter={<SetupTestTabs />}
             extraContentLeft={<ModelInfo />}
           />
           <ScrollArea className="mt-2.5 h-[calc(100vh-4.5rem)]">
