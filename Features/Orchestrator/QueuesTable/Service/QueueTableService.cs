@@ -34,7 +34,6 @@ public class QueueTableService : IQueueTableService
             // Validate queue uniqueness
             var queueAlreadyExists = await _unitOfWork.QueueRepo
                                                      .GetByConditionAsync(w =>
-                                                        w.CreatedByUserId == _userId &&
                                                         w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
                                                      .FirstOrDefaultAsync();
 
@@ -68,14 +67,47 @@ public class QueueTableService : IQueueTableService
         var serviceResponse = new ServiceResponse<IEnumerable<QueuesTableDto>>
         {
             Data = null,
-            StatusCode = 400
+            Message = "Failed to retrive queues. Please try again"
         };
 
         try
         {
             // Get queues for the current user
             var queues = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                .GetAllAsync()
+                .OrderByDescending(o => o.CreatedOn)
+                .ProjectToType<QueuesTableDto>()
+                .ToListAsync();
+
+            // Task successful
+            serviceResponse.Data = queues;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Queues retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Searches for queues by name
+    public async Task<ServiceResponse<IEnumerable<QueuesTableDto>>> SearchQueuesAsync(string queueName)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<QueuesTableDto>>
+        {
+            Data = null,
+            Message = "Failed to search queues. Please try again."
+        };
+
+        try
+        {
+            // Get queues by the name
+            var queues = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(w => w.Name.ToLower() == queueName.ToLower())
                 .OrderByDescending(o => o.CreatedOn)
                 .ProjectToType<QueuesTableDto>()
                 .ToListAsync();

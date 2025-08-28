@@ -19,6 +19,13 @@ public class QueueTableController : BaseApiController
         return ResultHelper(await _queueTableService.GetAllQueuesAsync());
     }
 
+    // Searches for queues by name.
+    [HttpGet("search/{queueName}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<QueuesTableDto>>>> SearchQueuesAsync(string queueName)
+    {
+        return ResultHelper(await _queueTableService.SearchQueuesAsync(queueName));
+    }
+
     // Retrieves a specific queue by its ID.
     [HttpGet("{queueId}")]
     public async Task<ActionResult<ServiceResponse<QueuesTableDto>>> GetQueueByIdAsync(Guid queueId)

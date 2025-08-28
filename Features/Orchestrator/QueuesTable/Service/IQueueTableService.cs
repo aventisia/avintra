@@ -19,6 +19,12 @@ public interface IQueueTableService
     Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetAllQueuesAsync();
 
     /// <summary>
+    /// Searches for queues by name.
+    /// </summary>
+    /// <returns>A task with the service response containing matching queues.</returns>
+    Task<ServiceResponse<IEnumerable<QueuesTableDto>>> SearchQueuesAsync(string queueName);
+
+    /// <summary>
     /// Retrieves the details of a specific queue by its unique identifier.
     /// </summary>
     /// <param name="id">The ID of the queue to fetch.</param>
