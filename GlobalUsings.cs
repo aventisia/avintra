@@ -19,11 +19,13 @@ global using WorkspaceAPIs.Extensions;
 global using WorkspaceAPIs.Repos;
 global using WorkspaceAPIs.DTOs;
 global using WorkspaceAPIs.MappingProfiles;
+global using WorkspaceAPIs.Enums;
 
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Security.Claims;
 global using System.Text.Json;
+global using System.ComponentModel;
 
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Mvc;
