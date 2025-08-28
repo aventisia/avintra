@@ -17,6 +17,11 @@ public class SubscriptionPlanDto
     public required string Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the type of the subscription plan (e.g., Free, Pro, Enterprise).
+    /// </summary>
+    public required SubscriptionPlanTypeEnum Type { get; set; }
+
+    /// <summary>
     /// Gets or sets the monthly price of the subscription plan.
     /// </summary>
     public required int MonthlyPrice { get; set; }
