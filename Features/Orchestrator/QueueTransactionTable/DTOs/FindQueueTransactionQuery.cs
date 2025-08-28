@@ -1,7 +1,7 @@
 namespace WorkspaceAPIs.DTOs;
 
 /// <summary>
-/// Query parameters to filter and search queue transactions.
+/// Represents query parameters for filtering and sorting queue transactions.
 /// </summary>
 public class FindQueueTransactionQuery
 {
@@ -16,17 +16,12 @@ public class FindQueueTransactionQuery
     public string? QueueName { get; set; }
 
     /// <summary>
-    /// Gets or sets the optional status to filter queue transactions (e.g., Pending, In Progress, Completed, Failed).
+    /// Gets or sets the column to sort the results by (e.g., Status, Date, Priority).
     /// </summary>
-    public QueueTransactionStatusTypesEnum? Status { get; set; }
+    public QueueItemSortSortByFieldsEnum? SortBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the optional creation date to filter queue transactions.
+    /// Gets or sets the sort direction. True for ascending, false for descending.
     /// </summary>
-    public DateTimeOffset? Date { get; set; }
-
-    /// <summary>
-    /// Gets or sets the optional priority to filter queue transactions.
-    /// </summary>
-    public int? Priority { get; set; }
+    public bool IsAscending { get; set; }
 }

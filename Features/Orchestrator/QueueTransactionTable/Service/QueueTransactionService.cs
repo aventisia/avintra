@@ -96,30 +96,31 @@ public class QueueTransactionService : IQueueTransactionService
                 return serviceResponse;
             }
 
-            // Build query for queue transactions
+            // Start building the query for queue transactions
             var query = _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(t => t.QueueId == queue.Id);
 
-            // Apply optional filters
-            if (queueTransactionQuery.Status.HasValue)
+            // Apply dynamic sorting based on SortColumn
+            query = queueTransactionQuery.SortBy switch
             {
-                query = query.Where(t => t.Status == queueTransactionQuery.Status.Value);
-            }
+                QueueItemSortSortByFieldsEnum.Status => queueTransactionQuery.IsAscending
+                    ? query.OrderBy(o => o.Status)
+                    : query.OrderByDescending(o => o.Status),
 
-            if (queueTransactionQuery.Date.HasValue)
-            {
-                query = query.Where(t => t.CreatedOn.Date == queueTransactionQuery.Date.Value.Date);
-            }
+                QueueItemSortSortByFieldsEnum.Date => queueTransactionQuery.IsAscending
+                    ? query.OrderBy(o => o.CreatedOn)
+                    : query.OrderByDescending(o => o.CreatedOn),
 
-            // if (queueTransactionQuery.Priority.HasValue)
-            // {
-            //     query = query.Where(t => t.Priority == queueTransactionQuery.Priority.Value);
-            // }
+                // QueueItemSortSortByFieldsEnum.Priority => queueTransactionQuery.IsAscending
+                //     ? query.OrderBy(o => o.Priority)
+                //     : query.OrderByDescending(o => o.Priority),
 
-            // Execute query
+                _ => query.OrderBy(o => o.CreatedOn)
+            };
+
+            // Execute query with included navigation properties
             var queueTransactions = await query
                 .Include(t => t.Queue)
-                .OrderBy(t => t.CreatedOn)
                 .AsNoTracking()
                 .ToListAsync();
 
