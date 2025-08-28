@@ -8,7 +8,7 @@ import { ModelNamesEnum } from "../enums/model-name-enum";
 const ModelInfo = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const modelName = queryParams.get("mn") || "";
+  const modelName = queryParams.get("pn") || "";
   const modelType = queryParams.get("ml") || "";
   const { data } = useFetchModel();
   const badgeName =

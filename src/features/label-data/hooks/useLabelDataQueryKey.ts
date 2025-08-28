@@ -12,8 +12,8 @@ export const useLabelDataQueryKey = () => {
   // Get modelId (m) and modelName (pn)
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  let modelId = queryParams.get("mid");
-  let modelName = queryParams.get("mn");
+  let modelId = queryParams.get("pid");
+  let modelName = queryParams.get("pn");
 
   // Get store setModelDataState action
   const { setModelDataState } = useLabelDataStore(

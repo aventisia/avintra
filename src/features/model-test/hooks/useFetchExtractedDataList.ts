@@ -14,7 +14,7 @@ export const useGetExtractedDataList = () => {
   const queryParams = new URLSearchParams(location.search);
 
   // Get modelId (mid) form query params
-  const modelId = queryParams.get("mid") || "";
+  const modelId = queryParams.get("pid") || "";
 
   // Get data using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({

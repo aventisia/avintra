@@ -11,7 +11,7 @@ export const useUpdateUserTypeMutation = () => {
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const modelId = queryParams.get("mid") || "";
+  const modelId = queryParams.get("pid") || "";
 
   const { isPending, mutate } = useMutation({
     mutationFn: updateFlowUser,

@@ -25,7 +25,7 @@ const PublishModel = () => {
     () => new URLSearchParams(location.search),
     [location.search],
   );
-  const modelId = queryParams.get("mid") || mlModelId || "";
+  const modelId = queryParams.get("pid") || mlModelId || "";
 
   const handlePublish = () => {
     mutatePublish(modelId, {

@@ -26,8 +26,8 @@ const router = createBrowserRouter(
       element: <MLModelBuilderLayout />,
       errorElement: <ErrorPage />,
       children: [
-        { path: "/", element: <Navigate to="/setup-test" /> },
-        { path: "/setup-test", element: <LabelDataPage /> },
+        { path: "/", element: <Navigate to="/project" /> },
+        { path: "/project", element: <LabelDataPage /> },
         { path: "/run-review", element: <RunReivewPage /> },
         { path: "/view", element: <ViewFilePage /> },
         { path: "/fine-tune", element: <FineTunePage /> },

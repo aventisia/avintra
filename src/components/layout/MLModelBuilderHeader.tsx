@@ -11,7 +11,7 @@ import { NavigationTabs } from "./NavigationTabs";
 const MLModelBuilderHeader = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const modelName = queryParams.get("mn") || "";
+  const modelName = queryParams.get("pn") || "";
 
   return (
     <header className="sticky top-0 z-10 w-full bg-white p-[var(--header-padding)] pb-0 backdrop-blur-md">

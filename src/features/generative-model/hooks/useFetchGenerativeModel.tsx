@@ -14,7 +14,7 @@ export const useFetchGenerativeModel = () => {
   const location = useLocation();
   const { data: modelData } = useFetchModel();
   const queryParams = new URLSearchParams(location.search);
-  const modelId = modelData?.data?.id || queryParams.get("mid") || "";
+  const modelId = modelData?.data?.id || queryParams.get("pid") || "";
 
   // Get models using react query
   const {

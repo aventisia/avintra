@@ -19,7 +19,7 @@ export const useFetchApiKeys = () => {
   );
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const modelId = queryParams.get("mid") || mlModelId || "";
+  const modelId = queryParams.get("pid") || mlModelId || "";
 
   // Get models using react query
   const { data, isLoading, refetch } = useQuery({

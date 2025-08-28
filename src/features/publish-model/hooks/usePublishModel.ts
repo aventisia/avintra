@@ -17,7 +17,7 @@ export const usePublishModelMutation = () => {
     () => new URLSearchParams(location.search),
     [location.search],
   );
-  const modelId = queryParams.get("mid") || mlModelId || "";
+  const modelId = queryParams.get("pid") || mlModelId || "";
 
   const { isPending, mutate } = useMutation({
     mutationFn: publishModel,

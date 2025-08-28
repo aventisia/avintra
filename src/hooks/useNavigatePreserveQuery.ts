@@ -9,7 +9,7 @@ export const useNavigatePreserveQuery = () => {
   const queryParams = new URLSearchParams(location.search);
 
   //Get model name through query params
-  const modelName = queryParams.get("mn") || "";
+  const modelName = queryParams.get("pn") || "";
 
   /**
    * Navigate to a new path while preserving all existing query parameters

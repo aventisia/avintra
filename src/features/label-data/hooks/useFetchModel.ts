@@ -13,7 +13,7 @@ export const useFetchModel = () => {
   // Get modelId (mid) from query params
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const modelId = queryParams.get("mid") || "";
+  const modelId = queryParams.get("pid") || "";
 
   // Get models using react query
   const {

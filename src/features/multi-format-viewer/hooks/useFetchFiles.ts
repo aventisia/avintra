@@ -27,7 +27,7 @@ export const useFetchUploadedFiles = (
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
 
-  let modelId = queryParams.get("mid");
+  let modelId = queryParams.get("pid");
 
   // Throw error if model id or name are not provided
   if (!modelId) {

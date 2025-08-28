@@ -13,7 +13,7 @@ import { FLOWS_USER_KEY } from "../constants";
 export const useFetchFlowUserList = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const modelId = queryParams.get("mid") || "";
+  const modelId = queryParams.get("pid") || "";
 
   // Get flow versions using react query
   const { data, isFetching, isLoading, isError, error, refetch } = useQuery({

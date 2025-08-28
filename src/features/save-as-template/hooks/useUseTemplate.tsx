@@ -13,7 +13,7 @@ export const useUseTemplateMutation = () => {
   const { data: modelData, refetch } = useFetchModel();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const modelId = queryParams.get("mid") || modelData?.data.id || "";
+  const modelId = queryParams.get("pid") || modelData?.data.id || "";
   const { setStepState } = useLabelDataStore(
     useShallow((state) => ({
       setStepState: state.setStepState,

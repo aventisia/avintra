@@ -18,7 +18,7 @@ export const useSaveAsTemplateForm = () => {
   const { data } = useFetchModel();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const modelId = data?.data.id || queryParams.get("mid") || "";
+  const modelId = data?.data.id || queryParams.get("pid") || "";
   // const modelName = data?.data.name || "";
   // const modelDescription = data?.data.description || "";
 
