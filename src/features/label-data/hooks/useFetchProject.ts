@@ -1,4 +1,4 @@
-import { getModel } from "@/features/model-library-table/apis/model-library-table-apis";
+import { getProjectMetaData } from "@/apis/project-apis";
 
 import { useQuery } from "@tanstack/react-query";
 //import { useEffect } from "react";
@@ -9,7 +9,7 @@ import { useLocation } from "react-router-dom";
  * Custom hook to fetch model using react query.
  * @returns An object containing the fetched data, and refetch method.
  */
-export const useFetchModel = () => {
+export const useFetchProject = () => {
   // Get modelId (mid) from query params
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -23,7 +23,7 @@ export const useFetchModel = () => {
     refetch,
   } = useQuery({
     queryKey: ["model", modelId],
-    queryFn: () => getModel(modelId),
+    queryFn: () => getProjectMetaData(modelId),
   });
 
   // Show toast on fetch error
