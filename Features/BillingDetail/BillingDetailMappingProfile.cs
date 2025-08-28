@@ -18,6 +18,12 @@ public class BillingDetailMappingProfile : IRegister
             ? src.CreatedByUser.UserName
             : null);
 
+        config.NewConfig<BillingDetail, BillingAccountDetailsDto>()
+                .Map(dest => dest.Name, src =>  $"Invoice_{src.CreatedOn:dd/MM/yyyy}")
+                .Map(dest => dest.Amount, src => src.Amount * src.TaxRate)
+                .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName : null)
+                .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null ? src.CreatedByUser.UserName : null);
+
         config.NewConfig<BillingDetailDto, BillingDetail>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedByUserId)

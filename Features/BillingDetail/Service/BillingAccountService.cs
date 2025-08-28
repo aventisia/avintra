@@ -19,13 +19,13 @@ public class BillingDetailService : IBillingDetailService
     }
 
     //Get a list of billing accounts
-    public async Task<ServiceResponse<IEnumerable<BillingDetailDto>>> GetBillingDetailListAsync()
+    public async Task<ServiceResponse<IEnumerable<BillingAccountDetailsDto>>> GetBillingDetailListAsync()
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<IEnumerable<BillingDetailDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<BillingAccountDetailsDto>>
         {
             Data = null,
-            StatusCode = 400
+            Message = "Failed to retrieve billing details. Please try again"
         };
 
         try
@@ -38,7 +38,7 @@ public class BillingDetailService : IBillingDetailService
             .ToListAsync();
 
             // Task successful
-            serviceResponse.Data = BillingDetails.Adapt<IEnumerable<BillingDetailDto>>();
+            serviceResponse.Data = BillingDetails.Adapt<IEnumerable<BillingAccountDetailsDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Billing accounts retrieved successfully";
         }

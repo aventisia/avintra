@@ -6,7 +6,7 @@ public interface IBillingDetailService
     /// Get billing account list
     /// </summary>
     /// <returns>List of billing accounts</returns>
-    Task<ServiceResponse<IEnumerable<BillingDetailDto>>> GetBillingDetailListAsync();
+    Task<ServiceResponse<IEnumerable<BillingAccountDetailsDto>>> GetBillingDetailListAsync();
 
     /// <summary>
     /// Insert billing account 
