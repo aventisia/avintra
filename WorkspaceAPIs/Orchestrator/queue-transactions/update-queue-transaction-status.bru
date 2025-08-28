@@ -1,0 +1,20 @@
+meta {
+  name: Update queue transaction status
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue-transaction/status
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{QUEUE_TRANSACTION_ID}}",
+    "queueId": "{{QUEUE_ID}}",
+    "queueName": "",
+    "payloadData": " {  \n      \"Id\": 1,  \n      \"Name\": \"Alice\",  \n      \"Date\": \"2025-08-01\",  \n      \"Location\": \"New York\"  \n    }"
+  }
+}
