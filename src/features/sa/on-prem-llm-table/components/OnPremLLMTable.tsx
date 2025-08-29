@@ -27,15 +27,7 @@ export const OnPremLLMTable = () => {
 
   const table = useDataTable(
     onPremLLMsTableColumns,
-    data?.data || [
-      {
-        id: "123",
-        description: "lorem ipsum",
-        displayName: "gemma",
-        llm: "gemma",
-        status: "success",
-      },
-    ],
+    data?.data || [],
     columnVisibilityState,
     true,
   );
