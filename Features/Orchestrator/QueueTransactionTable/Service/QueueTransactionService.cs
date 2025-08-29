@@ -7,6 +7,7 @@ public class QueueTransactionService : IQueueTransactionService
     private readonly Guid _userId;
     private readonly string _username;
     private readonly IStringEncryptionService _stringEncryptionService;
+    private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
     public QueueTransactionService(
         ILogger<QueueTransactionService> logger,
@@ -96,6 +97,9 @@ public class QueueTransactionService : IQueueTransactionService
                 return serviceResponse;
             }
 
+            // Acquire the lock
+            await _semaphore.WaitAsync();
+
             // Start building the query for queue transactions
             var query = _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(t => t.QueueId == queue.Id);
@@ -122,10 +126,11 @@ public class QueueTransactionService : IQueueTransactionService
             var queueTransactions = await query
                 .Include(t => t.Queue)
                 .AsNoTracking()
+                .ProjectToType<QueueTransactionDto>()
                 .ToListAsync();
 
             // Success response
-            serviceResponse.Data = queueTransactions.Adapt<IEnumerable<QueueTransactionDto>>();
+            serviceResponse.Data = queueTransactions;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Successfully retrieved queue transactions.";
 
@@ -136,7 +141,11 @@ public class QueueTransactionService : IQueueTransactionService
             _logger.LogError(ex, "Error occurred while fetching transactions for queue. Name: {QueueName}, ID: {QueueId}",
                 queueTransactionQuery.QueueName, queueTransactionQuery.QueueId);
         }
-
+        finally
+        {
+            // Release the lock
+            _semaphore.Release();
+        }
         return serviceResponse;
     }
 
@@ -318,10 +327,7 @@ public class QueueTransactionService : IQueueTransactionService
                         validationMessages.Add($"Duplicate entry detected for: {uniqueFieldsStr}");
                         _logger.LogWarning("Duplicate transaction detected: {UniqueKey}", newUniqueKey);
                     }
-                    else
-                    {
-                        existingUniqueKeys.Add(newUniqueKey);
-                    }
+                    existingUniqueKeys.Add(newUniqueKey);
                 }
 
                 // Serialize validated dynamic object
@@ -361,6 +367,7 @@ public class QueueTransactionService : IQueueTransactionService
             {
                 _logger.LogWarning("Some transactions failed validation. Returning failed data for review.");
                 serviceResponse.Data = invalidTransactions;
+                serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Validation failed for some transactions. Details in remarks.";
                 return serviceResponse;
             }
@@ -378,6 +385,7 @@ public class QueueTransactionService : IQueueTransactionService
 
             // Final success response
             serviceResponse.StatusCode = 200;
+            serviceResponse.Data = newTransactions.Adapt<IEnumerable<QueueTransactionDto>>();
             serviceResponse.Message = "Transactions added to the queue successfully.";
             _logger.LogInformation("All transactions inserted successfully into queue {QueueId}.", queueTransactionDto.QueueId);
         }
@@ -389,7 +397,7 @@ public class QueueTransactionService : IQueueTransactionService
         return serviceResponse;
     }
 
-    // Updates the status and payload of an existing queue transaction, including validation, uniqueness checks, encryption handling, and database persistence.
+    // Updates the status an existing queue transaction.
     public async Task<ServiceResponse<QueueTransactionDto>> UpdateTransactionStatusAsync(QueueTransactionDto queueTransactionDto)
     {
         var serviceResponse = new ServiceResponse<QueueTransactionDto>
@@ -456,7 +464,7 @@ public class QueueTransactionService : IQueueTransactionService
         return serviceResponse;
     }
 
-    // Updates the status and payload of an existing queue transaction, including validation, uniqueness checks, encryption handling, and database persistence.
+    // Updates the payload of an existing queue transaction, including validation, uniqueness checks, encryption handling, and database persistence.
     public async Task<ServiceResponse<QueueTransactionDto>> UpdateTransactionDataAsync(QueueTransactionDto queueTransactionDto)
     {
         var serviceResponse = new ServiceResponse<QueueTransactionDto>
