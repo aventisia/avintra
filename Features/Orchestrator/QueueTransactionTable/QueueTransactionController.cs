@@ -37,7 +37,7 @@ public class QueueTransactionController : BaseApiController
 
     // Add multiple transactions (work items) to the specified queue
     [HttpPost("multiple-data")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<QueueTransactionDto>>>> InsertMultipleTransactionsAsync([FromBody] QueueTransactionDto queueTransactionDto)
+    public async Task<ActionResult<ServiceResponse<QueueTransactionDto>>> InsertMultipleTransactionsAsync([FromBody] QueueTransactionDto queueTransactionDto)
     {
         return ResultHelper(await _queueTransactionService.InsertMultipleTransactionsAsync(queueTransactionDto));
     }

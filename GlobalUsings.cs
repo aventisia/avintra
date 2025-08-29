@@ -37,3 +37,5 @@ global using Ardalis.GuardClauses;
 
 global using Newtonsoft.Json;
 global using Newtonsoft.Json.Schema;
+global using Newtonsoft.Json.Linq;
+
