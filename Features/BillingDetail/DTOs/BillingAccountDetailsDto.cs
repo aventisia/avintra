@@ -13,6 +13,16 @@ public class BillingAccountDetailsDto
     public string? Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the date the billing ammount was paid.
+    /// </summary>
+    public DateTimeOffset? PaidOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the payment status of the account billing.
+    /// </summary>
+    public PaymentStatusEnum PaymentStatus { get; set; } = PaymentStatusEnum.Pending;
+
+    /// <summary>
     /// Gets or sets the subscription frequency (e.g., monthly or yearly).
     /// </summary>
     public SubscriptionFrequenciesEnum Frequency { get; set; }
