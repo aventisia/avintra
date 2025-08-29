@@ -1,6 +1,7 @@
 import { SidebarMenuSectionType } from "@aventisia/ui/types";
 import {
   BanknotesIcon,
+  ChartPieIcon,
   IdentificationIcon,
   QuestionMarkCircleIcon,
   QueueListIcon,
@@ -181,6 +182,12 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: BanknotesIcon,
         name: "Credit Plans",
         route: "sa/credit-plans",
+      },
+      {
+        permissions: ["SA"],
+        Icon: ChartPieIcon,
+        name: "Tenants Consumption",
+        route: "sa/tenants-consumption",
       },
     ],
   },
