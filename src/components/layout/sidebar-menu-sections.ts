@@ -17,13 +17,10 @@ import {
   MonitorPlayIcon,
   ServerIcon,
   Shield,
-  TagIcon,
   Wallet,
   Workflow,
 } from "lucide-react";
 import { AiOutlineThunderbolt } from "react-icons/ai";
-import { PiScrollLight } from "react-icons/pi";
-import { TbCertificate } from "react-icons/tb";
 
 const sidebarMenuSections: SidebarMenuSectionType[] = [
   {
@@ -114,18 +111,12 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         name: "credits Usage",
         route: "/credits-usage",
       },
-      {
-        permissions: ["SA", "GA"],
-        Icon: TbCertificate,
-        name: "licenses & Credits",
-        route: "/orchestrator/licenses",
-      },
-      {
-        permissions: ["SA", "GA"],
-        Icon: PiScrollLight,
-        name: "billing",
-        route: "/billing",
-      },
+      // {
+      //   permissions: ["SA", "GA"],
+      //   Icon: TbCertificate,
+      //   name: "licenses & Credits",
+      //   route: "/orchestrator/licenses",
+      // },
       {
         permissions: ["SA", "GA"],
         Icon: UsersIcon,
@@ -167,24 +158,24 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         name: "subscription plans",
         route: "sa/subscription-plans",
       },
-      {
-        permissions: ["SA"],
-        Icon: TagIcon,
-        name: "pricing",
-        route: "sa/pricing",
-      },
+      // {
+      //   permissions: ["SA"],
+      //   Icon: TagIcon,
+      //   name: "pricing",
+      //   route: "sa/pricing",
+      // },
       {
         permissions: ["SA"],
         Icon: ServerIcon,
         name: "on-prem LLMs",
         route: "sa/on-prem-llms",
       },
-      {
-        permissions: ["SA"],
-        Icon: TbCertificate,
-        name: "licenses & Credits",
-        route: "sa/licenses",
-      },
+      // {
+      //   permissions: ["SA"],
+      //   Icon: TbCertificate,
+      //   name: "licenses & Credits",
+      //   route: "sa/licenses",
+      // },
       {
         permissions: ["SA"],
         Icon: BanknotesIcon,

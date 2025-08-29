@@ -1,0 +1,30 @@
+import { CrudActionType } from "@aventisia/ui/types";
+
+const BILLING_HISOTRY_QUERY_KEY = ["billing_history"];
+
+const TABLE_HEADING = "Billing History";
+
+/**
+ * The column used for searching in the models.
+ */
+const SEARCH_COLUMN = "invoice";
+
+const getDialogHeadingDescription = (crudAction: CrudActionType) => {
+  switch (crudAction) {
+    case "create":
+      return { heading: "Create History", description: "" };
+    case "read":
+      return { heading: "Billing History", description: "" };
+    case "update":
+      return { heading: "Edit History", description: "" };
+    default:
+      return { heading: "", description: "" };
+  }
+};
+
+export {
+    BILLING_HISOTRY_QUERY_KEY,
+  TABLE_HEADING,
+  getDialogHeadingDescription,
+  SEARCH_COLUMN,
+};
