@@ -28,7 +28,7 @@ public interface IQueueTransactionService
     /// </summary>
     /// <param name="queueTransactionDto">Details of the transactions to be added to the queue (PayloadData contains a list of transactions)</param>
     /// <returns>A service response indicating whether the transactions were successfully inserted</returns>
-    Task<ServiceResponse<bool>> InsertMultipleTransactionsAsync(QueueTransactionDto queueTransactionDto);
+    Task<ServiceResponse<IEnumerable<QueueTransactionDto>>> InsertMultipleTransactionsAsync(QueueTransactionDto queueTransactionDto);
 
     /// <summary>
     /// Modify the status of an existing transaction (e.g., Pending → In Progress → Completed/Failed).

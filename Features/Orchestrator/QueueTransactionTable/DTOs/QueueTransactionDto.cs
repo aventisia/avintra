@@ -24,6 +24,12 @@ public class QueueTransactionDto
     public string? PayloadData { get; set; }
 
     /// <summary>
+    /// Gets or sets the remarks, validation errors, or other processing notes related to the transaction.
+    /// This field is primarily used for diagnostics or displaying validation results.
+    /// </summary>
+    public string? Remarks { get; set; }
+
+    /// <summary>
     /// Gets or sets the identifier for the queue to which this transaction belongs.
     /// </summary>
     public required Guid QueueId { get; set; }
