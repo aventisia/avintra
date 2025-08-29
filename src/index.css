@@ -14,8 +14,8 @@
     --secondary-foreground: rgb(248, 250, 252);
     --muted: rgb(241, 245, 249);
     --muted-foreground: rgb(100, 116, 139);
-    --accent: rgb(245, 245, 245);
-    --accent-foreground: rgb(23, 23, 23);
+    --accent: hsl(226, 100%, 97%);
+    --accent-foreground: hsl(222.2 47.4% 11.2%);
     --destructive: rgb(244, 67, 54);
     --destructive-foreground: rgb(255, 255, 255);
     --success: rgb(159, 227, 205);
@@ -29,6 +29,8 @@
     --input: rgb(224, 224, 241);
     --ring: rgba(78, 70, 229, 0.2);
     --radius: 0.5rem;
+    --popover: hsl(0 0% 100%);
+    --popover-foreground: hsl(222.2 84% 4.9%);
   }
 
   .dark {
