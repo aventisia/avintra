@@ -49,7 +49,7 @@ export const TemplateCard = ({ template, onClick }: TemplateCardProps) => {
         </div>
 
         {/* Template title */}
-        <CardTitle className="!mt-5 text-[0.9rem] font-semibold capitalize">
+        <CardTitle className="!mt-5 truncate text-[0.9rem] font-semibold capitalize">
           {template.name}
         </CardTitle>
 

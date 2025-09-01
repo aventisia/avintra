@@ -17,11 +17,11 @@ import {
 import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
 import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
 import { AchievesPage } from "./pages/AchievesPage";
-import { BillingPage } from "./pages/BillingPage";
+import { TenantPage } from "./pages/TenantPage";
 import ComingSoon from "./pages/CommingSoon";
 import { FlowsPage } from "./pages/FlowsPage";
 import { LibraryPage } from "./pages/LibraryPage";
-import { LicensesPage } from "./pages/LicensesPage";
+// import { LicensesPage } from "./pages/LicensesPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import MyAccountPage from "./pages/MyAccountPage";
 import { ExecutionsPage } from "./pages/orchestrator/ExecutionsPage";
@@ -33,18 +33,18 @@ import { QueuesPage } from "./pages/orchestrator/QueuesPage";
 import { QueuesWorkItemsPage } from "./pages/orchestrator/QueuesWorkItemsPage";
 import { TriggersPage } from "./pages/orchestrator/TriggersPage";
 import { VaultPage } from "./pages/orchestrator/VaultPage";
-import { PricingPage } from "./pages/sa/PricingPage";
-import { SaLicensesPage } from "./pages/sa/SaLicensesPage";
+// import { PricingPage } from "./pages/sa/PricingPage";
+// import { SaLicensesPage } from "./pages/sa/SaLicensesPage";
 import { SubscriptionPlansPage } from "./pages/sa/SubscriptionPlansPage";
 import { TenantsPage } from "./pages/sa/TenantsPage";
 import { SupportTicketsPage } from "./pages/SupportTicketsPage";
 import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
-import { TenantInfoPage } from "./pages/TenantsInfoPage";
 import { UsersPage } from "./pages/UsersPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AppIntegrationsPage } from "./pages/IntegrationsPage";
 import { CreditPlansPage } from "./pages/sa/CreditPlansPage";
 import { CreditsUsagePage } from "./pages/CreditsUsagePage";
+import { OnPremLLMPage } from "./pages/sa/OnPremLLMPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -117,16 +117,7 @@ const routerConfig: RouteObject[] = [
       {
         path: "/tenant",
         element: (
-          <ProtectedRoute
-            persmissions={["SA", "GA"]}
-            page={<TenantInfoPage />}
-          />
-        ),
-      },
-      {
-        path: "/billing",
-        element: (
-          <ProtectedRoute persmissions={["SA", "GA"]} page={<BillingPage />} />
+          <ProtectedRoute persmissions={["SA", "GA"]} page={<TenantPage />} />
         ),
       },
       {
@@ -227,15 +218,15 @@ const routerConfig: RouteObject[] = [
               />
             ),
           },
-          {
-            path: "/orchestrator/licenses/:id?/:a?",
-            element: (
-              <ProtectedRoute
-                persmissions={["SA", "GA"]}
-                page={<LicensesPage />}
-              />
-            ),
-          },
+          // {
+          //   path: "/orchestrator/licenses/:id?/:a?",
+          //   element: (
+          //     <ProtectedRoute
+          //       persmissions={["SA", "GA"]}
+          //       page={<LicensesPage />}
+          //     />
+          //   ),
+          // },
         ],
       },
       {
@@ -261,21 +252,30 @@ const routerConfig: RouteObject[] = [
             ),
             index: true,
           },
+          // {
+          //   path: "/sa/licenses",
+          //   element: (
+          //     <ProtectedRoute
+          //       persmissions={["SA", "GA"]}
+          //       page={<SaLicensesPage />}
+          //     />
+          //   ),
+          // },
+          // {
+          //   path: "/sa/pricing",
+          //   element: (
+          //     <ProtectedRoute
+          //       persmissions={["SA", "GA"]}
+          //       page={<PricingPage />}
+          //     />
+          //   ),
+          // },
           {
-            path: "/sa/licenses",
+            path: "/sa/on-prem-llms",
             element: (
               <ProtectedRoute
                 persmissions={["SA", "GA"]}
-                page={<SaLicensesPage />}
-              />
-            ),
-          },
-          {
-            path: "/sa/pricing",
-            element: (
-              <ProtectedRoute
-                persmissions={["SA", "GA"]}
-                page={<PricingPage />}
+                page={<OnPremLLMPage />}
               />
             ),
           },

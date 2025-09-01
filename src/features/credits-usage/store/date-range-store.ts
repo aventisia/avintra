@@ -1,19 +1,26 @@
+import { subDays } from "date-fns";
 import { create } from "zustand";
 
+export type DateRange = {
+    from: Date | undefined;
+    to?: Date | undefined;
+};
+
 interface dateRangePickerState {
-    startDate: string;
-    endDate: string;
+    dateRange: DateRange | undefined;
 }
 
 interface dateRangePickerActions {
-    setStartEndDate: (from: string, to: string) => void;
+    setDateRange: (range: DateRange | undefined) => void;
 }
 
+const today = new Date();
+const last7thDay = subDays(today, 6); // Includes today as the 7th day
+
 export const useDateRangePickerStore =create<dateRangePickerState & dateRangePickerActions>((set) => ({
-    startDate: "",
-    endDate: "",
-    setStartEndDate: (from, to) => set({
-        startDate: from,
-        endDate: to,
-    })
+    dateRange: {
+        from: last7thDay,
+        to: today,
+      },
+      setDateRange: (range) => set({ dateRange: range }),
 }));
