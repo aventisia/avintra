@@ -1,25 +1,27 @@
 import os
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+env_file = os.getenv("ENV_FILE", ".env.dev")
+load_dotenv(env_file)
 
 class Settings(BaseSettings):
     # JWT settings from environment variables
-    secret_key: str = os.environ.get("SECRET_KEY")
+    secret_key: str
     algorithm: str = "HS512"
-    issuer: str = os.getenv("ISSUER", "localhost")
-    audience: str = os.getenv("AUDIENCE", "localhost")
+    issuer: str = "localhost"
+    audience: str = "localhost"
 
     # Qdrant settings from environment variables
-    qdrant_api_key: str | None = os.getenv("QDRANT_API_KEY", None) 
-    qdrant_url: str | None = os.environ.get("QDRANT_URL", None)
+    qdrant_api_key: str | None = None
+    qdrant_url: str | None = None
 
     # Ollama settings from environment variables
-    ollama_api_url: str = os.getenv("OLLAMA_API_URL", None)
-    ollama_api_key: str = os.getenv("OLLAMA_API_KEY", None)
+    ollama_api_url: str
+    ollama_api_key: str
 
-    # Dynamically load the .env file based on the environment
     model_config = SettingsConfigDict(
-        # Allow extra fields not explicitly defined
-        extra="allow" 
+        extra="allow"
     )
 
 # Initialize the settings class, loading the environment variables
