@@ -2,11 +2,8 @@ import os
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# Get ENVIRONMENT value from the system or default to 'development'
-env = os.getenv("ENVIRONMENT", "development").lower()
-
-# Set the correct .env file based on the environment
-env_file = f".env.{env}" 
+# Set the .env file path
+env_file = ".env"
 
 # Load environment variables from .env file
 load_dotenv(env_file)
