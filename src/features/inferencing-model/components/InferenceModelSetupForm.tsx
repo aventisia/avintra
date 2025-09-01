@@ -105,7 +105,7 @@ const InferenceModelSetupForm = () => {
           },
           configurationType: "OnPrem",
           llm: "gemma",
-          nodePrompt: `You are a question answering assistant. Your task is to read the provided context and accurately answer the user’s question based only on the information present in the given text.\nIf the answer is clearly stated, provide a precise and concise response. If the answer is not found or cannot be determined from the context, respond with "Answer not found in the provided content."\nDo not guess or rely on external knowledge. Only use the information provided in the context.`,
+          nodePrompt: `You are an assistant that extracts information from documents. You will receive: \n1. The text content of a document.\n2. A list of questions with instructions on how to answer them.\n\nYour task is to carefully read the document and answer each question based ONLY on the document text.\n- Always follow the instructions for formatting each answer.\n- If an answer is not explicitly available in the document, respond with: "Not found in document".\n- Do not add extra information or assumptions.\n- Keep answers concise and accurate.`,
           temperature: 0.2,
         });
       } else if (taskName === "extraction") {
