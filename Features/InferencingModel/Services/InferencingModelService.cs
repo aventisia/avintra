@@ -1870,8 +1870,9 @@ public class InferencingModelService : IInferencingModelService
                         for (int i = 0; i < inferencingModelDto.QuestionAnswer.SetupObject.QuestionAnswers.Count; i++)
                         {
                             var questionAnswer = inferencingModelDto.QuestionAnswer.SetupObject.QuestionAnswers[i];
-                            var instructions = string.IsNullOrEmpty(questionAnswer.Instructions) ? "" : $", - {questionAnswer.Instructions}";
-                            questionAnswerPrompt.AppendLine($"{questionAnswer.Index}. {questionAnswer.Name}{instructions}");
+                            var instructions = string.IsNullOrEmpty(questionAnswer.Instructions) ? "" : $" Explicit instructions for this question → {questionAnswer.Instructions}";
+                            instructions = instructions.Replace("\n", " ").Trim();
+                            questionAnswerPrompt.AppendLine($"Question #{i + 1}: {questionAnswer.Name}{instructions}");
                         }
                     }
 
@@ -1880,7 +1881,7 @@ public class InferencingModelService : IInferencingModelService
                     {
                         { "{{Prompt}}", defaultPrompt.ToString() },
                         { "{{Context}}", inferencingModelDto.BusinessContext },
-                        { "{{QuestionAnswers}}", questionAnswerPrompt.Replace("\n", "").ToString() }
+                        { "{{Questions}}", questionAnswerPrompt.ToString() }
                     });
                     break;
 

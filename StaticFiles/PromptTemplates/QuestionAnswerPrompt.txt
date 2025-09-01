@@ -1,20 +1,13 @@
 {{Prompt}}
 
-Context: {{Context}}  
-Questions: {{Questions}}  
+Extra context: {{Context}}
+
 FileContent: {{FileContent}}
 
-Instructions:  
-1. Use questions exactly as written.  
-2. Answer only what's asked, based solely on Context and FileContent.  
-3. If the answer is missing or unclear, leave `answer` empty and set `confidenceScore` to `"0"`.  
-4. Return a valid JSON array string only — no markdown or extra text.
+Questions with their instructions:
+{{Questions}}
 
-Each result must include:  
-- `question`: (string)  
-- `answer`: (string, empty if not found)  
-- `confidenceScore`: (string from "0" to "100")
-
-Output format (return **only** this):
+Output format (return **only** this. Return a valid JSON array string only. no markdown or extra text.):
 ```json
 {{OutputFormat}}
+```
