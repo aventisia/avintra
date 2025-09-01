@@ -1,12 +1,5 @@
 import os
-from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-# Set the .env file path
-env_file = ".env"
-
-# Load environment variables from .env file
-load_dotenv(env_file)
 
 class Settings(BaseSettings):
     # JWT settings from environment variables
@@ -25,9 +18,7 @@ class Settings(BaseSettings):
 
     # Dynamically load the .env file based on the environment
     model_config = SettingsConfigDict(
-        # This tells Pydantic to load the correct .env file
-        env_file=env_file,  
-         # Allow extra fields not explicitly defined
+        # Allow extra fields not explicitly defined
         extra="allow" 
     )
 
