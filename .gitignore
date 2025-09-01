@@ -488,3 +488,8 @@ $RECYCLE.BIN/
 
 # Ignore wwwroot folder
 wwwroot/
+
+# Ignore extra files/folders
+TO-DELETE-*
+sample-*
+test-*
