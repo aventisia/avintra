@@ -17,7 +17,7 @@ createRoot(document.getElementById("root")!).render(
       </AlertDialogWrapper>
 
       {/* To show toaster notifications */}
-      <SonnerToaster />
+      <SonnerToaster position="top-center" />
     </TooltipProvider>
   </StrictMode>,
 );
