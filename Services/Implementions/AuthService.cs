@@ -11,6 +11,7 @@ public class AuthService : IAuthService
     private readonly ILogger<AuthService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
+    private readonly DefaultTenantConfig _defaultTenantConfig;
 
     public AuthService(
         UserManager<AccountUser> userManager,
@@ -21,7 +22,8 @@ public class AuthService : IAuthService
         IAuthHelperService authHelperService,
         IdentityConfig identityConfig,
         JwtConfig jwtConfig,
-        VerificationCodeConfig verificationCodeConfig)
+        VerificationCodeConfig verificationCodeConfig,
+        DefaultTenantConfig defaultTenantConfig)
     {
         _userManager = userManager;
         _emailService = emailService;
@@ -32,6 +34,7 @@ public class AuthService : IAuthService
         _identityConfig = identityConfig;
         _jwtConfig = jwtConfig;
         _verificationCodeConfig = verificationCodeConfig;
+        _defaultTenantConfig = defaultTenantConfig;
     }
 
     // Checks the availability of a email.
@@ -308,7 +311,29 @@ public class AuthService : IAuthService
             }
             else
             {
-                serviceResponse.Message = "New session has been created successfully";
+                // Determine if the current user is part of the default tenant
+                var isDefaultTenant = _defaultTenantConfig.TenantId == user.TenantId;
+
+                // Query the current tenant's subscription, including related plan and creator details
+                var subscription = await _unitOfWork.TenantSubscriptionRepo
+                    .GetByConditionAsync(w =>
+                        !isDefaultTenant || w.CreatedByUserId == user.Id &&
+                        w.TenantId == user.TenantId
+                    // w.StartDate.Date >= DateTimeOffset.UtcNow.Date &&
+                    // w.EndDate.Date <= DateTimeOffset.UtcNow.Date
+                    )
+                    .SingleOrDefaultAsync();
+
+                // Check if a valid subscription was found
+                if (subscription == null)
+                {
+                    _logger.LogWarning("No active subscription found for user {UserId} in tenant {TenantId}.", user.Id, user.TenantId);
+                    serviceResponse.Message = "Tenant has no active subscription.";
+                }
+                else
+                {
+                    serviceResponse.Message = "New session has been created successfully.";
+                }
             }
 
             // UserSessionDto is ready
