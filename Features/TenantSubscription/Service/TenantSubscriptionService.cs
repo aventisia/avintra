@@ -38,12 +38,13 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         {
             _logger.LogInformation("Attempting to retrieve all tenant subscriptions.");
 
-            var isDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
+            var isDefaultTenant = _defaultTenantConfig.TenantId == _tenantId;
 
             // Fetch all tenant subscriptions with their related plan and creator user
             var subscriptions = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
-                    isDefaultTenant || w.CreatedByUserId == _userId
+                    !isDefaultTenant || w.CreatedByUserId == _userId &&
+                    w.TenantId == _tenantId
                 )
                 .Include(i => i.Plan)
                 .Include(i => i.CreatedByUser)
@@ -452,12 +453,13 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         {
             _logger.LogInformation("Fetching current tenant subscription plan for tenant ID: {TenantId}", _tenantId);
 
-            var isDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
+            var isDefaultTenant = _defaultTenantConfig.TenantId == _tenantId;
 
             // Query the current tenant's subscription, including related plan and creator details
             var subscription = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
-                    isDefaultTenant || w.CreatedByUserId == _userId &&
+                    w.TenantId == _tenantId &&
+                    !isDefaultTenant || w.CreatedByUserId == _userId &&
                     w.StartDate.Date >= DateTimeOffset.UtcNow.Date &&
                     w.EndDate.Date <= DateTimeOffset.UtcNow.Date
                 )
