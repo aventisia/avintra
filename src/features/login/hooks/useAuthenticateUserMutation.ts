@@ -1,4 +1,9 @@
-import { PWD_EXPIRED, TWO_FA_ENABLED } from "@/react-toolkit/constants";
+import {
+  ADD_TENANT,
+  DEV_JWT_LS_KEY,
+  PWD_EXPIRED,
+  TWO_FA_ENABLED,
+} from "@/react-toolkit/constants";
 import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 
 import { useMutation } from "@tanstack/react-query";
@@ -56,19 +61,30 @@ export const useAuthenticateUserMutation = () => {
 
         // ----------User is authenticated Now----------
 
-        // Reset login process
-        resetLoginProcess();
+        // TODO: To be removed
+        if (import.meta.env.DEV) {
+          localStorage.setItem(DEV_JWT_LS_KEY, data.accessToken);
+        }
 
-        // Set authenticated user locally
-        const userSessionStoreObj = setUserSessionLocally(data);
+        // Check if backend message indicates incomplete tenant setup
+        if (message.includes(ADD_TENANT)) {
+          window.location.href =
+            import.meta.env.VITE_ACCOUNTS_URL + "/account-setup";
+        } else {
+          // Reset login process
+          resetLoginProcess();
 
-        // TODO: Route as per user type (internal or external)
-        navigate(
-          "/redirect?msg=Logging in...&url=" +
-            (userSessionStoreObj.isAE
-              ? import.meta.env.VITE_WORC_URL
-              : import.meta.env.VITE_WORC_URL),
-        );
+          // Set authenticated user locally
+          const userSessionStoreObj = setUserSessionLocally(data);
+
+          // TODO: Route as per user type (internal or external)
+          navigate(
+            "/redirect?msg=Logging in...&url=" +
+              (userSessionStoreObj.isAE
+                ? import.meta.env.VITE_WORC_URL
+                : import.meta.env.VITE_WORC_URL),
+          );
+        }
       },
       onError: () => {
         resetLoginProcess();
