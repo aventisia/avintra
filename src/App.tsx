@@ -13,6 +13,9 @@ import {
 
 // Lazy load pages
 const CreateAccountPage = lazy(() => import("@/pages/CreateAccountPage"));
+const SignupPage = lazy(() => import("@/pages/SignupPage"));
+const AccountSetupPage = lazy(() => import("@/pages/AccountSetupPage"));
+const ChoosePlanPage = lazy(() => import("@/pages/ChoosePlanPage"));
 const LogInPage = lazy(() => import("@/pages/LogInPage"));
 const ResetPwdPage = lazy(() => import("@/pages/ResetPwdPage"));
 
@@ -44,6 +47,19 @@ const router = createBrowserRouter(
           path: "/create-account",
           element: <CreateAccountPage />,
         },
+        {
+          path: "/signup",
+          element: <SignupPage />,
+        },
+        {
+          path: "/account-setup",
+          element: <AccountSetupPage />,
+        },
+        {
+          path: "/choose-plan",
+          element: <ChoosePlanPage />,
+        },
+
         {
           path: "/reset-pwd",
           element: <ResetPwdPage />,

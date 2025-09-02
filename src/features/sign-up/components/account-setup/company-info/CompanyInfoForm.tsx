@@ -1,0 +1,97 @@
+import {
+  countryProps,
+  industryProps,
+  numberOfEmployeesProps,
+  organizationDomainProps,
+  organizationNameProps,
+  roleProps,
+} from "@/features/sign-up/constants/company-form-field-props";
+import { companyInfoSchema } from "@/features/sign-up/constants/company-info-zod-schema";
+import { useDefineCompanyInfoForm } from "@/features/sign-up/hooks/useDefineCompanyInfoForm";
+import { useUpdateTenantInfoMutation } from "@/features/sign-up/hooks/useUpdateTenantInfoMutation";
+import { useCompanyInfoStore } from "@/features/sign-up/stores/company-info-store";
+import { Form } from "@/react-toolkit/ui/form/Form";
+
+import { Button, SubmitButton } from "@aventisia/ui/buttons";
+import { InputField, SelectField } from "@aventisia/ui/form";
+import { toast } from "@aventisia/ui/sonner";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
+/**
+ * Component for the create account form.
+ */
+export const CompanyInfoForm = () => {
+  // Get navigate
+  // const navigate = useNavigate();
+
+  // Define form
+  const { form, isSubmitting } = useDefineCompanyInfoForm();
+
+  const { setStepNo } = useCompanyInfoStore(
+    useShallow((state) => ({
+      setStepNo: state.setStepNo,
+    })),
+  );
+
+  const { updateTenantInfoMutation, isCreationPending } =
+    useUpdateTenantInfoMutation();
+
+  // Define submit handler
+  const onSubmit = async (formData: z.infer<typeof companyInfoSchema>) => {
+    try {
+      await updateTenantInfoMutation(formData);
+
+      // Reset the form to clear dirty state and suppress discard dialog
+      form.reset();
+
+      // navigate("/choose-plan");
+      // Navigate after successful form submission
+      window.location.href = import.meta.env.VITE_ACCOUNTS_URL + "/choose-plan";
+    } catch (error) {
+      // Optional: If you're not already handling error in useMutation
+      toast.error(error instanceof Error ? error.message : String(error));
+    }
+  };
+
+  // Return form
+  return (
+    <Form
+      methods={form}
+      onSubmit={form.handleSubmit(onSubmit)}
+      disabled={isSubmitting}
+      className="space-y-4"
+    >
+      {/* Email */}
+      <InputField {...organizationNameProps} />
+
+      <InputField {...organizationDomainProps} />
+
+      <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
+        <SelectField {...numberOfEmployeesProps} />
+
+        {/* Confirm Password */}
+        <SelectField {...countryProps} />
+      </div>
+      <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
+        {/* Terms and Conditions */}
+        <InputField {...industryProps} />
+
+        {/* Confirm Password */}
+        <InputField {...roleProps} />
+      </div>
+
+      <div className="flex w-full justify-between">
+        <Button
+          variant={"outline"}
+          onClick={() => {
+            setStepNo(1);
+          }}
+        >
+          Back
+        </Button>
+        <SubmitButton isPending={isCreationPending} primaryText="Finish" />
+      </div>
+    </Form>
+  );
+};

@@ -1,0 +1,64 @@
+import {
+  maxLenError,
+  nameError,
+  reqError,
+} from "@/react-toolkit/utils/error-message-list";
+import { nameRegex } from "@/react-toolkit/utils/regex-list";
+
+import { z } from "zod";
+
+export const billingInfoSchema = z
+  .object({
+    organizationName: z
+      .string()
+      .min(1, { message: reqError("Organization name") })
+      .max(255, { message: maxLenError("Organization name", 255) })
+      .regex(nameRegex, {
+        message: nameError("Organization name"),
+      }),
+
+    addressLine1: z
+      .string()
+      .min(1, { message: reqError("Address Line 1") })
+      .max(255, { message: maxLenError("Address Line 1", 255) })
+      .regex(nameRegex, {
+        message: nameError("Address Line 1"),
+      }),
+
+    addressLine2: z.string().optional(), // No validation since it's optional
+
+    state: z.string().min(1, reqError("State")),
+
+    city: z
+      .string()
+      .min(1, { message: reqError("City") })
+      .max(255, { message: maxLenError("City", 255) })
+      .regex(nameRegex, {
+        message: nameError("City"),
+      }),
+
+    pinCode: z
+      .string()
+      .min(1, { message: reqError("Pin Code") })
+      .max(10, { message: maxLenError("Pin Code", 10) }),
+
+    country: z.string().min(1, reqError("Country")),
+
+    gstRegistration: z.boolean().optional(), // Optional Switch field
+
+    // Conditional validation for gstNumber
+    gstNumber: z
+      .string()
+      .min(0, { message: reqError("GST Number") })
+      .max(15, { message: maxLenError("GST Number", 15) })
+      .optional(), // Make it optional by default
+  })
+  .refine(
+    (data) =>
+      !data.gstRegistration ||
+      (data.gstNumber !== undefined && data.gstNumber !== ""),
+    {
+      message: "GST Number is required",
+      path: ["gstNumber"],
+    },
+  );

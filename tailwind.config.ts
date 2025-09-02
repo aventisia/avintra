@@ -87,6 +87,14 @@ const config = {
           DEFAULT: "var(--info)",
           foreground: "var(--info-foreground)",
         },
+        accent: {
+          DEFAULT: "var(--accent)",
+          foreground: "var(--accent-foreground)",
+        },
+        popover: {
+          DEFAULT: "var(--popover)",
+          foreground: "var(--popover-foreground)",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

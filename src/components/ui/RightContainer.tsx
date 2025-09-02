@@ -1,7 +1,10 @@
+import { cn } from "@aventisia/ui/lib";
+
 interface RightContainerProps {
   heading: string;
   subHeading: string;
   imgSrc: string;
+  className?: string;
 }
 
 /**
@@ -19,9 +22,15 @@ const RightContainer = ({
   heading,
   subHeading,
   imgSrc,
+  className = "lg:w-[50%]",
 }: RightContainerProps) => {
   return (
-    <div className="relative hidden overflow-hidden rounded-[1.5rem] bg-slate-100 lg:block lg:w-[50%]">
+    <div
+      className={cn(
+        "relative hidden overflow-hidden rounded-[1.5rem] bg-slate-100 lg:block lg:w-[50%]",
+        className,
+      )}
+    >
       <div className="absolute w-full">
         <div className="mt-0 flex flex-col gap-3 px-[5.5rem] py-16">
           <h2 className="text-5xl font-medium leading-[3.5rem] text-secondary">
