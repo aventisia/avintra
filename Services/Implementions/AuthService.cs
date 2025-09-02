@@ -312,17 +312,17 @@ public class AuthService : IAuthService
             else
             {
                 // Determine if the current user is part of the default tenant
-                var isDefaultTenant = _defaultTenantConfig.TenantId == user.TenantId;
+                var isNonDefaultTenant = _defaultTenantConfig.TenantId != user.TenantId;
 
                 // Query the current tenant's subscription, including related plan and creator details
                 var subscription = await _unitOfWork.TenantSubscriptionRepo
                     .GetByConditionAsync(w =>
-                        !isDefaultTenant || w.CreatedByUserId == user.Id &&
-                        w.TenantId == user.TenantId
-                    // w.StartDate.Date >= DateTimeOffset.UtcNow.Date &&
-                    // w.EndDate.Date <= DateTimeOffset.UtcNow.Date
+                        (isNonDefaultTenant || w.CreatedByUserId == user.Id) &&
+                        w.TenantId == user.TenantId &&
+                        w.StartDate.Date <= DateTimeOffset.UtcNow.Date &&
+                        w.EndDate.Date >= DateTimeOffset.UtcNow.Date
                     )
-                    .SingleOrDefaultAsync();
+                    .FirstOrDefaultAsync();
 
                 // Check if a valid subscription was found
                 if (subscription == null)
