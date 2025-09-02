@@ -31,10 +31,10 @@ export const useDefineBillingInfoForm = () => {
       addressLine2: billingData?.addressLine2 ?? "",
       city: billingData?.city ?? "",
       state: billingData?.state ?? "",
-      gstRegistration: billingData?.gstRegistration ?? false,
+      isWillingToFileGst: billingData?.isWillingToFileGst ?? false,
       country: billingData?.country ?? "India",
       gstNumber: billingData?.gstNumber ?? "",
-      pinCode: billingData?.pinCode ?? "",
+      postalCode: billingData?.postalCode ?? "",
     },
   });
   console.log(form.formState.errors);

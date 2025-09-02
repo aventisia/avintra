@@ -24,7 +24,7 @@ const CompanyDetails = () => {
     city,
     state,
     country,
-    pinCode,
+    postalCode,
     gstNumber,
   } = billingData || {};
 
@@ -37,7 +37,7 @@ const CompanyDetails = () => {
       country?.replace(/([a-z])([A-Z])/g, "$1 $2"),
     ]
       .filter(Boolean)
-      .join(", ") + (pinCode ? ` - ${pinCode}` : "");
+      .join(", ") + (postalCode ? ` - ${postalCode}` : "");
 
   return (
     <div className="max-w-[35rem] rounded-lg border">

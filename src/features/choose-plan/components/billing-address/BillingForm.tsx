@@ -40,7 +40,7 @@ export const BillingForm = () => {
     });
     setStepNo(3);
   };
-  const isGSTRegistered = form.watch("gstRegistration");
+  const isGSTRegistered = form.watch("isWillingToFileGst");
   const applyGST = form.watch("country") == "India";
 
   return (
