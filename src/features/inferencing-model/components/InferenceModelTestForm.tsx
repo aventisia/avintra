@@ -185,19 +185,32 @@ const InferenceModelTestForm = () => {
               />
               <span className="text-sm">Submit for Fine-tuning</span>
             </div>
-            <Button
-              size="xs"
-              type="submit"
-              disabled={isSubmitting || isUpdatePending}
-            >
-              {isUpdatePending ? (
-                <LoadingSpinner className="h-4 w-4" />
-              ) : isLastFile ? (
-                "Save"
-              ) : (
-                "Save & Next"
-              )}
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                className="hidden"
+                variant="outline"
+                size="xs"
+                onClick={(e) => {
+                  e.preventDefault();
+                  form.reset();
+                }}
+              >
+                Reset
+              </Button>
+              <Button
+                size="xs"
+                type="submit"
+                disabled={isSubmitting || isUpdatePending}
+              >
+                {isUpdatePending ? (
+                  <LoadingSpinner className="h-4 w-4" />
+                ) : isLastFile ? (
+                  "Save"
+                ) : (
+                  "Save & Next"
+                )}
+              </Button>
+            </div>
           </div>
         </>
       )}
