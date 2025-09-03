@@ -388,7 +388,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             newSubscription.EndDate = tenantSubscriptionPurchaseDto.Frequency switch
             {
                 SubscriptionFrequenciesEnum.Monthly => DateTimeOffset.UtcNow.Date.AddMonths(1),
-                SubscriptionFrequenciesEnum.Yearly => DateTimeOffset.UtcNow.Date.AddYears(1),
+                SubscriptionFrequenciesEnum.Yearly => DateTimeOffset.MaxValue,
                 _ => throw new ArgumentException("Invalid subscription frequency.")
             };
 
@@ -407,19 +407,23 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 return serviceResponse;
             }
 
-            var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
-            billingDetail.CreatedByUserId = _userId;
-            billingDetail.LastModifiedByUserId = _userId;
-
-            // Insert the new address into the repository
-            await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
-
-            // Save changes to the database
-            if (!await _unitOfWork.SaveAsync())
+            // If the subscription plan is not 'Starter', billing details are required
+            if (subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                _logger.LogError("Failed to persist new address for BillingDetail: {BillingDetailId}", billingDetail.Id);
-                serviceResponse.Message = "Failed to save the billing address.";
-                return serviceResponse;
+                var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
+                billingDetail.CreatedByUserId = _userId;
+                billingDetail.LastModifiedByUserId = _userId;
+
+                // Insert the new address into the repository
+                await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
+
+                // Save changes to the database
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to persist new address for BillingDetail: {BillingDetailId}", billingDetail.Id);
+                    serviceResponse.Message = "Failed to save the billing address.";
+                    return serviceResponse;
+                }
             }
 
             // Log the successful creation of the tenant subscription
