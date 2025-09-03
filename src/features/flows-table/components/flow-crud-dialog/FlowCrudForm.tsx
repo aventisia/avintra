@@ -5,6 +5,7 @@ import {
   InputField,
   SwitchField,
   TextareaField,
+  SelectField,
 } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect } from "react";
@@ -17,6 +18,7 @@ import {
   idProps,
   isDisabledProps,
   nameProps,
+  typeProps,
 } from "../../constants/flow-form-field-props";
 import { flowZodSchema } from "../../constants/flow-zod-schema";
 import { FlowsTableDto } from "../../dtos/flows-table-dto";
@@ -79,19 +81,19 @@ export const FlowCrudForm = () => {
       {/* Flow Id */}
       {isReadMode && <InputField {...idProps} />}
 
-      {/* Type. TODO: Select field doesn't update. Applied workaround for now */}
-      {/* {crudAction === "create" ? (
-        <SelectField {...typeProps} />
-      ) : (
-        form.getValues("type") !== "" && <SelectField {...typeProps} />
-      )} */}
-
       {/* Name */}
       <InputField
         {...nameProps}
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
       />
+
+      {/* Type. TODO: Select field doesn't update. Applied workaround for now */}
+      {crudAction === "create" ? (
+        <SelectField {...typeProps} />
+      ) : (
+        form.getValues("type") !== "" && <SelectField {...typeProps} />
+      )}
 
       {/* Description */}
       <TextareaField {...descriptionProps} />
