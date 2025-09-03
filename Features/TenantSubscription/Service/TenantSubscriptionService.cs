@@ -383,7 +383,13 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Map the DTO to the subscription entity
             var newSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
             newSubscription.Frequency = tenantSubscriptionPurchaseDto.Frequency;
-            
+            newSubscription.AvailableCredit = newSubscription.Frequency switch
+            {
+                SubscriptionFrequenciesEnum.Monthly => subscriptionPlan.MaxCredits,
+                SubscriptionFrequenciesEnum.Yearly => subscriptionPlan.MaxCredits * 12,
+                _ => throw new ArgumentOutOfRangeException(nameof(newSubscription.Frequency), "Unsupported subscription frequency.")
+            };
+
             // Set audit fields for tracking user actions
             newSubscription.CreatedByUserId = _userId;
             newSubscription.LastModifiedByUserId = _userId;
@@ -402,13 +408,21 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             if (subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
                 var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
-                billingDetail.NextBillingDate = newSubscription.Frequency switch
-                {
-                    SubscriptionFrequenciesEnum.Monthly => DateTimeOffset.UtcNow.Date.AddMonths(1),
-                    SubscriptionFrequenciesEnum.Yearly => DateTimeOffset.UtcNow.Date.AddYears(1),
-                    _ => throw new ArgumentOutOfRangeException(nameof(newSubscription.Frequency), "Unsupported subscription frequency.")
-                };
                 
+                // Determine pricing and next billing date based on frequency
+                switch (tenantSubscriptionPurchaseDto.Frequency)
+                {
+                    case SubscriptionFrequenciesEnum.Monthly:
+                        billingDetail.NextBillingDate = DateTimeOffset.UtcNow.Date.AddMonths(1);
+                        billingDetail.Amount = subscriptionPlan.MonthlyPrice * billingDetail.TaxRate;
+                        break;
+
+                    case SubscriptionFrequenciesEnum.Yearly:
+                        billingDetail.NextBillingDate = DateTimeOffset.UtcNow.Date.AddYears(1);
+                        billingDetail.Amount = subscriptionPlan.YearlyPrice * billingDetail.TaxRate;
+                        break;
+                }
+
                 billingDetail.CreatedByUserId = _userId;
                 billingDetail.LastModifiedByUserId = _userId;
 
@@ -419,7 +433,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 if (!await _unitOfWork.SaveAsync())
                 {
                     _logger.LogError("Failed to persist new address for BillingDetail: {BillingDetailId}", billingDetail.Id);
-                    serviceResponse.Message = "Failed to save the billing address.";
                     return serviceResponse;
                 }
             }
@@ -536,6 +549,12 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             {
                 // No existing subscription — create new
                 tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
+                tenantSubscription.AvailableCredit = tenantSubscription.Frequency switch
+                {
+                    SubscriptionFrequenciesEnum.Monthly => subscriptionPlan.MaxCredits,
+                    SubscriptionFrequenciesEnum.Yearly => subscriptionPlan.MaxCredits * 12,
+                    _ => throw new ArgumentOutOfRangeException(nameof(tenantSubscription.Frequency), "Unsupported subscription frequency.")
+                };
                 tenantSubscription.PlanId = subscriptionPlan.Id;
                 tenantSubscription.CreatedByUserId = _userId;
                 tenantSubscription.LastModifiedByUserId = _userId;
@@ -556,6 +575,14 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 tenantSubscription.PlanId = subscriptionPlan.Id;
                 tenantSubscription.LastModifiedByUserId = _userId;
 
+                // Set available credit based on frequency
+                tenantSubscription.AvailableCredit = tenantSubscription.Frequency switch
+                {
+                    SubscriptionFrequenciesEnum.Monthly => subscriptionPlan.MaxCredits,
+                    SubscriptionFrequenciesEnum.Yearly => subscriptionPlan.MaxCredits * 12,
+                    _ => throw new ArgumentOutOfRangeException(nameof(tenantSubscription.Frequency), "Unsupported subscription frequency.")
+                };
+
                 _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
 
                 if (!await _unitOfWork.SaveAsync())
@@ -572,12 +599,19 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             {
                 var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
 
-                billingDetail.NextBillingDate = tenantSubscription.Frequency switch
+                // Determine pricing and next billing date based on frequency
+                switch (tenantSubscriptionPurchaseDto.Frequency)
                 {
-                    SubscriptionFrequenciesEnum.Monthly => DateTimeOffset.UtcNow.Date.AddMonths(1),
-                    SubscriptionFrequenciesEnum.Yearly => DateTimeOffset.UtcNow.Date.AddYears(1),
-                    _ => throw new ArgumentOutOfRangeException(nameof(tenantSubscription.Frequency), "Unsupported subscription frequency.")
-                };
+                    case SubscriptionFrequenciesEnum.Monthly:
+                        billingDetail.NextBillingDate = DateTimeOffset.UtcNow.Date.AddMonths(1);
+                        billingDetail.Amount = subscriptionPlan.MonthlyPrice * billingDetail.TaxRate;
+                        break;
+
+                    case SubscriptionFrequenciesEnum.Yearly:
+                        billingDetail.NextBillingDate = DateTimeOffset.UtcNow.Date.AddYears(1);
+                        billingDetail.Amount = subscriptionPlan.YearlyPrice * billingDetail.TaxRate;
+                        break;
+                }
 
                 billingDetail.CreatedByUserId = _userId;
                 billingDetail.LastModifiedByUserId = _userId;
