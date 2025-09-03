@@ -26,8 +26,6 @@ public interface IUnitOfWork
 
     IPaymentRepo PaymentRepo { get; }
 
-    IPricingPlanRepo PricingPlanRepo { get; }
-
     IBillingDetailRepo BillingDetailRepo { get; }
 
     ISpaceRepo SpaceRepo { get; }

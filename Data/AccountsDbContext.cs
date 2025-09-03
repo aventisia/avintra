@@ -53,11 +53,6 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<Tenant>().Property(e => e.Country).HasConversion(new EnumToStringConverter<CountriesEnum>());
         builder.Entity<SessionLog>().Property(e => e.HowSessionEnded).HasConversion(new EnumToStringConverter<TerminateSessionReasonsEnum>());
         builder.Entity<VerificationCode>().Property(e => e.RequestType).HasConversion(new EnumToStringConverter<VerificationCodeRequestTypesEnum>());
-        builder.Entity<PlanPricing>().Property(e => e.Currency).HasConversion(new EnumToStringConverter<CurrencyTypesEnum>());
-        builder.Entity<PlanPricing>().Property(e => e.Unit).HasConversion(new EnumToStringConverter<UnitTypesEnum>());
-        builder.Entity<PlanPricing>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<FrequencyTypesEnum>());
-        builder.Entity<PlanPricing>().Property(e => e.TenantType).HasConversion(new EnumToStringConverter<TenantTypesEnum>());
-        builder.Entity<PlanPricing>().Property(e => e.PricingComponent).HasConversion(new EnumToStringConverter<PricingComponentsEnum>());
         builder.Entity<Payment>().Property(e => e.PaymentStatus).HasConversion(new EnumToStringConverter<PaymentStatusEnum>());
         builder.Entity<Payment>().Property(e => e.PaymentMethod).HasConversion(new EnumToStringConverter<PaymentMethodEnum>());
         builder.Entity<AccountUser>().Property(e => e.Gender).HasConversion(new EnumToStringConverter<GenderTypeEnum>());

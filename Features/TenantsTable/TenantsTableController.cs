@@ -74,11 +74,4 @@ public class TenantsTableController : BaseApiController
     {
         return ResultHelper(await _tenantsTableService.DisableTenantsAsync(ids));
     }
-    
-    // Retrieves a list of available currency options for pricing plans.
-    [HttpGet("currencies-to-select")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetPricingPlanCurrencySelectOptionsAsync()
-    {
-        return ResultHelper(await _tenantsTableService.GetPricingPlanCurrencySelectOptionsAsync());
-    }
 }

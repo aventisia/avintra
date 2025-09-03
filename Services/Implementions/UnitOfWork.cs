@@ -20,7 +20,6 @@ public class UnitOfWork : IUnitOfWork
     public IPermissionRepo PermissionRepo => new PermissionRepo(_accountsDbContext);
     public IRolePermissionRepo RolePermissionRepo => new RolePermissionRepo(_accountsDbContext);
     public IPaymentRepo PaymentRepo => new PaymentRepo(_accountsDbContext);
-    public IPricingPlanRepo PricingPlanRepo => new PricingPlanRepo(_accountsDbContext);
     public IAuditLogRepo AuditLogRepo => new AuditLogRepo(_accountsDbContext);
     public IBillingDetailRepo BillingDetailRepo => new BillingDetailRepo(_accountsDbContext);
     public ISpaceRepo SpaceRepo => new SpaceRepo(_accountsDbContext);

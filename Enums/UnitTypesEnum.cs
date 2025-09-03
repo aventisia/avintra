@@ -6,18 +6,6 @@ namespace AccountsAPIs.Enums;
 public enum UnitTypesEnum
 {
     /// <summary>
-    /// Unit is measured in credits.
-    /// </summary>
-    [Description("Credits")]
-    Credit,
-
-    /// <summary>
-    /// Unit is measured in licenses.
-    /// </summary>
-    [Description("Licenses")]
-    License,
-
-    /// <summary>
     /// Unit is measured in seconds.
     /// </summary>
     [Description("Seconds")]
