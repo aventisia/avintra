@@ -6,10 +6,10 @@ namespace AccountsAPIs.Enums;
 public enum SubscriptionPlanTypeEnum
 {
     /// <summary>
-    /// A basic plan that includes only essential features.
+    /// A starter plan that includes only essential features.
     /// </summary>
-    [Description("Basic plan with essential features")]
-    Free,
+    [Description("Starter plan with essential features")]
+    Starter,
 
     /// <summary>
     /// A paid plan with more features for individual users or small teams.
