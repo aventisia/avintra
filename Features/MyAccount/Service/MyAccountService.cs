@@ -992,54 +992,10 @@ public class MyAccountService(
             user.DateOfBirth = userProfileDto.DateOfBirth;
             user.PhoneNumber = userProfileDto.PhoneNumber;
             user.Gender = userProfileDto.Gender;
-
-            //getting the personal address
-            var address = await _unitOfWork.AddressRepo
-            .GetByConditionAsync(a => a.AddressRefId == user.Id)
-            .FirstOrDefaultAsync();
-
-            if (address is null)
-            {
-                address = new()
-                {
-                    AddressRefId = user.Id,
-                    AddressType = AddressTypeEnum.Personal,
-                    AddressLine1 = userProfileDto.AddressLine1,
-                    AddressLine2 = userProfileDto.AddressLine2,
-                    Country = userProfileDto.Country,
-                    StateOrProvince = userProfileDto.StateOrProvince,
-                    City = userProfileDto.City,
-                    ZipOrPostalCode = userProfileDto.ZipOrPostalCode,
-                    CreatedByUser = user,
-                    CreatedByUserId = user.Id,
-                    IsDisabled = false,
-                    Id = Guid.NewGuid(),
-                    LastModifiedByUser = user,
-                    LastModifiedByUserId = user.Id,
-                };
-                await _unitOfWork.AddressRepo.InsertAsync(address);
-            }
-            else
-            {
-                address.AddressLine1 = userProfileDto.AddressLine1;
-                address.AddressLine2 = userProfileDto.AddressLine2;
-                address.Country = userProfileDto.Country;
-                address.StateOrProvince = userProfileDto.StateOrProvince;
-                address.City = userProfileDto.City;
-                address.ZipOrPostalCode = userProfileDto.ZipOrPostalCode;
-
-                address.LastModifiedByUser = user;
-                address.LastModifiedByUserId = user.Id;
-
-                _unitOfWork.AddressRepo.Update(address);
-            }
-
-            var addressSaveResult = await _unitOfWork.SaveAsync();
-
             var updateUserResult = await _userManager.UpdateAsync(user);
 
             // User Update-Job failed
-            if (!updateUserResult.Succeeded || !addressSaveResult)
+            if (!updateUserResult.Succeeded)
             {
                 _logger.LogInformation("Failed while updating user's profile");
                 serviceResponse.Message = "User's profile update failed";
@@ -1085,12 +1041,6 @@ public class MyAccountService(
                 serviceResponse.Message = userDoesNotExists;
                 return serviceResponse;
             }
-
-            //getting the personal address
-            var address = await _unitOfWork.AddressRepo
-            .GetByConditionAsync(a => a.AddressRefId == user.Id)
-            .FirstOrDefaultAsync();
-
             var userProfileDetails = new UserProfileDto
             {
                 AvatarSrc = user.AvatarSrc,
@@ -1098,13 +1048,7 @@ public class MyAccountService(
                 LastName = user.LastName,
                 DateOfBirth = user.DateOfBirth,
                 PhoneNumber = user.PhoneNumber,
-                Gender = user.Gender,
-                AddressLine1 = address?.AddressLine1,
-                AddressLine2 = address?.AddressLine2,
-                Country = address?.Country,
-                City = address?.City,
-                StateOrProvince = address?.StateOrProvince,
-                ZipOrPostalCode = address?.ZipOrPostalCode,
+                Gender = user.Gender
             };
 
             var updateUserResult = await _userManager.UpdateAsync(user);
@@ -1173,8 +1117,8 @@ public class MyAccountService(
                 _logger.LogInformation("{_UserName} user is individual", _userName);
 
                 //if the use is individual then get the billing address of the user
-                var userBillingAddress = await _unitOfWork.AddressRepo
-                .GetByConditionAsync(a => a.AddressRefId == user.Id)
+                var userBillingAddress = await _unitOfWork.BillingDetailRepo
+                .GetByConditionAsync(w => w.CreatedByUserId == user.Id)
                 .FirstOrDefaultAsync();
 
                 getUserTenantInfoDto = new()
@@ -1184,16 +1128,16 @@ public class MyAccountService(
                     AddressLine1 = userBillingAddress?.AddressLine1,
                     AddressLine2 = userBillingAddress?.AddressLine2,
                     City = userBillingAddress?.City,
-                    Country = userBillingAddress?.Country,
-                    StateOrProvince = userBillingAddress?.StateOrProvince,
+                    Country = userBillingAddress?.Country.ToString(),
+                    StateOrProvince = userBillingAddress?.State,
                     //no designation and tenant for indi user
                 };
                 serviceResponse.Message = userBillingAddress is null ? "Please add the address of billing." : "tenant info fetched succesfully.";
             }
             else
             {
-                var addressOfTenant = await _unitOfWork.AddressRepo
-                .GetByConditionAsync(a => a.AddressRefId == defaultTenant.Id)
+                var addressOfTenant = await _unitOfWork.BillingDetailRepo
+                .GetAllAsync()
                 .FirstOrDefaultAsync();
                 getUserTenantInfoDto = new()
                 {
@@ -1202,8 +1146,8 @@ public class MyAccountService(
                     AddressLine1 = addressOfTenant?.AddressLine1,
                     AddressLine2 = addressOfTenant?.AddressLine2,
                     City = addressOfTenant?.City,
-                    Country = addressOfTenant?.Country,
-                    StateOrProvince = addressOfTenant?.StateOrProvince,
+                    Country = addressOfTenant?.Country.ToString(),
+                    StateOrProvince = addressOfTenant?.State,
                     //TODO change when the designation when data is availabl
                     Designation = string.Empty,
                     TenantName = defaultTenant.Name
@@ -1276,51 +1220,7 @@ public class MyAccountService(
                 return serviceResponse;
             }
 
-            //TODO - user must be authorized to update the tenant info while indie user can update its billing address
-            var address = await _unitOfWork.AddressRepo
-            .GetByConditionAsync(a => a.AddressRefId == user.Id && a.AddressType == AddressTypeEnum.Official)
-            .FirstOrDefaultAsync();
-
-            if (address is null)
-            {
-                address = new()
-                {
-                    Id = Guid.NewGuid(),
-                    AddressRefId = (isIndie is null || isIndie.Value) ? user.Id : defaultTenant.Id,
-                    CreatedByUser = user,
-                    LastModifiedByUser = user,
-                    AddressLine1 = userTenantInfoDto?.AddressLine1,
-                    AddressLine2 = userTenantInfoDto?.AddressLine2,
-                    AddressType = AddressTypeEnum.Official,
-                    City = userTenantInfoDto?.City,
-                    Country = userTenantInfoDto?.Country,
-                    StateOrProvince = userTenantInfoDto?.StateOrProvince,
-                };
-                await _unitOfWork.AddressRepo.InsertAsync(address);
-            }
-            else
-            {
-                //only indie user can update its billin password
-                address.AddressLine1 = userTenantInfoDto?.AddressLine1;
-                address.AddressLine2 = userTenantInfoDto?.AddressLine2;
-                address.City = userTenantInfoDto?.City;
-                address.Country = userTenantInfoDto?.Country;
-                address.StateOrProvince = userTenantInfoDto?.StateOrProvince;
-
-                address.LastModifiedByUser = user;
-                address.LastModifiedByUserId = user.Id;
-
-                _unitOfWork.AddressRepo.Update(address);
-            }
-            // Update-ActiveSession job failed
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogInformation("Context SaveChanges failed while updating the tenant account by logged in user id {Id}", user.Id);
-                serviceResponse.Message = "Something went wrong while updating the tenant info. Please try again later";
-                return serviceResponse;
-            }
-
-            serviceResponse.Message = address is null ? "Please add the tenant account info." : "tenant info updated succesfully.";
+            serviceResponse.Message = "tenant info updated succesfully.";
             serviceResponse.Data = userTenantInfoDto;
             serviceResponse.StatusCode = 200;
         }
