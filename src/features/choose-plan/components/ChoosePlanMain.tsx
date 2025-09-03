@@ -25,8 +25,8 @@ export const ChoosePlanMain = () => {
   );
 
   // Validate user session
-  const { isPending, userSession } = useValidateUserSession();
-  console.log(userSession);
+  const { isPending } = useValidateUserSession();
+
   // Return component
   return (
     <>
