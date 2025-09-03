@@ -1,4 +1,5 @@
 import { organizationNameProps } from "@/features/sign-up/constants/company-form-field-props";
+import { BILLING_INFO_KEY } from "@/react-toolkit/constants";
 import { Form } from "@/react-toolkit/ui/form/Form";
 
 import { Button, SubmitButton } from "@aventisia/ui/buttons";
@@ -18,27 +19,66 @@ import {
   stateProps,
 } from "../../constants/form-field-props";
 import { useDefineBillingInfoForm } from "../../hooks/useDefineBillingInfoForm";
+import { useInsertBillingDetailsMutation } from "../../hooks/useInsertBillingDetailsMutation";
 import { useChoosePlanStore } from "../../stores/choose-plan-store";
 
 /**
  * Component for the billing form.
  */
 export const BillingForm = () => {
-  const { form, isSubmitting } = useDefineBillingInfoForm();
+  const { form, isSubmitting, isIndividualUser } = useDefineBillingInfoForm();
 
-  const { setStepNo, setBillingData } = useChoosePlanStore(
+  const { planId, planType, setStepNo, setBillingData } = useChoosePlanStore(
     useShallow((state) => ({
       setStepNo: state.setStepNo,
+      planId: state.planId,
+      planType: state.planType,
       setBillingData: state.setBillingData,
     })),
   );
 
+  const { insetBillingDetailsMutation, isPending } =
+    useInsertBillingDetailsMutation();
+
   const onSubmit = (formData: z.infer<typeof billingInfoSchema>) => {
-    console.log(formData);
+    let existingData = {};
+
+    try {
+      const storedData = localStorage.getItem(BILLING_INFO_KEY);
+      if (storedData) {
+        existingData = JSON.parse(storedData);
+      }
+    } catch (error) {
+      console.error("Error parsing BILLING_INFO_KEY from localStorage:", error);
+    }
+
+    // Merge old data ( country) with new
+    const mergedData = {
+      ...existingData,
+      ...formData,
+    };
+
+    // Save back to localStorage
+    localStorage.setItem(BILLING_INFO_KEY, JSON.stringify(mergedData));
+
     setBillingData({
       ...formData,
     });
-    setStepNo(3);
+
+    insetBillingDetailsMutation({
+      addressLine1: formData.addressLine1,
+      amount: 0,
+      city: formData.city,
+      country: formData.country,
+      frequency: planType,
+      isWillingToFileGst: !!formData.isWillingToFileGst,
+      planId: planId,
+      postalCode: formData.postalCode,
+      state: formData.state,
+      taxRate: 18,
+      addressLine2: formData.addressLine2,
+      gstNumber: formData.gstNumber,
+    });
   };
   const isGSTRegistered = form.watch("isWillingToFileGst");
   const applyGST = form.watch("country") == "India";
@@ -51,11 +91,17 @@ export const BillingForm = () => {
       className="space-y-4"
     >
       {/* GST Filing Consent */}
-      {applyGST && <SwitchField {...gstRegistrationProps} />}{" "}
+      {applyGST && !isIndividualUser && (
+        <SwitchField {...gstRegistrationProps} />
+      )}
       {/* Additional validation field */}
-      {applyGST && isGSTRegistered && <InputField {...gstNumberProps} />}
+      {applyGST && !isIndividualUser && isGSTRegistered && (
+        <InputField {...gstNumberProps} />
+      )}
       {/* Address Line 1 */}
-      <InputField {...organizationNameProps} />
+      {!isIndividualUser && (
+        <InputField disabled {...organizationNameProps} />
+      )}{" "}
       {/* Address Line 1 */}
       <InputField {...addressLine1Props} />
       {/* Address Line 2 */}
@@ -83,7 +129,7 @@ export const BillingForm = () => {
         >
           Back
         </Button>
-        <SubmitButton isPending={false} primaryText="Continue" />
+        <SubmitButton isPending={isPending} primaryText="Continue" />
       </div>
     </Form>
   );
