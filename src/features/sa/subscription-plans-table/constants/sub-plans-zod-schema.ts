@@ -1,9 +1,4 @@
-import {
-  flexibleNameError,
-  flexibleNameRegex,
-  maxLenError,
-  reqError,
-} from "@aventisia/ui/utils";
+import { maxLenError, reqError } from "@aventisia/ui/utils";
 import { z } from "zod";
 
 /**
@@ -13,8 +8,9 @@ export const subPlanNameSchema = z
   .string()
   .min(1, { message: reqError("Plan Name") })
   .max(255, { message: maxLenError("Plan Name", 255) })
-  .regex(flexibleNameRegex, {
-    message: flexibleNameError("Plan Name"),
+  .regex(/^[a-zA-Z0-9 ()_-]+$/, {
+    message:
+      "Plan Name can only contain letters, numbers, spaces, hyphens (-), underscores (_), and parentheses ( )",
   });
 
 //To use Text field for numbers schema
@@ -32,6 +28,7 @@ const numberTextFieldSchema = z
 export const subPlansZodSchema = z.object({
   id: z.string(), // UUID format validation
   name: subPlanNameSchema,
+  type: z.string(),
   maxCredits: numberTextFieldSchema.refine((num) => num >= -1, {
     message: "Value must be greater than or equal to -1",
   }),
