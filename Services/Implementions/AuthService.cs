@@ -318,9 +318,7 @@ public class AuthService : IAuthService
                 var subscription = await _unitOfWork.TenantSubscriptionRepo
                     .GetByConditionAsync(w =>
                         (isNonDefaultTenant || w.CreatedByUserId == user.Id) &&
-                        w.TenantId == user.TenantId &&
-                        w.StartDate.Date <= DateTimeOffset.UtcNow.Date &&
-                        w.EndDate.Date >= DateTimeOffset.UtcNow.Date
+                        w.TenantId == user.TenantId
                     )
                     .FirstOrDefaultAsync();
 
