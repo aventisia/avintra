@@ -1,8 +1,7 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
 
-import { SubscriptionPlanDTO } from "../dtos/subscription-plans-dto";
 import { useChoosePlanStore } from "../stores/choose-plan-store";
+import { useFetchSubscriptionPlans } from "./useFetchSubscriptionPlans";
 
 export const useSelectedPlan = () => {
   const { planId, planType } = useChoosePlanStore(
@@ -12,10 +11,7 @@ export const useSelectedPlan = () => {
     })),
   );
   // Get query client
-  const queryClient = useQueryClient();
-  const plansData = queryClient.getQueryData<{
-    data: SubscriptionPlanDTO[];
-  }>(["SUBSCRIPTION_PLANS"]);
+  const { data: plansData } = useFetchSubscriptionPlans();
 
   // Get config data by id
   const planData = plansData?.data.find((item) => item?.id === planId);

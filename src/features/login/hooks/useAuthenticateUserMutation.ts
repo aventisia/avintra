@@ -1,6 +1,7 @@
 import {
   ADD_TENANT,
   DEV_JWT_LS_KEY,
+  NO_ACTIVE_SUBSCRIPTION,
   PWD_EXPIRED,
   TWO_FA_ENABLED,
 } from "@/react-toolkit/constants";
@@ -70,6 +71,9 @@ export const useAuthenticateUserMutation = () => {
         if (message.includes(ADD_TENANT)) {
           window.location.href =
             import.meta.env.VITE_ACCOUNTS_URL + "/account-setup";
+        } else if (message.includes(NO_ACTIVE_SUBSCRIPTION)) {
+          window.location.href =
+            import.meta.env.VITE_ACCOUNTS_URL + "/choose-plan";
         } else {
           // Reset login process
           resetLoginProcess();

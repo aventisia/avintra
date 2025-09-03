@@ -1,3 +1,5 @@
+import { INDIVIDUAL_USERS } from "@/features/sign-up/constants";
+import { BILLING_INFO_KEY } from "@/react-toolkit/constants";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,10 +12,10 @@ import { useChoosePlanStore } from "../stores/choose-plan-store";
 
 export const useDefineBillingInfoForm = () => {
   const { userSession } = useUserSessionStore(
-    useShallow((state) => ({
-      userSession: state.userSession,
-    })),
+    useShallow((state) => ({ userSession: state.userSession })),
   );
+
+  const isIndividualUser = userSession?.tenantName == INDIVIDUAL_USERS;
 
   const { billingData } = useChoosePlanStore(
     useShallow((state) => ({
@@ -21,23 +23,47 @@ export const useDefineBillingInfoForm = () => {
     })),
   );
 
+  // Try loading from localStorage
+  const storedBillingData =
+    typeof window !== "undefined"
+      ? localStorage.getItem(BILLING_INFO_KEY)
+      : null;
+
+  let parsedStoredData: Partial<z.infer<typeof billingInfoSchema>> = {};
+
+  if (storedBillingData) {
+    try {
+      parsedStoredData = JSON.parse(storedBillingData);
+    } catch (e) {
+      console.warn(e, "Invalid local storage data for billingInfo");
+    }
+  }
+
   // Define form with zod schema
   const form = useForm<z.infer<typeof billingInfoSchema>>({
     resolver: zodResolver(billingInfoSchema),
     defaultValues: {
       organizationName:
-        billingData?.organizationName ?? userSession?.tenantName ?? "",
-      addressLine1: billingData?.addressLine1 ?? "",
-      addressLine2: billingData?.addressLine2 ?? "",
-      city: billingData?.city ?? "",
-      state: billingData?.state ?? "",
-      gstRegistration: billingData?.gstRegistration ?? false,
-      country: billingData?.country ?? "India",
-      gstNumber: billingData?.gstNumber ?? "",
-      pinCode: billingData?.pinCode ?? "",
+        billingData?.organizationName ??
+        parsedStoredData.organizationName ??
+        userSession?.tenantName ??
+        "",
+      addressLine1:
+        billingData?.addressLine1 ?? parsedStoredData.addressLine1 ?? "",
+      addressLine2:
+        billingData?.addressLine2 ?? parsedStoredData.addressLine2 ?? "",
+      city: billingData?.city ?? parsedStoredData.city ?? "",
+      state: billingData?.state ?? parsedStoredData.state ?? "",
+      isWillingToFileGst:
+        billingData?.isWillingToFileGst ??
+        parsedStoredData.isWillingToFileGst ??
+        false,
+      country: billingData?.country ?? parsedStoredData.country ?? "India",
+      gstNumber: billingData?.gstNumber ?? parsedStoredData.gstNumber ?? "",
+      postalCode: billingData?.postalCode ?? parsedStoredData.postalCode ?? "",
     },
   });
-  console.log(form.formState.errors);
+
   // Destructor form values and methods
   const {
     formState: { isSubmitting, isDirty },
@@ -48,5 +74,6 @@ export const useDefineBillingInfoForm = () => {
     form,
     isSubmitting,
     isDirty,
+    isIndividualUser,
   };
 };

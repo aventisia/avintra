@@ -1,14 +1,20 @@
 import CustomRadioItem from "@/components/ui/CustomRadioItem";
+import { INDIVIDUAL_USERS } from "@/features/sign-up/constants";
+import { useUpdateTenantInfoMutation } from "@/features/sign-up/hooks/useUpdateTenantInfoMutation";
 import { useCompanyInfoStore } from "@/features/sign-up/stores/company-info-store";
+import { USER_NAME_LS_KEY } from "@/react-toolkit/constants";
 
 import { Button } from "@aventisia/ui/buttons";
 import { RadioGroup } from "@aventisia/ui/radio-group";
 import { Building2, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { ContentHeader } from "../ContentHeader";
 
 export default function UserTypeSelection() {
+  const navigate = useNavigate();
+
   const { setStepNo, userType, setUserType } = useCompanyInfoStore(
     useShallow((state) => ({
       setStepNo: state.setStepNo,
@@ -17,10 +23,28 @@ export default function UserTypeSelection() {
     })),
   );
 
+  const { isCreationPending, updateTenantInfoMutation } =
+    useUpdateTenantInfoMutation();
+
+  const onSubmit = async () => {
+    try {
+      await updateTenantInfoMutation({
+        domain: localStorage.getItem(USER_NAME_LS_KEY)?.split("@")[1] ?? "",
+        organizationName: INDIVIDUAL_USERS,
+      });
+
+      setTimeout(() => {
+        navigate("/choose-plan");
+      }, 300);
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : String(error));
+    }
+  };
+
   const handleProceed = () => {
     if (userType) {
-      console.log("Selected:", userType);
-      setStepNo(2);
+      if (userType == "organization") setStepNo(2);
+      else onSubmit();
     }
   };
 
@@ -79,7 +103,7 @@ export default function UserTypeSelection() {
       <Button
         className="w-full mt-5"
         onClick={handleProceed}
-        disabled={!userType}
+        disabled={!userType || isCreationPending}
       >
         Continue
       </Button>

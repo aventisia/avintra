@@ -9,7 +9,7 @@ import { enumToArray } from "@aventisia/ui/utils";
 // Pin Code
 const pinCodeProps: InputFieldProps = {
   label: "Pin Code",
-  name: "pinCode",
+  name: "postalCode",
   isRequired: true,
 };
 
@@ -53,7 +53,7 @@ const gstNumberProps: InputFieldProps = {
 };
 // GST Registration Inquiry
 const gstRegistrationProps: SwitchFieldProps = {
-  name: "gstRegistration",
+  name: "isWillingToFileGst",
   label: "Are you GST registered?",
   description: "",
 };

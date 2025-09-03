@@ -5,7 +5,7 @@ export interface IBillingData {
   gstNumber?: string;
   state: string;
   city: string;
-  pinCode: string;
+  postalCode: string;
   country: string;
-  gstRegistration?: boolean;
+  isWillingToFileGst?: boolean;
 }

@@ -37,14 +37,14 @@ export const billingInfoSchema = z
         message: nameError("City"),
       }),
 
-    pinCode: z
+    postalCode: z
       .string()
       .min(1, { message: reqError("Pin Code") })
       .max(10, { message: maxLenError("Pin Code", 10) }),
 
     country: z.string().min(1, reqError("Country")),
 
-    gstRegistration: z.boolean().optional(), // Optional Switch field
+    isWillingToFileGst: z.boolean().optional(),
 
     // Conditional validation for gstNumber
     gstNumber: z
@@ -55,7 +55,7 @@ export const billingInfoSchema = z
   })
   .refine(
     (data) =>
-      !data.gstRegistration ||
+      !data.isWillingToFileGst ||
       (data.gstNumber !== undefined && data.gstNumber !== ""),
     {
       message: "GST Number is required",
