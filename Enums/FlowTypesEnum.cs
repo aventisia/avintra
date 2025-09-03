@@ -9,6 +9,13 @@ namespace AspNetToolkit.Enums;
 /// </remarks>
 public enum FlowTypesEnum
 {
-    AutomationAgent,
-    AIAgent
+    /// <summary>
+    /// Represents an agent flow type.
+    /// </summary>
+    Agent,
+
+    /// <summary>
+    /// Represents a block flow type.
+    /// </summary>
+    Block
 }
