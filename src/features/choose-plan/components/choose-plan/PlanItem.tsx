@@ -1,7 +1,6 @@
 import CustomRadioItem from "@/components/ui/CustomRadioItem";
 
 import { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
-import { getPlanPricing } from "../../utils/pricing";
 import { PlanFeatures } from "./PlanFeatures";
 
 type Props = {
@@ -11,7 +10,6 @@ type Props = {
 };
 
 export const PlanItem = ({ plan, planType, selectedId }: Props) => {
-  const { credits } = getPlanPricing(plan, planType);
   const isSelected = selectedId === plan.id;
 
   return (
@@ -26,10 +24,8 @@ export const PlanItem = ({ plan, planType, selectedId }: Props) => {
         <h6 className="text-base font-medium">{plan.name}</h6>
         <div className="flex justify-between items-center w-full">
           <div className="flex gap-1 items-baseline">
-            <p className="text-lg">{credits}</p>
-            <span className="text-sm text-muted-foreground">
-              credits/{planType == "monthly" ? "month" : "year"}
-            </span>
+            <p className="text-lg">{plan.maxCredits}</p>
+            <span className="text-sm text-muted-foreground">credits/month</span>
           </div>
           <div className="flex gap-1 items-baseline">
             <p className="text-lg">
@@ -38,7 +34,6 @@ export const PlanItem = ({ plan, planType, selectedId }: Props) => {
               ) : (
                 <>
                   <span className="line-through text-sm">
-                    {" "}
                     ${plan.monthlyPrice}
                   </span>
                   <span className="font-semibold"> ${plan.yearlyPrice}</span>
