@@ -16,6 +16,11 @@ public class TenantSubscription : BaseEntity
     public SubscriptionFrequenciesEnum Frequency { get; set; }
 
     /// <summary>
+    /// Gets or sets the amount of credit available to the tenant subscriptions.
+    /// </summary>
+    public decimal AvailableCredit { get; set; }
+
+    /// <summary>
     /// Gets or sets the status of the payment.
     /// </summary>
     public PaymentStatusEnum PaymentStatus { get; set; } = PaymentStatusEnum.Pending;
