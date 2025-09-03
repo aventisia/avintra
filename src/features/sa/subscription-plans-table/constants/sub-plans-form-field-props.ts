@@ -1,4 +1,8 @@
-import { InputFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
+import {
+  InputFieldProps,
+  SelectFieldProps,
+  SwitchFieldProps,
+} from "@aventisia/ui/form";
 
 // ID (read-only)
 const idProps: InputFieldProps = {
@@ -15,6 +19,18 @@ const nameProps: InputFieldProps = {
   isRequired: true,
 };
 
+// Type
+const typeProps: SelectFieldProps = {
+  name: "type",
+  label: "Type",
+  selectOptions: [
+    { label: "Starter", value: "Starter" },
+    { label: "Pro", value: "Pro" },
+    { label: "Enterprise", value: "Enterprise" },
+  ],
+  defaultValue: "Pro",
+  isRequired: true,
+};
 // Max Credits
 const maxCreditsProps: InputFieldProps = {
   name: "maxCredits",
@@ -88,4 +104,5 @@ export {
   isDisabledProps,
   yearlyPriceProps,
   monthlyPriceProps,
+  typeProps,
 };
