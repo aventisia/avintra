@@ -8,9 +8,9 @@ public class BillingDetail : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the subscription frequency (e.g., monthly or yearly).
+    /// Gets or sets the date of the next scheduled billing for the subscription. This indicates when the next payment will be charged or invoiced.
     /// </summary>
-    public SubscriptionFrequenciesEnum Frequency { get; set; }
+    public DateTimeOffset NextBillingDate { get; set; }
 
     /// <summary>
     /// Gets or sets the first line of the billing address.
