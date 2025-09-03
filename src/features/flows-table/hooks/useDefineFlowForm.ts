@@ -50,7 +50,7 @@ export const useDefineFlowForm = () => {
     resolver: zodResolver(flowZodSchema),
     defaultValues: {
       id: "",
-      type: "AutomationAgent", // TODO: Remove later when we are sure whether we need this field or not
+      type: "Agent", // TODO: Remove later when we are sure whether we need this field or not
       name: "",
       description: "",
       thumbnail: "",
@@ -84,7 +84,7 @@ export const useDefineFlowForm = () => {
     // Set flow data to form
     form.reset({
       id: rowId,
-      type: flowData?.type ?? "AutomationAgent",
+      type: flowData?.type ?? "Agent",
       name: flowData?.name ?? "",
       description: flowData?.description ?? "",
       thumbnail: flowData?.thumbnail ?? "",

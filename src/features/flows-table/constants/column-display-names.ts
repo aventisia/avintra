@@ -4,7 +4,7 @@ import { KeyValueLookupType } from "@aventisia/ui/types";
 export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "id", value: "Select Row" },
   { key: "name", value: "Name" },
-  // { key: "type", value: "Type" },
+  { key: "type", value: "Type" },
   { key: "flowCommentCount", value: "Comments" },
   { key: "createdBy", value: "Created By" },
   { key: "createdOn", value: "Created On" },

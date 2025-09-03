@@ -5,6 +5,6 @@
  * also we need to update existing flows in the database.
  */
 export enum FlowTypesEnum {
-  AutomationAgent = "Automation Agent",
-  AIAgent = "AI Agent",
+  Agent = "Agent",
+  Block = "Block",
 }

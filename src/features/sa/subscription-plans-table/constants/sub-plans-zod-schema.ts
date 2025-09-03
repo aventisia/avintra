@@ -1,9 +1,4 @@
-import {
-  flexibleNameError,
-  flexibleNameRegex,
-  maxLenError,
-  reqError,
-} from "@aventisia/ui/utils";
+import { maxLenError, reqError } from "@aventisia/ui/utils";
 import { z } from "zod";
 
 /**
@@ -13,9 +8,19 @@ export const subPlanNameSchema = z
   .string()
   .min(1, { message: reqError("Plan Name") })
   .max(255, { message: maxLenError("Plan Name", 255) })
-  .regex(flexibleNameRegex, {
-    message: flexibleNameError("Plan Name"),
+  .regex(/^[a-zA-Z0-9 ()_-]+$/, {
+    message:
+      "Plan Name can only contain letters, numbers, spaces, hyphens (-), underscores (_), and parentheses ( )",
   });
+
+//To use Text field for numbers schema
+const numberTextFieldSchema = z
+  .string({ coerce: true })
+  .min(1, { message: "Field is required" })
+  .refine((num) => !isNaN(Number(num)), {
+    message: "Only number allowed",
+  })
+  .transform((val) => Number(val));
 
 /**
  * Represents the Zod schema for a Subscription Plans.
@@ -23,30 +28,31 @@ export const subPlanNameSchema = z
 export const subPlansZodSchema = z.object({
   id: z.string(), // UUID format validation
   name: subPlanNameSchema,
-  maxCredits: z
-    .string({ message: reqError("No of credits") })
-    .min(1, { message: reqError("No of credits") })
-    .transform((val) => Number(val)),
-  maxPublishedItems: z
-    .string({ message: reqError("Published") })
-    .min(1, { message: reqError("Published") })
-    .transform((val) => Number(val)),
-  historyRetentionDays: z
-    .string({ message: reqError("Days") })
-    .min(1, { message: reqError("Days") })
-    .transform((val) => Number(val)),
-  maxSpaces: z
-    .string({ message: reqError("Spaces") })
-    .min(1, { message: reqError("Spaces") })
-    .transform((val) => Number(val)),
-  storageLimitMB: z
-    .string({ message: reqError("Storage Limit") })
-    .min(1, { message: reqError("Storage Limit") })
-    .transform((val) => Number(val)),
-  maxUsers: z
-    .string({ message: reqError("Users") })
-    .min(1, { message: reqError("Users") })
-    .transform((val) => Number(val)),
+  type: z.string(),
+  maxCredits: numberTextFieldSchema.refine((num) => num >= -1, {
+    message: "Value must be greater than or equal to -1",
+  }),
+  maxPublishedItems: numberTextFieldSchema.refine((num) => num >= 0, {
+    message: "Value must be greater than or equal to 0",
+  }),
+  historyRetentionDays: numberTextFieldSchema.refine((num) => num >= 0, {
+    message: "Value must be greater than or equal to 0",
+  }),
+  maxSpaces: numberTextFieldSchema.refine((num) => num >= -1, {
+    message: "Value must be greater than or equal to -1",
+  }),
+  storageLimitMB: numberTextFieldSchema.refine((num) => num >= -1, {
+    message: "Value must be greater than or equal to -1",
+  }),
+  maxUsers: numberTextFieldSchema.refine((num) => num >= -1, {
+    message: "Value must be greater than or equal to -1",
+  }),
+  monthlyPrice: numberTextFieldSchema.refine((num) => num >= 0, {
+    message: "Value must be greater than or equal to 0",
+  }),
+  yearlyPrice: numberTextFieldSchema.refine((num) => num >= 0, {
+    message: "Value must be greater than or equal to 0",
+  }),
   isDisabled: z.boolean().default(false),
   // Read (view) only fields
   createdBy: z.string(),

@@ -22,9 +22,16 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   }
 };
 
+function displayValue(value: number) {
+  if (value === -1) return "Unlimited";
+  if (value === 0) return "N/A";
+  return value.toLocaleString();
+}
+
 export {
   PLANS_QUERY_KEY,
   TABLE_HEADING,
   SEARCH_COLUMN,
   getDialogHeadingDescription,
+  displayValue,
 };

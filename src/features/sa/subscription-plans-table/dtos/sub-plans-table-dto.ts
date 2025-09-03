@@ -12,6 +12,8 @@ export interface SubPlansTableDto {
    */
   name: string;
 
+  type: "Starter" | "Pro" | "Enterprise";
+
   /**
    * Gets or sets the maximum number of credits allowed in the plan.
    */
@@ -26,6 +28,16 @@ export interface SubPlansTableDto {
    * Gets or sets the number of days to retain history.
    */
   historyRetentionDays: number;
+
+  /**
+   * Gets or sets the monthly price.
+   */
+  monthlyPrice: number;
+
+  /**
+   * Gets or sets the yearly price.
+   */
+  yearlyPrice: number;
 
   /**
    * Gets or sets the maximum number of spaces allowed.
