@@ -37,7 +37,6 @@ public partial class AccountsDbContext : IdentityDbContext<
         base.OnModelCreating(builder);
 
         // Global TenantId filters
-        builder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<BillingDetail>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<Invoice>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<Payment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -85,9 +84,6 @@ public partial class AccountsDbContext : IdentityDbContext<
         // Configure One-to-One relationship between Tenant and AccountUser
         builder.Entity<Tenant>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         builder.Entity<Tenant>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
-
-        //Configure one-to-many relationship between Plan and Subscription
-        builder.Entity<PlanPricing>().HasMany(p => p.Subscriptions).WithOne(one => one.PlanPricing).HasForeignKey(fKey => fKey.PlanId).IsRequired();
 
         // Configure Many-to-Many relationship between Permission and Custom Role
         builder.Entity<RolePermission>().HasOne(o => o.Permission).WithMany(r => r.RolePermissions).HasForeignKey(fKey => fKey.PermissionId).IsRequired();

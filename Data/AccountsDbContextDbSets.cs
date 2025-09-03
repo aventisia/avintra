@@ -12,7 +12,6 @@ public partial class AccountsDbContext
     public DbSet<VerificationCode> VerificationCodes { get; set; }
     public DbSet<ContactUs> ContactUs { get; set; }
     public DbSet<PlanPricing> PlanPricings { get; set; }
-    public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Permission> Permissions { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set; }
     public DbSet<Invoice> Invoices { get; set; }

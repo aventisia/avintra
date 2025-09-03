@@ -58,9 +58,4 @@ public class PlanPricing : BaseEntity
     /// </summary>
     [ForeignKey("TenantId")]
     public virtual Tenant? Tenant { get; set; }
-
-    /// <summary>
-    /// Gets or sets the collection of subscriptions associated with this pricing plan.
-    /// </summary>
-    public virtual ICollection<Subscription>? Subscriptions { get; set; }
 }

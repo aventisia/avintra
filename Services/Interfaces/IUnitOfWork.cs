@@ -16,8 +16,6 @@ public interface IUnitOfWork
 
     IContactUsRepo ContactUsRepo { get; }
 
-    ISubscriptionRepo SubscriptionRepo { get; }
-
     IPermissionRepo PermissionRepo { get; }
 
     IAccountRoleRepo AccountRoleRepo { get; }
@@ -35,7 +33,7 @@ public interface IUnitOfWork
     IBillingDetailRepo BillingDetailRepo { get; }
 
     IAddressRepo AddressRepo { get; }
-    
+
     ISpaceRepo SpaceRepo { get; }
 
     ISpaceUserRepo SpaceUserRepo { get; }
