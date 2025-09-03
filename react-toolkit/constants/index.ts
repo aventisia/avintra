@@ -50,6 +50,11 @@ const SESSION_EXPIRED_LS_KEY = "sessionExpired";
 const DEV_JWT_LS_KEY = "dev_jwt";
 
 /**
+ * Local storage key for storing the billing info form data.
+ */
+const BILLING_INFO_KEY = "billingInfo";
+
+/**
  * The key used to store the user's username in the local storage.
  */
 const USER_NAME_LS_KEY = "userName";
@@ -77,4 +82,5 @@ export {
   COPYRIGHT_TEXT,
   ADD_TENANT,
   NO_ACTIVE_SUBSCRIPTION,
+  BILLING_INFO_KEY,
 };
