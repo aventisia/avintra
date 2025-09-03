@@ -65,10 +65,16 @@ public interface ITenantSubscriptionService
     /// <returns>A task with the purchased subscription details.</returns>
     Task<ServiceResponse<TenantSubscriptionDto>> PurchaseTenantSubscriptionPlanAsync(TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto);
 
-
     /// <summary>
     /// Retrieves the current subscription plan for a tenant.
     /// </summary>
     /// <returns>A task with the tenant's current subscription details.</returns>
     Task<ServiceResponse<TenantSubscriptionDto>> GetCurrentTenantSubscriptionPlanAsync();
+
+    /// <summary>
+    /// Upgrades the subscription plan for a tenant.
+    /// </summary>
+    /// <param name="tenantSubscriptionPurchaseDto">The details of the subscription upgrade request.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the updated subscription details.</returns>
+    Task<ServiceResponse<TenantSubscriptionDto>> UpgradeSubscriptionPlanAsync(TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto);
 }

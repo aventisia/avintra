@@ -382,16 +382,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Map the DTO to the subscription entity
             var newSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
-
-            // Set the subscription's start and end dates
-            newSubscription.StartDate = DateTimeOffset.UtcNow.Date;
-            newSubscription.EndDate = tenantSubscriptionPurchaseDto.Frequency switch
-            {
-                SubscriptionFrequenciesEnum.Monthly => DateTimeOffset.UtcNow.Date.AddMonths(1),
-                SubscriptionFrequenciesEnum.Yearly => DateTimeOffset.MaxValue,
-                _ => throw new ArgumentException("Invalid subscription frequency.")
-            };
-
+            newSubscription.Frequency = tenantSubscriptionPurchaseDto.Frequency;
+            
             // Set audit fields for tracking user actions
             newSubscription.CreatedByUserId = _userId;
             newSubscription.LastModifiedByUserId = _userId;
@@ -403,7 +395,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Failed to persist new tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
-                serviceResponse.Message = "Failed to save the subscription.";
                 return serviceResponse;
             }
 
@@ -411,6 +402,13 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             if (subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
                 var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
+                billingDetail.NextBillingDate = newSubscription.Frequency switch
+                {
+                    SubscriptionFrequenciesEnum.Monthly => DateTimeOffset.UtcNow.Date.AddMonths(1),
+                    SubscriptionFrequenciesEnum.Yearly => DateTimeOffset.UtcNow.Date.AddYears(1),
+                    _ => throw new ArgumentOutOfRangeException(nameof(newSubscription.Frequency), "Unsupported subscription frequency.")
+                };
+                
                 billingDetail.CreatedByUserId = _userId;
                 billingDetail.LastModifiedByUserId = _userId;
 
@@ -463,9 +461,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             var subscription = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
                         (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
-                        w.TenantId == _tenantId &&
-                        w.StartDate.Date <= DateTimeOffset.UtcNow.Date &&
-                        w.EndDate.Date >= DateTimeOffset.UtcNow.Date
+                        w.TenantId == _tenantId
                 )
                 .Include(i => i.Plan)
                 .Include(i => i.CreatedByUser)
@@ -487,6 +483,124 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while retrieving the current tenant subscription plan for tenant ID: {TenantId}", _tenantId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Upgrades the subscription plan for a tenant. If no subscription exists, creates a new one.
+    public async Task<ServiceResponse<TenantSubscriptionDto>> UpgradeSubscriptionPlanAsync(TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto)
+    {
+        var serviceResponse = new ServiceResponse<TenantSubscriptionDto>
+        {
+            Data = null,
+            Message = "Failed to upgrade tenant subscription. Please try again later.",
+        };
+
+        try
+        {
+
+            _logger.LogInformation("Processing subscription upgrade for TenantId: {TenantId}, PlanId: {PlanId}", _tenantId, tenantSubscriptionPurchaseDto.PlanId);
+
+            // Retrieve the selected subscription plan
+            var subscriptionPlan = await _unitOfWork.SubscriptionPlanRepo
+                .GetByConditionAsync(w => w.Id == tenantSubscriptionPurchaseDto.PlanId)
+                .SingleOrDefaultAsync();
+
+            if (subscriptionPlan == null)
+            {
+                _logger.LogWarning("Subscription plan not found for PlanId: {PlanId}.", tenantSubscriptionPurchaseDto.PlanId);
+                serviceResponse.Message = "Subscription plan not found.";
+                return serviceResponse;
+            }
+
+            // Sanitize input data
+            tenantSubscriptionPurchaseDto = TrimDtoStringPropsUtil.TrimDtoStringProps(tenantSubscriptionPurchaseDto);
+
+            // Ensure TenantId is set
+            tenantSubscriptionPurchaseDto.TenantId = tenantSubscriptionPurchaseDto.TenantId == Guid.Empty ? _tenantId : tenantSubscriptionPurchaseDto.TenantId;
+
+            var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
+
+            // Fetch existing tenant subscription (if any), including plan and creator information
+            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w =>
+                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
+                    w.TenantId == _tenantId
+                )
+                .Include(i => i.Plan)
+                .Include(i => i.CreatedByUser)
+                .SingleOrDefaultAsync();
+
+            if (tenantSubscription == null)
+            {
+                // No existing subscription — create new
+                tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
+                tenantSubscription.PlanId = subscriptionPlan.Id;
+                tenantSubscription.CreatedByUserId = _userId;
+                tenantSubscription.LastModifiedByUserId = _userId;
+
+                await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to create tenant subscription. TenantId: {TenantId}, PlanId: {PlanId}", _tenantId, tenantSubscriptionPurchaseDto.PlanId);
+                    return serviceResponse;
+                }
+
+                _logger.LogInformation("New tenant subscription created. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, tenantSubscription.Id);
+            }
+            else
+            {
+                // Existing subscription found — update plan
+                tenantSubscription.PlanId = subscriptionPlan.Id;
+                tenantSubscription.LastModifiedByUserId = _userId;
+
+                _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to update tenant subscription. TenantId: {TenantId}, PlanId: {PlanId}", _tenantId, tenantSubscriptionPurchaseDto.PlanId);
+                    return serviceResponse;
+                }
+
+                _logger.LogInformation("Tenant subscription updated. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, tenantSubscription.Id);
+            }
+
+            // If the plan is not 'Starter', store billing details
+            if (subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
+            {
+                var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
+
+                billingDetail.NextBillingDate = tenantSubscription.Frequency switch
+                {
+                    SubscriptionFrequenciesEnum.Monthly => DateTimeOffset.UtcNow.Date.AddMonths(1),
+                    SubscriptionFrequenciesEnum.Yearly => DateTimeOffset.UtcNow.Date.AddYears(1),
+                    _ => throw new ArgumentOutOfRangeException(nameof(tenantSubscription.Frequency), "Unsupported subscription frequency.")
+                };
+
+                billingDetail.CreatedByUserId = _userId;
+                billingDetail.LastModifiedByUserId = _userId;
+
+                await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save billing details. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
+                    return serviceResponse;
+                }
+
+                _logger.LogInformation("Billing details saved for TenantId: {TenantId}", _tenantId);
+            }
+
+            // Prepare successful response
+            serviceResponse.Data = tenantSubscription.Adapt<TenantSubscriptionDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Tenant subscription upgraded successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while upgrading the subscription. TenantId: {TenantId}, PlanId: {PlanId}", _tenantId, tenantSubscriptionPurchaseDto.PlanId);
         }
 
         return serviceResponse;

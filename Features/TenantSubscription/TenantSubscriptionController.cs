@@ -67,4 +67,11 @@ public class TenantSubscriptionController : BaseApiController
     {
         return ResultHelper(await _tenantSubscriptionService.GetCurrentTenantSubscriptionPlanAsync());
     }
+
+    // Upgrades a tenant's subscription plan based on the provided details.
+    [HttpPut("upgrade-plan")]
+    public async Task<ActionResult<ServiceResponse<TenantSubscriptionDto>>> UpgradeSubscription([FromBody] TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto)
+    {
+        return ResultHelper(await _tenantSubscriptionService.UpgradeSubscriptionPlanAsync(tenantSubscriptionPurchaseDto));
+    }
 }
