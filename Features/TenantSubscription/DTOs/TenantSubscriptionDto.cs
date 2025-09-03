@@ -17,14 +17,9 @@ public class TenantSubscriptionDto
     public Guid? TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the date when the subscription becomes active.
+    /// Gets or sets the subscription frequency (e.g., monthly or yearly).
     /// </summary>
-    public DateTimeOffset StartDate { get; set; }
-
-    /// <summary>
-    /// Gets or sets the date when the subscription ends or expires.
-    /// </summary>
-    public DateTimeOffset EndDate { get; set; }
+    public SubscriptionFrequenciesEnum Frequency { get; set; }
 
     /// <summary>
     /// Gets or sets the status of the payment.
@@ -35,6 +30,11 @@ public class TenantSubscriptionDto
     /// Gets or sets a value indicating whether the subscription is currently active.
     /// </summary>
     public bool IsActive { get; set; }
+
+    /// <summary>
+    /// Gets or sets the amount of credit available to the tenant subscriptions.
+    /// </summary>
+    public decimal AvailableCredit { get; set; }
 
     /// <summary>
     /// Gets or sets the display name of the subscription plan (e.g., Free, Pro, Enterprise).
