@@ -7,13 +7,13 @@ interface TenantInfoDto {
   domain: string;
 
   /** User's last name. Max-50 */
-  numberOfEmployees: string;
+  numberOfEmployees?: string;
 
   /** Password for the user account. Min-8, Max-16 */
   industry?: string;
 
   /** Primary key of verificaiton code db record */
-  country: string;
+  country?: string;
 
   /** The verification code or OTP provided by user */
   role?: string;
