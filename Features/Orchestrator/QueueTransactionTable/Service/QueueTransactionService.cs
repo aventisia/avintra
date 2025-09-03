@@ -363,8 +363,22 @@ public class QueueTransactionService : IQueueTransactionService
                 }
             }
 
+            if (isValidationFailed)
+            {
+                // Set enriched payload with validation Status and Remark for each transaction
+                queueTransactionDto.PayloadData = enrichedPayloadData.ToString(Formatting.Indented);
+
+                // Set response status code and attach updated DTO to response
+                serviceResponse.StatusCode = 409;
+                serviceResponse.Data = queueTransactionDto;
+                serviceResponse.Message = "Some transactions failed validation. Check 'Status' and 'Remark' fields for details.";
+                _logger.LogWarning("Transaction processing completed with validation errors. Returning enriched payload with remarks.");
+
+                return serviceResponse;
+            }
+
             // Insert if no validation errors
-            if (!isValidationFailed && newTransactions.Any())
+            if (newTransactions.Any())
             {
                 _logger.LogInformation("Inserting {Count} transaction(s) into the database...", newTransactions.Count);
                 await _unitOfWork.QueueTransactionRepo.InsertAsync(newTransactions);
@@ -372,32 +386,15 @@ public class QueueTransactionService : IQueueTransactionService
                 if (!await _unitOfWork.SaveAsync())
                 {
                     _logger.LogError("Database commit failed after inserting transactions into queue {QueueId}.", queueTransactionDto.QueueId);
-                    serviceResponse.Message = "Database error: Failed to save transactions.";
                     return serviceResponse;
                 }
             }
 
-            // Set enriched payload with validation Status and Remark for each transaction
-            queueTransactionDto.PayloadData = enrichedPayloadData.ToString(Formatting.Indented);
-
             // Set response status code and attach updated DTO to response
             serviceResponse.StatusCode = 200;
             serviceResponse.Data = queueTransactionDto;
-
-            // Set message and log outcome based on validation result
-            if (isValidationFailed)
-            {
-                // Inform client of validation issues in payload
-                serviceResponse.Message = "Some transactions failed validation. Check 'Status' and 'Remark' fields for details.";
-                _logger.LogWarning("Transaction processing completed with validation errors. Returning enriched payload with remarks.");
-            }
-            else
-            {
-                // Inform client of successful processing
-                serviceResponse.Message = "All transactions validated and inserted successfully.";
-                _logger.LogInformation("Transaction processing completed successfully. All transactions inserted into queue {QueueId}.", queueTransactionDto.QueueId);
-            }
-
+            serviceResponse.Message = "Transaction validated and added successfully.";
+            _logger.LogInformation("Transaction processing completed successfully. All transactions inserted into queue {QueueId}.", queueTransactionDto.QueueId);
         }
         catch (Exception ex)
         {
