@@ -8,11 +8,11 @@ public class Payment : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the Id of a Invoice, this payment is associated with
+    /// Gets or sets the Id of a billing detail, this payment is associated with
     /// </summary>
-    public Guid InvoiceId { get; set; }
-    [ForeignKey("InvoiceId")]
-    public virtual Invoice? Invoice { get; set; }
+    public Guid BillingDetailId { get; set; }
+    [ForeignKey("BillingDetailId")]
+    public virtual BillingDetail? BillingDetail { get; set; }
 
     /// <summary>
     /// Gets or sets the amountPaid

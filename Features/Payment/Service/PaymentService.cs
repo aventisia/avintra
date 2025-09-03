@@ -96,7 +96,7 @@ public class PaymentService : IPaymentService
         {
             // Try to retrive data by invoiceId
             var paymentInvoice = await _unitOfWork.PaymentRepo
-            .GetByConditionAsync(w => w.InvoiceId == invoiceId).ToListAsync();
+            .GetByConditionAsync(w => w.BillingDetailId == invoiceId).ToListAsync();
 
             if (paymentInvoice == null)
             {

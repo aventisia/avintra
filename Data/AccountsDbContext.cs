@@ -38,7 +38,6 @@ public partial class AccountsDbContext : IdentityDbContext<
 
         // Global TenantId filters
         builder.Entity<BillingDetail>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        builder.Entity<Invoice>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<Payment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<AppIntegration>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<AppSecret>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -92,9 +91,6 @@ public partial class AccountsDbContext : IdentityDbContext<
         // Configure Many-to-Many relationship between AccountUser and AccountRole
         builder.Entity<AccountUser>().HasMany(m => m.UserRoles).WithOne(o => o.User).HasForeignKey(fKey => fKey.UserId).IsRequired();
         builder.Entity<AccountRole>().HasMany(m => m.UserRoles).WithOne(o => o.Role).HasForeignKey(fKey => fKey.RoleId).IsRequired();
-
-        // Configure one-to-many relationship between Invoice and payment
-        builder.Entity<Invoice>().HasMany(i => i.Payment).WithOne(p => p.Invoice).HasForeignKey(p => p.InvoiceId);
 
         // Configure One-to-One relationship between BillingAccount and AccountUser
         builder.Entity<BillingDetail>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
