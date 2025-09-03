@@ -36,12 +36,6 @@ public class Invoice : BaseEntity, IMustHaveTenant
     /// </summary>
     public Guid LicenseCreditId { get; set; }
 
-    /// <summary>
-    /// Gets or sets the plan, this LicenseCredit is associated with
-    /// </summary>
-    [ForeignKey("LicenseCreditId")]
-    public virtual LicenseCredit? LicenseCredit { get; set; }
-
     // TODO: This property will be used later
     // /// <summary>
     // /// Gets or sets the Id of a Subscription, this Invoice is associated with

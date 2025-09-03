@@ -32,7 +32,6 @@ public class InvoiceService : IInvoiceService
             // Fetch all invoice entities from the database
             var invoices = await _unitOfWork.InvoiceRepo
                             .GetAllAsync()
-                            .Include(i => i.LicenseCredit)
                             .ToListAsync();
 
             // Map to DTO and return success
@@ -60,7 +59,6 @@ public class InvoiceService : IInvoiceService
             // Retrieve the pricing plan and its associated license credits
             var pricingPlan = await _unitOfWork.PricingPlanRepo
                 .GetByConditionAsync(w => w.Id == pricingPlanId)
-                .Include(i => i.LicenseCredits)
                 .FirstOrDefaultAsync();
 
             if (pricingPlan == null)
@@ -72,8 +70,7 @@ public class InvoiceService : IInvoiceService
 
             // Retrieve invoices associated with the pricing plan's license credits
             var invoices = await _unitOfWork.InvoiceRepo
-                .GetByConditionAsync(w => pricingPlan.LicenseCredits.Select(s => s.Id).Contains(w.LicenseCreditId))
-                .Include(i => i.LicenseCredit)
+                .GetAllAsync()
                 .ToListAsync();
 
             // Check if any invoices were found
@@ -112,7 +109,6 @@ public class InvoiceService : IInvoiceService
             // Fetch invoice entity by ID
             var invoice = await _unitOfWork.InvoiceRepo
                 .GetByConditionAsync(w => w.Id == invoiceId)
-                .Include(i => i.LicenseCredit)
                 .FirstOrDefaultAsync();
 
             // Handle not found case

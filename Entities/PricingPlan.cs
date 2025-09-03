@@ -63,9 +63,4 @@ public class PlanPricing : BaseEntity
     /// Gets or sets the collection of subscriptions associated with this pricing plan.
     /// </summary>
     public virtual ICollection<Subscription>? Subscriptions { get; set; }
-
-    /// <summary>
-    /// Gets or sets the collection of license credits linked to this pricing plan.
-    /// </summary>
-    public virtual ICollection<LicenseCredit>? LicenseCredits { get; set; }
 }

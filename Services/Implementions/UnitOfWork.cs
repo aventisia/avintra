@@ -26,7 +26,6 @@ public class UnitOfWork : IUnitOfWork
     public IAuditLogRepo AuditLogRepo => new AuditLogRepo(_accountsDbContext);
     public IBillingDetailRepo BillingDetailRepo => new BillingDetailRepo(_accountsDbContext);
     public IAddressRepo AddressRepo => new AddressRepo(_accountsDbContext);
-    public ILicenseCreditRepo LicenseCreditRepo => new LicenseCreditRepo(_accountsDbContext);
     public ISpaceRepo SpaceRepo => new SpaceRepo(_accountsDbContext);
     public ISpaceUserRepo SpaceUserRepo => new SpaceUserRepo(_accountsDbContext);
     public IAppIntegrationRepo AppIntegrationRepo => new AppIntegrationRepo(_accountsDbContext);

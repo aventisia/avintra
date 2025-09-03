@@ -35,9 +35,7 @@ public interface IUnitOfWork
     IBillingDetailRepo BillingDetailRepo { get; }
 
     IAddressRepo AddressRepo { get; }
-
-    ILicenseCreditRepo LicenseCreditRepo { get; }
-
+    
     ISpaceRepo SpaceRepo { get; }
 
     ISpaceUserRepo SpaceUserRepo { get; }

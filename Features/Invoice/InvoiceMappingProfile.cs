@@ -11,8 +11,7 @@ public class InvoiceMappingProfile : IRegister
         .IgnoreNullValues(true);
 
         // Mapping for Get the Invoice Record.
-        config.NewConfig<Invoice, InvoiceDto>()
-            .Map(dest => dest.PricingPlanId, src => src.LicenseCredit != null ? src.LicenseCredit.PlanId : Guid.Empty);
+        config.NewConfig<Invoice, InvoiceDto>();
 
         // Mapping for Generate invoice Record.
         config.NewConfig<GenerateInvoiceDto, Invoice>()
