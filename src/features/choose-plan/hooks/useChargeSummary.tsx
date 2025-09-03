@@ -1,7 +1,5 @@
 import { useChoosePlanStore } from "@/features/choose-plan/stores/choose-plan-store";
-import { INDIVIDUAL_USERS } from "@/features/sign-up/constants";
 import { BILLING_INFO_KEY } from "@/react-toolkit/constants";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { SubscriptionPlanDTO } from "../dtos/subscription-plans-dto";
 
@@ -20,10 +18,6 @@ export const useChargeSummary = (
   plan: SubscriptionPlanDTO | undefined,
   planType: string,
 ) => {
-  const { userSession } = useUserSessionStore((state) => ({
-    userSession: state.userSession,
-  }));
-
   const { billingData } = useChoosePlanStore((state) => ({
     billingData: state.billingData,
   }));
@@ -35,9 +29,7 @@ export const useChargeSummary = (
     ...billingData,
   };
 
-  const isIndividualUser = userSession?.tenantName === INDIVIDUAL_USERS;
-  const isTaxApplicable =
-    effectiveBilling.country === "India" && !isIndividualUser;
+  const isTaxApplicable = effectiveBilling.country === "India";
 
   const basePrice =
     planType === "monthly"

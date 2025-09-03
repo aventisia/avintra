@@ -91,13 +91,9 @@ export const BillingForm = () => {
       className="space-y-4"
     >
       {/* GST Filing Consent */}
-      {applyGST && !isIndividualUser && (
-        <SwitchField {...gstRegistrationProps} />
-      )}
+      {applyGST && <SwitchField {...gstRegistrationProps} />}
       {/* Additional validation field */}
-      {applyGST && !isIndividualUser && isGSTRegistered && (
-        <InputField {...gstNumberProps} />
-      )}
+      {applyGST && isGSTRegistered && <InputField {...gstNumberProps} />}
       {/* Address Line 1 */}
       {!isIndividualUser && (
         <InputField disabled {...organizationNameProps} />
