@@ -12,6 +12,8 @@ export interface SubPlansTableDto {
    */
   name: string;
 
+  type: "Starter" | "Pro" | "Enterprise";
+
   /**
    * Gets or sets the maximum number of credits allowed in the plan.
    */

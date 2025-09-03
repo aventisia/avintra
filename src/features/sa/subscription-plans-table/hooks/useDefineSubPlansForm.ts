@@ -54,6 +54,7 @@ export const useDefineSubPlansForm = () => {
     defaultValues: {
       id: "",
       name: "",
+      type: "Pro",
       maxCredits: 0,
       maxPublishedItems: 0,
       historyRetentionDays: 0,
@@ -93,6 +94,7 @@ export const useDefineSubPlansForm = () => {
       id: rowId,
       name: subPlanData?.name ?? "",
       maxCredits: subPlanData?.maxCredits ?? 0,
+      type: subPlanData?.type ?? "Pro",
       maxPublishedItems: subPlanData?.maxPublishedItems ?? 0,
       maxUsers: subPlanData?.maxUsers ?? 0,
       historyRetentionDays: subPlanData?.historyRetentionDays ?? 0,

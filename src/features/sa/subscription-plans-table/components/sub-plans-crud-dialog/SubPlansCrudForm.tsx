@@ -1,5 +1,11 @@
 import { SubmitButton } from "@aventisia/ui/buttons";
-import { AutherCard, Form, InputField, SwitchField } from "@aventisia/ui/form";
+import {
+  AutherCard,
+  Form,
+  InputField,
+  SelectField,
+  SwitchField,
+} from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect } from "react";
 import { z } from "zod";
@@ -18,6 +24,7 @@ import {
   storageLimitMBProps,
   monthlyPriceProps,
   yearlyPriceProps,
+  typeProps,
 } from "../../constants/sub-plans-form-field-props";
 import { subPlansZodSchema } from "../../constants/sub-plans-zod-schema";
 import { SubPlansTableDto } from "../../dtos/sub-plans-table-dto";
@@ -86,6 +93,8 @@ export const SubPlansCrudForm = () => {
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
       />
+
+      <SelectField {...typeProps} />
 
       {/* Storage Limit */}
       <InputField {...monthlyPriceProps} />
