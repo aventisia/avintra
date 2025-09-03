@@ -1,13 +1,9 @@
-import { INDIVIDUAL_USERS } from "@/features/sign-up/constants";
-import { BILLING_INFO_KEY } from "@/react-toolkit/constants";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
-import { Separator } from "@aventisia/ui";
+import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { useNavigate } from "react-router-dom";
-import { useShallow } from "zustand/react/shallow";
 
 import { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
+import { useChargeSummary } from "../../hooks/useChargeSummary";
+import { useInsertSubscriptionMutation } from "../../hooks/useInsertSubscriptionMutation";
 
 const ChargeSummary = ({
   plan,
@@ -16,38 +12,22 @@ const ChargeSummary = ({
   plan: SubscriptionPlanDTO | undefined;
   planType: string;
 }) => {
-  const navigate = useNavigate();
-  const { userSession } = useUserSessionStore(
-    useShallow((state) => ({ userSession: state.userSession })),
-  );
+  const { basePrice, tax, total, isTaxApplicable, effectiveBilling } =
+    useChargeSummary(plan, planType);
 
-  const isIndividualUser = userSession?.tenantName == INDIVIDUAL_USERS;
+  const { isPending, insertSubscriptionMutation } =
+    useInsertSubscriptionMutation();
 
-  // Try loading from localStorage
-  const storedBillingData =
-    typeof window !== "undefined"
-      ? localStorage.getItem(BILLING_INFO_KEY)
-      : null;
-
-  let parsedStoredData = { country: "" };
-
-  if (storedBillingData) {
-    try {
-      parsedStoredData = JSON.parse(storedBillingData);
-    } catch (e) {
-      console.warn(e, "Invalid local storage data for billingInfo");
-    }
-  }
-  const taxApplicable =
-    parsedStoredData?.country == "India" && !isIndividualUser;
-
-  const basePrice =
-    planType === "monthly"
-      ? (plan?.monthlyPrice ?? 0)
-      : Number(plan?.yearlyPrice) * 12;
-
-  const tax = taxApplicable ? +(basePrice * 0.18).toFixed(2) : 0;
-  const total = +(basePrice + tax).toFixed(2);
+  const handleFreePlan = () => {
+    insertSubscriptionMutation({
+      planId: plan?.id || "",
+      amount: total,
+      taxRate: tax,
+      frequency: planType,
+      ...effectiveBilling,
+      isWillingToFileGst: !!effectiveBilling.isWillingToFileGst,
+    });
+  };
 
   return (
     <div className="rounded-lg border p-4">
@@ -59,9 +39,9 @@ const ChargeSummary = ({
           label="Subscription Fee"
           value={`$${basePrice.toFixed(2)}`}
         />
-        {taxApplicable && (
+        {isTaxApplicable && (
           <SummaryRow label="Tax" value={`$${tax.toFixed(2)}`} />
-        )}{" "}
+        )}
         <Separator />
         <SummaryRow
           label="Amount Due"
@@ -73,11 +53,17 @@ const ChargeSummary = ({
       {total === 0 ? (
         <Button
           className="mt-2 w-full"
-          onClick={() =>
-            navigate("/redirect?url=" + import.meta.env.VITE_WORC_URL)
-          }
+          disabled={isPending}
+          onClick={handleFreePlan}
         >
-          Start
+          {isPending ? (
+            <>
+              <LoadingSpinner className="h-4 w-4 mr-2" />
+              Starting...
+            </>
+          ) : (
+            "Start"
+          )}
         </Button>
       ) : (
         <Button className="mt-2 w-full">Make Payment</Button>
