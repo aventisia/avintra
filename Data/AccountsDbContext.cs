@@ -40,7 +40,6 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<BillingDetail>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<Payment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<AppIntegration>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        builder.Entity<AppSecret>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<CreditUsage>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
@@ -57,7 +56,6 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<Payment>().Property(e => e.PaymentMethod).HasConversion(new EnumToStringConverter<PaymentMethodEnum>());
         builder.Entity<AccountUser>().Property(e => e.Gender).HasConversion(new EnumToStringConverter<GenderTypeEnum>());
         builder.Entity<RolePermission>().Property(e => e.Access).HasConversion(new EnumToStringConverter<PermissionAccessTypesEnum>());
-        builder.Entity<AppSecret>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AppSecretTypesEnum>());
         builder.Entity<CreditPlan>().Property(e => e.ServiceType).HasConversion(new EnumToStringConverter<CreditServiceTypesEnum>());
         builder.Entity<CreditPlan>().Property(e => e.UnitType).HasConversion(new EnumToStringConverter<UnitTypesEnum>());
         builder.Entity<CreditUsage>().Property(e => e.ServiceType).HasConversion(new EnumToStringConverter<CreditServiceTypesEnum>());

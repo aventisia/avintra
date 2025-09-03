@@ -34,8 +34,6 @@ public interface IUnitOfWork
 
     IAppIntegrationRepo AppIntegrationRepo { get; }
 
-    IAppSecretRepo AppSecretRepo { get; }
-
     ISubscriptionPlanRepo SubscriptionPlanRepo { get; }
 
     ITenantSubscriptionRepo TenantSubscriptionRepo { get; }

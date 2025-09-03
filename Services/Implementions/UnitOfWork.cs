@@ -25,7 +25,6 @@ public class UnitOfWork : IUnitOfWork
     public ISpaceRepo SpaceRepo => new SpaceRepo(_accountsDbContext);
     public ISpaceUserRepo SpaceUserRepo => new SpaceUserRepo(_accountsDbContext);
     public IAppIntegrationRepo AppIntegrationRepo => new AppIntegrationRepo(_accountsDbContext);
-    public IAppSecretRepo AppSecretRepo => new AppSecretRepo(_accountsDbContext);
     public ISubscriptionPlanRepo SubscriptionPlanRepo => new SubscriptionPlanRepo(_accountsDbContext);
     public ITenantSubscriptionRepo TenantSubscriptionRepo => new TenantSubscriptionRepo(_accountsDbContext);
     public ICreditPlanRepo CreditPlanRepo => new CreditPlanRepo(_accountsDbContext);

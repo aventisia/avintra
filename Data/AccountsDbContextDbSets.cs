@@ -19,7 +19,6 @@ public partial class AccountsDbContext
     public DbSet<Space> Spaces { get; set; }
     public DbSet<SpaceUser> SpaceUsers { get; set; }
     public DbSet<AppIntegration> AppIntegrations { get; set; }
-    public DbSet<AppSecret> AppSecrets { get; set; }
     public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
     public DbSet<TenantSubscription> TenantSubscriptions { get; set; }
     public DbSet<CreditPlan> CreditPlans { get; set; }

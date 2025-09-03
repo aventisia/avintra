@@ -35,7 +35,6 @@ public static class AppServicesExtension
         config.Apply(new ActiveSessionMappingProfile());
         config.Apply(new SpaceTableMappingProfile());
         config.Apply(new AppIntegrationMappingProfile());
-        config.Apply(new AppSecretMappingProfile());
         config.Apply(new SubscriptionPlanMappingProfile());
         config.Apply(new TenantSubscriptionMappingProfile());
         config.Apply(new CreditPlanMappingProfile());
@@ -106,7 +105,6 @@ public static class AppServicesExtension
         services.AddScoped<ITenantRoleManagementService, TenantRoleManagementService>();
         services.AddScoped<ISpaceTableService, SpaceTableService>();
         services.AddScoped<IAppIntegrationService, AppIntegrationService>();
-        services.AddScoped<IAppSecretService, AppSecretService>();
         services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
         services.AddScoped<ITenantSubscriptionService, TenantSubscriptionService>();
         services.AddScoped<ICreditPlanService, CreditPlanService>();

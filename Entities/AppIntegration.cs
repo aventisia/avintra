@@ -30,12 +30,4 @@ public class AppIntegration : BaseEntity, IMustHaveTenant
     /// Gets or sets the website URL of the app integration, if available. This field is optional and can contain up to 500 characters.
     /// </summary>
     public string? WebsiteUrl { get; set; }
-
-    /// <summary>
-    /// Gets or sets the collection of app secrets associated with the app integration.
-    /// </summary>
-    /// <remarks>
-    /// An app integration can have multiple secrets associated with it.
-    /// </remarks>
-    public ICollection<AppSecret>? AppSecrets { get; set; }
 }
