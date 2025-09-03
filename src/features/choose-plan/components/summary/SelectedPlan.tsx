@@ -11,12 +11,6 @@ const SelectedPlan = ({
   plan: SubscriptionPlanDTO | undefined;
   planType: string;
 }) => {
-  const isYearly = planType === "yearly";
-  const creditAmount = isYearly
-    ? plan?.maxCredits && plan?.maxCredits * 12
-    : plan?.maxCredits;
-  const price = isYearly ? plan?.yearlyPrice : plan?.monthlyPrice;
-
   const formatValue = (val: number | undefined, fallback = "—") =>
     val ?? fallback;
 
@@ -28,26 +22,34 @@ const SelectedPlan = ({
           <div className="flex w-full items-end justify-between">
             <Label htmlFor="selected" className="text-base">
               {plan?.name}
-              <div className="mt-1 text-sm">
-                <span className="text-base">{creditAmount}</span>{" "}
-                <span className="text-muted-foreground">
-                  credits/{isYearly ? "year" : "month"}
+              <div className="flex gap-1 mt-1 items-baseline">
+                <p className="text-lg">{plan?.maxCredits}</p>
+                <span className="text-sm text-muted-foreground">
+                  credits/month
                 </span>
               </div>
             </Label>
-            <p className="text-muted-foreground">
-              <span className="text-accent-foreground">${price}</span>{" "}
-              {isYearly ? "/Year" : "/Month"}
-            </p>
+            <div className="flex gap-1 items-baseline">
+              <p className="text-lg">
+                {planType == "monthly" ? (
+                  <> ${plan?.monthlyPrice}</>
+                ) : (
+                  <>
+                    <span className="line-through text-sm">
+                      ${plan?.monthlyPrice}
+                    </span>
+                    <span className="font-semibold"> ${plan?.yearlyPrice}</span>
+                  </>
+                )}
+              </p>
+              <span className="text-sm text-muted-foreground">/{"month"}</span>
+            </div>
           </div>
         </div>
 
         <div className="p-4 space-y-2">
           <p className="text-md font-semibold">Plan Includes:</p>
           <ul className="text-sm mt-2 space-y-1">
-            <PlanFeature
-              label={`${creditAmount} credits/${isYearly ? "year" : "month"}`}
-            />
             <PlanFeature
               label={`${formatValue(plan?.maxPublishedItems)} Published Agents or AI Models`}
             />

@@ -5,7 +5,7 @@ import { FeatureList } from "./FeatureList";
 
 export const PlanFeatures = ({ plan }: { plan: SubscriptionPlanDTO }) => {
   const features = [
-    `${plan.maxCredits} credits/${"month"}`,
+    // `${plan.maxCredits} credits/${"month"}`,
     `${plan.maxPublishedItems} Published Agents or AI Models`,
     `${plan.historyRetentionDays} days of insights & workflow history`,
     `${plan.maxSpaces} Worc Spaces`,
