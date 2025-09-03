@@ -11,14 +11,9 @@ public class TenantSubscription : BaseEntity
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the date when the subscription becomes active.
+    /// Gets or sets the subscription frequency (e.g., monthly or yearly).
     /// </summary>
-    public DateTimeOffset StartDate { get; set; }
-
-    /// <summary>
-    /// Gets or sets the date when the subscription ends or expires.
-    /// </summary>
-    public DateTimeOffset EndDate { get; set; }
+    public SubscriptionFrequenciesEnum Frequency { get; set; }
 
     /// <summary>
     /// Gets or sets the status of the payment.

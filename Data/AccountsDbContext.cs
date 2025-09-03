@@ -70,7 +70,7 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<CreditPlan>().Property(e => e.UnitType).HasConversion(new EnumToStringConverter<UnitTypesEnum>());
         builder.Entity<CreditUsage>().Property(e => e.ServiceType).HasConversion(new EnumToStringConverter<CreditServiceTypesEnum>());
         builder.Entity<CreditUsage>().Property(e => e.RefType).HasConversion(new EnumToStringConverter<UsageSourceTypesEnum>());
-        builder.Entity<BillingDetail>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<SubscriptionFrequenciesEnum>());
+        builder.Entity<TenantSubscription>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<SubscriptionFrequenciesEnum>());
         builder.Entity<BillingDetail>().Property(e => e.Country).HasConversion(new EnumToStringConverter<CountriesEnum>());
         builder.Entity<SubscriptionPlan>().Property(e => e.Type).HasConversion(new EnumToStringConverter<SubscriptionPlanTypeEnum>());
 
