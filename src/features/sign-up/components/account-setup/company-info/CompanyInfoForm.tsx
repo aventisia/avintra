@@ -10,11 +10,12 @@ import { companyInfoSchema } from "@/features/sign-up/constants/company-info-zod
 import { useDefineCompanyInfoForm } from "@/features/sign-up/hooks/useDefineCompanyInfoForm";
 import { useUpdateTenantInfoMutation } from "@/features/sign-up/hooks/useUpdateTenantInfoMutation";
 import { useCompanyInfoStore } from "@/features/sign-up/stores/company-info-store";
+import { BILLING_INFO_KEY } from "@/react-toolkit/constants";
 import { Form } from "@/react-toolkit/ui/form/Form";
 
 import { Button, SubmitButton } from "@aventisia/ui/buttons";
 import { InputField, SelectField } from "@aventisia/ui/form";
-import { toast } from "@aventisia/ui/sonner";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
@@ -23,7 +24,7 @@ import { useShallow } from "zustand/react/shallow";
  */
 export const CompanyInfoForm = () => {
   // Get navigate
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   // Define form
   const { form, isSubmitting } = useDefineCompanyInfoForm();
@@ -41,16 +42,20 @@ export const CompanyInfoForm = () => {
   const onSubmit = async (formData: z.infer<typeof companyInfoSchema>) => {
     try {
       await updateTenantInfoMutation(formData);
+      localStorage.setItem(
+        BILLING_INFO_KEY,
+        JSON.stringify({ country: formData.country }),
+      );
 
       // Reset the form to clear dirty state and suppress discard dialog
-      form.reset();
+      form.reset(form.getValues());
 
-      // navigate("/choose-plan");
-      // Navigate after successful form submission
-      window.location.href = import.meta.env.VITE_ACCOUNTS_URL + "/choose-plan";
+      setTimeout(() => {
+        navigate("/choose-plan");
+      }, 300);
     } catch (error) {
       // Optional: If you're not already handling error in useMutation
-      toast.error(error instanceof Error ? error.message : String(error));
+      console.error(error instanceof Error ? error.message : String(error));
     }
   };
 
