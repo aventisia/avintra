@@ -11,6 +11,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
     value: "Insights & History (Days)",
   },
   { key: "maxSpaces", value: "Spaces" },
+  { key: "type", value: "Type" },
   { key: "storageLimitMB", value: "Storage (MB)" },
   { key: "maxUsers", value: "Users" },
   { key: "monthlyPrice", value: "Monthly Charge" },

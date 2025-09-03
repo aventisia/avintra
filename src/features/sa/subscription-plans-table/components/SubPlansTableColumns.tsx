@@ -66,9 +66,9 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("monthlyPrice") == 0
+        {row.getValue("yearlyPrice") == 0
           ? "Free"
-          : "$" + row.getValue("monthlyPrice")}
+          : "$" + row.getValue("yearlyPrice")}
       </div>
     ),
   },
