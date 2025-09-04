@@ -1,53 +1,70 @@
 namespace WorkspaceAPIs.DTOs;
 
 /// <summary>
-/// DTO for the WorcTemplate entity.
+/// Represents a data transfer object for a project template, including metadata, structure, access settings, usage details, and audit information.
 /// </summary>
-public class WorcTemplateDto
+public class ProjectTemplateDto
 {
     /// <summary>
-    /// Gets or sets the unique identifier of the WORC template.
+    /// Gets or sets the unique identifier of the project template.
     /// </summary>
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the associated flow version.
-    /// </summary>
-    public Guid FlowVersionId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the name of the worc template. Max-255 characters.
+    /// Gets or sets the name of the project template. Limited to 255 characters.
     /// </summary>
     [MaxLength(255)]
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the description of the worc template. Max-500 characters.
+    /// Gets or sets a brief description of the project template.
     /// </summary>
-    [MaxLength(500)]
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the worc template's nodes, edges, and viewport JSON data in string format.
-    /// The default value will be an empty object.
+    /// Gets or sets the type or structure of the template (e.g., Block, Agent).
     /// </summary>
-    public string? ReactFlowObject { get; set; } = "{\"nodes\":[],\"edges\":[],\"viewport\":{\"x\":0,\"y\":0,\"zoom\":1}}";
+    public ProjectTemplateTypesEnum Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the functional purpose of the template (e.g., Workflow, Automation).
+    /// Gets or sets the access level required to use or manage the template.
     /// </summary>
-    public FlowTypesEnum Purpose { get; set; }
+    public AccessTypesEnum AccessType { get; set; }
 
     /// <summary>
-    /// Gets or sets the structural category of the template (e.g., Block, Agent).
+    /// Gets or sets the list of space identifiers where the agent template is applicable.
     /// </summary>
-    public PublishTypesEnum Type { get; set; }
-    
+    public List<Guid>? SpaceIds { get; set; }
+
     /// <summary>
-    /// Gets or sets the number of times this template has been used to create flows.
-    /// This will be used to track trending templates.
+    /// Gets or sets the JSON schema that defines the template's structure and rules.
     /// </summary>
-    public int UsagesCount { get; set; }
+    public string? Schema { get; set; }
+
+    /// <summary>
+    /// Gets or sets the version number of the associated schema.
+    /// </summary>
+    public int SchemaVersion { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the referenced flow or model version linked to this template.
+    /// </summary>
+    public Guid RefId { get; set; }
+
+    /// <summary>
+    /// Gets or sets a collection of tags associated with the template for categorization or search.
+    /// </summary>
+    public List<string> Tags { get; set; } = new List<string>();
+
+    /// <summary>
+    /// Gets or sets the number of times this template has been used to create models or flows.
+    /// </summary>
+    public int UsageCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets a collection of icons or avatars that visually represent the template.
+    /// </summary>
+    public List<string>? Icons { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.

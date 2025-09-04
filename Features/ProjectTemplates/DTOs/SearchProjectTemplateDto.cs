@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.DTOs;
 /// <summary>
 /// DTO for the Search WorcTemplate entity.
 /// </summary>
-public class SearchWorcTemplateDto
+public class SearchProjectTemplateDto
 {
     /// <summary>
     /// Gets or sets the unique identifier of the WORC template.
@@ -28,12 +28,7 @@ public class SearchWorcTemplateDto
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the functional purpose of the template (e.g., Workflow, Automation).
-    /// </summary>
-    public FlowTypesEnum Purpose { get; set; }
-
-    /// <summary>
     /// Gets or sets the structural category of the template (e.g., Block, Agent).
     /// </summary>
-    public PublishTypesEnum Type { get; set; }
+    public ProjectTemplateTypesEnum Type { get; set; }
 }
