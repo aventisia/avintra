@@ -9,7 +9,7 @@ public class TemplateResource : BaseEntity
     /// <summary>
     /// Gets or sets the unique identifier of the tenant (used for multi-tenant filtering).
     /// </summary>
-    public Guid TenantId { get; set; }
+    public Guid? TenantId { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the uploaded file. Maximum length is 255 characters.
@@ -18,7 +18,7 @@ public class TemplateResource : BaseEntity
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the file extension of the uploaded resource (e.g., ".txt", ".json").
+    /// Gets or sets the file extension of the uploaded resource (e.g., "txt", "json").
     /// </summary>
     public required string Extension { get; set; }
 
@@ -28,7 +28,7 @@ public class TemplateResource : BaseEntity
     public long Size { get; set; }
 
     /// <summary>
-    /// Gets or sets the file storage path of the uploaded resource.
+    /// Gets or sets the URL or local path pointing to the uploaded or external resource.
     /// </summary>
     public required string Path { get; set; }
 
@@ -36,16 +36,6 @@ public class TemplateResource : BaseEntity
     /// Gets or sets a value indicating whether the file is stored locally.
     /// </summary>
     public bool IsLocal { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether this resource is used for setup or test purposes.
-    /// </summary>
-    public bool IsSetuptTest { get; set; }
-
-    /// <summary>
-    /// Gets or sets the textual content extracted or associated with the resource, if any.
-    /// </summary>
-    public string? ResourceText { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier of the associated project template.

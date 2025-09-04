@@ -9,7 +9,7 @@ public class ProjectTemplate : BaseEntity
     /// <summary>
     /// Gets or sets the unique identifier of the tenant that owns this template.
     /// </summary>
-    public Guid TenantId { get; set; }
+    public Guid? TenantId { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the project template. Limited to 255 characters.
@@ -28,19 +28,9 @@ public class ProjectTemplate : BaseEntity
     public ProjectTemplateTypesEnum Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the access level required to use or manage the template.
+    /// Gets or sets the identifier of the referenced flow or model version linked to this template.
     /// </summary>
-    public AccessTypesEnum AccessType { get; set; }
-
-    /// <summary>
-    /// Gets or sets the list of space identifiers where the agent template is applicable.
-    /// </summary>
-    public List<Guid>? SpaceIds { get; set; }
-
-    /// <summary>
-    /// Gets or sets the JSON schema that defines the template's structure and rules.
-    /// </summary>
-    public string? Schema { get; set; }
+    public Guid RefId { get; set; }
 
     /// <summary>
     /// Gets or sets the version number of the associated schema.
@@ -48,14 +38,9 @@ public class ProjectTemplate : BaseEntity
     public int SchemaVersion { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the referenced flow or model version linked to this template.
+    /// Gets or sets the JSON schema that defines the template's structure and rules.
     /// </summary>
-    public Guid RefId { get; set; }
-
-    /// <summary>
-    /// Gets or sets a collection of tags associated with the template for categorization or search.
-    /// </summary>
-    public List<string> Tags { get; set; } = new List<string>();
+    public string? Schema { get; set; }
 
     /// <summary>
     /// Gets or sets the number of times this template has been used to create models or flows.
@@ -63,9 +48,24 @@ public class ProjectTemplate : BaseEntity
     public int UsageCount { get; set; }
 
     /// <summary>
+    /// Gets or sets the access level required to use or manage the template.
+    /// </summary>
+    public AccessTypesEnum AccessType { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique identifier of the space where the agent template is applicable.
+    /// </summary>
+    public Guid? SpaceId { get; set; }
+
+    /// <summary>
     /// Gets or sets a collection of icons or avatars that visually represent the template.
     /// </summary>
     public List<string>? Icons { get; set; }
+
+    /// <summary>
+    /// Gets or sets a collection of tags associated with the template for categorization or search.
+    /// </summary>
+    public List<string> Tags { get; set; } = new List<string>();
 
     /// <summary>
     /// Gets or sets the collection of resources associated with this project template.
