@@ -334,12 +334,14 @@ public class WorkspaceUserService : IWorkspaceUserService
                 // Search workspace users by FirstName, LastName, or UserName
                 workspaceUsers = await _unitOfWork.WorkspaceUserRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _tenantId &&
                     (includeCurrentUser || w.Id != _userId) &&
                     (
                         w.FirstName.ToLower().Contains(searchKey.ToLower()) ||
                         w.LastName.ToLower().Contains(searchKey.ToLower()) ||
                         w.UserName.ToLower().Contains(searchKey.ToLower())
-                    ))
+                    )
+                )
                 .ProjectToType<WorkspaceUserDto>()
                 .ToListAsync();
             }

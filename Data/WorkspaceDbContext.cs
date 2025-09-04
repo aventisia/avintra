@@ -23,7 +23,6 @@ public class WorkspaceDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         // Global TenantId filters
-        modelBuilder.Entity<WorkspaceUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Notification>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<NotificationUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Flow>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
