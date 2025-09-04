@@ -5,7 +5,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { UseTemplateDTO } from "../dtos/use-template-dto";
 import { WorcTemplatesDto } from "../dtos/worc-templates-dtos";
 
-const baseAPIURL_WORC: string = `${import.meta.env.VITE_WORC_API_URL}/flow-template`;
+const baseAPIURL_WORC: string = `${import.meta.env.VITE_WORC_API_URL}/project-template`;
 const baseAPIURL_AI_STUDIO: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/ai-model-template`;
 
 /**
