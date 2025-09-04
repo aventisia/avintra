@@ -5,11 +5,13 @@ import {
   InputField,
   SwitchField,
   TextareaField,
-  SelectField,
 } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect } from "react";
 import { z } from "zod";
+
+//Refactored Select to show description in options
+import { SelectField } from "@/components/select-field/SelectField";
 
 import { flowOptimisticMutationFn } from "../../apis/flows-table-apis";
 import { FLOWS_QUERY_KEY } from "../../constants";
