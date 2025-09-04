@@ -56,7 +56,7 @@ public class ProjectTemplateController : BaseApiController
 
     // Publish a project template
     [HttpPost("publish")]
-    public async Task<ActionResult<ServiceResponse<ProjectTemplateDto>>> PublishProjectTemplate([FromBody] PublishProjectTemplateDto publishProjectTemplateDto)
+    public async Task<ActionResult<ServiceResponse<ProjectTemplateDto>>> PublishProjectTemplate([FromForm] PublishProjectTemplateDto publishProjectTemplateDto)
     {
         return ResultHelper(await _projectTemplateService.PublishProjectTemplateAsync(publishProjectTemplateDto));
     }

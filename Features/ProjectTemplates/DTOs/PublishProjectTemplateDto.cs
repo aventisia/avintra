@@ -42,4 +42,14 @@ public class PublishProjectTemplateDto
     /// Gets or sets a collection of tags associated with the template for categorization or search.
     /// </summary>
     public List<string> Tags { get; set; } = new List<string>();
+
+    /// <summary>
+    /// Gets or sets the collection of uploaded files associated with the template.
+    /// </summary>
+    public List<IFormFile> Files { get; set; } = new List<IFormFile>();
+
+    /// <summary>
+    /// Gets or sets the collection of resource file metadata associated with the project template. Typically populated after file uploads.
+    /// </summary>
+    public IEnumerable<TemplateResourceFileDto> FileResources { get; set; } = new List<TemplateResourceFileDto>();
 }

@@ -4,17 +4,14 @@ namespace WorkspaceAPIs.Services
     {
         private readonly ILogger<ProjectTemplateService> _logger;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly HttpClientUrlConfig _httpClientUrlConfig;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IUploadFileService _uploadFileService;
         private readonly Guid _userId;
         private readonly Guid _tenantId;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         public ProjectTemplateService(
             ILogger<ProjectTemplateService> logger,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor httpContextAccessor,
-            HttpClientUrlConfig httpClientUrlConfig,
-            IHttpClientFactory httpClientFactory)
+            IUploadFileService uploadFileService)
         {
             // Set _userId
             _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -22,9 +19,7 @@ namespace WorkspaceAPIs.Services
 
             _logger = logger;
             _unitOfWork = unitOfWork;
-            _httpClientUrlConfig = httpClientUrlConfig;
-            _httpClientFactory = httpClientFactory;
-            _httpContextAccessor = httpContextAccessor;
+            _uploadFileService = uploadFileService;
         }
 
         // Retrieve all project templates list
@@ -436,7 +431,6 @@ namespace WorkspaceAPIs.Services
                     projectTemplate.SchemaVersion = flowVersion.VersionNumber;
                     projectTemplate.CreatedByUserId = _userId;
                     projectTemplate.LastModifiedByUserId = _userId;
-
                 }
 
                 // Insert the new template entity into repository
@@ -449,10 +443,81 @@ namespace WorkspaceAPIs.Services
                     return serviceResponse;
                 }
 
+                // Check if any files are included in the request
+                if (publishProjectTemplateDto.Files.Any())
+                {
+                    // Upload the files using the upload service
+                    var uploadedFiles = await _uploadFileService.UploadFilesAsync(publishProjectTemplateDto.Files);
+
+                    // Check if upload was successful and files were returned
+                    if (uploadedFiles.StatusCode == 200 && uploadedFiles.Data != null)
+                    {
+                        // Map uploaded file data to TemplateResource entities
+                        var templateResources = uploadedFiles.Data.Select(s => new TemplateResource()
+                        {
+                            Name = s.Name,
+                            Size = s.Size,
+                            Path = s.Path,
+                            Extension = s.Extension ?? string.Empty,
+                            IsLocal = true,
+                            ProjectTemplateId = projectTemplate.Id,
+                            TenantId = _tenantId,
+                            CreatedByUserId = _userId,
+                            LastModifiedByUserId = _userId
+                        }).ToList();
+
+                        // Insert the new template resource entities into the repository
+                        await _unitOfWork.TemplateResourceRepo.InsertAsync(templateResources);
+
+                        // Attempt to save changes to the database; return failure response if saving fails
+                        if (!await _unitOfWork.SaveAsync())
+                        {
+                            _logger.LogWarning("PublishTemplateAsync: Failed to persist template resources to the database.");
+                            return serviceResponse;
+                        }
+                    }
+                    else
+                    {
+                        // Upload failed, log a warning
+                        _logger.LogWarning("PublishTemplateAsync: Failed to upload one or more files.");
+                        // Optionally: set failure message or status on serviceResponse
+                        return serviceResponse;
+                    }
+                }
+
+                // Check if any file resources are provided in the request
+                if (publishProjectTemplateDto.FileResources.Any())
+                {
+                    // Map each file resource DTO to a TemplateResource entity
+                    var templateResources = publishProjectTemplateDto.FileResources.Select(s => new TemplateResource()
+                    {
+                        Name = s.Name,
+                        Size = s.Size,
+                        Path = s.Path,
+                        Extension = s.Extension ?? string.Empty,
+                        IsLocal = true,
+                        ProjectTemplateId = projectTemplate.Id,
+                        TenantId = _tenantId,
+                        CreatedByUserId = _userId,
+                        LastModifiedByUserId = _userId
+                    }).ToList();
+
+                    // Insert the new template resource entities into the repository
+                    await _unitOfWork.TemplateResourceRepo.InsertAsync(templateResources);
+
+                    // Attempt to save changes to the database; return failure response if save fails
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogWarning("PublishTemplateAsync: Failed to persist template resource to the database.");
+                        return serviceResponse;
+                    }
+                }
+
                 // On success, adapt to DTO and set response
                 serviceResponse.Data = projectTemplate.Adapt<ProjectTemplateDto>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Template published successfully.";
+
                 _logger.LogInformation("PublishTemplateAsync: Successfully published template with RefId {RefId} by user {UserId}.",
                     publishProjectTemplateDto.RefId, _userId);
             }
@@ -517,10 +582,19 @@ namespace WorkspaceAPIs.Services
 
             try
             {
-                // Retrieve all project templates, ordered by descending usage count
+                // Placeholder space ID used for filtering templates with space-level access
+                var spaceId = Guid.Empty;
+
+                // Retrieve project templates accessible to the current tenant or publicly available
+                // Results are ordered by descending usage count (i.e., most used/trending first)
                 var trendingTemplates = await _unitOfWork.ProjectTemplateRepo
-                    .GetAllAsync()
+                    .GetByConditionAsync(w =>
+                        w.AccessType == AccessTypesEnum.Public ||
+                        (w.AccessType == AccessTypesEnum.TenantLevel && w.TenantId == _tenantId) ||
+                        (w.AccessType == AccessTypesEnum.Space && w.SpaceIds.Contains(spaceId))
+                    )
                     .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
                     .OrderByDescending(o => o.UsageCount)
                     .ProjectToType<TrendingTemplateDto>()
                     .ToListAsync();

@@ -14,17 +14,17 @@ public class TemplateResourceFileDto
     /// Gets or sets the name of the file. Maximum length is 255 characters.
     /// </summary>
     [MaxLength(255)]
-    public required string FileName { get; set; }
+    public required string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the file extension (e.g., ".txt", ".json").
     /// </summary>
-    public required string FileExtension { get; set; }
+    public required string Extension { get; set; }
 
     /// <summary>
     /// Gets or sets the size of the file in bytes.
     /// </summary>
-    public long FileSize { get; set; }
+    public long Size { get; set; }
 
     /// <summary>
     /// Gets or sets the file storage path of the uploaded resource.
