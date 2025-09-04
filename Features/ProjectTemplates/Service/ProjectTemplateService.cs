@@ -7,6 +7,8 @@ namespace WorkspaceAPIs.Services
         private readonly IUploadFileService _uploadFileService;
         private readonly Guid _userId;
         private readonly Guid _tenantId;
+        private readonly Guid _spaceId;
+
         public ProjectTemplateService(
             ILogger<ProjectTemplateService> logger,
             IUnitOfWork unitOfWork,
@@ -16,6 +18,7 @@ namespace WorkspaceAPIs.Services
             // Set _userId
             _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
             _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
+            _spaceId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("spid") ?? Guid.Empty.ToString());
 
             _logger = logger;
             _unitOfWork = unitOfWork;
@@ -544,9 +547,14 @@ namespace WorkspaceAPIs.Services
                 // Attempt to retrieve the project templates that match the search key (case-insensitive).
                 var projectTemplates = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w =>
-                        w.Name.ToLower().Contains(searchKey.ToLower())
+                        w.Name.ToLower().Contains(searchKey.ToLower()) &&
+                        (
+                            w.AccessType == AccessTypesEnum.Public ||
+                            (w.AccessType == AccessTypesEnum.TenantLevel && w.TenantId == _tenantId) ||
+                            (w.AccessType == AccessTypesEnum.Space && w.SpaceIds != null && w.SpaceIds.Contains(_spaceId))
+                        )
                     )
-                    .Include(c => c.CreatedByUser)
+                    .Include(i => i.CreatedByUser)
                     .ProjectToType<SearchProjectTemplateDto>()
                     .ToListAsync();
 
@@ -582,25 +590,21 @@ namespace WorkspaceAPIs.Services
 
             try
             {
-                // Placeholder space ID used for filtering templates with space-level access
-                var spaceId = Guid.Empty;
-
                 // Retrieve project templates accessible to the current tenant or publicly available
                 // Results are ordered by descending usage count (i.e., most used/trending first)
                 var trendingTemplates = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w =>
                         w.AccessType == AccessTypesEnum.Public ||
                         (w.AccessType == AccessTypesEnum.TenantLevel && w.TenantId == _tenantId) ||
-                        (w.AccessType == AccessTypesEnum.Space && w.SpaceIds.Contains(spaceId))
+                        (w.AccessType == AccessTypesEnum.Space && w.SpaceIds != null && w.SpaceIds.Contains(_spaceId))
                     )
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
                     .OrderByDescending(o => o.UsageCount)
-                    .ProjectToType<TrendingTemplateDto>()
                     .ToListAsync();
 
                 // Populate response with retrieved data
-                serviceResponse.Data = trendingTemplates;
+                serviceResponse.Data = trendingTemplates.Adapt<IEnumerable<TrendingTemplateDto>>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Trending project templates retrieved successfully.";
 
@@ -640,6 +644,8 @@ namespace WorkspaceAPIs.Services
                     serviceResponse.Message = "Project template not found.";
                     return serviceResponse;
                 }
+
+                var projectTemplateDto = projectTemplate.Adapt<ProjectTemplateDto>();
 
                 _logger.LogInformation("Project template found. Template ID: {TemplateId}", trendingTemplateDto.Id);
 
@@ -688,6 +694,9 @@ namespace WorkspaceAPIs.Services
                         return serviceResponse;
                     }
 
+                    // Update refId as flowId
+                    projectTemplateDto.RefId = flowEntity.Id;
+
                     _logger.LogInformation("Flow version saved successfully. Flow ID: {FlowId}, Version: 1", flowEntity.Id);
                 }
                 else
@@ -708,10 +717,10 @@ namespace WorkspaceAPIs.Services
                     return serviceResponse;
                 }
 
-                _logger.LogInformation("Flow successfully created from project template. Template ID: {TemplateId}", trendingTemplateDto.Id);
+                _logger.LogInformation("Flow or Mdoel successfully created from project template. Template ID: {TemplateId}", trendingTemplateDto.Id);
 
                 // Return success response
-                serviceResponse.Data = projectTemplate.Adapt<ProjectTemplateDto>();
+                serviceResponse.Data = projectTemplateDto;
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Project template applied successfully.";
             }
