@@ -20,7 +20,7 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    type: "AutomationAgent",
+    type: "Agent",
     name: faker.commerce.product(),
     description: faker.lorem.paragraph(),
   })
