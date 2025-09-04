@@ -232,6 +232,7 @@ namespace WorkspaceAPIs.Services
                         w.TenantId == _tenantId &&
                         w.CreatedByUserId == _userId
                     )
+                    .Include(i => i.TemplateResources)
                     .FirstOrDefaultAsync();
 
                 // Handle not found case
@@ -260,6 +261,99 @@ namespace WorkspaceAPIs.Services
                     return serviceResponse;
                 }
 
+                // Check if resources were provided in the request
+                if (projectTemplateDto.Resources != null)
+                {
+                    // Get the current resources from the database
+                    var existingResources = existingTemplate.TemplateResources?.ToList() ?? new List<TemplateResource>();
+
+                    // Initialize lists for resources to add, update, and remove
+                    var resourcesToAdd = new List<TemplateResource>();
+                    var resourcesToUpdate = new List<TemplateResource>();
+                    var resourcesToRemove = new List<TemplateResource>();
+
+                    // If resources are provided in the request, handle the changes
+                    if (projectTemplateDto.Resources != null)
+                    {
+                        // Resources to remove: those that exist in DB but not in the request
+                        resourcesToRemove = existingResources
+                            .Where(w => !projectTemplateDto.Resources.Any(a => a.Id == w.Id))
+                            .ToList();
+
+                        // Resources to add: those that exist in the request but not in the DB
+                        resourcesToAdd = projectTemplateDto.Resources
+                            .Where(w => !existingResources.Any(a => a.Name == w.Name))
+                            .Select(s => new TemplateResource
+                            {
+                                Name = s.Name,
+                                Size = s.Size,
+                                Path = s.Path,
+                                Extension = s.Extension ?? string.Empty,
+                                TenantId = existingTemplate.AccessType != TemplateAccessTypesEnum.Public ? _tenantId : null,
+                                ProjectTemplateId = existingTemplate.Id,
+                                CreatedByUserId = _userId,
+                                LastModifiedByUserId = _userId
+                            })
+                            .ToList();
+
+                        // Resources to update: those that exist in both the DB and the request (matching Id)
+                        resourcesToUpdate = existingResources
+                            .Where(w => projectTemplateDto.Resources.Any(a => a.Id == w.Id && a.Name != w.Name))
+                            .ToList();
+
+                        // Update fields for resources that exist both in the database and request
+                        foreach (var resourceToUpdate in resourcesToUpdate)
+                        {
+                            var updatedResource = projectTemplateDto.Resources.FirstOrDefault(f => f.Id == resourceToUpdate.Id);
+                            if (updatedResource != null)
+                            {
+                                // Update the resource fields (not creating new resources, just modifying the existing ones)
+                                resourceToUpdate.Name = updatedResource.Name;
+                                resourceToUpdate.Size = updatedResource.Size;
+                                resourceToUpdate.Path = updatedResource.Path;
+                                resourceToUpdate.Extension = updatedResource.Extension ?? string.Empty;
+                                resourceToUpdate.LastModifiedByUserId = _userId;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // If Resources is null, delete all existing resources for this project template
+                        resourcesToRemove = existingResources;
+                        _logger.LogInformation("No resources provided in the request. Removing all resources for project template with ID {ProjectTemplateId}.", existingTemplate.Id);
+                    }
+
+                    // Apply the changes: Insert new resources, Update existing resources, Delete old resources
+                    if (resourcesToAdd.Any())
+                    {
+                        await _unitOfWork.TemplateResourceRepo.InsertAsync(resourcesToAdd);
+                        // Save changes after inserting resources
+                        if (!await _unitOfWork.SaveAsync())
+                        {
+                            _logger.LogError("SaveChanges failed when inserting resources for project template with ID {ProjectTemplateId}.", existingTemplate.Id);
+                        }
+                    }
+
+                    if (resourcesToRemove.Any())
+                    {
+                        _unitOfWork.TemplateResourceRepo.Delete(resourcesToRemove);
+                        // Save changes after deleting resources
+                        if (!await _unitOfWork.SaveAsync())
+                        {
+                            _logger.LogError("SaveChanges failed when deleting resources for project template with ID {ProjectTemplateId}.", existingTemplate.Id);
+                        }
+                    }
+
+                    if (resourcesToUpdate.Any())
+                    {
+                        _unitOfWork.TemplateResourceRepo.Update(resourcesToUpdate);
+                        // Save changes after updating resources
+                        if (!await _unitOfWork.SaveAsync())
+                        {
+                            _logger.LogError("SaveChanges failed when updating resources for project template with ID {ProjectTemplateId}.", existingTemplate.Id);
+                        }
+                    }
+                }
                 // Map updated entity to DTO and set success response
                 serviceResponse.Data = existingTemplate.Adapt<ProjectTemplateDto>();
                 serviceResponse.StatusCode = 200;
@@ -420,7 +514,7 @@ namespace WorkspaceAPIs.Services
                 // Trim string properties for data consistency
                 publishProjectTemplateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(publishProjectTemplateDto);
 
-                ProjectTemplate? projectTemplate = null;
+                List<ProjectTemplate>? projectTemplates = null;
 
                 if (publishProjectTemplateDto.Type == ProjectTemplateTypesEnum.Block || publishProjectTemplateDto.Type == ProjectTemplateTypesEnum.Agent)
                 {
@@ -438,15 +532,31 @@ namespace WorkspaceAPIs.Services
                         return serviceResponse;
                     }
 
-                    // Map DTO to entity and set properties from flow version
-                    projectTemplate = publishProjectTemplateDto.Adapt<ProjectTemplate>();
-                    projectTemplate.TenantId = _tenantId;
+                    // Map the DTO to the ProjectTemplate entity and set properties from the flow version
+                    var projectTemplate = publishProjectTemplateDto.Adapt<ProjectTemplate>();
+                    projectTemplate.TenantId = publishProjectTemplateDto.AccessType != TemplateAccessTypesEnum.Public ? _tenantId : null;
                     projectTemplate.Version = 1;
                     projectTemplate.RefId = flowVersion.Id;
                     projectTemplate.Schema = flowVersion.ReactFlowObject;
                     projectTemplate.SchemaVersion = flowVersion.VersionNumber;
                     projectTemplate.CreatedByUserId = _userId;
                     projectTemplate.LastModifiedByUserId = _userId;
+
+                    // If the access type is 'Space', create a ProjectTemplate for each SpaceId
+                    if (projectTemplate.AccessType == TemplateAccessTypesEnum.Space)
+                    {
+                        foreach (var spaceId in publishProjectTemplateDto.SpaceIds)
+                        {
+                            // Create a new instance for each SpaceId to avoid reference issues
+                            var projectTemplateWithSpace = projectTemplate.Adapt<ProjectTemplate>();
+                            projectTemplateWithSpace.SpaceId = spaceId;
+                            projectTemplates.Add(projectTemplateWithSpace);
+                        }
+                    }
+                    else
+                    {
+                        projectTemplates.Add(projectTemplate);
+                    }
                 }
                 else
                 {
@@ -464,57 +574,65 @@ namespace WorkspaceAPIs.Services
                         serviceResponse.Message = "Specified ml model version does not exist.";
                         return serviceResponse;
                     }
-
-                    // Map DTO to entity and set properties from flow version
-                    projectTemplate = publishProjectTemplateDto.Adapt<ProjectTemplate>();
-                    projectTemplate.TenantId = _tenantId;
-                    projectTemplate.Version = 1;
-                    projectTemplate.RefId = flowVersion.Id;
-                    projectTemplate.Schema = flowVersion.ReactFlowObject;
-                    projectTemplate.SchemaVersion = flowVersion.VersionNumber;
-                    projectTemplate.CreatedByUserId = _userId;
-                    projectTemplate.LastModifiedByUserId = _userId;
                 }
 
-                // Insert the new template entity into repository
-                await _unitOfWork.ProjectTemplateRepo.InsertAsync(projectTemplate);
-
-                // Save changes, if fails return failure response
-                if (!await _unitOfWork.SaveAsync())
+                // Check if projectTemplates is not null before proceeding with insertion
+                if (projectTemplates != null)
                 {
-                    _logger.LogWarning("PublishTemplateAsync: Failed to persist project template to the database.");
-                    return serviceResponse;
+                    // Insert the new template entity into repository
+                    await _unitOfWork.ProjectTemplateRepo.InsertAsync(projectTemplates);
+
+                    // Save changes, if fails return failure response
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogWarning("PublishTemplateAsync: Failed to persist project template to the database.");
+                        return serviceResponse;
+                    }
                 }
 
                 // Check if any file resources are provided in the request
                 if (publishProjectTemplateDto.Resources != null)
                 {
-                    // Map each file resource DTO to a TemplateResource entity
-                    var templateResources = publishProjectTemplateDto.Resources.Select(s => new TemplateResource()
+                    // Create a list to hold all template resources
+                    var allTemplateResources = new List<TemplateResource>();
+
+                    // For each project template (this covers all templates, not just one)
+                    foreach (var projectTemplate in projectTemplates)
                     {
-                        Name = s.Name,
-                        Size = s.Size,
-                        Path = s.Path,
-                        Extension = s.Extension ?? string.Empty,
-                        IsLocal = true,
-                        ProjectTemplateId = projectTemplate.Id,
-                        TenantId = _tenantId,
-                        CreatedByUserId = _userId,
-                        LastModifiedByUserId = _userId
-                    }).ToList();
+                        // Map each file resource DTO to a TemplateResource entity associated with the current project template
+                        var templateResources = publishProjectTemplateDto.Resources.Select(s => new TemplateResource()
+                        {
+                            Name = s.Name,
+                            Size = s.Size,
+                            Path = s.Path,
+                            Extension = s.Extension ?? string.Empty,
+                            TenantId = publishProjectTemplateDto.AccessType != TemplateAccessTypesEnum.Public ? _tenantId : null,
+                            ProjectTemplateId = projectTemplate.Id,
+                            CreatedByUserId = _userId,
+                            LastModifiedByUserId = _userId
+                        }).ToList();
 
-                    // Insert the new template resource entities into the repository
-                    await _unitOfWork.TemplateResourceRepo.InsertAsync(templateResources);
+                        // Add these resources to the allTemplateResources list
+                        allTemplateResources.AddRange(templateResources);
+                    }
 
-                    // Attempt to save changes to the database; return failure response if save fails
+                    // Insert all template resources in a single batch
+                    await _unitOfWork.TemplateResourceRepo.InsertAsync(allTemplateResources);
+
+                    // Attempt to save changes to the database
+                    // If saving the changes fails, log a warning and return a failure response
                     if (!await _unitOfWork.SaveAsync())
                     {
-                        _logger.LogWarning("PublishTemplateAsync: Failed to persist template resource to the database.");
+                        // Log warning message for debugging
+                        _logger.LogWarning("PublishTemplateAsync: Failed to persist template resources to the database.");
+
+                        // Return failure service response, informing that the operation was unsuccessful
                         return serviceResponse;
                     }
                 }
+
                 // On success, adapt to DTO and set response
-                serviceResponse.Data = projectTemplate.Adapt<ProjectTemplateDto>();
+                serviceResponse.Data = projectTemplates.Adapt<ProjectTemplateDto>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Template published successfully.";
 
