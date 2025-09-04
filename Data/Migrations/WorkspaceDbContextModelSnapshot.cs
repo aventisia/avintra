@@ -926,14 +926,14 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<int>("SchemaVersion")
                         .HasColumnType("integer");
 
-                    b.Property<List<Guid>>("SpaceIds")
-                        .HasColumnType("uuid[]");
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
 
                     b.Property<List<string>>("Tags")
                         .IsRequired()
                         .HasColumnType("text[]");
 
-                    b.Property<Guid>("TenantId")
+                    b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Type")
@@ -1323,9 +1323,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<bool>("IsLocal")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsSetuptTest")
-                        .HasColumnType("boolean");
-
                     b.Property<Guid>("LastModifiedByUserId")
                         .HasColumnType("uuid");
 
@@ -1344,13 +1341,10 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("ProjectTemplateId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ResourceText")
-                        .HasColumnType("text");
-
                     b.Property<long>("Size")
                         .HasColumnType("bigint");
 
-                    b.Property<Guid>("TenantId")
+                    b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
 
                     b.Property<uint>("Version")
