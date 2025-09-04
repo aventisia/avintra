@@ -29,6 +29,9 @@ export const useDefineBillingInfoForm = () => {
       ? localStorage.getItem(BILLING_INFO_KEY)
       : null;
 
+  const storedCountryData =
+    typeof window !== "undefined" ? localStorage.getItem("country") : null;
+
   let parsedStoredData: Partial<z.infer<typeof billingInfoSchema>> = {};
 
   if (storedBillingData) {
@@ -38,6 +41,8 @@ export const useDefineBillingInfoForm = () => {
       console.warn(e, "Invalid local storage data for billingInfo");
     }
   }
+
+  const disableCountryDD = !!storedCountryData;
 
   // Define form with zod schema
   const form = useForm<z.infer<typeof billingInfoSchema>>({
@@ -58,7 +63,11 @@ export const useDefineBillingInfoForm = () => {
         billingData?.isWillingToFileGst ??
         parsedStoredData.isWillingToFileGst ??
         false,
-      country: billingData?.country ?? parsedStoredData.country ?? "India",
+      country:
+        storedCountryData ??
+        billingData?.country ??
+        parsedStoredData.country ??
+        "India",
       gstNumber: billingData?.gstNumber ?? parsedStoredData.gstNumber ?? "",
       postalCode: billingData?.postalCode ?? parsedStoredData.postalCode ?? "",
     },
@@ -75,5 +84,6 @@ export const useDefineBillingInfoForm = () => {
     isSubmitting,
     isDirty,
     isIndividualUser,
+    disableCountryDD,
   };
 };

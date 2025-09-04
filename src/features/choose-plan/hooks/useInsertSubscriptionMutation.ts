@@ -10,8 +10,7 @@ export const useInsertSubscriptionMutation = () => {
   // Define mutation to purchase subscription plan
   const { mutate: insertSubscriptionMutation, isPending } = useMutation({
     mutationFn: purchasePlan,
-    onSuccess: (httpResponse) => {
-      toast.success(httpResponse.message);
+    onSuccess: () => {
       navigate("/redirect?url=" + import.meta.env.VITE_WORC_URL);
     },
     onError: (error) => {

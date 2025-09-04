@@ -10,7 +10,6 @@ import { companyInfoSchema } from "@/features/sign-up/constants/company-info-zod
 import { useDefineCompanyInfoForm } from "@/features/sign-up/hooks/useDefineCompanyInfoForm";
 import { useUpdateTenantInfoMutation } from "@/features/sign-up/hooks/useUpdateTenantInfoMutation";
 import { useCompanyInfoStore } from "@/features/sign-up/stores/company-info-store";
-import { BILLING_INFO_KEY } from "@/react-toolkit/constants";
 import { Form } from "@/react-toolkit/ui/form/Form";
 
 import { Button, SubmitButton } from "@aventisia/ui/buttons";
@@ -42,10 +41,7 @@ export const CompanyInfoForm = () => {
   const onSubmit = async (formData: z.infer<typeof companyInfoSchema>) => {
     try {
       await updateTenantInfoMutation(formData);
-      localStorage.setItem(
-        BILLING_INFO_KEY,
-        JSON.stringify({ country: formData.country }),
-      );
+      localStorage.setItem("country", formData.country);
 
       // Reset the form to clear dirty state and suppress discard dialog
       form.reset(form.getValues());

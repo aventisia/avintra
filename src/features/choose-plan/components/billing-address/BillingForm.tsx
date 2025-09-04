@@ -26,7 +26,8 @@ import { useChoosePlanStore } from "../../stores/choose-plan-store";
  * Component for the billing form.
  */
 export const BillingForm = () => {
-  const { form, isSubmitting, isIndividualUser } = useDefineBillingInfoForm();
+  const { form, isSubmitting, isIndividualUser, disableCountryDD } =
+    useDefineBillingInfoForm();
 
   const { planId, planType, setStepNo, setBillingData } = useChoosePlanStore(
     useShallow((state) => ({
@@ -114,7 +115,7 @@ export const BillingForm = () => {
         <InputField {...stateProps} />
 
         {/* Country */}
-        <SelectField {...countryProps} />
+        <SelectField disabled={disableCountryDD} {...countryProps} />
       </div>
       <div className="flex w-full justify-between">
         <Button
