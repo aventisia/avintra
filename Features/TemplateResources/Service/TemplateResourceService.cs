@@ -154,14 +154,15 @@ public class TemplateResourceService : ITemplateResourceService
             templateResourceDto = TrimDtoStringPropsUtil.TrimDtoStringProps(templateResourceDto);
 
             // Map DTO to entity
-            var newResource = templateResourceDto.Adapt<TemplateResource>();
+            var newResourceTemplate = templateResourceDto.Adapt<TemplateResource>();
 
             // Set audit fields
-            newResource.CreatedByUserId = _userId;
-            newResource.LastModifiedByUserId = _userId;
+            newResourceTemplate.TenantId = _tenantId;
+            newResourceTemplate.CreatedByUserId = _userId;
+            newResourceTemplate.LastModifiedByUserId = _userId;
 
             // Insert into repository
-            await _unitOfWork.TemplateResourceRepo.InsertAsync(newResource);
+            await _unitOfWork.TemplateResourceRepo.InsertAsync(newResourceTemplate);
 
             // Save changes
             if (!await _unitOfWork.SaveAsync())
@@ -171,11 +172,11 @@ public class TemplateResourceService : ITemplateResourceService
             }
 
             // Success response
-            serviceResponse.Data = newResource.Adapt<TemplateResourceDto>();
+            serviceResponse.Data = newResourceTemplate.Adapt<TemplateResourceDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Template resource added successfully.";
 
-            _logger.LogInformation($"Template resource added successfully to ProjectTemplateId {newResource.ProjectTemplateId} by UserId {newResource.CreatedByUserId}.");
+            _logger.LogInformation($"Template resource added successfully to ProjectTemplateId {newResourceTemplate.ProjectTemplateId} by UserId {newResourceTemplate.CreatedByUserId}.");
         }
         catch (Exception ex)
         {
@@ -199,8 +200,7 @@ public class TemplateResourceService : ITemplateResourceService
         {
             // Retrieve the existing template resource entity using its Id and ensure it belongs to the current user
             var existingResource = await _unitOfWork.TemplateResourceRepo
-                .GetByConditionAsync(w => w.Id ==
-                    templateResourceDto.Id &&
+                .GetByConditionAsync(w => w.Id == templateResourceDto.Id &&
                     w.TenantId == _tenantId &&
                     w.CreatedByUserId == _userId
                 )

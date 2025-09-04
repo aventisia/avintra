@@ -12,13 +12,12 @@ public class TemplateResourceDto
 
     /// <summary>
     /// Gets or sets the name of the uploaded file. Maximum length is 255 characters.
-    /// Gets or sets the name of the uploaded file. Maximum length is 255 characters.
     /// </summary>
     [MaxLength(255)]
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the file extension of the uploaded resource (e.g., ".txt", ".json").
+    /// Gets or sets the file extension of the uploaded resource (e.g., "txt", "json").
     /// </summary>
     public required string Extension { get; set; }
 
