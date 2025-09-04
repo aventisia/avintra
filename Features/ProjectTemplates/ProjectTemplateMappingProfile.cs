@@ -6,8 +6,11 @@ public class ProjectTemplateMappingProfile : IRegister
     {
         // Request mapping for inserting or updating a Project template record
         config.NewConfig<ProjectTemplateDto, ProjectTemplate>()
-        .Ignore(dest => dest.Id)
-        .IgnoreNullValues(true);
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.CreatedOn)
+            .Ignore(dest => dest.LastModifiedOn)
+            .Ignore(dest => dest.RefId)
+            .IgnoreNullValues(true);
 
         // Request mapping for getting Project template record
         config.NewConfig<ProjectTemplate, ProjectTemplateDto>()

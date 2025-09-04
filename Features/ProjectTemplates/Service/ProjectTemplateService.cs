@@ -40,7 +40,6 @@ namespace WorkspaceAPIs.Services
                 // Fetch project templates filtered by tenant and user, ordered by usage count, including related data
                 var projectTemplates = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w =>
-                        w.TenantId == _tenantId &&
                         w.CreatedByUserId == _userId
                     )
                     .OrderByDescending(o => o.UsageCount)
@@ -229,9 +228,9 @@ namespace WorkspaceAPIs.Services
                 var existingTemplate = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w =>
                         w.Id == projectTemplateDto.Id &&
-                        w.TenantId == _tenantId &&
                         w.CreatedByUserId == _userId
                     )
+                    .AsNoTracking()
                     .Include(i => i.TemplateResources)
                     .FirstOrDefaultAsync();
 
@@ -247,8 +246,8 @@ namespace WorkspaceAPIs.Services
                 projectTemplateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(projectTemplateDto);
 
                 // Map updated values onto existing entity and increment version
-                existingTemplate = projectTemplateDto.Adapt(existingTemplate);
-                existingTemplate.Version += 1;
+                projectTemplateDto.Adapt(existingTemplate);
+                existingTemplate.SchemaVersion += 1;
                 existingTemplate.LastModifiedByUserId = _userId;
 
                 // Mark entity as updated
@@ -282,7 +281,7 @@ namespace WorkspaceAPIs.Services
 
                         // Resources to add: those that exist in the request but not in the DB
                         resourcesToAdd = projectTemplateDto.Resources
-                            .Where(w => !existingResources.Any(a => a.Name == w.Name))
+                            .Where(w => !existingResources.Any(a => a.Id == w.Id && a.Name == w.Name))
                             .Select(s => new TemplateResource
                             {
                                 Name = s.Name,
@@ -367,7 +366,6 @@ namespace WorkspaceAPIs.Services
             {
                 // Log exceptions
                 _logger.LogError(ex, "An error occurred while updating project template with ID {ProjectTemplateId}.", projectTemplateDto.Id);
-                serviceResponse.Message = "An unexpected error occurred while updating the project template.";
             }
 
             return serviceResponse;
@@ -511,10 +509,22 @@ namespace WorkspaceAPIs.Services
                     return serviceResponse;
                 }
 
+                // Query for a project template by reference ID, including related user and resources
+                var existingProjectTemplate = await _unitOfWork.ProjectTemplateRepo
+                    .GetByConditionAsync(w => w.RefId == publishProjectTemplateDto.RefId)
+                    .FirstOrDefaultAsync();
+
+                if (existingProjectTemplate != null)
+                {
+                    _logger.LogWarning("Project template with reference ID {RefId} already exists and has been published.", publishProjectTemplateDto.RefId);
+                    serviceResponse.Message = "Project template has already been published.";
+                    return serviceResponse;
+                }
+
                 // Trim string properties for data consistency
                 publishProjectTemplateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(publishProjectTemplateDto);
 
-                List<ProjectTemplate>? projectTemplates = null;
+                List<ProjectTemplate>? projectTemplates = new List<ProjectTemplate>();
 
                 if (publishProjectTemplateDto.Type == ProjectTemplateTypesEnum.Block || publishProjectTemplateDto.Type == ProjectTemplateTypesEnum.Agent)
                 {
@@ -632,7 +642,7 @@ namespace WorkspaceAPIs.Services
                 }
 
                 // On success, adapt to DTO and set response
-                serviceResponse.Data = projectTemplates.Adapt<ProjectTemplateDto>();
+                serviceResponse.Data = projectTemplates?.FirstOrDefault().Adapt<ProjectTemplateDto>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Template published successfully.";
 
