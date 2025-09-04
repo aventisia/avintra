@@ -50,7 +50,7 @@ public class ProjectTemplate : BaseEntity
     /// <summary>
     /// Gets or sets the access level required to use or manage the template.
     /// </summary>
-    public AccessTypesEnum AccessType { get; set; }
+    public TemplateAccessTypesEnum AccessType { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier of the space where the agent template is applicable.

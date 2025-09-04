@@ -26,7 +26,7 @@ public class PublishProjectTemplateDto
     /// <summary>
     /// Gets or sets the access level required to use or manage the template.
     /// </summary>
-    public AccessTypesEnum AccessType { get; set; }
+    public TemplateAccessTypesEnum AccessType { get; set; }
 
     /// <summary>
     /// Gets or sets the list of space identifiers where the agent template is applicable.
@@ -44,7 +44,7 @@ public class PublishProjectTemplateDto
     public List<string> Tags { get; set; } = new List<string>();
 
     /// <summary>
-    /// Gets or sets the collection of uploaded files associated with the template.
+    /// Gets or sets the collection of resource files associated with the project template.
     /// </summary>
-    public List<IFormFile> Files { get; set; } = new List<IFormFile>();
+    public IEnumerable<TemplateResourceDto>? Resources { get; set; }
 }
