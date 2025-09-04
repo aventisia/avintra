@@ -32,9 +32,9 @@ public class ProjectTemplateDto
     public AccessTypesEnum AccessType { get; set; }
 
     /// <summary>
-    /// Gets or sets the list of space identifiers where the agent template is applicable.
+    /// Gets or sets the unique identifier of the space where the agent template is applicable.
     /// </summary>
-    public List<Guid>? SpaceIds { get; set; }
+    public Guid? SpaceId { get; set; }
 
     /// <summary>
     /// Gets or sets the JSON schema that defines the template's structure and rules.
@@ -65,6 +65,11 @@ public class ProjectTemplateDto
     /// Gets or sets a collection of icons or avatars that visually represent the template.
     /// </summary>
     public List<string>? Icons { get; set; }
+
+    /// <summary>
+    /// Gets or sets the collection of resource files associated with the project template.
+    /// </summary>
+    public IEnumerable<TemplateResourceDto>? Resources { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
