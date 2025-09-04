@@ -1,0 +1,27 @@
+meta {
+  name: Use project template
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/project-template/use
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{PROJECT_TEMPLATE_ID}}",
+    "name": "Test",
+    "description": "This is test",
+    "purpose": null,
+    "type": "Agent",
+    "tags": [
+      "[\"Test\",\"Template\"]"
+    ],
+    "refId": "516b6972-bd80-4174-94b1-a00d64d81032",
+    "isDisabled": false,
+    "icons": null
+  }
+}

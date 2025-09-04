@@ -6,7 +6,7 @@ meta {
 
 post {
   url: {{WORKSPACE_APIS_BASE_URL}}/project-template/publish
-  body: json
+  body: multipartForm
   auth: none
 }
 
@@ -37,7 +37,7 @@ body:multipart-form {
   AccessType: Public
   RefId: 516b6972-bd80-4174-94b1-a00d64d81032
   Tags: ["Test","Template"]
-  FileResources: {[[]
+  Files: @file(/home/rahmat/Gitea/Test/Bakery_Store_Invoice_Format.pdf)
 }
 
 script:post-response {

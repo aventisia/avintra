@@ -1,0 +1,11 @@
+meta {
+  name: Get template resources list
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/template-resources/list/{{PROJECT_TEMPLATE_ID}}
+  body: none
+  auth: none
+}

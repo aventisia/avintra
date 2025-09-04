@@ -1,0 +1,23 @@
+meta {
+  name: Update template resource
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/template-resources
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{TEMPLATE_RESOURCE_ID}}",
+    "name": "Bakery_Store_Invoice_Format.json",
+    "extension": "JSON",
+    "size": 154885,
+    "path": "/files/ff1a4458-f8eb-477c-9560-b8f6614221e8.json",
+    "isLocal": true,
+    "projectTemplateId": "{{PROJECT_TEMPLATE_ID}}"
+  }
+}
