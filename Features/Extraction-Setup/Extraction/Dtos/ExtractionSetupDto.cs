@@ -89,6 +89,12 @@ public class FieldSetupDto
     public required string Name { get; set; }
 
     /// <summary>
+    /// The JSON property name to extract within the document.
+    /// </summary>
+    [StringLength(255)]
+    public required string JsonPropertyName { get; set; }
+
+    /// <summary>
     /// The data type of the field to extract (e.g., string, number, date).
     /// </summary>
     [StringLength(255)]
@@ -136,6 +142,12 @@ public class TableHeaderDto
     /// </summary>
     [StringLength(255)]
     public required string Name { get; set; }
+
+    /// <summary>
+    /// The JSON property name to extract within the document.
+    /// </summary>
+    [StringLength(255)]
+    public required string JsonPropertyName { get; set; }
 
     /// <summary>
     /// The data type of the column (e.g., string, number, date).

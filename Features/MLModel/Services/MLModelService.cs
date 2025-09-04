@@ -425,6 +425,7 @@ public class MLModelService : IMLModelService
                     new FieldSetupDto
                     {
                         Name = string.Empty,
+                        JsonPropertyName = string.Empty,
                         Type = string.Empty,
                         Instructions = string.Empty
                     }
