@@ -9,13 +9,9 @@ public class ProjectTemplateMappingProfile : IRegister
         .Ignore(dest => dest.Id)
         .IgnoreNullValues(true);
 
-        //Request mapping for publishing flow as a template record
-        config.NewConfig<FlowVersion, ProjectTemplate>()
-        .Map(dest => dest.RefId, src => src.Id)
-        .IgnoreNullValues(true);
-
         // Request mapping for getting Project template record
-        config.NewConfig<ProjectTemplate, ProjectTemplateDto>();
+        config.NewConfig<ProjectTemplate, ProjectTemplateDto>()
+            .Map(dest => dest.Resources, src =>  src.TemplateResources.Adapt<IEnumerable<TemplateResourceDto>>());
 
         // Request mapping for getting Project template record
         config.NewConfig<ProjectTemplate, SearchProjectTemplateDto>();
