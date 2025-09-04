@@ -216,18 +216,19 @@ public class FlowBuilderService : IFlowBuilderService
                     _logger.LogInformation($"Publishing flow version as Template. FlowVersionId: {publishFlowVersionDto.Id}, FlowId: {publishFlowVersionDto.Id}");
 
                     // Create a new template (WorcTemplate)
-                    var template = new WorcTemplate
+                    var template = new ProjectTemplate
                     {
                         Name = !string.IsNullOrEmpty(publishFlowVersionDto.Name) ? publishFlowVersionDto.Name : string.Empty,
                         Description = publishFlowVersionDto.Description,
                         RefId = flowVersion.Id,
-                        ReactFlowObject = publishFlowVersionDto.ReactFlowObject,
+                        Schema = publishFlowVersionDto.ReactFlowObject,
+                        SchemaVersion = flowVersion.VersionNumber,
                         CreatedByUserId = _userId,
                         LastModifiedByUserId = _userId
                     };
 
                     // Insert and persist changes
-                    await _unitOfWork.WorcTemplateRepo.InsertAsync(template);
+                    await _unitOfWork.ProjectTemplateRepo.InsertAsync(template);
                     if (!await _unitOfWork.SaveAsync())
                     {
                         _logger.LogError("Failed to save changes while publishing the flow version as Template.");
