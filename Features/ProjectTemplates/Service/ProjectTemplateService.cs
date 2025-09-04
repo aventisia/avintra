@@ -488,34 +488,6 @@ namespace WorkspaceAPIs.Services
                     }
                 }
 
-                // Check if any file resources are provided in the request
-                if (publishProjectTemplateDto.FileResources.Any())
-                {
-                    // Map each file resource DTO to a TemplateResource entity
-                    var templateResources = publishProjectTemplateDto.FileResources.Select(s => new TemplateResource()
-                    {
-                        Name = s.Name,
-                        Size = s.Size,
-                        Path = s.Path,
-                        Extension = s.Extension ?? string.Empty,
-                        IsLocal = true,
-                        ProjectTemplateId = projectTemplate.Id,
-                        TenantId = _tenantId,
-                        CreatedByUserId = _userId,
-                        LastModifiedByUserId = _userId
-                    }).ToList();
-
-                    // Insert the new template resource entities into the repository
-                    await _unitOfWork.TemplateResourceRepo.InsertAsync(templateResources);
-
-                    // Attempt to save changes to the database; return failure response if save fails
-                    if (!await _unitOfWork.SaveAsync())
-                    {
-                        _logger.LogWarning("PublishTemplateAsync: Failed to persist template resource to the database.");
-                        return serviceResponse;
-                    }
-                }
-
                 // On success, adapt to DTO and set response
                 serviceResponse.Data = projectTemplate.Adapt<ProjectTemplateDto>();
                 serviceResponse.StatusCode = 200;
