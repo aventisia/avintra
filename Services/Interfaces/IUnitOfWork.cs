@@ -17,13 +17,13 @@ public interface IUnitOfWork
     IMachineRepo MachineRepo { get; }
     IMachineFlowRepo MachineFlowRepo { get; }
     IProjectTemplateRepo ProjectTemplateRepo { get; }
+    ITemplateResourceRepo TemplateResourceRepo { get; }
     IQueueRepo QueueRepo { get; }
     IQueueFlowVersionRepo QueueFlowVersionRepo { get; }
     IQueueTransactionRepo QueueTransactionRepo { get; }
     IJobRepo JobRepo { get; }
     IKeyStoreRepo KeyStoreRepo { get; }
     IVaultRepo VaultRepo { get; }
-
     ITriggerRepo TriggerRepo { get; }
     ITriggerFlowRepo TriggerFlowRepo { get; }
     IFlowUserRepo FlowUserRepo { get; }

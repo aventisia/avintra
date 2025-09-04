@@ -12,30 +12,20 @@ public class UnitOfWork : IUnitOfWork
     }
 
     public IWorkspaceUserRepo WorkspaceUserRepo => new WorkspaceUserRepo(_workspaceDbContext);
-
     public INotificationRepo NotificationRepo => new NotificationRepo(_workspaceDbContext);
-
     public INotificationUserRepo NotificationUserRepo => new NotificationUserRepo(_workspaceDbContext);
-
     public IFlowRepo FlowRepo => new FlowRepo(_workspaceDbContext);
-
     public IFlowCommentRepo FlowCommentRepo => new FlowCommentRepo(_workspaceDbContext);
     public ISupportTicketRepo SupportTicketRepo => new SupportTicketRepo(_workspaceDbContext);
-
     public ISupportTicketRemarkRepo SupportTicketRemarkRepo => new SupportTicketRemarkRepo(_workspaceDbContext);
-
     public IFlowLogRepo FlowLogRepo => new FlowLogRepo(_workspaceDbContext);
-
     public IProjectTemplateRepo ProjectTemplateRepo => new ProjectTemplateRepo(_workspaceDbContext);
+    public ITemplateResourceRepo TemplateResourceRepo => new TemplateResourceRepo(_workspaceDbContext);
     public IFlowVersionRepo FlowVersionRepo => new FlowVersionRepo(_workspaceDbContext);
     public ISubscriptionRepo SubscriptionRepo => new SubscriptionRepo(_workspaceDbContext);
-
     public IFlowExecutionLogRepo FlowExecutionLogRepo => new FlowExecutionLogRepo(_workspaceDbContext);
-
     public IActionExecutionLogRepo ActionExecutionLogRepo => new ActionExecutionLogRepo(_workspaceDbContext);
-
     public IMachineRepo MachineRepo => new MachineRepo(_workspaceDbContext);
-
     public IMachineFlowRepo MachineFlowRepo => new MachineFlowRepo(_workspaceDbContext);
     public IQueueRepo QueueRepo => new QueueRepo(_workspaceDbContext);
     public IQueueFlowVersionRepo QueueFlowVersionRepo => new QueueFlowVersionRepo(_workspaceDbContext);
@@ -43,9 +33,7 @@ public class UnitOfWork : IUnitOfWork
     public IJobRepo JobRepo => new JobRepo(_workspaceDbContext);
     public IKeyStoreRepo KeyStoreRepo => new KeyStoreRepo(_workspaceDbContext);
     public IVaultRepo VaultRepo => new VaultRepo(_workspaceDbContext);
-
     public ITriggerRepo TriggerRepo => new TriggerRepo(_workspaceDbContext);
-
     public ITriggerFlowRepo TriggerFlowRepo => new TriggerFlowRepo(_workspaceDbContext);
     public IFlowUserRepo FlowUserRepo => new FlowUserRepo(_workspaceDbContext);
     public IBlockRepo BlockRepo => new BlockRepo(_workspaceDbContext);
