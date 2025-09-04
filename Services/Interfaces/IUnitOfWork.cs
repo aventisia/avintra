@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore.Metadata;
-
 namespace WorkspaceAPIs.Services;
 
 public interface IUnitOfWork
@@ -18,7 +16,7 @@ public interface IUnitOfWork
     IActionExecutionLogRepo ActionExecutionLogRepo { get; }
     IMachineRepo MachineRepo { get; }
     IMachineFlowRepo MachineFlowRepo { get; }
-    IWorcTemplateRepo WorcTemplateRepo { get; }
+    IProjectTemplateRepo ProjectTemplateRepo { get; }
     IQueueRepo QueueRepo { get; }
     IQueueFlowVersionRepo QueueFlowVersionRepo { get; }
     IQueueTransactionRepo QueueTransactionRepo { get; }

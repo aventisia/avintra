@@ -26,7 +26,7 @@ public class UnitOfWork : IUnitOfWork
 
     public IFlowLogRepo FlowLogRepo => new FlowLogRepo(_workspaceDbContext);
 
-    public IWorcTemplateRepo WorcTemplateRepo => new WorcTemplateRepo(_workspaceDbContext);
+    public IProjectTemplateRepo ProjectTemplateRepo => new ProjectTemplateRepo(_workspaceDbContext);
     public IFlowVersionRepo FlowVersionRepo => new FlowVersionRepo(_workspaceDbContext);
     public ISubscriptionRepo SubscriptionRepo => new SubscriptionRepo(_workspaceDbContext);
 
