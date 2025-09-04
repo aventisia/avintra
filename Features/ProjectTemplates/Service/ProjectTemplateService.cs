@@ -111,6 +111,46 @@ namespace WorkspaceAPIs.Services
             return serviceResponse;
         }
 
+        // Retrieves a specific project template by its reference ID.
+        public async Task<ServiceResponse<ProjectTemplateDto>> GetProjectTemplateByRefIdAsync(Guid refId)
+        {
+            var serviceResponse = new ServiceResponse<ProjectTemplateDto>
+            {
+                Data = null,
+                Message = "Failed to retrieve template. Please try again later."
+            };
+
+            try
+            {
+                // Query for a project template by reference ID including related user and resources
+                var projectTemplate = await _unitOfWork.ProjectTemplateRepo
+                    .GetByConditionAsync(w => w.RefId == refId)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.TemplateResources)
+                    .FirstOrDefaultAsync();
+
+                if (projectTemplate == null)
+                {
+                    _logger.LogWarning("Project template with reference ID {RefId} not found.", refId);
+                    serviceResponse.Message = "Project template not found.";
+                    return serviceResponse;
+                }
+
+                serviceResponse.Data = projectTemplate.Adapt<ProjectTemplateDto>();
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Project template retrieved successfully.";
+
+                _logger.LogInformation("Successfully retrieved project template with reference ID {RefId}.", refId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching the project template with reference ID {RefId}.", refId);
+                serviceResponse.Message = "An unexpected error occurred while retrieving the template.";
+            }
+
+            return serviceResponse;
+        }
+
         // Creates a new project template.
         public async Task<ServiceResponse<ProjectTemplateDto>> InsertProjectTemplateAsync(ProjectTemplateDto projectTemplateDto)
         {
@@ -369,7 +409,7 @@ namespace WorkspaceAPIs.Services
             try
             {
                 // Validate required fields based on access type
-                if (publishProjectTemplateDto.AccessType == AccessTypesEnum.Space
+                if (publishProjectTemplateDto.AccessType == TemplateAccessTypesEnum.Space
                     && (publishProjectTemplateDto.SpaceIds == null || !publishProjectTemplateDto.SpaceIds.Any()))
                 {
                     _logger.LogWarning("PublishTemplateAsync: 'AccessType' is set to 'Space' but no SpaceIds were provided.");
@@ -446,48 +486,33 @@ namespace WorkspaceAPIs.Services
                     return serviceResponse;
                 }
 
-                // Check if any files are included in the request
-                if (publishProjectTemplateDto.Files.Any())
+                // Check if any file resources are provided in the request
+                if (publishProjectTemplateDto.Resources != null)
                 {
-                    // Upload the files using the upload service
-                    var uploadedFiles = await _uploadFileService.UploadFilesAsync(publishProjectTemplateDto.Files);
-
-                    // Check if upload was successful and files were returned
-                    if (uploadedFiles.StatusCode == 200 && uploadedFiles.Data != null)
+                    // Map each file resource DTO to a TemplateResource entity
+                    var templateResources = publishProjectTemplateDto.Resources.Select(s => new TemplateResource()
                     {
-                        // Map uploaded file data to TemplateResource entities
-                        var templateResources = uploadedFiles.Data.Select(s => new TemplateResource()
-                        {
-                            Name = s.Name,
-                            Size = s.Size,
-                            Path = s.Path,
-                            Extension = s.Extension ?? string.Empty,
-                            IsLocal = true,
-                            ProjectTemplateId = projectTemplate.Id,
-                            TenantId = _tenantId,
-                            CreatedByUserId = _userId,
-                            LastModifiedByUserId = _userId
-                        }).ToList();
+                        Name = s.Name,
+                        Size = s.Size,
+                        Path = s.Path,
+                        Extension = s.Extension ?? string.Empty,
+                        IsLocal = true,
+                        ProjectTemplateId = projectTemplate.Id,
+                        TenantId = _tenantId,
+                        CreatedByUserId = _userId,
+                        LastModifiedByUserId = _userId
+                    }).ToList();
 
-                        // Insert the new template resource entities into the repository
-                        await _unitOfWork.TemplateResourceRepo.InsertAsync(templateResources);
+                    // Insert the new template resource entities into the repository
+                    await _unitOfWork.TemplateResourceRepo.InsertAsync(templateResources);
 
-                        // Attempt to save changes to the database; return failure response if saving fails
-                        if (!await _unitOfWork.SaveAsync())
-                        {
-                            _logger.LogWarning("PublishTemplateAsync: Failed to persist template resources to the database.");
-                            return serviceResponse;
-                        }
-                    }
-                    else
+                    // Attempt to save changes to the database; return failure response if save fails
+                    if (!await _unitOfWork.SaveAsync())
                     {
-                        // Upload failed, log a warning
-                        _logger.LogWarning("PublishTemplateAsync: Failed to upload one or more files.");
-                        // Optionally: set failure message or status on serviceResponse
+                        _logger.LogWarning("PublishTemplateAsync: Failed to persist template resource to the database.");
                         return serviceResponse;
                     }
                 }
-
                 // On success, adapt to DTO and set response
                 serviceResponse.Data = projectTemplate.Adapt<ProjectTemplateDto>();
                 serviceResponse.StatusCode = 200;
@@ -521,12 +546,14 @@ namespace WorkspaceAPIs.Services
                     .GetByConditionAsync(w =>
                         w.Name.ToLower().Contains(searchKey.ToLower()) &&
                         (
-                            w.AccessType == AccessTypesEnum.Public ||
-                            (w.AccessType == AccessTypesEnum.TenantLevel && w.TenantId == _tenantId) ||
-                            (w.AccessType == AccessTypesEnum.Space && w.SpaceIds != null && w.SpaceIds.Contains(_spaceId))
+                            w.AccessType == TemplateAccessTypesEnum.Public ||
+                            (w.AccessType == TemplateAccessTypesEnum.TenantLevel && w.TenantId != null && w.TenantId == _tenantId) ||
+                            (w.AccessType == TemplateAccessTypesEnum.Space && w.SpaceId != null && w.SpaceId == _spaceId)
                         )
                     )
                     .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
+                    .AsNoTracking()
                     .ProjectToType<SearchProjectTemplateDto>()
                     .ToListAsync();
 
@@ -566,9 +593,9 @@ namespace WorkspaceAPIs.Services
                 // Results are ordered by descending usage count (i.e., most used/trending first)
                 var trendingTemplates = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w =>
-                        w.AccessType == AccessTypesEnum.Public ||
-                        (w.AccessType == AccessTypesEnum.TenantLevel && w.TenantId == _tenantId) ||
-                        (w.AccessType == AccessTypesEnum.Space && w.SpaceIds != null && w.SpaceIds.Contains(_spaceId))
+                        w.AccessType == TemplateAccessTypesEnum.Public ||
+                        (w.AccessType == TemplateAccessTypesEnum.TenantLevel && w.TenantId != null && w.TenantId == _tenantId) ||
+                        (w.AccessType == TemplateAccessTypesEnum.Space && w.SpaceId != null && w.SpaceId == _spaceId)
                     )
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)

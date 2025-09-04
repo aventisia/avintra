@@ -24,8 +24,15 @@ public class ProjectTemplateController : BaseApiController
     public async Task<ActionResult<ServiceResponse<ProjectTemplateDto>>> GetProjectTemplate(Guid projectTemplateId)
     {
         return ResultHelper(await _projectTemplateService.GetProjectTemplateAsync(projectTemplateId));
-
     }
+
+    // Fetch project template by ref id
+    [HttpGet("reference/{refId}")]
+    public async Task<ActionResult<ServiceResponse<ProjectTemplateDto>>> GetProjectTemplateByRefId(Guid refId)
+    {
+        return ResultHelper(await _projectTemplateService.GetProjectTemplateByRefIdAsync(refId));
+    }
+    
     // Create a new project template
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<ProjectTemplateDto>>> InsertProjectTemplate([FromBody] ProjectTemplateDto projectTemplateDto)

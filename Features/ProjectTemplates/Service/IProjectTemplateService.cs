@@ -19,6 +19,13 @@ public interface IProjectTemplateService
     Task<ServiceResponse<ProjectTemplateDto>> GetProjectTemplateAsync(Guid projectTemplateId);
 
     /// <summary>
+    /// Retrieves a project template by its reference ID.
+    /// </summary>
+    /// <param name="refId">The reference ID of the project template to retrieve.</param>
+    /// <returns>The project template with the specified reference ID.</returns>
+    Task<ServiceResponse<ProjectTemplateDto>> GetProjectTemplateByRefIdAsync(Guid refId);
+
+    /// <summary>
     /// Creates a new project template.
     /// </summary>
     /// <param name="projectTemplateDto">The data for the project template to be created.</param>
