@@ -16,17 +16,7 @@ public enum ProjectTemplateTypesEnum
     Block,
 
     /// <summary>
-    /// A project template focused on data-driven or predictive tasks.
+    /// A general AI-driven project template not specific to agents or block structures.
     /// </summary>
-    Inferencing,
-
-    /// <summary>
-    /// A project template built for conversational systems or chatbots.
-    /// </summary>
-    Conversation,
-
-    /// <summary>
-    /// A project template for generating content such as text or images.
-    /// </summary>
-    Generative
+    AIProject
 }
