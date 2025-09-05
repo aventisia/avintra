@@ -12,6 +12,7 @@ from PIL import Image
 import requests
 import tempfile
 import os
+import camelot
 
 def extract_text_from_file(file_path: str) -> str:
     """Extract text from various file types. Supports local files and remote URLs."""
@@ -98,27 +99,44 @@ def extract_text_from_pdf(pdf_path: str) -> str:
 
     # Initialize
     logger.info("Extracting text from PDF: %s", pdf_path)
-    text = ""
+    text_parts = []
 
-    with pdfplumber.open(pdf_path) as pdf:
-        for i, page in enumerate(pdf.pages):
-            page_text = page.extract_text() or ""
-            ocr_texts = []
-            if page.images:
-                for img_index, img in enumerate(page.images):
-                    try:
-                        cropped = page.crop((img["x0"], img["top"], img["x1"], img["bottom"]))
-                        pil_image = cropped.to_image(resolution=300).original
-                        ocr_result = pytesseract.image_to_string(pil_image)
-                        if ocr_result.strip():
-                            ocr_texts.append(ocr_result.strip())
-                    except Exception as e:
-                        logger.warning(f"OCR failed for image {img_index+1} on page {i+1}: {e}")
-            combined = page_text.strip()
-            if ocr_texts:
-                combined += "\n" + "\n".join(ocr_texts)
-            text += combined + "\n"
-    return text.strip()
+    # Extract all tables using camelot
+    try:
+        tables = camelot.read_pdf(pdf_path, pages="all")
+        logger.info(f"Total tables found: {tables.n}")
+        for idx, table in enumerate(tables):
+            table_text = table.df.to_json(orient="records", force_ascii=False)
+            print(table_text)
+            text_parts.append(f"--- Table {idx+1} (JSON) ---\n{table_text}")
+    except Exception as e:
+        logger.warning(f"Failed to extract tables with camelot: {e}")
+
+    # Extract text and OCR from each page using pdfplumber
+    try:
+        with pdfplumber.open(pdf_path) as pdf:
+            for i, page in enumerate(pdf.pages):
+                page_text = page.extract_text() or ""
+                ocr_texts = []
+                if page.images:
+                    for img_index, img in enumerate(page.images):
+                        try:
+                            cropped = page.crop((img["x0"], img["top"], img["x1"], img["bottom"]))
+                            pil_image = cropped.to_image(resolution=300).original
+                            ocr_result = pytesseract.image_to_string(pil_image)
+                            if ocr_result.strip():
+                                ocr_texts.append(ocr_result.strip())
+                        except Exception as e:
+                            logger.warning(f"OCR failed for image {img_index+1} on page {i+1}: {e}")
+                combined = page_text.strip()
+                if ocr_texts:
+                    combined += "\n" + "\n".join(ocr_texts)
+                if combined:
+                    text_parts.append(f"--- Page {i+1} ---\n{combined}")
+    except Exception as e:
+        logger.error(f"Error extracting text from PDF: {e}")
+
+    return "\n\n".join(text_parts).strip()
 
 def download_remote_file(url: str) -> str:
     """Download a remote file and return the local temp file path. Caller is responsible for cleanup."""
