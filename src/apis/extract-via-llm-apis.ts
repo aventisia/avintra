@@ -19,7 +19,7 @@ const extractViaLLM = (
       `${baseAPIURL}/inferencing-model/execute`,
       postObj,
       {
-        timeout: numberOfTasks * 60000,
+        timeout: numberOfTasks * 120000,
       },
     )
     .then((res) => res.data);

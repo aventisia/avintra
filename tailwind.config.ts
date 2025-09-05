@@ -26,6 +26,7 @@ const config = {
     },
     fontSize: {
       sm: ["0.8rem", "1.25rem"],
+      md: ["0.9rem", "1.35rem"],
       base: ["0.95rem", "1.5rem"],
       lg: ["1.1rem", "1.6rem"],
       xl: ["1.2rem", "1.75rem"],
@@ -56,6 +57,7 @@ const config = {
         "3lg": "1224px", // 3-large => @media (min-width: 1224px) { ... }
       },
       colors: {
+        icon: "var(--icon)",
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
@@ -92,6 +94,18 @@ const config = {
         destructive: {
           DEFAULT: "var(--destructive)",
           foreground: "var(--destructive-foreground)",
+        },
+        success: {
+          DEFAULT: "var(--success)",
+          foreground: "var(--success-foreground)",
+        },
+        warning: {
+          DEFAULT: "var(--warning)",
+          foreground: "var(--warning-foreground)",
+        },
+        info: {
+          DEFAULT: "var(--info)",
+          foreground: "var(--info-foreground)",
         },
         muted: {
           DEFAULT: "var(--muted)",

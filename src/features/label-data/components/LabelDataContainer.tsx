@@ -87,15 +87,17 @@ export const LabelDataContainer = () => {
               return <AIPersonaModel />;
             case "inferencing":
               return (
-                <ResizablePanelGroup direction="horizontal">
-                  <ResizablePanel defaultSize={70} minSize={35}>
-                    <FileUploaderWrapper />
-                  </ResizablePanel>
-                  <ResizableHandle withHandle className="ml-2 mr-0" />
-                  <ResizablePanel defaultSize={35} minSize={35}>
-                    <InferenceModel />
-                  </ResizablePanel>
-                </ResizablePanelGroup>
+                <div className="w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)]">
+                  <ResizablePanelGroup direction="horizontal">
+                    <ResizablePanel defaultSize={60} minSize={30}>
+                      <FileUploaderWrapper />
+                    </ResizablePanel>
+                    <ResizableHandle withHandle className="ml-2 mr-0" />
+                    <ResizablePanel defaultSize={40} minSize={30}>
+                      <InferenceModel />
+                    </ResizablePanel>
+                  </ResizablePanelGroup>
+                </div>
               );
             case "generative":
               return <GenerativeModel />;
