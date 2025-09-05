@@ -31,6 +31,7 @@ et_xmlfile==2.0.0
 fastapi==0.115.9
 filelock==3.17.0
 fsspec==2025.2.0
+ghostscript==0.8.1
 grpcio==1.74.0
 gunicorn==23.0.0
 h11==0.14.0
