@@ -1278,11 +1278,51 @@ public class InferencingModelService : IInferencingModelService
         }
     }
 
+    public static string? GetFieldValueByJsonPropertyName(JsonElement rootJsonElement, string jsonPropertyName)
+    {
+        if (rootJsonElement.TryGetProperty("fields", out var fields))
+        {
+            if (fields.TryGetProperty(jsonPropertyName, out var value))
+            {
+                return value.GetString();
+            }
+        }
+        return string.Empty; // Not found
+    }
+
+    // TODO: temp fix to show the table rows
+    public static List<string> GetTableHeaderValues(JsonElement rootJsonElement, string tableName, string headerJsonPropertyName)
+    {
+        if (rootJsonElement.TryGetProperty("tables", out var tables))
+        {
+            foreach (var table in tables.EnumerateArray())
+            {
+                // If you have table_name property, match it here:
+                if (table.TryGetProperty("table_name", out var tName) && tName.GetString().ToLower() != tableName.ToLower()) continue;
+
+                if (table.TryGetProperty("rows", out var rows))
+                {
+                    var headerValues = new List<string>();
+                    foreach (var row in rows.EnumerateArray())
+                    {
+                        if (row.TryGetProperty(headerJsonPropertyName, out var headerValue))
+                        {
+                            headerValues.Add(headerValue.GetString() ?? "");
+                        }
+                    }
+                    return headerValues;
+                }
+            }
+        }
+        return new List<string>(); // Not found
+    }
+
     // Calls the LLM with a prompt, processes the response, and populates extraction metadata.
     private async Task<InferencingModelTaskResponseDto> CallLLMAndProcessResponseAsync(ModelTask modelTask, string fileContent, InferencingModelTaskResponseDto documentExtractionData)
     {
         // Generate the prompt by replacing placeholders with actual content
         var outputFormatJson = GetOutputFormatJson(modelTask);
+        var ollamaOutputFormatSchema = GetOllamaOutputFormatSchema(modelTask);
         var prompt = modelTask.GeneratedPrompt.Replace("{{FileContent}}", fileContent).Replace("{{OutputFormat}}", outputFormatJson);
 
         // Log the generated prompt for debugging
@@ -1291,7 +1331,7 @@ public class InferencingModelService : IInferencingModelService
         var startTime = DateTime.UtcNow;
 
         // Call the LLM service to extract data
-        var llmResponse = await _llmDataExtractionService.ExtractDataAsync(prompt, modelTask.LLM, modelTask.Temperature);
+        var llmResponse = await _llmDataExtractionService.ExtractDataAsync(prompt, modelTask.LLM, modelTask.Temperature, ollamaOutputFormatSchema);
 
         var endTime = DateTime.UtcNow;
         var executionSeconds = (int)Math.Ceiling((endTime - startTime).TotalSeconds);
@@ -1320,7 +1360,47 @@ public class InferencingModelService : IInferencingModelService
             switch (modelTask.Name)
             {
                 case nameof(InferencingModelTypesEnum.Extraction):
-                    documentExtractionData.Extraction = JsonSerializer.Deserialize<ExtractionTaskExtractedDataDto>(llmResponse.Data, options);
+                    var llmResponseJsonRoot = JsonDocument.Parse(llmResponse.Data).RootElement;
+                    var extractionSetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(modelTask.SetupObject ?? null, options);
+
+                    // Prepare the output format with extracted data, mapping from fields and tables
+                    if (extractionSetupObject.Tables.Count() > 0)
+                    {
+                        var extractionResult = new ExtractionTaskExtractedDataDto()
+                        {
+                            Fields = extractionSetupObject.Fields.Select(field => new ExtractionFieldDto()
+                            {
+                                Name = field.Name,
+                                Value = GetFieldValueByJsonPropertyName(llmResponseJsonRoot, field.JsonPropertyName),
+                                ConfidenceScore = "0",
+                            }).ToList(),
+
+                            // Map tables into a corresponding format
+                            Tables = extractionSetupObject.Tables.Select(table => new ExtractionTableDto()
+                            {
+                                Name = table.Name,
+                                Headers = table.TableHeaders.Select(header => new ExtractionSetupTableHeaderSchema()
+                                {
+                                    Name = header.Name,
+                                    Values = GetTableHeaderValues(llmResponseJsonRoot, table.Name, header.JsonPropertyName),
+                                }).ToList()
+                            }).ToList()
+                        };
+                        documentExtractionData.Extraction = extractionResult;
+                    }
+                    else
+                    {
+                        var extractionResult = new ExtractionTaskExtractedDataDto()
+                        {
+                            Fields = extractionSetupObject.Fields.Select(field => new ExtractionFieldDto()
+                            {
+                                Name = field.Name,
+                                Value = GetFieldValueByJsonPropertyName(llmResponseJsonRoot, field.JsonPropertyName),
+                                ConfidenceScore = "0",
+                            }).ToList(),
+                        };
+                        documentExtractionData.Extraction = extractionResult;
+                    }
                     break;
 
                 case nameof(InferencingModelTypesEnum.Summarization):
@@ -1469,6 +1549,7 @@ public class InferencingModelService : IInferencingModelService
     }
 
     // Generates and returns a JSON string representing the output format based on the model task type.
+    // TODO: need to remove later since we have GetOllamaOutputFormatSchema
     private string? GetOutputFormatJson(ModelTask modelTask)
     {
         // If the modelTask is null, return null immediately
@@ -1492,29 +1573,28 @@ public class InferencingModelService : IInferencingModelService
                 var extractionSetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(modelTask.SetupObject ?? null, jsonOptions);
 
                 // Prepare the output format with extracted data, mapping from fields and tables
-                var extractionResult = new ExtractionTaskExtractedDataDto()
+
+                if (extractionSetupObject.Tables.Count() > 0)
                 {
-                    Fields = extractionSetupObject.Fields.Select(field => new ExtractionFieldDto()
+                    var extractionResult = new
                     {
-                        Name = field.Name,
-                        Value = string.Empty,
-                        ConfidenceScore = "0",
-                    }).ToList(),
-
-                    // Map tables into a corresponding format
-                    Tables = extractionSetupObject.Tables.Select(table => new ExtractionTableDto()
-                    {
-                        Name = table.Name,
-                        Headers = table.TableHeaders.Select(header => new ExtractionSetupTableHeaderSchema()
+                        fields = extractionSetupObject.Fields.ToDictionary(f => f.JsonPropertyName, f => ""),
+                        tables = extractionSetupObject.Tables.Select(table => new
                         {
-                            Name = header.Name,
-                            Values = new List<string>(),
-                        }).ToList()
-                    }).ToList()
-                };
-
-                // Serialize to JSON string
-                outputFormatJson = JsonSerializer.Serialize(extractionResult, jsonOptions);
+                            table_name = table.Name,
+                            rows = table.TableHeaders.ToDictionary(h => h.JsonPropertyName, h => "")
+                        }).ToArray()
+                    };
+                    outputFormatJson = JsonSerializer.Serialize(extractionResult, jsonOptions);
+                }
+                else
+                {
+                    var extractionResult = new
+                    {
+                        fields = extractionSetupObject.Fields.ToDictionary(f => f.JsonPropertyName, f => ""),
+                    };
+                    outputFormatJson = JsonSerializer.Serialize(extractionResult, jsonOptions);
+                }
                 break;
 
             // Handle Classification task type
@@ -1705,6 +1785,80 @@ public class InferencingModelService : IInferencingModelService
         return outputFormatJson;
     }
 
+    // Generates and returns a JSON string representing the output format based on the model task type.
+    private object? GetOllamaOutputFormatSchema(ModelTask modelTask)
+    {
+        // If the modelTask is null, return null immediately
+        if (modelTask == null) return null;
+
+        // Configure JSON deserialization options to make property name matching case-insensitive
+        var jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        // Check the type of model task and process accordingly
+        switch (modelTask.Name)
+        {
+            // Handle Extraction task type
+            case nameof(InferencingModelTypesEnum.Extraction):
+                // Deserialize the SetupObject into the ExtractionTaskSetupDto
+                var extractionSetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(modelTask.SetupObject ?? null, jsonOptions);
+
+                // Prepare the output format with extracted data, mapping from fields and tables
+                var extractionJsonObj = new
+                {
+                    type = "object",
+                    properties = new
+                    {
+                        fields = new
+                        {
+                            type = "object",
+                            properties = extractionSetupObject.Fields.ToDictionary(
+                                f => f.JsonPropertyName,
+                                f => new { type = "string" }
+                            ),
+                            required = extractionSetupObject.Fields.Select(f => f.JsonPropertyName).ToArray()
+                        },
+                        tables = new
+                        {
+                            type = "array",
+                            items = extractionSetupObject.Tables.Select(table => new
+                            {
+                                type = "object",
+                                properties = new
+                                {
+                                    table_name = new { type = "string" },
+                                    rows = new
+                                    {
+                                        type = "array",
+                                        items = new
+                                        {
+                                            type = "object",
+                                            properties = table.TableHeaders.ToDictionary(
+                                                h => h.JsonPropertyName,
+                                                h => new { type = "string" }
+                                            ),
+                                            required = table.TableHeaders.Select(h => h.JsonPropertyName).ToArray()
+                                        }
+                                    }
+                                },
+                                required = new[] { "table_name", "rows" }
+                            }).ToArray()
+                        }
+                    }
+                };
+
+                // Return
+                return extractionJsonObj;
+
+            // Default case, if the model task name does not match any of the above
+            default:
+                return null;
+        }
+    }
+
+
     // Generates a task-specific LLM prompt based on the model type and setup configuration.
     private string? GenerateModelPrompt(string name, InferencingModelDto inferencingModelDto)
     {
@@ -1745,9 +1899,10 @@ public class InferencingModelService : IInferencingModelService
                     {
                         foreach (var table in inferencingModelDto.Extraction.SetupObject.Tables)
                         {
-                            tableInstruction.AppendLine("### Data Extraction Instructions for the Table:");
-                            tableInstruction.AppendLine($"{table.Index}. Table name: {table.Name}{(string.IsNullOrEmpty(table.Context) ? "" : $", context - {table.Context}")}");
-                            tableInstruction.AppendLine("Please extract the following columns:");
+                            string tableNameContext = string.IsNullOrEmpty(table.Context) ? table.Name : $"{table.Name} ({table.Context})";
+                            tableInstruction.AppendLine("#### Tables:");
+                            tableInstruction.AppendLine($"Extract rows of the {tableNameContext} table with the following columns (if available):");
+                            tableInstruction.AppendLine();
 
                             // Add table column headers if they exist
                             if (table.TableHeaders != null)
@@ -1763,7 +1918,7 @@ public class InferencingModelService : IInferencingModelService
                     else
                     {
                         // If no table details are available, provide a fallback message
-                        tableInstruction.AppendLine("Since the table has no details, return the `tables` array as an empty list: `[]`.");
+                        tableInstruction.AppendLine();
                     }
 
                     // Load the Data Extraction prompt template and replace placeholders

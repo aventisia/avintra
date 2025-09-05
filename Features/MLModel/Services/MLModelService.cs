@@ -381,6 +381,7 @@ public class MLModelService : IMLModelService
                 .Include(i => i.Tasks)
                 .Include(i => i.GenerativeModel)
                 .Include(i => i.ConversationalModel)
+                .AsNoTracking()
                 .ProjectToType<MLModelDto>()
                 .SingleOrDefaultAsync();
 

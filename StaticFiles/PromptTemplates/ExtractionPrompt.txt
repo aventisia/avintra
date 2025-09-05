@@ -1,22 +1,31 @@
 {{Prompt}}
-If a value is found, populate the 'value' and assign a confidence score from 1 to 100 (e.g., "95"). If not found, leave 'value' as "" and set 'confidenceScore' to "0".
-Do not extract any other information which is not specified in the json format. Do not include any other text in your response, just the json object.
 
-Here is the json format and pdf text. 
+### Extraction Requirements
 
-```plaintext
+#### Key-Value Fields
+
+Extract the following fields if explicitly present in the document:
+
+{{FieldInstructions}}
+
+{{TableInstructions}}
+
+### Rules
+
+- Do not infer or guess — only extract information explicitly present in the document.
+- Preserve formatting exactly — keep numbers, dates, and text exactly as written.
+- Output must be valid JSON only — no explanations, commentary, or additional text.
+- If a field or table column is missing, represent it with an empty string (`""`).
+- If no transactions are found, return an empty array (`[]`) for the table.
+
+Description of the document:
+
+```
+{{Context}}
+```
+
+Document text:
+
+```
 {{FileContent}}
-```
-
-Instructions:
-- Match values by their `Name`.
-- If a value is found in the content, populate the `Value` and assign a `ConfidenceScore` between "1" and "100".
-- If not found, leave `Value` as "" and `ConfidenceScore` as "0".
-- Do not extract or generate anything else.
-- Return ONLY the JSON output in the same structure.
-
-
-JSON schema:
-```
-{{OutputFormat}}
 ```
