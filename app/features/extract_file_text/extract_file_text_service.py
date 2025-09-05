@@ -94,6 +94,28 @@ def extract_text_from_file(file_path: str) -> str:
             except Exception as cleanup_err:
                 logger.warning(f"Failed to delete temp file: {temp_file_path} ({cleanup_err})")
 
+def merge_camelot_tables(tables):
+    """Merge tables with identical columns (headers) into a single DataFrame list."""
+    merged_tables = []
+    prev_df = None
+
+    for table in tables:
+        df = table.df
+        # Remove empty rows
+        df = df.dropna(how='all')
+        # If previous table exists and columns match, append
+        if prev_df is not None and df.shape[1] == prev_df.shape[1] and (df.iloc[0] == prev_df.iloc[0]).all():
+            # Skip header row for the new table
+            df_no_header = df.iloc[1:]
+            prev_df = pd.concat([prev_df, df_no_header], ignore_index=True)
+        else:
+            if prev_df is not None:
+                merged_tables.append(prev_df)
+            prev_df = df
+    if prev_df is not None:
+        merged_tables.append(prev_df)
+    return merged_tables
+
 def extract_text_from_pdf(pdf_path: str) -> str:
     """Extract text from a PDF, combining selectable text and OCR from images on each page."""
 
@@ -104,10 +126,10 @@ def extract_text_from_pdf(pdf_path: str) -> str:
     # Extract all tables using camelot
     try:
         tables = camelot.read_pdf(pdf_path, pages="all")
-        logger.info(f"Total tables found: {tables.n}")
-        for idx, table in enumerate(tables):
-            table_text = table.df.to_json(orient="records", force_ascii=False)
-            print(table_text)
+        logger.info(f"Total tables found: {tables.n} in pdf {pdf_path}")
+        merged_tables = merge_camelot_tables(tables)
+        for idx, table in enumerate(merged_tables):
+            table_text = table.to_json(orient="records", force_ascii=False)
             text_parts.append(f"--- Table {idx+1} (JSON) ---\n{table_text}")
     except Exception as e:
         logger.warning(f"Failed to extract tables with camelot: {e}")
