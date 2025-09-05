@@ -1,0 +1,15 @@
+meta {
+  name: Upload single file
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/file/upload/single
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  file: @file(/home/rahmat/Gitea/Test/Bakery_Store_Invoice_Format.pdf)
+}

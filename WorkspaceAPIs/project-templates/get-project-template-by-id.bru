@@ -1,0 +1,11 @@
+meta {
+  name: Get project template by id
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/project-template/{{PROJECT_TEMPLATE_ID}}
+  body: none
+  auth: none
+}

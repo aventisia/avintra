@@ -6,7 +6,7 @@ meta {
 
 post {
   url: {{WORKSPACE_APIS_BASE_URL}}/project-template/publish
-  body: multipartForm
+  body: json
   auth: none
 }
 
@@ -18,7 +18,7 @@ body:json {
     "accessType": "Public",
     "tags": ["Test","Tata"],
     "refId": "516b6972-bd80-4174-94b1-a00d64d81032",
-    "fileResources": [
+    "resources": [
       {
         "id": "30c97d97-b0d5-445b-8e1a-a61d3ec2796b",
         "name": "Bakery_Store_Invoice_Format.pdf",
