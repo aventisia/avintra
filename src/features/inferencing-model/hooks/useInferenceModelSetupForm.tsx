@@ -82,8 +82,41 @@ export const useInferenceModelSetupForm = () => {
   const refineFormData = (
     formData: z.infer<typeof inferenceModelFormZodSchema>,
   ) => {
+    const extraction = formData.extraction;
     const classification = formData.classification;
     const sentimentAnalytics = formData.sentimentAnalytics;
+
+    // Helper to generate a valid jsonPropertyName
+    const toJsonPropertyName = (name: string) =>
+      name
+        .replace(/[^a-zA-Z0-9]/g, "_") // Remove non-alphanumeric
+        .replace(/^\d+/, "_$&") // Remove leading digits
+        .toLowerCase();
+
+    if (extraction) {
+      // Update fields
+      if (Array.isArray(extraction.setupObject.fields)) {
+        extraction.setupObject.fields = extraction.setupObject.fields.map(
+          (field) => ({
+            ...field,
+            jsonPropertyName: toJsonPropertyName(field.name),
+          }),
+        );
+      }
+
+      // Update tables
+      if (Array.isArray(extraction.setupObject.tables)) {
+        extraction.setupObject.tables = extraction.setupObject.tables.map(
+          (table) => ({
+            ...table,
+            tableHeaders: table.tableHeaders.map((header) => ({
+              ...header,
+              jsonPropertyName: toJsonPropertyName(header.name),
+            })),
+          }),
+        );
+      }
+    }
 
     if (classification) {
       const seen = new Set<string>();

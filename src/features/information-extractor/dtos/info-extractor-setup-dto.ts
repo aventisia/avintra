@@ -3,6 +3,7 @@ import { ILLMConfiguration } from "@/features/llm-configuration/dtos/llm-configu
 interface IFieldDescriptor {
   id?: string;
   name: string;
+  jsonPropertyName?: string;
   type: string;
   instructions: string;
 }
