@@ -7,7 +7,7 @@ import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import { useTabStore } from "@/store/tab-store";
 
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { toast } from "@aventisia/ui/sonner";
+//import { toast } from "@aventisia/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { useShallow } from "zustand/react/shallow";
 
@@ -32,8 +32,11 @@ const InferenceModel = () => {
 
   // Handle Test tab click
   const handleTabClick = (tabValue: string) => {
+    // TODO: Temporary fix since pending status is not updating correctly
+    setActiveTab(tabValue);
+
     if (tabValue === "test" && isTestTabDisabled) {
-      toast.error("Please configure the setup fields first.");
+      //toast.error("Please configure the setup fields first.");
     } else {
       setActiveTab(tabValue);
     }
