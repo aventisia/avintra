@@ -12,7 +12,7 @@ public interface ILLMDataExtractionService
     /// <param name="llmModel">The LLM model to use.</param>
     /// <param name="modelTemperature">Controls how focused or creative the response is (0–1).</param>
     /// <returns>The LLM’s response as text.</returns>
-    Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature);
+    Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature, object? ollamaOutputFormatSchema = null);
 
     /// <summary>
     /// Extracts plain text from a file at the given URL.

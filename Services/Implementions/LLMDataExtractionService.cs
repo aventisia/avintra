@@ -12,7 +12,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
     }
 
     // Extracts structured data from a document by retrieving its text and passing it to an LLM for processing.
-    public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature)
+    public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature, object? ollamaOutputFormatSchema = null)
     {
         var serviceResponse = new ServiceResponse<string>()
         {
@@ -133,13 +133,40 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                     }
 
                     // Step 5: Send the generation request to the model with the prompt and temperature
-                    var requestDto = new
+                    object requestDto;
+                    if (ollamaOutputFormatSchema == null)
                     {
-                        stream = false,
-                        temperature = modelTemperature,
-                        prompt = prompt,
-                        model = mappedModel
-                    };
+                        requestDto = new
+                        {
+                            stream = false,
+                            prompt,
+                            //format = "json",
+                            model = mappedModel,
+                            options = new
+                            {
+                                // seed = 1452692,
+                                temperature = modelTemperature
+                            }
+                        };
+                    }
+                    else
+                    {
+                        requestDto = new
+                        {
+                            stream = false,
+                            prompt,
+                            format = ollamaOutputFormatSchema ?? "json",
+                            model = mappedModel,
+                            options = new
+                            {
+                                // seed = 1452692,
+                                temperature = modelTemperature
+                            }
+                        };
+                    }
+
+
+                    _logger.LogInformation("Prepared request DTO for LLM model: {ollamaOutputFormatSchema}", System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema));
 
                     var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(requestDto), Encoding.UTF8, "application/json");
                     _logger.LogInformation("Sending request to LLM model: {MappedModel}", mappedModel);
