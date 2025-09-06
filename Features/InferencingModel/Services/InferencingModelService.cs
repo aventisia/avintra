@@ -1995,7 +1995,27 @@ public class InferencingModelService : IInferencingModelService
                         {
                             var category = inferencingModelDto.Classification.SetupObject.Categories[i];
                             var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
-                            classificationCategoriesPrompt.AppendLine($"{category.Index}. {category.Name}{instructions}");
+                            classificationCategoriesPrompt.AppendLine($"{category.Name}{instructions}");
+
+                            // Check for Main category -> sub-category
+                            if (category.SubCategories != null && category.SubCategories.Any())
+                            {
+                                foreach (var subCategory in category.SubCategories)
+                                {
+                                    var subCategoryInstructions = string.IsNullOrEmpty(subCategory.Instructions) ? "" : $", - {subCategory.Instructions}";
+                                    classificationCategoriesPrompt.AppendLine($"{subCategory.Name}. {subCategoryInstructions}");
+
+                                    // Check for Main category -> sub-category -> sub-sub-category
+                                    if (subCategory.SubSubCategories != null && subCategory.SubSubCategories.Any())
+                                    {
+                                        foreach (var subSubCategory in subCategory.SubSubCategories)
+                                        {
+                                            var subSubCategoryInstructions = string.IsNullOrEmpty(subSubCategory.Instructions) ? "" : $", - {subSubCategory.Instructions}";
+                                            classificationCategoriesPrompt.AppendLine($"{subSubCategory.Name}. {subSubCategoryInstructions}");
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -2005,7 +2025,7 @@ public class InferencingModelService : IInferencingModelService
                         { "{{Prompt}}", defaultPrompt.ToString() },
                         { "{{Context}}", inferencingModelDto.BusinessContext },
                         { "{{AllowMultipleClasses}}", inferencingModelDto.Classification.SetupObject.AllowMultipleClasses.ToString() },
-                        { "{{Categories}}", classificationCategoriesPrompt.Replace("\n", "").ToString() }
+                        { "{{Categories}}", classificationCategoriesPrompt.ToString() }
                     });
                     break;
 
