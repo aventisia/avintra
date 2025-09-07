@@ -1,7 +1,7 @@
 {{Prompt}}
 
-Context: {{Context}}  
-FileContent: {{FileContent}}
+Context
+{{Context}}  
 
 Length Limits:  
 - Min: {{TotalMinimumWords}} words  
@@ -17,3 +17,9 @@ Instructions:
 Output (return ONLY this JSON):
 ```json
 {"summary":"summary_content"}
+```
+
+Text to be summerized
+```
+{{FileContent}}
+```
