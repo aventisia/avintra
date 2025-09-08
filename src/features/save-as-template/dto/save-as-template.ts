@@ -5,13 +5,14 @@
  * Intended for creating a new template.
  */
 export interface SaveAsTemplateDto {
+  id?: string;
   /** Name of the template (required) */
   name: string;
 
   /** Optional description of the template */
   description?: string;
 
-  /** Type of entity to save as (e.g., 'Agent', 'BLock') */
+  /** Type of entity to save as (e.g., 'Agent', 'Block') */
   type: string;
 
   /** Access level (e.g., 'Public', 'Tenant', 'Spaces') */
@@ -22,4 +23,39 @@ export interface SaveAsTemplateDto {
 
   /** Reference ID of the original flow or source */
   refId: string;
+
+  /** Optional list of file resources associated with the template */
+  resources?: FileResource[];
+
+  /**
+   * Gets or sets the username of the user who created the flow record. Max-254
+   */
+  createdBy?: string;
+
+  /**
+   * Gets or sets the date and time when the flow record was created.
+   */
+  createdOn?: Date;
+
+  /**
+   * Gets or sets the username of the user who last modified the flow record. Max-254
+   */
+  lastModifiedBy?: string;
+
+  /**
+   * Gets or sets the date and time when the flow record was last modified.
+   */
+  lastModifiedOn?: Date;
+}
+
+/**
+ * FileResource
+ *
+ * Represents a file attached to a template.
+ */
+export interface FileResource {
+  name: string;
+  size: number;
+  path: string;
+  extension: string;
 }
