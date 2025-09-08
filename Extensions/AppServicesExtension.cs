@@ -27,7 +27,6 @@ public static class AppServicesExtension
         config.Apply(new SupportTicketRemarksMappingProfile());
         config.Apply(new FlowLogMappingProfile());
         config.Apply(new ProjectTemplateMappingProfile());
-        config.Apply(new TemplateResourceMappingProfile());
         config.Apply(new FlowVersionMappingProfile());
         config.Apply(new SubscriptionMappingProfile());
         config.Apply(new FlowExecutionLogMappingProfile());
@@ -70,7 +69,6 @@ public static class AppServicesExtension
         services.AddScoped<IFlowLogService, FlowLogService>();
         services.AddScoped<IProjectTemplateService, ProjectTemplateService>();
         services.AddScoped<IPublicTemplateService, PublicTemplateService>();
-        services.AddScoped<ITemplateResourceService, TemplateResourceService>();
         services.AddScoped<IFlowVersionService, FlowVersionService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IFlowExecutionLogService, FlowExecutionLogService>();
