@@ -920,6 +920,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("RefId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Remark")
+                        .HasColumnType("text");
+
                     b.Property<string>("Schema")
                         .HasColumnType("text");
 
@@ -928,6 +931,9 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<Guid?>("SpaceId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<List<string>>("Tags")
                         .IsRequired()
