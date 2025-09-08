@@ -69,7 +69,7 @@ public static class AppServicesExtension
         services.AddScoped<ISupportTicketRemarksService, SupportTicketRemarksService>();
         services.AddScoped<IFlowLogService, FlowLogService>();
         services.AddScoped<IProjectTemplateService, ProjectTemplateService>();
-        services.AddScoped<IExternalTemplateService, ExternalTemplateService>();
+        services.AddScoped<IPublicTemplateService, PublicTemplateService>();
         services.AddScoped<ITemplateResourceService, TemplateResourceService>();
         services.AddScoped<IFlowVersionService, FlowVersionService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();

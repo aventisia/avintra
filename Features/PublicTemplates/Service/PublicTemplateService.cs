@@ -1,12 +1,12 @@
 namespace WorkspaceAPIs.Services
 {
-    public class ExternalTemplateService : IExternalTemplateService
+    public class PublicTemplateService : IPublicTemplateService
     {
-        private readonly ILogger<ExternalTemplateService> _logger;
+        private readonly ILogger<PublicTemplateService> _logger;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ExternalTemplateService(
-            ILogger<ExternalTemplateService> logger,
+        public PublicTemplateService(
+            ILogger<PublicTemplateService> logger,
             IUnitOfWork unitOfWork)
         {
             _logger = logger;
@@ -27,7 +27,7 @@ namespace WorkspaceAPIs.Services
             {
                 // Query the template repository for the specific template by ID
                 var template = await _unitOfWork.ProjectTemplateRepo
-                    .GetByConditionAsync(w => w.Id == templateId)
+                    .GetByConditionAsync(w => w.Id == templateId && w.Status == ProjectTemplateStatusesEnum.Approved)
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.TemplateResources)
                     .FirstOrDefaultAsync();
@@ -74,6 +74,7 @@ namespace WorkspaceAPIs.Services
                 var templates = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w =>
                         w.Name.ToLower().Contains(searchKey.ToLower()) &&
+                        w.Status == ProjectTemplateStatusesEnum.Approved &&
                         w.AccessType == TemplateAccessTypesEnum.Public &&
                         w.TenantId == null
                     )
@@ -113,21 +114,22 @@ namespace WorkspaceAPIs.Services
 
             try
             {
-                // Query the template repository for External templates and order by usage count (most popular first)
+                // Query the template repository for public templates and order by usage count (most popular first)
                 var trendingTemplates = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w =>
-                        w.AccessType == TemplateAccessTypesEnum.Public && 
-                        w.TenantId == null 
+                        w.Status == ProjectTemplateStatusesEnum.Approved &&
+                        w.AccessType == TemplateAccessTypesEnum.Public &&
+                        w.TenantId == null
                     )
                     .Include(i => i.CreatedByUser)
-                    .Include(i => i.LastModifiedByUser) 
-                    .OrderByDescending(o => o.UsageCount) 
+                    .Include(i => i.LastModifiedByUser)
+                    .OrderByDescending(o => o.UsageCount)
                     .ToListAsync();
 
                 // Map the result to the trending template DTOs
                 serviceResponse.Data = trendingTemplates.Adapt<IEnumerable<TrendingTemplateDto>>();
                 serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "Trending templates retrieved successfully."; 
+                serviceResponse.Message = "Trending templates retrieved successfully.";
 
                 // Log the number of trending templates retrieved
                 _logger.LogInformation("Successfully retrieved {Count} trending templates.", trendingTemplates.Count);

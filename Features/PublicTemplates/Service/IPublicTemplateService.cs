@@ -1,9 +1,9 @@
 namespace WorkspaceAPIs.Services;
 
 /// <summary>
-/// Provides methods for managing external templates, including retrieving, searching, and identifying trending templates.
+/// Provides methods for managing public templates, including retrieving, searching, and identifying trending templates.
 /// </summary>
-public interface IExternalTemplateService
+public interface IPublicTemplateService
 {
     /// <summary>
     /// Retrieves a template using its unique identifier.
