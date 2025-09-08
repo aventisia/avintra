@@ -86,62 +86,59 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
                 if (string.IsNullOrWhiteSpace(filePath))
                     throw new ArgumentException("File path cannot be empty.");
 
+                // Determine separator
                 var separator = ",";
                 if (columnsSeparatorType == SeparatorTypeEnum.Predefined)
                 {
-                    var predefSep = PredefinedSeparator.Get(context);
-                    switch (predefSep)
+                    switch (PredefinedSeparator.Get(context))
                     {
-                        case PredefinedSeparatorEnum.Comma:
-                            separator = ",";
-                            break;
-                        case PredefinedSeparatorEnum.Tab:
-                            separator = "\t";
-                            break;
-                        case PredefinedSeparatorEnum.Semicolon:
-                            separator = ";";
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
+                        case PredefinedSeparatorEnum.Comma: separator = ","; break;
+                        case PredefinedSeparatorEnum.Tab: separator = "\t"; break;
+                        case PredefinedSeparatorEnum.Semicolon: separator = ";"; break;
+                        default: throw new ArgumentOutOfRangeException();
                     }
                 }
                 else if (columnsSeparatorType == SeparatorTypeEnum.Custom)
                 {
                     var customSep = CustomSeparator.Get(context);
-                    if (!string.IsNullOrWhiteSpace(customSep))
-                        separator = customSep;
-                    else
+                    if (string.IsNullOrWhiteSpace(customSep))
                         throw new ArgumentException("Custom separator cannot be empty.");
+                    separator = customSep;
                 }
 
                 using (var reader = new StreamReader(filePath, GetEncoding(encodingEnum)))
-                using (var csvReader = new CsvReader(reader, separator)) // Fully qualify if needed
                 {
                     var dataTable = new DataTable();
-
                     string line;
-                    var lineNumber = 0;
+                    int lineNumber = 0;
 
-                    while ((line = csvReader.ReadLine()) != null)
+                    while ((line = reader.ReadLine()) != null)
                     {
-                        if (firstLineContainsColumnNames && lineNumber == 0)
+                        if (string.IsNullOrWhiteSpace(line)) continue;
+
+                        var values = line.Split(new[] { separator }, StringSplitOptions.None);
+
+                        if (lineNumber == 0 && firstLineContainsColumnNames)
                         {
-                            // Read column names
-                            var columns = line.Split(new[] { separator }, StringSplitOptions.None);
-                            foreach (var column in columns)
+                            // Use first row as column headers
+                            for (int i = 0; i < values.Length; i++)
                             {
-                                dataTable.Columns.Add(trimFields ? column.Trim() : column);
+                                var colName = trimFields ? values[i].Trim() : values[i];
+                                if (string.IsNullOrEmpty(colName))
+                                    colName = $"Column_{i + 1}";
+                                dataTable.Columns.Add(colName);
                             }
                         }
                         else
                         {
-                            // Read data rows
-                            var values = line.Split(new[] { separator }, StringSplitOptions.None);
+                            // Ensure enough columns exist
+                            while (values.Length > dataTable.Columns.Count)
+                                dataTable.Columns.Add($"Column_{dataTable.Columns.Count + 1}");
+
                             var row = dataTable.NewRow();
-                            for (var i = 0; i < values.Length; i++)
-                            {
+                            for (int i = 0; i < values.Length; i++)
                                 row[i] = trimFields ? values[i].Trim() : values[i];
-                            }
+
                             dataTable.Rows.Add(row);
                         }
 
@@ -150,7 +147,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 
                     CsvTable.Set(context, dataTable);
                     IsSuccess.Set(context, true);
-                    StatusMessage.Set(context, $" Successfully read data from '{filePath}'.");
+                    StatusMessage.Set(context, $" Successfully read {dataTable.Rows.Count} rows and {dataTable.Columns.Count} columns from '{filePath}'.");
                 }
             }
             catch (Exception ex)
