@@ -14,12 +14,7 @@ namespace CodeActivityToJSON.Utils
     {
         private static List<string> _excludedCategories = new List<string>
         {
-            "CodeActivitiesLibrary.AiIntegrations.AiStudioActivities",
-            "CodeActivitiesLibrary.AppIntegrations.TwilioActivities",
-            "CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities",
-            "CodeActivitiesLibrary.AppIntegrations.SendGridActivities",
-            "CodeActivitiesLibrary.DataTransformations.JSONActivities",
-            "CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActivities",
+            "None",
         };
 
         private static List<string> _excludedActivities = new List<string>
