@@ -2,14 +2,16 @@
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 
 namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
-    // IMPORTANT NOTE: DO NOT CHANGE THE NAME OF THIS CLASS AND InArgument/OutArgument NAMES
+    // IMPORTANT NOTE: DO NOT CHANGE THE NAME OF THIS class AND InArgument/OutArgument NAMES
     // THESE NAMES ARE BEING USED IN AGENT BUILDER REACT APP
 
     [DisplayName("Set Variable")]
-    [Description("Sets the value of a named variable within the workflow context.")]
+    [Description("Sets the value of a named variable within the workflow context. Supports arithmetic expressions for ValueToSet.")]
     public class SetVariableActivity : BaseCodeActivity
     {
         [RequiredArgument]
@@ -19,7 +21,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 
         [RequiredArgument]
         [DisplayName("Value To Set")]
-        [Description("The value (text, number, list, or object) to assign to the variable.")]
+        [Description("The value (text, number, list, object, or arithmetic expression) to assign to the variable.")]
         public InArgument<object> ValueToSet { get; set; }
 
         // Hidden output argument to return the value of the variable. It should not be displayed in the config form
@@ -34,27 +36,54 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 
             try
             {
-                // Step 1: Check if variable name is correct or not
+                // Step 1: Validate variable name
                 if (!IsValidVariableName(variableName))
                 {
                     statusMessage = "Variable name is not valid.";
                     isSuccess = false;
                 }
 
-                // Step 2: Check if the value to set is valid or not
+                // Step 2: Validate input value
                 if (valueToSet == null)
                 {
-                    statusMessage = "Value to set cannot be null or empty.";
+                    statusMessage = "Value to set cannot be null.";
                     isSuccess = false;
                 }
 
-                // Step 3: Set the variable in the context
-                if (isSuccess)
+                object finalValue = valueToSet;
+
+                // Step 3: If value is a string, try to evaluate as arithmetic expression
+                if (isSuccess && valueToSet is string strValue)
                 {
-                    OutVariableValue.Set(context, valueToSet);
-                    statusMessage = $"Variable '{variableName}' set successfully.";
+                    try
+                    {
+                        // Use DynamicExpressionParser to evaluate expression
+                        var lambda = DynamicExpressionParser.ParseLambda(
+                            new ParsingConfig(),
+                            parameters: new ParameterExpression[] { },
+                            resultType: typeof(object),
+                            expression: strValue
+                        );
+
+                        finalValue = lambda.Compile().DynamicInvoke();
+                        statusMessage = $"Expression '{strValue}' evaluated successfully to {finalValue}.";
+                    }
+                    catch
+                    {
+                        // If expression parsing fails, keep as plain string
+                        finalValue = strValue;
+                        statusMessage = $"Assigned as plain value (not a valid expression): '{strValue}'.";
+                    }
                 }
 
+                // Step 4: Set variable
+                if (isSuccess)
+                {
+                    OutVariableValue.Set(context, finalValue);
+                    statusMessage = $"Variable '{variableName}' set successfully with value: {finalValue}";
+                }
+
+                // Set outputs
                 IsSuccess.Set(context, isSuccess);
                 StatusMessage.Set(context, statusMessage);
             }
