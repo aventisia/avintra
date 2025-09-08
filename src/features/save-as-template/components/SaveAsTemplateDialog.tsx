@@ -31,7 +31,7 @@ export const SaveAsTemplateDialog = () => {
       // Toggles dialog visibility when the dialog is opened or closed
       onOpenChangeFn={() => setShowDialog(!showDialog)}
     >
-      <DialogContent className="!max-w-[38vw]">
+      <DialogContent className="!max-w-[60vw]" side="right">
         {/* Header with static title */}
         <DialogDefaultHeader heading="Save As Template" />
 
