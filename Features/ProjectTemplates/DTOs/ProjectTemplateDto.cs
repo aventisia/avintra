@@ -22,6 +22,16 @@ public class ProjectTemplateDto
     public string? Description { get; set; }
 
     /// <summary>
+    /// Gets or sets the current approval status of the project template, such as Approved, Rejected, or Pending Approval.
+    /// </summary>
+    public ProjectTemplateStatusesEnum Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets optional remarks providing context about the status, such as reasons for rejection or reviewer comments.
+    /// </summary>
+    public string? Remark { get; set; }
+
+    /// <summary>
     /// Gets or sets the type or structure of the template (e.g., Block, Agent).
     /// </summary>
     public ProjectTemplateTypesEnum Type { get; set; }
