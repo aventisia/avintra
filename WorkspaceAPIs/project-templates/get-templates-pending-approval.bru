@@ -1,0 +1,11 @@
+meta {
+  name: Get templates pending approval
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/project-template/pending-approval
+  body: none
+  auth: none
+}

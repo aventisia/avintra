@@ -1,0 +1,15 @@
+meta {
+  name: Search template
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/template/search?key={{SEARCH_KEY}}
+  body: none
+  auth: none
+}
+
+params:query {
+  key: {{SEARCH_KEY}}
+}
