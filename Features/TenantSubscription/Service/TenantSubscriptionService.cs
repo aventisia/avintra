@@ -383,6 +383,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Map the DTO to the subscription entity
             var tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
             tenantSubscription.Frequency = tenantSubscriptionPurchaseDto.Frequency;
+            tenantSubscription.IsActive = true;
 
             // Set audit fields for tracking user actions
             tenantSubscription.CreatedByUserId = _userId;
@@ -399,7 +400,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             }
 
             // If the subscription plan is not 'Starter', billing details are required
-            if (subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter)
+            if (subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
                 // Map the subscription purchase DTO to a new BillingDetail entity
                 var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
@@ -438,7 +439,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 // Create and assign initial credits for the tenant based on the subscription
                 var tenantCredit = new TenantCredit()
                 {
-                    CreditedOn = DateTimeOffset.UtcNow,
+                    CreditedOn = DateTimeOffset.UtcNow.Date,
                     ExpiredOn = DateTimeOffset.UtcNow.Date.AddMonths(1).AddDays(-1),
                     SubscriptionId = tenantSubscription.Id,
                     AvailableCredits = subscriptionPlan.MaxCredits,
@@ -497,11 +498,12 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             var subscription = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
                         (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
+                        w.IsActive &&
                         w.TenantId == _tenantId
                 )
                 .Include(i => i.Plan)
                 .Include(i => i.CreatedByUser)
-                .SingleOrDefaultAsync();
+                .FirstOrDefaultAsync();
 
             if (subscription == null)
             {
@@ -561,34 +563,17 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
                     (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
+                    w.IsActive == true &&
                     w.TenantId == _tenantId
                 )
                 .Include(i => i.Plan)
                 .Include(i => i.CreatedByUser)
                 .SingleOrDefaultAsync();
 
-            if (tenantSubscription == null)
-            {
-                // No existing subscription — create new
-                tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
-                tenantSubscription.PlanId = subscriptionPlan.Id;
-                tenantSubscription.CreatedByUserId = _userId;
-                tenantSubscription.LastModifiedByUserId = _userId;
-
-                await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
-
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Failed to create tenant subscription. TenantId: {TenantId}, PlanId: {PlanId}", _tenantId, tenantSubscriptionPurchaseDto.PlanId);
-                    return serviceResponse;
-                }
-
-                _logger.LogInformation("New tenant subscription created. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, tenantSubscription.Id);
-            }
-            else
+            if (tenantSubscription != null)
             {
                 // Existing subscription found — update plan
-                tenantSubscription.PlanId = subscriptionPlan.Id;
+                tenantSubscription.IsActive = false;
                 tenantSubscription.LastModifiedByUserId = _userId;
 
                 _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
@@ -601,6 +586,23 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
                 _logger.LogInformation("Tenant subscription updated. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, tenantSubscription.Id);
             }
+
+            // No existing subscription — create new
+            tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
+            tenantSubscription.PlanId = subscriptionPlan.Id;
+            tenantSubscription.IsActive = true;
+            tenantSubscription.CreatedByUserId = _userId;
+            tenantSubscription.LastModifiedByUserId = _userId;
+
+            await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to create tenant subscription. TenantId: {TenantId}, PlanId: {PlanId}", _tenantId, tenantSubscriptionPurchaseDto.PlanId);
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("New tenant subscription created. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, tenantSubscription.Id);
 
             // If the plan is not 'Starter', store billing details
             if (subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)

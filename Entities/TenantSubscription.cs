@@ -16,6 +16,11 @@ public class TenantSubscription : BaseEntity
     public SubscriptionFrequenciesEnum Frequency { get; set; }
 
     /// <summary>
+    /// Gets or sets a flag indicating whether this is the current active subscription plan for the tenant.
+    /// </summary>
+    public bool IsActive { get; set; }
+
+    /// <summary>
     /// Gets or sets the ID of the subscription plan assigned to the tenant.
     /// </summary>
     public required Guid PlanId { get; set; }
