@@ -381,21 +381,15 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             tenantSubscriptionPurchaseDto.TenantId = tenantSubscriptionPurchaseDto.TenantId == Guid.Empty ? _tenantId : tenantSubscriptionPurchaseDto.TenantId;
 
             // Map the DTO to the subscription entity
-            var newSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
-            newSubscription.Frequency = tenantSubscriptionPurchaseDto.Frequency;
-            newSubscription.AvailableCredit = newSubscription.Frequency switch
-            {
-                SubscriptionFrequenciesEnum.Monthly => subscriptionPlan.MaxCredits,
-                SubscriptionFrequenciesEnum.Yearly => subscriptionPlan.MaxCredits * 12,
-                _ => throw new ArgumentOutOfRangeException(nameof(newSubscription.Frequency), "Unsupported subscription frequency.")
-            };
+            var tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
+            tenantSubscription.Frequency = tenantSubscriptionPurchaseDto.Frequency;
 
             // Set audit fields for tracking user actions
-            newSubscription.CreatedByUserId = _userId;
-            newSubscription.LastModifiedByUserId = _userId;
+            tenantSubscription.CreatedByUserId = _userId;
+            tenantSubscription.LastModifiedByUserId = _userId;
 
             // Insert the new subscription into the repository
-            await _unitOfWork.TenantSubscriptionRepo.InsertAsync(newSubscription);
+            await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
 
             // Save changes to the database
             if (!await _unitOfWork.SaveAsync())
@@ -405,11 +399,12 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             }
 
             // If the subscription plan is not 'Starter', billing details are required
-            if (subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
+            if (subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter)
             {
+                // Map the subscription purchase DTO to a new BillingDetail entity
                 var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
-                
-                // Determine pricing and next billing date based on frequency
+
+                // Set pricing and next billing date based on the selected subscription frequency
                 switch (tenantSubscriptionPurchaseDto.Frequency)
                 {
                     case SubscriptionFrequenciesEnum.Monthly:
@@ -423,25 +418,53 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                         break;
                 }
 
+                // Set audit fields
                 billingDetail.CreatedByUserId = _userId;
                 billingDetail.LastModifiedByUserId = _userId;
 
-                // Insert the new address into the repository
+                // Save billing detail to the database
                 await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
 
-                // Save changes to the database
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogError("Failed to persist new address for BillingDetail: {BillingDetailId}", billingDetail.Id);
+                    _logger.LogError("Unable to persist billing details. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
                     return serviceResponse;
                 }
+
+                _logger.LogInformation("Billing details successfully saved. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
+            }
+            else
+            {
+                // Create and assign initial credits for the tenant based on the subscription
+                var tenantCredit = new TenantCredit()
+                {
+                    CreditedOn = DateTimeOffset.UtcNow,
+                    ExpiredOn = DateTimeOffset.UtcNow.Date.AddMonths(1).AddDays(-1),
+                    SubscriptionId = tenantSubscription.Id,
+                    AvailableCredits = subscriptionPlan.MaxCredits,
+                    CreditStatus = CreditStatusesEnum.Available,
+                    TenantId = _tenantId,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId
+                };
+
+                // Save tenant credit to the database
+                await _unitOfWork.TenantCreditRepo.InsertAsync(tenantCredit);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Unable to persist tenant credit. TenantId: {TenantId}, TenantCreditId: {TenantCreditId}", _tenantId, tenantCredit.Id);
+                    return serviceResponse;
+                }
+
+                _logger.LogInformation("Tenant credit successfully saved. TenantId: {TenantId}, TenantCreditId: {TenantCreditId}", _tenantId, tenantCredit.Id);
             }
 
             // Log the successful creation of the tenant subscription
-            _logger.LogInformation("Tenant subscription successfully created with ID: {TenantSubscriptionId}", newSubscription.Id);
+            _logger.LogInformation("Tenant subscription successfully created with ID: {TenantSubscriptionId}", tenantSubscription.Id);
 
             // Map the newly created subscription entity to a DTO and return a successful response
-            serviceResponse.Data = newSubscription.Adapt<TenantSubscriptionDto>();
+            serviceResponse.Data = tenantSubscription.Adapt<TenantSubscriptionDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Tenant subscription completed successfully.";
         }
@@ -512,7 +535,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         try
         {
-
             _logger.LogInformation("Processing subscription upgrade for TenantId: {TenantId}, PlanId: {PlanId}", _tenantId, tenantSubscriptionPurchaseDto.PlanId);
 
             // Retrieve the selected subscription plan
@@ -549,12 +571,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             {
                 // No existing subscription — create new
                 tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
-                tenantSubscription.AvailableCredit = tenantSubscription.Frequency switch
-                {
-                    SubscriptionFrequenciesEnum.Monthly => subscriptionPlan.MaxCredits,
-                    SubscriptionFrequenciesEnum.Yearly => subscriptionPlan.MaxCredits * 12,
-                    _ => throw new ArgumentOutOfRangeException(nameof(tenantSubscription.Frequency), "Unsupported subscription frequency.")
-                };
                 tenantSubscription.PlanId = subscriptionPlan.Id;
                 tenantSubscription.CreatedByUserId = _userId;
                 tenantSubscription.LastModifiedByUserId = _userId;
@@ -575,14 +591,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 tenantSubscription.PlanId = subscriptionPlan.Id;
                 tenantSubscription.LastModifiedByUserId = _userId;
 
-                // Set available credit based on frequency
-                tenantSubscription.AvailableCredit = tenantSubscription.Frequency switch
-                {
-                    SubscriptionFrequenciesEnum.Monthly => subscriptionPlan.MaxCredits,
-                    SubscriptionFrequenciesEnum.Yearly => subscriptionPlan.MaxCredits * 12,
-                    _ => throw new ArgumentOutOfRangeException(nameof(tenantSubscription.Frequency), "Unsupported subscription frequency.")
-                };
-
                 _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
 
                 if (!await _unitOfWork.SaveAsync())
@@ -597,9 +605,10 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // If the plan is not 'Starter', store billing details
             if (subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
+                // Map the subscription purchase DTO to a new BillingDetail entity
                 var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
 
-                // Determine pricing and next billing date based on frequency
+                // Set pricing and next billing date based on the selected subscription frequency
                 switch (tenantSubscriptionPurchaseDto.Frequency)
                 {
                     case SubscriptionFrequenciesEnum.Monthly:
@@ -613,18 +622,46 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                         break;
                 }
 
+                // Set audit fields
                 billingDetail.CreatedByUserId = _userId;
                 billingDetail.LastModifiedByUserId = _userId;
 
+                // Save billing detail to the database
                 await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
 
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogError("Failed to save billing details. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
+                    _logger.LogError("Unable to persist billing details. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
                     return serviceResponse;
                 }
 
-                _logger.LogInformation("Billing details saved for TenantId: {TenantId}", _tenantId);
+                _logger.LogInformation("Billing details successfully saved. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
+            }
+            else
+            {
+                // Create and assign initial credits for the tenant based on the subscription
+                var tenantCredit = new TenantCredit()
+                {
+                    CreditedOn = DateTimeOffset.UtcNow,
+                    ExpiredOn = DateTimeOffset.UtcNow.Date.AddMonths(1).AddDays(-1),
+                    SubscriptionId = tenantSubscription.Id,
+                    AvailableCredits = subscriptionPlan.MaxCredits,
+                    CreditStatus = CreditStatusesEnum.Available,
+                    TenantId = _tenantId,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId
+                };
+
+                // Save tenant credit to the database
+                await _unitOfWork.TenantCreditRepo.InsertAsync(tenantCredit);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Unable to persist tenant credit. TenantId: {TenantId}, TenantCreditId: {TenantCreditId}", _tenantId, tenantCredit.Id);
+                    return serviceResponse;
+                }
+
+                _logger.LogInformation("Tenant credit successfully saved. TenantId: {TenantId}, TenantCreditId: {TenantCreditId}", _tenantId, tenantCredit.Id);
             }
 
             // Prepare successful response
