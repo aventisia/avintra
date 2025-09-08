@@ -248,6 +248,7 @@ namespace WorkspaceAPIs.Services
                 // Map updated values onto existing entity and increment version
                 projectTemplateDto.Adapt(existingTemplate);
                 existingTemplate.SchemaVersion += 1;
+                existingTemplate.Status = ProjectTemplateStatusesEnum.Pending;
                 existingTemplate.LastModifiedByUserId = _userId;
 
                 // Mark entity as updated
@@ -696,6 +697,7 @@ namespace WorkspaceAPIs.Services
                     projectTemplate.RefId = flowVersion.Id;
                     projectTemplate.Schema = flowVersion.ReactFlowObject;
                     projectTemplate.SchemaVersion = flowVersion.VersionNumber;
+                    projectTemplate.AccessPath = $"/agent?f={flowVersion.FlowId}&v={flowVersion.Id}";
                     projectTemplate.CreatedByUserId = _userId;
                     projectTemplate.LastModifiedByUserId = _userId;
 

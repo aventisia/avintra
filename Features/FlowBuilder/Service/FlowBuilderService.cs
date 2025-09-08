@@ -222,6 +222,7 @@ public class FlowBuilderService : IFlowBuilderService
                         Description = publishFlowVersionDto.Description,
                         RefId = flowVersion.Id,
                         Schema = publishFlowVersionDto.ReactFlowObject,
+                        AccessPath = $"/agent?f={flowVersion.FlowId}&v={flowVersion.Id}",
                         SchemaVersion = flowVersion.VersionNumber,
                         CreatedByUserId = _userId,
                         LastModifiedByUserId = _userId

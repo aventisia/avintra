@@ -10,6 +10,7 @@ public class ProjectTemplateMappingProfile : IRegister
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
             .Ignore(dest => dest.RefId)
+            .Ignore(dest => dest.AccessPath)
             .IgnoreNullValues(true);
 
         // Request mapping for getting Project template record

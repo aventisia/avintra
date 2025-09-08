@@ -32,6 +32,11 @@ public class ProjectTemplateDto
     public string? Remark { get; set; }
 
     /// <summary>
+    /// Gets or sets the URL or path used to access or view this template.
+    /// </summary>
+    public string AccessPath { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the type or structure of the template (e.g., Block, Agent).
     /// </summary>
     public ProjectTemplateTypesEnum Type { get; set; }
