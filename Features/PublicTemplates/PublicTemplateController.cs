@@ -31,4 +31,12 @@ public class PublicTemplateController : BaseApiController
     {
         return ResultHelper(await _publicTemplateService.GetAllTrendingTemplatesAsync());
     }
+
+    // Retrieves all project templates that are pending approval
+    [Authorize]
+    [HttpGet("pending-approval")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ProjectTemplateDto>>>> GetAllPendingApprovalTemplatesAsync()
+    {
+        return ResultHelper(await _publicTemplateService.GetAllPendingApprovalProjectTemplatesAsync());
+    }
 }

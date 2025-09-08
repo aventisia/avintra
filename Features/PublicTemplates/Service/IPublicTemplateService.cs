@@ -24,4 +24,10 @@ public interface IPublicTemplateService
     /// </summary>
     /// <returns>A service response containing a list of trending templates, or an error message if no templates are found.</returns>
     Task<ServiceResponse<IEnumerable<TrendingTemplateDto>>> GetAllTrendingTemplatesAsync();
+
+    /// <summary>
+    /// Retrieves all project templates that are pending approval.
+    /// </summary>
+    /// <returns>A list of project templates that are pending approval.</returns>
+    Task<ServiceResponse<IEnumerable<ProjectTemplateDto>>> GetAllPendingApprovalProjectTemplatesAsync();
 }

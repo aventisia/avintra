@@ -4,7 +4,6 @@ namespace WorkspaceAPIs.Services
     {
         private readonly ILogger<ProjectTemplateService> _logger;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IUploadFileService _uploadFileService;
         private readonly Guid _userId;
         private readonly Guid _tenantId;
         private readonly Guid _spaceId;
@@ -12,8 +11,7 @@ namespace WorkspaceAPIs.Services
         public ProjectTemplateService(
             ILogger<ProjectTemplateService> logger,
             IUnitOfWork unitOfWork,
-            IHttpContextAccessor httpContextAccessor,
-            IUploadFileService uploadFileService)
+            IHttpContextAccessor httpContextAccessor)
         {
             // Set _userId
             _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -22,7 +20,6 @@ namespace WorkspaceAPIs.Services
 
             _logger = logger;
             _unitOfWork = unitOfWork;
-            _uploadFileService = uploadFileService;
         }
 
         // Retrieve all project templates list
@@ -489,6 +486,108 @@ namespace WorkspaceAPIs.Services
             return serviceResponse;
         }
 
+        // Retrieves all project templates that are pending approval
+        public async Task<ServiceResponse<IEnumerable<ProjectTemplateDto>>> GetAllPendingApprovalProjectTemplatesAsync()
+        {
+            // Initialize default response with failure message
+            var serviceResponse = new ServiceResponse<IEnumerable<ProjectTemplateDto>>
+            {
+                Data = null,
+                Message = "Failed to retrieve templates pending approval. Please try again later."
+            };
+
+            try
+            {
+                // Fetch project templates filtered by status as "Pending" approval, ordered by usage count
+                var pendingApprovalTemplates = await _unitOfWork.ProjectTemplateRepo
+                    .GetByConditionAsync(w =>
+                        w.TenantId == _tenantId &&
+                        w.Status == ProjectTemplateStatusesEnum.Pending
+                    )
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.TemplateResources)
+                    .ToListAsync();
+
+                // Map entities to DTOs and set success response
+                serviceResponse.Data = pendingApprovalTemplates.Adapt<IEnumerable<ProjectTemplateDto>>();
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Project templates pending approval retrieved successfully.";
+
+                // Log success with count and context
+                _logger.LogInformation("Successfully retrieved {Count} project templates pending approval for user {UserId} in tenant {TenantId}.",
+                    pendingApprovalTemplates.Count, _userId, _tenantId);
+            }
+            catch (Exception ex)
+            {
+                // Log any errors during retrieval
+                _logger.LogError(ex, "Error occurred while fetching pending approval templates for user {UserId} in tenant {TenantId}.", _userId, _tenantId);
+            }
+
+            return serviceResponse;
+        }
+
+        // Updates the status of an existing project template (Approve/Reject)
+        public async Task<ServiceResponse<ProjectTemplateDto>> UpdateTemplateStatusAsync(ProjectTemplateDto projectTemplateDto)
+        {
+            // Initialize default response with failure message
+            var serviceResponse = new ServiceResponse<ProjectTemplateDto>
+            {
+                Data = null,
+                Message = "Failed to update template status. Please try again."
+            };
+
+            try
+            {
+                // Query existing template by ID, tenant, and user to ensure ownership
+                var existingTemplate = await _unitOfWork.ProjectTemplateRepo
+                    .GetByConditionAsync(w =>
+                        w.Id == projectTemplateDto.Id
+                    )
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
+
+                // Handle not found case
+                if (existingTemplate == null)
+                {
+                    _logger.LogWarning("Project template with ID {ProjectTemplateId} not found for status update.", projectTemplateDto.Id);
+                    serviceResponse.Message = "Project template not found.";
+                    return serviceResponse;
+                }
+
+                // Update status and remark (if provided)
+                existingTemplate.Status = projectTemplateDto.Status;
+                existingTemplate.Remark = projectTemplateDto.Remark;
+                existingTemplate.LastModifiedByUserId = _userId;
+
+                // Mark the template as updated
+                _unitOfWork.ProjectTemplateRepo.Update(existingTemplate);
+
+                // Save changes and check success
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogInformation("SaveChanges failed when updating status for project template with ID {ProjectTemplateId}.", projectTemplateDto.Id);
+                    return serviceResponse;
+                }
+
+                // Map updated entity to DTO and set success response
+                serviceResponse.Data = existingTemplate.Adapt<ProjectTemplateDto>();
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Project template status updated successfully.";
+
+                // Log success
+                _logger.LogInformation("Successfully updated status for project template with ID {ProjectTemplateId} to {Status} by user {UserId}.",
+                    projectTemplateDto.Id, projectTemplateDto.Status, _userId);
+            }
+            catch (Exception ex)
+            {
+                // Log exceptions
+                _logger.LogError(ex, "An error occurred while updating status for project template with ID {ProjectTemplateId}.", projectTemplateDto.Id);
+            }
+
+            return serviceResponse;
+        }
+
         // Publishes a project template based on the specified type (Agent, Block, Inferencing, Conversation, and Generative).
         public async Task<ServiceResponse<ProjectTemplateDto>> PublishProjectTemplateAsync(PublishProjectTemplateDto publishProjectTemplateDto)
         {
@@ -673,6 +772,7 @@ namespace WorkspaceAPIs.Services
                 var projectTemplates = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w =>
                         w.Name.ToLower().Contains(searchKey.ToLower()) &&
+                        w.Status == ProjectTemplateStatusesEnum.Approved &&
                         (
                             w.AccessType == TemplateAccessTypesEnum.Public ||
                             (w.AccessType == TemplateAccessTypesEnum.TenantLevel && w.TenantId != null && w.TenantId == _tenantId) ||
@@ -720,14 +820,17 @@ namespace WorkspaceAPIs.Services
                 // Retrieve project templates accessible to the current tenant or publicly available
                 // Results are ordered by descending usage count (i.e., most used/trending first)
                 var trendingTemplates = await _unitOfWork.ProjectTemplateRepo
-                    .GetByConditionAsync(w =>
-                        w.AccessType == TemplateAccessTypesEnum.Public ||
-                        (w.AccessType == TemplateAccessTypesEnum.TenantLevel && w.TenantId != null && w.TenantId == _tenantId) ||
-                        (w.AccessType == TemplateAccessTypesEnum.Space && w.SpaceId != null && w.SpaceId == _spaceId)
+                    .GetByConditionAsync(template =>
+                        template.Status == ProjectTemplateStatusesEnum.Approved &&
+                        (
+                            template.AccessType == TemplateAccessTypesEnum.Public ||
+                            (template.AccessType == TemplateAccessTypesEnum.TenantLevel && template.TenantId.HasValue && template.TenantId == _tenantId) ||
+                            (template.AccessType == TemplateAccessTypesEnum.Space && template.SpaceId.HasValue && template.SpaceId == _spaceId)
+                        )
                     )
-                    .Include(i => i.CreatedByUser)
-                    .Include(i => i.LastModifiedByUser)
-                    .OrderByDescending(o => o.UsageCount)
+                    .Include(t => t.CreatedByUser)
+                    .Include(t => t.LastModifiedByUser)
+                    .OrderByDescending(t => t.UsageCount)
                     .ToListAsync();
 
                 // Populate response with retrieved data
@@ -760,7 +863,10 @@ namespace WorkspaceAPIs.Services
             {
                 // Fetch the full project template including its resources
                 var projectTemplate = await _unitOfWork.ProjectTemplateRepo
-                    .GetByConditionAsync(w => w.Id == trendingTemplateDto.Id)
+                    .GetByConditionAsync(w =>
+                        w.Id == trendingTemplateDto.Id &&
+                        w.Status == ProjectTemplateStatusesEnum.Approved
+                    )
                     .Include(i => i.TemplateResources)
                     .SingleOrDefaultAsync();
 

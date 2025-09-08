@@ -54,6 +54,19 @@ public interface IProjectTemplateService
     Task<ServiceResponse<bool>> DeleteProjectTemplatesAsync(IEnumerable<Guid> projectTemplateIds);
 
     /// <summary>
+    /// Retrieves all project templates that are pending approval.
+    /// </summary>
+    /// <returns>A list of project templates that are pending approval.</returns>
+    Task<ServiceResponse<IEnumerable<ProjectTemplateDto>>> GetAllPendingApprovalProjectTemplatesAsync();
+
+    /// <summary>
+    /// Approves or rejects a project template based on the provided status.
+    /// </summary>
+    /// <param name="projectTemplateDto">The project template data transfer object containing the template details and status update.</param>
+    /// <returns>The updated project template after the approval or rejection operation.</returns>
+    Task<ServiceResponse<ProjectTemplateDto>> UpdateTemplateStatusAsync(ProjectTemplateDto projectTemplateDto);
+
+    /// <summary>
     /// Publishes a new project template from a specific version or configuration.
     /// </summary>
     /// <param name="publishProjectTemplateDto">The data required to publish a new project template.</param>

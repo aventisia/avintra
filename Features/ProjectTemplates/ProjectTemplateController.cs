@@ -32,7 +32,7 @@ public class ProjectTemplateController : BaseApiController
     {
         return ResultHelper(await _projectTemplateService.GetProjectTemplateByRefIdAsync(refId));
     }
-    
+
     // Create a new project template
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<ProjectTemplateDto>>> InsertProjectTemplate([FromBody] ProjectTemplateDto projectTemplateDto)
@@ -60,6 +60,21 @@ public class ProjectTemplateController : BaseApiController
     {
         return ResultHelper(await _projectTemplateService.DeleteProjectTemplatesAsync(projectTemplateIds));
     }
+
+    // Retrieves all project templates that are pending approval
+    [HttpGet("pending-approval")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ProjectTemplateDto>>>> GetAllPendingApprovalTemplatesAsync()
+    {
+        return ResultHelper(await _projectTemplateService.GetAllPendingApprovalProjectTemplatesAsync());
+    }
+
+    // Approve or reject a project template
+    [HttpPut("status")]
+    public async Task<ActionResult<ServiceResponse<ProjectTemplateDto>>> UpdateTemplateStatus([FromBody] ProjectTemplateDto projectTemplateDto)
+    {
+        return ResultHelper(await _projectTemplateService.UpdateTemplateStatusAsync(projectTemplateDto));
+    }
+
 
     // Publish a project template
     [HttpPost("publish")]
