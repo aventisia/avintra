@@ -3,7 +3,6 @@
 Context: {{Context}}  
 Categories: {{Categories}}  
 AllowMultipleClasses: {{AllowMultipleClasses}}  
-FileContent: {{FileContent}}
 
 Task:  
 Classify the input by sentiment or tone. For each category, return:  
@@ -28,3 +27,9 @@ Rules:
 Output format (return only this):
 ```json
 {{OutputFormat}}
+```
+
+FileContent: 
+```
+{{FileContent}}
+```

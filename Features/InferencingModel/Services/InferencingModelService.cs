@@ -1965,7 +1965,27 @@ public class InferencingModelService : IInferencingModelService
                         {
                             var category = inferencingModelDto.SentimentAnalytics.SetupObject.Categories[i];
                             var instructions = string.IsNullOrEmpty(category.Instructions) ? "" : $", - {category.Instructions}";
-                            sentimentAnalyticsCategoriesPrompt.AppendLine($"{category.Index}. {category.Name}{instructions}");
+                            sentimentAnalyticsCategoriesPrompt.AppendLine($"- {category.Name}{instructions}");
+
+                            // Check for Main category -> sub-category
+                            if (category.SubCategories != null && category.SubCategories.Any())
+                            {
+                                foreach (var subCategory in category.SubCategories)
+                                {
+                                    var subCategoryInstructions = string.IsNullOrEmpty(subCategory.Instructions) ? "" : $", - {subCategory.Instructions}";
+                                    sentimentAnalyticsCategoriesPrompt.AppendLine($"- {subCategory.Name}{subCategoryInstructions}");
+
+                                    // Check for Main category -> sub-category -> sub-sub-category
+                                    if (subCategory.SubSubCategories != null && subCategory.SubSubCategories.Any())
+                                    {
+                                        foreach (var subSubCategory in subCategory.SubSubCategories)
+                                        {
+                                            var subSubCategoryInstructions = string.IsNullOrEmpty(subSubCategory.Instructions) ? "" : $", - {subSubCategory.Instructions}";
+                                            sentimentAnalyticsCategoriesPrompt.AppendLine($"- {subSubCategory.Name}{subSubCategoryInstructions}");
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -1974,7 +1994,7 @@ public class InferencingModelService : IInferencingModelService
                     {
                         { "{{Prompt}}", defaultPrompt.ToString() },
                         { "{{Context}}", inferencingModelDto.BusinessContext },
-                        { "{{Categories}}", sentimentAnalyticsCategoriesPrompt.Replace("\n", "").ToString() }
+                        { "{{Categories}}", sentimentAnalyticsCategoriesPrompt.ToString() }
                     });
                     break;
 
@@ -2003,7 +2023,7 @@ public class InferencingModelService : IInferencingModelService
                                 foreach (var subCategory in category.SubCategories)
                                 {
                                     var subCategoryInstructions = string.IsNullOrEmpty(subCategory.Instructions) ? "" : $", - {subCategory.Instructions}";
-                                    classificationCategoriesPrompt.AppendLine($"{subCategory.Name}. {subCategoryInstructions}");
+                                    classificationCategoriesPrompt.AppendLine($"{subCategory.Name}{subCategoryInstructions}");
 
                                     // Check for Main category -> sub-category -> sub-sub-category
                                     if (subCategory.SubSubCategories != null && subCategory.SubSubCategories.Any())
@@ -2011,7 +2031,7 @@ public class InferencingModelService : IInferencingModelService
                                         foreach (var subSubCategory in subCategory.SubSubCategories)
                                         {
                                             var subSubCategoryInstructions = string.IsNullOrEmpty(subSubCategory.Instructions) ? "" : $", - {subSubCategory.Instructions}";
-                                            classificationCategoriesPrompt.AppendLine($"{subSubCategory.Name}. {subSubCategoryInstructions}");
+                                            classificationCategoriesPrompt.AppendLine($"{subSubCategory.Name}{subSubCategoryInstructions}");
                                         }
                                     }
                                 }

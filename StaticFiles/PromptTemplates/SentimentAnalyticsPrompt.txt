@@ -1,25 +1,24 @@
 {{Prompt}}
 
 Context: {{Context}}  
-CategoriesToEvaluate: {{Categories}}  
-FileContent: {{FileContent}}
+Categories to be evaluated: 
+{{Categories}}  
 
 Instructions:  
 1. Use categories exactly as provided — no edits.  
-2. Use Prompt, Context, and FileContent together.  
-3. For each category:  
-   - `value`: "true" if clearly matched, else "false"  
-   - `confidenceScore`:  
-     - "1"–"100" if `value = "true"`  
-     - "0" if `value = "false"`  
-4. Output must be a **valid JSON array string** — no extra text or formatting.  
-5. Include all categories, even if `"false"` or `"0"`.
+2. Use Prompt, Context, and FileContent together.
+3. Output must be a **valid JSON array string** — no extra text or formatting.
 
 Each result must include:  
-- `name`: (string) category name  
-- `value`: (string) "true" or "false"  
-- `confidenceScore`: (string) "0"–"100"
+- `name`: (string) sentiment name  
+- `value`: (string) "true" or "false"
 
 Return only this:
 ```json
 {{OutputFormat}}
+```
+
+FileContent: 
+```
+{{FileContent}}
+```
