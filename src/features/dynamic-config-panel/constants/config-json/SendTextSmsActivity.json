@@ -1,10 +1,19 @@
 [
   {
     "direction": "Input",
-    "type": "credentials-select",
-    "name": "TwilioServiceVaultId",
-    "label": "Twilio Credential",
-    "description": "Twilio Credential",
+    "type": "text",
+    "name": "AccountSid",
+    "label": "Account SID",
+    "description": "Twilio Account SID",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "AuthToken",
+    "label": "Auth Token",
+    "description": "Twilio Auth Token",
     "defaultValue": "",
     "required": true
   },

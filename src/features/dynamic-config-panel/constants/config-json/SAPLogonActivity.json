@@ -1,0 +1,65 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Client",
+    "label": "Client",
+    "description": "SAP Client number (e.g., \u0027100\u0027).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "UserId",
+    "label": "User ID",
+    "description": "SAP User ID (e.g., \u0027USER123\u0027).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Password",
+    "label": "Password",
+    "description": "SAP Password. Will be hidden in UI.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SystemNumber",
+    "label": "System Number",
+    "description": "SAP System Number (e.g., \u002700\u0027).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SystemName",
+    "label": "System Name",
+    "description": "SAP System Name (e.g., \u0027DEV\u0027, \u0027PRD\u0027).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Language",
+    "label": "Language",
+    "description": "Language code (e.g., \u0027EN\u0027 for English).",
+    "defaultValue": "EN",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "ContinueOnError",
+    "label": "Continue on Error",
+    "description": "If true, workflow continues even if the request fails.",
+    "defaultValue": false,
+    "required": false
+  }
+]

@@ -222,7 +222,7 @@
             "type": "activityNode",
             "name": "SetVariableActivity",
             "label": "Set Variable",
-            "description": "Sets the value of a named variable within the workflow context.",
+            "description": "Sets the value of a named variable within the workflow context. Supports arithmetic expressions for ValueToSet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -439,6 +439,69 @@
             "name": "ExtractTextWithOcrActivity",
             "label": "Extract Text with OCR",
             "description": "Extracts text from an image file using Tesseract OCR engine.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "JSON",
+        "description": "Transform data to and from JSON format, including parsing, serialization, and deserialization.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "DeserializeJSONTextActivity",
+            "label": "Deserialize JSON Text",
+            "description": "Parses a JSON string into a JToken object.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetJSONNodeActivity",
+            "label": "Get First JSON Node by Key",
+            "description": "Recursively searches through a JSON structure and returns the first value associated with the specified key.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetJSONNodeListActivity",
+            "label": "Find JSON Nodes by Key",
+            "description": "Recursively searches through a JSON structure and returns all values associated with the specified key.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "InsertOrUpdateJSONNodeWithPrimaryKeyActivity",
+            "label": "Insert or Update JSON Node by Primary Key",
+            "description": "Searches recursively through a JSON structure to find an object where a primary key matches a given value. If found, inserts or updates a specified key-value pair.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReadJSONFileActivity",
+            "label": "Read JSON File",
+            "description": "Reads the contents of a JSON file from the specified file path.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WriteTextToJSONFileActivity",
+            "label": "Write Text to JSON File",
+            "description": "Writes the provided content as JSON to the specified file path.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -1723,6 +1786,60 @@
         ]
       },
       {
+        "label": "Credential Manager",
+        "description": "Manage credentials such as usernames and passwords securely using windows credential manager.",
+        "icon": null,
+        "img": "/assets/CredentialManager.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "GetAccountPasswordActivity",
+            "label": "Get Account Password from Credential Manager",
+            "description": "Retrieves the password for a stored credential from Windows Credential Manager.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/CredentialManager.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetCredentialsActivity",
+            "label": "Get Credential Manager Credentials",
+            "description": "Retrieves stored credentials from Windows Credential Manager for a specified target.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/CredentialManager.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "RemoveCredentialsActivity",
+            "label": "Remove Credential Manager Credentials",
+            "description": "Removes stored credentials from Windows Credential Manager for a specified target.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/CredentialManager.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "SetCredentialsActivity",
+            "label": "Save Credential Manager Credentials",
+            "description": "Saves credentials to Windows Credential Manager for a specified target.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/CredentialManager.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateAccountPasswordActivity",
+            "label": "Update Account Password in Credential Manager",
+            "description": "Updates the password for an existing credential in Windows Credential Manager.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/CredentialManager.svg"
+          }
+        ]
+      },
+      {
         "label": "Compression",
         "description": "Compress and decompress files and folders.",
         "icon": null,
@@ -2271,6 +2388,42 @@
         ]
       },
       {
+        "label": "Twilio",
+        "description": "Activities for integrating with Twilio services",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "SendTextSmsActivity",
+            "label": "Send SMS (Twilio)",
+            "description": "Sends an SMS using Twilio service.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SendWhatsappMessageActivity",
+            "label": "Send WhatsApp Message (Twilio)",
+            "description": "Sends a WhatsApp message using Twilio service.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SendWhatsAppMessageViaMessagingServiceActivity",
+            "label": "Send WhatsApp Message via Messaging Service",
+            "description": "Sends a WhatsApp message using Twilio Messaging Service.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
         "label": "Terminal Emulation",
         "description": "Automate terminal and mainframe interactions.",
         "icon": null,
@@ -2352,6 +2505,1176 @@
         ]
       },
       {
+        "label": "ServiceNow",
+        "description": "Perform ServiceNow operations including incident management, user and configuration management, attachment handling, and record manipulation. Authenticate via Basic Auth or OAuth2 and securely reuse credentials across actions.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "DeleteServiceNowAttachmentByIdActivity",
+            "label": "Delete ServiceNow Attachment",
+            "description": "Deletes an attachment from ServiceNow using only Credential ID (BasicAuth token or OAuth2 token).",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyServiceNowAttachmentsActivity",
+            "label": "Get Many ServiceNow Attachments",
+            "description": "Retrieves multiple attachments from a ServiceNow table or record using a stored credential. Optionally downloads file contents.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetServiceNowAttachmentActivity",
+            "label": "Get ServiceNow Attachment",
+            "description": "Retrieves metadata for a ServiceNow attachment by sys_id using a stored credential (Bearer token). Optionally downloads the file content.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UploadServiceNowAttachmentActivity",
+            "label": "Upload ServiceNow Attachment",
+            "description": "Uploads a file as an attachment to a record in ServiceNow using a Bearer token.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyBusinessServicesActivity",
+            "label": "Get Many Business Services",
+            "description": "Retrieves multiple Business Services from ServiceNow using a stored credential. Supports pagination.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyConfigurationItemsActivity",
+            "label": "Get Many Configuration Items",
+            "description": "Retrieves multiple Configuration Items (CIs) from ServiceNow using a stored credential. Supports pagination.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateServiceNowCredentialActivity",
+            "label": "Create ServiceNow Credential",
+            "description": "Creates a new ServiceNow credential using either Basic Auth or OAuth2.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyDepartmentsActivity",
+            "label": "Get Many Departments",
+            "description": "Retrieves multiple Departments from ServiceNow using a stored credential. Supports pagination.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyDictionaryActivity",
+            "label": "Get Many Dictionary Entries",
+            "description": "Retrieves multiple Dictionary entries from ServiceNow using a stored credential. Supports pagination.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateServiceNowIncidentActivity",
+            "label": "Create ServiceNow Incident",
+            "description": "Creates a new incident in ServiceNow using a stored credential ID or token.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteServiceNowIncidentActivity",
+            "label": "Delete ServiceNow Incident",
+            "description": "Deletes a ServiceNow incident by sys_id using a stored Credential ID / Token.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetAllServiceNowIncidentsActivity",
+            "label": "Get All ServiceNow Incidents",
+            "description": "Retrieves all or limited incidents from ServiceNow using a stored credential. Supports pagination.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetServiceNowIncidentActivity",
+            "label": "Get ServiceNow Incident",
+            "description": "Retrieves a single incident from ServiceNow by sys_id using a stored credential.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateServiceNowIncidentActivity",
+            "label": "Update ServiceNow Incident",
+            "description": "Updates an existing ServiceNow incident by sys_id using a stored credential.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateServiceNowTableRecordActivity",
+            "label": "Create ServiceNow Table Record",
+            "description": "Creates a new record in a specified ServiceNow table using InstanceUrl + Credential ID/Token.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteServiceNowTableRecordActivity",
+            "label": "Delete ServiceNow Table Record",
+            "description": "Deletes a record from a ServiceNow table using the record sys_id and credential ID (BasicAuth → Base64(username:password) or OAuth2 → Bearer token).",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyServiceNowTableRecordsActivity",
+            "label": "Get Many ServiceNow Table Records",
+            "description": "Retrieves multiple records from a ServiceNow table using only the provided Credential ID or token. Supports pagination.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetServiceNowTableRecordActivity",
+            "label": "Get ServiceNow Table Record",
+            "description": "Retrieves a specific record from a ServiceNow table by sys_id using a stored credential.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateServiceNowTableRecordActivity",
+            "label": "Update ServiceNow Table Record",
+            "description": "Updates an existing record in a specified ServiceNow table by sys_id using a stored credential.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateServiceNowUserActivity",
+            "label": "Create ServiceNow User",
+            "description": "Creates a new user in ServiceNow using a stored credential.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteServiceNowUserActivity",
+            "label": "Delete ServiceNow User",
+            "description": "Deletes a user from ServiceNow by sys_id using a stored credential.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetAllServiceNowUsersActivity",
+            "label": "Get All ServiceNow Users",
+            "description": "Retrieves multiple users from ServiceNow using a stored credential. Supports pagination.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetServiceNowUserActivity",
+            "label": "Get ServiceNow User",
+            "description": "Retrieves a user from ServiceNow by sys_id or username using a stored credential.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateServiceNowUserActivity",
+            "label": "Update ServiceNow User",
+            "description": "Updates an existing user in ServiceNow by sys_id using the provided CredentialId directly.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "SendGrid",
+        "description": "Send, receive, and manage emails.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "SendEmailThroughSendGridActivity",
+            "label": "Send Email with SendGrid",
+            "description": "Sends an email using SendGrid's API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "SAP",
+        "description": "Perform SAP Actions.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "CallTransactionActivity",
+            "label": "Call Transaction",
+            "description": "Calls an SAP transaction code with optional prefix (/n, /o, or none).",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ClickPictureOnScreenActivity",
+            "label": "Click Picture on Screen",
+            "description": "Clicks a picture displayed on an SAP GUI screen.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExpandALVHierarchicalTableActivity",
+            "label": "Expand ALV Hierarchical Table",
+            "description": "Expands a row in an SAP ALV Hierarchical Table by clicking the expansion icon.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExpandALVTreeActivity",
+            "label": "Expand ALV Tree",
+            "description": "Expands parent ALV tree to the selected node.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateAccountActivity",
+            "label": "Create Account",
+            "description": "Creates a new account in SAP Cloud for Customer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateCompanyLeadActivity",
+            "label": "Create Company Lead",
+            "description": "Creates a company-associated lead in SAP Cloud for Customer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateContactActivity",
+            "label": "Create Contact",
+            "description": "Creates a new contact in SAP Cloud for Customer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateIndividualLeadActivity",
+            "label": "Create Individual Lead",
+            "description": "Creates an individual lead not associated with any company in SAP Cloud for Customer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteRecordCustomerActivity",
+            "label": "Delete Record",
+            "description": "Deletes a record in SAP Cloud for Customer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetRecordCustomerActivity",
+            "label": "Get Record",
+            "description": "Retrieves a record in SAP Cloud for Customer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "InsertRecordCustomerActivity",
+            "label": "Insert Record",
+            "description": "Inserts a new record in SAP Cloud for Customer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ListAllRecordsActivity",
+            "label": "List All Records",
+            "description": "Lists all records for a specified entity in SAP Cloud for Customer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SAPCloudForCustomerHTTPRequestActivity",
+            "label": "SAP Cloud for Customer HTTP Request",
+            "description": "Performs HTTP requests to interact with SAP Cloud for Customer using OAuth 2.0 authentication.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateAccountActivity",
+            "label": "Update Account",
+            "description": "Updates account information in SAP Cloud for Customer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateContactActivity",
+            "label": "Update Contact",
+            "description": "Updates contact information in SAP Cloud for Customer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateLeadActivity",
+            "label": "Update Lead",
+            "description": "Updates lead information in SAP Cloud for Customer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateRecordCustomerActivity",
+            "label": "Update Record",
+            "description": "Updates a record in SAP Cloud for Customer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WaitForEventOnSAPCloudForCustomerActivity",
+            "label": "Wait for an Event on SAP Cloud for Customer and Resume",
+            "description": "Pauses and resumes a workflow based on specific events occurring in SAP Cloud for Customer.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "AddQuickExpenseActivity",
+            "label": "Add Quick Expense",
+            "description": "Adds a quick expense in SAP Concur for later linking to a report.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "AddQuickExpenseWithReceiptActivity",
+            "label": "Add Quick Expense with Receipt",
+            "description": "Adds a quick expense entry with a receipt file in SAP Concur.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteRecordSapConcurActivity",
+            "label": "Delete Record in SAP Concur",
+            "description": "Deletes a record in SAP Concur using DELETE request.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetRecordSapConcurActivity",
+            "label": "Get Record in SAP Concur",
+            "description": "Retrieves a single record by ID from SAP Concur.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "InsertRecordSapConcurActivity",
+            "label": "Insert Record to SAP Concur",
+            "description": "Inserts a new expense or quick expense record into SAP Concur using OAuth 2.0.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ListAllRecordsSapConcurActivity",
+            "label": "List All Records in SAP Concur",
+            "description": "Retrieves a list of all records from a specified endpoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReplaceRecordSapConcurActivity",
+            "label": "Replace Record in SAP Concur",
+            "description": "Updates an existing record in SAP Concur using PUT request.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SAPConcurHttpRequestActivity",
+            "label": "SAP Concur HTTP Request",
+            "description": "Perform custom HTTP requests to SAP Concur using existing connector and connection.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UploadReceiptImageActivity",
+            "label": "Upload Receipt Image",
+            "description": "Uploads receipt files to SAP Concur, supporting formats like PDF, JPG, JPEG, and PNG.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "WaitForEventOnSapConcurActivity",
+            "label": "Wait for an Event on SAP Concur and Resume",
+            "description": "Pauses and resumes a workflow based on specific events occurring in SAP Concur.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SAPLoginActivity",
+            "label": "SAP Login",
+            "description": "Logs into SAP GUI using provided credentials.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SAPLogonActivity",
+            "label": "SAP Logon",
+            "description": "Logs on to an SAP system by interacting with the SAP Logon Pad.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteRecordActivity",
+            "label": "Delete Record",
+            "description": "Deletes a record in SAP OData.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "InsertRecordActivity",
+            "label": "Insert Record",
+            "description": "Inserts a new record in SAP OData.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ListAllEntityRecordsActivity",
+            "label": "List All Entity Records",
+            "description": "Lists all records for a specified entity using SAP OData services.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SapODataHttpRequestActivity",
+            "label": "SAP OData HTTP Request",
+            "description": "Perform HTTP requests to interact with SAP OData using existing connector and connection.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateRecordActivity",
+            "label": "Update Record",
+            "description": "Updates a record in SAP OData.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SaveImageActivity",
+            "label": "Save Image",
+            "description": "Saves a screenshot of a UI element or region to disk.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "SelectMenuItemActivity",
+            "label": "Select Menu Item",
+            "description": "Selects a menu item from the SAP GUI menu bar using a path (e.g., 'System → Log Off').",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Salesforce",
+        "description": "Work with Salesforce Actions.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "AddNoteToAccountActivity",
+            "label": "Add Note to Salesforce Account",
+            "description": "Adds a note (CaseComment or custom) to a Salesforce Account via related object or custom logic.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateAccountActivity",
+            "label": "Create Salesforce Account",
+            "description": "Creates a new Account record in Salesforce using the provided credentials and account details.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateOrUpdateAccountActivity",
+            "label": "Create or Update Salesforce Account",
+            "description": "Creates a new Account in Salesforce if it doesn't exist, or updates it if it does. Uses Name as the identifier.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteAccountActivity",
+            "label": "Delete Salesforce Account",
+            "description": "Deletes an existing Account record from Salesforce by its ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetAccountActivity",
+            "label": "Get Salesforce Account",
+            "description": "Retrieves a single Account record from Salesforce by its ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetAccountSummaryActivity",
+            "label": "Get Salesforce Account Summary",
+            "description": "Retrieves summary information about an Account, such as count of related contacts, opportunities, etc.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyAccountsActivity",
+            "label": "Get Multiple Salesforce Accounts",
+            "description": "Retrieves multiple Account records from Salesforce using SOQL query.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateAccountActivity",
+            "label": "Update Salesforce Account",
+            "description": "Updates an existing Account record in Salesforce using the provided credentials and account details.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateAttachmentActivity",
+            "label": "Create Salesforce Attachment",
+            "description": "Creates a new Attachment record in Salesforce linked to a parent record (e.g., Account, Contact).",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteAttachmentActivity",
+            "label": "Delete Salesforce Attachment",
+            "description": "Deletes an existing Attachment record in Salesforce by its ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetAttachmentActivity",
+            "label": "Get Salesforce Attachment",
+            "description": "Retrieves a single Attachment record from Salesforce by its ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetAttachmentSummaryActivity",
+            "label": "Get Salesforce Attachment Summary",
+            "description": "Retrieves summary information about attachments linked to a parent record, such as the total count.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyAttachmentsActivity",
+            "label": "Get Many Salesforce Attachments",
+            "description": "Retrieves multiple Attachment records from Salesforce using SOQL query.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateAttachmentActivity",
+            "label": "Update Salesforce Attachment",
+            "description": "Updates an existing Attachment record in Salesforce.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "AddCommentToCaseActivity",
+            "label": "Add a Comment to a Case",
+            "description": "Adds a comment to an existing Case in Salesforce.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateCaseActivity",
+            "label": "Create Salesforce Case",
+            "description": "Creates a new Case record in Salesforce using the provided credentials and case details.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteCaseActivity",
+            "label": "Delete a Case",
+            "description": "Deletes an existing Case record in Salesforce.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetCaseActivity",
+            "label": "Get a Case",
+            "description": "Retrieves a single Case record by ID from Salesforce.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetCaseSummaryActivity",
+            "label": "Get a Case Summary",
+            "description": "Retrieves metadata about the Case object (fields, types, etc.).",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyCasesActivity",
+            "label": "Get Many Cases",
+            "description": "Retrieves multiple Case records using a SOQL query.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateCaseActivity",
+            "label": "Update Salesforce Case",
+            "description": "Updates an existing Case record in Salesforce using the provided credentials and updated field values.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "AddContactToCampaignActivity",
+            "label": "Add Contact to Campaign",
+            "description": "Adds a Contact to a Salesforce Campaign by creating a CampaignMember record.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "AddNoteToContactActivity",
+            "label": "Add Note to Salesforce Contact",
+            "description": "Adds a note (CaseComment or custom) to a Salesforce Contact via related object or custom logic.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateContactActivity",
+            "label": "Create Salesforce Contact",
+            "description": "Creates a new Contact record in Salesforce using the provided credentials and contact details.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateOrUpdateContactActivity",
+            "label": "Create or Update Salesforce Contact",
+            "description": "Creates a new Contact in Salesforce if it doesn't exist, or updates it if it does. Uses Email as the identifier.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteContactActivity",
+            "label": "Delete Salesforce Contact",
+            "description": "Deletes an existing Contact record in Salesforce by its ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetContactActivity",
+            "label": "Get Salesforce Contact",
+            "description": "Retrieves a single Contact record from Salesforce by its ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetContactSummaryActivity",
+            "label": "Get Salesforce Contact Summary",
+            "description": "Retrieves summary information about a Contact, such as count of related opportunities, cases, etc.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyContactsActivity",
+            "label": "Get Many Salesforce Contacts",
+            "description": "Retrieves multiple Contact records from Salesforce using SOQL query.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateContactActivity",
+            "label": "Update Salesforce Contact",
+            "description": "Updates an existing Contact record in Salesforce.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateCustomObjectActivity",
+            "label": "Create a custom object",
+            "description": "Creates a new custom object record in Salesforce.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateOrUpdateCustomObjectActivity",
+            "label": "Create or update a custom object",
+            "description": "Creates a new custom object or updates an existing one in Salesforce using an external ID field.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteCustomObjectActivity",
+            "label": "Delete a custom object",
+            "description": "Deletes a custom object in Salesforce by its ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetCustomObjectActivity",
+            "label": "Get a custom object",
+            "description": "Retrieves a single custom object from Salesforce by its ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyCustomObjectsActivity",
+            "label": "Get many custom objects",
+            "description": "Retrieves multiple custom objects from Salesforce using SOQL or default query.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateCustomObjectActivity",
+            "label": "Update a custom object",
+            "description": "Updates an existing custom object in Salesforce with new field values.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UploadDocumentActivity",
+            "label": "Upload Document",
+            "description": "Uploads a document to Salesforce as a ContentVersion (Salesforce File).",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyFlowsActivity",
+            "label": "Get Many Flows",
+            "description": "Retrieves multiple Salesforce flows. Use 'Return All' to get all records without limit.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "InvokeFlowActivity",
+            "label": "Invoke Flow",
+            "description": "Invokes a Salesforce flow with input variables or JSON parameters.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "AddLeadToCampaignActivity",
+            "label": "Add a lead to a campaign",
+            "description": "Adds an existing lead to a Salesforce campaign.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "AddNoteToLeadActivity",
+            "label": "Add a note to a lead",
+            "description": "Adds a text note to a Salesforce lead.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateLeadActivity",
+            "label": "Create a lead",
+            "description": "Creates a new lead in Salesforce.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateOrUpdateLeadActivity",
+            "label": "Create or update a lead",
+            "description": "Creates a new lead or updates an existing one using external ID field.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteLeadActivity",
+            "label": "Delete a lead",
+            "description": "Deletes a lead from Salesforce by its ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetLeadActivity",
+            "label": "Get a lead",
+            "description": "Retrieves a single lead from Salesforce by its ID using the Salesforce REST API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetLeadSummaryActivity",
+            "label": "Get a lead summary",
+            "description": "Retrieves a summary of a lead's information from Salesforce.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyLeadsActivity",
+            "label": "Get many leads",
+            "description": "Retrieves multiple leads from Salesforce using SOQL or default query.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateLeadActivity",
+            "label": "Update a lead",
+            "description": "Updates an existing lead in Salesforce.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "AddNoteToOpportunityActivity",
+            "label": "Add Note to Opportunity",
+            "description": "Adds a text note to a Salesforce opportunity.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateOpportunityActivity",
+            "label": "Create Opportunity",
+            "description": "Creates a new opportunity in Salesforce.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateOrUpdateOpportunityActivity",
+            "label": "Create or Update Opportunity",
+            "description": "Creates a new opportunity or updates an existing one using an external ID field.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyOpportunitiesActivity",
+            "label": "Get Many Opportunities",
+            "description": "Retrieves multiple Salesforce opportunities using SOQL.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetOpportunityActivity",
+            "label": "Get Opportunity",
+            "description": "Retrieves a Salesforce opportunity by its ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetOpportunitySummaryActivity",
+            "label": "Get Opportunity Summary",
+            "description": "Retrieves a summary of a Salesforce opportunity by its ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateOpportunityActivity",
+            "label": "Update Opportunity",
+            "description": "Updates an existing opportunity in Salesforce.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "PerformAQueryActivity",
+            "label": "Performs A Search Query",
+            "description": "Performs a search query in Salesforce using SOQL-like syntax.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateTaskActivity",
+            "label": "Create Task",
+            "description": "Creates a new task in Salesforce.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteTaskActivity",
+            "label": "Delete Task",
+            "description": "Deletes a Salesforce task by its ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetAllTasksActivity",
+            "label": "Get All Tasks",
+            "description": "Retrieves multiple Salesforce tasks using SOQL.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetTaskActivity",
+            "label": "Get Task",
+            "description": "Retrieves a Salesforce task by its ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetTaskSummaryActivity",
+            "label": "Get Task Summary",
+            "description": "Retrieves a summary of a Salesforce task by its ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateTaskActivity",
+            "label": "Update Task",
+            "description": "Updates an existing task in Salesforce.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyUsersActivity",
+            "label": "Get Many Users",
+            "description": "Retrieves multiple Salesforce user records using SOQL.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetUserActivity",
+            "label": "Get User",
+            "description": "Retrieves a Salesforce user record by its ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
         "label": "PDF",
         "description": "Work with PDF documents.",
         "icon": null,
@@ -2424,6 +3747,123 @@
         ]
       },
       {
+        "label": "M365 Outlook",
+        "description": "Activities for integrating with Microsoft 365 Outlook services.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "CreateDraftEmailActivity",
+            "label": "Create Draft Email",
+            "description": "Creates a draft email message in the user's mailbox using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Outlook.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteEmailActivity",
+            "label": "Delete Email",
+            "description": "Deletes an email from the mailbox using its Message ID via Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Outlook.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "DownloadAttachmentsActivity",
+            "label": "Download Attachments",
+            "description": "Downloads all attachments for a specified email message using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Outlook.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetAccessTokenUsingAppKeyActivity",
+            "label": "Get Access Token Using App Key",
+            "description": "Acquires a Microsoft Graph API access token using client credentials (App Key flow).",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Outlook.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetEmailDetailsByIdActivity",
+            "label": "Get Email Details by ID",
+            "description": "Fetches full email details (including attachments) from Outlook using the Graph API by message ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Outlook.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetEmailsActivity",
+            "label": "Get Emails",
+            "description": "Retrieves top 10 emails from the Inbox folder using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Outlook.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "ListMailFoldersActivity",
+            "label": "List Mail Folders",
+            "description": "Lists all mail folders for a user's mailbox using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Outlook.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "MarkEmailAsReadActivity",
+            "label": "Mark Email as Read/Unread",
+            "description": "Marks an email as read or unread using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Outlook.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "MoveEmailToFolderActivity",
+            "label": "Move Email To Folder",
+            "description": "Moves an email to a specified folder using Microsoft Graph API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Outlook.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReplyToEmailActivity",
+            "label": "Reply to Email",
+            "description": "Replies to an email using Message ID.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Outlook.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "SearchEmailsActivity",
+            "label": "Search Emails",
+            "description": "Searches inbox emails using a filter query (e.g., subject eq 'Test')",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Outlook.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "SendEmailM365Activity",
+            "label": "Send Email",
+            "description": "Sends an email via the Microsoft Graph API using application permissions.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Outlook.svg"
+          }
+        ]
+      },
+      {
         "label": "HTTP",
         "description": "Perform HTTP requests and integrations.",
         "icon": null,
@@ -2444,6 +3884,60 @@
             "name": "InvokeWebServiceActivity",
             "label": "Invoke Web Service",
             "description": "Invokes a web service (REST or SOAP) and returns the response text.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Google Workspace",
+        "description": "Perform Google Workspace requests and integrations.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "AppendRowActivity",
+            "label": "Append Row to Google Sheet",
+            "description": "Appends a single row of data to a Google Sheet at the next available row in the specified range.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateGoogleInstanceActivity",
+            "label": "Create Google Sheets Service Instance",
+            "description": "Creates and returns a SheetsService instance using Google service account credentials.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteRangeOrCellActivity",
+            "label": "Delete Range or Cell in Google Sheet",
+            "description": "Deletes (clears) the values from a specified cell or range in a Google Sheet. Formatting, formulas, and comments are preserved.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReadGoogleSheetRangeActivity",
+            "label": "Read Google Sheet Range",
+            "description": "Reads data from a specified range in a Google Sheet using the Sheets API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateCellOrRangeActivity",
+            "label": "Update Cell or Range in Google Sheet",
+            "description": "Updates a specific cell or range in a Google Sheet with the provided values.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"
@@ -3056,6 +4550,240 @@
             "name": "SendEmailActivity",
             "label": "Send Email",
             "description": "Creates and sends a new email message using MailKit.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "Azure",
+        "description": "Perform Azure requests and integrations.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "DeleteAllBlobsFromContainerActivity",
+            "label": "Delete All Blobs from Container",
+            "description": "Deletes all blobs in the specified Azure Blob container. Returns the number of successfully deleted blobs.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteBlobFromContainerActivity",
+            "label": "Delete Blob from Container",
+            "description": "Deletes a specified blob from the Azure Blob container.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DownloadFileFromBlobStorageActivity",
+            "label": "Download File from Blob Storage",
+            "description": "Downloads a file from an Azure Blob container to a specified local path.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetBlobContainerClientInstanceActivity",
+            "label": "Get Blob Container Client Instance",
+            "description": "Creates and returns a BlobContainerClient instance for the specified container and connection string.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "UploadFileToBlobStorageActivity",
+            "label": "Upload File to Blob Storage",
+            "description": "Uploads a file from the local system to an Azure Blob container.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          }
+        ]
+      },
+      {
+        "label": "AWS",
+        "description": "Activities for integrating with Amazon Web Services (AWS), including authentication, resource management, and service operations.",
+        "icon": null,
+        "img": null,
+        "listType": null,
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "DeleteCertificateActivity",
+            "label": "Delete AWS ACM Certificate",
+            "description": "Deletes an AWS Certificate Manager (ACM) certificate using AWS credentials resolved from environment or IAM role.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetCertificateActivity",
+            "label": "Get AWS Certificate Manager Certificate",
+            "description": "Retrieves the certificate body and chain from AWS Certificate Manager using the Certificate ARN.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetCertificateMetadataActivity",
+            "label": "Get AWS Certificate Manager Certificate Metadata",
+            "description": "Retrieves metadata for an AWS Certificate Manager (ACM) certificate using the DescribeCertificate API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyCertificatesActivity",
+            "label": "Get Many AWS Certificate Manager Certificates",
+            "description": "Lists multiple AWS Certificate Manager (ACM) certificates using the ListCertificates API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RenewAcmCertificateActivity",
+            "label": "Renew AWS ACM Certificate",
+            "description": "Renews an AWS Certificate Manager (ACM) certificate using AWS credentials from AWE Credential Vault.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DetectDominantLanguageActivity",
+            "label": "Detect Dominant Language (AWS Comprehend)",
+            "description": "Identifies the dominant language of a given text using AWS Comprehend.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DetectEntitiesActivity",
+            "label": "Detect Entities (AWS Comprehend)",
+            "description": "Identifies named entities (e.g., PERSON, ORGANIZATION, LOCATION) in a given text using AWS Comprehend.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DetectSentimentActivity",
+            "label": "Detect Sentiment (AWS Comprehend)",
+            "description": "Analyzes the sentiment of a given text using AWS Comprehend.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "AddListenerCertificateActivity",
+            "label": "Add AWS ELB Listener Certificate",
+            "description": "Adds a certificate to an AWS Elastic Load Balancer (ALB/NLB) listener.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateLoadBalancerActivity",
+            "label": "Create AWS ELB Load Balancer",
+            "description": "Creates an Application or Network Load Balancer in AWS Elastic Load Balancing (ALB/NLB).",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteLoadBalancerActivity",
+            "label": "Delete AWS ELB Load Balancer",
+            "description": "Deletes an Application or Network Load Balancer in AWS Elastic Load Balancing (ALB/NLB).",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetLoadBalancerActivity",
+            "label": "Get AWS ELB Load Balancer",
+            "description": "Retrieves details of an Application or Network Load Balancer in AWS Elastic Load Balancing (ALB/NLB).",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyListenerCertificatesActivity",
+            "label": "Get Many AWS ELB Listener Certificates",
+            "description": "Retrieves all certificates associated with an AWS Elastic Load Balancer (ALB/NLB) listener.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "GetManyLoadBalancersActivity",
+            "label": "Get Many AWS ELB Load Balancers",
+            "description": "Retrieves multiple load balancers from AWS Elastic Load Balancing (ALB/NLB).",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "RemoveListenerCertificateActivity",
+            "label": "Remove AWS ELB Listener Certificate",
+            "description": "Removes a certificate from an AWS Elastic Load Balancer (ALB/NLB) listener.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DynamoDbCreateOrUpdateActivity",
+            "label": "Create or Update AWS DynamoDB Item",
+            "description": "Creates or updates an item in AWS DynamoDB using the PutItem API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DynamoDbDeleteActivity",
+            "label": "Delete AWS DynamoDB Item",
+            "description": "Deletes an item from AWS DynamoDB using the DeleteItem API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DynamoDbGetActivity",
+            "label": "Get AWS DynamoDB Item",
+            "description": "Retrieves an item from AWS DynamoDB using the GetItem API. Always returns all attributes.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
+            "name": "DynamoDbGetManyActivity",
+            "label": "Get Many AWS DynamoDB Items",
+            "description": "Retrieves multiple items from AWS DynamoDB using Query or Scan API.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/function.png"

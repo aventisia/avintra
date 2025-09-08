@@ -1,0 +1,38 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ImageSource",
+    "label": "Image Source",
+    "description": "The source of the image (e.g., screen region, control).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "File Path",
+    "description": "Full path where the image will be saved (e.g., C:\\temp\\image.png).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Format",
+    "label": "Image Format",
+    "description": "Format of the saved image (e.g., PNG, JPEG). Default: PNG.",
+    "defaultValue": "PNG",
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "ContinueOnError",
+    "label": "Continue on Error",
+    "description": "If true, workflow continues even if the request fails.",
+    "defaultValue": false,
+    "required": false
+  }
+]
