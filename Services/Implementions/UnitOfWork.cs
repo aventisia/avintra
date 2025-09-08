@@ -27,6 +27,7 @@ public class UnitOfWork : IUnitOfWork
     public IAppIntegrationRepo AppIntegrationRepo => new AppIntegrationRepo(_accountsDbContext);
     public ISubscriptionPlanRepo SubscriptionPlanRepo => new SubscriptionPlanRepo(_accountsDbContext);
     public ITenantSubscriptionRepo TenantSubscriptionRepo => new TenantSubscriptionRepo(_accountsDbContext);
+    public ITenantCreditRepo TenantCreditRepo => new TenantCreditRepo(_accountsDbContext);
     public ICreditPlanRepo CreditPlanRepo => new CreditPlanRepo(_accountsDbContext);
     public ICreditUsageRepo CreditUsageRepo => new CreditUsageRepo(_accountsDbContext);
 

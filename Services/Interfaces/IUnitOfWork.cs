@@ -37,6 +37,8 @@ public interface IUnitOfWork
     ISubscriptionPlanRepo SubscriptionPlanRepo { get; }
 
     ITenantSubscriptionRepo TenantSubscriptionRepo { get; }
+    
+    ITenantCreditRepo TenantCreditRepo { get; }
 
     ICreditPlanRepo CreditPlanRepo { get; }
 
