@@ -12,17 +12,17 @@ public class ExternalTemplateController : BaseApiController
     }
 
     // Fetch template by its ID
-    [HttpGet("{projectTemplateId}")]
-    public async Task<ActionResult<ServiceResponse<ProjectTemplateDto>>> GetProjectTemplate(Guid projectTemplateId)
+    [HttpGet()]
+    public async Task<ActionResult<ServiceResponse<ProjectTemplateDto>>> GetProjectTemplate([FromQuery] Guid Ptid)
     {
-        return ResultHelper(await _externalTemplateService.GetTemplateAsync(projectTemplateId));
+        return ResultHelper(await _externalTemplateService.GetTemplateAsync(Ptid));
     }
 
     // Search project templates based on the provided search key
-    [HttpGet("search/{searchKey}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SearchProjectTemplateDto>>>> SearchTemplates(string searchKey)
+    [HttpGet("search")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SearchProjectTemplateDto>>>> SearchTemplates([FromQuery] string key)
     {
-        return ResultHelper(await _externalTemplateService.SearchTemplatesAsync(searchKey));
+        return ResultHelper(await _externalTemplateService.SearchTemplatesAsync(key));
     }
 
     // Retrieves all trending project templates
