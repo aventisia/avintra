@@ -143,44 +143,4 @@ public class PublicTemplateService : IPublicTemplateService
         // Return the service response (either success or failure)
         return serviceResponse;
     }
-
-    // Retrieves all project templates that are pending approval
-    public async Task<ServiceResponse<IEnumerable<ProjectTemplateDto>>> GetAllPendingApprovalProjectTemplatesAsync()
-    {
-        // Initialize default response with failure message
-        var serviceResponse = new ServiceResponse<IEnumerable<ProjectTemplateDto>>
-        {
-            Data = null,
-            Message = "Failed to retrieve templates pending approval. Please try again later."
-        };
-
-        try
-        {
-            // Fetch project templates filtered by status as "Pending" approval, ordered by usage count
-            var pendingApprovalTemplates = await _unitOfWork.ProjectTemplateRepo
-                .GetByConditionAsync(w =>
-                    w.TenantId == null &&
-                    w.Status == ProjectTemplateStatusesEnum.Pending
-                )
-                .OrderByDescending(o => o.CreatedOn)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.TemplateResources)
-                .ToListAsync();
-
-            // Map entities to DTOs and set success response
-            serviceResponse.Data = pendingApprovalTemplates.Adapt<IEnumerable<ProjectTemplateDto>>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Project templates pending approval retrieved successfully.";
-
-            // Log success with count and context
-            _logger.LogInformation("Successfully retrieved {Count} project templates pending approval.", pendingApprovalTemplates.Count);
-        }
-        catch (Exception ex)
-        {
-            // Log any errors during retrieval
-            _logger.LogError(ex, "Error occurred while fetching pending approval templates.");
-        }
-
-        return serviceResponse;
-    }
 }

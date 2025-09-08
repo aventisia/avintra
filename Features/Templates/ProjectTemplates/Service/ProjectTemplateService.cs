@@ -4,6 +4,7 @@ namespace WorkspaceAPIs.Services
     {
         private readonly ILogger<ProjectTemplateService> _logger;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IAutoNotificationService _autoNotificationService;
         private readonly Guid _userId;
         private readonly Guid _tenantId;
         private readonly Guid _spaceId;
@@ -11,7 +12,8 @@ namespace WorkspaceAPIs.Services
         public ProjectTemplateService(
             ILogger<ProjectTemplateService> logger,
             IUnitOfWork unitOfWork,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IAutoNotificationService autoNotificationService)
         {
             // Set _userId
             _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -20,6 +22,7 @@ namespace WorkspaceAPIs.Services
 
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _autoNotificationService = autoNotificationService;
         }
 
         // Retrieve all project templates list
@@ -569,6 +572,51 @@ namespace WorkspaceAPIs.Services
                     _logger.LogInformation("SaveChanges failed when updating status for project template with ID {ProjectTemplateId}.", projectTemplateDto.Id);
                     return serviceResponse;
                 }
+
+                // Determine the notification type and message based on the status
+                string notificationMessage;
+
+                // Set the notification message according to the project template's status
+                switch (projectTemplateDto.Status)
+                {
+                    case ProjectTemplateStatusesEnum.Approved:
+                        notificationMessage = $"Project template '{projectTemplateDto.Name}' has been approved.";
+                        break;
+
+                    case ProjectTemplateStatusesEnum.Rejected:
+                        notificationMessage = $"Project template '{projectTemplateDto.Name}' was rejected. {projectTemplateDto.Remark ?? string.Empty}";
+                        break;
+
+                    default:
+                        notificationMessage = $"Project template '{projectTemplateDto.Name}' status updated. {projectTemplateDto.Remark ?? string.Empty}";
+                        break;
+                }
+
+                // Create the AutoNotificationDto
+                var notification = new AutoNotificationDto
+                {
+                    RefId = projectTemplateDto.Id,
+                    Message = notificationMessage,
+                    Type = NotificationTypesEnum.Information,
+                    UserIdList = new List<Guid>
+                    {
+                        existingTemplate.CreatedByUserId
+                    },
+                    // TODO: Replace with actual front-end URL for viewing the project template
+                    ActionUrl = $"https://yourapp.com/project-template/{projectTemplateDto.Id}"
+                };
+
+                // Insert the notification into the AutoNotificationService
+                if (!await _autoNotificationService.InsertAutoNotificationAsync(notification))
+                {
+                    _logger.LogError("Failed to insert notification for project template '{ProjectTemplateName}' (ID: {ProjectTemplateId}) with status '{Status}'.",
+                        projectTemplateDto.Name,
+                        projectTemplateDto.Id,
+                        projectTemplateDto.Status);
+                }
+                else
+                    // Log success if required
+                    _logger.LogInformation("Notification for project template {ProjectTemplateId} with status {Status} sent to user {UserId}.", projectTemplateDto.Id, projectTemplateDto.Status, existingTemplate.CreatedByUserId);
 
                 // Map updated entity to DTO and set success response
                 serviceResponse.Data = existingTemplate.Adapt<ProjectTemplateDto>();
