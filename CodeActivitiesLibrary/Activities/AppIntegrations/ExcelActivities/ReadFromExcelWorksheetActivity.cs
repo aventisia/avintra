@@ -88,7 +88,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
+            string status = "Starting Excel read...";
             DataTable dataTable = null;
 
             try
@@ -112,15 +112,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 if (!(excelApp.ActiveSheet is Excel.Worksheet ws))
                     throw new InvalidOperationException("Active sheet is not a valid Excel worksheet.");
 
+                Log(context, "Excel worksheet detected. Starting read operation...");
+
                 switch (retrieveMode)
                 {
                     case ExcelRetrieveModeEnum.SingleCell:
                         {
                             int colIndex = startColIndex > 0 ? startColIndex : GetColumnIndex(startCol);
-                            var cell = ws.Cells[startRow, colIndex];
+                            var cell = ws.Cells[startRow, colIndex] as Excel.Range;
                             dataTable = new DataTable();
                             dataTable.Columns.Add("Value");
-                            dataTable.Rows.Add(cell.Value);
+                            dataTable.Rows.Add(getContentsAsText ? cell.Text : cell.Value2);
                             break;
                         }
 
@@ -130,7 +132,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             int endIndex = endColIndex > 0 ? endColIndex : GetColumnIndex(endCol);
 
                             var range = ws.Range[ws.Cells[startRow, startIndex], ws.Cells[endRow, endIndex]];
-                            dataTable = ReadRange(range, getContentsAsText, firstLineContainsColumnNames);
+                            dataTable = ReadRange(range, getContentsAsText, firstLineContainsColumnNames, omitEmptyColumnsAndRows);
                             break;
                         }
 
@@ -139,14 +141,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             if (!(excelApp.Selection is Excel.Range selection))
                                 throw new InvalidOperationException("No range is selected.");
 
-                            dataTable = ReadRange(selection, getContentsAsText, firstLineContainsColumnNames);
+                            dataTable = ReadRange(selection, getContentsAsText, firstLineContainsColumnNames, omitEmptyColumnsAndRows);
                             break;
                         }
 
                     case ExcelRetrieveModeEnum.AllAvailableValues:
                         {
                             var usedRange = ws.UsedRange;
-                            dataTable = ReadRange(usedRange, getContentsAsText, firstLineContainsColumnNames);
+                            dataTable = ReadRange(usedRange, getContentsAsText, firstLineContainsColumnNames, omitEmptyColumnsAndRows);
                             break;
                         }
 
@@ -156,12 +158,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             if (namedRange == null)
                                 throw new ArgumentException($"Named range '{name}' not found.");
 
-                            dataTable = ReadRange(namedRange, getContentsAsText, firstLineContainsColumnNames);
-
-                            if (omitEmptyColumnsAndRows)
-                                // Trim empty columns and rows
-                                dataTable = TrimEmptyColumnsAndRows(dataTable);
-
+                            dataTable = ReadRange(namedRange, getContentsAsText, firstLineContainsColumnNames, omitEmptyColumnsAndRows);
                             break;
                         }
 
@@ -170,75 +167,74 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 }
 
                 ExcelData.Set(context, dataTable);
+
+                if (dataTable != null)
+                    Log(context, $"Excel read complete. Rows={dataTable.Rows.Count}, Cols={dataTable.Columns.Count}");
+
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, "Excel data read successfully.");
             }
             catch (Exception ex)
             {
                 status = $"Error reading from Excel: {ex.Message}";
-                ExcelData.Set(context, dataTable);
+                ExcelData.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
+                Log(context, status);
             }
         }
 
-        private static DataTable ReadRange(Excel.Range range, bool getContentsAsText, bool firstLineContainsColumnNames)
+        private static DataTable ReadRange(Excel.Range range, bool getContentsAsText, bool firstLineContainsColumnNames, bool trimEmpty)
         {
             var dataTable = new DataTable();
 
-            try
+            int rowCount = range.Rows.Count;
+            int colCount = range.Columns.Count;
+
+            if (rowCount == 0 || colCount == 0)
+                return dataTable;
+
+            object[,] values = range.Value2 as object[,];
+            if (values == null)
+                return dataTable;
+
+            int maxRow = values.GetLength(0);
+            int maxCol = values.GetLength(1);
+
+            if (trimEmpty)
             {
-                var rowCount = range.Rows.Count;
-                var colCount = range.Columns.Count;
+                while (maxRow > 1 && Enumerable.Range(1, maxCol).All(c => values[maxRow, c] == null))
+                    maxRow--;
 
-                // Determine the starting row based on whether the first line contains column names
-                int startRow = firstLineContainsColumnNames ? 2 : 1;
-
-                // If the range is empty, return an empty DataTable
-                if (rowCount < startRow || colCount < 1)
-                    return dataTable; // Return empty DataTable
-
-                // Add columns dynamically
-                for (var j = 1; j <= colCount; j++)
-                {
-                    string columnName = $"Column{j}";
-                    if (firstLineContainsColumnNames)
-                        columnName = (range.Cells[1, j] as Excel.Range)?.Text?.ToString() ?? $"Column{j}";
-                    dataTable.Columns.Add(columnName);
-                }
-
-                // Add rows
-                for (var i = startRow; i <= rowCount; i++)
-                {
-                    var row = dataTable.NewRow();
-                    for (var j = 1; j <= colCount; j++)
-                    {
-                        var cell = range.Cells[i, j] as Excel.Range;
-                        row[j - 1] = getContentsAsText ? cell.Text : cell.Value;
-                    }
-
-                    dataTable.Rows.Add(row);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
+                while (maxCol > 1 && Enumerable.Range(1, maxRow).All(r => values[r, maxCol] == null))
+                    maxCol--;
             }
 
-            return dataTable;
-        }
+            int startRow = firstLineContainsColumnNames ? 2 : 1;
 
-        private static DataTable TrimEmptyColumnsAndRows(DataTable dataTable)
-        {
-            // Trim empty columns
-            for (var i = dataTable.Columns.Count - 1; i >= 0; i--)
-                if (dataTable.AsEnumerable().All(row => row.IsNull(i)))
-                    dataTable.Columns.RemoveAt(i);
+            for (int j = 1; j <= maxCol; j++)
+            {
+                string columnName = $"Column{j}";
+                if (firstLineContainsColumnNames)
+                {
+                    var header = values[1, j]?.ToString();
+                    if (!string.IsNullOrWhiteSpace(header))
+                        columnName = header;
+                }
+                dataTable.Columns.Add(columnName);
+            }
 
-            // Trim empty rows
-            for (var i = dataTable.Rows.Count - 1; i >= 0; i--)
-                if (dataTable.Rows[i].ItemArray.All(item => item == DBNull.Value))
-                    dataTable.Rows.RemoveAt(i);
+            // Add rows
+            for (int i = startRow; i <= maxRow; i++)
+            {
+                var row = dataTable.NewRow();
+                for (int j = 1; j <= maxCol; j++)
+                {
+                    object val = values[i, j];
+                    row[j - 1] = val ?? DBNull.Value;
+                }
+                dataTable.Rows.Add(row);
+            }
 
             return dataTable;
         }
@@ -252,6 +248,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             columnName = columnName.ToUpperInvariant();
 
             return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
+        }
+
+        private void Log(CodeActivityContext context, string message)
+        {
+            // Append to StatusMessage output so it shows in logs
+            var current = StatusMessage.Get(context) ?? string.Empty;
+            StatusMessage.Set(context, $"{current}{Environment.NewLine}{message}");
         }
     }
 }
