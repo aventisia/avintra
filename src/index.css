@@ -25,10 +25,10 @@
     --border: hsl(214.3 31.8% 91.4%);
     --input: hsl(214.3 31.8% 91.4%);
     --ring: rgba(78, 70, 229, 0.2);
-    --flow-start: #EAEAEA;
-    --flow-end: #F4F4F4;
-    --flow-border-start: #B7B7B7;
-    --flow-border-end: #B7B7B7;
+    --flow-start: #eaeaea;
+    --flow-end: #f4f4f4;
+    --flow-border-start: #b7b7b7;
+    --flow-border-end: #b7b7b7;
     --radius: 0.5rem;
 
     --banner-height: 3.5rem;
@@ -43,6 +43,19 @@
   /* TODO: Add dark mode support lator */
 }
 
+/* Style for  markdown editor toolbar */
+.md-editor-toolbar button svg {
+  color: hsl(222.2 47.4% 11.2%) !important;
+}
+
+.md-editor-toolbar-warp:not(.md-editor-toolbar-bottom) {
+  border-bottom: 1px solid hsl(214.3 31.8% 91.4%) !important;
+}
+
+.cm-line {
+  max-width: 55vw;
+  text-wrap: wrap;
+}
 @layer base {
   *,
   *::after,
