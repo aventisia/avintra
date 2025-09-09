@@ -1,7 +1,7 @@
 import {
   DialogContent,
   DialogDefaultHeader,
-  DialogWrapper,
+  Dialog,
 } from "@aventisia/ui/dialog";
 
 import { useShallow } from "zustand/react/shallow";
@@ -9,6 +9,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useSaveAsTemplateStore } from "../stores/save-as-template-store";
 
 import { SaveAsTemplateForm } from "./SaveAsTemplateForm";
+import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
 
 /**
  * SaveAsTemplateDialog component
@@ -24,12 +25,21 @@ export const SaveAsTemplateDialog = () => {
       setShowDialog: state.setShowDialog,
     })),
   );
+  const { clearAll } = useFileStore(
+    useShallow((state) => ({
+      clearAll: state.clearAll,
+    })),
+  );
 
   return (
-    <DialogWrapper
+    <Dialog
       open={showDialog}
-      // Toggles dialog visibility when the dialog is opened or closed
-      onOpenChangeFn={() => setShowDialog(!showDialog)}
+      onOpenChange={(open) => {
+        setShowDialog(open);
+        if (!open) {
+          clearAll(); // Dialog is being closed
+        }
+      }}
     >
       <DialogContent className="!max-w-[60vw]" side="right">
         {/* Header with static title */}
@@ -38,6 +48,6 @@ export const SaveAsTemplateDialog = () => {
         {/* Main form to save current config as a template */}
         <SaveAsTemplateForm />
       </DialogContent>
-    </DialogWrapper>
+    </Dialog>
   );
 };
