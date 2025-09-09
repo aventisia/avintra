@@ -13,7 +13,7 @@
     "type": "text",
     "name": "ValueToSet",
     "label": "Value To Set",
-    "description": "The value (text, number, list, or object) to assign to the variable.",
+    "description": "The value (text, number, list, object, or arithmetic expression) to assign to the variable.",
     "defaultValue": "",
     "required": true
   },
