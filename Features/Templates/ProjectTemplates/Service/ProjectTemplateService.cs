@@ -257,6 +257,7 @@ namespace WorkspaceAPIs.Services
                 // Map updated values onto existing entity and increment version
                 projectTemplateDto.Adapt(existingTemplate);
                 existingTemplate.SchemaVersion += 1;
+                existingTemplate.TenantId = projectTemplateDto.AccessType != TemplateAccessTypesEnum.Public ? _tenantId : null;
                 existingTemplate.Status = ProjectTemplateStatusesEnum.Pending;
                 existingTemplate.LastModifiedByUserId = _userId;
 
@@ -397,7 +398,6 @@ namespace WorkspaceAPIs.Services
                 var existingTemplate = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w =>
                         w.Id == projectTemplateId &&
-                        w.TenantId == _tenantId &&
                         w.CreatedByUserId == _userId
                     )
                     .Include(i => i.TemplateResources)
@@ -456,7 +456,6 @@ namespace WorkspaceAPIs.Services
                 var templatesToDelete = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w =>
                         projectTemplateIds.Contains(w.Id) &&
-                        w.TenantId == _tenantId &&
                         w.CreatedByUserId == _userId
                     )
                     .Include(i => i.TemplateResources)
