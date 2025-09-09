@@ -103,4 +103,11 @@ public class ProjectTemplateController : BaseApiController
     {
         return ResultHelper(await _projectTemplateService.UseProjectTemplateAsync(trendingTemplateDto));
     }
+
+    // Generates a new template via LLM based on the provided template data
+    [HttpPost("generate")]
+    public async Task<ActionResult<ServiceResponse<string>>> GenerateTemplateUsingLLM([FromBody] ProjectTemplateDto projectTemplateDto)
+    {
+        return ResultHelper(await _projectTemplateService.GenerateTemplateUsingLLMAsync(projectTemplateDto));
+    }
 }

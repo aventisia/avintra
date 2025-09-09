@@ -92,4 +92,11 @@ public interface IProjectTemplateService
     /// <param name="trendingTemplateDto">The trending project template to base the creation on.</param>
     /// <returns>A response containing the created entity details or an error message.</returns>
     Task<ServiceResponse<ProjectTemplateDto>> UseProjectTemplateAsync(TrendingTemplateDto trendingTemplateDto);
+
+    /// <summary>
+    /// Generates template using an LLM (Large Language Model) based on the provided template data.
+    /// </summary>
+    /// <param name="projectTemplateDto">The data for the project template to be generated using LLM.</param>
+    /// <returns>Returns the newly generated template wrapped in a ServiceResponse.</returns>
+    Task<ServiceResponse<string>> GenerateTemplateUsingLLMAsync(ProjectTemplateDto projectTemplateDto);
 }

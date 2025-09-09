@@ -6,6 +6,7 @@ namespace WorkspaceAPIs.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAutoNotificationService _autoNotificationService;
         private readonly IUserManagementGuardService _userManagementGuardService;
+        private readonly LLMDataExtractionService _lLMDataExtractionService;
         private readonly Guid _userId;
         private readonly Guid _tenantId;
         private readonly Guid _spaceId;
@@ -15,7 +16,8 @@ namespace WorkspaceAPIs.Services
             IUnitOfWork unitOfWork,
             IHttpContextAccessor httpContextAccessor,
             IAutoNotificationService autoNotificationService,
-            IUserManagementGuardService userManagementGuardService)
+            IUserManagementGuardService userManagementGuardService,
+            LLMDataExtractionService lLMDataExtractionService)
         {
             // Set _userId
             _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -26,6 +28,7 @@ namespace WorkspaceAPIs.Services
             _unitOfWork = unitOfWork;
             _autoNotificationService = autoNotificationService;
             _userManagementGuardService = userManagementGuardService;
+            _lLMDataExtractionService = lLMDataExtractionService;
         }
 
         // Retrieve all project templates list
@@ -1027,6 +1030,64 @@ namespace WorkspaceAPIs.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while creating flow from project template ID: {TemplateId}.", trendingTemplateDto.Id);
+            }
+
+            return serviceResponse;
+        }
+
+        // Generates a new project template using an LLM (Large Language Model) based on the provided template data.
+        public async Task<ServiceResponse<string>> GenerateTemplateUsingLLMAsync(ProjectTemplateDto projectTemplateDto)
+        {
+            // Initialize a default failure response
+            var serviceResponse = new ServiceResponse<string>
+            {
+                Data = null,
+                Message = "Failed to generate template. Please try again later."
+            };
+
+            // Prepare the prompt and LLM parameters for template generation
+            var prompt = $@"
+                Generate documentation for the template '{projectTemplateDto.Name}' with description/instructions: {projectTemplateDto.Description}. Include the following:
+                - Purpose and use case
+                - Setup instructions
+                Keep the documentation clear, professional, and suitable for a technical audience.";
+            var model = "gemma";
+            var temperature = 0.3;
+
+            // Start the template generation process using the LLM data extraction service
+            try
+            {
+                // Log the request details for better traceability
+                _logger.LogInformation("Initiating template generation using LLM model: {Model} with temperature: {Temperature}", model, temperature);
+
+                // Call the LLM service to generate the template
+                var generatedTemplate = await _lLMDataExtractionService.ExtractDataAsync(
+                    prompt: prompt,
+                    llmModel: model,
+                    modelTemperature: temperature
+                );
+
+                // Check if the template was successfully generated
+                if (generatedTemplate.Data == null)
+                {
+                    // Handle null response (no template generated)
+                    serviceResponse.Message = "Template generation returned null data. Please try again later.";
+
+                    _logger.LogWarning("Template generation returned null data. Check the LLM service response or input prompt.");
+                }
+
+                // Populate the service response with the generated template
+                serviceResponse.Data = generatedTemplate.Data;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Template generated successfully using LLM.";
+
+                _logger.LogInformation("Successfully generated template using LLM model: {Model}. Template Name: {TemplateName}", model, projectTemplateDto.Name);
+
+            }
+            catch (Exception ex)
+            {
+                // Log the exception if an error occurs during the generation process
+                _logger.LogError(ex, "An error occurred while generating the template using LLM model: {Model}", model);
             }
 
             return serviceResponse;
