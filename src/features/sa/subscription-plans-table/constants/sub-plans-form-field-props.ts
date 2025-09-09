@@ -1,4 +1,8 @@
-import { InputFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
+import {
+  InputFieldProps,
+  SelectFieldProps,
+  SwitchFieldProps,
+} from "@aventisia/ui/form";
 
 // ID (read-only)
 const idProps: InputFieldProps = {
@@ -15,6 +19,18 @@ const nameProps: InputFieldProps = {
   isRequired: true,
 };
 
+// Type
+const typeProps: SelectFieldProps = {
+  name: "type",
+  label: "Type",
+  selectOptions: [
+    { label: "Starter", value: "Starter" },
+    { label: "Pro", value: "Pro" },
+    { label: "Enterprise", value: "Enterprise" },
+  ],
+  defaultValue: "Pro",
+  isRequired: true,
+};
 // Max Credits
 const maxCreditsProps: InputFieldProps = {
   name: "maxCredits",
@@ -46,17 +62,29 @@ const maxSpacesProps: InputFieldProps = {
 // Storage Limit MB
 const storageLimitMBProps: InputFieldProps = {
   name: "storageLimitMB",
-  label: "Storage (in MB)",
+  label: "Storage Limit(in MB)",
   isRequired: true,
 };
 
 // Max Users
 const maxUsersProps: InputFieldProps = {
   name: "maxUsers",
-  label: "Users",
+  label: "No of Users",
   isRequired: true,
 };
 
+// Yearly Charge
+const yearlyPriceProps: InputFieldProps = {
+  name: "yearlyPrice",
+  label: "Yearly Charge",
+  isRequired: true,
+};
+// Monthly Charge
+const monthlyPriceProps: InputFieldProps = {
+  name: "monthlyPrice",
+  label: "Monthly Charge",
+  isRequired: true,
+};
 // Is Disabled
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
@@ -74,4 +102,7 @@ export {
   storageLimitMBProps,
   maxUsersProps,
   isDisabledProps,
+  yearlyPriceProps,
+  monthlyPriceProps,
+  typeProps,
 };

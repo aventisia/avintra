@@ -4,7 +4,6 @@ import {
   SwitchFieldProps,
   TextareaFieldProps,
 } from "@aventisia/ui/form";
-import { enumToArray } from "@aventisia/ui/utils";
 
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
@@ -20,7 +19,19 @@ const typeProps: SelectFieldProps = {
   name: "type",
   label: "Type",
   isRequired: true,
-  selectOptions: enumToArray(FlowTypesEnum),
+  selectOptions: [
+    {
+      label: FlowTypesEnum.Agent,
+      value: FlowTypesEnum.Agent,
+      description:
+        "A complete flow that can be published and run independently",
+    },
+    {
+      label: FlowTypesEnum.Block,
+      value: FlowTypesEnum.Block,
+      description: "A reusable flow component that can be called within agents",
+    },
+  ],
 };
 
 // Name

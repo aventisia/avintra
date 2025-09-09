@@ -6,13 +6,8 @@ import ConnectedIntegrations from "./connected-integrations/ConnectedIntegration
 export const AppIntegrations = () => {
   return (
     <>
-      <div className="space-y-6 py-4">
-        <div>
-          <p className="text-lg font-medium">Integrations</p>
-          <p className="text-sm text-muted-foreground">
-            Supercharge your workflow with our integrations.
-          </p>
-        </div>
+      <div className="space-y-5 py-4">
+        <p className="text-lg font-medium">Integrations</p>
         <ConnectedIntegrations />
         <AvailableIntegrationsDialog>
           <AvailableIntegrations />

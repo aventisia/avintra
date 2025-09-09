@@ -3,6 +3,7 @@ import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { displayValue } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { SubPlansTableDto } from "../dtos/sub-plans-table-dto";
 
@@ -46,13 +47,39 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
     ),
   },
   {
+    accessorKey: "monthlyPrice",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("monthlyPrice")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("monthlyPrice") == 0
+          ? "Free"
+          : "$" + row.getValue("monthlyPrice")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "yearlyPrice",
+    header: ({ column }) => (
+      <DTColumnHeader column={column} title={getColumnName("yearlyPrice")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("yearlyPrice") == 0
+          ? "Free"
+          : "$" + row.getValue("yearlyPrice")}
+      </div>
+    ),
+  },
+  {
     accessorKey: "maxCredits",
     header: ({ column }) => (
       <DTColumnHeader column={column} title={getColumnName("maxCredits")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("maxCredits")}
+        {displayValue(row.getValue("maxCredits"))}
       </div>
     ),
   },
@@ -66,7 +93,7 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("maxPublishedItems")}
+        {displayValue(row.getValue("maxPublishedItems"))}
       </div>
     ),
   },
@@ -80,7 +107,7 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("historyRetentionDays")}
+        {displayValue(row.getValue("historyRetentionDays"))}
       </div>
     ),
   },
@@ -91,7 +118,7 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("maxSpaces")}
+        {displayValue(row.getValue("maxSpaces"))}
       </div>
     ),
   },
@@ -102,7 +129,7 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("storageLimitMB")}
+        {displayValue(row.getValue("storageLimitMB"))}
       </div>
     ),
   },
@@ -113,7 +140,7 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("maxUsers")}
+        {displayValue(row.getValue("maxUsers"))}
       </div>
     ),
   },

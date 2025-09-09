@@ -10,19 +10,15 @@ import {
 } from "@aventisia/ui/select";
 import { enumToArray } from "@aventisia/ui/utils";
 import { Download } from "lucide-react";
-import { format } from "date-fns";
 
 import { ServiceTypeEnum } from "@/features/sa/credit-plans-table/enums/service-type-enum";
 
-import { DateRangePicker } from "../shared/date-range-picker/DateRangePicker";
 import { useExportDialogStore } from "../store/export-dialog-store";
-import { useDateRangePickerStore } from "../store/date-range-store";
-// import { useFetchCreditUsageSummary } from "../hooks/useFetchCreditUsageSummary";
+
+import ChartsHeaderDateRangeFilter from "./ChartsHeaderDateRangeFilter";
 
 const ChartsHeader = () => {
   const { setOpen } = useExportDialogStore();
-  const { setStartEndDate } = useDateRangePickerStore();
-  // const { refetch } = useFetchCreditUsageSummary();
 
   const avaialbleCredits = 20000;
   return (
@@ -52,22 +48,7 @@ const ChartsHeader = () => {
         </Select>
 
         {/* Calendar */}
-        <DateRangePicker
-          onUpdate={(values) => {
-            const from = format(values.range.from, "yyyy-MM-dd");
-            const to = format(
-              values.range.to ?? values.range.from,
-              "yyyy-MM-dd",
-            );
-
-            setStartEndDate(from, to);
-          }}
-          initialDateFrom={format(new Date(), "yyyy-MM-dd")}
-          initialDateTo={format(new Date(), "yyyy-MM-dd")}
-          align="start"
-          locale="en-GB"
-          showCompare={false}
-        />
+        <ChartsHeaderDateRangeFilter />
 
         {/* Export Button */}
         <Button
