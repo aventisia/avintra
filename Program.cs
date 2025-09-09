@@ -60,6 +60,7 @@ builder.Services.AddDbContextConfig(config);
 // ASP.NET & App services
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddEmailService();
+builder.Services.AddLLMExtractionService();
 builder.Services.AddSharedDependencies(config);
 builder.Services.AddAppDependencies(config);
 builder.Services.AddMappingProfiles();

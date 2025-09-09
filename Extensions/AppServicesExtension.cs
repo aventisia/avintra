@@ -54,6 +54,7 @@ public static class AppServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("AesEncryptionConfig").Get<AesEncryptionConfig>(), "AesEncryptionConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("DefaultTenantConfig").Get<DefaultTenantConfig>(), message: "DefaultTenantConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("APIKeyConfig").Get<APIKeyConfig>(), "APIKeyConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("ExtractViaLLMConfig").Get<ExtractViaLLMConfig>(), "ExtractViaLLMConfig cannot be null"));
 
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
@@ -86,7 +87,6 @@ public static class AppServicesExtension
         services.AddScoped<IFlowUserService, FlowUserService>();
         services.AddScoped<IBlockService, BlockService>();
         services.AddScoped<IAppSecretService, AppSecretService>();
-
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
