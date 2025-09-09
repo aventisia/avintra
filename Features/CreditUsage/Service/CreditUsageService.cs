@@ -178,15 +178,57 @@ public class CreditUsageService : ICreditUsageService
 
         try
         {
-            // Log the attempt to insert credit usage
             _logger.LogInformation("Initiating credit usage insertion for User ID: {UserId}, Service Type: {ServiceType}",
                 creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
+
+            // Variable to track if there are available credits
+            bool hasAvailableCredits = true;
+
+            // Check if the tenant is non-default
+            var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
+
+            // Query the current tenant's subscription, including related plan and creator details
+            var subscriptionPlan = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w =>
+                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
+                    w.IsActive &&
+                    w.TenantId == _tenantId
+                )
+                .Include(i => i.Plan)
+                .Include(i => i.CreatedByUser)
+                .FirstOrDefaultAsync();
+
+            // If no subscription plan is found, log a warning and return failure message
+            if (subscriptionPlan == null)
+            {
+                _logger.LogWarning("No current subscription plan found for tenant ID: {TenantId}", _tenantId);
+                serviceResponse.Message = "No subscription plan found for the current tenant.";
+                return serviceResponse;
+            }
+
+            // Query the tenant credits that are available and belong to the current user
+            var availableCredits = _unitOfWork.TenantCreditRepo
+                .GetByConditionAsync(w =>
+                    w.TenantId == _tenantId &&
+                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
+                    w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date &&
+                    w.AvailableCredits > 0
+                ).OrderByDescending(o => o.ExpiredOn);
+
+            // If no available credits are found, log a warning and return failure message
+            if (!availableCredits.Any())
+            {
+                _logger.LogWarning("No available credits found for TenantId: {TenantId}, UserId: {UserId}.", _tenantId, _userId);
+                serviceResponse.Message = "No available credits found for the specified tenant and user.";
+                return serviceResponse;
+            }
 
             // Verify that the specified service type exists in the credit plan repository
             var existingCreditPlan = await _unitOfWork.CreditPlanRepo
                 .GetByConditionAsync(w => w.ServiceType == creditUsageDto.ServiceType)
                 .SingleOrDefaultAsync();
 
+            // If the service type doesn't exist, log a warning and return failure message
             if (existingCreditPlan == null)
             {
                 _logger.LogWarning("Credit plan not found for Service Type: {ServiceType}. Insertion aborted.",
@@ -195,42 +237,47 @@ public class CreditUsageService : ICreditUsageService
                 return serviceResponse;
             }
 
+            // Calculate how many credits are needed based on the consumed units
+            TenantCredit? tenantAvailableCredit = null;
             int creditUsed = (int)Math.Ceiling((decimal)creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit) * existingCreditPlan.Credits;
 
-            // // Determine credit usage based on the unit type defined in the credit plan
-            // if (existingCreditPlan.UnitType == UnitTypesEnum.Credit)
-            //     // If unit type is 'Credit', use the consumed units directly
-            //     creditUsed = creditUsageDto.ConsumedUnit;
+            // Attempt to find the first available credit that has enough available credits to cover the usage
+            tenantAvailableCredit = await availableCredits.FirstOrDefaultAsync(w => w.AvailableCredits >= creditUsed);
 
-            // if (existingCreditPlan.UnitType == UnitTypesEnum.Transactions)
-            //     // If unit type is 'Transactions', use the consumed units directly
-            //     creditUsed = creditUsageDto.ConsumedUnit;
+            // If no sufficient credits are found, get the highest available credit and log a warning
+            if (tenantAvailableCredit == null)
+            {
+                tenantAvailableCredit = await availableCredits.OrderByDescending(o => o.AvailableCredits).FirstAsync();
+                _logger.LogWarning("No available credits found for TenantId: {TenantId}, UserId: {UserId}.", _tenantId, _userId);
 
-            // if (existingCreditPlan.UnitType == UnitTypesEnum.Message)
-            //     // If unit type is 'Message', use the consumed units directly
-            //     creditUsed = creditUsageDto.ConsumedUnit;
+                // Update the service response to reflect that credits are not available
+                serviceResponse.Message = "No available credits found for the specified tenant and user.";
+                hasAvailableCredits = false; 
+            }
 
-            // if (existingCreditPlan.UnitType == UnitTypesEnum.Seconds)
-            //     // If unit type is 'Seconds', calculate credits based on configured unit and credit values
-            //     // Formula: ceil(seconds / OneUnit) * Credits
-            //     creditUsed = (int)Math.Ceiling((decimal)creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit)
-            //                  * existingCreditPlan.Credits;
+            // Reduce the available credits by the amount used
+            tenantAvailableCredit.AvailableCredits = tenantAvailableCredit.AvailableCredits - creditUsed;
 
-            // if (existingCreditPlan.UnitType == UnitTypesEnum.Tokens)
-            //     // If unit type is 'Tokens', calculate credits based on configured unit and credit values
-            //     // Formula: ceil(tokens / OneUnit) * Credits
-            //     creditUsed = (int)Math.Ceiling((decimal)creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit)
-            //                  * existingCreditPlan.Credits;
+            // Update the tenant credit record with the new available credits
+            _unitOfWork.TenantCreditRepo.Update(tenantAvailableCredit);
 
-            // Adapt DTO to entity and assign current user ID
+            // Attempt to commit changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Database save failed during credit usage insertion for User ID: {UserId}, Service Type: {ServiceType}.",
+                    creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
+                return serviceResponse; 
+            }
+
+            // Map the DTO to the entity model and set the user ID
             var creditUsage = creditUsageDto.Adapt<CreditUsage>();
             creditUsage.CreditsUsed = creditUsed;
             creditUsage.UsedByUserId = _userId;
 
-            // Insert the new usage record
+            // Insert the new credit usage record into the database
             await _unitOfWork.CreditUsageRepo.InsertAsync(creditUsage);
 
-            // Commit changes to the database
+            // Commit the changes to the database again after inserting the usage record
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Database save failed during credit usage insertion for User ID: {UserId}, Service Type: {ServiceType}.",
@@ -238,20 +285,29 @@ public class CreditUsageService : ICreditUsageService
                 return serviceResponse;
             }
 
+            // If no available credits were found earlier, return the failure service response
+            if (!hasAvailableCredits)
+            {
+                return serviceResponse;
+            }
+
+            // Set the service response to indicate successful credit usage insertion
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credit usage recorded successfully.";
 
-            // Log success
+            // Log success with relevant details
             _logger.LogInformation("Credit usage successfully recorded for User ID: {UserId}, Service Type: {ServiceType}.",
                 creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
         }
         catch (Exception ex)
         {
+            // Log any unexpected errors during the credit usage process
             _logger.LogError(ex, "An error occurred while recording credit usage for User ID: {UserId}, Service Type: {ServiceType}.",
                 creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
         }
 
+        // Return the service response
         return serviceResponse;
     }
 
