@@ -888,8 +888,13 @@ namespace WorkspaceAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("AccessType")
-                        .HasColumnType("integer");
+                    b.Property<string>("AccessPath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("AccessType")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
@@ -932,8 +937,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid?>("SpaceId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<List<string>>("Tags")
                         .IsRequired()
