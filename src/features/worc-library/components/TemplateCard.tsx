@@ -4,12 +4,11 @@ import { Badge } from "@aventisia/ui/badge";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@aventisia/ui/cards";
-import { BotIcon, Copy } from "lucide-react";
+import { BotIcon, Copy, Tag } from "lucide-react";
 
 import { WorcTemplatesDto } from "../dtos/worc-templates-dtos";
 
@@ -52,17 +51,16 @@ export const TemplateCard = ({ template, onClick }: TemplateCardProps) => {
         <CardTitle className="!mt-5 truncate text-[0.9rem] font-semibold capitalize">
           {template.name}
         </CardTitle>
-
-        {/* Template description (fallback if empty) */}
-        <CardDescription className="line-clamp-4 text-muted-foreground">
-          {template.description || "No description available"}
-        </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-3 pb-1">
         {/* Type badge */}
-        <Badge className="bg-slate-100" variant="outline">
-          {template.type}
+        <Badge
+          variant="outline"
+          className="flex w-fit items-center gap-1 bg-slate-100 py-1"
+        >
+          <Tag className="h-3 w-3" />
+          <span className="leading-3"> {template.type}</span>
         </Badge>
       </CardContent>
 
