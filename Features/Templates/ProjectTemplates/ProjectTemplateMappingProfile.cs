@@ -15,7 +15,10 @@ public class ProjectTemplateMappingProfile : IRegister
 
         // Request mapping for getting Project template record
         config.NewConfig<ProjectTemplate, ProjectTemplateDto>()
-            .Map(dest => dest.Resources, src =>  src.TemplateResources.Adapt<IEnumerable<TemplateResourceDto>>());
+            .Map(dest => dest.Resources, src => src.TemplateResources.Adapt<IEnumerable<TemplateResourceDto>>())
+            .Map(dest => dest.RefId, src => src.RefId)
+            .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName : null)
+            .Map(dest => dest.LastModifiedBy, src => src.LastModifiedByUser != null ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName : null);
 
         // Request mapping for getting Project template record
         config.NewConfig<ProjectTemplate, SearchProjectTemplateDto>();
