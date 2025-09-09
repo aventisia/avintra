@@ -57,7 +57,7 @@ export const ActionCategoryList = () => {
       const result: ActionCategoryType[] = [];
       actionSelectorData.forEach(({ label, actionCategories }) => {
         if (
-          currentFlow?.type === FlowTypesEnum.AutomationAgent &&
+          currentFlow?.type === FlowTypesEnum.Agent &&
           label === "AI Integrations"
         )
           return;
@@ -171,7 +171,7 @@ export const ActionCategoryList = () => {
                             <div>{iconMapper[item.icon]}</div>
                           ) : item.img ? (
                             <FallbackImageIcon
-                              className="h-5 w-5 "
+                              className="h-5 w-5"
                               src={item.img}
                             />
                           ) : null}

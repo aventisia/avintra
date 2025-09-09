@@ -33,7 +33,7 @@ export const PrimaryCategoryList = () => {
               onSelect={() => setPrimaryCategoryLabel(item.label)}
               // disabled={!item.actionCategories.length}
               disabled={
-                currentFlow?.type === FlowTypesEnum.AutomationAgent &&
+                currentFlow?.type === FlowTypesEnum.Agent &&
                 item.label === "AI Integrations" &&
                 true
               }

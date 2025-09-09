@@ -80,7 +80,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
     isLocked: false,
     isDraft: false,
     isArchived: false,
-    type: FlowTypesEnum.AIAgent,
+    type: FlowTypesEnum.Agent,
     description: "",
   },
   isFlowLoading: false,
