@@ -5,6 +5,7 @@ namespace WorkspaceAPIs.Services
         private readonly ILogger<ProjectTemplateService> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAutoNotificationService _autoNotificationService;
+        private readonly IUserManagementGuardService _userManagementGuardService;
         private readonly Guid _userId;
         private readonly Guid _tenantId;
         private readonly Guid _spaceId;
@@ -13,7 +14,8 @@ namespace WorkspaceAPIs.Services
             ILogger<ProjectTemplateService> logger,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor httpContextAccessor,
-            IAutoNotificationService autoNotificationService)
+            IAutoNotificationService autoNotificationService,
+            IUserManagementGuardService userManagementGuardService)
         {
             // Set _userId
             _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -23,6 +25,7 @@ namespace WorkspaceAPIs.Services
             _logger = logger;
             _unitOfWork = unitOfWork;
             _autoNotificationService = autoNotificationService;
+            _userManagementGuardService = userManagementGuardService;
         }
 
         // Retrieve all project templates list
@@ -42,9 +45,11 @@ namespace WorkspaceAPIs.Services
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId == _userId
                     )
-                    .OrderByDescending(o => o.UsageCount)
+                    .AsNoTracking()
                     .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
                     .Include(i => i.TemplateResources)
+                    .OrderByDescending(o => o.UsageCount)
                     .ToListAsync();
 
                 // Map entities to DTOs and set success response
@@ -81,6 +86,7 @@ namespace WorkspaceAPIs.Services
                 var projectTemplate = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w => w.Id == projectTemplateId)
                     .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
                     .Include(i => i.TemplateResources)
                     .FirstOrDefaultAsync();
 
@@ -502,14 +508,24 @@ namespace WorkspaceAPIs.Services
 
             try
             {
-                // Fetch project templates filtered by status as "Pending" approval, ordered by usage count
-                var pendingApprovalTemplates = await _unitOfWork.ProjectTemplateRepo
-                    .GetByConditionAsync(w =>
-                        w.TenantId == _tenantId &&
+                // Check if the current user has the "SA" (Super Admin) role, using case-insensitive comparison
+                bool isSuperAdmin = _userManagementGuardService
+                    .GetAllowedRoleListToManageUser()
+                    .Any(a => a.Equals("SA", StringComparison.OrdinalIgnoreCase));
+
+                // Build query to fetch project templates with status "Pending"
+                var query = _unitOfWork.ProjectTemplateRepo.GetByConditionAsync(w =>
+                        // If user is Super Admin, only fetch global templates (TenantId == null)
+                        // Otherwise, fetch templates for the current tenant
+                        (isSuperAdmin ? w.TenantId == null : w.TenantId == _tenantId) &&
                         w.Status == ProjectTemplateStatusesEnum.Pending
-                    )
+                );
+
+                // Execute the query: order by creation date (most recent first), and include related data
+                var pendingApprovalTemplates = await query
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
                     .Include(i => i.TemplateResources)
                     .ToListAsync();
 
@@ -880,6 +896,7 @@ namespace WorkspaceAPIs.Services
                     )
                     .Include(t => t.CreatedByUser)
                     .Include(t => t.LastModifiedByUser)
+                    .Include(t => t.TemplateResources)
                     .OrderByDescending(t => t.UsageCount)
                     .ToListAsync();
 
