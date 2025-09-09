@@ -1,6 +1,13 @@
 import { reqError } from "@aventisia/ui/utils";
 import { z } from "zod";
 
+export const fileSchema = z.object({
+  name: z.string(),
+  extension: z.string(),
+  size: z.number(),
+  path: z.string(),
+});
+
 /**
  * saveAsTemplateSchema
  *
@@ -15,25 +22,21 @@ export const saveAsTemplateSchema = z
     // Optional template description
     description: z.string().optional(),
 
-    // Target type to save as (e.g., Agent or Block)
-    saveAs: z.string().min(1, "Save as is required"),
-
     // Access level for the template (e.g., Tenant, Public, Spaces)
-    accessLevel: z.string().min(1, "AccessLevel is required"),
-
-    // Flag to indicate whether this is being saved as a template
-    saveAsTemplate: z.boolean().default(true),
+    accessType: z.string().min(1, "AccessLevel is required"),
 
     // Optional list of tags for filtering or categorization
     tags: z.array(z.string()).optional(),
 
     // Optional list of space IDs (conditionally required)
     spaces: z.array(z.string()).optional(),
+
+    resources: z.array(fileSchema),
   })
   .superRefine((data, ctx) => {
     // Custom validation: If access level is "Spaces", ensure at least one space is selected
     if (
-      data.accessLevel === "Spaces" &&
+      data.accessType === "Spaces" &&
       (!data.spaces || data.spaces.length === 0)
     ) {
       ctx.addIssue({

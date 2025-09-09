@@ -32,7 +32,7 @@ export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
         <div className="flex gap-2">
           <h2 className="flex items-center text-xs font-medium text-foreground">
             {data.label}
-            {currentFlow.type === FlowTypesEnum.AutomationAgent &&
+            {currentFlow.type === FlowTypesEnum.Agent &&
               data.label === "AI Integrations" && (
                 <Badge variant="outline" className="ml-1">
                   Coming Soon

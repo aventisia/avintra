@@ -18,7 +18,7 @@ const saveAsProps: SelectFieldProps = {
 
 // Access Level
 const accessLevelProps: SelectFieldProps = {
-  name: "accessLevel",
+  name: "accessType",
   label: "Access Level",
   isRequired: true,
   selectOptions: enumToArray(AccessTypeEnum),

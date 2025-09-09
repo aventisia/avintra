@@ -116,7 +116,8 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  // @tailwindcss/typography required for markdown viewer with "prose" class wrapper on markdown viewer
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config;
 
 export default config;

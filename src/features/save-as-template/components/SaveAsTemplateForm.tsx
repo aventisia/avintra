@@ -1,11 +1,11 @@
 import { Button } from "@aventisia/ui/buttons";
 import {
-  AutosizeTextareaField,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
+  FormLabelExt,
   FormMessage,
   InputField,
   MultiSelectField,
@@ -13,16 +13,18 @@ import {
 } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { LoadingSpinner, TagInput } from "@aventisia/ui";
+import { Controller } from "react-hook-form";
 
 import { useDefineSATForm } from "../hooks/useDefineSATForm";
 
 import {
   accessLevelProps,
-  descriptionProps,
-  saveAsProps,
   spacesProps,
   templateNameProps,
 } from "../constants/save-as-template-feild-props";
+import FileUploadList from "@/features/file-uploader-setup/components/FileUploadList";
+import MarkdownContainer from "@/components/markdown/MarkdownContainer";
+import { StatusAlert } from "./StatusAlert";
 
 /**
  * SaveAsTemplateForm Component
@@ -32,32 +34,58 @@ import {
  */
 export const SaveAsTemplateForm = () => {
   // Destructure form methods and UI state from custom hook
-  const { form, onSubmit, showSpaces, isPending } = useDefineSATForm();
+  const {
+    form,
+    onSubmit,
+    showSpaces,
+    isPending,
+    isUpdatePending,
+    status,
+    viewMode,
+  } = useDefineSATForm();
 
   return (
     // Scrollable container to handle long forms
-    <ScrollArea className="h-[calc(100vh-22rem)]">
+    <ScrollArea className="h-[calc(100vh-3rem)]">
       <Form
         methods={form}
+        disabled={!viewMode}
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-4 p-4"
       >
-        {/* Dropdown for selecting 'Save As' type */}
-        <SelectField {...saveAsProps} />
+        {<StatusAlert status={status} />}
+        <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
+          {/* Input for template name */}
+          <InputField {...templateNameProps} />
 
-        {/* Input for template name */}
-        <InputField {...templateNameProps} />
-
-        {/* Resizable text area for template description */}
-        <AutosizeTextareaField {...descriptionProps} />
-
-        {/* Only show access level dropdown in non-production environments */}
-        {import.meta.env.MODE !== "production" ? (
-          <SelectField {...accessLevelProps} />
-        ) : null}
+          {/* Only show access level dropdown in non-production environments */}
+          {import.meta.env.MODE !== "production" ? (
+            <SelectField {...accessLevelProps} />
+          ) : null}
+        </div>
 
         {/* Optional multi-select field for selecting spaces */}
         {showSpaces && <MultiSelectField {...spacesProps} />}
+
+        {/* Markdown description */}
+        <Controller
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <div>
+              <FormLabelExt
+                label="Description"
+                description="Instruction to how to setup and use the template"
+              />
+              <div className="mt-1 rounded-lg border p-2">
+                <MarkdownContainer
+                  textValue={field.value || ""}
+                  setTextValue={field.onChange}
+                />
+              </div>
+            </div>
+          )}
+        />
 
         {/* Custom tag input for optional tags */}
         <FormField
@@ -80,13 +108,20 @@ export const SaveAsTemplateForm = () => {
           )}
         />
 
+        {/* File uploader */}
+        <FileUploadList />
+
         {/* Submit button, disabled during submission */}
-        <div className="flex items-center justify-end">
-          <Button disabled={isPending} type="submit">
-            {isPending ? <LoadingSpinner className="mr-2 h-4 w-4" /> : null}
-            Save
-          </Button>
-        </div>
+        {viewMode && (
+          <div className="flex items-center justify-end">
+            <Button disabled={isPending || isUpdatePending} type="submit">
+              {isPending || isUpdatePending ? (
+                <LoadingSpinner className="mr-2 h-4 w-4" />
+              ) : null}
+              Submit For Approval
+            </Button>
+          </div>
+        )}
       </Form>
     </ScrollArea>
   );
