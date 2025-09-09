@@ -7,6 +7,7 @@ import { postSaveAsTemplate } from "../apis/save-as-template-apis";
 import { useSaveAsTemplateStore } from "../stores/save-as-template-store";
 
 import { useShallow } from "zustand/react/shallow";
+import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
 
 /**
  * useSaveAsTemplateMutation
@@ -22,6 +23,12 @@ export const useSaveAsTemplateMutation = () => {
     })),
   );
 
+  const { clearAll } = useFileStore(
+    useShallow((state) => ({
+      clearAll: state.clearAll,
+    })),
+  );
+
   // Define mutation using React Query
   const { isPending, mutate } = useMutation({
     // Function that triggers the API call
@@ -32,6 +39,8 @@ export const useSaveAsTemplateMutation = () => {
       toast.success(httpResponse?.message, {
         className: "sonner-toaster-sm",
       });
+      clearAll();
+      setShowDialog(false);
     },
 
     // Called on mutation error
@@ -41,7 +50,7 @@ export const useSaveAsTemplateMutation = () => {
 
     // Always called at the end (success or error)
     onSettled: () => {
-      setShowDialog(false); // Close the dialog after submit attempt
+      // Close the dialog after submit attempt
     },
   });
 
