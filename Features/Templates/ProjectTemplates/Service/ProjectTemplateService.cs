@@ -6,7 +6,7 @@ namespace WorkspaceAPIs.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAutoNotificationService _autoNotificationService;
         private readonly IUserManagementGuardService _userManagementGuardService;
-        private readonly LLMDataExtractionService _lLMDataExtractionService;
+        private readonly ILLMDataExtractionService _lLMDataExtractionService;
         private readonly Guid _userId;
         private readonly Guid _tenantId;
         private readonly Guid _spaceId;
@@ -17,7 +17,7 @@ namespace WorkspaceAPIs.Services
             IHttpContextAccessor httpContextAccessor,
             IAutoNotificationService autoNotificationService,
             IUserManagementGuardService userManagementGuardService,
-            LLMDataExtractionService lLMDataExtractionService)
+            ILLMDataExtractionService lLMDataExtractionService)
         {
             // Set _userId
             _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
