@@ -4,15 +4,21 @@ public class CreditUsageService : ICreditUsageService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreditUsageService> _logger;
+    private readonly DefaultTenantConfig _defaultTenantConfig;
     private readonly Guid _userId;
+    private readonly Guid _tenantId;
 
-    public CreditUsageService(IUnitOfWork unitOfWork, ILogger<CreditUsageService> logger, IHttpContextAccessor httpContextAccessor)
+    public CreditUsageService(IUnitOfWork unitOfWork, ILogger<CreditUsageService> logger, IHttpContextAccessor httpContextAccessor, DefaultTenantConfig defaultTenantConfig)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _defaultTenantConfig = defaultTenantConfig;
 
         // Extract user ID from JWT token in the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        // Extract tenant ID from JWT token claims
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
     }
 
     // Retrieves the credit usage for a given user or service.
@@ -338,6 +344,60 @@ public class CreditUsageService : ICreditUsageService
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while exporting credit usage data.");
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieves a summary of the user's available credits, including a monthly breakdown.
+    public async Task<ServiceResponse<AvailableCreditSummaryDto>> GetAvailableCreditsAsync()
+    {
+        // Prepare the default service response in case of failure
+        var serviceResponse = new ServiceResponse<AvailableCreditSummaryDto>
+        {
+            Data = null,
+            Message = "Unable to retrieve available credits at this time. Please try again later."
+        };
+
+        try
+        {
+            // Log the beginning of the operation for audit/debugging purposes
+            _logger.LogInformation("Fetching available credits for user: {UserId}", _userId);
+
+            var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
+
+            // Query the tenant credits that are available and belong to the current user
+            var availableCreditsQuery = _unitOfWork.TenantCreditRepo
+                .GetByConditionAsync(w =>
+                    w.TenantId == _tenantId &&
+                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
+                    w.AvailableCredits > 0
+                );
+
+
+            // Build the DTO from the filtered credit records
+            var availableCreditDto = new AvailableCreditSummaryDto
+            {
+                AvailableCredits = availableCreditsQuery.Sum(s => s.AvailableCredits),
+                MonthlyCredits = await availableCreditsQuery.Select(s => new MonthlyCreditDetailsDto
+                {
+                    AvailableCredits = s.AvailableCredits,
+                    ExpiredOn = s.ExpiredOn
+                }).ToListAsync()
+            };
+
+            // Populate the response with success data
+            serviceResponse.Data = availableCreditDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Available credits retrieved successfully.";
+
+            // Log successful completion
+            _logger.LogInformation("Available credit summary retrieved successfully for user: {UserId}", _userId);
+        }
+        catch (Exception ex)
+        {
+            // Log the error with full context
+            _logger.LogError(ex, "Error occurred while retrieving available credits for user: {UserId}", _userId);
         }
 
         return serviceResponse;

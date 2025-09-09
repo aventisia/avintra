@@ -39,4 +39,11 @@ public class CreditUsageController : BaseApiController
         }
         return ResultHelper(exportedData);
     }
+
+    // Gets available credits for a tenant
+    [HttpGet("available-credits")]
+    public async Task<ActionResult> GetAvailableCredits()
+    {
+        return ResultHelper(await _creditUsageService.GetAvailableCreditsAsync());
+    }
 }

@@ -29,4 +29,10 @@ public interface ICreditUsageService
     /// <param name="exportCreditUsageRequestDto">A DTO containing optional filters like service type, user IDs, agent IDs, AI model IDs, and date range to filter the credit usage data.</param>
     /// <returns>A service response containing the CSV file stream of the filtered credit usage data.</returns>
     Task<ServiceResponse<FileStreamResult>> ExportCreditUsageAsync(ExportCreditUsageRequestDto exportCreditUsageRequestDto);
+
+    /// <summary>
+    /// Retrieves the summary of available credits, including filtered credit usage data.
+    /// </summary>
+    /// <returns>A task with a service response containing the available credits summary.</returns>
+    Task<ServiceResponse<AvailableCreditSummaryDto>> GetAvailableCreditsAsync();
 }
