@@ -1,0 +1,37 @@
+meta {
+  name: Generate project template documentation via LLM
+  type: http
+  seq: 14
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/project-template/generate
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Test",
+    "description": ""
+  }
+}
+
+body:multipart-form {
+  Name: Test
+  Description: This is test
+  Type: Agent
+  AccessType: Public
+  RefId: 516b6972-bd80-4174-94b1-a00d64d81032
+  Tags: ["Test","Template"]
+  Files: @file(/home/rahmat/Gitea/Test/Bakery_Store_Invoice_Format.pdf)
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+    bru.setGlobalEnvVar(
+    "PROJECT_TEMPLATE_ID",
+    res.getBody().data.id
+    );
+  }
+}
