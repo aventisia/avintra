@@ -49,7 +49,7 @@ export const SaveAsTemplateForm = () => {
     <ScrollArea className="h-[calc(100vh-3rem)]">
       <Form
         methods={form}
-        disabled={!viewMode}
+        disabled={viewMode}
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-4 p-4"
       >
@@ -112,7 +112,7 @@ export const SaveAsTemplateForm = () => {
         <FileUploadList />
 
         {/* Submit button, disabled during submission */}
-        {viewMode && (
+        {!viewMode && (
           <div className="flex items-center justify-end">
             <Button disabled={isPending || isUpdatePending} type="submit">
               {isPending || isUpdatePending ? (
