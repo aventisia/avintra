@@ -24,26 +24,29 @@ export interface SaveAsTemplateDto {
   /** Reference ID of the original flow or source */
   refId: string;
 
+  /** Approval status of the template */
+  status?: StatusType;
+
   /** Optional list of file resources associated with the template */
   resources?: FileResource[];
 
   /**
-   * Gets or sets the username of the user who created the flow record. Max-254
+   * Gets or sets the username of the user who created the template. Max-254
    */
   createdBy?: string;
 
   /**
-   * Gets or sets the date and time when the flow record was created.
+   * Gets or sets the date and time when the template was created.
    */
   createdOn?: Date;
 
   /**
-   * Gets or sets the username of the user who last modified the flow record. Max-254
+   * Gets or sets the username of the user who last modified the template. Max-254
    */
   lastModifiedBy?: string;
 
   /**
-   * Gets or sets the date and time when the flow record was last modified.
+   * Gets or sets the date and time when the template was last modified.
    */
   lastModifiedOn?: Date;
 }
@@ -59,3 +62,5 @@ export interface FileResource {
   path: string;
   extension: string;
 }
+
+export type StatusType = "Approved" | "Pending" | "Rejected" | undefined;
