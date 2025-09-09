@@ -17,13 +17,6 @@ body:json {
   }
 }
 
-script:pre-request {
-  req.setBody({
-    email: bru.getGlobalEnvVar("MY_EMAIL"),
-    pwd: bru.getGlobalEnvVar("MY_PWD")
-  })
-}
-
 script:post-response {
   if(res.getStatus() == 200 && 
      res.getBody().message=== "TwoFA is enabled")

@@ -1,0 +1,11 @@
+meta {
+  name: Get available credits
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/credit-usage/available-credits
+  body: json
+  auth: none
+}
