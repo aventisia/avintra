@@ -105,6 +105,8 @@ const VaultDynamicForm = () => {
         className="px-2.5 pb-5"
         disabled={isReadOnly || isUpdating}
       >
+        {/* Vault Id */}
+        {isReadOnly && <InputField name="id" label="Vault Id" value={rowId} />}
         {action == "create" && (
           <>
             <Controller
