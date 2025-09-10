@@ -106,9 +106,9 @@ public class ProjectTemplateController : BaseApiController
 
     // Generates a new template via LLM based on the provided template data
     [HttpPost("generate")]
-    public async Task<ActionResult<ServiceResponse<string>>> GenerateTemplateUsingLLM([FromBody] ProjectTemplateDto projectTemplateDto)
+    public async Task<ActionResult<ServiceResponse<string>>> GenerateTemplateUsingLLM([FromBody] GenereateProjectInstructionRequestDto genereateProjectInstructionRequestDto)
     {
-        return ResultHelper(await _projectTemplateService.GenerateTemplateUsingLLMAsync(projectTemplateDto));
+        return ResultHelper(await _projectTemplateService.GenerateTemplateUsingLLMAsync(genereateProjectInstructionRequestDto));
     }
 
     // Validates whether the specified projects or resources are approved templates and checks their access permissions based on the provided access types.

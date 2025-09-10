@@ -20,3 +20,15 @@ public class ProjectAccessStatusDto
     /// </summary>
     public bool IsApprovedTemplate { get; set; }
 }
+
+/// <summary>
+/// DTO for requesting LLM-generated documentation or instructions for a project template flow.
+/// </summary>
+public class GenereateProjectInstructionRequestDto
+{
+    /// <summary>
+    /// Gets or sets the payload containing the serialized project template flow data to be sent to the LLM.
+    /// This data is used as context for generating meaningful documentation or usage instructions.
+    /// </summary>
+    public required string Payload { get; set; }
+}
