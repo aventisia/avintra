@@ -54,10 +54,17 @@ public interface IProjectTemplateService
     Task<ServiceResponse<bool>> DeleteProjectTemplatesAsync(IEnumerable<Guid> projectTemplateIds);
 
     /// <summary>
-    /// Retrieves all project templates that are pending approval.
+    /// Retrieves tenant project templates that are pending approval.
     /// </summary>
     /// <returns>A list of project templates that are pending approval.</returns>
-    Task<ServiceResponse<IEnumerable<ProjectTemplateDto>>> GetAllPendingApprovalProjectTemplatesAsync();
+    Task<ServiceResponse<IEnumerable<ProjectTemplateDto>>> GetTenantPendingApprovalProjectTemplatesAsync();
+
+
+    /// <summary>
+    /// Retrieves public project templates that are pending approval.
+    /// </summary>
+    /// <returns>A list of project templates that are pending approval.</returns>
+    Task<ServiceResponse<IEnumerable<ProjectTemplateDto>>> GetPublicPendingApprovalProjectTemplatesAsync();
 
     /// <summary>
     /// Approves or rejects a project template based on the provided status.

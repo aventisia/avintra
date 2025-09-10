@@ -492,8 +492,8 @@ namespace WorkspaceAPIs.Services
             return serviceResponse;
         }
 
-        // Retrieves all project templates that are pending approval
-        public async Task<ServiceResponse<IEnumerable<ProjectTemplateDto>>> GetAllPendingApprovalProjectTemplatesAsync()
+        // Retrieves tenant project templates that are pending approval
+        public async Task<ServiceResponse<IEnumerable<ProjectTemplateDto>>> GetTenantPendingApprovalProjectTemplatesAsync()
         {
             // Initialize default response with failure message
             var serviceResponse = new ServiceResponse<IEnumerable<ProjectTemplateDto>>
@@ -504,14 +504,53 @@ namespace WorkspaceAPIs.Services
 
             try
             {
-                // Check if the current user has the "SA" (Super Admin) role, using case-insensitive comparison
-                bool isSuperAdmin = _userManagementGuardService
-                    .GetAllowedRoleListToManageUser()
-                    .Any(a => a.Equals("SA", StringComparison.OrdinalIgnoreCase));
-
                 // Build query to fetch project templates with status "Pending"
                 var query = _unitOfWork.ProjectTemplateRepo.GetByConditionAsync(w =>
-                        (isSuperAdmin ? (w.TenantId == null || w.TenantId == _tenantId) : w.TenantId == _tenantId) &&
+                        w.TenantId == _tenantId &&
+                        w.Status == ProjectTemplateStatusesEnum.Pending
+                    );
+
+                // Execute the query: order by creation date (most recent first), and include related data
+                var pendingApprovalTemplates = await query
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
+                    .Include(i => i.TemplateResources)
+                    .ToListAsync();
+
+                // Map entities to DTOs and set success response
+                serviceResponse.Data = pendingApprovalTemplates.Adapt<IEnumerable<ProjectTemplateDto>>();
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Project templates pending approval retrieved successfully.";
+
+                // Log success with count and context
+                _logger.LogInformation("Successfully retrieved {Count} project templates pending approval for user {UserId} in tenant {TenantId}.",
+                    pendingApprovalTemplates.Count, _userId, _tenantId);
+            }
+            catch (Exception ex)
+            {
+                // Log any errors during retrieval
+                _logger.LogError(ex, "Error occurred while fetching pending approval templates for user {UserId} in tenant {TenantId}.", _userId, _tenantId);
+            }
+
+            return serviceResponse;
+        }
+
+        // Retrieves public project templates that are pending approval
+        public async Task<ServiceResponse<IEnumerable<ProjectTemplateDto>>> GetPublicPendingApprovalProjectTemplatesAsync()
+        {
+            // Initialize default response with failure message
+            var serviceResponse = new ServiceResponse<IEnumerable<ProjectTemplateDto>>
+            {
+                Data = null,
+                Message = "Failed to retrieve templates pending approval. Please try again later."
+            };
+
+            try
+            {
+                // Build query to fetch project templates with status "Pending"
+                var query = _unitOfWork.ProjectTemplateRepo.GetByConditionAsync(w =>
+                        w.TenantId == null &&
                         w.Status == ProjectTemplateStatusesEnum.Pending
                     );
 
