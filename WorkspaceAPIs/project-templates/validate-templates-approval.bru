@@ -1,0 +1,29 @@
+meta {
+  name: Validate templates approval
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/project-template/validate-access
+  body: json
+  auth: none
+}
+
+body:json {
+  [
+    {
+      "refId": "c0a80104-5e6b-4d21-aef5-7e0d7e9b1234",
+      "accessType": "Public"
+    },
+    {
+      "refId": "d1b90214-9f1c-4d43-b4c9-2a739b812345",
+      "accessType": "TenantLevel"
+    },
+    {
+      "refId": "e3f00324-8b3e-41c3-9c6d-9a49f9c56789",
+      "accessType": "Space"
+    }
+  ]
+  
+}
