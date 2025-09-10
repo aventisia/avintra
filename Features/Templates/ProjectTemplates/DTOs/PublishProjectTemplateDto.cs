@@ -49,6 +49,11 @@ public class PublishProjectTemplateDto
     public List<string> Tags { get; set; } = new List<string>();
 
     /// <summary>
+    /// Gets or sets a collection of icons or avatars that visually represent the template.
+    /// </summary>
+    public List<string>? Icons { get; set; }
+
+    /// <summary>
     /// Gets or sets the collection of resource files associated with the project template.
     /// </summary>
     public IEnumerable<TemplateResourceDto>? Resources { get; set; }

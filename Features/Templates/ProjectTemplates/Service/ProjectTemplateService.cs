@@ -658,6 +658,7 @@ namespace WorkspaceAPIs.Services
         // Publishes a project template based on the specified type (Agent, Block, Inferencing, Conversation, and Generative).
         public async Task<ServiceResponse<ProjectTemplateDto>> PublishProjectTemplateAsync(PublishProjectTemplateDto publishProjectTemplateDto)
         {
+            // Initialize default response with failure message
             var serviceResponse = new ServiceResponse<ProjectTemplateDto>
             {
                 Data = null,
@@ -713,6 +714,7 @@ namespace WorkspaceAPIs.Services
                     projectTemplate.TenantId = publishProjectTemplateDto.AccessType != TemplateAccessTypesEnum.Public ? _tenantId : null;
                     projectTemplate.Version = 1;
                     projectTemplate.RefId = flowVersion.Id;
+                    projectTemplate.Icons = publishProjectTemplateDto?.Icons?.Distinct().ToList() ?? new List<string>();
                     projectTemplate.Schema = flowVersion.ReactFlowObject;
                     projectTemplate.SchemaVersion = flowVersion.VersionNumber;
                     projectTemplate.AccessPath = $"/agent?f={flowVersion.FlowId}&v={flowVersion.Id}";
