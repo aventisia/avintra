@@ -1,14 +1,14 @@
-namespace AccountsAPIs.DTOs;
+namespace WorkspaceAPIs.DTOs;
 
 /// <summary>
 /// Represents access settings for a project or resource, including its visibility and template approval status.
 /// </summary>
-public class ProjectAccessDto
+public class ProjectAccessStatusDto
 {
     /// <summary>
     /// Gets or sets the unique identifier of the project template.
     /// </summary>
-    public Guid RefId { get; set; }
+    public required Guid RefId { get; set; }
 
     /// <summary>
     /// Gets or sets the access level of the project or resource (e.g., Public, Tenant, Space).

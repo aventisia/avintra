@@ -110,4 +110,11 @@ public class ProjectTemplateController : BaseApiController
     {
         return ResultHelper(await _projectTemplateService.GenerateTemplateUsingLLMAsync(projectTemplateDto));
     }
+
+    // Validates whether the specified projects or resources are approved templates and checks their access permissions based on the provided access types.
+    [HttpPost("validate-access")]
+    public async Task<ActionResult<ServiceResponse<List<ProjectAccessStatusDto>>>> ValidateProjectAccess([FromBody] IEnumerable<ProjectAccessStatusDto> projectAccessStatusDtos)
+    {
+        return ResultHelper(await _projectTemplateService.ValidateProjectAccessAsync(projectAccessStatusDtos));
+    }
 }

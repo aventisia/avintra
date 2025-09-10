@@ -99,4 +99,11 @@ public interface IProjectTemplateService
     /// <param name="projectTemplateDto">The data for the project template to be generated using LLM.</param>
     /// <returns>Returns the newly generated template wrapped in a ServiceResponse.</returns>
     Task<ServiceResponse<string>> GenerateTemplateUsingLLMAsync(ProjectTemplateDto projectTemplateDto);
+
+    /// <summary>
+    /// Validates a list of projects or resources to determine if they are approved templates and verifies access permissions based on their access types.
+    /// </summary>
+    /// <param name="projectAccessStatusDtos">A collection of project access status DTOs for validation.</param>
+    /// <returns>A task that returns a service response containing validation results for each project.</returns>
+    Task<ServiceResponse<List<ProjectAccessStatusDto>>> ValidateProjectAccessAsync(IEnumerable<ProjectAccessStatusDto> projectAccessStatusDtos);
 }

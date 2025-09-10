@@ -401,6 +401,7 @@ namespace WorkspaceAPIs.Services
                         w.CreatedByUserId == _userId
                     )
                     .Include(i => i.TemplateResources)
+                    .AsNoTracking()
                     .FirstOrDefaultAsync();
 
                 // Handle not found case
@@ -1093,6 +1094,82 @@ namespace WorkspaceAPIs.Services
             {
                 // Log the exception if an error occurs during the generation process
                 _logger.LogError(ex, "An error occurred while generating the template using LLM model: {Model}", model);
+            }
+
+            return serviceResponse;
+        }
+
+        // Validates whether the specified projects are approved templates and checks access type.
+        public async Task<ServiceResponse<List<ProjectAccessStatusDto>>> ValidateProjectAccessAsync(IEnumerable<ProjectAccessStatusDto> projectAccessStatusDtos)
+        {
+            // Initialize the service response with a default failure state.
+            var serviceResponse = new ServiceResponse<List<ProjectAccessStatusDto>>
+            {
+                Data = null,
+                Message = "Failed to validate project access. Please try again.",
+            };
+
+            try
+            {
+                // Extract all RefIds from the incoming project access DTOs to use for querying.
+                var refIds = projectAccessStatusDtos.Select(p => p.RefId).ToList();
+
+                // Early return if no refIds provided
+                if (!refIds.Any())
+                {
+                    serviceResponse.Data = new List<ProjectAccessStatusDto>();
+                    serviceResponse.StatusCode = 200;
+                    serviceResponse.Message = "No project references provided.";
+                    _logger.LogWarning("ValidateProjectAccessAsync: No project RefIds provided for validation.");
+                    return serviceResponse;
+                }
+
+                // Retrieve matching project templates from repository
+                var projectTemplates = await _unitOfWork.ProjectTemplateRepo
+                    .GetByConditionAsync(w => refIds.Contains(w.RefId))
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                // Create dictionary for O(1) lookup by RefId
+                var templateDict = projectTemplates.ToDictionary(t => t.RefId);
+
+                var validatedProjects = new List<ProjectAccessStatusDto>();
+
+                foreach (var projectAccess in projectAccessStatusDtos)
+                {
+                    // Early skip for invalid RefId or AccessType
+                    if (projectAccess.RefId == Guid.Empty || !Enum.IsDefined(typeof(TemplateAccessTypesEnum), projectAccess.AccessType))
+                    {
+                        validatedProjects.Add(new ProjectAccessStatusDto
+                        {
+                            RefId = projectAccess.RefId,
+                            AccessType = projectAccess.AccessType,
+                            IsApprovedTemplate = false
+                        });
+                        continue;
+                    }
+
+                    // Determine if project template exists and is approved
+                    bool isApproved = templateDict.TryGetValue(projectAccess.RefId, out var matchedTemplate)
+                                      && matchedTemplate.Status == ProjectTemplateStatusesEnum.Approved;
+
+                    validatedProjects.Add(new ProjectAccessStatusDto
+                    {
+                        RefId = projectAccess.RefId,
+                        AccessType = projectAccess.AccessType,
+                        IsApprovedTemplate = isApproved
+                    });
+                }
+
+                serviceResponse.Data = validatedProjects;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Project access validated successfully.";
+
+                _logger.LogInformation("ValidateProjectAccessAsync: Validated {Count} project templates for access.", validatedProjects.Count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ValidateProjectAccessAsync: Error validating project access.");
             }
 
             return serviceResponse;
