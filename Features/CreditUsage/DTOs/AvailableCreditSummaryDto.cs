@@ -29,6 +29,11 @@ namespace AccountsAPIs.DTOs
         public decimal AvailableCredits { get; set; }
 
         /// <summary>
+        /// Gets or sets the current status of the credit (e.g., available, used, or expired).
+        /// </summary>
+        public CreditStatusesEnum Status { get; set; }
+
+        /// <summary>
         /// Gets or sets the expiration date for the credits of that month.
         /// </summary>
         public DateTimeOffset ExpiredOn { get; set; }

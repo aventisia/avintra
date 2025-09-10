@@ -252,7 +252,7 @@ public class CreditUsageService : ICreditUsageService
 
                 // Update the service response to reflect that credits are not available
                 serviceResponse.Message = "No available credits found for the specified tenant and user.";
-                hasAvailableCredits = false; 
+                hasAvailableCredits = false;
             }
 
             // Reduce the available credits by the amount used
@@ -266,12 +266,13 @@ public class CreditUsageService : ICreditUsageService
             {
                 _logger.LogError("Database save failed during credit usage insertion for User ID: {UserId}, Service Type: {ServiceType}.",
                     creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
-                return serviceResponse; 
+                return serviceResponse;
             }
 
             // Map the DTO to the entity model and set the user ID
             var creditUsage = creditUsageDto.Adapt<CreditUsage>();
             creditUsage.CreditsUsed = creditUsed;
+            creditUsage.CreditsUsed = creditUsageDto.ConsumedUnit;
             creditUsage.UsedByUserId = _userId;
 
             // Insert the new credit usage record into the database
@@ -438,7 +439,8 @@ public class CreditUsageService : ICreditUsageService
                 MonthlyCredits = await availableCreditsQuery.Select(s => new MonthlyCreditDetailsDto
                 {
                     AvailableCredits = s.AvailableCredits,
-                    ExpiredOn = s.ExpiredOn
+                    ExpiredOn = s.ExpiredOn.Date,
+                    Status = s.ExpiredOn.Date < DateTimeOffset.UtcNow.Date ? CreditStatusesEnum.Expired : (s.AvailableCredits == 0 ? CreditStatusesEnum.Used : CreditStatusesEnum.Available)
                 }).ToListAsync()
             };
 
