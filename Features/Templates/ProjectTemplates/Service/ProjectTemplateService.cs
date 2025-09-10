@@ -517,11 +517,9 @@ namespace WorkspaceAPIs.Services
 
                 // Build query to fetch project templates with status "Pending"
                 var query = _unitOfWork.ProjectTemplateRepo.GetByConditionAsync(w =>
-                        // If user is Super Admin, only fetch global templates (TenantId == null)
-                        // Otherwise, fetch templates for the current tenant
-                        (isSuperAdmin ? w.TenantId == null : w.TenantId == _tenantId) &&
+                        (isSuperAdmin ? (w.TenantId == null || w.TenantId == _tenantId) : w.TenantId == _tenantId) &&
                         w.Status == ProjectTemplateStatusesEnum.Pending
-                );
+                    );
 
                 // Execute the query: order by creation date (most recent first), and include related data
                 var pendingApprovalTemplates = await query
@@ -611,32 +609,40 @@ namespace WorkspaceAPIs.Services
                         break;
                 }
 
-                // Create the AutoNotificationDto
-                var notification = new AutoNotificationDto
+                // TODO: Remove this check once the Space feature is implemented
+                // Determine if the current user has the "SA" (Super Admin) role (case-insensitive)
+                bool isSuperAdmin = _userManagementGuardService
+                    .GetAllowedRoleListToManageUser()
+                    .Any(role => string.Equals(role, "SA", StringComparison.OrdinalIgnoreCase));
+
+                if (!isSuperAdmin)
                 {
-                    RefId = projectTemplateDto.Id,
-                    Message = notificationMessage,
-                    Type = NotificationTypesEnum.Information,
-                    UserIdList = new List<Guid>
+                    // Create the AutoNotificationDto
+                    var notification = new AutoNotificationDto
+                    {
+                        RefId = projectTemplateDto.Id,
+                        Message = notificationMessage,
+                        Type = NotificationTypesEnum.Information,
+                        UserIdList = new List<Guid>
                     {
                         existingTemplate.CreatedByUserId
                     },
-                    // TODO: Replace with actual front-end URL for viewing the project template
-                    ActionUrl = $"https://yourapp.com/project-template/{projectTemplateDto.Id}"
-                };
+                        // TODO: Replace with actual front-end URL for viewing the project template
+                        // ActionUrl = $"https://yourapp.com/project-template/{projectTemplateDto.Id}"
+                    };
 
-                // Insert the notification into the AutoNotificationService
-                if (!await _autoNotificationService.InsertAutoNotificationAsync(notification))
-                {
-                    _logger.LogError("Failed to insert notification for project template '{ProjectTemplateName}' (ID: {ProjectTemplateId}) with status '{Status}'.",
-                        projectTemplateDto.Name,
-                        projectTemplateDto.Id,
-                        projectTemplateDto.Status);
+                    // Insert the notification into the AutoNotificationService
+                    if (!await _autoNotificationService.InsertAutoNotificationAsync(notification))
+                    {
+                        _logger.LogError("Failed to insert notification for project template '{ProjectTemplateName}' (ID: {ProjectTemplateId}) with status '{Status}'.",
+                            projectTemplateDto.Name,
+                            projectTemplateDto.Id,
+                            projectTemplateDto.Status);
+                    }
+                    else
+                        // Log success if required
+                        _logger.LogInformation("Notification for project template {ProjectTemplateId} with status {Status} sent to user {UserId}.", projectTemplateDto.Id, projectTemplateDto.Status, existingTemplate.CreatedByUserId);
                 }
-                else
-                    // Log success if required
-                    _logger.LogInformation("Notification for project template {ProjectTemplateId} with status {Status} sent to user {UserId}.", projectTemplateDto.Id, projectTemplateDto.Status, existingTemplate.CreatedByUserId);
-
                 // Map updated entity to DTO and set success response
                 serviceResponse.Data = existingTemplate.Adapt<ProjectTemplateDto>();
                 serviceResponse.StatusCode = 200;
