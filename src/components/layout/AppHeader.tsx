@@ -10,6 +10,7 @@ import { UnreadNotifications } from "@/react-toolkit/features/unread-notificatio
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 
 import { AppLogo } from "./AppLogo";
+import TrustLocalhostSSLButton from "./TrustLocalhostSSLButton";
 
 const AppHeader: React.FC = () => {
   return (
@@ -26,6 +27,9 @@ const AppHeader: React.FC = () => {
         </div>
         {import.meta.env.MODE !== "production" ? <SearchBox /> : null}
         <div className="ml-4 flex items-center gap-4">
+          {import.meta.env.VITE_WORC_API_URL?.includes("https://localhost") && (
+            <TrustLocalhostSSLButton />
+          )}
           <UnreadNotifications />
           <UserAccountModal />
         </div>
