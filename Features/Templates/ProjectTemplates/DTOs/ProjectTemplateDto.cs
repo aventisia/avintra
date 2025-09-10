@@ -22,6 +22,11 @@ public class ProjectTemplateDto
     public string? Description { get; set; }
 
     /// <summary>
+    /// Gets or sets instructions or guidelines on how to use or clone this template.
+    /// </summary>
+    public string? Instruction { get; set; }
+
+    /// <summary>
     /// Gets or sets the current approval status of the project template, such as Approved, Rejected, or Pending Approval.
     /// </summary>
     public ProjectTemplateStatusesEnum Status { get; set; }

@@ -19,6 +19,11 @@ public class PublishProjectTemplateDto
     public string? Description { get; set; }
 
     /// <summary>
+    /// Gets or sets instructions or guidelines on how to use or clone this template.
+    /// </summary>
+    public string? Instruction { get; set; }
+
+    /// <summary>
     /// Gets or sets the type or structure of the template (e.g., Block, Agent).
     /// </summary>
     public ProjectTemplateTypesEnum Type { get; set; }
