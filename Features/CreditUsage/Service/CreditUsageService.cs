@@ -272,7 +272,7 @@ public class CreditUsageService : ICreditUsageService
             // Map the DTO to the entity model and set the user ID
             var creditUsage = creditUsageDto.Adapt<CreditUsage>();
             creditUsage.CreditsUsed = creditUsed;
-            creditUsage.CreditsUsed = creditUsageDto.ConsumedUnit;
+            creditUsage.UnitUsed = creditUsageDto.ConsumedUnit;
             creditUsage.UsedByUserId = _userId;
 
             // Insert the new credit usage record into the database
