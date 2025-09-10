@@ -908,6 +908,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<List<string>>("Icons")
                         .HasColumnType("text[]");
 
+                    b.Property<string>("Instruction")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
