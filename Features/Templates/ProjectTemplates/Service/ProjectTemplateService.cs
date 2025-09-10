@@ -137,13 +137,6 @@ namespace WorkspaceAPIs.Services
                     .Include(i => i.TemplateResources)
                     .FirstOrDefaultAsync();
 
-                if (projectTemplate == null)
-                {
-                    _logger.LogWarning("Project template with reference ID {RefId} not found.", refId);
-                    serviceResponse.Message = "Project template not found.";
-                    return serviceResponse;
-                }
-
                 serviceResponse.Data = projectTemplate.Adapt<ProjectTemplateDto>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Project template retrieved successfully.";
