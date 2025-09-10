@@ -63,8 +63,16 @@ const AIPersonaSetupForm = () => {
 
   useEffect(() => {
     if (fileList && fileList.data.length > 0) {
+      const currentDocs =
+        form.getValues("aiPersona.setupObject.documents") || [];
       const setupFormDocuments = fileList.data.map(({ id, name, path }) => {
-        return { id: id ?? "", name, instructions: "", filePath: path ?? "" };
+        const existing = currentDocs.find((doc) => doc.id === id);
+        return {
+          id: id ?? "",
+          name,
+          instructions: existing?.instructions ?? "",
+          filePath: path ?? "",
+        };
       });
       form.setValue("aiPersona.setupObject.documents", setupFormDocuments);
     }
