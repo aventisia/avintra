@@ -8,7 +8,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { getDialogHeadingDescription } from "../../constants";
 import { useVaultDialogStore } from "../../stores/vault-dialog-store";
-import CallAgentConfigForm from "../../vault-config/components/VaultDynamicForm";
+import VaultDynamicForm from "../../vault-config/components/VaultDynamicForm";
 
 export const VaultCrudDialog = () => {
   // Get crud dialog store state
@@ -40,7 +40,7 @@ export const VaultCrudDialog = () => {
       <DialogContent side={"right"} className="!max-w-[32rem]">
         <DialogDefaultHeader {...getDialogHeadingDescription(action)} />
         <ScrollArea className="h-[calc(100vh-4rem)] px-2.5 pb-0 pt-4">
-          <CallAgentConfigForm />
+          <VaultDynamicForm />
         </ScrollArea>
       </DialogContent>
     </Dialog>
