@@ -443,7 +443,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     ExpiredOn = DateTimeOffset.UtcNow.Date.AddMonths(1).AddDays(-1),
                     SubscriptionId = tenantSubscription.Id,
                     AvailableCredits = subscriptionPlan.MaxCredits,
-                    CreditStatus = CreditStatusesEnum.Available,
                     TenantId = _tenantId,
                     CreatedByUserId = _userId,
                     LastModifiedByUserId = _userId
@@ -648,7 +647,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     ExpiredOn = DateTimeOffset.UtcNow.Date.AddMonths(1).AddDays(-1),
                     SubscriptionId = tenantSubscription.Id,
                     AvailableCredits = subscriptionPlan.MaxCredits,
-                    CreditStatus = CreditStatusesEnum.Available,
                     TenantId = _tenantId,
                     CreatedByUserId = _userId,
                     LastModifiedByUserId = _userId
