@@ -12,6 +12,7 @@ import {
   ArchiveIcon,
   BadgeDollarSignIcon,
   BotIcon,
+  CheckCheckIcon,
   FileBoxIcon,
   Library,
   LibraryIcon,
@@ -112,6 +113,12 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         name: "credits Usage",
         route: "/credits-usage",
       },
+      {
+        permissions: ["SA", "GA"],
+        Icon: CheckCheckIcon,
+        name: "Approvals",
+        route: "/approvals",
+      },
       // {
       //   permissions: ["SA", "GA"],
       //   Icon: TbCertificate,
@@ -152,6 +159,12 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: UsersIcon,
         name: "users",
         route: "/users",
+      },
+      {
+        permissions: ["SA"],
+        Icon: CheckCheckIcon,
+        name: "Approvals",
+        route: "sa/approvals",
       },
       {
         permissions: ["SA"],
