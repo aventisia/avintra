@@ -1,10 +1,8 @@
 import { Search } from "lucide-react";
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 
-import { WorcTemplatesDto } from "../dtos/worc-templates-dtos";
 import { useFetchAgentTemplates } from "../hooks/useFetchAgentTemplates";
 import { useFetchModelTemplates } from "../hooks/useFetchModelTemplates";
-import { useWorcLibraryDialogStore } from "../stores/worc-library-store";
 
 import { TemplateCard } from "./TemplateCard";
 import { TemplateCardSkeleton } from "./TemplateCardSkelton";
@@ -15,8 +13,6 @@ const WorcLibraryTemplates = ({
 }: {
   selectedCategory: string;
 }) => {
-  const { setOpen, setTemplateToUse } = useWorcLibraryDialogStore();
-
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(12);
 
@@ -55,44 +51,11 @@ const WorcLibraryTemplates = ({
     setCurrentPage(1);
   }, [selectedCategory]);
 
-  // Handle template selection to open dialog
-  const handleTemplateToUse = useCallback(
-    (template: WorcTemplatesDto) => {
-      const {
-        id,
-        name,
-        refId,
-        type,
-        createdBy,
-        description,
-        accessType,
-        tags,
-        usagesCount,
-        icons,
-      } = template;
-
-      setOpen(true);
-      setTemplateToUse({
-        id,
-        name,
-        refId,
-        type,
-        createdBy,
-        description,
-        accessType,
-        tags,
-        usagesCount,
-        icons,
-      });
-    },
-    [setOpen, setTemplateToUse],
-  );
-
   // Show skeletons while loading
   if (isAgentDataLoading || isModelDataLoading) {
     return (
       <div className="mt-2 grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
-        {[1, 2, 3].map((i) => (
+        {[1, 2, 3, 4].map((i) => (
           <TemplateCardSkeleton key={i} />
         ))}
       </div>
@@ -105,11 +68,7 @@ const WorcLibraryTemplates = ({
       <div className="mt-2 grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
         {currentItems.length > 0 ? (
           currentItems.map((item) => (
-            <TemplateCard
-              key={item.id}
-              template={item}
-              onClick={handleTemplateToUse}
-            />
+            <TemplateCard key={item.id} template={item} />
           ))
         ) : (
           // Empty state when no templates found
