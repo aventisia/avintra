@@ -23,6 +23,7 @@ public static class AppServicesExtension
         // Mapster mapping profiles
         var config = TypeAdapterConfig.GlobalSettings;
         config.Apply(new TenantsTableMappingProfile());
+        config.Apply(new TenantAccountMappingProfile());
         config.Apply(new AccountUsersTableMappingProfile());
         config.Apply(new SessionLogMappingProfile());
         config.Apply(new AccountRoleMappingProfile());
