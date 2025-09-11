@@ -133,6 +133,9 @@ export const useDefineSATForm = () => {
   // template remark
   const templateRemark = data?.data?.remark;
 
+  // template lastModifiedBy
+  const lastModifiedBy = data?.data?.lastModifiedBy;
+
   return {
     form,
     isPending,
@@ -142,6 +145,7 @@ export const useDefineSATForm = () => {
     templateId,
     viewMode,
     templateRemark,
+    lastModifiedBy,
     onSubmit,
   };
 };

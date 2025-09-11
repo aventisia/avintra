@@ -45,6 +45,7 @@ export const SaveAsTemplateForm = () => {
     viewMode,
     templateId,
     templateRemark,
+    lastModifiedBy,
   } = useDefineSATForm();
 
   return (
@@ -56,7 +57,13 @@ export const SaveAsTemplateForm = () => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-4 p-4"
       >
-        {<StatusAlert status={status} content={templateRemark} />}
+        {
+          <StatusAlert
+            status={status}
+            remark={templateRemark}
+            approvedBy={lastModifiedBy}
+          />
+        }
         <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
           {/* Input for template name */}
           <InputField {...templateNameProps} />
