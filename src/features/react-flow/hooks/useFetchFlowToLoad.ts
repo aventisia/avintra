@@ -96,7 +96,7 @@ export const useFetchFlowToLoad = () => {
       setEdges(flow.edges);
       setFlowVariablesObject(flowVarObjs || []);
       setInputOutputObject(inputOutputObj || []);
-      console.log(JSON.stringify(flow.nodes.map((node) => node.data)));
+
       // If flow has more than 2 nodes then set the saved viewport
       if (flow.nodes.length > 2) {
         setViewport(flow.viewport, { duration: ZOOM_ANIMATION_DURATION });

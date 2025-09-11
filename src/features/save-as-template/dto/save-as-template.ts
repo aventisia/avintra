@@ -24,7 +24,7 @@ export interface SaveAsTemplateDto {
   remark?: string;
   /** Reference ID of the original flow or source */
   refId: string;
-
+  icons?: string[];
   /** Approval status of the template */
   status?: StatusType;
 
