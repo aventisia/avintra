@@ -4,7 +4,7 @@ import { FileUploadDto } from "../dtos/file-upload-dto";
 export interface FileState {
   name: string;
   size: number;
-  type:string;
+  type: string;
   progress: number;
   currentController?: AbortController | null;
 }
@@ -16,7 +16,7 @@ interface FileUploaderState {
   addFile: (file: FileState) => void;
   updateProgress: (name: string, progress: number) => void;
   addFileToUpload: (file: FileUploadDto) => void;
-  addFilesToUpload: (files: FileUploadDto[]) => void;
+  initializeFilesToUpload: (files: FileUploadDto[]) => void;
   removeFile: (name: string) => void;
   clearFiles: () => void;
   clearAll: () => void;
@@ -38,9 +38,9 @@ export const useFileStore = create<FileUploaderState>((set) => ({
       filesToUpload: [...state.filesToUpload, file],
     })),
 
-  addFilesToUpload: (newFiles) =>
-    set((state) => ({
-      filesToUpload: [...state.filesToUpload, ...newFiles],
+  initializeFilesToUpload: (newFiles) =>
+    set(() => ({
+      filesToUpload: newFiles,
     })),
 
   removeFile: (name) =>
