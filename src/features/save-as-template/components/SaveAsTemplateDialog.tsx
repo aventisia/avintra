@@ -10,6 +10,7 @@ import { useSaveAsTemplateStore } from "../stores/save-as-template-store";
 
 import { SaveAsTemplateForm } from "./SaveAsTemplateForm";
 import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
+import { useEffect } from "react";
 
 /**
  * SaveAsTemplateDialog component
@@ -31,14 +32,15 @@ export const SaveAsTemplateDialog = () => {
     })),
   );
 
+  useEffect(() => {
+    if (!showDialog) clearAll(); // Dialog is being closed
+  }, [clearAll, showDialog]);
+
   return (
     <Dialog
       open={showDialog}
-      onOpenChange={(open) => {
-        setShowDialog(open);
-        if (!open) {
-          clearAll(); // Dialog is being closed
-        }
+      onOpenChange={() => {
+        setShowDialog(!showDialog);
       }}
     >
       <DialogContent className="!max-w-[60vw]" side="right">

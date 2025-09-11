@@ -25,6 +25,7 @@ import {
 import FileUploadList from "@/features/file-uploader-setup/components/FileUploadList";
 import MarkdownContainer from "@/components/markdown/MarkdownContainer";
 import { StatusAlert } from "./StatusAlert";
+import DeleteTemplate from "./DeleteTemplate";
 
 /**
  * SaveAsTemplateForm Component
@@ -42,6 +43,8 @@ export const SaveAsTemplateForm = () => {
     isUpdatePending,
     status,
     viewMode,
+    templateId,
+    templateRemark,
   } = useDefineSATForm();
 
   return (
@@ -53,7 +56,7 @@ export const SaveAsTemplateForm = () => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-4 p-4"
       >
-        {<StatusAlert status={status} />}
+        {<StatusAlert status={status} content={templateRemark} />}
         <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
           {/* Input for template name */}
           <InputField {...templateNameProps} />
@@ -113,7 +116,9 @@ export const SaveAsTemplateForm = () => {
 
         {/* Submit button, disabled during submission */}
         {!viewMode && (
-          <div className="flex items-center justify-end">
+          <div className="flex items-center justify-end gap-4 pb-4">
+            {templateId && <DeleteTemplate id={templateId || ""} />}
+
             <Button disabled={isPending || isUpdatePending} type="submit">
               {isPending || isUpdatePending ? (
                 <LoadingSpinner className="mr-2 h-4 w-4" />

@@ -4,9 +4,13 @@ import { StatusType } from "../dto/save-as-template";
 
 interface StatusAlertProps {
   status?: StatusType;
+  content?: string;
 }
 
-export const StatusAlert: React.FC<StatusAlertProps> = ({ status }) => {
+export const StatusAlert: React.FC<StatusAlertProps> = ({
+  status,
+  content,
+}) => {
   switch (status) {
     case "Approved":
       return (
@@ -14,7 +18,7 @@ export const StatusAlert: React.FC<StatusAlertProps> = ({ status }) => {
           variant="success"
           icon={CheckCircle2Icon}
           title="Approved"
-          description="The template has been approved."
+          description={content ?? "The template has been approved by."}
         />
       );
 
@@ -34,7 +38,10 @@ export const StatusAlert: React.FC<StatusAlertProps> = ({ status }) => {
           variant="destructive"
           icon={XCircleIcon}
           title="Rejected"
-          description="The template was not approved. You may revise and resubmit it for review."
+          description={
+            content ??
+            "The template was not approved. You may revise and resubmit it for review."
+          }
         />
       );
 

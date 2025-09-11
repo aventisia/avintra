@@ -17,9 +17,7 @@ const postSaveAsTemplate = (templateData: SaveAsTemplateDto) => {
 
 const updateTemplate = (templateData: SaveAsTemplateDto) => {
   return axiosInstance
-    .put<
-      IHttpResponse<SaveAsTemplateDto>
-    >(`${baseAPIURL}`, templateData)
+    .put<IHttpResponse<SaveAsTemplateDto>>(`${baseAPIURL}`, templateData)
     .then((res) => res.data);
 };
 
@@ -29,4 +27,18 @@ const getTemplateByRefId = (id: string) => {
     .then((res) => res.data);
 };
 
-export { getTemplateByRefId, postSaveAsTemplate, updateTemplate };
+/**
+ * Deletes a template by its ID.
+ */
+const deleteTemplate = (id: string) => {
+  return axiosInstance
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .then((res) => res.data);
+};
+
+export {
+  getTemplateByRefId,
+  postSaveAsTemplate,
+  updateTemplate,
+  deleteTemplate,
+};

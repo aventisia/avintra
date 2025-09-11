@@ -22,70 +22,40 @@ import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
  * Integrates schema validation, default values, and submit logic.
  */
 export const useDefineSATForm = () => {
-  // Retrieve current flow from global store
+  // Get the current flow store
   const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
       currentFlow: state.currentFlow,
     })),
   );
 
-  // Get user session
+  // Get user session from user session store
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
     })),
   );
 
-  const { filesToUpload, addFilesToUpload } = useFileStore(
+  // File upload state
+  const { filesToUpload, initializeFilesToUpload } = useFileStore(
     useShallow((state) => ({
       filesToUpload: state.filesToUpload,
-      addFilesToUpload: state.addFilesToUpload,
+      initializeFilesToUpload: state.initializeFilesToUpload,
     })),
   );
 
+  // Fetch template details
   const { data } = useFetchTemplateDetails();
 
-  // Initialize mutation for saving the template
+  // Mutation for creating a new template
   const { mutate, isPending } = useSaveAsTemplateMutation();
 
+  // Mutation for updating an existing template
   const { mutate: updateTemplate, isPending: isUpdatePending } =
     useUpdateTemplateMutation();
 
-  /**
-   * Form submission handler
-   *
-   * Maps form values to DTO format and triggers mutation
-   */
-  const onSubmit = (formData: z.infer<typeof saveAsTemplateSchema>) => {
-    if (data?.data) {
-      updateTemplate({
-        ...data.data,
-        accessType: formData.accessType,
-        name: formData.name,
-        type: currentFlow.type,
-        description: formData.description,
-        tags: formData.tags,
-        resources: filesToUpload,
-        lastModifiedBy: userSession?.email ?? "",
-        lastModifiedOn: new Date(),
-      });
-    } else
-      mutate({
-        accessType: formData.accessType,
-        name: formData.name,
-        refId: currentFlow.versionId,
-        type: currentFlow.type,
-        description: formData.description,
-        tags: formData.tags,
-        resources: filesToUpload,
-        createdBy: userSession?.firstName + " " + userSession?.lastName,
-        createdOn: new Date(),
-      });
-  };
-
-  // Initialize the form with validation and default values
   const form = useForm<z.infer<typeof saveAsTemplateSchema>>({
-    resolver: zodResolver(saveAsTemplateSchema),
+    resolver: zodResolver(saveAsTemplateSchema), // Zod schema validation
     defaultValues: {
       name: currentFlow.name,
       description: "",
@@ -97,33 +67,81 @@ export const useDefineSATForm = () => {
   });
 
   useEffect(() => {
-    if (data?.data)
+    if (data?.data) {
       form.reset({
         name: data?.data.name ?? currentFlow.name,
         description: data?.data.description ?? "",
         accessType: data?.data.accessType ?? "TenantLevel",
-        spaces: [],
+        spaces: [], // Not yet handled
         tags: data?.data.tags ?? [],
         resources: data?.data.resources ?? [],
       });
-    if (data?.data?.resources) addFilesToUpload(data?.data?.resources);
-  }, [data?.data]);
 
-  // Show "spaces" field only if access level is set to "Spaces"
+      // Load existing resources into file store
+      if (data?.data?.resources) {
+        initializeFilesToUpload(data?.data?.resources);
+      }
+    }
+  }, [initializeFilesToUpload, currentFlow.name, data?.data, form]);
+
+  /**
+   * Submits form values.
+   * Decides between "create" and "update" depending on whether template data exists.
+   */
+  const onSubmit = (formData: z.infer<typeof saveAsTemplateSchema>) => {
+    if (data?.data) {
+      // If updating an existing template
+      updateTemplate({
+        ...data.data,
+        accessType: formData.accessType,
+        name: formData.name,
+        type: currentFlow.type,
+        description: formData.description,
+        tags: formData.tags,
+        resources: filesToUpload.length > 0 ? filesToUpload : null,
+        lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+        lastModifiedOn: new Date(),
+      });
+    } else {
+      // If creating a new template
+      mutate({
+        accessType: formData.accessType,
+        name: formData.name,
+        refId: currentFlow.versionId,
+        type: currentFlow.type,
+        description: formData.description,
+        tags: formData.tags,
+        resources: filesToUpload.length > 0 ? filesToUpload : null,
+        createdBy: userSession?.firstName + " " + userSession?.lastName,
+        createdOn: new Date(),
+      });
+    }
+  };
+
+  // Show the "Spaces" input only when access type is set to "Spaces"
   const showSpaces = form.watch("accessType") === "Spaces";
 
-  const status = data?.data.status;
+  // Get current status of the template
+  const status = data?.data?.status;
 
+  // Disable form if access type is view
   const viewMode = currentFlow.accessType == "View";
 
-  // Expose form state and helpers
+  // ID of current template
+  const templateId = data?.data?.id;
+
+  // template remark
+  const templateRemark = data?.data?.remark;
+
   return {
     form,
     isPending,
     isUpdatePending,
     showSpaces,
     status,
+    templateId,
     viewMode,
+    templateRemark,
     onSubmit,
   };
 };

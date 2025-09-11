@@ -21,6 +21,7 @@ export interface SaveAsTemplateDto {
   /** Optional tags associated with the template */
   tags?: string[];
 
+  remark?: string;
   /** Reference ID of the original flow or source */
   refId: string;
 
@@ -28,7 +29,7 @@ export interface SaveAsTemplateDto {
   status?: StatusType;
 
   /** Optional list of file resources associated with the template */
-  resources?: FileResource[];
+  resources?: FileResource[] | null;
 
   /**
    * Gets or sets the username of the user who created the template. Max-254
