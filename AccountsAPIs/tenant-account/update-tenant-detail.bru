@@ -1,0 +1,18 @@
+meta {
+  name: Update tenant detail
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant-account/detail
+  body: json
+  auth: none
+}
+
+script:post-response {
+  if(res.getStatus() == 200)
+  {
+    bru.setGlobalEnvVar("CREDIT_PLAN_ID", res.getBody().data.id);
+  }
+}
