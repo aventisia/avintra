@@ -11,10 +11,10 @@ import {
 import { BotIcon, Copy, Tag } from "lucide-react";
 
 import { WorcTemplatesDto } from "../dtos/worc-templates-dtos";
+import { useViewTemplate } from "../hooks/useViewTemplate";
 
 type TemplateCardProps = {
   template: WorcTemplatesDto;
-  onClick: (template: WorcTemplatesDto) => void;
 };
 
 /**
@@ -23,12 +23,14 @@ type TemplateCardProps = {
  * Reusable component to visually display a Worc template.
  * Shows name, description, icons, usage count, and creator info.
  */
-export const TemplateCard = ({ template, onClick }: TemplateCardProps) => {
+export const TemplateCard = ({ template }: TemplateCardProps) => {
+  const handleViewTemplate = useViewTemplate();
+
   return (
     <Card
       key={template.id}
       className="cursor-pointer rounded-2xl border-primary-50 shadow-none transition-all hover:border-primary-200 hover:bg-slate-50"
-      onClick={() => onClick(template)}
+      onClick={() => handleViewTemplate(template.id)}
     >
       <CardHeader className="pb-4">
         {/* Icon area */}

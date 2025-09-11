@@ -17,11 +17,11 @@ import {
 import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
 import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
 import { AchievesPage } from "./pages/AchievesPage";
-import { TenantPage } from "./pages/TenantPage";
 import ComingSoon from "./pages/CommingSoon";
+import { CreditsUsagePage } from "./pages/CreditsUsagePage";
 import { FlowsPage } from "./pages/FlowsPage";
+import { AppIntegrationsPage } from "./pages/IntegrationsPage";
 import { LibraryPage } from "./pages/LibraryPage";
-// import { LicensesPage } from "./pages/LicensesPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import MyAccountPage from "./pages/MyAccountPage";
 import { ExecutionsPage } from "./pages/orchestrator/ExecutionsPage";
@@ -33,18 +33,17 @@ import { QueuesPage } from "./pages/orchestrator/QueuesPage";
 import { QueuesWorkItemsPage } from "./pages/orchestrator/QueuesWorkItemsPage";
 import { TriggersPage } from "./pages/orchestrator/TriggersPage";
 import { VaultPage } from "./pages/orchestrator/VaultPage";
-// import { PricingPage } from "./pages/sa/PricingPage";
-// import { SaLicensesPage } from "./pages/sa/SaLicensesPage";
+import { PublicTemplatesApprovalPage } from "./pages/PublicTemplatesApprovalPage";
+import { CreditPlansPage } from "./pages/sa/CreditPlansPage";
+import { OnPremLLMPage } from "./pages/sa/OnPremLLMPage";
 import { SubscriptionPlansPage } from "./pages/sa/SubscriptionPlansPage";
 import { TenantsPage } from "./pages/sa/TenantsPage";
 import { SupportTicketsPage } from "./pages/SupportTicketsPage";
 import { SupportTicketsReviewerPage } from "./pages/SupportTicketsReviewerPage";
+import { TenantPage } from "./pages/TenantPage";
+import { TenantTemplatesApprovalPage } from "./pages/TenantTemplatesApprovalPage";
 import { UsersPage } from "./pages/UsersPage";
 import { ProtectedRoute } from "./ProtectedRoute";
-import { AppIntegrationsPage } from "./pages/IntegrationsPage";
-import { CreditPlansPage } from "./pages/sa/CreditPlansPage";
-import { CreditsUsagePage } from "./pages/CreditsUsagePage";
-import { OnPremLLMPage } from "./pages/sa/OnPremLLMPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -138,6 +137,16 @@ const routerConfig: RouteObject[] = [
           />
         ),
       },
+      {
+        path: "/approvals",
+        element: (
+          <ProtectedRoute
+            persmissions={["SA", "GA"]}
+            page={<TenantTemplatesApprovalPage />}
+          />
+        ),
+      },
+
       {
         path: "/orchestrator",
         element: <Orchestrator />,
@@ -248,6 +257,16 @@ const routerConfig: RouteObject[] = [
               <ProtectedRoute
                 persmissions={["SA"]}
                 page={<SubscriptionPlansPage />}
+              />
+            ),
+            index: true,
+          },
+          {
+            path: "/sa/approvals",
+            element: (
+              <ProtectedRoute
+                persmissions={["SA"]}
+                page={<PublicTemplatesApprovalPage />}
               />
             ),
             index: true,

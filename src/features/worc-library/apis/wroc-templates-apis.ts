@@ -35,9 +35,25 @@ const applyModelTemplate = (data: UseTemplateDTO) => {
     .then((res) => res.data);
 };
 
+const getTemplateById = (id: string) => {
+  return axiosInstance
+    .get<IHttpResponse<UseTemplateDTO>>(`${baseAPIURL_WORC}/${id}`)
+    .then((res) => res.data);
+};
+
+const downloadTemplateResource = (path: string) => {
+  return axiosInstance
+    .get(`${import.meta.env.VITE_WORC_API_URL}/file/download?fileUrl=${path}`, {
+      responseType: "blob",
+    })
+    .then((res) => res.data);
+};
+
 export {
   getAgentTemplates,
   getModelTemplates,
   applyAgentTemplate,
   applyModelTemplate,
+  getTemplateById,
+  downloadTemplateResource,
 };

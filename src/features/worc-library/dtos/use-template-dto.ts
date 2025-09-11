@@ -25,6 +25,42 @@ export interface UseTemplateDTO {
   /** Optional tags for categorization or filtering */
   tags?: string[];
 
-  /** Optional identifier for the template's creator */
+  resources?: FileResource[];
+
+  /** Optional purpose or intent of the template */
+  status?: StatusType;
+
+  schemaVersion?: number;
+
+  usageCount?: number;
+
+  icons?: string[];
+
+  /**
+   * Gets or sets the username of the user who created the flow record. Max-254
+   */
   createdBy?: string;
+
+  /**
+   * Gets or sets the date and time when the flow record was created.
+   */
+  createdOn?: Date;
+  /**
+   * Gets or sets the username of the user who last modified the flow record. Max-254
+   */
+  lastModifiedBy?: string;
+
+  /**
+   * Gets or sets the date and time when the flow record was last modified.
+   */
+  lastModifiedOn?: Date;
 }
+
+export interface FileResource {
+  name: string;
+  size: number;
+  path: string;
+  extension: string;
+}
+
+export type StatusType = "Approved" | "Pending" | "Rejected" | undefined;
