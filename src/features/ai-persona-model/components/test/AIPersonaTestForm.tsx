@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import { useFetchUserSession } from "@/hooks/useUserSession";
+import { DEV_JWT_LS_KEY } from "@/react-toolkit/constants";
 
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
@@ -55,8 +56,8 @@ function AIPersonaTestForm() {
 
   const modelId = modelData?.data.id || "";
   const { data } = useFetchUserSession();
-  const token = data?.data.accessToken || "";
-
+  const token = import.meta.env.DEV ? localStorage.getItem(DEV_JWT_LS_KEY) : data?.data.accessToken;
+  
   // Reflect transcript in input
   useEffect(() => {
     if (transcript) {
