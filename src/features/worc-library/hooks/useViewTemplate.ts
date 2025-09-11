@@ -1,16 +1,16 @@
 /**
- * Custom hook to handle opening a template in a new tab.
+ * Custom hook to view a template.
  *
- * @returns A function to handle opening the template.
+ * The template is displayed at the `/library` route.
+ *
+ * @returns A function that takes a template ID and opens the template in a new tab.
  */
 export const useViewTemplate = () => {
-  // Handle open flow action
+  // Function to open the template
   const handleViewTemplate = (id: string) => {
-    // View  in a new tab
     const url = `/library?t=${id}`;
     window.open(url, "_blank");
   };
 
-  // Return the handle open flow action function
   return handleViewTemplate;
 };
