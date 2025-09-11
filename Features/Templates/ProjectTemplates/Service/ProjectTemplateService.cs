@@ -134,6 +134,7 @@ namespace WorkspaceAPIs.Services
                 var projectTemplate = await _unitOfWork.ProjectTemplateRepo
                     .GetByConditionAsync(w => w.RefId == refId)
                     .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
                     .Include(i => i.TemplateResources)
                     .FirstOrDefaultAsync();
 
