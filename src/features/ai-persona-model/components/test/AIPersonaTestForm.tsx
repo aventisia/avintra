@@ -56,8 +56,10 @@ function AIPersonaTestForm() {
 
   const modelId = modelData?.data.id || "";
   const { data } = useFetchUserSession();
-  const token = import.meta.env.DEV ? localStorage.getItem(DEV_JWT_LS_KEY) : data?.data.accessToken;
-  
+  const token = import.meta.env.DEV
+    ? localStorage.getItem(DEV_JWT_LS_KEY)
+    : data?.data.accessToken;
+
   // Reflect transcript in input
   useEffect(() => {
     if (transcript) {
@@ -78,7 +80,7 @@ function AIPersonaTestForm() {
     socket.onopen = () => {
       toast.success("Chat created");
       setWs(socket);
-      setWsStatus("connected"); // ✅ Connected
+      setWsStatus("connected");
     };
 
     socket.onmessage = (event) => {
@@ -99,15 +101,12 @@ function AIPersonaTestForm() {
 
     socket.onclose = () => {
       console.log("WebSocket disconnected");
-      if (wsStatus !== "connected") {
-        setWsStatus("failed"); // ✅ Failed if it never connected
-      }
+      setWsStatus("failed");
     };
 
     socket.onerror = (err) => {
       console.error("WebSocket error:", err);
-      toast.error("WebSocket connection failed.");
-      setWsStatus("failed"); // ✅ Failed
+      setWsStatus("failed");
     };
 
     return () => {
@@ -198,18 +197,13 @@ function AIPersonaTestForm() {
             <ChatMessages.Empty
               children={
                 wsStatus === "connecting" ? (
-                  <p className="animate-pulse text-xl font-semibold text-center">
+                  <p className="animate-pulse text-base text-center">
                     Initializing chat, please wait...
                   </p>
                 ) : wsStatus === "connected" && ws ? (
                   <div className="text-center space-y-2 mb-4">
-                    <h1 className="text-xl md:text-3xl xl:text-4xl font-semibold ">
-                      Welcome to <span className="text-primary">AI Studio</span>
-                    </h1>
                     <p className="max-w-lg md:max-w-2xl text-md md:text-base text-muted-foreground mx-auto">
-                      Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-                      Impedit quos reprehenderit repellendus autem, magni
-                      doloremque nemo ratione explicabo cum ex.
+                      Start chatting with your AI Persona!
                     </p>
                   </div>
                 ) : (

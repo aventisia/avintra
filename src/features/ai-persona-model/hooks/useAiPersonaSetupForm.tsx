@@ -36,7 +36,7 @@ export const useAIPersonaSetupForm = () => {
         name: "AIPersona",
         configurationType: "OnPrem",
         llm: "gemma",
-        nodePrompt: "node prompt",
+        nodePrompt: "AI Persona",
         temperature: 0.7,
         setupObject: {
           name: "",
