@@ -406,24 +406,24 @@ public class CreditUsageService : ICreditUsageService
         return serviceResponse;
     }
 
-    // Retrieves a summary of the user's available credits, including a monthly breakdown.
-    public async Task<ServiceResponse<AvailableCreditSummaryDto>> GetAvailableCreditsAsync()
+    // Retrieves the user's available credit balance.
+    public async Task<ServiceResponse<AvailableCreditDto>> GetAvailableCreditsAsync()
     {
-        // Prepare the default service response in case of failure
-        var serviceResponse = new ServiceResponse<AvailableCreditSummaryDto>
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<AvailableCreditDto>
         {
             Data = null,
-            Message = "Unable to retrieve available credits at this time. Please try again later."
+            Message = "Unable to retrieve available credits. Please try again later."
         };
 
         try
         {
-            // Log the beginning of the operation for audit/debugging purposes
-            _logger.LogInformation("Fetching available credits for user: {UserId}", _userId);
+            // Log the start of the credit retrieval process
+            _logger.LogInformation("Starting credit retrieval for user: {UserId}", _userId);
 
             var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
 
-            // Query the tenant credits that are available and belong to the current user
+            // Fetch available tenant credits for the current user
             var availableCreditsQuery = _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
@@ -431,8 +431,53 @@ public class CreditUsageService : ICreditUsageService
                     w.AvailableCredits > 0
                 );
 
+            // Aggregate available credit data into the DTO
+            var availableCreditDto = new AvailableCreditDto
+            {
+                AvailableCredits = await availableCreditsQuery.SumAsync(s => s.AvailableCredits),
+            };
 
-            // Build the DTO from the filtered credit records
+            // Update response with successful data
+            serviceResponse.Data = availableCreditDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Available credits fetched successfully.";
+
+            _logger.LogInformation("Credit balance successfully retrieved for user: {UserId}", _userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving credit balance for user: {UserId}", _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieves the user's available credits along with a monthly breakdown.
+    public async Task<ServiceResponse<AvailableCreditSummaryDto>> GetAvailableCreditsSummaryAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<AvailableCreditSummaryDto>
+        {
+            Data = null,
+            Message = "Unable to retrieve credit summary. Please try again later."
+        };
+
+        try
+        {
+            // Log the start of the summary retrieval process
+            _logger.LogInformation("Starting credit summary retrieval for user: {UserId}", _userId);
+
+            var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
+
+            // Fetch available tenant credits for the current user
+            var availableCreditsQuery = _unitOfWork.TenantCreditRepo
+                .GetByConditionAsync(w =>
+                    w.TenantId == _tenantId &&
+                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
+                    w.AvailableCredits > 0
+                );
+
+            // Construct the credit summary DTO with monthly breakdown
             var availableCreditDto = new AvailableCreditSummaryDto
             {
                 AvailableCredits = availableCreditsQuery.Sum(s => s.AvailableCredits),
@@ -440,22 +485,24 @@ public class CreditUsageService : ICreditUsageService
                 {
                     AvailableCredits = s.AvailableCredits,
                     ExpiredOn = s.ExpiredOn.Date,
-                    Status = s.ExpiredOn.Date < DateTimeOffset.UtcNow.Date ? CreditStatusesEnum.Expired : (s.AvailableCredits == 0 ? CreditStatusesEnum.Used : CreditStatusesEnum.Available)
+                    Status = s.ExpiredOn.Date < DateTimeOffset.UtcNow.Date
+                        ? CreditStatusesEnum.Expired
+                        : (s.AvailableCredits == 0
+                            ? CreditStatusesEnum.Used
+                            : CreditStatusesEnum.Available)
                 }).ToListAsync()
             };
 
-            // Populate the response with success data
+            // Update response with successful data
             serviceResponse.Data = availableCreditDto;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Available credits retrieved successfully.";
+            serviceResponse.Message = "Credit summary retrieved successfully.";
 
-            // Log successful completion
-            _logger.LogInformation("Available credit summary retrieved successfully for user: {UserId}", _userId);
+            _logger.LogInformation("Credit summary successfully retrieved for user: {UserId}", _userId);
         }
         catch (Exception ex)
         {
-            // Log the error with full context
-            _logger.LogError(ex, "Error occurred while retrieving available credits for user: {UserId}", _userId);
+            _logger.LogError(ex, "An error occurred while retrieving credit summary for user: {UserId}", _userId);
         }
 
         return serviceResponse;

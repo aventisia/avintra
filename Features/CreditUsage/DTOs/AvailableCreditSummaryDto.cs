@@ -4,6 +4,18 @@ namespace AccountsAPIs.DTOs
     /// Represents the available credit summary, including the total available credits, 
     /// monthly credit details, and a generated summary string.
     /// </summary>
+    public class AvailableCreditDto
+    {
+        /// <summary>
+        /// Gets or sets the total available credits.
+        /// </summary>
+        public decimal AvailableCredits { get; set; }
+    }
+
+    /// <summary>
+    /// Represents the available credit summary, including the total available credits, 
+    /// monthly credit details, and a generated summary string.
+    /// </summary>
     public class AvailableCreditSummaryDto
     {
         /// <summary>

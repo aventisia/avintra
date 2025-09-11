@@ -31,8 +31,14 @@ public interface ICreditUsageService
     Task<ServiceResponse<FileStreamResult>> ExportCreditUsageAsync(ExportCreditUsageRequestDto exportCreditUsageRequestDto);
 
     /// <summary>
-    /// Retrieves the summary of available credits, including filtered credit usage data.
+    /// Fetches the total available credits for a tenant, potentially including any filtered usage data.
     /// </summary>
-    /// <returns>A task with a service response containing the available credits summary.</returns>
-    Task<ServiceResponse<AvailableCreditSummaryDto>> GetAvailableCreditsAsync();
+    /// <returns>A task that represents the asynchronous operation, containing a service response with the available credits.</returns>
+    Task<ServiceResponse<AvailableCreditDto>> GetAvailableCreditsAsync();
+
+    /// <summary>
+    /// Retrieves a detailed summary of available credits, including monthly usage breakdown and any filtered data.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation, containing a service response with the detailed available credits summary.</returns>
+    Task<ServiceResponse<AvailableCreditSummaryDto>> GetAvailableCreditsSummaryAsync();
 }

@@ -42,8 +42,15 @@ public class CreditUsageController : BaseApiController
 
     // Gets available credits for a tenant
     [HttpGet("available-credits")]
-    public async Task<ActionResult> GetAvailableCredits()
+    public async Task<ActionResult<ServiceResponse<AvailableCreditDto>>> GetAvailableCredits()
     {
         return ResultHelper(await _creditUsageService.GetAvailableCreditsAsync());
+    }
+
+    // Gets the available credits summary for a tenant
+    [HttpGet("available-credits-summary")]
+    public async Task<ActionResult<ServiceResponse<AvailableCreditSummaryDto>>> GetCreditsSummary()
+    {
+        return ResultHelper(await _creditUsageService.GetAvailableCreditsSummaryAsync());
     }
 }
