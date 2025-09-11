@@ -14,6 +14,12 @@ import { useEffect } from "react";
 import { useFetchTemplateDetails } from "./useFetchTemplateDetails";
 import { useUpdateTemplateMutation } from "./useUpdateTemplateMutation";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { useValidateTemplateMutation } from "./useValidateTemplateMutation";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { getRelevantNodeIds } from "../utils/getRelevantNodeIds";
+import { NodeDataType } from "@/types/node-data-type";
+import { Node } from "@xyflow/react";
+import { useSaveAsTemplateStore } from "../stores/save-as-template-store";
 
 /**
  * useDefineSATForm
@@ -29,10 +35,25 @@ export const useDefineSATForm = () => {
     })),
   );
 
+  // Get the current flow store
+  const { nodes } = useReactFlowExtStore(
+    useShallow((state) => ({
+      nodes: state.nodes,
+    })),
+  );
+
   // Get user session from user session store
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
+    })),
+  );
+
+  // Get state and actions from the  store
+  const { validationStatus, setValidationStatus } = useSaveAsTemplateStore(
+    useShallow((state) => ({
+      validationStatus: state.validationStatus,
+      setValidationStatus: state.setValidationStatus,
     })),
   );
 
@@ -46,6 +67,17 @@ export const useDefineSATForm = () => {
 
   // Fetch template details
   const { data } = useFetchTemplateDetails();
+
+  const { mutate: validateTemplate } = useValidateTemplateMutation();
+
+  useEffect(() => {
+    const childIds = getRelevantNodeIds(nodes as Node<NodeDataType>[]);
+    const obj = childIds?.map((i) => {
+      return { refId: i };
+    });
+    if (obj?.length > 0) validateTemplate(obj);
+    else setValidationStatus(true);
+  }, []);
 
   // Mutation for creating a new template
   const { mutate, isPending } = useSaveAsTemplateMutation();
@@ -82,7 +114,7 @@ export const useDefineSATForm = () => {
         initializeFilesToUpload(data?.data?.resources);
       }
     }
-  }, [initializeFilesToUpload, currentFlow.name, data?.data, form]);
+  }, [data?.data]);
 
   /**
    * Submits form values.
@@ -146,6 +178,7 @@ export const useDefineSATForm = () => {
     viewMode,
     templateRemark,
     lastModifiedBy,
+    validationStatus,
     onSubmit,
   };
 };

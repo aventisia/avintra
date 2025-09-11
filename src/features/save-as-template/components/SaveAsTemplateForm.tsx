@@ -26,6 +26,8 @@ import FileUploadList from "@/features/file-uploader-setup/components/FileUpload
 import MarkdownContainer from "@/components/markdown/MarkdownContainer";
 import { StatusAlert } from "./StatusAlert";
 import DeleteTemplate from "./DeleteTemplate";
+import { Alert } from "@/react-toolkit/ui/alert";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 
 /**
  * SaveAsTemplateForm Component
@@ -34,7 +36,7 @@ import DeleteTemplate from "./DeleteTemplate";
  * Uses a custom form hook and UI component library.
  */
 export const SaveAsTemplateForm = () => {
-  // Destructure form methods and UI state from custom hook
+  // Destructure form logic and state from custom hook
   const {
     form,
     onSubmit,
@@ -46,10 +48,11 @@ export const SaveAsTemplateForm = () => {
     templateId,
     templateRemark,
     lastModifiedBy,
+    validationStatus,
   } = useDefineSATForm();
 
   return (
-    // Scrollable container to handle long forms
+    // Scrollable container to support long forms within the viewport
     <ScrollArea className="h-[calc(100vh-3rem)]">
       <Form
         methods={form}
@@ -57,27 +60,38 @@ export const SaveAsTemplateForm = () => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-4 p-4"
       >
-        {
+        {/* Show a warning if validation fails */}
+        {!validationStatus && (
+          <Alert
+            variant="warning"
+            icon={ExclamationCircleIcon}
+            title="Ensure all child Agents Blocks and AI Nodes are published and approved as templates."
+          />
+        )}
+
+        {/* Show approval status if validation passes */}
+        {validationStatus && (
           <StatusAlert
             status={status}
             remark={templateRemark}
             approvedBy={lastModifiedBy}
           />
-        }
+        )}
+
         <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
-          {/* Input for template name */}
+          {/* Template name input field */}
           <InputField {...templateNameProps} />
 
-          {/* Only show access level dropdown in non-production environments */}
+          {/* Access level dropdown (hidden in production) */}
           {import.meta.env.MODE !== "production" ? (
             <SelectField {...accessLevelProps} />
           ) : null}
         </div>
 
-        {/* Optional multi-select field for selecting spaces */}
+        {/* Optional multi-select for choosing spaces */}
         {showSpaces && <MultiSelectField {...spacesProps} />}
 
-        {/* Markdown description */}
+        {/* Markdown-based description field */}
         <Controller
           control={form.control}
           name="description"
@@ -85,7 +99,7 @@ export const SaveAsTemplateForm = () => {
             <div>
               <FormLabelExt
                 label="Description"
-                description="Instruction to how to setup and use the template"
+                description="Instructions for setting up and using the template"
               />
               <div className="mt-1 rounded-lg border p-2">
                 <MarkdownContainer
@@ -97,7 +111,7 @@ export const SaveAsTemplateForm = () => {
           )}
         />
 
-        {/* Custom tag input for optional tags */}
+        {/* Optional tag input */}
         <FormField
           name="tags"
           control={form.control}
@@ -118,15 +132,18 @@ export const SaveAsTemplateForm = () => {
           )}
         />
 
-        {/* File uploader */}
+        {/* File upload section */}
         <FileUploadList />
 
-        {/* Submit button, disabled during submission */}
+        {/* Submit button and delete action, only in edit mode */}
         {!viewMode && (
           <div className="flex items-center justify-end gap-4 pb-4">
             {templateId && <DeleteTemplate id={templateId || ""} />}
 
-            <Button disabled={isPending || isUpdatePending} type="submit">
+            <Button
+              disabled={isPending || isUpdatePending || !validationStatus}
+              type="submit"
+            >
               {isPending || isUpdatePending ? (
                 <LoadingSpinner className="mr-2 h-4 w-4" />
               ) : null}
