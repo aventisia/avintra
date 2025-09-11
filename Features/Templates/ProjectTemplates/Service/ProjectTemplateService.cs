@@ -253,6 +253,7 @@ namespace WorkspaceAPIs.Services
                 existingTemplate.TenantId = projectTemplateDto.AccessType != TemplateAccessTypesEnum.Public ? _tenantId : null;
                 existingTemplate.Status = ProjectTemplateStatusesEnum.Pending;
                 existingTemplate.LastModifiedByUserId = _userId;
+                existingTemplate.LastModifiedOn = DateTimeOffset.UtcNow;
 
                 // Mark entity as updated
                 _unitOfWork.ProjectTemplateRepo.Update(existingTemplate);
@@ -612,6 +613,7 @@ namespace WorkspaceAPIs.Services
                 existingTemplate.Status = projectTemplateDto.Status;
                 existingTemplate.Remark = projectTemplateDto.Remark;
                 existingTemplate.LastModifiedByUserId = _userId;
+                existingTemplate.LastModifiedOn = DateTimeOffset.UtcNow;
 
                 // Mark the template as updated
                 _unitOfWork.ProjectTemplateRepo.Update(existingTemplate);
