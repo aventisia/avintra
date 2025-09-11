@@ -28,6 +28,7 @@ import { StatusAlert } from "./StatusAlert";
 import DeleteTemplate from "./DeleteTemplate";
 import { Alert } from "@/react-toolkit/ui/alert";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import GenerateButton from "./GenerateButton";
 
 /**
  * SaveAsTemplateForm Component
@@ -105,6 +106,7 @@ export const SaveAsTemplateForm = () => {
                 <MarkdownContainer
                   textValue={field.value || ""}
                   setTextValue={field.onChange}
+                  children={<GenerateButton setVal={form.setValue} />}
                 />
               </div>
             </div>
