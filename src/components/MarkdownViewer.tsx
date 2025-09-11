@@ -5,32 +5,32 @@ const MarkdownViewer = ({ textValue }: { textValue: string }) => {
   const components: Components = {
     // Headers with custom styling
     h1: ({ children }) => (
-      <h2 className="mb-4 mt-10 border-b border-gray-300 pb-1 text-3xl font-semibold tracking-tight text-slate-900 dark:border-gray-600 dark:text-slate-100">
+      <h2 className="not-first:mt-6 mb-4 border-b border-gray-300 pb-1 text-3xl font-semibold tracking-tight text-slate-900 dark:border-gray-600 dark:text-slate-100">
         {children}
       </h2>
     ),
     h2: ({ children }) => (
-      <h2 className="mb-4 mt-10 border-b border-gray-300 pb-1 text-3xl font-semibold tracking-tight text-slate-900 dark:border-gray-600 dark:text-slate-100">
+      <h2 className="not-first:mt-6 mb-4 border-b border-gray-300 pb-1 text-3xl font-semibold tracking-tight text-slate-900 dark:border-gray-600 dark:text-slate-100">
         {children}
       </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="mb-4 mt-8 text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+      <h3 className="mb-4 mt-5 text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
         {children}
       </h3>
     ),
     h4: ({ children }) => (
-      <h4 className="mb-4 mt-7 text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+      <h4 className="mb-4 mt-4 text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
         {children}
       </h4>
     ),
     h5: ({ children }) => (
-      <h5 className="mb-3 mt-6 text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+      <h5 className="mb-3 mt-3 text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
         {children}
       </h5>
     ),
     h6: ({ children }) => (
-      <h6 className="mb-2 mt-5 text-base font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+      <h6 className="mb-2 mt-2 text-base font-semibold tracking-tight text-slate-900 dark:text-slate-100">
         {children}
       </h6>
     ),

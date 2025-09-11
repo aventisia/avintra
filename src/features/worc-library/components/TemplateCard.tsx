@@ -33,14 +33,29 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
       onClick={() => handleViewTemplate(template.id)}
     >
       <CardHeader className="pb-4">
-        {/* Icon area */}
         <div className="flex items-center gap-4">
           {template.icons?.length ? (
-            template.icons.map((icon, idx) => (
-              <div key={icon || idx} className="rounded-lg bg-accent p-2">
-                <img src={icon} alt="icon" className="h-6 w-6" />
-              </div>
-            ))
+            <>
+              {template.icons.slice(0, 4).map((icon, idx) => (
+                <div key={icon || idx} className="rounded-lg bg-accent p-2">
+                  <img src={icon} alt="icon" className="h-6 w-6" />
+                </div>
+              ))}
+
+              {template.icons.length > 5 && (
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent p-2">
+                  <span className="text-sm font-medium">
+                    +{template.icons.length - 4}
+                  </span>
+                </div>
+              )}
+
+              {template.icons.length === 5 && (
+                <div className="rounded-lg bg-accent p-2">
+                  <img src={template.icons[4]} alt="icon" className="h-6 w-6" />
+                </div>
+              )}
+            </>
           ) : (
             // Fallback icon
             <div className="rounded-lg bg-accent p-2">

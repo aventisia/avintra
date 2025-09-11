@@ -38,6 +38,9 @@ export const useUpdateTemplateMutation = () => {
       queryClient.invalidateQueries({
         queryKey: PTA_QUERY_KEY,
       });
+      queryClient.invalidateQueries({
+        queryKey: ["AGENT_TEMPLATES"],
+      });
     },
 
     // Called on mutation error
