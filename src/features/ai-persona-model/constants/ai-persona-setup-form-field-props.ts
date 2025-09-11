@@ -2,7 +2,10 @@ import { LLMsEnum } from "@/enums/llms-enum";
 import { SliderFieldProps } from "@/shared/Slider/SliderField";
 import { SelectFieldProps } from "@/shared/select-field/SelectField";
 
-import { AutosizeTextareaFieldProps } from "@aventisia/ui/form";
+import {
+  AutosizeTextareaFieldProps,
+  InputFieldProps,
+} from "@aventisia/ui/form";
 import { enumToArray } from "@aventisia/ui/utils";
 
 import { LanguageEnum } from "../enums/language-enum";
@@ -58,12 +61,17 @@ const exclusionsBoundariesProps: AutosizeTextareaFieldProps = {
   className: "text-sm resize-none",
 };
 
-const contextMemoryProps: AutosizeTextareaFieldProps = {
+const contextMemoryProps: InputFieldProps = {
   name: "aiPersona.setupObject.contextMemoryTimeframe",
   label: "Context Memory",
-  minHeight: 10,
+  type: "number",
+  placeholder: "Enter number of interactions to remember (2-50)",
+  defaultValue: "2",
+  min: 2,
+  max: 50,
+  step: 1,
   isRequired: true,
-  className: "text-sm resize-none",
+  className: "text-sm",
 };
 
 const modelTypeProps: SelectFieldProps = {

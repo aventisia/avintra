@@ -46,7 +46,7 @@ export const useAIPersonaSetupForm = () => {
           instructions: "",
           exclusionsOrBoundaries: "",
           documents: null,
-          contextMemoryTimeframe: "",
+          contextMemoryTimeframe: "2",
           speechConfiguration: {
             configurationType: "OnPrem",
             onPremConfig: {

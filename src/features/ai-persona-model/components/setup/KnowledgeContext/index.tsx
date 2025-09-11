@@ -1,7 +1,7 @@
 import { contextMemoryProps } from "@/features/ai-persona-model/constants/ai-persona-setup-form-field-props";
 import { aiPersonaSetupFormZodSchema } from "@/features/ai-persona-model/constants/ai-persona-setup-zod-schema";
 
-import { AutosizeTextareaField } from "@aventisia/ui/form";
+import { InputField } from "@aventisia/ui/form";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
@@ -29,7 +29,7 @@ const KnowledgeContext = ({
         removeCategory={removeCategory}
         categoryFields={categoryFields}
       />
-      <AutosizeTextareaField {...contextMemoryProps} />
+      <InputField {...contextMemoryProps} />
     </div>
   );
 };
