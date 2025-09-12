@@ -10,12 +10,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { useShallow } from "zustand/react/shallow";
 
 import { useFetchSetupFormData } from "../hooks/useFetchSetupFormData";
+import { useTempChatStore } from "../store/temp-chat-store";
 import AIPersonaSetupForm from "./setup/AIPersonaSetupForm";
 import SavingIndicator from "./setup/SavingIndicator";
 import AIPersonaTestForm from "./test/AIPersonaTestForm";
 
 const AIPersonaModel = () => {
   const { isLoading, isError } = useFetchSetupFormData();
+
+  // -----------------------------------------------
+  const {
+    chatConfig: { assistantName },
+  } = useTempChatStore(
+    useShallow((state) => ({
+      chatConfig: state.chatConfig,
+    })),
+  );
+  // -----------------------------------------------
 
   const { isDataSaving } = useAnnotationDataStore(
     useShallow((state) => ({
@@ -49,7 +60,9 @@ const AIPersonaModel = () => {
         {/* Header and TabsList side by side */}
         <div className="flex items-center h-12 justify-between border-b px-4 py-2">
           <div className="flex items-center gap-2">
-            <p className="text-md font-medium">AI Persona</p>
+            <p className="text-md font-medium">
+              AI Persona {activeTab === "test" ? `- ${assistantName}` : ""}
+            </p>
             <SavingIndicator isSaving={isDataSaving} />
           </div>
 
