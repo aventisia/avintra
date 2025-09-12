@@ -18,12 +18,12 @@ export const useFetchPendingTemplates = (isSuperAdmin: boolean) => {
     if (isSuperAdmin) {
       return {
         queryFn: getPublicPendingTemplates,
-        queryKey: [PTA_QUERY_KEY],
+        queryKey: PTA_QUERY_KEY,
       };
     }
     return {
       queryFn: getTenantPendingTemplates,
-      queryKey: [TTA_QUERY_KEY],
+      queryKey: TTA_QUERY_KEY,
     };
   }, [isSuperAdmin]);
 

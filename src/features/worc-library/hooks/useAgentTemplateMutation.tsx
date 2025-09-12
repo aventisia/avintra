@@ -17,7 +17,7 @@ export const useAgentTemplateMutation = () => {
       return applyAgentTemplate({
         id: originalData.id,
         name: originalData.name,
-        description: originalData.name + "Template",
+        description: originalData.description,
         refId: originalData.refId,
       });
     },
