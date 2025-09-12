@@ -21,6 +21,11 @@ import { useEffect, useRef, useState } from "react";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
+import { useShallow } from "zustand/react/shallow";
+
+import { useFetchSetupFormData } from "../../hooks/useFetchSetupFormData";
+import { useTempChatStore } from "../../store/temp-chat-store";
+import { generateSystemMessage } from "../../utils/generate-system-message";
 
 type MessageRole = "system" | "user" | "assistant" | "data";
 interface Message {
@@ -40,6 +45,50 @@ function AIPersonaTestForm() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { data: modelData } = useFetchProjectMetaData();
+
+  // -----------------------------------------------
+  // Get temp chat store state and actions
+  const {
+    chatConfig: {
+      llm,
+      assistantName,
+      systemPrompt,
+      temperature,
+      maxMessagesInContext,
+    },
+    messagesToSend,
+    setChatConfig,
+    setMessagesToSend,
+  } = useTempChatStore(
+    useShallow((state) => ({
+      chatConfig: state.chatConfig,
+      messagesToSend: state.messagesToSend,
+      setChatConfig: state.setChatConfig,
+      setMessagesToSend: state.setMessagesToSend,
+    })),
+  );
+
+  // Fetch persona setup data
+  const { data: personaData } = useFetchSetupFormData();
+
+  // Generate and add system message when personaData is available
+  useEffect(() => {
+    if (personaData && personaData.data) {
+      // Set chat config in temp chat store
+      setChatConfig({
+        llm: personaData.data.aiPersona.llm,
+        assistantName: personaData.data.aiPersona.setupObject.name,
+        systemPrompt: generateSystemMessage(personaData.data),
+        temperature: personaData.data.aiPersona.temperature,
+        maxMessagesInContext:
+          Number(
+            personaData.data.aiPersona.setupObject.contextMemoryTimeframe,
+          ) * 2 || 4, // x2 for user and assistant messages
+      });
+    }
+  }, [personaData, setChatConfig, setMessagesToSend]);
+
+  // -----------------------------------------------
 
   const {
     transcript,
@@ -87,7 +136,11 @@ function AIPersonaTestForm() {
       try {
         const data = JSON.parse(event.data);
 
-        if (data.user_type === "AIPersona" && data.message) {
+        if (data.user_type === "assistant" && data.message) {
+          // Add assistant message to messagesToSend
+          setMessagesToSend({ role: "assistant", content: data.message });
+
+          // Update messages state to display
           setMessages((prev) => [
             ...prev,
             { role: "assistant", content: data.message },
@@ -137,6 +190,19 @@ function AIPersonaTestForm() {
         annotations,
       };
 
+      // -----------------------------------------------
+
+      // Prevent sending empty messages
+      if (message.content.trim() === "") {
+        toast.error("Cannot send empty message");
+        return null;
+      }
+
+      // Add user message to messagesToSend
+      setMessagesToSend({ role: "user", content: message.content });
+
+      // -----------------------------------------------
+
       setMessages((prev) => [...prev, msgWithFiles]);
 
       if (
@@ -146,11 +212,20 @@ function AIPersonaTestForm() {
         setIsLoading(true);
         const msgPayload = {
           model_id: modelId,
-          message: message.content,
+          llm: llm,
+          temperature: temperature,
+          messages: [
+            { role: "system", content: systemPrompt },
+            ...(maxMessagesInContext < messagesToSend.length
+              ? messagesToSend.slice(-maxMessagesInContext)
+              : messagesToSend),
+            { role: "user", content: message.content },
+          ],
           file: null,
         };
 
         try {
+          console.log(msgPayload);
           socketRef.current.send(JSON.stringify(msgPayload));
         } catch (e) {
           console.error("Send failed:", e);
@@ -203,7 +278,9 @@ function AIPersonaTestForm() {
                 ) : wsStatus === "connected" && ws ? (
                   <div className="text-center space-y-2 mb-4">
                     <p className="max-w-lg md:max-w-2xl text-md md:text-base text-muted-foreground mx-auto">
-                      Start chatting with your AI Persona!
+                      {assistantName && (
+                        <>Start chatting with {assistantName}!</>
+                      )}
                     </p>
                   </div>
                 ) : (
