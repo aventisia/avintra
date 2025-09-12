@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-env_file = os.getenv("ENV_FILE", ".env.localhost")
-load_dotenv(env_file)
+if os.getenv("ENV") == "development":
+    load_dotenv(".env.localhost")
 
 class Settings(BaseSettings):
     # JWT settings from environment variables
