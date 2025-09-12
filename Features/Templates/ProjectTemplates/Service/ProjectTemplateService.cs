@@ -1168,28 +1168,13 @@ namespace WorkspaceAPIs.Services
 
                 foreach (var projectAccess in projectAccessStatusDtos)
                 {
-                    // Early skip for invalid RefId or AccessType
-                    if (projectAccess.RefId == Guid.Empty || !Enum.IsDefined(typeof(TemplateAccessTypesEnum), projectAccess.AccessType))
-                    {
-                        validatedProjects.Add(new ProjectAccessStatusDto
-                        {
-                            RefId = projectAccess.RefId,
-                            AccessType = projectAccess.AccessType,
-                            IsApprovedTemplate = false
-                        });
-                        continue;
-                    }
-
                     // Determine if project template exists and is approved
                     bool isApproved = templateDict.TryGetValue(projectAccess.RefId, out var matchedTemplate)
                                       && matchedTemplate.Status == ProjectTemplateStatusesEnum.Approved;
 
-                    validatedProjects.Add(new ProjectAccessStatusDto
-                    {
-                        RefId = projectAccess.RefId,
-                        AccessType = projectAccess.AccessType,
-                        IsApprovedTemplate = isApproved
-                    });
+                    var validatedProject = matchedTemplate.Adapt<ProjectAccessStatusDto>() ?? new ProjectAccessStatusDto() { RefId = projectAccess.RefId };
+                    validatedProject.IsApprovedTemplate = isApproved;
+                    validatedProjects.Add(validatedProject);
                 }
 
                 serviceResponse.Data = validatedProjects;

@@ -25,6 +25,8 @@ public class ProjectTemplateMappingProfile : IRegister
 
         config.NewConfig<PublishProjectTemplateDto, ProjectTemplate>();
 
+        config.NewConfig<ProjectTemplate, ProjectAccessStatusDto>();
+
         // Request mapping for getting  trending flow template record
         config.NewConfig<ProjectTemplate, TrendingTemplateDto>()
             .Map(dest => dest.RefId, src => src.RefId)
