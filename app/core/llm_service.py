@@ -23,7 +23,7 @@ class LLMService:
         "llama3.1": "llama3.1:8b",
         "llama3.2": "llama3.2:3b",
         "mistral": "mistral:7b",
-        "gemma": "gemma:7b",
+        "gemma": "gemma3:12b",
     }
 
     def __init__(self, api_url: str = settings.ollama_api_url, api_key: str = settings.ollama_api_key) -> None:
@@ -42,11 +42,11 @@ class LLMService:
         """
         return self.model_version_map.get(model_identifier, model_identifier)
 
-    async def generate_response(self, prompt: str, model: str, temperature: float = 0.7) -> str:
+    async def generate_response(self, messages: str, model: str, temperature: float = 0.7) -> str:
         """
         Generate a response from the Ollama LLM based on the user's prompt.
 
-        :param prompt: The prompt/question from the user.
+        :param messages: The prompt/question from the user.
         :param model: The simplified model name.
         :param temperature: Controls randomness of the LLM output.
         :return: A dictionary containing either the cleaned response or an error.
@@ -54,12 +54,12 @@ class LLMService:
         model_version = self.resolve_model_version(model)
 
         # Log the prompt before sending it to the LLM
-        logger.info(f"Prompt sent to LLM ({model_version}): {prompt}")
+        logger.info(f"Prompt sent to LLM ({model_version}): {messages}")
 
         # Step 5: Build request payload and headers
         request_payload = {
             "model": model_version,
-            "prompt": prompt,
+            "messages": messages,
             "temperature": temperature,
             "stream": False,  # Use non-streaming response
         }
@@ -75,13 +75,13 @@ class LLMService:
         logger.info(f"Sending request to LLM model: {model_version}")
         logger.debug(f"Request payload: {request_payload}")
 
-        # Set timeout (30 seconds for the whole request cycle)
-        timeout = httpx.Timeout(30.0)  # 30 seconds timeout for the request
+        # Set timeout (600 seconds for the whole request cycle)
+        timeout = httpx.Timeout(600.0)  # 600 seconds timeout for the request
         try:
            # Step 6: Send POST request to generate the data from the LLM
             async with httpx.AsyncClient(timeout=timeout) as client:
                 api_response = await client.post(
-                    f"{self.api_url}/generate",
+                    f"{self.api_url}/chat",
                     json=request_payload,
                     headers=request_headers,
                 )
@@ -98,18 +98,12 @@ class LLMService:
                     return {"error": "Failed to parse JSON response."}
 
                 # Step 9: Ensure the response contains the expected 'response' field
-                if "response" not in ollama_response:
+                if "message" not in ollama_response:
                     logger.warning("LLM response is missing the 'response' field.")
                     return {"error": "LLM response is missing the 'response' field."}
                 
-                # Step 10: Extract and clean the response content
-                response_content = ollama_response["response"]
-                cleaned_response = self._clean_llm_response(response_content)
-
-                logger.info(f"Final cleaned LLM response: {cleaned_response}")
-
-                # Return the cleaned response in a structured format
-                return cleaned_response
+                # Step 10: Return assistant's message content
+                return ollama_response["message"]["content"]
 
         except httpx.RequestError as req_err:
             logger.error(f"Request error: {str(req_err)}")

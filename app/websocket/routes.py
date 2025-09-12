@@ -22,13 +22,13 @@ async def websocket_chat_handler(websocket: WebSocket):
     Authenticates the user, processes messages, and returns responses from an LLM.
     """
     try:
-        logger.info("🔌 WebSocket connection attempt received")
+        logger.info("WebSocket connection attempt received")
 
         # Step 1: Authenticate user from token query param
         token = websocket.query_params.get("token")
         model_id = websocket.query_params.get("model_id")
         if not token:
-            logger.warning("❌ No token provided — closing connection with 1008")
+            logger.warning("No token provided — closing connection with 1008")
             await websocket.close(code=1008)
             return
         if not model_id:
@@ -47,18 +47,18 @@ async def websocket_chat_handler(websocket: WebSocket):
     logger.info(f"User {user_info.id} connected. Connection ID: {connection_id}")
 
     try:
-        # Step 3: Send initial message to the user
-        ai_intro_message = ChatMessage(
-            model_id=user_info.id,
-            user_id=user_info.id,
-            user_type="AIPersona",
-            message="Hi! How can I assist you today?",
-            timestamp=str(datetime.datetime.utcnow()),
-            file=None
-        )
+        # # Step 3: Send initial message to the user
+        # ai_intro_message = ChatMessage(
+        #     model_id=user_info.id,
+        #     user_id=user_info.id,
+        #     user_type="AIPersona",
+        #     message="Hi! How can I assist you today?",
+        #     timestamp=str(datetime.datetime.utcnow()),
+        #     file=None
+        # )
 
-        # Step 4: Send the introductory message from the LLM
-        await connection_manager.send_personal_message(ai_intro_message.json(), connection_id)
+        # # Step 4: Send the introductory message from the LLM
+        # await connection_manager.send_personal_message(ai_intro_message.json(), connection_id)
 
         while True:
             # Step 5: Receive message from the client
@@ -72,8 +72,8 @@ async def websocket_chat_handler(websocket: WebSocket):
                 user_message = ChatMessage(
                     model_id=message_data["model_id"],
                     user_id=user_info.id,
-                    user_type="User",
-                    message=message_data["message"],
+                    user_type="user",
+                    message=message_data["messages"][-1]["content"],  # Assuming last message is user's message
                     timestamp=str(datetime.datetime.utcnow()),
                     file=message_data.get("file")  # Optional file
                 )
@@ -86,23 +86,23 @@ async def websocket_chat_handler(websocket: WebSocket):
                 continue
 
             # Step 8: Echo the user message back
-            await connection_manager.send_personal_message(user_message.json(), connection_id)
+            await connection_manager.send_personal_message(user_message.model_dump_json(), connection_id)
 
             # Step 9: Compose prompt for the language model with AI persona
-            llm_prompt = generate_prompt_for_ai_persona(model_id=user_message.model_id, user_query=user_message.message)
-            logger.info(f"Prompt sent to LLM: {llm_prompt}")
+            # llm_prompt = generate_prompt_for_ai_persona(model_id=user_message.model_id, user_query=user_message.message)
+            logger.info(f"Prompt sent to LLM: {message_data['messages']}")
 
             # Step 10: Store user message in Qdrant
-            try:
-                add_document_to_collection(user_message)
-            except Exception as e:
-                logger.warning(f"Failed to store user message in Qdrant: {e}")
+            # try:
+            #     add_document_to_collection(user_message)
+            # except Exception as e:
+            #     logger.warning(f"Failed to store user message in Qdrant: {e}")
 
             # Step 11: Get a response from the LLM
             llm_response = await llm_service.generate_response(
-                prompt=llm_prompt,
-                model="gemma",
-                temperature=0.7,
+                messages=message_data['messages'],
+                model=message_data['llm'],
+                temperature=message_data['temperature'],
             )
             ai_reply_text = llm_response
 
@@ -110,20 +110,20 @@ async def websocket_chat_handler(websocket: WebSocket):
             ai_response_message = ChatMessage(
                 model_id=user_message.model_id,
                 user_id=user_info.id,
-                user_type="AIPersona",
+                user_type="assistant",
                 message=ai_reply_text,
                 timestamp=str(datetime.datetime.utcnow()),
                 file=None
             )
 
             # Step 13: Send AI response message to the client
-            await connection_manager.send_personal_message(ai_response_message.json(), connection_id)
+            await connection_manager.send_personal_message(ai_response_message.model_dump_json(), connection_id)
 
             # Step 14: Store AI response message in Qdrant
-            try:
-                add_document_to_collection(ai_response_message)
-            except Exception as e:
-                logger.warning(f"Failed to store AI response message in Qdrant: {e}")
+            # try:
+            #     add_document_to_collection(ai_response_message)
+            # except Exception as e:
+            #     logger.warning(f"Failed to store AI response message in Qdrant: {e}")
 
     except WebSocketDisconnect:
         # Graceful disconnection
