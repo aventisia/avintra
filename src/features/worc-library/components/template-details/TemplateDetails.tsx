@@ -22,7 +22,7 @@ export function TemplateDetail() {
 
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
               <div className="min-w-0 lg:col-span-8">
-                <TemplateMarkdown content={data?.data?.description} />
+                <TemplateMarkdown content={data?.data?.instruction || ""} />
               </div>
               <div className="lg:col-span-4">
                 <TemplateMetaAside template={data?.data} />

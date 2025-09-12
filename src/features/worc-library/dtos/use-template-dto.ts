@@ -13,6 +13,8 @@ export interface UseTemplateDTO {
   /** Description of the template's purpose or content */
   description: string;
 
+  instruction?: string;
+
   /** Reference ID linked to the actual model or agent */
   refId: string;
 
