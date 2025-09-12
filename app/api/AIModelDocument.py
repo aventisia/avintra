@@ -100,7 +100,7 @@ async def add_document_content_to_collection(document: AIModelDocument, content:
                 "model_id": str(document.model_id),
                 "user_id": str(document.user_id),
                 "text": chunk_text,
-                "timestamp": str(datetime.datetime.utcnow()),
+                "timestamp": str(datetime.datetime.now(datetime.timezone.utc)),
                 "chunk_index": chunk_number,
                 "is_chunked": total_word_count > max_words_per_chunk,
             }
