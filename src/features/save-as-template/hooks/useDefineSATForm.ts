@@ -94,7 +94,7 @@ export const useDefineSATForm = () => {
     resolver: zodResolver(saveAsTemplateSchema), // Zod schema validation
     defaultValues: {
       name: currentFlow.name,
-      description: "",
+      instruction: "",
       accessType: "TenantLevel",
       spaces: [],
       tags: [],
@@ -106,7 +106,7 @@ export const useDefineSATForm = () => {
     if (data?.data) {
       form.reset({
         name: data?.data.name ?? currentFlow.name,
-        description: data?.data.description ?? "",
+        instruction: data?.data.instruction ?? "",
         accessType: data?.data.accessType ?? "TenantLevel",
         spaces: [], // Not yet handled
         tags: data?.data.tags ?? [],
@@ -132,7 +132,8 @@ export const useDefineSATForm = () => {
         accessType: formData.accessType,
         name: formData.name,
         type: currentFlow.type,
-        description: formData.description,
+        description: currentFlow.description,
+        instruction: formData.instruction ?? "",
         tags: formData.tags,
         icons: imgPaths,
         resources: filesToUpload.length > 0 ? filesToUpload : null,
@@ -146,7 +147,8 @@ export const useDefineSATForm = () => {
         name: formData.name,
         refId: currentFlow.versionId,
         type: currentFlow.type,
-        description: formData.description,
+        instruction: formData.instruction ?? "",
+        description: currentFlow.description,
         tags: formData.tags,
         icons: imgPaths,
         resources: filesToUpload.length > 0 ? filesToUpload : null,

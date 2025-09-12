@@ -12,6 +12,8 @@ export interface SaveAsTemplateDto {
   /** Optional description of the template */
   description?: string;
 
+  instruction: string;
+
   /** Type of entity to save as (e.g., 'Agent', 'Block') */
   type: string;
 

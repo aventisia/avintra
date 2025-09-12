@@ -92,10 +92,10 @@ export const SaveAsTemplateForm = () => {
         {/* Optional multi-select for choosing spaces */}
         {showSpaces && <MultiSelectField {...spacesProps} />}
 
-        {/* Markdown-based description field */}
+        {/* Markdown-based instruction field */}
         <Controller
           control={form.control}
-          name="description"
+          name="instruction"
           render={({ field }) => (
             <div>
               <FormLabelExt

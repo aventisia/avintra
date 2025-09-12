@@ -1,6 +1,6 @@
 import { Button } from "@aventisia/ui/buttons";
 import { SparklesIcon } from "lucide-react";
-import { useGenerateDescriptionMutation } from "../hooks/useGenerateDescriptionMutation";
+import { useGenerateInstructionMutation } from "../hooks/useGenerateInstructionMutation";
 import { getPromptDataFromNodes } from "../utils/getPromtDataFormNodes";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useShallow } from "zustand/react/shallow";
@@ -22,14 +22,14 @@ const GenerateButton = ({
     useShallow((state) => ({ nodes: state.nodes })),
   );
 
-  // Mutation hook to generate the template description
+  // Mutation hook to generate the template instruction
   const { mutate, data, isPending, isSuccess } =
-    useGenerateDescriptionMutation();
+    useGenerateInstructionMutation();
 
-  // Update the form value 'description' whenever new data is returned from the mutation
+  // Update the form value 'instruction' whenever new data is returned from the mutation
   useEffect(() => {
     if (data?.data) {
-      setVal("description", data.data);
+      setVal("instruction", data.data);
     }
   }, [data?.data]);
 

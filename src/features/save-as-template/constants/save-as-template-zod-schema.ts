@@ -22,6 +22,9 @@ export const saveAsTemplateSchema = z
     // Optional template description
     description: z.string().optional(),
 
+    // Optional template description
+    instruction: z.string().optional(),
+
     // Access level for the template (e.g., Tenant, Public, Spaces)
     accessType: z.string().min(1, "AccessLevel is required"),
 

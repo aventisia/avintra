@@ -36,12 +36,12 @@ const validateTemplate = (templateData: ValidateTemplateDto[]) => {
 };
 
 /**
- * Generate a template description based on prompt data.
+ * Generate a template instruction based on prompt data.
  *
  * @param payload - Serialized prompt data (usually from nodes).
- * @returns Generated description as a string.
+ * @returns Generated instruction as a string.
  */
-const generateTemplateDescription = (payload: string) => {
+const generateTemplateInstruction = (payload: string) => {
   return axiosInstance
     .post<IHttpResponse<string>>(
       `${baseAPIURL}/generate`,
@@ -93,5 +93,5 @@ export {
   postSaveAsTemplate,
   updateTemplate,
   deleteTemplate,
-  generateTemplateDescription,
+  generateTemplateInstruction,
 };
