@@ -5,7 +5,7 @@ import { Node, NodeProps } from "@xyflow/react";
 import { ReactFlowContextMenu } from "@/features/react-flow/components/context-menu";
 import { cn } from "@aventisia/ui/lib";
 import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
-import { Bot, GripVertical } from "lucide-react";
+import { BotIcon, GripVertical } from "lucide-react";
 import { Separator } from "@aventisia/ui";
 import { NodeDescription } from "../node-container/NodeDescription";
 import { NodeHeading } from "../node-container/node-header/NodeHeading";
@@ -40,7 +40,7 @@ export const CallAgentNode = ({
           <div className="flex h-full w-full flex-col gap-2 bg-[#F9F9F9] px-4 pb-3.5 pt-[0.7rem]">
             <NodeHeader>
               {/* <div className="flex items-center gap-3"> */}
-              <Bot className="h-5 w-5 text-[#3E37B3]" />
+              <BotIcon className="h-5 w-5 text-[#3E37B3]" />
               <NodeHeading className="text-[#1E1B4B]">{data.label}</NodeHeading>
             </NodeHeader>
             {/* </div> */}

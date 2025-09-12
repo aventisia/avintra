@@ -10,7 +10,7 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import { useSaveAsTemplateMutation } from "./useSaveAsTemplateMutation";
 import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFetchTemplateDetails } from "./useFetchTemplateDetails";
 import { useUpdateTemplateMutation } from "./useUpdateTemplateMutation";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
@@ -20,6 +20,7 @@ import { getRelevantNodeIds } from "../utils/getRelevantNodeIds";
 import { NodeDataType } from "@/types/node-data-type";
 import { Node } from "@xyflow/react";
 import { useSaveAsTemplateStore } from "../stores/save-as-template-store";
+import { getUniqueFlowImages } from "../utils/getUniqueNodeImages";
 
 /**
  * useDefineSATForm
@@ -28,6 +29,7 @@ import { useSaveAsTemplateStore } from "../stores/save-as-template-store";
  * Integrates schema validation, default values, and submit logic.
  */
 export const useDefineSATForm = () => {
+  const [imgPaths, setImgPaths] = useState<string[]>([]);
   // Get the current flow store
   const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
@@ -77,6 +79,8 @@ export const useDefineSATForm = () => {
     });
     if (obj?.length > 0) validateTemplate(obj);
     else setValidationStatus(true);
+
+    setImgPaths(getUniqueFlowImages(nodes as Node<NodeDataType>[]));
   }, []);
 
   // Mutation for creating a new template
@@ -90,7 +94,7 @@ export const useDefineSATForm = () => {
     resolver: zodResolver(saveAsTemplateSchema), // Zod schema validation
     defaultValues: {
       name: currentFlow.name,
-      description: "",
+      instruction: "",
       accessType: "TenantLevel",
       spaces: [],
       tags: [],
@@ -102,7 +106,7 @@ export const useDefineSATForm = () => {
     if (data?.data) {
       form.reset({
         name: data?.data.name ?? currentFlow.name,
-        description: data?.data.description ?? "",
+        instruction: data?.data.instruction ?? "",
         accessType: data?.data.accessType ?? "TenantLevel",
         spaces: [], // Not yet handled
         tags: data?.data.tags ?? [],
@@ -128,8 +132,10 @@ export const useDefineSATForm = () => {
         accessType: formData.accessType,
         name: formData.name,
         type: currentFlow.type,
-        description: formData.description,
+        description: currentFlow.description,
+        instruction: formData.instruction ?? "",
         tags: formData.tags,
+        icons: imgPaths,
         resources: filesToUpload.length > 0 ? filesToUpload : null,
         lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
         lastModifiedOn: new Date(),
@@ -141,8 +147,10 @@ export const useDefineSATForm = () => {
         name: formData.name,
         refId: currentFlow.versionId,
         type: currentFlow.type,
-        description: formData.description,
+        instruction: formData.instruction ?? "",
+        description: currentFlow.description,
         tags: formData.tags,
+        icons: imgPaths,
         resources: filesToUpload.length > 0 ? filesToUpload : null,
         createdBy: userSession?.firstName + " " + userSession?.lastName,
         createdOn: new Date(),

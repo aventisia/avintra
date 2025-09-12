@@ -18,7 +18,7 @@
             "label": "Inferencing Model",
             "description": "Perform inference tasks using a trained AI model",
             "docsLink": null,
-            "icon": null,
+            "icon": "BrainCircuitIcon",
             "img": "/function.png"
           },
           {
@@ -27,7 +27,7 @@
             "label": "Conversation Model",
             "description": "Enable natural, AI-powered conversational experiences",
             "docsLink": null,
-            "icon": null,
+            "icon": "BrainCircuitIcon",
             "img": "/function.png"
           },
           {
@@ -36,7 +36,7 @@
             "label": "Generative Model",
             "description": "Generate content such as text, images, or code using AI",
             "docsLink": null,
-            "icon": null,
+            "icon": "BrainCircuitIcon",
             "img": "/function.png"
           },
           {
@@ -45,7 +45,7 @@
             "label": "Speech to Text (STT)",
             "description": "Convert spoken language into written text using AI",
             "docsLink": null,
-            "icon": null,
+            "icon": "BrainCircuitIcon",
             "img": "/function.png"
           },
           {
@@ -54,7 +54,7 @@
             "label": "Text to Speech (TTS)",
             "description": "Convert written text into natural-sounding speech using AI",
             "docsLink": null,
-            "icon": null,
+            "icon": "BrainCircuitIcon",
             "img": "/function.png"
           }
         ]

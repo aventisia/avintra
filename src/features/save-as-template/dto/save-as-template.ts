@@ -12,6 +12,8 @@ export interface SaveAsTemplateDto {
   /** Optional description of the template */
   description?: string;
 
+  instruction: string;
+
   /** Type of entity to save as (e.g., 'Agent', 'Block') */
   type: string;
 
@@ -24,7 +26,7 @@ export interface SaveAsTemplateDto {
   remark?: string;
   /** Reference ID of the original flow or source */
   refId: string;
-
+  icons?: string[];
   /** Approval status of the template */
   status?: StatusType;
 

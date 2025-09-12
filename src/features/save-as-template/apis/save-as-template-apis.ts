@@ -3,13 +3,14 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { SaveAsTemplateDto } from "../dto/save-as-template";
 import { ValidateTemplateDto } from "../dto/validate-template-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/project-template`;
+// Base API URL for all project-template related endpoints
+const baseAPIURL = `${import.meta.env.VITE_WORC_API_URL}/project-template`;
 
 /**
- * Sends a new template to the API to be saved and published.
+ * Save and publish a new template.
  *
  * @param templateData - The template data to be saved.
- * @returns A promise resolving to the saved template response.
+ * @returns Response containing saved template data.
  */
 const postSaveAsTemplate = (templateData: SaveAsTemplateDto) => {
   return axiosInstance
@@ -23,8 +24,8 @@ const postSaveAsTemplate = (templateData: SaveAsTemplateDto) => {
  * Validates whether all child nodes and agent blocks in the template
  * are approved and meet access requirements.
  *
- * @param templateData - Array of template validation DTOs.
- * @returns A promise resolving to the validation result.
+ * @param templateData - Data to validate for access.
+ * @returns Validation result from the backend.
  */
 const validateTemplate = (templateData: ValidateTemplateDto[]) => {
   return axiosInstance
@@ -35,10 +36,26 @@ const validateTemplate = (templateData: ValidateTemplateDto[]) => {
 };
 
 /**
- * Updates an existing template with new data.
+ * Generate a template instruction based on prompt data.
  *
- * @param templateData - The updated template data.
- * @returns A promise resolving to the updated template response.
+ * @param payload - Serialized prompt data (usually from nodes).
+ * @returns Generated instruction as a string.
+ */
+const generateTemplateInstruction = (payload: string) => {
+  return axiosInstance
+    .post<IHttpResponse<string>>(
+      `${baseAPIURL}/generate`,
+      { payload },
+      { timeout: 90000 }, // Allow long-running generation (up to 90s)
+    )
+    .then((res) => res.data);
+};
+
+/**
+ * Update an existing template.
+ *
+ * @param templateData - Updated template data.
+ * @returns Response containing updated template data.
  */
 const updateTemplate = (templateData: SaveAsTemplateDto) => {
   return axiosInstance
@@ -47,10 +64,10 @@ const updateTemplate = (templateData: SaveAsTemplateDto) => {
 };
 
 /**
- * Fetches a template by its reference ID.
+ * Fetch a template by its reference ID.
  *
- * @param id - The reference ID of the template.
- * @returns A promise resolving to the template data.
+ * @param id - Reference ID of the template.
+ * @returns Template data from the backend.
  */
 const getTemplateByRefId = (id: string) => {
   return axiosInstance
@@ -59,10 +76,10 @@ const getTemplateByRefId = (id: string) => {
 };
 
 /**
- * Deletes a template by its ID.
+ * Delete a template by its ID.
  *
- * @param id - The ID of the template to delete.
- * @returns A promise resolving to a boolean indicating success.
+ * @param id - ID of the template to delete.
+ * @returns Boolean indicating success of the deletion.
  */
 const deleteTemplate = (id: string) => {
   return axiosInstance
@@ -76,4 +93,5 @@ export {
   postSaveAsTemplate,
   updateTemplate,
   deleteTemplate,
+  generateTemplateInstruction,
 };
