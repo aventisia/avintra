@@ -73,7 +73,7 @@ function AIPersonaTestForm() {
 
   // Generate and add system message when personaData is available
   useEffect(() => {
-    if (personaData && personaData.data) {
+    if (personaData && personaData.data && personaData.data.aiPersona) {
       // Set chat config in temp chat store
       setChatConfig({
         llm: personaData.data.aiPersona.llm,
@@ -127,7 +127,6 @@ function AIPersonaTestForm() {
     socketRef.current = socket;
 
     socket.onopen = () => {
-      toast.success("Chat created");
       setWs(socket);
       setWsStatus("connected");
     };
@@ -277,15 +276,19 @@ function AIPersonaTestForm() {
                   </p>
                 ) : wsStatus === "connected" && ws ? (
                   <div className="text-center space-y-2 mb-4">
-                    <p className="max-w-lg md:max-w-2xl text-md md:text-base text-muted-foreground mx-auto">
-                      {assistantName && (
+                    <p className="max-w-lg md:max-w-2xl text-md text-muted-foreground mx-auto">
+                      {assistantName ? (
                         <>Start chatting with {assistantName}!</>
+                      ) : (
+                        <>Setup your AI Persona to start chatting</>
                       )}
                     </p>
                   </div>
                 ) : (
                   <p className="text-base text-center text-red-500">
-                    Failed to create chat, please try again...
+                    {assistantName && (
+                      <>Failed to create chat, please try again...</>
+                    )}
                   </p>
                 )
               }
@@ -297,7 +300,10 @@ function AIPersonaTestForm() {
           <ChatInput
             annotations={annotations}
             resetUploadedFiles={reset}
-            className="p-0 box-border flex flex-col shrink-0"
+            className={cn(
+              "p-0 box-border flex flex-col shrink-0",
+              assistantName ? "flex" : "hidden",
+            )}
           >
             {imageUrl && (
               <div className="px-4">

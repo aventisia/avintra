@@ -26,7 +26,7 @@ type Actions = {
 export const useTempChatStore = create<State & Actions>((set) => ({
   chatConfig: {
     llm: "gpt-3.5-turbo",
-    assistantName: "Assistant",
+    assistantName: "",
     systemPrompt: "You are a helpful assistant.",
     temperature: 0.7,
     maxMessagesInContext: 10,
