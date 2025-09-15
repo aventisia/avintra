@@ -2,7 +2,7 @@ namespace AccountsAPIs.Controllers;
 
 [Route("tenant")]
 [ApiController]
-[Authorize(Roles = "SA,GA")]
+[Authorize(Roles = "SA")]
 public class TenantsTableController : BaseApiController
 {
     private readonly ITenantsTableService _tenantsTableService;
