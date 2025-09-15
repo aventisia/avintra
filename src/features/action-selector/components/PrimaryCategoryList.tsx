@@ -3,8 +3,6 @@ import { Separator } from "@aventisia/ui";
 import { PrimaryCategory } from "./PrimaryCategory";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { useShallow } from "zustand/react/shallow";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
 export const PrimaryCategoryList = () => {
   // Get the setPrimaryCategory function from the store
@@ -12,12 +10,6 @@ export const PrimaryCategoryList = () => {
     useShallow((state) => ({
       actionSelectorData: state.actionSelectorData,
       setPrimaryCategoryLabel: state.setPrimaryCategoryLabel,
-    })),
-  );
-
-  const { currentFlow } = useCurrentFlowStore(
-    useShallow((state) => ({
-      currentFlow: state.currentFlow,
     })),
   );
 
@@ -31,12 +23,6 @@ export const PrimaryCategoryList = () => {
               value={item.label}
               className="rounded-lg p-1"
               onSelect={() => setPrimaryCategoryLabel(item.label)}
-              // disabled={!item.actionCategories.length}
-              disabled={
-                currentFlow?.type === FlowTypesEnum.Agent &&
-                item.label === "AI Integrations" &&
-                true
-              }
             >
               {/* Primary category item */}
               <PrimaryCategory data={item} />

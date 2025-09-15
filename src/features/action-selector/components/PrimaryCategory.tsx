@@ -1,9 +1,7 @@
 import { iconMapper } from "@/components/icon-mapper";
-import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { Badge } from "@aventisia/ui/badge";
+
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import { useShallow } from "zustand/react/shallow";
+
 import { PrimaryCategoryType } from "../types/primary-category-type";
 import { FallbackImageIcon } from "./FallbackImageIcon";
 
@@ -12,12 +10,6 @@ interface PrimaryCategoryProps {
 }
 
 export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
-  const { currentFlow } = useCurrentFlowStore(
-    useShallow((state) => ({
-      currentFlow: state.currentFlow,
-    })),
-  );
-
   return (
     <div className="flex w-full items-center gap-3 px-2 py-2">
       {/* Category icon or image */}
@@ -32,12 +24,6 @@ export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
         <div className="flex gap-2">
           <h2 className="flex items-center text-xs font-medium text-foreground">
             {data.label}
-            {currentFlow.type === FlowTypesEnum.Agent &&
-              data.label === "AI Integrations" && (
-                <Badge variant="outline" className="ml-1">
-                  Coming Soon
-                </Badge>
-              )}
           </h2>
         </div>
 
