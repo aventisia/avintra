@@ -1172,7 +1172,7 @@ namespace WorkspaceAPIs.Services
                     bool isApproved = templateDict.TryGetValue(projectAccess.RefId, out var matchedTemplate)
                                       && matchedTemplate.Status == ProjectTemplateStatusesEnum.Approved;
 
-                    var validatedProject = matchedTemplate.Adapt<ProjectAccessStatusDto>() ?? new ProjectAccessStatusDto() { RefId = projectAccess.RefId };
+                    var validatedProject = matchedTemplate.Adapt<ProjectAccessStatusDto>() ?? new ProjectAccessStatusDto() { RefId = projectAccess.RefId, Name = projectAccess.Name };
                     validatedProject.IsApprovedTemplate = isApproved;
                     validatedProjects.Add(validatedProject);
                 }
