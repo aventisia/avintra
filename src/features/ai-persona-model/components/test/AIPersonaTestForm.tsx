@@ -136,15 +136,25 @@ function AIPersonaTestForm() {
         const data = JSON.parse(event.data);
 
         if (data.user_type === "assistant" && data.message) {
+          // Stop loading state on first chunk of assistant message
+          setIsLoading(false);
+
           // Add assistant message to messagesToSend
           setMessagesToSend({ role: "assistant", content: data.message });
 
           // Update messages state to display
-          setMessages((prev) => [
-            ...prev,
-            { role: "assistant", content: data.message },
-          ]);
-          setIsLoading(false);
+          setMessages((prev) => {
+            if (prev.length > 0 && prev[prev.length - 1].role === "assistant") {
+              const updated = [...prev];
+              updated[updated.length - 1] = {
+                ...updated[updated.length - 1],
+                content: updated[updated.length - 1].content + data.message, // append the new word
+              };
+              return updated;
+            } else {
+              return [...prev, { role: "assistant", content: data.message }];
+            }
+          });
         }
       } catch (error) {
         console.error("WebSocket message parsing error:", error);
@@ -238,118 +248,114 @@ function AIPersonaTestForm() {
   };
 
   return (
-    <div className="flex flex-col">
-      <ChatSection handler={handler} className="pb-0">
-        <div className="flex w-full flex-col gap-4 mx-auto h-[calc(100vh-9.5rem)] overflow-hidden p-0 md:p-5 md:pb-3">
-          <ChatMessages className="p-0">
-            <ChatMessages.List>
-              {messages.map((message, index) => (
-                <ChatMessage
-                  className="p-0 text-md items-start"
-                  key={index}
-                  message={message}
-                  isLast={true}
+    <ChatSection handler={handler} className="p-0">
+        <ChatMessages className="">
+          <ChatMessages.List>
+            {messages.map((message, index) => (
+              <ChatMessage
+                className="p-0 text-md items-start"
+                key={index}
+                message={message}
+                isLast={true}
+              >
+                <ChatMessage.Avatar />
+                <ChatMessage.Content
+                  isLoading={isLoading}
+                  append={handler.append}
                 >
-                  <ChatMessage.Avatar />
-                  <ChatMessage.Content
-                    isLoading={isLoading}
-                    append={handler.append}
-                  >
-                    <ChatMessage.Content.Markdown />
-                    <div className="w-1/4 self-end">
-                      <ChatMessage.Content.Image />
-                    </div>
-                    <ChatMessage.Content.DocumentFile />
-                  </ChatMessage.Content>
-                </ChatMessage>
-              ))}
-              <ChatMessages.Loading className="justify-start">
-                <div className="animate-pulse">Thinking...</div>
-              </ChatMessages.Loading>
-            </ChatMessages.List>
-
-            <ChatMessages.Empty
-              children={
-                wsStatus === "connecting" ? (
-                  <p className="animate-pulse text-base text-center">
-                    Initializing chat, please wait...
-                  </p>
-                ) : wsStatus === "connected" && ws ? (
-                  <div className="text-center space-y-2 mb-4">
-                    <p className="max-w-lg md:max-w-2xl text-md text-muted-foreground mx-auto">
-                      {assistantName ? (
-                        <>Start chatting with {assistantName}!</>
-                      ) : (
-                        <>Setup your AI Persona to start chatting</>
-                      )}
-                    </p>
+                  <ChatMessage.Content.Markdown />
+                  <div className="w-1/4 self-end">
+                    <ChatMessage.Content.Image />
                   </div>
-                ) : (
-                  <p className="text-base text-center text-red-500">
-                    {assistantName && (
-                      <>Failed to create chat, please try again...</>
+                  <ChatMessage.Content.DocumentFile />
+                </ChatMessage.Content>
+              </ChatMessage>
+            ))}
+            <ChatMessages.Loading className="justify-start">
+              <div className="animate-pulse">Thinking...</div>
+            </ChatMessages.Loading>
+          </ChatMessages.List>
+
+          <ChatMessages.Empty
+            children={
+              wsStatus === "connecting" ? (
+                <p className="animate-pulse text-base text-center">
+                  Initializing chat, please wait...
+                </p>
+              ) : wsStatus === "connected" && ws ? (
+                <div className="text-center space-y-2 mb-4">
+                  <p className="max-w-lg md:max-w-2xl text-md text-muted-foreground mx-auto">
+                    {assistantName ? (
+                      <>Start chatting with {assistantName}!</>
+                    ) : (
+                      <>Setup your AI Persona to start chatting</>
                     )}
                   </p>
-                )
-              }
-            />
-          </ChatMessages>
-
-          <ChatCanvas className="w-1/3" />
-
-          <ChatInput
-            annotations={annotations}
-            resetUploadedFiles={reset}
-            className={cn(
-              "p-0 box-border flex flex-col shrink-0",
-              assistantName ? "flex" : "hidden",
-            )}
-          >
-            {imageUrl && (
-              <div className="px-4">
-                <img
-                  className="max-h-[100px] object-contain rounded-md border"
-                  src={imageUrl}
-                  alt="Uploaded preview"
-                />
-              </div>
-            )}
-            <ChatInput.Form>
-              <ChatInput.Field
-                className="rounded-lg box-border bg-accent focus-visible:ring-2 focus-visible:ring-offset-0 focus-visible:outline-none text-md min-h-0 h-24 max-h-52 px-4 py-5"
-                placeholder="Type your message..."
-              />
-              {browserSupportsSpeechRecognition && (
-                <Button
-                  type="button"
-                  onClick={() => {
-                    if (listening) {
-                      SpeechRecognition.stopListening();
-                    } else {
-                      resetTranscript();
-                      SpeechRecognition.startListening({ continuous: true });
-                    }
-                  }}
-                  className={cn(
-                    `absolute right-14 bottom-2 p-2 rounded-full text-accent-foreground h-10 w-10`,
-                    listening && "text-white",
+                </div>
+              ) : (
+                <p className="text-base text-center text-red-500">
+                  {assistantName && (
+                    <>Failed to create chat, please try again...</>
                   )}
-                  variant={listening ? "default" : "ghost"}
-                >
-                  <MicIcon />
-                </Button>
+                </p>
+              )
+            }
+          />
+        </ChatMessages>
+      
+      <ChatCanvas className="w-1/3" />
+
+      <ChatInput
+        annotations={annotations}
+        resetUploadedFiles={reset}
+        className={cn(
+          "px-4 pb-14 box-border flex flex-col shrink-0",
+          assistantName ? "flex" : "hidden",
+        )}
+      >
+        {imageUrl && (
+          <div className="px-4">
+            <img
+              className="max-h-[100px] object-contain rounded-md border"
+              src={imageUrl}
+              alt="Uploaded preview"
+            />
+          </div>
+        )}
+        <ChatInput.Form>
+          <ChatInput.Field
+            className="rounded-lg box-border bg-accent focus-visible:ring-2 focus-visible:ring-offset-0 focus-visible:outline-none text-md min-h-0 h-24 max-h-52 px-4 py-5"
+            placeholder="Type your message..."
+          />
+          {browserSupportsSpeechRecognition && (
+            <Button
+              type="button"
+              onClick={() => {
+                if (listening) {
+                  SpeechRecognition.stopListening();
+                } else {
+                  resetTranscript();
+                  SpeechRecognition.startListening({ continuous: true });
+                }
+              }}
+              className={cn(
+                `absolute right-14 bottom-2 p-2 rounded-full text-accent-foreground h-10 w-10`,
+                listening && "text-white",
               )}
-              <ChatInput.Upload
-                multiple={true}
-                onUpload={handleUpload}
-                className="[&>label]:bg-accent [&>label]:text-accent-foreground [&>label]:p-0"
-              />
-              <ChatInput.Submit className="bottom-2" />
-            </ChatInput.Form>
-          </ChatInput>
-        </div>
-      </ChatSection>
-    </div>
+              variant={listening ? "default" : "ghost"}
+            >
+              <MicIcon />
+            </Button>
+          )}
+          <ChatInput.Upload
+            multiple={true}
+            onUpload={handleUpload}
+            className="[&>label]:bg-accent [&>label]:text-accent-foreground [&>label]:p-0"
+          />
+          <ChatInput.Submit className="bottom-2" />
+        </ChatInput.Form>
+      </ChatInput>
+    </ChatSection>
   );
 }
 

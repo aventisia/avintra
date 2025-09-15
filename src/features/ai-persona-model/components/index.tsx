@@ -44,7 +44,7 @@ const AIPersonaModel = () => {
         </ResizablePanel>
 
         {/* separator */}
-        <ResizableHandle withHandle className="w-[0.5px]" />
+        <ResizableHandle withHandle className="w-[1px]" />
 
         {/* chat testing */}
         <ResizablePanel defaultSize={50} minSize={40}>

@@ -35,7 +35,22 @@ export const useTempChatStore = create<State & Actions>((set) => ({
 
   setChatConfig: (config) => set({ chatConfig: config }),
   setMessagesToSend: (message) =>
-    set((state) => ({
-      messagesToSend: [...state.messagesToSend, message],
-    })),
+    set((state) => {
+      if (
+        message.role === "assistant" &&
+        state.messagesToSend.length > 0 &&
+        state.messagesToSend[state.messagesToSend.length - 1].role ===
+          "assistant"
+      ) {
+        // Append chunk to last assistant message
+        const updated = [...state.messagesToSend];
+        updated[updated.length - 1] = {
+          ...updated[updated.length - 1],
+          content: updated[updated.length - 1].content + message.content,
+        };
+        return { messagesToSend: updated };
+      }
+      // Otherwise, add new message
+      return { messagesToSend: [...state.messagesToSend, message] };
+    }),
 }));
