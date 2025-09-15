@@ -103,7 +103,7 @@ const AIPersonaSetupForm = () => {
         onSubmit={form.handleSubmit(submitHandler)}
         disabled={isSubmitting || isLoading || modelData?.data.isPublished}
       >
-        <ScrollArea className="mt-4 flex-grow h-[calc(100vh-14.2rem)]">
+        <ScrollArea className="pt-4 flex-grow h-[calc(100vh-12.5rem)]">
           <FormProvider {...form}>
             <div className="space-y-4 px-4 pb-1 w-full">
               {/* Basic Information */}
@@ -143,17 +143,19 @@ const AIPersonaSetupForm = () => {
           </FormProvider>
         </ScrollArea>
 
-        <Separator className="my-0 h-[0.5px] w-full" />
-        <div className="flex items-center justify-end self-end gap-2 px-4 py-1 pb-4">
+        <div className="flex items-center px-4 py-4 border-t">
           <Button
             size="xs"
             type="submit"
             disabled={isSubmitting || isUpdatePending}
           >
             {isSubmitting || isUpdatePending ? (
-              <LoadingSpinner className="h-4 w-4" />
+              <div className="flex items-center gap-2">
+                <LoadingSpinner className="size-4" />
+                Saving...
+              </div>
             ) : (
-              "Save"
+              "Save Changes"
             )}
           </Button>
         </div>
