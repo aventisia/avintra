@@ -1,3 +1,4 @@
+import json
 import httpx
 from app.qdrant.service import get_last_chats_by_model_id, get_document_context_by_model_id 
 from typing import Any, Dict
@@ -42,14 +43,9 @@ class LLMService:
         """
         return self.model_version_map.get(model_identifier, model_identifier)
 
-    async def generate_response(self, messages: str, model: str, temperature: float = 0.7) -> str:
+    async def generate_response_stream(self, messages: str, model: str, temperature: float = 0.7):
         """
-        Generate a response from the Ollama LLM based on the user's prompt.
-
-        :param messages: The prompt/question from the user.
-        :param model: The simplified model name.
-        :param temperature: Controls randomness of the LLM output.
-        :return: A dictionary containing either the cleaned response or an error.
+        Stream response from the Ollama LLM as chunks.
         """
         model_version = self.resolve_model_version(model)
 
@@ -61,7 +57,7 @@ class LLMService:
             "model": model_version,
             "messages": messages,
             "temperature": temperature,
-            "stream": False,  # Use non-streaming response
+            "stream": True,  # Use non-streaming response
         }
 
         request_headers = {
@@ -71,51 +67,28 @@ class LLMService:
         if self.api_key:
             request_headers["API-KEY"] = self.api_key
 
-        # Log details of the request being sent
-        logger.info(f"Sending request to LLM model: {model_version}")
-        logger.debug(f"Request payload: {request_payload}")
-
         # Set timeout (600 seconds for the whole request cycle)
         timeout = httpx.Timeout(600.0)  # 600 seconds timeout for the request
         try:
-           # Step 6: Send POST request to generate the data from the LLM
             async with httpx.AsyncClient(timeout=timeout) as client:
-                api_response = await client.post(
+                async with client.stream(
+                    "POST",
                     f"{self.api_url}/chat",
                     json=request_payload,
                     headers=request_headers,
-                )
-
-                # Step 7: Handle response from the API
-                api_response.raise_for_status()  # This raises an error if the status code is 4xx/5xx
-                logger.info(f"Received response from Ollama API: {api_response.status_code}")
-
-                # Step 8: Parse the response body
-                try:
-                    ollama_response = api_response.json() 
-                except Exception as e:
-                    logger.error(f"Error parsing JSON response: {e}")
-                    return {"error": "Failed to parse JSON response."}
-
-                # Step 9: Ensure the response contains the expected 'response' field
-                if "message" not in ollama_response:
-                    logger.warning("LLM response is missing the 'response' field.")
-                    return {"error": "LLM response is missing the 'response' field."}
-                
-                # Step 10: Return assistant's message content
-                return ollama_response["message"]["content"]
-
-        except httpx.RequestError as req_err:
-            logger.error(f"Request error: {str(req_err)}")
-            return {"error": f"Request failed: {str(req_err)}"}
-
-        except httpx.HTTPStatusError as http_err:
-            logger.error(f"HTTP error {http_err.response.status_code}: {http_err.response.text}")
-            return {"error": f"HTTP error {http_err.response.status_code}: {http_err.response.text}"}
-
+                ) as response:
+                    response.raise_for_status()
+                    async for line in response.aiter_lines():
+                        if line.strip():
+                            try:
+                                data = json.loads(line)
+                                if "message" in data:
+                                    yield data["message"]["content"]
+                            except Exception as e:
+                                logger.warning(f"Streaming parse error: {e}")
         except Exception as e:
-            logger.exception(f"Unexpected error during LLM call: {str(e)}")
-            return {"error": f"Unexpected error: {str(e)}"}
+            logger.error(f"Streaming error: {e}")
+            yield "[Error: Streaming failed]"
 
     def _clean_llm_response(self, llm_response: str) -> str:
         """

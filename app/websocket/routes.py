@@ -53,7 +53,7 @@ async def websocket_chat_handler(websocket: WebSocket):
         #     user_id=user_info.id,
         #     user_type="AIPersona",
         #     message="Hi! How can I assist you today?",
-        #     timestamp=str(datetime.datetime.utcnow()),
+        #     timestamp=str(datetime.datetime.now(datetime.timezone.utc)),
         #     file=None
         # )
 
@@ -74,7 +74,7 @@ async def websocket_chat_handler(websocket: WebSocket):
                     user_id=user_info.id,
                     user_type="user",
                     message=message_data["messages"][-1]["content"],  # Assuming last message is user's message
-                    timestamp=str(datetime.datetime.utcnow()),
+                    timestamp=str(datetime.datetime.now(datetime.timezone.utc)),
                     file=message_data.get("file")  # Optional file
                 )
 
@@ -98,26 +98,21 @@ async def websocket_chat_handler(websocket: WebSocket):
             # except Exception as e:
             #     logger.warning(f"Failed to store user message in Qdrant: {e}")
 
-            # Step 11: Get a response from the LLM
-            llm_response = await llm_service.generate_response(
+            async for chunk in llm_service.generate_response_stream(
                 messages=message_data['messages'],
                 model=message_data['llm'],
                 temperature=message_data['temperature'],
-            )
-            ai_reply_text = llm_response
-
-            # Step 12: Create AI response message with updated variable names
-            ai_response_message = ChatMessage(
-                model_id=user_message.model_id,
-                user_id=user_info.id,
-                user_type="assistant",
-                message=ai_reply_text,
-                timestamp=str(datetime.datetime.utcnow()),
-                file=None
-            )
-
-            # Step 13: Send AI response message to the client
-            await connection_manager.send_personal_message(ai_response_message.model_dump_json(), connection_id)
+            ):
+                # Optionally, send each chunk as it arrives (for true streaming to client)
+                ai_response_message = ChatMessage(
+                    model_id=user_message.model_id,
+                    user_id=user_info.id,
+                    user_type="assistant",
+                    message=chunk,
+                    timestamp=str(datetime.datetime.now(datetime.timezone.utc)),
+                    file=None
+                )
+                await connection_manager.send_personal_message(ai_response_message.model_dump_json(), connection_id)
 
             # Step 14: Store AI response message in Qdrant
             # try:

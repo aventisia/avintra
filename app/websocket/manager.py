@@ -51,7 +51,7 @@ class ConnectionManager:
             # Send the message to the WebSocket client as a JSON string
             await self.active_connections[connection_id].send_text(str(message))
             
-            logger.info(f"Sent message to ConnID={connection_id}: {message}")
+            # logger.info(f"Sent message to ConnID={connection_id}: {message}")
 
     def get_connection_id_by_user(self, user_id: str) -> str:
         """
