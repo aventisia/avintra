@@ -13,62 +13,28 @@ namespace AspNetToolkit.Enums;
 public enum CustomRolesEnum
 {
     /// <summary>
-    /// Super administrator. This role should have access to everything.
+    /// Super administrator. This role has full access to all system features.
     /// </summary>
-    [Description("0; Super administrator; This role should have access to everything.")]
+    [Description("0; Super administrator; This role has full access to all system features.")]
     SA,
 
-    /// <summary>
-    /// Global administrator. This role will have access to everything. The main purpose of this role is to assign GSA and GLBA roles to other users.
-    /// </summary>
-    [Description("1; Global administrator; This role will have access to everything. The main purpose of this role is to assign GSA and GLBA roles to other users.")]
-    GA,
 
     /// <summary>
-    /// Global settings administrator. This role will have access to support, app settings, users, groups, policies, setup, CRUD operations, all products, all tenants, all internal apps.
+    /// Tenant Administrator. This role manages users, settings, and data for one specific tenant only.
     /// </summary>
-    [Description("2; Global settings administrator; This role will have access to support, app settings, users, groups, policies, setup, CRUD operations, all products, all tenants, all internal apps.")]
-    GSA,
-
-    /// <summary>
-    /// Global license and billing administrator. This role will have access to handle billings, payments, license, subscription of individual user as well as all tenants.
-    /// </summary>
-    [Description("3; Global license and billing administrator; This role will have access to handle billings, payments, license, subscription of individual user as well as all tenants.")]
-    GLBA,
-
-    /// <summary>
-    /// Tenant administrator. This role will have access to all things (within a specific Tenant) to which TSA, TLBA, and TU have access to. The main purpose of this role is to assign TSA, TLBA, and TA roles to other users.
-    /// </summary>
-    [Description("4; Tenant administrator; This role will have access to all things (within a specific Tenant) to which TSA, TLBA, and TU have access to. The main purpose of this role is to assign TSA, TLBA, and TA roles to other users.")]
+    [Description("1; Tenant Administrator; This role manages users, settings, and data for one specific tenant only.")]
     TA,
 
     /// <summary>
-    /// Tenant settings administrator. This role will have similar access like GSA to manage a specific tenant.
+    /// Orchestrator Manager. This role handles workflows, automation, and operations for a single tenant.
     /// </summary>
-    [Description("5; Tenant settings administrator; This role will have similar access like GSA to manage a specific tenant.")]
-    TSA,
+    [Description("2; Orchestrator Manager; This role handles workflows, automation, and operations for a single tenant.")]
+    OM,
 
     /// <summary>
-    /// Tenant license and billing administrator. This role will have similar access like GLBA to manage a specific tenant.
+    /// Tenant User. This role allows basic access to use the system within a specific tenant.
     /// </summary>
-    [Description("6; Tenant license and billing administrator; This role will have similar access like GLBA to manage a specific tenant.")]
-    TLBA,
+    [Description("3; Tenant User; This role allows basic access to use the system within a specific tenant.")]
 
-    /// <summary>
-    /// Tenant user. This role will be assigned to those users who will be using the products.
-    /// </summary>
-    [Description("7; Tenant user; This role will be assigned to those users who will be using the products.")]
-    TU,
-
-    /// <summary>
-    /// Individual user. This role will be assigned automatically to those users who will be using the products and will be creating accounts as individual developers.
-    /// </summary>
-    [Description("8; Individual user; This role will be assigned automatically to those users who will be using the products and will be creating accounts as individual developers.")]
-    IU,
-
-    /// <summary>
-    /// Aventisia employee. Role for an Aventisia Employee to access internal apps only as a normal user.
-    /// </summary>
-    [Description("9; Aventisia employee; Role for an Aventisia Employee to access internal apps only as a normal user.")]
-    AE,
+    TU
 }
