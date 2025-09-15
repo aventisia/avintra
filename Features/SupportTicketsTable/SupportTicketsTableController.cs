@@ -42,7 +42,7 @@ public class SupportTicketsTableController : BaseApiController
 
     // Updates an existing support ticket status.
     [HttpPut("ticket-status")]
-    [Authorize(Roles = "GA,SA,GSA")]
+    [Authorize(Roles = "SA")]
     public async Task<ActionResult<ServiceResponse<SupportTicketsTableDto>>> UpdateSupportTicketStatus([FromBody] STUpdateByReviewerDto stUpdateByReviewerDto)
     {
         return ResultHelper(await _supportTicketsTableService.UpdateSupportTicketStatusAsync(stUpdateByReviewerDto));

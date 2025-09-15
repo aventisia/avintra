@@ -2,7 +2,7 @@ namespace WorkspaceAPIs.Controllers;
 
 [Route("notification/global")]
 [ApiController]
-[Authorize(Roles = "SA,GA,GSA")]
+[Authorize(Roles = "SA")]
 public class GlobalNotificationController : BaseApiController
 {
     private readonly IGlobalNotificationService _globalNotificationCrudService;
