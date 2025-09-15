@@ -16,11 +16,12 @@ import { useUpdateTemplateMutation } from "./useUpdateTemplateMutation";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useValidateTemplateMutation } from "./useValidateTemplateMutation";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { getRelevantNodeIds } from "../utils/getRelevantNodeIds";
+import { getSelectedEntitiesFromNodes } from "../utils/getSelectedEntitiesFromNodes";
 import { NodeDataType } from "@/types/node-data-type";
 import { Node } from "@xyflow/react";
 import { useSaveAsTemplateStore } from "../stores/save-as-template-store";
 import { getUniqueFlowImages } from "../utils/getUniqueNodeImages";
+import { ValidateTemplateDto } from "../dto/validate-template-dto";
 
 /**
  * useDefineSATForm
@@ -73,12 +74,12 @@ export const useDefineSATForm = () => {
   const { mutate: validateTemplate } = useValidateTemplateMutation();
 
   useEffect(() => {
-    const childIds = getRelevantNodeIds(nodes as Node<NodeDataType>[]);
+    const childIds = getSelectedEntitiesFromNodes(nodes as Node<NodeDataType>[]);
     const obj = childIds?.map((i) => {
-      return { refId: i };
+      return { refId: i?.id, name: i?.name };
     });
-    if (obj?.length > 0) validateTemplate(obj);
-    else setValidationStatus(true);
+    if (obj) validateTemplate(obj as unknown as ValidateTemplateDto[]);
+    else setValidationStatus([]);
 
     setImgPaths(getUniqueFlowImages(nodes as Node<NodeDataType>[]));
   }, []);

@@ -11,5 +11,9 @@ export interface ValidateTemplateDto {
   /** Reference ID of the original flow or source */
   refId: string;
 
+  id?: string;
+  name?: string;
+  type?: string;
+  status?: string;
   isApprovedTemplate?: boolean;
 }
