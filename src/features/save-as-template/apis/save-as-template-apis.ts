@@ -46,7 +46,7 @@ const generateTemplateInstruction = (payload: string) => {
     .post<IHttpResponse<string>>(
       `${baseAPIURL}/generate`,
       { payload },
-      { timeout: 90000 }, // Allow long-running generation (up to 90s)
+      { timeout: 5 * 60000 }, // Allow long-running generation (up to 5min)
     )
     .then((res) => res.data);
 };
