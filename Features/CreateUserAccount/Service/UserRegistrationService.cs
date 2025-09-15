@@ -162,7 +162,7 @@ public class UserRegistrationService : IUserRegistrationService
     // Updates the tenant organization details for a specified user.
     public async Task<ServiceResponse<AccountUser>> UpdateTenantOrganizationAsync(TenantOrganizationDto tenantOrganizationDto)
     {
-        // Default failure response
+        // Initialize default failure response
         var serviceResponse = new ServiceResponse<AccountUser>
         {
             Data = null,
@@ -171,7 +171,7 @@ public class UserRegistrationService : IUserRegistrationService
 
         try
         {
-            // Validate required fields
+            // Validate required fields: Domain and OrganizationName must not be empty or whitespace
             if (string.IsNullOrWhiteSpace(tenantOrganizationDto.Domain) ||
                 string.IsNullOrWhiteSpace(tenantOrganizationDto.OrganizationName))
             {
@@ -179,20 +179,23 @@ public class UserRegistrationService : IUserRegistrationService
                 return serviceResponse;
             }
 
-            // Validate domain format using regex
+            // Define regex pattern to validate domain format (e.g., example.com, www.example.org)
             var domainPattern = @"^(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$";
+
+            // Normalize domain input to lowercase and trim whitespace
             var domain = tenantOrganizationDto.Domain.Trim().ToLower();
 
+            // Check if the domain matches the required pattern
             if (!Regex.IsMatch(domain, domainPattern))
             {
                 serviceResponse.Message = "Invalid domain format. Example: 'example.com' or 'www.example.org'.";
                 return serviceResponse;
             }
 
-            // Remove 'www.' if present
+            // Clean domain by removing 'www.' prefix if present
             var cleanDomain = domain.StartsWith("www.") ? domain.Substring(4) : domain;
 
-            // Get the user by ID
+            // Retrieve user by ID from user manager
             var user = await _userManager.FindByIdAsync(_userId.ToString());
             if (user == null)
             {
@@ -200,133 +203,138 @@ public class UserRegistrationService : IUserRegistrationService
                 return serviceResponse;
             }
 
+            // Prevent reassignment if user is already linked to a tenant organization
             if (user.TenantId != null)
             {
                 serviceResponse.Message = "This user is already assigned to an organization and cannot be reassigned.";
                 return serviceResponse;
             }
 
-            Tenant? userTenant = null;
-            List<string> userRoles = new();
-
-            // Case: Individual Users tenant
+            // Check if the organization name corresponds to 'IndividualUsers' or 'Aventisia'
             var isIndividualUser = tenantOrganizationDto.OrganizationName.Equals(
                 GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers),
                 StringComparison.InvariantCultureIgnoreCase) ||
             tenantOrganizationDto.OrganizationName.Equals(
                 GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia),
                 StringComparison.InvariantCultureIgnoreCase);
+
+            // For individual users, overwrite organization name and domain with the username
             if (isIndividualUser)
             {
-                // Assign existing 'Individual Users' tenant
-                userTenant = await _unitOfWork.TenantRepo
-                    .GetByConditionAsync(w => w.Name.ToLower() == tenantOrganizationDto.OrganizationName.ToLower())
-                    .SingleOrDefaultAsync();
-
-                // Assign AE or IU role based on domain
-                userRoles.Add(domain.Equals("aventisia.com", StringComparison.OrdinalIgnoreCase)
-                    ? CustomRolesEnum.AE.ToString()
-                    : CustomRolesEnum.IU.ToString());
+                tenantOrganizationDto.OrganizationName = user.UserName;
+                tenantOrganizationDto.Domain = user.UserName;
+                domain = user.UserName;
             }
-            else
-            {
-                // Check if tenant name already exists
-                var existingTenant = await _unitOfWork.TenantRepo
-                .GetByConditionAsync(w =>
+
+            // Fetch all existing tenants without tracking changes
+            var tenants = _unitOfWork.TenantRepo
+                        .GetAllAsync()
+                        .AsNoTracking();
+
+            // Check if a tenant with the same domain or name already exists to prevent duplicates
+            var existingTenant = await tenants.FirstOrDefaultAsync(w =>
                     w.Domain.ToLower() == domain.ToLower() ||
                     w.Name.ToLower() == tenantOrganizationDto.OrganizationName.ToLower()
-                )
-                .SingleOrDefaultAsync();
+                );
 
-                if (existingTenant != null)
-                {
-                    _logger.LogInformation("Tenant update blocked: '{TenantName}' already exists. Requested by user {UserId}.",
-                        existingTenant.Name, _userId);
+            if (existingTenant != null)
+            {
+                _logger.LogInformation("Tenant creation blocked: Tenant '{TenantName}' already exists. Requested by user ID {UserId}.",
+                    existingTenant.Name, _userId);
 
-                    serviceResponse.Message = $"Tenant or domain already exists. Please contact support.";
-                    return serviceResponse;
-                }
-
-                // Create a new tenant
-                userTenant = new Tenant
-                {
-                    Id = Guid.NewGuid(),
-                    Name = tenantOrganizationDto.OrganizationName,
-                    Type = TenantTypesEnum.Shared,
-                    Currency = CurrencyTypesEnum.USD,
-                    ExpiresOn = DateTimeOffset.UtcNow.AddYears(1),
-                    Domain = cleanDomain,
-                    Role = tenantOrganizationDto.Role,
-                    NumberOfEmployees = tenantOrganizationDto.NumberOfEmployees,
-                    Industry = tenantOrganizationDto.Industry,
-                    Country = tenantOrganizationDto.Country,
-                    CreatedByUserId = _userId,
-                    LastModifiedByUserId = _userId
-                };
-
-                await _unitOfWork.TenantRepo.InsertAsync(userTenant);
-
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogWarning("Tenant creation failed for '{TenantName}' (ID: {TenantId}).", userTenant.Name, userTenant.Id);
-                    return serviceResponse;
-                }
-
-                // Assign TA role to tenant admin
-                userRoles.Add(CustomRolesEnum.TA.ToString());
-
-                _logger.LogInformation("New tenant '{TenantName}' (ID: {TenantId}) created by user {UserId}.",
-                    userTenant.Name, userTenant.Id, _userId);
+                serviceResponse.Message = "Tenant or domain already exists. Please contact support.";
+                return serviceResponse;
             }
 
-            // Assign roles to user
+            // Create a new Tenant entity and populate fields
+            var userTenant = new Tenant
+            {
+                Id = Guid.NewGuid(),
+                Name = tenantOrganizationDto.OrganizationName,
+                Type = TenantTypesEnum.Shared,
+                Currency = CurrencyTypesEnum.USD,
+                ExpiresOn = DateTimeOffset.UtcNow.AddYears(1),
+                Domain = cleanDomain,
+                Role = tenantOrganizationDto.Role,
+                NumberOfEmployees = tenantOrganizationDto.NumberOfEmployees,
+                Industry = tenantOrganizationDto.Industry,
+                Country = tenantOrganizationDto.Country,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId
+            };
+
+            // Insert new tenant into repository
+            await _unitOfWork.TenantRepo.InsertAsync(userTenant);
+
+            // Save changes and validate insertion success
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning("Failed to save new tenant '{TenantName}' (ID: {TenantId}).", userTenant.Name, userTenant.Id);
+                return serviceResponse;
+            }
+
+            _logger.LogInformation("Tenant '{TenantName}' (ID: {TenantId}) successfully created by user ID {UserId}.",
+                userTenant.Name, userTenant.Id, _userId);
+
+            // Initialize user roles for tenant admin assignment
+            var userRoles = new List<string> { nameof(CustomRolesEnum.TA), nameof(CustomRolesEnum.OM), nameof(CustomRolesEnum.TU) };
+
+            // If there are no tenants, assign the Super Admin role as well
+            if (tenants.Count() == 0)
+            {
+                userRoles.Add(nameof(CustomRolesEnum.SA));
+            }
+
+            // Assign roles to user; add tenant admin roles including potentially SA role
             var addToRolesResult = await _userManager.AddToRolesAsync(user, userRoles);
 
+            // Log errors if role assignment fails
             if (!addToRolesResult.Succeeded)
             {
                 foreach (var error in addToRolesResult.Errors)
                 {
-                    _logger.LogError("Role assignment failed for user {UserId}. Code: {Code}, Description: {Description}",
+                    _logger.LogError("Role assignment failed for user ID {UserId}. Error Code: {Code}, Description: {Description}",
                         user.Id, error.Code, error.Description);
                 }
 
-                serviceResponse.Message = "Failed to assign user roles. Please try again later.";
+                serviceResponse.Message = "Failed to assign roles to user. Please try again later.";
                 return serviceResponse;
             }
 
-            // Link tenant to user and update
+            // Link the newly created tenant to the user and update last modified info
             user.TenantId = userTenant.Id;
             user.LastModifiedByUserId = user.Id;
 
             _unitOfWork.AccountUserRepo.Update(user);
 
+            // Save changes and verify user update success
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogWarning("Failed to update user {UserId} with new tenant ID {TenantId}.", user.Id, userTenant.Id);
+                _logger.LogWarning("Failed to update user ID {UserId} with tenant ID {TenantId}.", user.Id, userTenant.Id);
                 return serviceResponse;
             }
 
-            _logger.LogInformation("User {UserId} successfully updated with tenant '{TenantName}' (ID: {TenantId}).",
+            _logger.LogInformation("User ID {UserId} successfully linked with tenant '{TenantName}' (ID: {TenantId}).",
                 user.Id, userTenant.Name, userTenant.Id);
 
-            /*Fetching again to get newUser with Tenant and Roles details*/
+            // Retrieve the updated user with related tenant and role details for the response
             var newlyAddedUser = await _unitOfWork.AccountUserRepo
                 .GetByConditionAsync(w => EF.Functions.ILike(user.Email, w.UserName))
                 .Include(i => i.UserRoles)
-                        .ThenInclude(i1 => i1.Role)
-                            .ThenInclude(i2 => i2.RolePermissions)
-                                .ThenInclude(i3 => i3.Permission)
+                    .ThenInclude(i1 => i1.Role)
+                        .ThenInclude(i2 => i2.RolePermissions)
+                            .ThenInclude(i3 => i3.Permission)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
-            // Prepare response
+            // Prepare success response with updated user data
             serviceResponse.Data = newlyAddedUser;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Tenant organization updated successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error while updating tenant for user {UserId}.", _userId);
+            _logger.LogError(ex, "An unexpected error occurred while updating tenant organization for user ID {UserId}.", _userId);
         }
 
         return serviceResponse;
