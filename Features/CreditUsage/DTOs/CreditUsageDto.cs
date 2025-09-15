@@ -11,7 +11,7 @@ public class CreditsUsageDto
     public CreditServiceTypesEnum ServiceType { get; set; }
 
     /// <summary>
-    /// Gets or sets the number of credits consumed for the specified service.
+    /// Gets or sets the number of unit consumed for the specified service. 
     /// </summary>
     public int ConsumedUnit { get; set; }
 
