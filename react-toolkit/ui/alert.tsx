@@ -40,35 +40,39 @@ export function Alert({
   icon: Icon,
   title,
   description,
+  children,
   ...props
 }: AlertProps) {
   return (
     <div
       role="alert"
-      className={cn(alertVariants({ variant }), "flex items-center", className)}
+      className={cn(alertVariants({ variant }), "", className)}
       {...props}
     >
-      {Icon && <Icon className="h-4 w-4" />}
-      <div className="space-y-1">
-        {title && <div className="font-medium tracking-tight">{title}</div>}
-        {description && (
-          <div
-            className={cn(
-              "text-sm",
-              variant === "success" &&
-                "text-green-700/80 dark:text-green-300/70",
-              variant === "destructive" &&
-                "text-red-700/80 dark:text-red-300/70",
-              variant === "warning" &&
-                "text-yellow-700/80 dark:text-yellow-300/70",
-              variant === "info" && "text-blue-700/80 dark:text-blue-300/70",
-              variant === "default" && "text-muted-foreground",
-            )}
-          >
-            {description}
-          </div>
-        )}
+      <div className="flex items-center gap-2">
+        {Icon && <Icon className="h-4 w-4" />}
+        <div className="space-y-1">
+          {title && <div className="font-medium tracking-tight">{title}</div>}
+          {description && (
+            <div
+              className={cn(
+                "text-sm",
+                variant === "success" &&
+                  "text-green-700/80 dark:text-green-300/70",
+                variant === "destructive" &&
+                  "text-red-700/80 dark:text-red-300/70",
+                variant === "warning" &&
+                  "text-yellow-700/80 dark:text-yellow-300/70",
+                variant === "info" && "text-blue-700/80 dark:text-blue-300/70",
+                variant === "default" && "text-muted-foreground",
+              )}
+            >
+              {description}
+            </div>
+          )}
+        </div>
       </div>
+      {children}
     </div>
   );
 }

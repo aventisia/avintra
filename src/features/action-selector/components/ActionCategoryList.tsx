@@ -2,8 +2,6 @@ import { useAddFirstNodeToBranch } from "@/hooks/useAddFirstNodeToBranch";
 import { useAddFirstNodeToFlow } from "@/hooks/useAddFirstNodeToFlow";
 import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
 import { useReplaceNode } from "@/hooks/useReplaceNode";
-import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { NodeDataType } from "@/types/node-data-type";
 import { Separator } from "@aventisia/ui";
 import {
@@ -46,21 +44,10 @@ export const ActionCategoryList = () => {
   // Is used to render the list of triggers
   const isOriginReplaceTrigger = origin === "ReplaceTrigger";
 
-  const { currentFlow } = useCurrentFlowStore(
-    useShallow((state) => ({
-      currentFlow: state.currentFlow,
-    })),
-  );
-
   const getActionCategories = () => {
     if (query) {
       const result: ActionCategoryType[] = [];
-      actionSelectorData.forEach(({ label, actionCategories }) => {
-        if (
-          currentFlow?.type === FlowTypesEnum.Agent &&
-          label === "AI Integrations"
-        )
-          return;
+      actionSelectorData.forEach(({ actionCategories }) => {
         actionCategories.forEach((category) => {
           const matchingActions = category.actions
             ? category.actions?.filter((action) =>

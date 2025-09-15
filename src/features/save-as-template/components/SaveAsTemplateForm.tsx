@@ -29,6 +29,8 @@ import DeleteTemplate from "./DeleteTemplate";
 import { Alert } from "@/react-toolkit/ui/alert";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import GenerateButton from "./GenerateButton";
+import { ValidateTemplateDto } from "../dto/validate-template-dto";
+import { XCircleIcon } from "lucide-react";
 
 /**
  * SaveAsTemplateForm Component
@@ -52,6 +54,18 @@ export const SaveAsTemplateForm = () => {
     validationStatus,
   } = useDefineSATForm();
 
+  // Helper to check if all templates are approved
+  function areAllTemplatesApproved(items: ValidateTemplateDto[]): boolean {
+    return items.every((item) => item.isApprovedTemplate);
+  }
+
+  const invalidNodes =
+    validationStatus
+      ?.filter((item) => !item.isApprovedTemplate)
+      ?.map((item) => {
+        return { name: item.name, type: item.type };
+      }) ?? [];
+
   return (
     // Scrollable container to support long forms within the viewport
     <ScrollArea className="h-[calc(100vh-3rem)]">
@@ -62,16 +76,28 @@ export const SaveAsTemplateForm = () => {
         className="space-y-4 p-4"
       >
         {/* Show a warning if validation fails */}
-        {!validationStatus && (
+        {!areAllTemplatesApproved(validationStatus) && (
           <Alert
             variant="warning"
             icon={ExclamationCircleIcon}
             title="Ensure all child Agents Blocks and AI Nodes are published and approved as templates."
+            children={
+              <>
+                <div className="mt-2  flex flex-wrap gap-3">
+                  {invalidNodes.map((item) => (
+                    <p className="flex items-center gap-1">
+                      <XCircleIcon className="h-3.5 w-3.5" />{" "}
+                      {`${item.name} (${item.type})`}
+                    </p>
+                  ))}
+                </div>
+              </>
+            }
           />
         )}
 
         {/* Show approval status if validation passes */}
-        {validationStatus && (
+        {areAllTemplatesApproved(validationStatus) && (
           <StatusAlert
             status={status}
             remark={templateRemark}

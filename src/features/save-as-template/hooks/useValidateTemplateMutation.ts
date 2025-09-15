@@ -3,7 +3,6 @@ import { useMutation } from "@tanstack/react-query";
 import { validateTemplate } from "../apis/save-as-template-apis";
 import { useSaveAsTemplateStore } from "../stores/save-as-template-store";
 import { useShallow } from "zustand/react/shallow";
-import { ValidateTemplateDto } from "../dto/validate-template-dto";
 
 /**
  * useValidateTemplateMutation
@@ -19,11 +18,6 @@ export const useValidateTemplateMutation = () => {
     })),
   );
 
-  // Helper to check if all templates are approved
-  function areAllTemplatesApproved(items: ValidateTemplateDto[]): boolean {
-    return items.every((item) => item.isApprovedTemplate);
-  }
-
   // Define mutation using React Query
   const { isPending, mutate } = useMutation({
     // Function that triggers the API call
@@ -31,8 +25,7 @@ export const useValidateTemplateMutation = () => {
 
     // Handle successful response
     onSuccess: (httpResponse) => {
-      if (httpResponse.data)
-        setValidationStatus(areAllTemplatesApproved(httpResponse.data));
+      if (httpResponse.data) setValidationStatus(httpResponse.data);
     },
 
     // Handle API errors
