@@ -11,6 +11,7 @@ export const useInsertSubscriptionMutation = () => {
   const { mutate: insertSubscriptionMutation, isPending } = useMutation({
     mutationFn: purchasePlan,
     onSuccess: () => {
+      localStorage.clear();
       navigate("/redirect?url=" + import.meta.env.VITE_WORC_URL);
     },
     onError: (error) => {
