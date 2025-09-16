@@ -1,6 +1,7 @@
 // import { useAnnotationDataStore } from "@/features/label-data/stores/annotation-data-store";
 import { useFetchSetupFormData } from "@/features/inferencing-model/hooks/useFetchSetupFormData";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 
 import { toast } from "@aventisia/ui/sonner";
@@ -20,7 +21,7 @@ export const useExtractViaLLMMutation = () => {
       extractedData: state.extractedData,
     })),
   );
-  const { modelId: mlModelId } = useLabelDataStore();
+  const { modelId: mlModelId, modelName } = useLabelDataStore();
   const location = useLocation();
   const queryParams = useMemo(
     () => new URLSearchParams(location.search),
@@ -48,6 +49,22 @@ export const useExtractViaLLMMutation = () => {
     models.filter((model) => model !== null && model !== undefined).length,
   );
 
+  // TODO: Mutate credits/units used after successful extraction. For now we are making an api call due to database split but later we should update it from the backend itself
+  const { mutate: updateCreditsUsed } = useMutation({
+    mutationFn: (postObj: unknown) => {
+      return axiosInstance.post(
+        `${import.meta.env.VITE_ACCOUNTS_API_URL}/credit-usage`,
+        postObj,
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["available-credits"] });
+    },
+    onError: (error) => {
+      toast.error(error.toString());
+    },
+  });
+
   // Define mutation to extract via LLM
   const { mutate: extractViaLLMMutation, isPending: isExtractionPending } =
     useMutation({
@@ -62,6 +79,15 @@ export const useExtractViaLLMMutation = () => {
           queryKey: ["model", modelId],
         });
         toast.success("Data extracted successfully");
+
+        // TODO: Update units/credits used. For now we are making an api call due to database split but later we should update it from the backend itself
+        updateCreditsUsed({
+          serviceType: httpResponse?.data?.extractedData[0]?.serviceType,
+          consumedUnit: httpResponse?.data?.extractedData[0]?.executionTime,
+          refType: "AIModel",
+          refId: mlModelId,
+          refName: modelName,
+        });
       },
 
       onError: (error) => {
@@ -69,5 +95,5 @@ export const useExtractViaLLMMutation = () => {
       },
     });
 
-  return { extractViaLLMMutation, isExtractionPending };
+  return { extractViaLLMMutation, updateCreditsUsed, isExtractionPending };
 };

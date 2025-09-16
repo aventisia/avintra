@@ -10,6 +10,7 @@ interface IExtractedData {
   executionCount: number;
   failedCount: number;
   executionTime: number;
+  serviceType: string;
   extraction: InfoExtractorTestDTO | null;
   summarization: SummarizationTestDTO | null;
   questionAnswer: QuestionAnswersTestDTO[] | null;
