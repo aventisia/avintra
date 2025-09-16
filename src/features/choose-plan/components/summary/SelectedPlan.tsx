@@ -3,13 +3,14 @@ import { RadioGroup, RadioGroupItem } from "@aventisia/ui/radio-group";
 import { Check } from "lucide-react";
 
 import { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
+import { getCreditsLabel } from "../../utils";
 
 const SelectedPlan = ({
   plan,
   planType,
 }: {
   plan: SubscriptionPlanDTO | undefined;
-  planType: string;
+  planType: "monthly" | "yearly";
 }) => {
   const formatValue = (val: number | undefined, fallback = "—") =>
     val ?? fallback;
@@ -22,12 +23,6 @@ const SelectedPlan = ({
           <div className="flex w-full items-end justify-between">
             <Label htmlFor="selected" className="text-base">
               {plan?.name}
-              <div className="flex gap-1 mt-1 items-baseline">
-                <p className="text-lg">{plan?.maxCredits}</p>
-                <span className="text-sm text-muted-foreground">
-                  credits/month
-                </span>
-              </div>
             </Label>
             <div className="flex gap-1 items-baseline">
               <p className="text-lg">
@@ -50,6 +45,11 @@ const SelectedPlan = ({
         <div className="p-4 space-y-2">
           <p className="text-md font-semibold">Plan Includes:</p>
           <ul className="text-sm mt-2 space-y-1">
+            {plan?.maxCredits && (
+              <PlanFeature
+                label={getCreditsLabel(plan?.maxCredits, planType)}
+              />
+            )}
             <PlanFeature
               label={`${formatValue(plan?.maxPublishedItems)} Published Agents or AI Models`}
             />
