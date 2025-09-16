@@ -2,6 +2,7 @@ import { useChoosePlanStore } from "@/features/choose-plan/stores/choose-plan-st
 import { BILLING_INFO_KEY } from "@/react-toolkit/constants";
 
 import { SubscriptionPlanDTO } from "../dtos/subscription-plans-dto";
+import { PlanType } from "../types/plan-type";
 
 const DEFAULT_BILLING = {
   country: "",
@@ -16,7 +17,7 @@ const DEFAULT_BILLING = {
 
 export const useChargeSummary = (
   plan: SubscriptionPlanDTO | undefined,
-  planType: string,
+  planType: PlanType,
 ) => {
   const { billingData } = useChoosePlanStore((state) => ({
     billingData: state.billingData,

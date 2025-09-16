@@ -1,11 +1,12 @@
 import CustomRadioItem from "@/components/ui/CustomRadioItem";
 
 import { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
+import { PlanType } from "../../types/plan-type";
 import { PlanFeatures } from "./PlanFeatures";
 
 type Props = {
   plan: SubscriptionPlanDTO;
-  planType: "monthly" | "yearly";
+  planType: PlanType;
   selectedId: string;
 };
 

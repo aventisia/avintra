@@ -1,6 +1,7 @@
 import { Separator } from "@aventisia/ui";
 
 import { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
+import { PlanType } from "../../types/plan-type";
 import { getCreditsLabel } from "../../utils";
 import { FeatureList } from "./FeatureList";
 
@@ -9,7 +10,7 @@ export const PlanFeatures = ({
   planType,
 }: {
   plan: SubscriptionPlanDTO;
-  planType: "monthly" | "yearly";
+  planType: PlanType;
 }) => {
   const features = [
     getCreditsLabel(plan.maxCredits, planType),

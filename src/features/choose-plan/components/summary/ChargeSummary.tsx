@@ -4,13 +4,14 @@ import { Button } from "@aventisia/ui/buttons";
 import { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
 import { useChargeSummary } from "../../hooks/useChargeSummary";
 import { useInsertSubscriptionMutation } from "../../hooks/useInsertSubscriptionMutation";
+import { PlanType } from "../../types/plan-type";
 
 const ChargeSummary = ({
   plan,
   planType,
 }: {
   plan: SubscriptionPlanDTO | undefined;
-  planType: string;
+  planType: PlanType;
 }) => {
   const { basePrice, tax, total, isTaxApplicable, effectiveBilling } =
     useChargeSummary(plan, planType);
