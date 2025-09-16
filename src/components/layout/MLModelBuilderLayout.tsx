@@ -1,4 +1,4 @@
-import CreditsCount from "@/features/credits/components/CreditsCount";
+import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
 import { FlowParticipantsFacePile } from "@/features/share-access/components/FlowParticipantsFacePile";
 import { useClearQueryParamsOutsideView } from "@/hooks/useClearQueryParamsOutsideView";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
@@ -31,7 +31,7 @@ export const MLModelBuilderLayout = () => {
                 {import.meta.env.MODE !== "production" && (
                   <FlowParticipantsFacePile />
                 )}
-                <CreditsCount />
+                <AvailableCredits />
                 <HeaderMenuActions />
               </>
             }
