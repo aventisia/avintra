@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useExtractViaLLMMutation } from "@/hooks/useExtractViaLLMMutation";
 import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import { useFetchUserSession } from "@/hooks/useUserSession";
 import { DEV_JWT_LS_KEY } from "@/react-toolkit/constants";
@@ -71,6 +72,9 @@ function AIPersonaTestForm() {
   // Fetch persona setup data
   const { data: personaData } = useFetchSetupFormData();
 
+  // Get update credits used mutation
+  const { updateCreditsUsed } = useExtractViaLLMMutation();
+
   // Generate and add system message when personaData is available
   useEffect(() => {
     if (personaData && personaData.data && personaData.data.aiPersona) {
@@ -104,6 +108,7 @@ function AIPersonaTestForm() {
   const annotations = getAnnotations();
 
   const modelId = modelData?.data.id || "";
+  const modelName = modelData?.data.name || "";
   const { data } = useFetchUserSession();
   const token = import.meta.env.DEV
     ? localStorage.getItem(DEV_JWT_LS_KEY)
@@ -135,6 +140,7 @@ function AIPersonaTestForm() {
       try {
         const data = JSON.parse(event.data);
 
+        // If message from assistant
         if (data.user_type === "assistant" && data.message) {
           // Stop loading state on first chunk of assistant message
           setIsLoading(false);
@@ -154,6 +160,21 @@ function AIPersonaTestForm() {
             } else {
               return [...prev, { role: "assistant", content: data.message }];
             }
+          });
+        }
+
+        // If message from backend/system for execution_time
+        if (
+          data.user_type === "system" &&
+          data.message_type === "credits_usage"
+        ) {
+          // TODO: Update units/credits used. For now we are making an api call due to database split but later we should update it from the backend itself
+          updateCreditsUsed({
+            serviceType: data.service_type,
+            consumedUnit: Number(data.consumed_units),
+            refType: "AIModel",
+            refId: modelId,
+            refName: modelName,
           });
         }
       } catch (error) {
