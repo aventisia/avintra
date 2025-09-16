@@ -57,6 +57,11 @@ public class InferencingModelTaskResponseDto
     public int ExecutionTime { get; set; }
 
     /// <summary>
+    /// Gets or sets the type of service used for extraction.
+    /// </summary>
+    public required string ServiceType { get; set; }
+
+    /// <summary>
     /// Gets or sets the extracted data for the extraction task.
     /// </summary>
     public ExtractionTaskExtractedDataDto? Extraction { get; set; }

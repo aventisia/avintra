@@ -441,6 +441,7 @@ public class InferencingModelService : IInferencingModelService
                     FailedCount = 0,
                     TokenCount = 0,
                     ExecutionTime = 0,
+                    ServiceType = "OnPremGpuText", // TODO: Hardcoded for now, will be dynamic later once cloud model provider is implemented.
                     FileId = fileId,
                     Remarks = string.Empty
                 };
@@ -561,6 +562,7 @@ public class InferencingModelService : IInferencingModelService
                 FailedCount = 0,
                 TokenCount = 0,
                 ExecutionTime = 0,
+                ServiceType = "OnPremGpuText", // TODO: Hardcoded for now, will be dynamic later once cloud model provider is implemented.
                 Remarks = string.Empty
             };
             // Process each task associated with the model
