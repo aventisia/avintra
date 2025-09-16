@@ -3,6 +3,7 @@ import { RadioGroup, RadioGroupItem } from "@aventisia/ui/radio-group";
 import { Check } from "lucide-react";
 
 import { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
+import { PlanType } from "../../types/plan-type";
 import { getCreditsLabel } from "../../utils";
 
 const SelectedPlan = ({
@@ -10,7 +11,7 @@ const SelectedPlan = ({
   planType,
 }: {
   plan: SubscriptionPlanDTO | undefined;
-  planType: "monthly" | "yearly";
+  planType: PlanType;
 }) => {
   const formatValue = (val: number | undefined, fallback = "—") =>
     val ?? fallback;

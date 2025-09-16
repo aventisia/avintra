@@ -6,11 +6,12 @@ import { useShallow } from "zustand/react/shallow";
 
 import { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
 import { useChoosePlanStore } from "../../stores/choose-plan-store";
+import { PlanType } from "../../types/plan-type";
 import { PlanItem } from "./PlanItem";
 
 type PlanTabProps = {
   data?: SubscriptionPlanDTO[];
-  planType: "monthly" | "yearly";
+  planType: PlanType;
 };
 
 export default function PlanTab({ data, planType }: PlanTabProps) {
