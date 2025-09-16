@@ -27,15 +27,26 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
         try
         {
-            // Fetch all plans with their creators included
-            var subscriptionPlans = await _unitOfWork.SubscriptionPlanRepo
-                .GetAllAsync()
-                .Include(i => i.CreatedByUser)
-                .OrderByDescending(o => o.CreatedOn)
-                .ToListAsync();
+            // Start building the database query; nothing is executed yet.
+            IQueryable<SubscriptionPlan> query = _unitOfWork.SubscriptionPlanRepo.GetAllAsync()
+                .Include(plan => plan.CreatedByUser);
 
-            // If a subscription plan type filter is provided, apply it to the list
-            if (subscriptionPlanType.HasValue) subscriptionPlans = subscriptionPlans.Where(w => w.Type == subscriptionPlanType).ToList();
+            // Check if a filter was provided.
+            if (subscriptionPlanType.HasValue)
+            {
+                // If yes, add a filter for that specific type to the database query.
+                query = query.Where(plan => plan.Type == subscriptionPlanType.Value);
+            }
+            else
+            {
+                // If no filter was provided, exclude Enterprise plans by default.
+                query = query.Where(plan => plan.Type != SubscriptionPlanTypeEnum.Enterprise);
+            }
+
+            // Execute the final query against the database and get the results.
+            var subscriptionPlans = await query
+                .OrderByDescending(plan => plan.CreatedOn)
+                .ToListAsync();
 
             // Map the plans to DTOs for safe transfer
             serviceResponse.Data = subscriptionPlans.Adapt<IEnumerable<SubscriptionPlanDto>>();
