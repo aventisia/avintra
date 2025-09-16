@@ -9,6 +9,7 @@ from app.core.logger import logger
 from app.models.chat_message import ChatMessage
 from app.qdrant.service import add_document_to_collection
 from app.core.llm_service import generate_prompt_for_ai_persona
+import time
 
 # Create FastAPI router and initialize services
 router = APIRouter()
@@ -98,12 +99,15 @@ async def websocket_chat_handler(websocket: WebSocket):
             # except Exception as e:
             #     logger.warning(f"Failed to store user message in Qdrant: {e}")
 
+            # Start Time
+            start_time = time.perf_counter()
+
             async for chunk in llm_service.generate_response_stream(
                 messages=message_data['messages'],
                 model=message_data['llm'],
                 temperature=message_data['temperature'],
             ):
-                # Optionally, send each chunk as it arrives (for true streaming to client)
+                # Send each chunk as it arrives (for true streaming to client)
                 ai_response_message = ChatMessage(
                     model_id=user_message.model_id,
                     user_id=user_info.id,
@@ -113,6 +117,18 @@ async def websocket_chat_handler(websocket: WebSocket):
                     file=None
                 )
                 await connection_manager.send_personal_message(ai_response_message.model_dump_json(), connection_id)
+
+            # End Time. Get total time taken for LLM response
+            end_time = time.perf_counter()
+            total_time = end_time - start_time
+
+            # Send total time taken to client
+            await connection_manager.send_personal_message(json.dumps({
+                "user_type": "system",
+                "message_type": "credits_usage",
+                "service_type": "OnPremGpuText",
+                "consumed_units": int(total_time)
+            }), connection_id)
 
             # Step 14: Store AI response message in Qdrant
             # try:
