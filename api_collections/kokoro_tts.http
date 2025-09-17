@@ -1,0 +1,54 @@
+###
+# API Collection: Kokoro TTS
+#
+# This file contains example HTTP requests for testing the `/kokoro-tts` API endpoints.
+#
+# Purpose:
+#   - To generate speech audio from text using different voices and options.
+#   - To list available voices.
+#   - To check the health of the TTS service.
+#
+# Usage:
+#   - Each section demonstrates a request for a different endpoint or option.
+#   - The API expects a JSON body for POST requests.
+#
+# Example scenarios covered:
+#   - Health check
+#   - Generate audio with basic and advanced options
+#   - List voices
+#   - Invalid input
+###
+
+### Local variables
+@kokoroTTSBaseUrl = {{host}}/kokoro-tts
+
+### Health Check
+GET {{kokoroTTSBaseUrl}}/health
+Accept: application/json
+
+### Generate audio with default options
+POST {{kokoroTTSBaseUrl}}/generate
+Content-Type: application/json
+
+{
+    "text": "I completely understand where you're coming from. Let's break it down into smaller parts so that it feels more manageable, and I'll make sure to explain each step clearly along the way.",
+    "voice": "af_heart",
+    "lang_code": "a"
+}
+
+### Generate audio with options (default values shown)
+POST {{kokoroTTSBaseUrl}}/generate
+Content-Type: application/json
+
+{
+    "text": "I completely understand where you're coming from. Let's break it down into smaller parts so that it feels more manageable, and I'll make sure to explain each step clearly along the way.",
+    "voice": "af_heart",
+    "lang_code": "a",
+    "speed": 1.0,
+    "output_format": "mp3",
+    "use_gpu": false
+}
+
+### Get kokoro TTS metadata
+GET {{kokoroTTSBaseUrl}}/metadata
+Content-Type: application/json
