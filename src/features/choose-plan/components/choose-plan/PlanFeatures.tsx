@@ -13,7 +13,10 @@ export const PlanFeatures = ({
   planType: PlanType;
 }) => {
   const features = [
-    getCreditsLabel(plan.maxCredits, planType),
+    getCreditsLabel(
+      plan.maxCredits,
+      plan.name == "Starter" ? "monthly" : planType,
+    ),
     `${plan.maxPublishedItems} Published Agents or AI Models`,
     `${plan.historyRetentionDays} days of insights & workflow history`,
     `${plan.maxSpaces} Worc Spaces`,

@@ -1,4 +1,3 @@
-import { INDIVIDUAL_USERS } from "@/features/sign-up/constants";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { useShallow } from "zustand/react/shallow";
@@ -13,7 +12,7 @@ const BillingDetails = () => {
     useShallow((state) => ({ userSession: state.userSession })),
   );
 
-  const isIndividualUser = userSession?.tenantName == INDIVIDUAL_USERS;
+  const isIndividualUser = userSession?.tenantName == userSession?.email;
 
   const renderRow = (label: string, value: string | undefined) =>
     value ? (
@@ -54,7 +53,7 @@ const BillingDetails = () => {
         {isIndividualUser
           ? renderRow(
               "Name",
-              `${userSession.firstName} ${userSession.lastName}`,
+              `${userSession?.firstName} ${userSession?.lastName}`,
             )
           : renderRow("Company Name", organizationName)}
         {renderRow("Billing Address", fullAddress)}

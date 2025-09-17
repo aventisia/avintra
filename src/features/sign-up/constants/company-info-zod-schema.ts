@@ -48,13 +48,25 @@ export const companyInfoSchema = z.object({
   organizationName: z
     .string()
     .min(1, { message: reqError("Organization name") })
-    .max(255, { message: maxLenError("Organization name", 255) })
-    .regex(nameRegex, {
-      message: nameError("Organization name"),
-    }),
+    .max(255, { message: maxLenError("Organization name", 255) }),
   domain: DomainSchema,
   numberOfEmployees: z.string().min(1, reqError("Number of Employees")),
-  country: z.string().min(1, reqError("Country")),
-  industry: z.string().optional(),
-  role: z.string().optional(),
+  country: z
+    .string()
+    .min(1, reqError("Country"))
+    .regex(nameRegex, {
+      message: nameError("Country"),
+    }),
+  industry: z
+    .string()
+    .regex(nameRegex, {
+      message: nameError("Industry"),
+    })
+    .optional(),
+  role: z
+    .string()
+    .regex(nameRegex, {
+      message: nameError("Role"),
+    })
+    .optional(),
 });

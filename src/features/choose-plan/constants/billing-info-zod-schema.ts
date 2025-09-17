@@ -1,9 +1,10 @@
 import {
   maxLenError,
   nameError,
+  numericError,
   reqError,
 } from "@/react-toolkit/utils/error-message-list";
-import { nameRegex } from "@/react-toolkit/utils/regex-list";
+import { nameRegex, numericRegex } from "@/react-toolkit/utils/regex-list";
 
 import { z } from "zod";
 
@@ -12,22 +13,20 @@ export const billingInfoSchema = z
     organizationName: z
       .string()
       .min(1, { message: reqError("Organization name") })
-      .max(255, { message: maxLenError("Organization name", 255) })
-      .regex(nameRegex, {
-        message: nameError("Organization name"),
-      }),
+      .max(255, { message: maxLenError("Organization name", 255) }),
 
     addressLine1: z
       .string()
       .min(1, { message: reqError("Address Line 1") })
-      .max(255, { message: maxLenError("Address Line 1", 255) })
+      .max(255, { message: maxLenError("Address Line 1", 255) }),
+    addressLine2: z.string().optional(),
+
+    state: z
+      .string()
+      .min(1, reqError("State"))
       .regex(nameRegex, {
-        message: nameError("Address Line 1"),
+        message: nameError("State"),
       }),
-
-    addressLine2: z.string().optional(), // No validation since it's optional
-
-    state: z.string().min(1, reqError("State")),
 
     city: z
       .string()
@@ -40,9 +39,17 @@ export const billingInfoSchema = z
     postalCode: z
       .string()
       .min(1, { message: reqError("Pin Code") })
-      .max(10, { message: maxLenError("Pin Code", 10) }),
+      .max(10, { message: maxLenError("Pin Code", 10) })
+      .regex(numericRegex, {
+        message: numericError("Pin Code"),
+      }),
 
-    country: z.string().min(1, reqError("Country")),
+    country: z
+      .string()
+      .min(1, reqError("Country"))
+      .regex(nameRegex, {
+        message: nameError("Country"),
+      }),
 
     isWillingToFileGst: z.boolean().optional(),
 

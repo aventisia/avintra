@@ -1,5 +1,4 @@
 import CustomRadioItem from "@/components/ui/CustomRadioItem";
-import { INDIVIDUAL_USERS } from "@/features/sign-up/constants";
 import { useUpdateTenantInfoMutation } from "@/features/sign-up/hooks/useUpdateTenantInfoMutation";
 import { useCompanyInfoStore } from "@/features/sign-up/stores/company-info-store";
 import { USER_NAME_LS_KEY } from "@/react-toolkit/constants";
@@ -30,7 +29,7 @@ export default function UserTypeSelection() {
     try {
       await updateTenantInfoMutation({
         domain: localStorage.getItem(USER_NAME_LS_KEY)?.split("@")[1] ?? "",
-        organizationName: INDIVIDUAL_USERS,
+        organizationName: localStorage.getItem(USER_NAME_LS_KEY) ?? "",
       });
 
       setTimeout(() => {
