@@ -4,6 +4,7 @@ import { Form } from "@/react-toolkit/ui/form/Form";
 
 import { Button, SubmitButton } from "@aventisia/ui/buttons";
 import { InputField, SelectField, SwitchField } from "@aventisia/ui/form";
+import { ScrollArea } from "@aventisia/ui/scroll";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
@@ -91,32 +92,36 @@ export const BillingForm = () => {
       disabled={isSubmitting}
       className="space-y-4"
     >
-      {/* GST Filing Consent */}
-      {applyGST && <SwitchField {...gstRegistrationProps} />}
-      {/* Additional validation field */}
-      {applyGST && isGSTRegistered && <InputField {...gstNumberProps} />}
-      {/* Address Line 1 */}
-      {!isIndividualUser && (
-        <InputField disabled {...organizationNameProps} />
-      )}{" "}
-      {/* Address Line 1 */}
-      <InputField {...addressLine1Props} />
-      {/* Address Line 2 */}
-      <InputField {...addressLine2Props} />
-      <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
-        {/* City */}
-        <InputField {...cityProps} />
+      <ScrollArea className="h-[60vh] border rounded-lg  p-4">
+        <div className="space-y-4">
+          {/* GST Filing Consent */}
+          {applyGST && <SwitchField {...gstRegistrationProps} />}
+          {/* Additional validation field */}
+          {applyGST && isGSTRegistered && <InputField {...gstNumberProps} />}
+          {/* Address Line 1 */}
+          {!isIndividualUser && (
+            <InputField disabled {...organizationNameProps} />
+          )}{" "}
+          {/* Address Line 1 */}
+          <InputField {...addressLine1Props} />
+          {/* Address Line 2 */}
+          <InputField {...addressLine2Props} />
+          <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
+            {/* City */}
+            <InputField {...cityProps} />
 
-        {/* Pin Code */}
-        <InputField {...pinCodeProps} />
-      </div>
-      <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
-        {/* State */}
-        <InputField {...stateProps} />
+            {/* Pin Code */}
+            <InputField {...pinCodeProps} />
+          </div>
+          <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2 ">
+            {/* State */}
+            <InputField {...stateProps} />
 
-        {/* Country */}
-        <SelectField disabled={disableCountryDD} {...countryProps} />
-      </div>
+            {/* Country */}
+            <SelectField disabled={disableCountryDD} {...countryProps} />
+          </div>
+        </div>
+      </ScrollArea>
       <div className="flex w-full justify-between">
         <Button
           variant={"outline"}
