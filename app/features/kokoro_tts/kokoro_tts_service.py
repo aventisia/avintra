@@ -12,7 +12,7 @@ import datetime
 OUTPUT_SAMPLE_RATE = 24000  # Sample rate expected by Kokoro TTS model
 
 # Generate Kokoro TTS audio
-async def generate_kokoro_tts_audio(request):
+async def generate_audio(request):
 	try:
 		# Determine the compute device
 		compute_device = torch.device("cuda" if request.use_gpu and torch.cuda.is_available() else "cpu")
@@ -67,7 +67,7 @@ async def generate_kokoro_tts_audio(request):
 		)
 
 # Get Kokoro TTS metadata	
-def get_kokoro_tts_metadata():
+def get_metadata():
 	"""
 	Loads and returns the Kokoro TTS metadata (languages and voices) from the local JSON file.
  	For the most up-to-date Kokoro TTS language and voice metadata, see: https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md
