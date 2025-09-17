@@ -1,4 +1,3 @@
-import { INDIVIDUAL_USERS } from "@/features/sign-up/constants";
 import { BILLING_INFO_KEY } from "@/react-toolkit/constants";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
@@ -15,7 +14,7 @@ export const useDefineBillingInfoForm = () => {
     useShallow((state) => ({ userSession: state.userSession })),
   );
 
-  const isIndividualUser = userSession?.tenantName == INDIVIDUAL_USERS;
+  const isIndividualUser = userSession?.tenantName == userSession?.email;
 
   const { billingData } = useChoosePlanStore(
     useShallow((state) => ({

@@ -12,7 +12,6 @@ export const useDefineCompanyInfoForm = () => {
     defaultValues: {
       organizationName: "",
       domain: localStorage.getItem(USER_NAME_LS_KEY)?.split("@")[1] ?? "",
-      industry: "",
       numberOfEmployees: "",
       country: "",
     },
