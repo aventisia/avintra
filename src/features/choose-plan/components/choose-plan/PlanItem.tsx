@@ -40,7 +40,7 @@ export const PlanItem = ({
           <h6 className="text-base font-medium ">{plan.name}</h6>
 
           <div className="flex gap-1 items-baseline">
-            <p className="text-lg">{price}</p>
+            <p className="text-base">${price}</p>
             <span className="text-sm text-muted-foreground">/{timeUnit}</span>
           </div>
         </div>
