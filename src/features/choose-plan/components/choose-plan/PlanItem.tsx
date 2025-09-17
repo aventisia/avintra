@@ -8,16 +8,30 @@ type Props = {
   plan: SubscriptionPlanDTO;
   planType: PlanType;
   selectedId: string;
+  highlightSelected?: boolean;
 };
 
-export const PlanItem = ({ plan, planType, selectedId }: Props) => {
+export const PlanItem = ({
+  plan,
+  planType,
+  selectedId,
+  highlightSelected = true,
+}: Props) => {
   const isSelected = selectedId === plan.id;
+  const timeUnit =
+    planType === "monthly" || plan.name == "Starter" ? "month" : "year";
+
+  const price =
+    planType === "monthly" || plan.name == "Starter"
+      ? plan.monthlyPrice
+      : plan.yearlyPrice * 12;
 
   return (
     <CustomRadioItem
       value={plan.id}
       selected={selectedId}
       showRadioCircle
+      highlightSelected={highlightSelected}
       className="flex flex-col items-start gap-4  p-4 pl-10"
       radioClassName="top-[1.375rem] left-4 "
     >
@@ -26,19 +40,8 @@ export const PlanItem = ({ plan, planType, selectedId }: Props) => {
           <h6 className="text-base font-medium ">{plan.name}</h6>
 
           <div className="flex gap-1 items-baseline">
-            <p className="text-lg">
-              {planType == "monthly" ? (
-                <> ${plan.monthlyPrice}</>
-              ) : (
-                <>
-                  <span className="line-through text-sm">
-                    ${plan.monthlyPrice}
-                  </span>
-                  <span className="font-semibold"> ${plan.yearlyPrice}</span>
-                </>
-              )}
-            </p>
-            <span className="text-sm text-muted-foreground">/{"month"}</span>
+            <p className="text-lg">{price}</p>
+            <span className="text-sm text-muted-foreground">/{timeUnit}</span>
           </div>
         </div>
 

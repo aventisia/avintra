@@ -9,6 +9,7 @@ interface BaseProps {
   className?: string;
   radioClassName?: string;
   showRadioCircle?: boolean;
+  highlightSelected?: boolean;
 }
 
 type CustomRadioItemProps = React.PropsWithChildren<BaseProps>;
@@ -19,6 +20,7 @@ const CustomRadioItem = ({
   className,
   radioClassName,
   showRadioCircle = false,
+  highlightSelected = true,
   children,
 }: CustomRadioItemProps) => {
   return (
@@ -35,9 +37,11 @@ const CustomRadioItem = ({
       <Label
         htmlFor={value}
         className={cn(
-          "p-6 border-2 rounded-lg cursor-pointer transition-all h-full w-full",
+          "p-6 border-2 rounded-lg  transition-all h-full w-full",
           className,
-          selected == value ? "border-primary" : "hover:border-gray-300",
+          highlightSelected && "cursor-pointer",
+          highlightSelected &&
+            (selected == value ? " border-primary" : "hover:border-gray-300"),
         )}
       >
         {children}
