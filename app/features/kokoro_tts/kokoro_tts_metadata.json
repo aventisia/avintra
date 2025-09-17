@@ -1,0 +1,108 @@
+[
+  {
+    "language": "American English",
+    "lang_code": "a",
+    "voices": [
+      { "voice_code": "af_heart", "name": "Heart", "gender": "female" },
+      { "voice_code": "af_alloy", "name": "Alloy", "gender": "female" },
+      { "voice_code": "af_aoede", "name": "Aoede", "gender": "female" },
+      { "voice_code": "af_bella", "name": "Bella", "gender": "female" },
+      { "voice_code": "af_jessica", "name": "Jessica", "gender": "female" },
+      { "voice_code": "af_kore", "name": "Kore", "gender": "female" },
+      { "voice_code": "af_nicole", "name": "Nicole", "gender": "female" },
+      { "voice_code": "af_nova", "name": "Nova", "gender": "female" },
+      { "voice_code": "af_river", "name": "River", "gender": "female" },
+      { "voice_code": "af_sarah", "name": "Sarah", "gender": "female" },
+      { "voice_code": "af_sky", "name": "Sky", "gender": "female" },
+      { "voice_code": "am_adam", "name": "Adam", "gender": "male" },
+      { "voice_code": "am_echo", "name": "Echo", "gender": "male" },
+      { "voice_code": "am_eric", "name": "Eric", "gender": "male" },
+      { "voice_code": "am_fenrir", "name": "Fenrir", "gender": "male" },
+      { "voice_code": "am_liam", "name": "Liam", "gender": "male" },
+      { "voice_code": "am_michael", "name": "Michael", "gender": "male" },
+      { "voice_code": "am_onyx", "name": "Onyx", "gender": "male" },
+      { "voice_code": "am_puck", "name": "Puck", "gender": "male" },
+      { "voice_code": "am_santa", "name": "Santa", "gender": "male" }
+    ]
+  },
+  {
+    "language": "British English",
+    "lang_code": "b",
+    "voices": [
+      { "voice_code": "bf_alice", "name": "Alice", "gender": "female" },
+      { "voice_code": "bf_emma", "name": "Emma", "gender": "female" },
+      { "voice_code": "bf_isabella", "name": "Isabella", "gender": "female" },
+      { "voice_code": "bf_lily", "name": "Lily", "gender": "female" },
+      { "voice_code": "bm_daniel", "name": "Daniel", "gender": "male" },
+      { "voice_code": "bm_fable", "name": "Fable", "gender": "male" },
+      { "voice_code": "bm_george", "name": "George", "gender": "male" },
+      { "voice_code": "bm_lewis", "name": "Lewis", "gender": "male" }
+    ]
+  },
+  {
+    "language": "Japanese",
+    "lang_code": "j",
+    "voices": [
+      { "voice_code": "jf_alpha", "name": "Alpha", "gender": "female" },
+      { "voice_code": "jf_gongitsune", "name": "Gongitsune", "gender": "female" },
+      { "voice_code": "jf_nezumi", "name": "Nezumi", "gender": "female" },
+      { "voice_code": "jf_tebukuro", "name": "Tebukuro", "gender": "female" },
+      { "voice_code": "jm_kumo", "name": "Kumo", "gender": "male" }
+    ]
+  },
+  {
+    "language": "Mandarin Chinese",
+    "lang_code": "z",
+    "voices": [
+      { "voice_code": "zf_xiaobei", "name": "Xiaobei", "gender": "female" },
+      { "voice_code": "zf_xiaoni", "name": "Xiaoni", "gender": "female" },
+      { "voice_code": "zf_xiaoxiao", "name": "Xiaoxiao", "gender": "female" },
+      { "voice_code": "zf_xiaoyi", "name": "Xiaoyi", "gender": "female" },
+      { "voice_code": "zm_yunjian", "name": "Yunjian", "gender": "male" },
+      { "voice_code": "zm_yunxi", "name": "Yunxi", "gender": "male" },
+      { "voice_code": "zm_yunxia", "name": "Yunxia", "gender": "male" },
+      { "voice_code": "zm_yunyang", "name": "Yunyang", "gender": "male" }
+    ]
+  },
+  {
+    "language": "Spanish",
+    "lang_code": "e",
+    "voices": [
+      { "voice_code": "ef_dora", "name": "Dora", "gender": "female" },
+      { "voice_code": "em_alex", "name": "Alex", "gender": "male" },
+      { "voice_code": "em_santa", "name": "Santa", "gender": "male" }
+    ]
+  },
+  {
+    "language": "French",
+    "lang_code": "f",
+    "voices": [{ "voice_code": "ff_siwis", "name": "Siwis", "gender": "female" }]
+  },
+  {
+    "language": "Hindi",
+    "lang_code": "h",
+    "voices": [
+      { "voice_code": "hf_alpha", "name": "Alpha", "gender": "female" },
+      { "voice_code": "hf_beta", "name": "Beta", "gender": "female" },
+      { "voice_code": "hm_omega", "name": "Omega", "gender": "male" },
+      { "voice_code": "hm_psi", "name": "Psi", "gender": "male" }
+    ]
+  },
+  {
+    "language": "Italian",
+    "lang_code": "i",
+    "voices": [
+      { "voice_code": "if_sara", "name": "Sara", "gender": "female" },
+      { "voice_code": "im_nicola", "name": "Nicola", "gender": "male" }
+    ]
+  },
+  {
+    "language": "Brazilian Portuguese",
+    "lang_code": "p",
+    "voices": [
+      { "voice_code": "pf_dora", "name": "Dora", "gender": "female" },
+      { "voice_code": "pm_alex", "name": "Alex", "gender": "male" },
+      { "voice_code": "pm_santa", "name": "Santa", "gender": "male" }
+    ]
+  }
+]

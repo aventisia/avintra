@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.Extraction import router as pdf_extraction_router
 from app.features.extract_file_text.extract_file_text_routes import router as extract_file_text_router
 from app.api.SpeechToText import router as speech_to_text_router
-from app.api.KokoroTTS import router as kokoro_text_to_speech_router
+from app.features.kokoro_tts.kokoro_tts_routes import router as kokoro_tts_router
 from app.api.AIModelDocument import router as ai_model_document_router
 from app.websocket.routes import router as websocket_router
 from app.dependencies.auth import authenticate_current_user
@@ -21,7 +21,7 @@ initialize_qdrant_collections()
 app.include_router(pdf_extraction_router, tags=["PDF Extraction"])
 app.include_router(extract_file_text_router, tags=["Extract text from file"])
 app.include_router(speech_to_text_router, tags=["Speech-to-Text"])
-app.include_router(kokoro_text_to_speech_router, tags=["Kokoro TTS"])
+app.include_router(kokoro_tts_router, tags=["Kokoro TTS"])
 app.include_router(ai_model_document_router, tags=["AI Model Documents"])
 app.include_router(websocket_router, tags=["WebSockets"])
 
