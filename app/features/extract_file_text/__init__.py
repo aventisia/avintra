@@ -1,1 +1,1 @@
-from .extract_file_text_routes import router
+# extract_file_text feature package
