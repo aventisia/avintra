@@ -21,7 +21,7 @@
 
 ### PDF: simple electronic pdf
 POST {{extractFileTextEndpoint}}
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
   "file_url": "{{testFilesPath}}/pdf-file.pdf"
@@ -29,7 +29,7 @@ Content-Type: {{contentType}}
 
 ### PDF: electronic pdf with images
 POST {{extractFileTextEndpoint}}
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
   "file_url": "{{testFilesPath}}/pdf-with-images.pdf"
@@ -37,7 +37,7 @@ Content-Type: {{contentType}}
 
 ### PNG: simple portable network graphics (png) file
 POST {{extractFileTextEndpoint}}
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
   "file_url": "{{testFilesPath}}/png-image-file.png"
@@ -45,7 +45,7 @@ Content-Type: {{contentType}}
 
 ### JPG: simple joint photographic experts group (jpg) file
 POST {{extractFileTextEndpoint}}
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
   "file_url": "{{testFilesPath}}/jpg-image-file.jpg"
@@ -53,7 +53,7 @@ Content-Type: {{contentType}}
 
 ### JPEG: simple joint photographic experts group (jpeg) file
 POST {{extractFileTextEndpoint}}
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
   "file_url": "{{testFilesPath}}/jpeg-image-file.jpeg"
@@ -61,7 +61,7 @@ Content-Type: {{contentType}}
 
 ### BMP: simple bitmap (bmp) file
 POST {{extractFileTextEndpoint}}
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
   "file_url": "{{testFilesPath}}/bmp-image-file.bmp"
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 ### TIFF: simple tagged image file format (tiff) file
 POST {{extractFileTextEndpoint}}
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
   "file_url": "{{testFilesPath}}/tiff-image-file.tiff"
@@ -77,7 +77,7 @@ Content-Type: {{contentType}}
 
 ### TIF: simple tagged image file (tif) file
 POST {{extractFileTextEndpoint}}
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
   "file_url": "{{testFilesPath}}/tif-image-file.tif"
@@ -85,7 +85,7 @@ Content-Type: {{contentType}}
 
 ### DOCX: simple document with docx extension
 POST {{extractFileTextEndpoint}}
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
   "file_url": "{{testFilesPath}}/docx-file.docx"
@@ -93,7 +93,7 @@ Content-Type: {{contentType}}
 
 ### XLSX: simple document with xlsx extension
 POST {{extractFileTextEndpoint}}
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
   "file_url": "{{testFilesPath}}/xlsx-file.xlsx"
@@ -101,7 +101,7 @@ Content-Type: {{contentType}}
 
 ### TXT: simple text file
 POST {{extractFileTextEndpoint}}
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
   "file_url": "{{testFilesPath}}/text-file.txt"
@@ -109,7 +109,7 @@ Content-Type: {{contentType}}
 
 ### CSV: simple comma-separated csv file
 POST {{extractFileTextEndpoint}}
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
   "file_url": "{{testFilesPath}}/csv-file.csv"
@@ -117,7 +117,7 @@ Content-Type: {{contentType}}
 
 ### RTF: simple rich text format file
 POST {{extractFileTextEndpoint}}
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
   "file_url": "{{testFilesPath}}/rich-text-format-file.rtf"
@@ -125,7 +125,7 @@ Content-Type: {{contentType}}
 
 ### ODT: simple OpenDocument text file
 POST {{extractFileTextEndpoint}}
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
   "file_url": "{{testFilesPath}}/opendocument-text-file.odt"
@@ -133,7 +133,7 @@ Content-Type: {{contentType}}
 
 ### MD: simple markdown file
 POST {{extractFileTextEndpoint}}
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
   "file_url": "{{testFilesPath}}/markdown-file.md"
