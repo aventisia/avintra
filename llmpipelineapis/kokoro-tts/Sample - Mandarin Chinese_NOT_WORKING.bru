@@ -1,0 +1,23 @@
+meta {
+  name: Sample - Mandarin Chinese_NOT_WORKING
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/kokoro-tts/generate
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "text": "我完全理解你的感受。我們把它分解成幾個小部分，這樣更容易理解，我會確保每個步驟都解釋清楚。",
+    "voice": "zf_xiaobei",
+    "lang_code": "z"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
