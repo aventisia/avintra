@@ -27,5 +27,11 @@ public enum AppSecretTypesEnum
     /// API key used to authenticate with SendGrid for sending emails.
     /// </summary>
     [Description("SendGrid API Key")]
-    SendGridApi
+    SendGridApi,
+
+    /// <summary>
+    /// Personal Access Token used to authenticate with the GitHub API.
+    /// </summary>
+    [Description("GitHub API Key")]
+    GitHubApi
 }
