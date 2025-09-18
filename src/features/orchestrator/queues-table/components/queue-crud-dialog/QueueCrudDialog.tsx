@@ -6,7 +6,6 @@ import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { useShallow } from "zustand/react/shallow";
 
 import { getDialogHeadingDescription } from "../../constants";
-import { UploadItemsForm } from "../queue-upload-items/upload-items-form/UploadItemsForm";
 
 import { QueueCrudForm } from "./QueueCrudForm";
 
@@ -27,22 +26,13 @@ export const QueueCrudDialog = ({ children }: React.PropsWithChildren) => {
   return (
     <DTCrudDialogWrapper>
       {children}
-      <DialogContent
-        side={"right"}
-        className={cn(
-          crudAction === "delete" ? "!max-w-[60rem]" : "!max-w-[32rem]",
-        )}
-      >
+      <DialogContent side={"right"} className={cn("!max-w-[32rem]")}>
         <DialogDefaultHeader
-          heading={
-            crudAction === "delete"
-              ? "Upload Items"
-              : dialogHeaderOptions.heading
-          }
+          heading={dialogHeaderOptions.heading}
           description={dialogHeaderOptions.description}
         />
         <ScrollArea className="h-[calc(100vh-4rem)] px-2.5 pb-0 pt-4">
-          {crudAction === "delete" ? <UploadItemsForm /> : <QueueCrudForm />}
+          <QueueCrudForm />
         </ScrollArea>
       </DialogContent>
     </DTCrudDialogWrapper>

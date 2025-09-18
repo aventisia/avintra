@@ -6,7 +6,6 @@ import {
 
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { QueueCreateUpdateDto } from "../../dtos/queue-create-update-dto";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
 
 interface QueueRowDeleteActionProps {
@@ -20,7 +19,7 @@ export const QueueRowDeleteAction = ({ rowId }: QueueRowDeleteActionProps) => {
   // Get mutation function to delete the queue
   const { mutate: deleteQueue } = useListOptimisticMutation<
     string,
-    boolean | QueueCreateUpdateDto,
+    boolean | QueuesTableDto,
     QueuesTableDto
   >([rowId], queueOptimisticMutationFn, DATA_QUERY_KEY);
 
