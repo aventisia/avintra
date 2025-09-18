@@ -57,7 +57,8 @@ const sendNextNodeToProcess = (
     (edge) =>
       edge.source === nodeId &&
       (edge.sourceHandle === undefined ||
-        edge.sourceHandle !== "branch-return"),
+        edge.sourceHandle !== "branch-return") &&
+      edge.type != "loopBack",
   )?.target;
 
   // Send node to process
@@ -187,8 +188,9 @@ const processConditionalNode = (
 
   // Get next node id from edges
   const nextNodeId =
-    getEdgesFromLS().find((edge) => edge.source === branchNode?.id)?.target ??
-    "nextNodeId";
+    getEdgesFromLS().find(
+      (edge) => edge.source === branchNode?.id && edge.type != "loopBack",
+    )?.target ?? "nextNodeId";
 
   // If branch is default branch, then send next node to process
   if (branchNode.data.name === "DefaultBranch") {
@@ -237,8 +239,9 @@ const processLoopNode = (
 
   // Get next node id from edges
   const nextNodeId =
-    getEdgesFromLS().find((edge) => edge.source === node.id)?.target ??
-    "nextNodeId";
+    getEdgesFromLS().find(
+      (edge) => edge.source === node.id && edge.type != "loopBack",
+    )?.target ?? "nextNodeId";
 
   // Send loop node to check condition
   sendCommand(
@@ -259,7 +262,7 @@ async function executeSubflow(
   }
 
   const returnNodeId = getEdgesFromLS().find(
-    (e) => e.source === node.id,
+    (e) => e.source === node.id && e.type != "loopBack",
   )?.target;
 
   try {
@@ -310,7 +313,7 @@ async function executeBlock(
 
   // The node we should resume after block finishes
   const returnNodeId = getEdgesFromLS().find(
-    (e) => e.source === node.id,
+    (e) => e.source === node.id && e.type != "loopBack",
   )?.target;
 
   try {
@@ -321,7 +324,7 @@ async function executeBlock(
 
     // 🧠 Find entry (no incoming edges) and exit (no outgoing edges) nodes
     const entryNode = blockNodes.find(
-      (n) => !blockEdges.some((e) => e.target === n.id),
+      (n) => !blockEdges.some((e) => e.target === n.id && e.type != "loopBack"),
     );
     const exitNode = blockNodes.find(
       (n) => !blockEdges.some((e) => e.source === n.id),
@@ -411,7 +414,7 @@ const sendNodeToProcess = (
   // If node is disabled, skip it and move to the next node
   if (nodeToProcess.data?.isDisabled) {
     const nextNodeId = getEdgesFromLS().find(
-      (edge) => edge.source === nodeToProcess.id,
+      (edge) => edge.source === nodeToProcess.id && edge.type != "loopBack",
     )?.target;
 
     if (nextNodeId) {
@@ -422,8 +425,9 @@ const sendNodeToProcess = (
 
   // Get next node id
   const nextNodeId =
-    getEdgesFromLS().find((edge) => edge.source === nodeToProcess.id)?.target ??
-    "nextNodeId";
+    getEdgesFromLS().find(
+      (edge) => edge.source === nodeToProcess.id && edge.type != "loopBack",
+    )?.target ?? "nextNodeId";
 
   // Check the type of the target node and handle accordingly
   switch (nodeToProcess.type) {
