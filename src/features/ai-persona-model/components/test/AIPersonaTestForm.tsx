@@ -48,6 +48,13 @@ function AIPersonaTestForm() {
   const { data: modelData } = useFetchProjectMetaData();
 
   // -----------------------------------------------
+  // Audio queue and ref
+  const [audioQueue, setAudioQueue] = useState<
+    { base64: string; mimeType: string }[]
+  >([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const isPlayingRef = useRef(false);
+
   // Get temp chat store state and actions
   const {
     chatConfig: {
@@ -91,6 +98,35 @@ function AIPersonaTestForm() {
       });
     }
   }, [personaData, setChatConfig, setMessagesToSend]);
+
+  // Play audio from queue
+  useEffect(() => {
+  if (!isPlayingRef.current && audioQueue.length > 0) {
+    const { base64, mimeType } = audioQueue[0];
+    isPlayingRef.current = true;
+
+    // Convert base64 to audio and play
+    const audioBytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+    const audioBlob = new Blob([audioBytes], { type: mimeType });
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio(audioUrl);
+    audioRef.current = audio;
+
+    audio.onended = () => {
+      isPlayingRef.current = false;
+      setAudioQueue((q) => q.slice(1)); // Remove the played chunk
+      URL.revokeObjectURL(audioUrl);
+    };
+
+    audio.onerror = () => {
+      isPlayingRef.current = false;
+      setAudioQueue((q) => q.slice(1));
+      URL.revokeObjectURL(audioUrl);
+    };
+
+    audio.play();
+  }
+}, [audioQueue]);
 
   // -----------------------------------------------
 
@@ -148,13 +184,25 @@ function AIPersonaTestForm() {
           // Add assistant message to messagesToSend
           setMessagesToSend({ role: "assistant", content: data.message });
 
+          // Enqueue audio if present
+          if (data.audio) {
+            setAudioQueue((q) => [
+              ...q,
+              {
+                base64: data.audio,
+                mimeType: data.audio_media_type || "audio/mpeg",
+              },
+            ]);
+          }
+
           // Update messages state to display
           setMessages((prev) => {
             if (prev.length > 0 && prev[prev.length - 1].role === "assistant") {
               const updated = [...prev];
               updated[updated.length - 1] = {
                 ...updated[updated.length - 1],
-                content: updated[updated.length - 1].content + data.message, // append the new word
+                content:
+                  updated[updated.length - 1].content + " " + data.message, // append the new word
               };
               return updated;
             } else {
@@ -195,7 +243,7 @@ function AIPersonaTestForm() {
     return () => {
       socket.close();
     };
-  }, [token]);
+  }, [token, modelId, modelName, setMessagesToSend, updateCreditsUsed]);
 
   // File upload handler
   const handleUpload = async (file: File) => {
@@ -255,7 +303,6 @@ function AIPersonaTestForm() {
         };
 
         try {
-          console.log(msgPayload);
           socketRef.current.send(JSON.stringify(msgPayload));
         } catch (e) {
           console.error("Send failed:", e);
@@ -270,60 +317,60 @@ function AIPersonaTestForm() {
 
   return (
     <ChatSection handler={handler} className="p-0">
-        <ChatMessages className="">
-          <ChatMessages.List>
-            {messages.map((message, index) => (
-              <ChatMessage
-                className="p-0 text-md items-start"
-                key={index}
-                message={message}
-                isLast={true}
+      <ChatMessages className="">
+        <ChatMessages.List>
+          {messages.map((message, index) => (
+            <ChatMessage
+              className="p-0 text-md items-start"
+              key={index}
+              message={message}
+              isLast={true}
+            >
+              <ChatMessage.Avatar />
+              <ChatMessage.Content
+                isLoading={isLoading}
+                append={handler.append}
               >
-                <ChatMessage.Avatar />
-                <ChatMessage.Content
-                  isLoading={isLoading}
-                  append={handler.append}
-                >
-                  <ChatMessage.Content.Markdown />
-                  <div className="w-1/4 self-end">
-                    <ChatMessage.Content.Image />
-                  </div>
-                  <ChatMessage.Content.DocumentFile />
-                </ChatMessage.Content>
-              </ChatMessage>
-            ))}
-            <ChatMessages.Loading className="justify-start">
-              <div className="animate-pulse">Thinking...</div>
-            </ChatMessages.Loading>
-          </ChatMessages.List>
-
-          <ChatMessages.Empty
-            children={
-              wsStatus === "connecting" ? (
-                <p className="animate-pulse text-base text-center">
-                  Initializing chat, please wait...
-                </p>
-              ) : wsStatus === "connected" && ws ? (
-                <div className="text-center space-y-2 mb-4">
-                  <p className="max-w-lg md:max-w-2xl text-md text-muted-foreground mx-auto">
-                    {assistantName ? (
-                      <>Start chatting with {assistantName}!</>
-                    ) : (
-                      <>Setup your AI Persona to start chatting</>
-                    )}
-                  </p>
+                <ChatMessage.Content.Markdown />
+                <div className="w-1/4 self-end">
+                  <ChatMessage.Content.Image />
                 </div>
-              ) : (
-                <p className="text-base text-center text-red-500">
-                  {assistantName && (
-                    <>Failed to create chat, please try again...</>
+                <ChatMessage.Content.DocumentFile />
+              </ChatMessage.Content>
+            </ChatMessage>
+          ))}
+          <ChatMessages.Loading className="justify-start">
+            <div className="animate-pulse">Thinking...</div>
+          </ChatMessages.Loading>
+        </ChatMessages.List>
+
+        <ChatMessages.Empty
+          children={
+            wsStatus === "connecting" ? (
+              <p className="animate-pulse text-base text-center">
+                Initializing chat, please wait...
+              </p>
+            ) : wsStatus === "connected" && ws ? (
+              <div className="text-center space-y-2 mb-4">
+                <p className="max-w-lg md:max-w-2xl text-md text-muted-foreground mx-auto">
+                  {assistantName ? (
+                    <>Start chatting with {assistantName}!</>
+                  ) : (
+                    <>Setup your AI Persona to start chatting</>
                   )}
                 </p>
-              )
-            }
-          />
-        </ChatMessages>
-      
+              </div>
+            ) : (
+              <p className="text-base text-center text-red-500">
+                {assistantName && (
+                  <>Failed to create chat, please try again...</>
+                )}
+              </p>
+            )
+          }
+        />
+      </ChatMessages>
+
       <ChatCanvas className="w-1/3" />
 
       <ChatInput
