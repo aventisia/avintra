@@ -1,115 +1,136 @@
-import { SubmitButton } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
+import { Input } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
-import { useDTCrudDialogStore } from "@aventisia/ui/stores";
-import { useEffect } from "react";
-import { read, utils } from "xlsx";
-import { z } from "zod";
+import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { useOptimisticMutation } from "@/react-toolkit/hooks/useOptimisticMutation";
-import { FileUploadDropzone } from "@/react-toolkit/ui/file-dropzone";
-
-import { QueueWorkItemDto } from "../../../../work-items-table/dtos/queue-work-item-dto";
-import { uploadWorkItem } from "../../../apis/queues-table-apis";
-import { queueUploadFileZodSchema } from "../../../constants/queue-zod-schema";
-import { useDefineFileUploadForm } from "../../../hooks/useDefineFileUploadForm";
+import { useUploadItemMutation } from "../../../hooks/useUploadItemMutation";
 import { useQueueUploadItemsStore } from "../../../stores/queues-upload-item-store";
 import { UploadedItemsTable } from "../uploadItems-select-table/UploadedItemsTable";
 
-export const UploadItemsForm = () => {
-  const { form, rowId, refineFormData } = useDefineFileUploadForm();
+export const UploadItemsForm = ({
+  fileInputRef,
+}: {
+  fileInputRef: React.RefObject<HTMLInputElement>;
+}) => {
+  const [uploadedData, setUploadedData] = useState<unknown[]>([]);
 
-  const { uploadedItems, setUploadedItems } = useQueueUploadItemsStore(
+  const { uploadedItems, rowId } = useQueueUploadItemsStore(
     useShallow((state) => ({
       uploadedItems: state.uploadedItems,
+      rowId: state.rowId,
       setUploadedItems: state.setUploadedItems,
     })),
   );
-
   useEffect(() => {
-    setUploadedItems([]);
-  }, []);
-
-  // Get data-table crud dialog store state and actions
-  const { setShowDialog } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      setShowDialog: state.setShowDialog,
-    })),
-  );
-
+    if (uploadedItems && uploadedItems?.length > 0)
+      setUploadedData(uploadedItems);
+  }, [uploadedItems]);
   // Use optimistic mutation to mark notification as read
-  const { mutate: mutateUploadWorkItem, isPending } = useOptimisticMutation<
-    QueueWorkItemDto,
-    QueueWorkItemDto,
-    boolean
-  >(uploadWorkItem, ["work-item", rowId], undefined);
+  const { mutate: mutateUploadWorkItem, isPending } = useUploadItemMutation();
 
-  // Handle file upload
-  const handleFileUpload = (file: File) => {
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // eslint-disable-next-line no-debugger
+    debugger;
+    event.preventDefault();
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    const isJson =
+      file.type === "application/json" || file.name.endsWith(".json");
+    const isCsv = file.type === "text/csv" || file.name.endsWith(".csv");
+
+    if (!isJson && !isCsv) {
+      console.error("Unsupported file type");
+      return;
+    }
+
     const reader = new FileReader();
 
     reader.onload = (e) => {
-      const fileData = e.target?.result;
+      try {
+        const content = e.target?.result as string;
 
-      const workbook = read(fileData, { type: "array" });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = utils.sheet_to_json(worksheet, { header: 1 });
-
-      // Extract headers and rows
-      const [headers, ...rows] = jsonData as string[][];
-      setUploadedItems(
-        rows.map((row) =>
-          row.reduce((acc, val, i) => ({ ...acc, [headers[i]]: val }), {}),
-        ),
-      );
+        if (isJson) {
+          const parsedData = JSON.parse(content);
+          console.log("JSON data:", parsedData);
+          setUploadedData(parsedData);
+        } else if (isCsv) {
+          // const parsedData = parseCSV(content);
+          const parsedData = parseCSVGeneric(content);
+          console.log("CSV data:", parsedData);
+          setUploadedData(parsedData);
+        }
+      } catch (err) {
+        console.error("Error parsing file:", err);
+        // setJsonData([]);
+      }
     };
 
-    reader.readAsArrayBuffer(file);
+    reader.onerror = () => {
+      console.error("File reading error");
+    };
+
+    reader.readAsText(file);
   };
 
-  useEffect(() => {
-    form.setValue("payloadData", JSON.stringify(uploadedItems), {
-      shouldDirty: true,
-    });
-  }, [uploadedItems, form]);
-
   // Define submit handler
-  const onSubmit = (formData: z.infer<typeof queueUploadFileZodSchema>) => {
+  const onSubmit = () => {
     // Create or update the queue
-    mutateUploadWorkItem(
-      refineFormData(formData) as unknown as QueueWorkItemDto,
-    );
-    setShowDialog(false);
-    setUploadedItems([]);
+    mutateUploadWorkItem({
+      queueId: rowId,
+      payloadData: JSON.stringify(uploadedData),
+    });
+  };
+
+  const parseCSVGeneric = (
+    csvText: string,
+  ): Record<string, string | number>[] => {
+    const lines = csvText.trim().split("\n");
+    if (lines.length < 2) return [];
+
+    const headers = lines[0].split(",").map((h) => h.trim());
+
+    return lines.slice(1).map((line) => {
+      const values = line.split(",").map((v) => v.trim());
+      const row: Record<string, string | number> = {};
+
+      headers.forEach((header, index) => {
+        const value = values[index] ?? "";
+        row[header] = isNaN(Number(value)) ? value : Number(value);
+      });
+
+      return row;
+    });
   };
 
   return (
-    <div>
-      <Form
-        methods={form}
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="px-2.5 pb-5"
-      >
-        <FileUploadDropzone
-          description="spredsheet file types allowed, eg .xlsx,.csv"
-          multiple={false}
-          accept={{
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-              [], // .xlsx
-            "text/csv": [], // .csv
-          }}
-          onDrop={(e) => handleFileUpload(e[0] as File)}
+    <div className="space-y-0 px-2.5 pb-5">
+      <div className="flex justify-between">
+        <Input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileUpload}
+          className="hidden"
+          accept=".json,application/json,.csv,text/csv"
         />
-
-        {uploadedItems && <UploadedItemsTable data={uploadedItems} />}
-        <div className="!mt-10 flex w-full justify-end">
-          <SubmitButton isPending={isPending} className={cn("min-w-[5rem]")}>
-            Upload
-          </SubmitButton>
-        </div>
-      </Form>
+      </div>
+      {uploadedItems && (
+        <UploadedItemsTable
+          setUploadedData={setUploadedData}
+          uploadedData={uploadedData}
+        />
+      )}
+      <div className="!mt-5 flex w-full justify-end">
+        <Button
+          disabled={isPending}
+          className={cn("min-w-[5rem]")}
+          onClick={onSubmit}
+        >
+          {isPending ? "Uploading..." : "Upload"}
+        </Button>
+      </div>
     </div>
   );
 };

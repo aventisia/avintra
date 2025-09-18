@@ -1,119 +1,189 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Checkbox } from "@aventisia/ui";
-import {
-  DataTable,
-  DataTableSkeleton,
-  DTColumnHeader,
-  DTSearchBox,
-} from "@aventisia/ui/data-table";
-import { ScrollArea } from "@aventisia/ui/scroll";
-import {
-  ColumnDef,
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import Enumerable from "linq";
-import { useMemo } from "react";
+import { Button } from "@aventisia/ui/buttons";
+import { DataTableSkeleton, DTColumnHeader } from "@aventisia/ui/data-table";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { useQueryClient } from "@tanstack/react-query";
+import { ColumnDef } from "@tanstack/react-table";
+import { CircleCheckIcon, CircleXIcon, Trash2Icon } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { DATA_QUERY_KEY } from "../../../constants";
+import {
+  InputSchemaField,
+  QueuesTableDto,
+} from "../../../dtos/queues-table-dto";
 import { useQueueUploadItemsStore } from "../../../stores/queues-upload-item-store";
 
-import { UploadedItemsTablePagination } from "./UploadedItemsTablePagination";
+import UploadedItemsDT from "./UploadedItemsDT";
 
-type UploadedItemsTableProps<TData extends object> = {
-  isRowSelectionEnabled?: boolean;
-  data: TData[];
-};
-
-export function UploadedItemsTable<TData extends object>({
-  data,
-}: Readonly<UploadedItemsTableProps<TData>>) {
-  const { isProcessiong } = useQueueUploadItemsStore(
+export function UploadedItemsTable({
+  uploadedData,
+  setUploadedData,
+}: {
+  uploadedData: any[];
+  setUploadedData: React.Dispatch<React.SetStateAction<any[]>>;
+}) {
+  const { isProcessiong, rowId } = useQueueUploadItemsStore(
     useShallow((state) => ({
       isProcessiong: state.isProcessing,
+      rowId: state.rowId,
+      uploadedItems: state.uploadedItems,
+      setUploadedItems: state.setUploadedItems,
     })),
   );
 
-  // create dynamic columns
-  const columns: ColumnDef<TData>[] = useMemo(() => {
-    const sampleObject = data[0];
-    if (!sampleObject) return [{ id: "id" }];
-    const columns = Enumerable.from(Object.keys(sampleObject)).select<
-      ColumnDef<TData>
-    >((key) => ({
-      accessorKey: key as keyof TData,
+  const queryClient = useQueryClient();
+
+  const [colData, setColData] = useState<InputSchemaField[]>([]);
+
+  useEffect(() => {
+    // Get queues data from query client
+    const queuesData = queryClient.getQueryData<{
+      data: QueuesTableDto[];
+    }>(DATA_QUERY_KEY);
+
+    // Get queue data by id
+    const queueData = queuesData?.data.find((item) => item.id === rowId);
+    if (queueData?.inputSchema) setColData(queueData?.inputSchema);
+  }, [queryClient, rowId]);
+
+  const columns = useMemo(() => {
+    const baseColumns: ColumnDef<any>[] = [
+      {
+        accessorKey: "rowId",
+        header: ({ table }) => (
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
+            aria-label="Select all"
+            className="translate-y-[2px]"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+            className="translate-y-[2px]"
+          />
+        ),
+        enableSorting: false,
+      },
+      ...generateDTColumns(colData),
+    ];
+
+    // Only add status column if the first row contains it
+    if (uploadedData.length > 0 && "Status" in uploadedData[0]) {
+      baseColumns.push({
+        id: "status",
+        header: ({ column }) => (
+          <DTColumnHeader column={column} title={"Status"} />
+        ),
+        cell: ({ row }) => {
+          const status = row.original as any;
+          const t = status?.Status;
+          const r = status?.Remark;
+
+          if (t === "Failed") {
+            return (
+              <Tooltip content={r}>
+                <CircleXIcon className="h-4 w-4 text-red-500" />
+              </Tooltip>
+            );
+          }
+
+          if (t === "Success") {
+            return <CircleCheckIcon className="h-4 w-4 text-green-500" />;
+          }
+
+          return <div className="text-sm text-muted-foreground">Pending</div>;
+        },
+      });
+    }
+
+    baseColumns.push({
+      id: "actions",
+      cell: ({ row }) => (
+        <Button
+          type="button"
+          onClick={() => {
+            const rowData = row.original;
+            setUploadedData((prev) =>
+              prev?.filter(
+                (r) => JSON.stringify(r) !== JSON.stringify(rowData),
+              ),
+            );
+          }}
+          variant={"caution"}
+          size={"xs"}
+        >
+          <Trash2Icon className="h-4 w-4" />
+        </Button>
+      ),
+    });
+
+    return baseColumns;
+  }, [colData, uploadedData, setUploadedData]);
+
+  function generateDTColumns<TData>(
+    fields: InputSchemaField[],
+  ): ColumnDef<TData>[] {
+    return fields.map((field) => ({
+      accessorKey: field.name as keyof TData,
       header: ({ column }) => (
         <DTColumnHeader
           column={column}
-          title={key.charAt(0).toUpperCase() + key.slice(1)}
+          title={field.name.charAt(0).toUpperCase() + field.name.slice(1)}
         />
-      ), // Capitalize the key name
+      ),
       cell: (info) => (
         <div className="w-auto truncate font-medium">
           {String(info.getValue())}
         </div>
       ),
     }));
+  }
+  //  columns visibility
+  const columnVisibility = useMemo(() => {
+    return {
+      rowId: false,
 
-    const selectRowsColumn: ColumnDef<TData> = {
-      accessorKey: "id",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-          className="translate-y-[2px]"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          className="translate-y-[2px]"
-        />
-      ),
-      enableSorting: false,
+      ...generateColumnVisibilityState(colData),
+      Status: Object.keys(uploadedData[0] || [])?.includes("Status")
+        ? true
+        : false,
     };
-    return [selectRowsColumn, ...columns];
-  }, [data]);
+  }, [colData, uploadedData]);
 
-  // Initialize the table
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-  });
+  /** Generate column visibility state with all fields visible */
+  function generateColumnVisibilityState(
+    fields: InputSchemaField[],
+  ): Record<string, boolean> {
+    const visibilityState: Record<string, boolean> = {};
+
+    fields.forEach((field) => {
+      visibilityState[field.name] = true;
+    });
+
+    return visibilityState;
+  }
 
   return isProcessiong ? (
     <DataTableSkeleton />
   ) : (
     <>
-      <div className="my-2 flex items-center justify-between">
-        <h4 className="text-md ml-1 flex w-full items-center truncate text-foreground">
-          Data
-        </h4>
-
-        <div className="flex items-center gap-2">
-          <DTSearchBox
-            table={table}
-            searchColumn={table.getAllColumns()[0].id}
-            placeholder="Search data..."
-          />
-        </div>
-      </div>
-
-      {/* Data table to render data */}
-      <ScrollArea className="h-[calc(60vh-15rem)] w-[48vw]">
-        <DataTable table={table} columnsLength={columns.length} />
-      </ScrollArea>
-      <div className="mt-2">
-        <UploadedItemsTablePagination table={table} />
-      </div>
+      <UploadedItemsDT
+        columns={columns}
+        columnsVisibilityState={columnVisibility}
+        data={uploadedData || []}
+      />
     </>
   );
 }

@@ -10,7 +10,6 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { QueueWorkItemDto } from "../../work-items-table/dtos/queue-work-item-dto";
 import { AssignAgentDto } from "../dtos/assign-agent-dto";
 import { QueueAgentsDto } from "../dtos/queue-agents-dto";
-import { QueueCreateUpdateDto } from "../dtos/queue-create-update-dto";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/queue`;
@@ -38,13 +37,9 @@ export const isNameAvailable = (postObj: CheckAvailabilityDto) => {
 /**
  * Inserts a new queue.
  */
-export const insertQueue = (newqueue: QueueCreateUpdateDto) => {
+export const insertQueue = (newqueue: QueuesTableDto) => {
   return axiosInstance
-    .post<IHttpResponse<QueueCreateUpdateDto>>(`${baseAPIURL}`, newqueue, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    })
+    .post<IHttpResponse<QueuesTableDto>>(`${baseAPIURL}`, newqueue)
     .then((res) => res.data);
 };
 
@@ -55,7 +50,7 @@ export const uploadWorkItem = (workitem: QueueWorkItemDto) => {
   return axiosInstance
     .post<
       IHttpResponse<QueueWorkItemDto>
-    >(`${import.meta.env.VITE_WORC_API_URL}/queue-transaction`, workitem)
+    >(`${import.meta.env.VITE_WORC_API_URL}/queue-transaction/multiple-data`, workitem)
     .then((res) => res.data);
 };
 
@@ -93,13 +88,9 @@ export const addTrigger = (assignAgentDto: AssignAgentDto) => {
 /**
  * Updates an existing queue.
  */
-export const updateQueue = (updatedqueue: QueueCreateUpdateDto) => {
+export const updateQueue = (updatedqueue: QueuesTableDto) => {
   return axiosInstance
-    .put<IHttpResponse<QueueCreateUpdateDto>>(`${baseAPIURL}`, updatedqueue, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    })
+    .put<IHttpResponse<QueuesTableDto>>(`${baseAPIURL}`, updatedqueue)
     .then((res) => res.data);
 };
 
@@ -131,14 +122,12 @@ export const deleteQueues = (ids: string[]) => {
 export const queueOptimisticMutationFn = ({
   payload,
   crudAction,
-}: IOptimisticMutation<
-  QueueCreateUpdateDto | QueuesTableDto | string | string[]
->) => {
+}: IOptimisticMutation<QueuesTableDto | string | string[]>) => {
   switch (crudAction) {
     case "create":
-      return insertQueue(payload as QueueCreateUpdateDto);
+      return insertQueue(payload as QueuesTableDto);
     case "update":
-      return updateQueue(payload as QueueCreateUpdateDto);
+      return updateQueue(payload as QueuesTableDto);
     case "delete":
       return deleteQueue(payload as string);
     case "delete-multiple":

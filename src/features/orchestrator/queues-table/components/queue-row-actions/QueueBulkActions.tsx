@@ -12,7 +12,6 @@ import { Table } from "@tanstack/react-table";
 
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { QueueCreateUpdateDto } from "../../dtos/queue-create-update-dto";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
 
 interface QueueBulkActionsProps {
@@ -33,7 +32,7 @@ export function QueueBulkActions({ table }: Readonly<QueueBulkActionsProps>) {
   // Get mutation function to delete the queue
   const { mutate: deletequeues } = useListOptimisticMutation<
     string[],
-    QueueCreateUpdateDto | boolean,
+    QueuesTableDto | boolean,
     QueuesTableDto
   >(selectedRowIds, queueOptimisticMutationFn, DATA_QUERY_KEY);
 

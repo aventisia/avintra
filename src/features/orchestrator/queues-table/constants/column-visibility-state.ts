@@ -1,13 +1,13 @@
-/** Column visibility initial state for the projects table. */
+/** Column visibility initial state for the queues table. */
 export const columnVisibilityState = {
   id: false,
   name: true,
-  pendingCount: true,
-  inprogressCount: true,
-  completedCount: true,
-  failedCount: true,
-  totalCount: true,
-  lastUpdatedOn: true,
-  createdBy: true,
-  createdOn: true,
+  inProgress: true,
+  pending: true,
+  completed: true,
+  failed: true,
+  total: true,
+  lastModifiedOn: true,
+  createdBy: false,
+  createdOn: false,
 };

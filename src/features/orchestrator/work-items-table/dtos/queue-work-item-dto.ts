@@ -5,7 +5,7 @@ export interface QueueWorkItemDto {
    * Gets or sets the ID of the flow this version is associated with.
    */
 
-  id: string;
+  id?: string;
 
   /**
    * Gets or sets the name of the queue.

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import { getQueuesWorkItemPayload } from "../apis/work-items-table-apis";
+import { getQueuesWorkItemsList } from "../apis/work-items-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 
 /**
@@ -16,7 +16,7 @@ export const useFetchQueuesWorkItems = () => {
   const { qid } = useParams();
   const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
     queryKey: [...DATA_QUERY_KEY, qid],
-    queryFn: () => getQueuesWorkItemPayload(qid ?? ""),
+    queryFn: () => getQueuesWorkItemsList(qid ?? ""),
   });
 
   // Show toast on fetch error
