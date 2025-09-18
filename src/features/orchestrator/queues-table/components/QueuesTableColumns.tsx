@@ -48,79 +48,61 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
       </WorkItemsTableCellLink>
     ),
   },
-
   {
-    accessorKey: "inprogressCount",
+    accessorKey: "inProgress",
     header: ({ column }) => (
-      <DTColumnHeader
-        column={column}
-        title={getColumnName("inprogressCount") ?? 0}
-      />
+      <DTColumnHeader column={column} title={getColumnName("inProgress")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("inprogressCount") ?? 0}
+        {row.getValue("inProgress") ?? 0}
       </div>
     ),
   },
-
   {
-    accessorKey: "pendingCount",
+    accessorKey: "pending",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("pendingCount")} />
+      <DTColumnHeader column={column} title={getColumnName("pending")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("pendingCount") ?? 0}
+        {row.getValue("pending") ?? 0}
       </div>
     ),
   },
-
   {
-    accessorKey: "completedCount",
+    accessorKey: "completed",
     header: ({ column }) => (
-      <DTColumnHeader
-        column={column}
-        title={getColumnName("completedCount") ?? 0}
-      />
+      <DTColumnHeader column={column} title={getColumnName("completed")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("completedCount") ?? 0}
+        {row.getValue("completed") ?? 0}
       </div>
     ),
   },
-
   {
-    accessorKey: "failedCount",
+    accessorKey: "failed",
     header: ({ column }) => (
-      <DTColumnHeader
-        column={column}
-        title={getColumnName("failedCount") ?? 0}
-      />
+      <DTColumnHeader column={column} title={getColumnName("failed")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("failedCount") ?? 0}
+        {row.getValue("failed") ?? 0}
       </div>
     ),
   },
-
   {
-    accessorKey: "totalCount",
+    accessorKey: "total",
     header: ({ column }) => (
-      <DTColumnHeader
-        column={column}
-        title={getColumnName("totalCount") ?? 0}
-      />
+      <DTColumnHeader column={column} title={getColumnName("total")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("totalCount") ?? 0}
+        {row.getValue("total") ?? 0}
       </div>
     ),
   },
-
   {
     accessorKey: "lastModifiedOn",
     header: ({ column }) => (
@@ -136,7 +118,6 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
       </div>
     ),
   },
-
   {
     accessorKey: "createdBy",
     header: ({ column }) => (

@@ -57,11 +57,11 @@ export const useDefineQueueForm = () => {
 
       isUniqueReferencesEnforced: false,
       isStoredEncrypted: false,
-      shouldRetryFailedItems: false,
-      shouldRetryAbandonedItems: false,
-      maximumRetryAttempts: 3,
-      specificDataSchemaFile: undefined,
-      outputDataSchemaFile: undefined,
+      // shouldRetryFailedItems: false,
+      // shouldRetryAbandonedItems: false,
+      // maximumRetryAttempts: 3,
+      inputSchema: "[]",
+      // outputDataSchemaFile: undefined,
 
       isDisabled: false,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
@@ -98,11 +98,11 @@ export const useDefineQueueForm = () => {
 
       isUniqueReferencesEnforced: queueData?.isUniqueReferencesEnforced,
       isStoredEncrypted: queueData?.isStoredEncrypted,
-      shouldRetryFailedItems: queueData?.shouldRetryFailedItems,
-      shouldRetryAbandonedItems: queueData?.shouldRetryAbandonedItems,
-      maximumRetryAttempts: queueData?.maximumRetryAttempts,
-      specificDataSchemaFile: undefined,
-      outputDataSchemaFile: undefined,
+      // shouldRetryFailedItems: queueData?.shouldRetryFailedItems,
+      // shouldRetryAbandonedItems: queueData?.shouldRetryAbandonedItems,
+      // maximumRetryAttempts: queueData?.maximumRetryAttempts,
+      inputSchema: JSON.stringify(queueData?.inputSchema, null, 2) ?? "[]",
+      // outputDataSchemaFile: undefined,
 
       isDisabled: queueData?.isDisabled,
       // Read (view) only fields
@@ -119,7 +119,7 @@ export const useDefineQueueForm = () => {
         ? new Date(queueData?.lastModifiedOn)
         : new Date(),
     });
-  }, [rowId, form, queryClient, userSession]);
+  }, [rowId, form, queryClient, userSession, crudAction]);
 
   // Get check availability state and methods
   const {
@@ -140,6 +140,7 @@ export const useDefineQueueForm = () => {
   const refineFormData = (formData: z.infer<typeof queueZodSchema>) => {
     return {
       ...formData,
+      inputSchema: JSON.parse(formData.inputSchema),
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };

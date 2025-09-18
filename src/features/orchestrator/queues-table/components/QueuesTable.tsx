@@ -18,6 +18,7 @@ import { useFetchQueues } from "../hooks/useFetchQueues";
 import { QueueAssignAgentDialog } from "./assign-agents/dialog/QueueAssignAgentDialog";
 import { QueueCrudDialog } from "./queue-crud-dialog/QueueCrudDialog";
 import { QueueBulkActions } from "./queue-row-actions/QueueBulkActions";
+import UploadItemsDialog from "./queue-upload-items/UploadItemsDialog";
 import { queuesTableColumns } from "./QueuesTableColumns";
 
 /**
@@ -69,7 +70,7 @@ export const QueuesTable = () => {
               columnsLength={queuesTableColumns.length}
             />
           </QueueCrudDialog>
-
+          <UploadItemsDialog />
           {/* Data table Pagination component */}
           <DTPagination table={table} />
 
