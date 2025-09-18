@@ -751,12 +751,20 @@ namespace WorkspaceAPIs.Services
                         return serviceResponse;
                     }
 
+                    // Extract distinct icons from the DTO, or initialize an empty list if none are provided
+                    var projectTemplateIcons = publishProjectTemplateDto?.Icons?.Distinct().ToList() ?? new List<string>();
+
+                    // Initialize tags list with the DTO's type, then append any additional tags
+                    var projectTemplateTags = new List<string>() { nameof(publishProjectTemplateDto.Type) };
+                    projectTemplateTags.AddRange(publishProjectTemplateDto.Tags);
+
                     // Map the DTO to the ProjectTemplate entity and set properties from the flow version
                     var projectTemplate = publishProjectTemplateDto.Adapt<ProjectTemplate>();
                     projectTemplate.TenantId = publishProjectTemplateDto.AccessType != TemplateAccessTypesEnum.Public ? _tenantId : null;
                     projectTemplate.Version = 1;
                     projectTemplate.RefId = flowVersion.Id;
-                    projectTemplate.Icons = publishProjectTemplateDto?.Icons?.Distinct().ToList() ?? new List<string>();
+                    projectTemplate.Icons = IconSorterUtil.SortByPriority(projectTemplateIcons);
+                    projectTemplate.Tags = projectTemplateTags;
                     projectTemplate.Schema = flowVersion.ReactFlowObject;
                     projectTemplate.SchemaVersion = flowVersion.VersionNumber;
                     projectTemplate.AccessPath = $"/agent?f={flowVersion.FlowId}&v={flowVersion.Id}";
