@@ -12,7 +12,7 @@ from app.models.chat_message import ChatMessage
 from app.qdrant.service import add_document_to_collection
 from app.core.llm_service import generate_prompt_for_ai_persona
 import time
-import base64
+import markdown2
 import re
 
 # Create FastAPI router and initialize services
@@ -107,7 +107,9 @@ async def websocket_chat_handler(websocket: WebSocket):
             
             # Buffer for accumulating LLM output
             buffer = ""
-            sentence_end_pattern = re.compile(r'[.!?]\s')  # Simple sentence boundary pattern
+            
+            # This regex splits after ., !, or ? followed by space, newline, or end of string
+            sentence_splitter = re.compile(r'(?<=[.!?])[\s\n]+')
 
             # Start Time
             start_time = time.perf_counter()
@@ -120,23 +122,29 @@ async def websocket_chat_handler(websocket: WebSocket):
                 # Append chunk to buffer
                 buffer += chunk
                 
-                # Check for sentence/phrase boundary
-                if sentence_end_pattern.search(buffer) or len(buffer) > 200:
-                    text_to_speak = buffer.strip()
-                    buffer = "" # clear before TTS
+                # Split buffer into sentences, keeping the last incomplete fragment
+                sentences = sentence_splitter.split(buffer)
+                
+                # All except the last are complete sentences
+                for sentence in sentences[:-1]:
+                    llm_text = sentence.strip()
+                    if not llm_text:
+                        continue
                     
-                    # Call Kokoro TTS
+                    # Convert markdown to plain text for TTS
+                    text_for_tts = markdown2.markdown(llm_text)
+                    
+                    # Remove HTML tags left by markdown2
+                    text_for_tts = re.sub(r'<[^>]+>', '', text_for_tts)
                     try:
-                        logger.info(f"Calling Kokoro TTS for text: {text_to_speak}")
+                        logger.info(f"Calling Kokoro TTS for text: {text_for_tts}")
                         request = KokoroTTSRequest(
-                            text=text_to_speak,
+                            text=text_for_tts,
                             voice='af_heart',
                             lang_code='a',
                             return_base64=True
                         )
                         audio_response = await kokoro_tts_service.synthesize(request)
-                        
-                        # Kokoro is returning json with 'audio_base64' and 'media_type'
                         if isinstance(audio_response, dict):
                             audio_b64 = audio_response.get("audio_base64")
                             audio_media_type = audio_response.get("media_type")
@@ -146,20 +154,21 @@ async def websocket_chat_handler(websocket: WebSocket):
                     except Exception as tts_err:
                         logger.error(f"Kokoro TTS failed: {tts_err}")
                         audio_b64 = None
+                        audio_media_type = None
 
-                    # Create AI response message with audio
                     ai_response_message = ChatMessage(
                         model_id=user_message.model_id,
                         user_id=user_info.id,
                         user_type="assistant",
-                        message=text_to_speak,
+                        message=llm_text,
                         timestamp=str(datetime.datetime.now(datetime.timezone.utc)),
                         audio=audio_b64,
                         audio_media_type=audio_media_type
                     )
-                    
-                    # Send the message with audio to client
                     await connection_manager.send_personal_message(ai_response_message.model_dump_json(), connection_id)
+                
+                # The last element is the incomplete fragment (or empty if buffer ended with a sentence)
+                buffer = sentences[-1]
                     
             # End Time. Get total time taken for LLM response
             end_time = time.perf_counter()
