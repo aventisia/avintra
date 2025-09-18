@@ -2,6 +2,8 @@ import datetime
 import json
 import uuid
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from app.features.kokoro_tts import kokoro_tts_service
+from app.features.kokoro_tts.kokoro_tts_schemas import KokoroTTSRequest
 from app.websocket.manager import ConnectionManager
 from app.core.security import get_user_from_token
 from app.core.llm_service import LLMService
@@ -10,6 +12,8 @@ from app.models.chat_message import ChatMessage
 from app.qdrant.service import add_document_to_collection
 from app.core.llm_service import generate_prompt_for_ai_persona
 import time
+import base64
+import re
 
 # Create FastAPI router and initialize services
 router = APIRouter()
@@ -98,6 +102,12 @@ async def websocket_chat_handler(websocket: WebSocket):
             #     add_document_to_collection(user_message)
             # except Exception as e:
             #     logger.warning(f"Failed to store user message in Qdrant: {e}")
+            
+            # ---------------------------------------------------
+            
+            # Buffer for accumulating LLM output
+            buffer = ""
+            sentence_end_pattern = re.compile(r'[.!?]\s')  # Simple sentence boundary pattern
 
             # Start Time
             start_time = time.perf_counter()
@@ -107,17 +117,50 @@ async def websocket_chat_handler(websocket: WebSocket):
                 model=message_data['llm'],
                 temperature=message_data['temperature'],
             ):
-                # Send each chunk as it arrives (for true streaming to client)
-                ai_response_message = ChatMessage(
-                    model_id=user_message.model_id,
-                    user_id=user_info.id,
-                    user_type="assistant",
-                    message=chunk,
-                    timestamp=str(datetime.datetime.now(datetime.timezone.utc)),
-                    file=None
-                )
-                await connection_manager.send_personal_message(ai_response_message.model_dump_json(), connection_id)
+                # Append chunk to buffer
+                buffer += chunk
+                
+                # Check for sentence/phrase boundary
+                if sentence_end_pattern.search(buffer) or len(buffer) > 200:
+                    text_to_speak = buffer.strip()
+                    buffer = "" # clear before TTS
+                    
+                    # Call Kokoro TTS
+                    try:
+                        logger.info(f"Calling Kokoro TTS for text: {text_to_speak}")
+                        request = KokoroTTSRequest(
+                            text=text_to_speak,
+                            voice='af_heart',
+                            lang_code='a',
+                            return_base64=True
+                        )
+                        audio_response = await kokoro_tts_service.synthesize(request)
+                        
+                        # Kokoro is returning json with 'audio_base64' and 'media_type'
+                        if isinstance(audio_response, dict):
+                            audio_b64 = audio_response.get("audio_base64")
+                            audio_media_type = audio_response.get("media_type")
+                        else:
+                            audio_b64 = None
+                            audio_media_type = None
+                    except Exception as tts_err:
+                        logger.error(f"Kokoro TTS failed: {tts_err}")
+                        audio_b64 = None
 
+                    # Create AI response message with audio
+                    ai_response_message = ChatMessage(
+                        model_id=user_message.model_id,
+                        user_id=user_info.id,
+                        user_type="assistant",
+                        message=text_to_speak,
+                        timestamp=str(datetime.datetime.now(datetime.timezone.utc)),
+                        audio=audio_b64,
+                        audio_media_type=audio_media_type
+                    )
+                    
+                    # Send the message with audio to client
+                    await connection_manager.send_personal_message(ai_response_message.model_dump_json(), connection_id)
+                    
             # End Time. Get total time taken for LLM response
             end_time = time.perf_counter()
             total_time = end_time - start_time

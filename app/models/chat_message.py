@@ -16,4 +16,6 @@ class ChatMessage(BaseModel):
     user_type: str  # User or Bot
     message: str  # Text message
     timestamp: str  # ISO 8601 formatted datetime string
+    audio: Optional[str] = None  # Base64 encoded audio content
+    audio_media_type: Optional[str] = None  # MIME type of the audio content
     file: Optional[FileDetail] = None  # Optional file attachment
