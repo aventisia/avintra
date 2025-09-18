@@ -4,8 +4,6 @@
 export interface QueuesTableDto {
   /**
    * Gets or sets the primary key of the queue record.
-   *
-   * Not making it required because same DTO is used for insert and update.
    */
   id: string;
 
@@ -15,78 +13,99 @@ export interface QueuesTableDto {
   name: string;
 
   /**
-   * Gets the toatal peding work items in queue
-   */
-  totalPendingItems: number;
-
-  /**
-   * Gets or sets description for the queue
+   * Gets or sets the description for the queue.
    */
   description: string;
 
   /**
-   * Gets or sets the wheather queue Unique References Enforced.
+   * Whether the queue enforces unique references.
    */
   isUniqueReferencesEnforced: boolean;
 
   /**
-   * Gets or sets the wheather queue is Stored Encrypted
+   * Whether the queue data is stored encrypted.
    */
   isStoredEncrypted: boolean;
 
   /**
-   * Gets or sets the wheather queue should Retry Failed Items
+   * Whether the queue should retry failed items.
    */
   shouldRetryFailedItems: boolean;
 
   /**
-   * Gets or sets the wheather queue should Retry Abandoned Items
+   * Whether the queue should retry abandoned items.
    */
   shouldRetryAbandonedItems: boolean;
 
   /**
-   * Gets or sets the maximum Retry Attempts for work item
+   * Maximum number of retry attempts for a work item.
    */
   maximumRetryAttempts: number;
 
   /**
-   * Gets the queue specific Data Schema Path and json string
+   * Whether the queue is disabled.
    */
-  specificDataSchemaPath: string;
-  specificDataSchemaJsonString: string;
+  isDisabled: boolean;
 
   /**
-   * Gets the wheather queue output Data Schema Path and json string
+   * Username of the user who created the queue.
    */
-  outputDataSchemaPath: string;
-  outputDataSchemaJsonString: string;
+  createdBy: string;
 
   /**
-   * Gets or sets a flag indicating whether the credentials record is disabled.
-   *
-   * Not making it required because same DTO is used for insert and update.
-   *
-   * Its important to have this property nullable because we need to differentiate between true, false and null.
+   * Timestamp when the queue was created.
    */
-  isDisabled?: boolean;
+  createdOn: string | Date;
 
   /**
-   * Gets or sets the username of the user who created the credentials record. Max-254
+   * Username of the user who last modified the queue.
    */
-  createdBy?: string;
+  lastModifiedBy: string;
 
   /**
-   * Gets or sets the date and time when the credentials record was created.
+   * Timestamp when the queue was last modified.
    */
-  createdOn?: Date;
+  lastModifiedOn: string | Date;
 
   /**
-   * Gets or sets the username of the user who last modified the credentials record. Max-254
+   * Number of in-progress items.
    */
-  lastModifiedBy?: string;
+  inProgress: number;
 
   /**
-   * Gets or sets the date and time when the credentials record was last modified.
+   * Number of pending items.
    */
-  lastModifiedOn?: Date;
+  pending: number;
+
+  /**
+   * Number of completed items.
+   */
+  completed: number;
+
+  /**
+   * Number of failed items.
+   */
+  failed: number;
+
+  /**
+   * Total number of items.
+   */
+  total: number;
+
+  /**
+   * Input schema definition for the queue.
+   */
+  inputSchema: InputSchemaField[];
+}
+
+/**
+ * Represents a field in the input schema.
+ */
+export interface InputSchemaField {
+  name: string;
+  description: string;
+  label: string | null;
+  type: "string" | "int" | "Date"; // Extend if more types exist
+  isRequired: boolean;
+  isUsedForUniqueIdentifier: boolean;
 }
