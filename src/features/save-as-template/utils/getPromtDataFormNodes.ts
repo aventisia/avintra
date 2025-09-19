@@ -24,9 +24,14 @@ const allowedNodeTypes: CustomNodeType[] = [
  * @param nodes - Array of React Flow nodes
  * @returns Cleaned array of node data objects for prompts
  */
-export function getPromptDataFromNodes(nodes: Node<NodeDataType>[]) {
+export function getPromptDataFromNodes(
+  nodes: Node<NodeDataType>[],
+  allowAllNodes: boolean = false,
+) {
   return nodes
-    .filter((node) => allowedNodeTypes.includes(node.data?.type)) // Filter only allowed node types
+    .filter(
+      (node) => allowAllNodes || allowedNodeTypes.includes(node?.data?.type),
+    ) // Filter only allowed node types
     .map((node) => {
       const data = node.data;
       const result: Record<string, unknown> = {};
@@ -48,7 +53,7 @@ export function getPromptDataFromNodes(nodes: Node<NodeDataType>[]) {
         ? data.inputs.map((input) => input.key).filter(Boolean)
         : [];
       if (inputKeys.length > 0) {
-        result.inputs = inputKeys;
+        result.inputs = allowAllNodes ? data?.inputs : inputKeys;
       }
 
       // Extract output keys if present and non-empty
@@ -56,7 +61,11 @@ export function getPromptDataFromNodes(nodes: Node<NodeDataType>[]) {
         ? data.outputs.map((output) => output.key).filter(Boolean)
         : [];
       if (outputKeys.length > 0) {
-        result.outputs = outputKeys;
+        result.outputs = allowAllNodes ? data?.outputs : outputKeys;
+      }
+
+      if (allowAllNodes) {
+        result.type = node?.type;
       }
 
       return result;

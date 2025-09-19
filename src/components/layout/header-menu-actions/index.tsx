@@ -23,6 +23,7 @@ import { useShallow } from "zustand/react/shallow";
 import { HeaderActionMenuTrigger } from "./HeaderActionMenuTrigger";
 import { useInputOutputsStore } from "@/features/add-input-output/stores/inputs-outputs-store";
 import { useSaveAsTemplateStore } from "@/features/save-as-template/stores/save-as-template-store";
+import { useExportFlow } from "@/hooks/useExportFlow";
 
 export const HeaderActionMenu: React.FC = () => {
   // Get flow execution store state & actions
@@ -44,6 +45,8 @@ export const HeaderActionMenu: React.FC = () => {
       setShowDialog: state.setShowDialog,
     })),
   );
+
+  const { exportFlow, exportFlowTrimmed } = useExportFlow();
 
   // Tauri API to open the UI inspector
   const openUIInspector = async () => {
@@ -115,7 +118,22 @@ export const HeaderActionMenu: React.FC = () => {
         ) : null}
         {import.meta.env.MODE !== "production" ? (
           <>
-            <SimpleDDMenuItem size="md" Icon={UploadIcon} content="Export" />
+            <SimpleDDMenuItem
+              size="md"
+              Icon={UploadIcon}
+              content="Export"
+              onClick={() => {
+                exportFlow();
+              }}
+            />
+            <SimpleDDMenuItem
+              size="md"
+              Icon={UploadIcon}
+              content="Export (Trimmed)"
+              onClick={() => {
+                exportFlowTrimmed();
+              }}
+            />
             <DropdownMenuSeparator />
 
             <SimpleDDMenuItem
