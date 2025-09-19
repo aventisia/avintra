@@ -86,12 +86,12 @@ public class UsageSummaryDto
     /// <summary>
     /// Gets or sets the total number of credits consumed in the selected period.
     /// </summary>
-    public int TotalCreditsConsumed { get; set; }
+    public int TotalCredits { get; set; }
 
     /// <summary>
-    /// Gets or sets the total number of transactions that occurred.
+    /// Gets or sets the total number of transactions consumed in the selected period.
     /// </summary>
-    public int TotalTransactionsCount { get; set; }
+    public int TotalTransactions { get; set; }
 }
 
 /// <summary>
@@ -107,7 +107,12 @@ public class DataUsageDataPointDto
     /// <summary>
     /// Gets or sets the total number of credits used on the specified date.
     /// </summary>
-    public int Value { get; set; }
+    public int TotalCredits { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of transactions used on the specified date.
+    /// </summary>
+    public int TotalTransactions { get; set; }
 }
 
 /// <summary>
@@ -134,6 +139,16 @@ public class ResourceUsageDetailDto
     /// Gets or sets how many credits are used for each unit.
     /// </summary>
     public int Credits { get; set; }
+
+    /// <summary>
+    /// Gets or sets how many credits are used by the service.
+    /// </summary>
+    public int TotalCredits { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of credits used by the service.
+    /// </summary>
+    public int TotalTransactions { get; set; }
 
     /// <summary>
     /// Gets or sets the historical usage data points for this resource.
@@ -180,7 +195,12 @@ public class UserUsageDto
     /// <summary>
     /// Gets or sets the total number of transactions performed by the user.
     /// </summary>
-    public int TransactionsCount { get; set; }
+    public int TotalTransactions { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of credits used by the user.
+    /// </summary>
+    public int TotalCredits { get; set; }
 }
 
 /// <summary>
@@ -194,9 +214,14 @@ public class AiModelUsageDto
     public string? ModelName { get; set; }
 
     /// <summary>
-    /// Gets or sets the number of times the model has been used.
+    /// Gets or sets the total number of transactions performed by the model.
     /// </summary>
-    public int UsageCount { get; set; }
+    public int TotalTransactions { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of credits used by the user.
+    /// </summary>
+    public int TotalCredits { get; set; }
 }
 
 /// <summary>
@@ -210,7 +235,12 @@ public class AgentUsageDto
     public string? AgentName { get; set; }
 
     /// <summary>
-    /// Gets or sets the number of times the agent has been used.
+    /// Gets or sets the total number of transactions performed by the agent.
     /// </summary>
-    public int UsageCount { get; set; }
+    public int TotalTransactions { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of credits used by the user.
+    /// </summary>
+    public int TotalCredits { get; set; }
 }
