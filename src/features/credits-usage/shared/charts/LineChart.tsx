@@ -74,7 +74,7 @@ export function ChartLineInteractive({
   const [activeChart] = React.useState<keyof typeof chartConfig>(valueKey);
   const total = React.useMemo(
     () =>
-      data.reduce(
+      data?.reduce(
         (acc, curr) =>
           acc +
           (valueKey == "totalCredits"
@@ -103,6 +103,7 @@ export function ChartLineInteractive({
             margin={{
               left: 12,
               right: 12,
+              bottom: data?.length > 7 ? 12 : 0,
             }}
           >
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
@@ -122,6 +123,7 @@ export function ChartLineInteractive({
                   day: "numeric",
                 });
               }}
+              hide={data?.length > 7}
             />
             <ChartTooltip
               content={
