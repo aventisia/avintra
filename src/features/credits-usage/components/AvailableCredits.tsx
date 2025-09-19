@@ -15,17 +15,16 @@ const AvailableCredits = () => {
   const { data, isLoading } = useFetchAvailableCredits();
 
   return (
-    <div className="flex items-center gap-4">
-      <p className="text-lg font-medium">Credit Usage</p>
-      <Badge className="border border-black bg-transparent px-4 py-1 text-sm text-accent-foreground">
-        Credits <span className="font-normal opacity-60">-</span>{" "}
+    <Badge className="border-black text-sm font-normal" variant={"outline"}>
+      Available Credits:
+      <span className="ml-1 font-semibold">
         {isLoading ? (
           <LoadingSpinner className="size-3 text-primary-300" />
         ) : (
           <>{data ? data?.data?.availableCredits.toLocaleString() : "0"}</>
         )}
-      </Badge>
-    </div>
+      </span>
+    </Badge>
   );
 };
 
