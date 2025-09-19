@@ -1,8 +1,8 @@
 import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
+import { useState } from "react";
 
 import { useFetchCreditUsageSummary } from "../hooks/useFetchCreditUsageSummary";
-import { useState } from "react";
 
 const UsageTabs = () => {
   const [selectedTab, setSelectedTab] = useState("totalCredits");
@@ -13,7 +13,21 @@ const UsageTabs = () => {
   const agents = data?.data.agents || [];
 
   return (
-    <div className="rounded-lg border-l bg-white py-2">
+    <div className="rounded-lg rounded-tl-none border-l bg-white pb-2">
+      <Tabs
+        value={selectedTab}
+        className="w-full"
+        onValueChange={setSelectedTab}
+      >
+        <TabsList className="w-full">
+          <TabsTrigger value="totalCredits" className="w-full">
+            Credits
+          </TabsTrigger>
+          <TabsTrigger value="totalTransactions" className="w-full">
+            Transactions
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
       <Tabs defaultValue="users">
         <TabsList className="grid w-full grid-cols-3 rounded-none border-b bg-white px-3 text-base">
           <TabsTrigger
@@ -35,24 +49,7 @@ const UsageTabs = () => {
             Agents
           </TabsTrigger>
         </TabsList>
-        <div className="flex justify-end p-1">
-          <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-            <TabsList className="rounded-full py-1">
-              <TabsTrigger
-                value="totalCredits"
-                className="rounded-full px-4 py-1 text-xs"
-              >
-                Credits
-              </TabsTrigger>
-              <TabsTrigger
-                value="totalTransactions"
-                className="rounded-full px-4 py-1 text-xs"
-              >
-                Transactions
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
+
         {/* Tabs Content for Users */}
         <TabsContent value="users" className="space-y-4 px-4 py-2">
           {users.map((user) => {
