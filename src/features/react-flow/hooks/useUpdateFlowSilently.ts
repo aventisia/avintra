@@ -31,6 +31,7 @@ export const useUpdateFlowSilently = () => {
     flowVariablesObject,
     inputOutputObject,
     isPublished,
+    setViewport,
   } = useReactFlowExtStore(
     useShallow((state) => ({
       nodes: state.nodes,
@@ -40,6 +41,7 @@ export const useUpdateFlowSilently = () => {
       isSavePending: state.isSavePending,
       setIsSavePending: state.setIsSavePending,
       isPublished: state.isPublished,
+      setViewport: state.setViewport,
     })),
   );
 
@@ -96,7 +98,8 @@ export const useUpdateFlowSilently = () => {
         edges: edges,
         viewport: viewportState,
       };
-
+      //set viewport state for react flow oject ext(only for reference its not for ReactFLow)
+      setViewport(viewportState);
       // Save flow data
       saveData({
         id: currentFlow.id,

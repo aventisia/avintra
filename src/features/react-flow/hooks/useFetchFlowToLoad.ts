@@ -29,6 +29,7 @@ export const useFetchFlowToLoad = () => {
     setFlowVariablesObject,
     setInputOutputObject,
     setIsPublished,
+    setViewport: setViewportState,
   } = useReactFlowExtStore(
     useShallow((state) => ({
       setNodes: state.setNodes,
@@ -36,6 +37,7 @@ export const useFetchFlowToLoad = () => {
       setFlowVariablesObject: state.setFlowVariablesObject,
       setInputOutputObject: state.setInputOutputObject,
       setIsPublished: state.setIsPublished,
+      setViewport: state.setViewport,
     })),
   );
 
@@ -97,6 +99,8 @@ export const useFetchFlowToLoad = () => {
       setFlowVariablesObject(flowVarObjs || []);
       setInputOutputObject(inputOutputObj || []);
 
+      //set viewport state for react flow oject ext(only for reference its not for ReactFLow)
+      setViewportState(flow.viewport);
       // If flow has more than 2 nodes then set the saved viewport
       if (flow.nodes.length > 2) {
         setViewport(flow.viewport, { duration: ZOOM_ANIMATION_DURATION });

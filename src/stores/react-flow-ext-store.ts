@@ -10,6 +10,7 @@ import {
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
+  Viewport,
   addEdge,
   applyEdgeChanges,
   applyNodeChanges,
@@ -40,6 +41,9 @@ type State = {
 
   /** Origin of context menu. null means menu is closed */
   contextMenuOrigin: "Node" | "Edge" | "Pane" | "Selection" | null;
+
+  /** Flow Viewport */
+  viewport: Viewport;
 };
 
 type Actions = {
@@ -73,6 +77,9 @@ type Actions = {
   /** Set flag to track pending flow save */
   setIsSavePending: (isSavePending: boolean) => void;
 
+  /** Set viewport */
+  setViewport: (viewport: Viewport) => void;
+
   /** Set context menu origin */
   setContextMenuOrigin: (
     origin: "Node" | "Edge" | "Pane" | "Selection" | null,
@@ -88,6 +95,7 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   isSavePending: false,
   contextMenuOrigin: null,
   isPublished: false,
+  viewport: { x: 0, y: 0, zoom: 1 },
 
   onNodesChange: (changes: NodeChange[]) => {
     set({
@@ -154,5 +162,9 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
 
   setContextMenuOrigin: (contextMenuOrigin) => {
     set({ contextMenuOrigin });
+  },
+
+  setViewport: (viewport) => {
+    set({ viewport });
   },
 }));
