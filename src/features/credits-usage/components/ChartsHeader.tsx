@@ -1,4 +1,3 @@
-import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
 import {
   Select,
@@ -15,20 +14,15 @@ import { ServiceTypeEnum } from "@/features/sa/credit-plans-table/enums/service-
 
 import { useExportDialogStore } from "../store/export-dialog-store";
 
+import { AvailableCredits } from "./AvailableCredits";
 import ChartsHeaderDateRangeFilter from "./ChartsHeaderDateRangeFilter";
 
 const ChartsHeader = () => {
   const { setOpen } = useExportDialogStore();
 
-  const avaialbleCredits = 20000;
   return (
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <p className="text-lg font-medium">Credit Usage</p>
-        <Badge className="border border-black bg-transparent px-4 py-1 text-sm text-accent-foreground">
-          Available Credits: {avaialbleCredits.toLocaleString()}
-        </Badge>
-      </div>
+      <AvailableCredits />
 
       <div className="flex items-center gap-4">
         {/* Select Services */}

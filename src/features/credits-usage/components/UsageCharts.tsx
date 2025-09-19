@@ -25,11 +25,13 @@ const UsageCharts = () => {
         title="Total Credits Used"
         data={totalCreditChartData}
         chartConfig={totalCreditsChartConfig}
+        valueKey="totalCredits"
       />
       <ChartLineInteractive
         title="Total Transactions"
         data={totalTransactionsChartData}
         chartConfig={totalTransactionsChartConfig}
+        valueKey="totalTransactions"
       />
     </div>
   );

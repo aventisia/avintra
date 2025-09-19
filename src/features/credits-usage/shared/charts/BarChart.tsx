@@ -29,7 +29,8 @@ export const description = "An interactive bar chart";
 
 interface IData {
   date: string;
-  value: number;
+  totalTransactions: number;
+  totalCredits: number;
 }
 
 interface ChartBarInteractiveProps {
@@ -37,6 +38,7 @@ interface ChartBarInteractiveProps {
   label?: string;
   data: IData[];
   chartConfig?: ChartConfig;
+  valueKey: string;
 }
 
 export function ChartBarInteractive({
@@ -44,8 +46,9 @@ export function ChartBarInteractive({
   label,
   data,
   chartConfig = {},
+  valueKey,
 }: ChartBarInteractiveProps) {
-  const [activeChart] = React.useState<keyof typeof chartConfig>("value");
+  const [activeChart] = React.useState<keyof typeof chartConfig>(valueKey);
 
   return (
     <Card className="py-0">

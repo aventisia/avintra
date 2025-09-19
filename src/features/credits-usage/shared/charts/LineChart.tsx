@@ -55,24 +55,34 @@ export const description = "An interactive line chart";
 
 interface IData {
   date: string;
-  value: number;
+  totalTransactions: number;
+  totalCredits: number;
 }
-
 interface ChartLineInteractiveProps {
   title: string;
   data: IData[];
   chartConfig?: ChartConfig;
+  valueKey: string;
 }
 
 export function ChartLineInteractive({
   title,
   data,
   chartConfig = {},
+  valueKey,
 }: ChartLineInteractiveProps) {
-  const [activeChart] = React.useState<keyof typeof chartConfig>("value");
+  const [activeChart] = React.useState<keyof typeof chartConfig>(valueKey);
   const total = React.useMemo(
-    () => data.reduce((acc, curr) => acc + curr.value, 0),
-    [data],
+    () =>
+      data.reduce(
+        (acc, curr) =>
+          acc +
+          (valueKey == "totalCredits"
+            ? curr.totalCredits
+            : curr.totalTransactions),
+        0,
+      ),
+    [data, valueKey],
   );
 
   return (
