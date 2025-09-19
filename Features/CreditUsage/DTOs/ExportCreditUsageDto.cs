@@ -67,11 +67,6 @@ public class ExportCreditUsageResponseDto
     public string? RefName { get; set; }
 
     /// <summary>
-    /// Gets or sets the fullname of the user who consumed the credits.
-    /// </summary>
-    public string? FullName { get; set; }
-
-    /// <summary>
     /// Gets or sets the username of the user who consumed the credits.
     /// </summary>
     public string? Username { get; set; }
