@@ -53,6 +53,7 @@ const ServiceCharts = () => {
               label={`${item.credits} ${item.credits > 1 ? "Credits" : "Credit"} per ${item.oneUnit > 1 ? item.oneUnit : ""} ${item.unitType}`}
               data={item.usageTimeline}
               chartConfig={totalCreditsChartConfig}
+              valueKey="totalCredits"
             />
           );
         })}

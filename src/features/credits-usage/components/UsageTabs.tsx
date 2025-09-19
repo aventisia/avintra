@@ -2,8 +2,11 @@ import { Avatar, AvatarFallback } from "@aventisia/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 
 import { useFetchCreditUsageSummary } from "../hooks/useFetchCreditUsageSummary";
+import { useState } from "react";
 
 const UsageTabs = () => {
+  const [selectedTab, setSelectedTab] = useState("totalCredits");
+
   const { data } = useFetchCreditUsageSummary();
   const users = data?.data.users || [];
   const aiModels = data?.data.aiModels || [];
@@ -32,7 +35,24 @@ const UsageTabs = () => {
             Agents
           </TabsTrigger>
         </TabsList>
-
+        <div className="flex justify-end p-1">
+          <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+            <TabsList className="rounded-full py-1">
+              <TabsTrigger
+                value="totalCredits"
+                className="rounded-full px-4 py-1 text-xs"
+              >
+                Credits
+              </TabsTrigger>
+              <TabsTrigger
+                value="totalTransactions"
+                className="rounded-full px-4 py-1 text-xs"
+              >
+                Transactions
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
         {/* Tabs Content for Users */}
         <TabsContent value="users" className="space-y-4 px-4 py-2">
           {users.map((user) => {
@@ -53,7 +73,11 @@ const UsageTabs = () => {
                   </Avatar>
                   <p className="text-sm">{fullName}</p>
                 </div>
-                <p className="text-sm">{user.transactionsCount}</p>
+                <p className="text-sm">
+                  {selectedTab == "totalCredits"
+                    ? user.totalCredits
+                    : user.totalTransactions}
+                </p>
               </div>
             );
           })}
@@ -65,10 +89,14 @@ const UsageTabs = () => {
             return (
               <div
                 className="flex items-center justify-between"
-                key={user.modelName + user.usageCount}
+                key={user.modelName + user.totalCredits}
               >
                 <p className="text-sm">{user.modelName}</p>
-                <p className="text-sm">{user.usageCount}</p>
+                <p className="text-sm">
+                  {selectedTab == "totalCredits"
+                    ? user.totalCredits
+                    : user.totalTransactions}
+                </p>
               </div>
             );
           })}
@@ -80,10 +108,14 @@ const UsageTabs = () => {
             return (
               <div
                 className="flex items-center justify-between"
-                key={user.agentName + user.usageCount}
+                key={user.agentName + user.totalCredits}
               >
                 <p className="text-sm">{user.agentName}</p>
-                <p className="text-sm">{user.usageCount}</p>
+                <p className="text-sm">
+                  {selectedTab == "totalCredits"
+                    ? user.totalCredits
+                    : user.totalTransactions}
+                </p>
               </div>
             );
           })}
