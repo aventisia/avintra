@@ -33,23 +33,23 @@ public class CreditUsageService : ICreditUsageService
 
         try
         {
+            if (!startDate.HasValue || !endDate.HasValue)
+            {
+                startDate = DateTime.UtcNow.Date.AddDays(-6);
+                endDate = DateTime.UtcNow.Date;
+            }
+
             // Log the incoming request and filters for traceability
             _logger.LogInformation("Starting credit usage fetch. Filters - StartDate: {Start}, EndDate: {End}",
                 startDate, endDate);
 
             // Build the query for CreditUsage with optional filters
             var creditUsageQuery = _unitOfWork.CreditUsageRepo
-                    .GetAllAsync()
+                    .GetByConditionAsync(w =>
+                        w.UsedAt.Date >= startDate.Value && w.UsedAt.Date <= endDate.Value
+                    )
                     .Include(i => i.UsedByUser)
                     .AsQueryable();
-
-            // Filter by start date if specified (records from this date forward)
-            if (startDate.HasValue)
-                creditUsageQuery = creditUsageQuery.Where(c => c.UsedAt.Date >= startDate.Value.Date);
-
-            // Filter by end date if specified (records up to this date)
-            if (endDate.HasValue)
-                creditUsageQuery = creditUsageQuery.Where(c => c.UsedAt.Date <= endDate.Value.Date);
 
             // Execute the query and retrieve filtered credit usage data
             var creditUsages = await creditUsageQuery.ToListAsync();
@@ -58,34 +58,39 @@ public class CreditUsageService : ICreditUsageService
             // Load all credit plan definitions from DB (used to match service type details)
             var creditPlans = await _unitOfWork.CreditPlanRepo.GetAllAsync().ToListAsync();
 
+            // Generate a sequence of all dates in the requested range.
+            // var totalDays = (endDate.Value - startDate.Value).Days + 1;
+            var allDatesInRange = Enumerable.Range(0, (endDate.Value - startDate.Value).Days + 1)
+                                            .Select(s => startDate.Value.AddDays(s));
+
             // Build the credit usage summary DTO to return
             var creditUsageDto = new CreditsUsageSummaryDto
             {
                 // Summary metrics: total credits and total transactions
                 UsageSummary = new UsageSummaryDto
                 {
-                    TotalCreditsConsumed = creditUsages.Sum(c => c.CreditsUsed),
-                    TotalTransactionsCount = creditUsages.Count
+                    TotalCredits = creditUsages.Sum(c => c.CreditsUsed),
+                    TotalTransactions = creditUsages.Count()
                 },
 
                 // Grouped credits usage per day (for usage trends)
-                CreditUsages = creditUsages
-                    .GroupBy(g => g.UsedAt.Date)
+                CreditUsages = allDatesInRange
                     .Select(s => new DataUsageDataPointDto
                     {
-                        Date = s.Key,
-                        Value = s.Sum(x => x.CreditsUsed)
+                        Date = s,
+                        TotalCredits = creditUsages.Where(w => w.UsedAt.Date == s).Sum(sm => sm.CreditsUsed),
+                        TotalTransactions = creditUsages.Where(w => w.UsedAt.Date == s).Count(),
                     })
                     .OrderBy(o => o.Date)
                     .ToList(),
 
                 // Grouped transaction counts per day
-                TransactionUsages = creditUsages
-                    .GroupBy(g => g.UsedAt.Date)
+                TransactionUsages = allDatesInRange
                     .Select(s => new DataUsageDataPointDto
                     {
-                        Date = s.Key,
-                        Value = s.Count()
+                        Date = s,
+                        TotalCredits = creditUsages.Where(w => w.UsedAt.Date == s).Sum(sm => sm.CreditsUsed),
+                        TotalTransactions = creditUsages.Where(w => w.UsedAt.Date == s).Count(),
                     })
                     .OrderBy(o => o.Date)
                     .ToList(),
@@ -104,46 +109,55 @@ public class CreditUsageService : ICreditUsageService
                             OneUnit = matchingPlan.OneUnit,
                             UnitType = matchingPlan.UnitType,
                             Credits = matchingPlan.Credits,
+                            TotalCredits = s.Sum(sm => sm.CreditsUsed),
+                            TotalTransactions = s.Count(),
                             // Usage over time for that resource
                             UsageTimeline = s
                                 .GroupBy(g1 => g1.UsedAt.Date)
                                 .Select(s1 => new DataUsageDataPointDto
                                 {
                                     Date = s1.Key,
-                                    Value = s1.Sum(x => x.CreditsUsed)
+                                    TotalCredits = s1.Sum(x => x.CreditsUsed),
+                                    TotalTransactions = s1.Count()
                                 })
-                                .OrderBy(x => x.Date)
+                                .OrderBy(o => o.Date)
                                 .ToList()
                         };
                     })
                     .ToList(),
-                Users = creditUsages.Where(c => c.UsedByUser != null).GroupBy(c => c.UsedByUserId).Select(group =>
+                Users = creditUsages.Where(w => w.UsedByUser != null)
+                .GroupBy(g => g.UsedByUserId).Select(s =>
                 {
-                    var user = group.First().UsedByUser;
+                    var user = s.First().UsedByUser;
                     return new UserUsageDto
                     {
                         Username = user.UserName,
                         FirstName = user.FirstName,
                         LastName = user.LastName,
-                        TransactionsCount = group.Count()
+                        TotalTransactions = s.Count(),
+                        TotalCredits = s.Sum(sm => sm.CreditsUsed)
                     };
                 })
                 .ToList(),
-                AiModels = creditUsages.Where(w => w.RefType.HasValue && w.RefType == UsageSourceTypesEnum.AIModel).GroupBy(g => g.RefId).Select(s =>
+                AiModels = creditUsages.Where(w => w.RefType.HasValue && w.RefType == UsageSourceTypesEnum.AIModel)
+                .GroupBy(g => g.RefId).Select(s =>
                 {
                     return new AiModelUsageDto
                     {
                         ModelName = s.First().RefName,
-                        UsageCount = s.Count()
+                        TotalTransactions = s.Count(),
+                        TotalCredits = s.Sum(sm => sm.CreditsUsed)
                     };
                 })
                     .ToList(),
-                Agents = creditUsages.Where(w => w.RefType.HasValue && w.RefType == UsageSourceTypesEnum.Agent).GroupBy(g => g.RefId).Select(s =>
+                Agents = creditUsages.Where(w => w.RefType.HasValue && w.RefType == UsageSourceTypesEnum.Agent)
+                .GroupBy(g => g.RefId).Select(s =>
                 {
                     return new AgentUsageDto
                     {
                         AgentName = s.First().RefName,
-                        UsageCount = s.Count()
+                        TotalTransactions = s.Count(),
+                        TotalCredits = s.Sum(sm => sm.CreditsUsed)
                     };
                 })
                     .ToList()
@@ -326,8 +340,11 @@ public class CreditUsageService : ICreditUsageService
         {
             // Initialize base query and include related user information
             var creditUsageQuery = _unitOfWork.CreditUsageRepo
-                .GetAllAsync()
+                .GetByConditionAsync(w =>
+                        w.UsedAt.Date >= exportCreditUsageRequestDto.StartDate && w.UsedAt.Date <= exportCreditUsageRequestDto.EndDate
+                )
                 .Include(i => i.UsedByUser)
+                .OrderByDescending(o => o.UsedAt)
                 .AsQueryable();
 
             // Filter by Service Types if any are specified in the request
@@ -384,7 +401,15 @@ public class CreditUsageService : ICreditUsageService
             _logger.LogInformation("Exporting {Count} credit usage record(s) based on applied filters.", creditUsages.Count);
 
             // Convert the retrieved data to CSV byte array for file export
-            var csvBytes = CsvDataExporterUtil.ExportToCsvBytes(creditUsages);
+            var csvBytes = CsvDataExporterUtil.ExportToCsvBytes(creditUsages, new List<string>
+            {
+                "Service",
+                "Credits Used",
+                "Date",
+                "Project Type",
+                "AI Model",
+                "User",
+            });
             var stream = new MemoryStream(csvBytes);
 
             var fileResult = new FileStreamResult(stream, "text/csv")
