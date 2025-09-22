@@ -110,7 +110,8 @@ public static class AccountsDbInitialSeed
                     Seq = Convert.ToInt32(splitContent[0].Trim()),
                     Name = role.ToString(),
                     FullName = splitContent[1].Trim(),
-                    Description = splitContent[2].Trim()
+                    Description = splitContent[2].Trim(),
+                    IsDefault = true,
                 });
             }
         }
