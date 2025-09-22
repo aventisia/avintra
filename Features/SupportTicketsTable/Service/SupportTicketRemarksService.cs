@@ -30,7 +30,7 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
     // Check if user is an agent
     private bool IsAgent()
     {
-        return _userRoles.Contains("GA") || _userRoles.Contains("SA") || _userRoles.Contains("GSA");
+        return _userRoles.Contains("SA");
     }
 
     // Retrieves all remarks associated with a support ticket.

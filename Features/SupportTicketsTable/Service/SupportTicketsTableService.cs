@@ -30,7 +30,7 @@ public class SupportTicketsTableService : ISupportTicketsTableService
     // Check if user is an agent
     private bool IsAgent()
     {
-        return _userRoles.Contains("GA") || _userRoles.Contains("SA") || _userRoles.Contains("GSA");
+        return _userRoles.Contains("SA");
     }
 
     // Retrieves a support ticket by its ID/ticketNumber.
