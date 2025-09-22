@@ -1,11 +1,11 @@
 meta {
-  name: Generate audio
+  name: Synthesize audio - return audio file
   type: http
   seq: 1
 }
 
 post {
-  url: {{LLM_PIPELINE_APIS_BASE_URL}}/kokoro-tts/generate
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/kokoro-tts/synthesize
   body: json
   auth: inherit
 }

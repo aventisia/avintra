@@ -1,11 +1,11 @@
 meta {
   name: Sample - Japanese_NOT_WORKING
   type: http
-  seq: 5
+  seq: 10
 }
 
 post {
-  url: {{LLM_PIPELINE_APIS_BASE_URL}}/kokoro-tts/generate
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/kokoro-tts/synthesize
   body: json
   auth: inherit
 }

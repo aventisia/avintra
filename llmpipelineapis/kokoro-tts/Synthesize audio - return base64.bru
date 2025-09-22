@@ -1,11 +1,11 @@
 meta {
-  name: Generate audio with options
+  name: Synthesize audio - return base64
   type: http
   seq: 2
 }
 
 post {
-  url: {{LLM_PIPELINE_APIS_BASE_URL}}/kokoro-tts/generate
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/kokoro-tts/synthesize
   body: json
   auth: inherit
 }
@@ -17,6 +17,7 @@ body:json {
     "lang_code": "a",
     "speed": 1,
     "output_format": "mp3",
+    "return_base64": true,
     "use_gpu": false
   }
 }
