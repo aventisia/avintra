@@ -9,6 +9,7 @@ from kokoro import KPipeline
 import datetime
 import base64
 from .kokoro_tts_constants import OUTPUT_SAMPLE_RATE, AUDIO_FORMATS
+from .kokoro_tts_utils import clean_text_for_tts
 
 # Synthesize Kokoro TTS audio
 async def synthesize(request):
@@ -25,12 +26,13 @@ async def synthesize(request):
 			logger.error(f"Failed to initialize Kokoro TTS pipeline: {e}")
 			raise RuntimeError("TTS pipeline initialization failed.") from e
 
-		# Generate audio segments
-		logger.info(f"Generating audio for text: '{request.text[:50]}...' | Voice: '{request.voice}'")
+		# Clean the input text for TTS
+		cleaned_text = clean_text_for_tts(request.text)
+		logger.info(f"Generating audio for cleaned text: '{cleaned_text}' | Voice: '{request.voice}'")
 		audio_segments = [
 			segment.cpu()
 			for _, _, segment in kokoro_pipeline(
-				request.text,
+				cleaned_text,
 				voice=request.voice,
 				speed=request.speed,
 				split_pattern=r'\n+'
