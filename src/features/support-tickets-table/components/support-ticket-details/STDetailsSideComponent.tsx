@@ -111,7 +111,7 @@ export const STDetailsSideComponent = () => {
       {/* Support ticket delete component */}
       {data &&
         !userSession?.userRoles.some((role) =>
-          ["SA", "GA", "GSA"].includes(role),
+          ["SA"].includes(role),
         ) && <SupportTicketTDeleteAction rowId={id} />}
     </div>
   );
