@@ -33,17 +33,8 @@ public class UserManagementGuardService : IUserManagementGuardService
             case "SA":
                 allowedRolesList = Enum.GetValues(typeof(CustomRolesEnum)).Cast<CustomRolesEnum>().Select(s => s.ToString()).ToList();
                 break;
-            case "GA":
-                allowedRolesList = new List<string>() { "GSA", "GLBA", "TA", "TSA", "TLBA", "TU", "AE" };
-                break;
-            case "GSA":
-                allowedRolesList = new List<string>() { "TU", "AE" };
-                break;
             case "TA":
-                allowedRolesList = new List<string>() { "TA", "TSA", "TLBA", "TU", };
-                break;
-            case "TSA":
-                allowedRolesList = new List<string>() { "TU", };
+                allowedRolesList = new List<string>() { "OM", "TU", };
                 break;
         }
 
