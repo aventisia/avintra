@@ -14,11 +14,23 @@ from app.core.llm_service import generate_prompt_for_ai_persona
 import time
 import markdown2
 import re
+import html
 
 # Create FastAPI router and initialize services
 router = APIRouter()
 connection_manager = ConnectionManager()
 llm_service = LLMService()
+
+def markdown_to_plain(text):
+    # Convert Markdown to HTML
+    html_text = markdown2.markdown(text)
+    # Remove HTML tags
+    plain = re.sub(r'<[^>]+>', '', html_text)
+    # Unescape HTML entities
+    plain = html.unescape(plain)
+    # Normalize whitespace (optional)
+    plain = re.sub(r'\\s+', ' ', plain)
+    return plain.strip()
 
 @router.websocket("/chat")
 async def websocket_chat_handler(websocket: WebSocket):
@@ -132,7 +144,7 @@ async def websocket_chat_handler(websocket: WebSocket):
                         continue
                     
                     # Convert markdown to plain text for TTS
-                    text_for_tts = markdown2.markdown(llm_text)
+                    text_for_tts = markdown_to_plain(llm_text)
                     
                     # Remove HTML tags left by markdown2
                     text_for_tts = re.sub(r'<[^>]+>', '', text_for_tts)
