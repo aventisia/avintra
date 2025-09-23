@@ -143,30 +143,38 @@ async def websocket_chat_handler(websocket: WebSocket):
                     if not llm_text:
                         continue
                     
-                    # Convert markdown to plain text for TTS
-                    text_for_tts = markdown_to_plain(llm_text)
-                    
-                    # Remove HTML tags left by markdown2
-                    text_for_tts = re.sub(r'<[^>]+>', '', text_for_tts)
-                    try:
-                        logger.info(f"Calling Kokoro TTS for text: {text_for_tts}")
-                        request = KokoroTTSRequest(
-                            text=text_for_tts,
-                            voice='af_heart',
-                            lang_code='a',
-                            return_base64=True
-                        )
-                        audio_response = await kokoro_tts_service.synthesize(request)
-                        if isinstance(audio_response, dict):
-                            audio_b64 = audio_response.get("audio_base64")
-                            audio_media_type = audio_response.get("media_type")
-                        else:
+                    # -----------------------------------
+                    # Only call TTS if message_data['is_voice_enabled'] is True
+                    if message_data.get('is_voice_enabled') is True:
+                        # Convert markdown to plain text for TTS
+                        text_for_tts = markdown_to_plain(llm_text)
+                        
+                        # Remove HTML tags left by markdown2
+                        text_for_tts = re.sub(r'<[^>]+>', '', text_for_tts)
+                        try:
+                            logger.info(f"Calling Kokoro TTS for text: {text_for_tts}")
+                            request = KokoroTTSRequest(
+                                text=text_for_tts,
+                                voice=message_data.get('voice_id') or 'af_heart',
+                                lang_code=message_data.get('language_id') or 'a',
+                                return_base64=True
+                            )
+                            audio_response = await kokoro_tts_service.synthesize(request)
+                            if isinstance(audio_response, dict):
+                                audio_b64 = audio_response.get("audio_base64")
+                                audio_media_type = audio_response.get("media_type")
+                            else:
+                                audio_b64 = None
+                                audio_media_type = None
+                        except Exception as tts_err:
+                            logger.error(f"Kokoro TTS failed: {tts_err}")
                             audio_b64 = None
                             audio_media_type = None
-                    except Exception as tts_err:
-                        logger.error(f"Kokoro TTS failed: {tts_err}")
+                    else:
                         audio_b64 = None
                         audio_media_type = None
+                        
+                    # -----------------------------------
 
                     ai_response_message = ChatMessage(
                         model_id=user_message.model_id,

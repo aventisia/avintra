@@ -28,7 +28,7 @@ async def synthesize(request):
 
 		# Clean the input text for TTS
 		cleaned_text = clean_text_for_tts(request.text)
-		logger.info(f"Generating audio for cleaned text: '{cleaned_text}' | Voice: '{request.voice}'")
+		logger.info(f"Generating audio for cleaned text: '{cleaned_text}' | language: '{request.lang_code}' | Voice: '{request.voice}'")
 		audio_segments = [
 			segment.cpu()
 			for _, _, segment in kokoro_pipeline(
