@@ -17,7 +17,7 @@ import {
 } from "@llamaindex/chat-ui";
 import "@llamaindex/chat-ui/styles/markdown.css";
 import "@llamaindex/chat-ui/styles/pdf.css";
-import { MicIcon } from "lucide-react";
+import { MicIcon, Volume2Icon, VolumeXIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -48,6 +48,8 @@ function AIPersonaTestForm() {
   const { data: modelData } = useFetchProjectMetaData();
 
   // -----------------------------------------------
+  // Is voice enabled
+  const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
   // Audio queue and ref
   const [audioQueue, setAudioQueue] = useState<
     { base64: string; mimeType: string }[]
@@ -63,6 +65,8 @@ function AIPersonaTestForm() {
       systemPrompt,
       temperature,
       maxMessagesInContext,
+      languageId,
+      voiceId,
     },
     messagesToSend,
     setChatConfig,
@@ -95,38 +99,54 @@ function AIPersonaTestForm() {
           Number(
             personaData.data.aiPersona.setupObject.contextMemoryTimeframe,
           ) * 2 || 4, // x2 for user and assistant messages
+        languageId:
+          personaData.data.aiPersona.setupObject?.speechConfiguration
+            ?.onPremConfig?.language,
+        voiceId:
+          personaData.data.aiPersona.setupObject?.speechConfiguration
+            ?.onPremConfig?.voice,
       });
+
+      // Set IsVoiceEnabled based on speech configuration
+      setIsVoiceEnabled(
+        personaData.data.aiPersona.setupObject?.speechConfiguration
+          ?.onPremConfig?.language &&
+          personaData.data.aiPersona.setupObject?.speechConfiguration
+            ?.onPremConfig?.voice
+          ? true
+          : false,
+      );
     }
   }, [personaData, setChatConfig, setMessagesToSend]);
 
   // Play audio from queue
   useEffect(() => {
-  if (!isPlayingRef.current && audioQueue.length > 0) {
-    const { base64, mimeType } = audioQueue[0];
-    isPlayingRef.current = true;
+    if (!isPlayingRef.current && audioQueue.length > 0) {
+      const { base64, mimeType } = audioQueue[0];
+      isPlayingRef.current = true;
 
-    // Convert base64 to audio and play
-    const audioBytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-    const audioBlob = new Blob([audioBytes], { type: mimeType });
-    const audioUrl = URL.createObjectURL(audioBlob);
-    const audio = new Audio(audioUrl);
-    audioRef.current = audio;
+      // Convert base64 to audio and play
+      const audioBytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+      const audioBlob = new Blob([audioBytes], { type: mimeType });
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
 
-    audio.onended = () => {
-      isPlayingRef.current = false;
-      setAudioQueue((q) => q.slice(1)); // Remove the played chunk
-      URL.revokeObjectURL(audioUrl);
-    };
+      audio.onended = () => {
+        isPlayingRef.current = false;
+        setAudioQueue((q) => q.slice(1)); // Remove the played chunk
+        URL.revokeObjectURL(audioUrl);
+      };
 
-    audio.onerror = () => {
-      isPlayingRef.current = false;
-      setAudioQueue((q) => q.slice(1));
-      URL.revokeObjectURL(audioUrl);
-    };
+      audio.onerror = () => {
+        isPlayingRef.current = false;
+        setAudioQueue((q) => q.slice(1));
+        URL.revokeObjectURL(audioUrl);
+      };
 
-    audio.play();
-  }
-}, [audioQueue]);
+      audio.play();
+    }
+  }, [audioQueue]);
 
   // -----------------------------------------------
 
@@ -292,6 +312,9 @@ function AIPersonaTestForm() {
           model_id: modelId,
           llm: llm,
           temperature: temperature,
+          is_voice_enabled: isVoiceEnabled,
+          language_id: languageId,
+          voice_id: voiceId,
           messages: [
             { role: "system", content: systemPrompt },
             ...(maxMessagesInContext < messagesToSend.length
@@ -395,26 +418,42 @@ function AIPersonaTestForm() {
             className="rounded-lg box-border bg-accent focus-visible:ring-2 focus-visible:ring-offset-0 focus-visible:outline-none text-md min-h-0 h-24 max-h-52 px-4 py-5"
             placeholder="Type your message..."
           />
-          {browserSupportsSpeechRecognition && (
+          <div className="absolute right-14 bottom-2">
             <Button
               type="button"
               onClick={() => {
-                if (listening) {
-                  SpeechRecognition.stopListening();
-                } else {
-                  resetTranscript();
-                  SpeechRecognition.startListening({ continuous: true });
-                }
+                setIsVoiceEnabled((prev) => !prev);
               }}
               className={cn(
-                `absolute right-14 bottom-2 p-2 rounded-full text-accent-foreground h-10 w-10`,
+                `p-2 rounded-full text-accent-foreground h-10 w-10`,
                 listening && "text-white",
               )}
-              variant={listening ? "default" : "ghost"}
+              variant="ghost"
             >
-              <MicIcon />
+              {isVoiceEnabled ? <Volume2Icon /> : <VolumeXIcon />}
             </Button>
-          )}
+            {browserSupportsSpeechRecognition && (
+              <Button
+                type="button"
+                onClick={() => {
+                  if (listening) {
+                    SpeechRecognition.stopListening();
+                  } else {
+                    resetTranscript();
+                    SpeechRecognition.startListening({ continuous: true });
+                  }
+                }}
+                className={cn(
+                  `p-2 rounded-full text-accent-foreground h-10 w-10`,
+                  listening && "text-white",
+                )}
+                variant={listening ? "default" : "ghost"}
+              >
+                <MicIcon />
+              </Button>
+            )}
+          </div>
+
           <ChatInput.Upload
             multiple={true}
             onUpload={handleUpload}

@@ -11,6 +11,8 @@ type ChatConfig = {
   systemPrompt: string; // System prompt
   temperature: number; // Temperature for response randomness
   maxMessagesInContext: number; // Max messages conversation to keep in context
+  languageId?: string; // Optional language for responses
+  voiceId?: string; // Optional voice ID for TTS
 };
 
 type State = {
@@ -30,6 +32,8 @@ export const useTempChatStore = create<State & Actions>((set) => ({
     systemPrompt: "You are a helpful assistant.",
     temperature: 0.7,
     maxMessagesInContext: 10,
+    languageId: undefined,
+    voiceId: undefined,
   },
   messagesToSend: [],
 
@@ -46,7 +50,7 @@ export const useTempChatStore = create<State & Actions>((set) => ({
         const updated = [...state.messagesToSend];
         updated[updated.length - 1] = {
           ...updated[updated.length - 1],
-          content: updated[updated.length - 1].content + message.content,
+          content: updated[updated.length - 1].content + " " + message.content,
         };
         return { messagesToSend: updated };
       }
