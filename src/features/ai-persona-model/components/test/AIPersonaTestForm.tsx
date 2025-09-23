@@ -307,7 +307,18 @@ function AIPersonaTestForm() {
         message.role === "user" &&
         socketRef.current?.readyState === WebSocket.OPEN
       ) {
+        // Set loading state
         setIsLoading(true);
+
+        // Clear audio queue and stop any ongoing playback
+        setAudioQueue([]);
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current = null;
+        }
+        isPlayingRef.current = false;
+
+        // Prepare payload
         const msgPayload = {
           model_id: modelId,
           llm: llm,
