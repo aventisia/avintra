@@ -1,0 +1,30 @@
+meta {
+  name: Insert multiple credit usage records
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/credit-usage/bulk
+  body: json
+  auth: none
+}
+
+body:json {
+  [
+    {
+      "serviceType": "OnPremGpuText",
+      "consumedUnit": "31",
+      "refType": "AIModel",
+      "refId": "bd48c1fe-dca2-4523-ac65-650dcbad49a2",
+      "refName": "Test AIModel"  
+    }
+  ]
+}
+
+script:post-response {
+  if(res.getStatus() == 200)
+  {
+    bru.setGlobalEnvVar("CREDIT_PLAN_ID", res.getBody().data.id);
+  }
+}
