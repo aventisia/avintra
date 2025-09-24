@@ -12,13 +12,15 @@ import {
   WebSocketCommandType,
   WebSocketMessageType,
 } from "..";
+import { useUpdateCreditsUsedMutation } from "@/features/available-credits/updateCreditsUsedMutation";
 
 export default function useWebSocket() {
   const socketRef = useRef<WebSocket | null>(null);
 
   // Get setExecutionState action from current flow store
-  const { setExecutionState } = useCurrentFlowStore(
+  const { currentFlow, setExecutionState } = useCurrentFlowStore(
     useShallow((state) => ({
+      currentFlow: state.currentFlow,
       setExecutionState: state.setExecutionState,
     })),
   );
@@ -47,6 +49,8 @@ export default function useWebSocket() {
     },
     [setExecutionState],
   );
+
+  const { updateCreditsUsed } = useUpdateCreditsUsedMutation();
 
   // Connect to web socket and handle messages
   useEffect(() => {
@@ -84,6 +88,13 @@ export default function useWebSocket() {
             case "abort":
             case "error":
             case "complete":
+              updateCreditsUsed({
+                serviceType: "AgentExecution", //CreditServiceTypesEnum
+                consumedUnit: 1,
+                refType: "Agent", //UsageSourceTypesEnum
+                refId: currentFlow?.id,
+                refName: currentFlow?.name,
+              });
               sendExecutionComplete(msg.command, sendCommand);
               break;
             case "start":
@@ -125,7 +136,13 @@ export default function useWebSocket() {
         socketRef.current.close(1000, "Component unmounted");
       }
     };
-  }, [sendCommand, setExecutionState]);
+  }, [
+    currentFlow?.id,
+    currentFlow?.name,
+    sendCommand,
+    setExecutionState,
+    updateCreditsUsed,
+  ]);
 
   return { sendCommand };
 }

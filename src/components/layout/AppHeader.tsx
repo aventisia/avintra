@@ -19,6 +19,7 @@ import { useIsAgentsAssist } from "@/features/agents-assist/hooks/useIsAgentsAss
 import { FlowParticipantsFacePile } from "@/features/share-access/components/share-avatars/FlowParticipantsFacePile";
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import AgentName from "./AgentName";
+import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
 
 const AppHeader: React.FC = () => {
   // Get user session state and actions
@@ -40,7 +41,7 @@ const AppHeader: React.FC = () => {
   return (
     <HeaderContainer className="bg-slate-200">
       <Header>
-        <div className="flex flex-grow items-center gap-3 text-white">
+        <div className="flex w-1/3 items-center gap-3 text-white">
           {/* Back Button */}
           {!isAssist && (
             <Tooltip content="Back">
@@ -63,40 +64,47 @@ const AppHeader: React.FC = () => {
           {/* Version selector */}
           {!isAssist && <FlowVersions />}{" "}
         </div>
-        <div>
-          {isIndividualUser ? (
-            <Avatar className={cn("flex h-7 w-7")}>
-              <AvatarFallback className="bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary">
-                {userSession ? userSession?.userInitials : "--"}
-              </AvatarFallback>
-            </Avatar>
-          ) : null}
+        <div className="flex w-1/3 justify-center">
+          <AvailableCredits />
         </div>
-        {!isAssist && (
-          <div className="mx-4 flex items-center gap-1 text-white">
-            {import.meta.env.MODE !== "production" && !isIndividualUser ? (
-              <FlowParticipantsFacePile />
+        <div className="flex w-1/3 justify-end">
+          <div>
+            {isIndividualUser ? (
+              <Avatar className={cn("flex h-7 w-7")}>
+                <AvatarFallback className="bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary">
+                  {userSession ? userSession?.userInitials : "--"}
+                </AvatarFallback>
+              </Avatar>
             ) : null}
-
-            <ExecuteFlow />
-
-            <SearchCommandTrigger />
-            {import.meta.env.MODE !== "production" ? <SettingsTrigger /> : null}
-
-            {import.meta.env.MODE !== "production" ? (
-              <StudioPreferences className="mt-0 mlg:mt-4" />
-            ) : null}
-            <FlowComments className="mt-0 mlg:mt-4" />
           </div>
-        )}
-        {!isAssist && import.meta.env.MODE !== "production" ? (
-          <PublishFlow />
-        ) : null}
-        {!isAssist && (
-          <Tooltip content="More">
-            <HeaderActionMenu />
-          </Tooltip>
-        )}
+          {!isAssist && (
+            <div className="mx-4 flex items-center gap-1 text-white">
+              {import.meta.env.MODE !== "production" && !isIndividualUser ? (
+                <FlowParticipantsFacePile />
+              ) : null}
+
+              <ExecuteFlow />
+
+              <SearchCommandTrigger />
+              {import.meta.env.MODE !== "production" ? (
+                <SettingsTrigger />
+              ) : null}
+
+              {import.meta.env.MODE !== "production" ? (
+                <StudioPreferences className="mt-0 mlg:mt-4" />
+              ) : null}
+              <FlowComments className="mt-0 mlg:mt-4" />
+            </div>
+          )}
+          {!isAssist && import.meta.env.MODE !== "production" ? (
+            <PublishFlow />
+          ) : null}
+          {!isAssist && (
+            <Tooltip content="More">
+              <HeaderActionMenu />
+            </Tooltip>
+          )}
+        </div>
       </Header>
     </HeaderContainer>
   );
