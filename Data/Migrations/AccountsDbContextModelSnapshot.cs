@@ -384,8 +384,14 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("BillingEmail")
+                        .HasColumnType("text");
+
                     b.Property<string>("City")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ContactPerson")
                         .HasColumnType("text");
 
                     b.Property<string>("Country")
