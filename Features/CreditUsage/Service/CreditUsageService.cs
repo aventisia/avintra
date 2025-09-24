@@ -595,6 +595,7 @@ public class CreditUsageService : ICreditUsageService
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
                     (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
+                    w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date &&
                     w.AvailableCredits > 0
                 );
 
@@ -641,7 +642,8 @@ public class CreditUsageService : ICreditUsageService
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
                     (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
-                    w.AvailableCredits > 0
+                    w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date &&
+                     w.AvailableCredits > 0
                 );
 
             // Construct the credit summary DTO with monthly breakdown
