@@ -14,6 +14,8 @@ namespace NodeExecutor.Services
         }
 
         public bool TryGet(string key, out object value) => _variables.TryGetValue(key, out value);
+
+        public bool Remove(string key) => _variables.Remove(key);
     }
 
 }

@@ -347,8 +347,12 @@ namespace NodeExecutor.Services
                     currentIndex = idx + 1; // Move to next item
 
                 if (currentIndex >= items.Count)
+                {
+                    // Remove the hidden index variable
+                    executionContext.Remove(indexKey);
                     return (false, ""); // No more items
-
+                }
+                    
                 // Set current item and index in executionContext
                 executionContext.Set(currentItemVarName, items[currentIndex]);
                 executionContext.Set(currentItemIndexVarName, currentIndex); // Expose the current index to the user as well
