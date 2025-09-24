@@ -13,6 +13,16 @@ public class BillingDetail : BaseEntity, IMustHaveTenant
     public DateTimeOffset NextBillingDate { get; set; }
 
     /// <summary>
+    /// Gets or sets the email address for billing communications with the tenant.
+    /// </summary>
+    public string? BillingEmail { get; set; }
+
+    /// <summary>
+    /// Gets or sets the contact person phone number for the tenant.
+    /// </summary>
+    public string? ContactPerson { get; set; } 
+
+    /// <summary>
     /// Gets or sets the first line of the billing address.
     /// </summary>
     public required string AddressLine1 { get; set; }
