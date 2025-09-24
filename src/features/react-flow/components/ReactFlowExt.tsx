@@ -32,6 +32,7 @@ import AddInputsOutputsDialog from "@/features/add-input-output/components/AddIn
 import { FlowBlockCrudDialog } from "@/features/flow-block/components/flow-block-crud-dialog";
 import ShareAccessDialog from "@/features/share-access/components";
 import { SaveAsTemplateDialog } from "@/features/save-as-template/components/SaveAsTemplateDialog";
+import ImportFlow from "@/features/import-flow/components/ImportFlow";
 
 /**
  * A custom extension of the ReactFlow component.
@@ -134,6 +135,7 @@ export const ReactFlowExt = () => {
       <FlowSettings />
       <FlowBlockCrudDialog />
       <SaveAsTemplateDialog />
+      <ImportFlow />
     </DCPDialog>
   );
 };
