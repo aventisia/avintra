@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using DynamicExpresso;
 
 namespace NodeExecutor
 {
@@ -17,6 +18,7 @@ namespace NodeExecutor
         private WebSocketHelper _webSocket;
         private AppTimerService _appTimer;
         private readonly ExecutionContext _executionContext = new ExecutionContext();
+        private readonly Interpreter _interpreter = new Interpreter(); // Dynamic expression interpreter to save variables and evaluate expressions
         private readonly string _agentName;
         private readonly string _wsPort;
 
@@ -187,7 +189,7 @@ namespace NodeExecutor
                 : "Node name not found";
 
             var result =
-                ActivityExecutorService.ExecuteCondition(conditionalBrnachNodeData.Conditions, _executionContext);
+                ActivityExecutorService.ExecuteCondition(conditionalBrnachNodeData.Conditions, _executionContext, _interpreter);
 
             await _webSocket.SendCommandAsync("next-node",
                 result.Item1
@@ -212,7 +214,7 @@ namespace NodeExecutor
             (bool success, string result) result = (false, string.Empty);
             if (loopNodeData.LoopType == "ConditionalLoop")
             {
-                result = ActivityExecutorService.ExecuteCondition(loopNodeData.Conditions, _executionContext);
+                result = ActivityExecutorService.ExecuteCondition(loopNodeData.Conditions, _executionContext, _interpreter);
             }
             else if (loopNodeData.LoopType == "ForEachLoop")
             {
@@ -220,7 +222,8 @@ namespace NodeExecutor
                     loopNodeData.ListVariableName,
                     loopNodeData.ItemVariableName,
                     loopNodeData.ItemIndexVariableName,
-                    _executionContext);
+                    _executionContext,
+                    _interpreter);
             }
 
             // Process next node
@@ -254,7 +257,7 @@ namespace NodeExecutor
             await Task.Run(async () =>
             {
                 // Execute single node
-                var (isSuccess, nodeExecutionLog) = ActivityExecutorService.ExecuteNode(nodeData, _executionContext, startTime);
+                var (isSuccess, nodeExecutionLog) = ActivityExecutorService.ExecuteNode(nodeData, _executionContext, _interpreter, startTime);
 
                 // Send the execution log back to the server (must be awaited on UI thread)
                 await Dispatcher.InvokeAsync(async () =>

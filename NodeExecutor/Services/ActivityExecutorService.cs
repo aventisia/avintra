@@ -13,6 +13,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using DynamicExpresso;
 
 namespace NodeExecutor.Services
 {
@@ -55,7 +56,7 @@ namespace NodeExecutor.Services
             }
         }
 
-        public static (bool, NodeExecutionLog) ExecuteNode(ActivityNodeData node, ExecutionContext executionContext, DateTime startTime)
+        public static (bool, NodeExecutionLog) ExecuteNode(ActivityNodeData node, ExecutionContext executionContext, Interpreter interpreter, DateTime startTime)
         {
             // Initiaze the return object
             var nodeExecutionlog = new NodeExecutionLog
@@ -102,7 +103,7 @@ namespace NodeExecutor.Services
                     object inputValue = input.Value;
                     if (input.Value is string strVal && strVal.Contains("{{") && strVal.Contains("}}"))
                     {
-                        inputValue = ResolveTemplate(strVal, executionContext);
+                        inputValue = ResolveTemplate(strVal, executionContext, interpreter);
                     }
 
                     // Convert the input value to the appropriate type
@@ -168,6 +169,7 @@ namespace NodeExecutor.Services
                     if (outputs != null && outputs.ContainsKey(nodeOutput.Key))
                     {
                         executionContext.Set(nodeOutput.Value.Value, outputs[nodeOutput.Key]);
+                        interpreter.SetVariable(nodeOutput.Value.Value, outputs[nodeOutput.Key]);
 
                         // Add to outputValues for logging
                         outputValues[nodeOutput.Value.Value] = outputs[nodeOutput.Key];
@@ -191,7 +193,7 @@ namespace NodeExecutor.Services
             return (nodeExecutionlog.IsSuccess, nodeExecutionlog);
         }
 
-        public static (bool, string) ExecuteCondition(List<List<ConditionGroup>> conditions, ExecutionContext executionContext)
+        public static (bool, string) ExecuteCondition(List<List<ConditionGroup>> conditions, ExecutionContext executionContext, Interpreter interpreter)
         {
             // If conditions null or empty return false
             if (conditions == null || conditions.Count == 0)
@@ -229,12 +231,12 @@ namespace NodeExecutor.Services
                     foreach (var cond in group)
                     {
                         // Resolve the first value
-                        var resolvedFirst = ResolveTemplate(cond.FirstValue, executionContext);
+                        var resolvedFirst = ResolveTemplate(cond.FirstValue, executionContext, interpreter);
                         if (resolvedFirst is string s1 && !cond.FirstValue.Trim().StartsWith("{{"))
                             resolvedFirst = InferType(s1);
 
                         // Resolve the second value
-                        var resolvedSecond = ResolveTemplate(cond.SecondValue, executionContext);
+                        var resolvedSecond = ResolveTemplate(cond.SecondValue, executionContext, interpreter);
                         if (resolvedSecond is string s2 && !cond.SecondValue.Trim().StartsWith("{{"))
                             resolvedSecond = InferType(s2);
 
@@ -286,10 +288,10 @@ namespace NodeExecutor.Services
             }
         }
 
-        public static (bool, string) MoveNextListItem(string listVarName, string currentItemVarName, string currentItemIndexVarName, ExecutionContext executionContext)
+        public static (bool, string) MoveNextListItem(string listVarName, string currentItemVarName, string currentItemIndexVarName, ExecutionContext executionContext, Interpreter interpreter)
         {
             // If listVarName or currentItemVarName is null or empty, return false
-            if (string.IsNullOrEmpty(listVarName) || string.IsNullOrEmpty(currentItemVarName) || string.IsNullOrEmpty(currentItemIndexVarName) || executionContext == null)
+            if (string.IsNullOrEmpty(listVarName) || string.IsNullOrEmpty(currentItemVarName) || string.IsNullOrEmpty(currentItemIndexVarName) || executionContext == null || interpreter == null)
                 return (false, "");
 
             //// Initiaze the return object
@@ -312,7 +314,7 @@ namespace NodeExecutor.Services
             try
             {
                 // Resolve the list variable name in case it contains a template
-                var resolvedListVar = ResolveTemplate(listVarName, executionContext);
+                var resolvedListVar = ResolveTemplate(listVarName, executionContext, interpreter);
 
                 // If resolvedListVar is a string, treat it as the key to look up in executionContext
                 object listObj = resolvedListVar;
@@ -351,6 +353,10 @@ namespace NodeExecutor.Services
                 executionContext.Set(currentItemVarName, items[currentIndex]);
                 executionContext.Set(currentItemIndexVarName, currentIndex); // Expose the current index to the user as well
                 executionContext.Set(indexKey, currentIndex); // hidden/internal index
+                interpreter.SetVariable(currentItemVarName, items[currentIndex]);
+                interpreter.SetVariable(currentItemIndexVarName, currentIndex); // Expose the current index to the user as well
+                interpreter.SetVariable(indexKey, currentIndex); // hidden/internal index
+
 
                 return (true, "");
             }
@@ -426,198 +432,74 @@ namespace NodeExecutor.Services
             }
         }
 
-        // Helper to resolve variable if value is in {{varName}} format
-        public static object ResolveTemplate(string template, ExecutionContext context)
+        // Helper to resolve variable if value is in {{varName}} format using Dynamic Expresso
+        public static object ResolveTemplate(string template, ExecutionContext executionContext, Interpreter interpreter)
         {
-            try
+            if (string.IsNullOrEmpty(template))
+                return template;
+
+            // Helper to recursively resolve all {{...}} placeholders
+            string ResolvePlaceholders(string input)
             {
-                if (string.IsNullOrEmpty(template))
-                    return template;
+                Regex placeholderRegex = new Regex(@"(?<!@)\{\{([^\{\}]+)\}\}");
+                string result = input;
+                int safety = 0; // Prevent infinite loops
 
-                // Helper to resolve variable with dot notation and indexers
-                object ResolveKey(string key)
+                while (placeholderRegex.IsMatch(result) && safety < 10)
                 {
-                    // Split by dot, but ignore dots inside brackets
-                    var parts = Regex.Split(key, @"\.(?![^\[]*\])");
-                    object current = null;
-
-                    // Extract base variable and possible indexer from parts[0]
-                    var baseMatch = Regex.Match(parts[0], @"^(?<var>\w+)(\[(?<idx>.+?)\])?$");
-                    if (!baseMatch.Success)
-                        return null;
-
-                    var baseKey = baseMatch.Groups["var"].Value;
-                    if (!context.TryGet(baseKey, out current) || current == null)
-                        return null;
-
-                    // Handle indexer on base variable, e.g., CurrentItem[0]
-                    if (baseMatch.Groups["idx"].Success)
+                    result = placeholderRegex.Replace(result, match =>
                     {
-                        var idx = baseMatch.Groups["idx"].Value.Trim('\'', '"');
-                        if (current is IList list && int.TryParse(idx, out int intIdx))
+                        var expr = match.Groups[1].Value.Trim();
+                        try
                         {
-                            if (intIdx >= 0 && intIdx < list.Count)
-                                current = list[intIdx];
-                            else
-                                return null;
-                        }
-                        else if (current is IDictionary dict && dict.Contains(idx))
-                        {
-                            current = dict[idx];
-                        }
-                        else if (current is DataTable dt)
-                        {
-                            if (int.TryParse(idx, out int rowIdx) && rowIdx >= 0 && rowIdx < dt.Rows.Count)
-                                current = dt.Rows[rowIdx];
-                            else if (dt.Columns.Contains(idx))
-                                current = dt.Rows[0][idx];
-                            else
-                                return null;
-                        }
-                        else if (current is DataRow row)
-                        {
-                            if (row.Table.Columns.Contains(idx))
-                                current = row[idx];
-                            else if (int.TryParse(idx, out int colIdx) && colIdx >= 0 && colIdx < row.Table.Columns.Count)
-                                current = row[colIdx];
-                            else
-                                return null;
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    }
-
-                    // Special handling for JObject or JSON string
-                    if ((current is string s && s.TrimStart().StartsWith("{")) || current is JObject)
-                    {
-                        // If key is like myJsonObject.user.profile.name, extract the path after the base
-                        var jsonPath = string.Join(".", parts.Skip(1));
-                        if (string.IsNullOrEmpty(jsonPath))
-                            return current;
-
-                        string jsonString = current is JObject jObj ? jObj.ToString() : current.ToString();
-                        var jsonValue = GetJsonProperty(jsonString, jsonPath);
-                        return jsonValue;
-                    }
-
-                    // Traverse properties/indexers as before
-                    for (int i = 1; i < parts.Length; i++)
-                    {
-                        var part = parts[i];
-
-                        // Handle indexer: e.g., [1], ["email"]
-                        var indexMatch = Regex.Match(part, @"^(?<prop>\w+)?\[(?<idx>.+?)\]$");
-                        if (indexMatch.Success)
-                        {
-                            var propName = indexMatch.Groups["prop"].Value;
-                            var idx = indexMatch.Groups["idx"].Value.Trim('\'', '"');
-
-                            // Property first, if any
-                            if (!string.IsNullOrEmpty(propName))
+                            var value = interpreter.Eval(expr);
+                            if (value is DataTable dt)
                             {
-                                var prop = current.GetType().GetProperty(propName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-                                if (prop != null)
-                                    current = prop.GetValue(current);
-                                else
-                                    return null;
+                                var sb = new StringBuilder();
+                                var columns = dt.Columns.Cast<DataColumn>().Select(c => c.ColumnName);
+                                sb.AppendLine(string.Join(",", columns));
+                                foreach (DataRow row in dt.Rows)
+                                    sb.AppendLine(string.Join(",", row.ItemArray.Select(x => x?.ToString() ?? "")));
+                                return sb.ToString().Trim();
                             }
-
-                            // Indexer
-                            if (current is IList list && int.TryParse(idx, out int intIdx))
+                            else if (value is System.Collections.IEnumerable enumerable && !(value is string))
                             {
-                                if (intIdx >= 0 && intIdx < list.Count)
-                                    current = list[intIdx];
-                                else
-                                    return null;
-                            }
-                            else if (current is IDictionary dict && dict.Contains(idx))
-                            {
-                                current = dict[idx];
-                            }
-                            else if (current is DataTable dt)
-                            {
-                                if (int.TryParse(idx, out int rowIdx) && rowIdx >= 0 && rowIdx < dt.Rows.Count)
-                                    current = dt.Rows[rowIdx];
-                                else if (dt.Columns.Contains(idx))
-                                    current = dt.Rows[0][idx];
-                                else
-                                    return null;
-                            }
-                            else if (current is DataRow row)
-                            {
-                                if (row.Table.Columns.Contains(idx))
-                                    current = row[idx];
-                                else
-                                    return null;
+                                return JsonConvert.SerializeObject(value);
                             }
                             else
                             {
-                                return null;
+                                return value?.ToString() ?? "";
                             }
                         }
-                        else
+                        catch
                         {
-                            // Simple property
-                            var prop = current.GetType().GetProperty(part, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-                            if (prop != null)
-                                current = prop.GetValue(current);
-                            else
-                                return null;
+                            return match.Value; // leave as is if evaluation fails
                         }
-                    }
-                    return current;
+                    });
+                    safety++;
                 }
-
-                // If the template is exactly a single variable reference like {{myVar}} or {{MyList.Count}}
-                var singleVarMatch = Regex.Match(template, @"^\s*\{\{([^\}]+)\}\}\s*$");
-                if (singleVarMatch.Success)
-                {
-                    var key = singleVarMatch.Groups[1].Value.Trim();
-                    return ResolveKey(key);
-                }
-
-                // Otherwise, do string replacement for embedded variables. Use @ to escape {{ and }} in the template.
-                // Cannot use \\ because it will not work in windows path like C:\Users\{{username}}\Documents
-                Regex PlaceholderRegex = new Regex(@"(?<!@)\{\{(?<key>[^\}]+)\}\}");
-                // Regex PlaceholderRegex = new Regex(@"(?<!\\)\{\{(?<key>[^\}]+)\}\}");
-                // Regex PlaceholderRegex = new Regex(@"\{\{(?<key>[a-zA-Z0-9_]+)\}\}");
-
-                var result = PlaceholderRegex.Replace(template, match =>
-                {
-                    var key = match.Groups["key"].Value.Trim();
-                    var value = ResolveKey(key);
-                    if (value != null)
-                    {
-                        if (value is DataTable dt)
-                        {
-                            var sb = new StringBuilder();
-                            var columns = dt.Columns.Cast<DataColumn>().Select(c => c.ColumnName);
-                            sb.AppendLine(string.Join(",", columns));
-                            foreach (DataRow row in dt.Rows)
-                                sb.AppendLine(string.Join(",", row.ItemArray.Select(x => x?.ToString() ?? "")));
-                            return sb.ToString().Trim();
-                        }
-                        else if (value is System.Collections.IEnumerable enumerable && !(value is string))
-                        {
-                            return JsonConvert.SerializeObject(value);
-                        }
-                        else
-                        {
-                            return value.ToString();
-                        }
-                    }
-                    return match.Value;
-                });
-
                 return result;
             }
-            catch (Exception ex)
+
+            // If the template is exactly a single variable/expression like {{MyList[0].Name}}
+            var singleVarMatch = Regex.Match(template, @"^\s*\{\{([^\}]+)\}\}\s*$");
+            if (singleVarMatch.Success)
             {
-                Console.WriteLine($"Error in ResolveTemplate: {ex.Message}");
-                return template;
+                // Recursively resolve any inner placeholders in the expression
+                var expr = ResolvePlaceholders(singleVarMatch.Groups[1].Value.Trim());
+                try
+                {
+                    return interpreter.Eval(expr);
+                }
+                catch
+                {
+                    return template;
+                }
             }
+
+            // Otherwise, recursively resolve all placeholders in the template
+            var finalResult = ResolvePlaceholders(template);
+            return finalResult;
         }
 
         public static string GetJsonProperty(string jsonString, string propertyPath)
