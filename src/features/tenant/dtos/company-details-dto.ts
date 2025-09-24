@@ -1,11 +1,12 @@
 export interface CompanyDetailsDTO {
-    companyName: string;
-    billingEmail: string;
-    address1: string;
-    address2: string;
-    city: string;
-    pinCode: string;
-    state: string;
-    country: string;
-    gstNumber: string;
+  id?: string;
+  organizationName: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  postalCode: string;
+  state: string;
+  country: string;
+  isWillingToFileGst: boolean;
+  gstNumber?: string;
 }

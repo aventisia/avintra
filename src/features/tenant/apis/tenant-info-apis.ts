@@ -1,0 +1,25 @@
+import { IHttpResponse } from "@aventisia/ui/dtos";
+
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
+import { CompanyDetailsDTO } from "../dtos/company-details-dto";
+import { TenantPreferencesDto } from "../dtos/tenant-prefrences-dto";
+
+const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant-account`;
+
+const getCompanyDetails = () =>
+  axiosInstance
+    .get<IHttpResponse<CompanyDetailsDTO>>(`${baseAPIURL}/detail`)
+    .then((res) => res.data);
+
+const getTenantPreferences = () =>
+  axiosInstance
+    .get<IHttpResponse<TenantPreferencesDto>>(`${baseAPIURL}/preferences`)
+    .then((res) => res.data);
+
+const updateTenantPreferences = (pref: TenantPreferencesDto) =>
+  axiosInstance
+    .put<IHttpResponse<TenantPreferencesDto>>(`${baseAPIURL}/preferences`, pref)
+    .then((res) => res.data);
+
+export { getCompanyDetails, getTenantPreferences, updateTenantPreferences };
