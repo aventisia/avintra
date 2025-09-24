@@ -14,6 +14,7 @@ import {
   BookCopyIcon,
   DockIcon,
   DownloadIcon,
+  ImportIcon,
   KeyboardIcon,
   LockOpenIcon,
   LogsIcon,
@@ -24,6 +25,7 @@ import { HeaderActionMenuTrigger } from "./HeaderActionMenuTrigger";
 import { useInputOutputsStore } from "@/features/add-input-output/stores/inputs-outputs-store";
 import { useSaveAsTemplateStore } from "@/features/save-as-template/stores/save-as-template-store";
 import { useExportFlow } from "@/hooks/useExportFlow";
+import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 
 export const HeaderActionMenu: React.FC = () => {
   // Get flow execution store state & actions
@@ -36,6 +38,12 @@ export const HeaderActionMenu: React.FC = () => {
   const { setShowDialog: setExportDialog } = useInputOutputsStore(
     useShallow((state) => ({
       setShowDialog: state.setShowDialog,
+    })),
+  );
+
+  const { setUpload } = useImportStore(
+    useShallow((state) => ({
+      setUpload: state.setUpload,
     })),
   );
 
@@ -118,6 +126,16 @@ export const HeaderActionMenu: React.FC = () => {
         ) : null}
         {import.meta.env.MODE !== "production" ? (
           <>
+            <DropdownMenuSeparator />
+
+            <SimpleDDMenuItem
+              size="md"
+              Icon={ImportIcon}
+              content="Import"
+              onClick={() => {
+                setUpload(true);
+              }}
+            />
             <SimpleDDMenuItem
               size="md"
               Icon={UploadIcon}
