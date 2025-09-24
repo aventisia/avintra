@@ -478,10 +478,10 @@ public class TenantSubscriptionService : ITenantSubscriptionService
     }
 
     // Retrieves the current subscription plan for a tenant.
-    public async Task<ServiceResponse<TenantSubscriptionDto>> GetCurrentTenantSubscriptionPlanAsync()
+    public async Task<ServiceResponse<SubscriptionDashboardDto>> GetCurrentTenantSubscriptionPlanAsync()
     {
-        // Initialize ServiceResponse with a failure message
-        var serviceResponse = new ServiceResponse<TenantSubscriptionDto>
+        // Initialize the response object with failure message by default
+        var serviceResponse = new ServiceResponse<SubscriptionDashboardDto>
         {
             Data = null,
             Message = "Failed to retrieve the current tenant subscription plan. Please try again."
@@ -489,39 +489,142 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         try
         {
+            // Log information about the process of fetching the current tenant's subscription plan
             _logger.LogInformation("Fetching current tenant subscription plan for tenant ID: {TenantId}", _tenantId);
 
+            // Determine if the current tenant is a non-default tenant
             var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
 
-            // Query the current tenant's subscription, including related plan and creator details
-            var subscription = await _unitOfWork.TenantSubscriptionRepo
+            // Initialize an empty SubscriptionDashboardDto to store subscription data
+            SubscriptionDashboardDto? subscriptionDashboardDto = new();
+
+            // Fetch the current tenant's active subscription, considering user and tenant constraints
+            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
-                        (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
-                        w.IsActive &&
-                        w.TenantId == _tenantId
+                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
+                    w.IsActive &&
+                    w.TenantId == _tenantId
                 )
                 .Include(i => i.Plan)
                 .Include(i => i.CreatedByUser)
                 .FirstOrDefaultAsync();
 
-            if (subscription == null)
+            // If no subscription is found, log a warning and return a failure message
+            if (tenantSubscription == null)
             {
-                _logger.LogWarning("No current subscription plan found for tenant ID: {TenantId}", _tenantId);
+                _logger.LogWarning("No active subscription found for tenant ID: {TenantId}", _tenantId);
                 serviceResponse.Message = "No subscription plan found for the current tenant.";
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Current tenant subscription plan retrieved successfully for tenant ID: {TenantId}", _tenantId);
+            // Fetch the available tenant credits for the current user, considering expiry and availability constraints
+            var availableCredits = await _unitOfWork.TenantCreditRepo
+                .GetByConditionAsync(w =>
+                    w.TenantId == _tenantId &&
+                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
+                    w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date &&
+                    w.AvailableCredits > 0
+                )
+                .SumAsync(sm => sm.AvailableCredits);
 
-            serviceResponse.Data = subscription.Adapt<TenantSubscriptionDto>();
-            serviceResponse.StatusCode = 200;
+            // Fetch the latest billing details for the current tenant
+            var billingDetail = await _unitOfWork.BillingDetailRepo
+                .GetAllAsync()
+                .OrderByDescending(o => o.NextBillingDate)
+                .FirstOrDefaultAsync();
+
+            // Extract the current subscription plan for easier reference
+            var currentPlan = tenantSubscription.Plan;
+
+            if (currentPlan != null)
+            {
+                // Populate the subscription plan details for the dashboard
+                subscriptionDashboardDto.CurrentPlan = new CurrentSubscriptionPlanDto()
+                {
+                    PlanName = currentPlan.Name,
+                    Frequency = tenantSubscription.Frequency,
+                    Price = tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
+                        ? currentPlan.MonthlyPrice
+                        : currentPlan.YearlyPrice,
+                    Currency = CurrencyTypesEnum.USD,
+                    AvailableCredits = availableCredits,
+                    Feature = new CurrentSubscriptionPlanDetailDto()
+                    {
+                        StorageLimitMB = currentPlan.StorageLimitMB,
+                        MaxSpaces = currentPlan.MaxSpaces,
+                        MaxUsers = currentPlan.MaxUsers,
+                        MaxCredits = currentPlan.MaxCredits,
+                        HistoryRetentionDays = currentPlan.HistoryRetentionDays,
+                        MaxPublishedItems = currentPlan.MaxPublishedItems
+                    },
+                    // TODO: Calculate the resource usage dynamically based on actual usage data
+                    // Currently, all resource usage values are set to 0. 
+                    Usage = new List<ResourceUsageDto>()
+                    {
+                        new ResourceUsageDto()
+                        {
+                            ResourceName = "PublishedItems",
+                            Used = 0,
+                            Limit = currentPlan.MaxPublishedItems,
+                            Unit = "number"
+                        },
+                        new ResourceUsageDto()
+                        {
+                            ResourceName = "Spaces",
+                            Used = await _unitOfWork.SpaceRepo.GetByConditionAsync(w=>w.TenantId == _tenantId).CountAsync(),
+                            Limit = currentPlan.MaxSpaces,
+                            Unit = "number"
+                        },
+                        new ResourceUsageDto()
+                        {
+                            ResourceName = "Storage",
+                            Used = 0,
+                            Limit = currentPlan.StorageLimitMB,
+                            Unit = "MB"
+                        }
+                    },
+                };
+            }
+
+            // If billing details are available, calculate the next payment breakdown
+            if (billingDetail != null)
+            {
+                // Calculate the subscription fee based on the plan's frequency
+                var subscriptionFee = tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
+                    ? currentPlan.MonthlyPrice
+                    : currentPlan.YearlyPrice;
+
+                // Calculate the tax (18% of the subscription fee)
+                var tax = subscriptionFee * 0.18m;  // 'm' denotes decimal literal
+
+                // Calculate the total amount (subscription fee + tax)
+                var totalAmount = subscriptionFee + tax;
+
+                // Populate the next payment details
+                subscriptionDashboardDto.NextPayment = new NextPaymentDetailDto()
+                {
+                    DueDate = billingDetail.NextBillingDate,
+                    SubscriptionFee = subscriptionFee,
+                    Tax = tax,
+                    TotalAmount = totalAmount,
+                };
+            }
+
+            // Log success message after retrieving the subscription details successfully
+            _logger.LogInformation("Successfully retrieved the current tenant subscription plan for tenant ID: {TenantId}", _tenantId);
+
+            // Populate the service response with the subscription data and a success message
+            serviceResponse.Data = subscriptionDashboardDto;
+            serviceResponse.StatusCode = 200; // HTTP OK
             serviceResponse.Message = "Current tenant subscription plan retrieved successfully.";
         }
         catch (Exception ex)
         {
+            // Log the error in case of an exception
             _logger.LogError(ex, "Error occurred while retrieving the current tenant subscription plan for tenant ID: {TenantId}", _tenantId);
         }
 
+        // Return the service response (success or failure)
         return serviceResponse;
     }
 

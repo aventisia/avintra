@@ -69,7 +69,7 @@ public interface ITenantSubscriptionService
     /// Retrieves the current subscription plan for a tenant.
     /// </summary>
     /// <returns>A task with the tenant's current subscription details.</returns>
-    Task<ServiceResponse<TenantSubscriptionDto>> GetCurrentTenantSubscriptionPlanAsync();
+    Task<ServiceResponse<SubscriptionDashboardDto>> GetCurrentTenantSubscriptionPlanAsync();
 
     /// <summary>
     /// Upgrades the subscription plan for a tenant.

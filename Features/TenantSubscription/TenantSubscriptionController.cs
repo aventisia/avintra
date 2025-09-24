@@ -63,7 +63,7 @@ public class TenantSubscriptionController : BaseApiController
 
     // Retrieve current subscription plan details.
     [HttpGet("current-plan")]
-    public async Task<ActionResult<ServiceResponse<TenantSubscriptionDto>>> CurrentTenantSubscriptions()
+    public async Task<ActionResult<ServiceResponse<SubscriptionDashboardDto>>> CurrentTenantSubscriptions()
     {
         return ResultHelper(await _tenantSubscriptionService.GetCurrentTenantSubscriptionPlanAsync());
     }
