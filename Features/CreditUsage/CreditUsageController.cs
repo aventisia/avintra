@@ -21,11 +21,18 @@ public class CreditUsageController : BaseApiController
         return ResultHelper(await _creditUsageService.GetCreditUsageAsync(startDate, endDate));
     }
 
-    // Inserts a new credit usage entry.
+    // Records credit usage entries.
     [HttpPost]
-    public async Task<ActionResult<ServiceResponse<bool>>> InsertCreditUsage([FromBody] CreditsUsageDto creditUsageDto)
+    public async Task<ActionResult<ServiceResponse<bool>>> RecordCreditUsage([FromBody] CreditsUsageDto creditUsageDto)
     {
-        return ResultHelper(await _creditUsageService.InsertCreditUsageAsync(creditUsageDto));
+        return ResultHelper(await _creditUsageService.RecordCreditUsageAsync(creditUsageDto));
+    }
+
+    // Records multiple credit usage entries.
+    [HttpPost("bulk")]
+    public async Task<ActionResult<ServiceResponse<bool>>> RecordCreditUsagesAsync(IEnumerable<CreditsUsageDto> creditUsageDtos)
+    {
+        return ResultHelper(await _creditUsageService.RecordCreditUsagesAsync(creditUsageDtos));
     }
 
     // Exports credit usage data into a CSV file

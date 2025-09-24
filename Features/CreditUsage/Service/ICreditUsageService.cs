@@ -15,13 +15,22 @@ public interface ICreditUsageService
     Task<ServiceResponse<CreditsUsageSummaryDto>> GetCreditUsageAsync(DateTimeOffset? startDate, DateTimeOffset? endDate);
 
     /// <summary>
-    /// Records a new credit usage entry into the system.
+    /// Records a single credit usage entry into the system.
     /// </summary>
     /// <param name="creditUsageDto">The credit usage data to record.</param>
     /// <returns>
-    /// A task representing the asynchronous operation. The result indicates whether the insertion was successful.
+    /// A task representing the asynchronous operation. The result contains a boolean indicating whether the insertion was successful.
     /// </returns>
-    Task<ServiceResponse<bool>> InsertCreditUsageAsync(CreditsUsageDto creditUsageDto);
+    Task<ServiceResponse<bool>> RecordCreditUsageAsync(CreditsUsageDto creditUsageDto);
+
+    /// <summary>
+    /// Records multiple credit usage entries into the system.
+    /// </summary>
+    /// <param name="creditUsageDtos">A collection of credit usage data to record.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The result contains a boolean indicating whether the batch insertion was successful.
+    /// </returns>
+    Task<ServiceResponse<bool>> RecordCreditUsagesAsync(IEnumerable<CreditsUsageDto> creditUsageDtos);
 
     /// <summary>
     /// Exports the credit usage data as a CSV file based on the provided filters encapsulated in the request DTO.
