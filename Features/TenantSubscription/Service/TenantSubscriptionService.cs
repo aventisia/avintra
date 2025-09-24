@@ -405,6 +405,17 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 // Map the subscription purchase DTO to a new BillingDetail entity
                 var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
 
+                // Fetch the current user's information based on their User ID
+                var currentUser = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.Id == _userId).FirstOrDefaultAsync();
+                if (currentUser != null)
+                {
+                    // Set the BillingEmail to the current user's username
+                    billingDetail.BillingEmail = currentUser?.UserName;
+
+                    // Set the ContactPerson to the full name (First and Last Name) of the current user
+                    billingDetail.ContactPerson = $"{currentUser?.FirstName} {currentUser.LastName}";
+                }
+
                 // Set pricing and next billing date based on the selected subscription frequency
                 switch (tenantSubscriptionPurchaseDto.Frequency)
                 {

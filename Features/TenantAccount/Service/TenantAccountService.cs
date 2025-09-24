@@ -62,6 +62,7 @@ public class TenantAccountService : ITenantAccountService
             var billingDetail = await _unitOfWork.BillingDetailRepo
                 .GetByConditionAsync(w => w.TenantId == _tenantId)
                 .AsNoTracking()
+                .OrderByDescending(o => o.NextBillingDate)
                 .FirstOrDefaultAsync();
 
             // Map billing details and populate response DTO
@@ -114,25 +115,27 @@ public class TenantAccountService : ITenantAccountService
 
             _logger.LogInformation("Tenant found. Proceeding with update for TenantId: {TenantId}", _tenantId);
 
+            // TODO: Uncomment if updating tenant name is required
             // Update tenant entity fields
-            tenant.Name = organizationBillingDto.OrganizationName;
-            tenant.LastModifiedByUserId = _userId;
-            tenant.LastModifiedOn = DateTimeOffset.UtcNow;
+            // tenant.Name = organizationBillingDto.OrganizationName;
+            // tenant.LastModifiedByUserId = _userId;
+            // tenant.LastModifiedOn = DateTimeOffset.UtcNow;
 
-            _unitOfWork.TenantRepo.Update(tenant);
+            // _unitOfWork.TenantRepo.Update(tenant);
 
-            // Save updated tenant
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogWarning("Failed to save tenant updates for TenantId: {TenantId}", _tenantId);
-                return serviceResponse;
-            }
+            // // Save updated tenant
+            // if (!await _unitOfWork.SaveAsync())
+            // {
+            //     _logger.LogWarning("Failed to save tenant updates for TenantId: {TenantId}", _tenantId);
+            //     return serviceResponse;
+            // }
 
-            _logger.LogInformation("Tenant update saved successfully for TenantId: {TenantId}", _tenantId);
+            // _logger.LogInformation("Tenant update saved successfully for TenantId: {TenantId}", _tenantId);
 
             // Attempt to retrieve billing detail
             var billingDetail = await _unitOfWork.BillingDetailRepo
-                .GetByConditionAsync(w => w.TenantId == tenant.Id)
+                .GetByConditionAsync(w => w.TenantId == _tenantId)
+                .OrderByDescending(o => o.NextBillingDate)
                 .FirstOrDefaultAsync();
 
             if (billingDetail == null)
