@@ -10,6 +10,23 @@ put {
   auth: none
 }
 
+body:json {
+  {
+      "id": "bdbbbae6-6335-4838-8bff-14240906d698",
+      "organizationName": "Individual Users",
+      "billingEmail": "user@aventisia.com",
+      "contactPerson": null,
+      "addressLine1": "123 Main Street",
+      "addressLine2": "Apt 4B",
+      "city": "Okhala",
+      "postalCode": "123456",
+      "state": "Delhi",
+      "country": "India",
+      "isWillingToFileGst": true,
+      "gstNumber": "GST1234567890"
+    }
+}
+
 script:post-response {
   if(res.getStatus() == 200)
   {
