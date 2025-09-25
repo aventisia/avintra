@@ -3,6 +3,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { CompanyDetailsDTO } from "../dtos/company-details-dto";
+import { CurrentPlanDto } from "../dtos/current-plan-dto";
 import { TenantPreferencesDto } from "../dtos/tenant-prefrences-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant-account`;
@@ -10,6 +11,11 @@ const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant-acco
 const getCompanyDetails = () =>
   axiosInstance
     .get<IHttpResponse<CompanyDetailsDTO>>(`${baseAPIURL}/detail`)
+    .then((res) => res.data);
+
+const updateCompanyDetails = (postObj: CompanyDetailsDTO) =>
+  axiosInstance
+    .put<IHttpResponse<CompanyDetailsDTO>>(`${baseAPIURL}/detail`, postObj)
     .then((res) => res.data);
 
 const getTenantPreferences = () =>
@@ -22,4 +28,17 @@ const updateTenantPreferences = (pref: TenantPreferencesDto) =>
     .put<IHttpResponse<TenantPreferencesDto>>(`${baseAPIURL}/preferences`, pref)
     .then((res) => res.data);
 
-export { getCompanyDetails, getTenantPreferences, updateTenantPreferences };
+const getTenantCurrentPlan = () =>
+  axiosInstance
+    .get<
+      IHttpResponse<CurrentPlanDto>
+    >(`${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant-subscriptions/current-plan`)
+    .then((res) => res.data);
+
+export {
+  getTenantCurrentPlan,
+  getCompanyDetails,
+  getTenantPreferences,
+  updateTenantPreferences,
+  updateCompanyDetails,
+};
