@@ -1,0 +1,85 @@
+[
+  {
+    "language": "English",
+    "lang_code": "en",
+    "voices": [
+      { "voice_id": "21m00Tcm4TlvDq8ikWAM", "name": "Rachel", "gender": "female" },
+      { "voice_id": "9BWtsMINqrJLrRacOk9x", "name": "Aria", "gender": "female" },
+      { "voice_id": "AZnzlk1XvdvUeBnXmlld", "name": "Domi", "gender": "female" },
+      { "voice_id": "EXAVITQu4vr4xnSDxMaL", "name": "Sarah", "gender": "female" },
+      { "voice_id": "CwhRBWXzGAHq8TQ4Fs17", "name": "Roger", "gender": "male" },
+      { "voice_id": "29vD33N1CtxCmqQRPOHJ", "name": "Drew", "gender": "male" },
+      { "voice_id": "2EiwWnXFnvU5JabPnv8n", "name": "Clyde", "gender": "male" },
+      { "voice_id": "5Q0t7uMcjvnagumLfvZi", "name": "Paul", "gender": "male" },
+      { "voice_id": "CYw3kZ02Hs0563khs1Fj", "name": "Dave", "gender": "male" }
+    ]
+  },
+  {
+    "language": "Irish",
+    "lang_code": "ga",
+    "voices": [
+      { "voice_id": "D38z5RcWu1voky8WS1ja", "name": "Fin", "gender": "male" }
+    ]
+  },
+  {
+    "language": "French",
+    "lang_code": "fr",
+    "voices": [
+      { "voice_id": "EXAVITQu4vr4xnSDxMaL", "name": "Sarah", "gender": "female" },
+      { "voice_id": "9BWtsMINqrJLrRacOk9x", "name": "Aria", "gender": "female" },
+      { "voice_id": "CwhRBWXzGAHq8TQ4Fs17", "name": "Roger", "gender": "male" }
+
+    ]
+  },
+  {
+    "language": "German",
+    "lang_code": "g",
+    "voices": [
+      { "voice_id": "CwhRBWXzGAHq8TQ4Fs17", "name": "Roger", "gender": "male" }
+    ]
+  },
+  {
+    "language": "Dutch",
+    "lang_code": "nl",
+    "voices": [
+      { "voice_id": "nm_roger", "name": "Roger", "gender": "male" }
+    ]
+  },
+  {
+    "language": "Spanish",
+    "lang_code": "es",
+    "voices": [
+      { "voice_id": "em_roger", "name": "Roger", "gender": "male" },
+      { "voice_id": "EXAVITQu4vr4xnSDxMaL", "name": "Sarah", "gender": "female" }
+    ]
+  },
+  {
+    "language": "Arabic",
+    "lang_code": "ar",
+    "voices": [
+      { "voice_id": "EXAVITQu4vr4xnSDxMaL", "name": "Sarah", "gender": "female" }
+    ]
+  },
+  {
+    "language": "Hindi",
+    "lang_code": "hi",
+    "voices": [
+      { "voice_id": "EXAVITQu4vr4xnSDxMaL", "name": "Sarah", "gender": "female" }
+    ]
+  },
+  {
+    "language": "Turkish",
+    "lang_code": "tr",
+    "voices": [
+      { "voice_id": "9BWtsMINqrJLrRacOk9x", "name": "Aria", "gender": "female" }
+    ]
+  },
+  {
+    "language": "Mandarin Chinese",
+    "lang_code": "zh",
+    "voices": [
+      { "voice_id": "EXAVITQu4vr4xnSDxMaL", "name": "Sarah", "gender": "female" },
+      { "voice_id": "9BWtsMINqrJLrRacOk9x", "name": "Aria", "gender": "female" }
+    ]
+  }
+]
