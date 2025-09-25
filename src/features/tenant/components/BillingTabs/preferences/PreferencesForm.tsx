@@ -15,6 +15,8 @@ import {
 import { preferencesSchema } from "@/features/tenant/constants/tenant-preferences-zod-schema";
 import { useDefinePreferencesForm } from "@/features/tenant/hooks/useDefinePreferencesForm";
 
+import TabLoader from "../TabLoader";
+
 const PreferencesForm = () => {
   const {
     form,
@@ -31,6 +33,8 @@ const PreferencesForm = () => {
   const onSubmit = (formData: z.infer<typeof preferencesSchema>) => {
     mutate(formData);
   };
+
+  if (isLoading) return <TabLoader />;
 
   // Return the form
   return (
