@@ -33,7 +33,8 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             { "llama3.2", "llama3.2:3b" },
             { "mistral", "mistral:7b" },
             { "gemma", "gemma3:12b" },
-            { "GPT 4o mini", "gpt-4o-mini" }
+            { "gpt-4o-mini", "gpt-4o-mini" },
+            { "gpt-4o", "gpt-4o" }
         };
 
         try
@@ -77,7 +78,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                     // Set timeout to 3 minutes
                     client.Timeout = TimeSpan.FromMinutes(3);
 
-                    if (mappedModel == "gpt-4o-mini" || mappedModel == "GPT 4o mini")
+                    if (mappedModel == "gpt-4o-mini" || mappedModel == "gpt-4o")
                     {
                         // Validate the API key
                         if (string.IsNullOrWhiteSpace(_openAIConfig.OpenAIApiKey))
@@ -109,9 +110,11 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                             new Dictionary<string, string>
                             {
                                 { "role", "user" },
-                                { "content", prompt }
+                                { "content", prompt + " Please provide the response in JSON format only. " + System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema)}
                             }
                         };
+
+                        _logger.LogInformation("Prepared openai or gemini OutputFormatSchema: {ollamaOutputFormatSchema}", System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema));
 
                         // Proceed to fetch chat completion from the OpenAI API
                         llmResponse = await GetChatCompletionAsync(messageList, mappedModel, client, modelTemperature, ollamaOutputFormatSchema);
@@ -220,7 +223,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                         }
 
 
-                        _logger.LogInformation("Prepared request DTO for LLM model: {ollamaOutputFormatSchema}", System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema));
+                        _logger.LogInformation("Prepared ollamaOutputFormatSchema: {ollamaOutputFormatSchema}", System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema));
 
                         var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(requestDto), Encoding.UTF8, "application/json");
                         _logger.LogInformation("Sending request to LLM model: {MappedModel}", mappedModel);
@@ -369,6 +372,8 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 // presence_penalty = 0.0f, // Penalize new tokens based on whether they appear in the text
                 // stop = new string[] { "\n" } // Optional: Stop sequence to end the response generation
             };
+
+            _logger.LogInformation("Prepared request body for OpenAI API: {RequestBody}", JsonConvert.SerializeObject(requestBody));
 
             // Serialize the request body to JSON format for the POST request
             var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
