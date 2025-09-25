@@ -25,6 +25,8 @@ export default function useWebSocket() {
     })),
   );
 
+  const { updateCreditsUsed } = useUpdateCreditsUsedMutation();
+
   // Function to send command to web socket
   const sendCommand = useCallback(
     (command: WebSocketCommandType, data?: string) => {
@@ -41,16 +43,24 @@ export default function useWebSocket() {
           }),
         );
 
+        if (command === "complete") {
+          updateCreditsUsed({
+            serviceType: "AgentExecution", //CreditServiceTypesEnum
+            consumedUnit: 1,
+            refType: "Agent", //UsageSourceTypesEnum
+            refId: currentFlow?.id,
+            refName: currentFlow?.name,
+          });
+        }
+
         // Update the execution state based on the command
         setExecutionState(getExecutionState(command));
       } else {
         console.warn("WebSocket not connected");
       }
     },
-    [setExecutionState],
+    [currentFlow?.id, currentFlow?.name, setExecutionState, updateCreditsUsed],
   );
-
-  const { updateCreditsUsed } = useUpdateCreditsUsedMutation();
 
   // Connect to web socket and handle messages
   useEffect(() => {
@@ -88,13 +98,6 @@ export default function useWebSocket() {
             case "abort":
             case "error":
             case "complete":
-              updateCreditsUsed({
-                serviceType: "AgentExecution", //CreditServiceTypesEnum
-                consumedUnit: 1,
-                refType: "Agent", //UsageSourceTypesEnum
-                refId: currentFlow?.id,
-                refName: currentFlow?.name,
-              });
               sendExecutionComplete(msg.command, sendCommand);
               break;
             case "start":
