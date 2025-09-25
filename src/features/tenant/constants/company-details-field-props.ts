@@ -1,67 +1,87 @@
-import { InputFieldProps, SelectFieldProps } from "@aventisia/ui/form"
+import { CountriesEnum } from "@aventisia/ui/enums";
+import {
+  InputFieldProps,
+  SelectFieldProps,
+  SwitchFieldProps,
+} from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
 
-const companyNameProps: InputFieldProps = {
-    name: "companyName",
-    label: "Company Name",
-    className: "text-sm",
-}
+const organizationNameProps: InputFieldProps = {
+  name: "organizationName",
+  label: "Organization Name",
+  isRequired: true,
+};
 
 const billingEmailProps: InputFieldProps = {
-    name: "billingEmail",
-    label: "Billing Email",
-    className: "text-sm",
-}
+  name: "billingEmail",
+  label: "Billing Email",
+  isRequired: true,
+};
 
-const address1Props: InputFieldProps = {
-    name: "address1",
-    label: "Address Line 1",
-    className: "text-sm",
-}
+const contactPersonProps: InputFieldProps = {
+  name: "contactPerson",
+  label: "Contact Person",
+  isRequired: true,
+};
 
-const address2Props: InputFieldProps = {
-    name: "address2",
-    label: "Address Line 2",
-    className: "text-sm",
-}
+const addressLine1Props: InputFieldProps = {
+  name: "addressLine1",
+  label: "Address Line 1",
+  isRequired: true,
+};
+
+const addressLine2Props: InputFieldProps = {
+  name: "addressLine2",
+  label: "Address Line 2",
+};
 
 const cityProps: InputFieldProps = {
-    name: "city",
-    label: "City",
-    className: "text-sm",
-}
+  name: "city",
+  label: "City",
+  isRequired: true,
+};
 
-const pinCodeProps: InputFieldProps = {
-    name: "pinCode",
-    label: "Pincode",
-    className: "text-sm",
-}
+const postalCodeProps: InputFieldProps = {
+  name: "postalCode",
+  label: "Pin Code",
+  isRequired: true,
+};
 
 const stateProps: InputFieldProps = {
-    name: "state",
-    label: "State",
-    className: "text-sm",
-}
+  name: "state",
+  label: "State",
+  isRequired: true,
+};
 
 const countryProps: SelectFieldProps = {
-    name: "country",
-    label: "Country",
-    className: "text-sm",
-    selectOptions: [],
-}
+  name: "country",
+  label: "Country",
+  isRequired: true,
+  selectOptions: enumToArray(CountriesEnum),
+};
 
-const gstNumberProps: InputFieldProps  = {
-    name: "gstNumber",
-    label: "GSt Number",
-    className: "text-sm",
-}
+const isWillingToFileGstProps: SwitchFieldProps = {
+  name: "isWillingToFileGst",
+  label: "Are you GST registered?",
+  description: "",
+};
+
+const gstNumberProps: InputFieldProps = {
+  name: "gstNumber",
+  label: "GST Number",
+  isRequired: true,
+};
 
 export {
-    companyNameProps, 
-    billingEmailProps, address1Props, 
-    address2Props, 
-    cityProps, 
-    pinCodeProps, 
-    stateProps, 
-    countryProps,
-    gstNumberProps
-}
+  organizationNameProps,
+  billingEmailProps,
+  addressLine1Props,
+  addressLine2Props,
+  cityProps,
+  postalCodeProps,
+  stateProps,
+  countryProps,
+  isWillingToFileGstProps,
+  gstNumberProps,
+  contactPersonProps,
+};
