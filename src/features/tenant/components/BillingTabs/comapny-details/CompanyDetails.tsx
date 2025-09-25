@@ -2,12 +2,20 @@ import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { SquarePen } from "lucide-react";
 
+import { useFetchCompanyDetails } from "@/features/tenant/hooks/useFetchCompanyDetails";
 import { useCompanyDetailsDialogStore } from "@/features/tenant/store/company-details/company-details-dialog-store";
+
+import TabLoader from "../TabLoader";
 
 import CompanyDetailsDialog from "./company-details-dialog/CompanyDetailsDialog";
 
 const CompanyDetails = () => {
   const { setOpen } = useCompanyDetailsDialogStore();
+
+  const { data, isLoading } = useFetchCompanyDetails();
+
+  if (isLoading) return <TabLoader />;
+
   return (
     <>
       <div className="rounded-lg border">
@@ -26,17 +34,17 @@ const CompanyDetails = () => {
         <div className="space-y-4 p-4">
           <div className="space-y-2">
             <p className="text-base font-medium">Company Details</p>
-            <div className="text-md flex items-center gap-4">
+            <div className="flex items-center gap-4 text-md">
               <p className="basis-32 text-muted-foreground">Company Name</p>
-              <p>Aventisia Technologies Pvt. Ltd.</p>
+              <p>{data?.data.organizationName ?? "--"}</p>
             </div>
-            <div className="text-md flex items-center gap-4">
+            <div className="flex items-center gap-4 text-md">
               <p className="basis-32 text-muted-foreground">Billing Email</p>
-              <p>accounts@aventisia.com</p>
+              <p>{data?.data.billingEmail ?? "--"} </p>
             </div>
-            <div className="text-md flex items-center gap-4">
+            <div className="flex items-center gap-4 text-md">
               <p className="basis-32 text-muted-foreground">Contact</p>
-              <p>Gaurav Kumar</p>
+              <p>{data?.data.contactPerson ?? "--"} </p>
             </div>
           </div>
 
@@ -44,32 +52,40 @@ const CompanyDetails = () => {
 
           <div className="space-y-2">
             <p className="text-base font-medium">Billing Address</p>
-            <div className="text-md flex items-center gap-4">
+            <div className="flex items-center gap-4 text-md">
               <p className="basis-32 text-muted-foreground">Primary Address</p>
               <p>
-                Office No 297, Global Business Hub, Kharadi, Pune, Maharashtra,
-                India - 411014
+                {[
+                  data?.data.addressLine1,
+                  data?.data.addressLine2,
+                  data?.data.city,
+                  data?.data.state,
+                  data?.data.country?.replace(/([a-z])([A-Z])/g, "$1 $2"),
+                ]
+                  .filter(Boolean)
+                  .join(", ") +
+                  (data?.data.postalCode ? ` - ${data?.data.postalCode}` : "")}
               </p>
             </div>
-            <div className="text-md flex items-center gap-4">
+            <div className="flex items-center gap-4 text-md">
               <p className="basis-32 text-muted-foreground">Country</p>
-              <p>India</p>
+              <p>{data?.data.country}</p>
             </div>
           </div>
 
-          <Separator />
+          {data?.data.gstNumber && (
+            <>
+              <Separator />
+              <div className="space-y-2">
+                <p className="text-base font-medium">Tax Details</p>
 
-          <div className="space-y-2">
-            <p className="text-base font-medium">Tax Details</p>
-            <div className="text-md flex items-center gap-4">
-              <p className="basis-32 text-muted-foreground">PO Number</p>
-              <p>000876675</p>
-            </div>
-            <div className="text-md flex items-center gap-4">
-              <p className="basis-32 text-muted-foreground">GST Number</p>
-              <p>NL123456789B01</p>
-            </div>
-          </div>
+                <div className="flex items-center gap-4 text-md">
+                  <p className="basis-32 text-muted-foreground">GST Number</p>
+                  <p>{data?.data.gstNumber}</p>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
       <CompanyDetailsDialog />
