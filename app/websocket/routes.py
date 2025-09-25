@@ -1,6 +1,8 @@
 import datetime
 import json
 import uuid
+from app.features.elevenlabs_tts import elevenlabs_tts_service
+from app.features.elevenlabs_tts.elevenlabs_tts_schemas import ElevenLabsTTSRequest
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from app.features.kokoro_tts import kokoro_tts_service
 from app.features.kokoro_tts.kokoro_tts_schemas import KokoroTTSRequest
@@ -160,6 +162,16 @@ async def websocket_chat_handler(websocket: WebSocket):
                                 return_base64=True
                             )
                             audio_response = await kokoro_tts_service.synthesize(request)
+                            
+                            # TODO: Uncomment and configure ElevenLabs TTS integration for audio synthesis
+                            # request = ElevenLabsTTSRequest(
+                            #     text=text_for_tts,
+                            #     voice_id=message_data.get('voice_id') or '21m00Tcm4TlvDq8ikWAM',
+                            #     model_id='eleven_multilingual_v2',
+                            #     return_base64=True
+                            # )
+                            # audio_response = await elevenlabs_tts_service.synthesize(request)
+
                             if isinstance(audio_response, dict):
                                 audio_b64 = audio_response.get("audio_base64")
                                 audio_media_type = audio_response.get("media_type")
