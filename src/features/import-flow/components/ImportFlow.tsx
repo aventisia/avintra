@@ -7,6 +7,7 @@ import { useFlowMutation } from "../hooks/useUpdateFlowMutation";
 import { SUPPORTED_FILE_TYPES } from "../constants";
 import { ImportConfirmationDialog } from "./ImportConfirmationDialog";
 import { useShallow } from "zustand/react/shallow";
+import { toast } from "@aventisia/ui/sonner";
 
 /**
  * Main component that allows users to import a flow.
@@ -47,11 +48,21 @@ const ImportFlow = () => {
   // Handle the flow update on dialog confirmation
   const handleUpdate = () => {
     setImportPending(true);
-    updateFlow({
-      id: flowId,
-      reactFlowObject: uploadedData,
-      versionId,
-    });
+
+    try {
+      const parsedData = JSON.parse(uploadedData);
+      const { reactFlowObject, flowVariablesObject } = parsedData;
+
+      // Update flow with the correct structure
+      updateFlow({
+        id: flowId,
+        reactFlowObject: JSON.stringify(reactFlowObject),
+        flowVariablesObject: JSON.stringify(flowVariablesObject),
+        versionId,
+      });
+    } catch (error) {
+      toast.error("Error processing the imported file");
+    }
   };
 
   return (

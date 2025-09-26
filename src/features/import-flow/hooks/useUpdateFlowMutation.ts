@@ -57,6 +57,8 @@ export const useFlowMutation = (
     onError: (error) => {
       // Display an error toast if the mutation fails
       toast.error(error.toString());
+      setImportPending(false);
+      setShowDialog(false);
     },
     onSettled: () => {
       // Reset the flow saving state once the mutation is settled
