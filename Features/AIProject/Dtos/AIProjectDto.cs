@@ -1,6 +1,6 @@
 namespace MLModelBuilderAPIs.DTOs;
 
-public class MLModelDto
+public class AIProjectDto
 {
     /// <summary>
     /// Gets or sets the primary key for the ML model.
@@ -16,7 +16,7 @@ public class MLModelDto
     /// <summary>
     /// Gets or sets the type of ML model.
     /// </summary>
-    public ModelTypesEnum? Type { get; set; }
+    public AIProjectTypeEnum? Type { get; set; }
 
     /// <summary>
     /// Gets or sets the documents processed for this record
