@@ -15,18 +15,18 @@ public interface IUnitOfWork
     /// <returns>True if there are pending changes, otherwise false.</returns>
     bool HasChanges();
 
-    IMLModelRepo MLModelRepo { get; }
+    IAIProjectRepo AIProjectRepo { get; }
     IExtractedDataRepo ExtractedDataRepo { get; }
-    IUploadedDocRepo UploadedDocRepo { get; }
+    IVersionResourceRepo VersionResourceRepo { get; }
     IModelBuilderUserRepo ModelBuilderUserRepo { get; }
     IScheduledModelRepo ScheduledModelRepo { get; }
     IFineTuningLogRepo FineTuningLogRepo { get; }
     IModelAPIKeyRepo ModelAPIKeyRepo { get; }
-    IModelTaskRepo ModelTaskRepo { get; }
+    IVersionTaskRepo VersionTaskRepo { get; }
     IConversationalModelRepo ConversationalModelRepo { get; }
     IGenerativeModelRepo GenerativeModelRepo { get; }
-    IMLModelVersionRepo MLModelVersionRepo { get; }
+    IAIProjectVersionRepo AIProjectVersionRepo { get; }
     IMLModelTemplateRepo MLModelTemplateRepo { get; }
-    IMLModelUserRepo MLModelUserRepo { get; }
+    IAIProjectUserRepo AIProjectUserRepo { get; }
     IConversationHistoryRepo ConversationHistoryRepo { get; }
 }

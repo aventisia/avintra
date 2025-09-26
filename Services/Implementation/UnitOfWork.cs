@@ -12,19 +12,19 @@ public class UnitOfWork : IUnitOfWork
         _mlModelBuilderDbContext = mlModelBuilderDbContext;
     }
 
-    public IMLModelRepo MLModelRepo => new MLModelRepo(_mlModelBuilderDbContext);
+    public IAIProjectRepo AIProjectRepo => new AIProjectRepo(_mlModelBuilderDbContext);
     public IExtractedDataRepo ExtractedDataRepo => new ExtractedDataRepo(_mlModelBuilderDbContext);
-    public IUploadedDocRepo UploadedDocRepo => new UploadedDocRepo(_mlModelBuilderDbContext);
+    public IVersionResourceRepo VersionResourceRepo => new VersionResourceRepo(_mlModelBuilderDbContext);
     public IModelBuilderUserRepo ModelBuilderUserRepo => new ModelBuilderUserRepo(_mlModelBuilderDbContext);
     public IScheduledModelRepo ScheduledModelRepo => new ScheduledModelRepo(_mlModelBuilderDbContext);
     public IFineTuningLogRepo FineTuningLogRepo => new FineTuningLogRepo(_mlModelBuilderDbContext);
     public IModelAPIKeyRepo ModelAPIKeyRepo => new ModelAPIKeyRepo(_mlModelBuilderDbContext);
-    public IModelTaskRepo ModelTaskRepo => new ModelTaskRepo(_mlModelBuilderDbContext);
+    public IVersionTaskRepo VersionTaskRepo => new VersionTaskRepo(_mlModelBuilderDbContext);
     public IConversationalModelRepo ConversationalModelRepo => new ConversationalModelRepo(_mlModelBuilderDbContext);
     public IGenerativeModelRepo GenerativeModelRepo => new GenerativeModelRepo(_mlModelBuilderDbContext);
-    public IMLModelVersionRepo MLModelVersionRepo => new MLModelVersionRepo(_mlModelBuilderDbContext);
+    public IAIProjectVersionRepo AIProjectVersionRepo => new AIProjectVersionRepo(_mlModelBuilderDbContext);
     public IMLModelTemplateRepo MLModelTemplateRepo => new MLModelTemplateRepo(_mlModelBuilderDbContext);
-    public IMLModelUserRepo MLModelUserRepo => new MLModelUserRepo(_mlModelBuilderDbContext);
+    public IAIProjectUserRepo AIProjectUserRepo => new AIProjectUserRepo(_mlModelBuilderDbContext);
     public IConversationHistoryRepo ConversationHistoryRepo => new ConversationHistoryRepo(_mlModelBuilderDbContext);
 
 
