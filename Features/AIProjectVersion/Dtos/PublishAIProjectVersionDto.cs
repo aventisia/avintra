@@ -1,6 +1,6 @@
 namespace MLModelBuilderAPIs.DTOs;
 
-public class PublishMLModelVersionDto
+public class PublishAIProjectVersionDto
 {
     /// <summary>
     /// Gets or sets the unique identifier for the machine learning model version.
