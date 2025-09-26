@@ -20,9 +20,10 @@ class Settings(BaseSettings):
     ollama_api_url: str
     ollama_api_key: str
 
-    # Elevenlabs API key
+    OPENAI_API_URL: str
+    OPENAI_API_KEY: str
     ELEVENLABS_API_KEY: str
-
+    
     model_config = SettingsConfigDict(
         extra="allow"
     )
