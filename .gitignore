@@ -23,7 +23,7 @@ var/
 *.egg
 
 # Environment
-.env
+.env.local
 .venv
 
 # IDE
