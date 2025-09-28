@@ -3,7 +3,7 @@ import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { displayValue } from "../constants";
+import { displayValue, TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { SubPlansTableDto } from "../dtos/sub-plans-table-dto";
 
@@ -40,7 +40,11 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("name")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("name")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
@@ -49,7 +53,11 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   {
     accessorKey: "monthlyPrice",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("monthlyPrice")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("monthlyPrice")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -62,7 +70,11 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   {
     accessorKey: "yearlyPrice",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("yearlyPrice")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("yearlyPrice")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -75,7 +87,11 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   {
     accessorKey: "maxCredits",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("maxCredits")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("maxCredits")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -87,6 +103,7 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
     accessorKey: "maxPublishedItems",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         column={column}
         title={getColumnName("maxPublishedItems")}
       />
@@ -101,6 +118,7 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
     accessorKey: "historyRetentionDays",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         column={column}
         title={getColumnName("historyRetentionDays")}
       />
@@ -114,7 +132,11 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   {
     accessorKey: "maxSpaces",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("maxSpaces")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("maxSpaces")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -125,7 +147,11 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   {
     accessorKey: "storageLimitMB",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("storageLimitMB")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("storageLimitMB")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -136,7 +162,11 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   {
     accessorKey: "maxUsers",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("maxUsers")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("maxUsers")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -148,7 +178,11 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdBy")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -160,6 +194,7 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
     accessorKey: "createdOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("createdOn")}

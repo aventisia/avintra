@@ -6,10 +6,11 @@ import {
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
+import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchOnPremLLMs } from "../hooks/useFetchOnPremLLM";
@@ -22,13 +23,20 @@ export const OnPremLLMTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
+  // Get data-table preferences from local storage
+  const { columnVisibility, sortState } = getDataTablePreferences(
+    TABLE_KEY,
+    columnVisibilityState,
+  );
+
   // Fetch models data
   const { data } = useFetchOnPremLLMs();
 
   const table = useDataTable(
     onPremLLMsTableColumns,
     data?.data || [],
-    columnVisibilityState,
+    columnVisibility,
+    sortState,
     true,
   );
 
@@ -51,7 +59,9 @@ export const OnPremLLMTable = () => {
                   searchColumn={SEARCH_COLUMN}
                   placeholder="Search LLM..."
                 />
-                <DTViewOptions {...{ table, columnDisplayNames }} />
+                <DTViewOptions
+                  {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
+                />
                 <DTCreateButton buttonText="Add LLM" />
               </div>
             </div>

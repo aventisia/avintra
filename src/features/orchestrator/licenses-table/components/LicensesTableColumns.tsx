@@ -9,6 +9,7 @@ import { getColumnName } from "../constants/column-display-names";
 import { MyLicensesTableDto } from "../dtos/licenses-table-dto";
 
 import { LicenseRowActions } from "./license-row-actions/LicenseRowActions";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the licenses table.
@@ -19,6 +20,7 @@ export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
     accessorKey: "pricingComponent",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         column={column}
         title={getColumnName("pricingComponent")}
       />
@@ -35,7 +37,11 @@ export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
   {
     accessorKey: "unit",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("unit")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("unit")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("unit")}</div>
@@ -44,7 +50,11 @@ export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
   {
     accessorKey: "allocated",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("allocated")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("allocated")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -55,7 +65,11 @@ export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
   {
     accessorKey: "consumed",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("consumed")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("consumed")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -66,7 +80,11 @@ export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
   {
     accessorKey: "available",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("available")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("available")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -78,6 +96,7 @@ export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
     accessorKey: "additionalUnitsRequested",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         column={column}
         title={getColumnName("additionalUnitsRequested")}
       />
@@ -91,7 +110,11 @@ export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
   {
     accessorKey: "unitPrice",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("unitPrice")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("unitPrice")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -103,7 +126,11 @@ export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
   {
     accessorKey: "overdueBalance",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("overdueBalance")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("overdueBalance")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -118,6 +145,7 @@ export const licensesTableColumns: ColumnDef<MyLicensesTableDto>[] = [
     accessorKey: "nextBillingDate",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("nextBillingDate")}

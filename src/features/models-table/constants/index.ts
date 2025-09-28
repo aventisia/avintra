@@ -4,6 +4,8 @@ const MODELS_QUERY_KEY = ["models"];
 
 const TABLE_HEADING = "AI Models";
 
+const TABLE_KEY = "ai-models";
+
 /**
  * The column used for searching in the models.
  */
@@ -25,6 +27,7 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
 export {
   MODELS_QUERY_KEY,
   TABLE_HEADING,
+  TABLE_KEY,
   getDialogHeadingDescription,
   SEARCH_COLUMN,
 };

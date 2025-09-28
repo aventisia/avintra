@@ -6,13 +6,14 @@ import {
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 import { ScrollArea, ScrollBar } from "@aventisia/ui/scroll";
 import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { useShallow } from "zustand/react/shallow";
 
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
+import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchSubPlans } from "../hooks/useFetchSubPlans";
@@ -30,6 +31,12 @@ export const SubPlansTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
+  // Get data-table preferences from local storage
+  const { columnVisibility, sortState } = getDataTablePreferences(
+    TABLE_KEY,
+    columnVisibilityState,
+  );
+
   // Get the state and actions from the base layout store
   const { sidebarExpand } = useBaseLayoutStore(
     useShallow((state) => ({
@@ -44,7 +51,8 @@ export const SubPlansTable = () => {
   const table = useDataTable(
     subPlansTableColumns,
     data?.data || [],
-    columnVisibilityState,
+    columnVisibility,
+    sortState,
     true,
   );
 
@@ -65,7 +73,9 @@ export const SubPlansTable = () => {
                   searchColumn={SEARCH_COLUMN}
                   placeholder="Search plans..."
                 />
-                <DTViewOptions {...{ table, columnDisplayNames }} />
+                <DTViewOptions
+                  {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
+                />
                 <DTCreateButton buttonText="Create Plan" />
               </div>
             </div>

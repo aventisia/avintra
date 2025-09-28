@@ -5,10 +5,11 @@ import {
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
+import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchPendingTemplates } from "../hooks/useFetchPendingTemplates";
@@ -33,6 +34,12 @@ export const TemplatesApprovalTable = ({
   // Set browser tab title
   useDocumentTitle(TABLE_HEADING);
 
+  // Get data-table preferences from local storage
+  const { columnVisibility, sortState } = getDataTablePreferences(
+    TABLE_KEY,
+    columnVisibilityState,
+  );
+
   // Fetch pending templates data based on user role
   const { data } = useFetchPendingTemplates(isSuperAdmin);
 
@@ -40,7 +47,8 @@ export const TemplatesApprovalTable = ({
   const table = useDataTable(
     templatesApprovalTable,
     data?.data || [],
-    columnVisibilityState,
+    columnVisibility,
+    sortState,
     true,
   );
 
@@ -60,7 +68,9 @@ export const TemplatesApprovalTable = ({
                 placeholder="Search..."
               />
               {/* Column visibility and view options */}
-              <DTViewOptions {...{ table, columnDisplayNames }} />
+              <DTViewOptions
+                {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
+              />
             </div>
           </div>
 

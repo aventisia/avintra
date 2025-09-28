@@ -4,6 +4,8 @@ const FLOWS_QUERY_KEY = ["flows"];
 
 const TABLE_HEADING = "Agents";
 
+const TABLE_KEY = "flows";
+
 /**
  * The column used for searching in the flows.
  */
@@ -25,6 +27,7 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
 export {
   FLOWS_QUERY_KEY,
   TABLE_HEADING,
+  TABLE_KEY,
   SEARCH_COLUMN,
   getDialogHeadingDescription,
 };

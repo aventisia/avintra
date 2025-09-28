@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { getColumnName } from "../constants/column-display-names";
 import { OnPremLLMTableDTO } from "../dtos/on-prem-llm-table-dto";
 import { OnPremLLMRowActions } from "./on-prem-llm-row-actions/OnPremLLMRowActions";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the model table.
@@ -38,7 +39,11 @@ export const onPremLLMsTableColumns: ColumnDef<OnPremLLMTableDTO>[] = [
   {
     accessorKey: "llm",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("llm")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("llm")}
+      />
     ),
     cell: ({ row }) => {
       return (
@@ -50,7 +55,11 @@ export const onPremLLMsTableColumns: ColumnDef<OnPremLLMTableDTO>[] = [
   {
     accessorKey: "displayName",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("displayName")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("displayName")}
+      />
     ),
     cell: ({ row }) => {
       return (
@@ -64,7 +73,11 @@ export const onPremLLMsTableColumns: ColumnDef<OnPremLLMTableDTO>[] = [
   {
     accessorKey: "description",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("description")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("description")}
+      />
     ),
     cell: ({ row }) => {
       return (
@@ -78,7 +91,11 @@ export const onPremLLMsTableColumns: ColumnDef<OnPremLLMTableDTO>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("status")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("status")}
+      />
     ),
     cell: ({ row }) => {
       return (
@@ -91,7 +108,9 @@ export const onPremLLMsTableColumns: ColumnDef<OnPremLLMTableDTO>[] = [
   // Actions
   {
     id: "actions",
-    header: ({ column }) => <DTColumnHeader column={column} title={""} />,
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={""} />
+    ),
     cell: ({ row }) => (
       // Render the model row actions component
       <OnPremLLMRowActions rowId={row.original.id || "rowId"} />

@@ -36,6 +36,7 @@ export function AgentSelectTable({
       versionNumber: true,
       isAssigned: false,
     },
+    [],
     true,
   );
 

@@ -12,6 +12,7 @@ import { getColumnName } from "../constants/column-display-names";
 import { PricingPlansTableDto } from "../dtos/pricingPlans-table-dto";
 
 import { PricingPlanRowActions } from "./pricingPlan-table-actions/PricingPlanRowActions";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the pricingplans table.
@@ -45,6 +46,7 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
     accessorKey: "pricingComponent",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         column={column}
         title={getColumnName("pricingComponent")}
       />
@@ -62,7 +64,11 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
   {
     accessorKey: "tenantType",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("tenantType")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("tenantType")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -76,7 +82,11 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
   {
     accessorKey: "tenantName",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("tenantName")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("tenantName")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -87,7 +97,11 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
   {
     accessorKey: "currency",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("currency")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("currency")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -99,7 +113,11 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
   {
     accessorKey: "unit",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("unit")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("unit")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("unit")}</div>
@@ -109,7 +127,11 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
   {
     accessorKey: "unitPrice",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("unitPrice")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("unitPrice")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -123,7 +145,11 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
   {
     accessorKey: "frequency",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("frequency")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("frequency")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -135,7 +161,11 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
   {
     accessorKey: "cola",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("cola")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("cola")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("cola")}</div>
@@ -145,7 +175,11 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdBy")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -158,6 +192,7 @@ export const pricingPlansTableColumns: ColumnDef<PricingPlansTableDto>[] = [
     accessorKey: "createdOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("createdOn")}

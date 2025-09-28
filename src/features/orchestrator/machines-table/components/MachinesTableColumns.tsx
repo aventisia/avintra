@@ -4,7 +4,7 @@ import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { maskIP } from "../constants";
+import { maskIP, TABLE_KEY } from "../constants";
 import { getColumnName, statusColor } from "../constants/column-display-names";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
 
@@ -41,7 +41,11 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("name")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("name")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto max-w-60 truncate font-medium">
@@ -53,7 +57,11 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
   {
     accessorKey: "agentCount",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("agentCount")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("agentCount")}
+      />
     ),
     cell: ({ row }) => row.getValue("agentCount"),
   },
@@ -61,7 +69,11 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
   {
     accessorKey: "environment",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("environment")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("environment")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -73,7 +85,11 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("type")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("type")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
@@ -83,7 +99,11 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("status")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("status")}
+      />
     ),
     cell: ({ row }) => (
       <Badge className={statusColor[row.original.status]}>
@@ -96,6 +116,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
     accessorKey: "lastModifiedOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("lastModifiedOn")}
@@ -113,7 +134,11 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
   {
     accessorKey: "ipAddress",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("ipAddress")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("ipAddress")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -125,7 +150,11 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
   {
     accessorKey: "hostname",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("hostname")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("hostname")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -137,7 +166,11 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdBy")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -150,6 +183,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
     accessorKey: "createdOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("createdOn")}

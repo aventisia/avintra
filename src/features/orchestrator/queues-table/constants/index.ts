@@ -10,6 +10,8 @@ const DATA_QUERY_KEY = ["queues"];
  */
 const TABLE_HEADING = "Queues";
 
+const TABLE_KEY = "queues";
+
 /**
  * The column used for searching in the queues.
  */
@@ -33,4 +35,5 @@ export {
   getDialogHeadingDescription,
   SEARCH_COLUMN,
   TABLE_HEADING,
+  TABLE_KEY,
 };

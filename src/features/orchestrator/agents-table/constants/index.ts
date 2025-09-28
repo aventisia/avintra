@@ -5,6 +5,8 @@ import type { CrudActionType } from "@aventisia/ui/types";
  */
 export const SEARCH_COLUMN = "name";
 
+export const TABLE_KEY = "agents-table";
+
 export const DATA_QUERY_KEY = ["agents"];
 
 export const getDialogHeadingDescription = (crudAction: CrudActionType) => {

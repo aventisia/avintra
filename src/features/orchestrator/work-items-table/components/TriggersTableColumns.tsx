@@ -3,6 +3,7 @@ import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the triggers table.
@@ -11,7 +12,9 @@ import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
 export const triggersTableColumns: ColumnDef<QueueWorkItemDto>[] = [
   {
     accessorKey: "id",
-    header: ({ column }) => <DTColumnHeader column={column} title={"Id"} />,
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Id"} />
+    ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("id")}</div>
     ),
@@ -19,7 +22,9 @@ export const triggersTableColumns: ColumnDef<QueueWorkItemDto>[] = [
   },
   {
     accessorKey: "status",
-    header: ({ column }) => <DTColumnHeader column={column} title={"Status"} />,
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Status"} />
+    ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("status")}
@@ -29,7 +34,11 @@ export const triggersTableColumns: ColumnDef<QueueWorkItemDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={"Created By"} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={"Created By"}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -40,7 +49,11 @@ export const triggersTableColumns: ColumnDef<QueueWorkItemDto>[] = [
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={"Created On"} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={"Created On"}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">

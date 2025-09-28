@@ -5,13 +5,14 @@ import {
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
+import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { useFetchBillingHistory } from "../hooks/useFetchBillingHistory";
 import { billingHistoryTableColumns } from "./BillingHistoryTableColumns";
 
@@ -24,13 +25,20 @@ export const BillingHistoryTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
+  // Get data-table preferences from local storage
+  const { columnVisibility, sortState } = getDataTablePreferences(
+    TABLE_KEY,
+    columnVisibilityState,
+  );
+
   // Fetch models data
   const { data } = useFetchBillingHistory();
 
   const table = useDataTable(
     billingHistoryTableColumns,
     data?.data || [],
-    columnVisibilityState,
+    columnVisibility,
+    sortState,
     true,
   );
 
@@ -51,7 +59,9 @@ export const BillingHistoryTable = () => {
                 searchColumn={SEARCH_COLUMN}
                 placeholder="Search History..."
               />
-              <DTViewOptions {...{ table, columnDisplayNames }} />
+              <DTViewOptions
+                {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
+              />
             </div>
           </div>
 

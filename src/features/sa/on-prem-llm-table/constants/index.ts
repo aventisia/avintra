@@ -4,6 +4,8 @@ const ONPREM_LLM_QUERY_KEY = ["on_prem_llm"];
 
 const TABLE_HEADING = "On-prem LLMs";
 
+const TABLE_KEY = "on-prem-llms";
+
 /**
  * The column used for searching in the models.
  */
@@ -25,6 +27,7 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
 export {
   ONPREM_LLM_QUERY_KEY,
   TABLE_HEADING,
+  TABLE_KEY,
   getDialogHeadingDescription,
   SEARCH_COLUMN,
 };

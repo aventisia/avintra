@@ -10,6 +10,8 @@ const DATA_QUERY_KEY = ["pricingplans"];
  */
 const TABLE_HEADING = "Pricing Plans";
 
+const TABLE_KEY = "pricing-plans";
+
 /**
  * The column used for searching in the pricing plans.
  */
@@ -31,6 +33,7 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
 export {
   DATA_QUERY_KEY,
   TABLE_HEADING,
+  TABLE_KEY,
   SEARCH_COLUMN,
   getDialogHeadingDescription,
 };

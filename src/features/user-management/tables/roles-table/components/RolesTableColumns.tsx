@@ -7,6 +7,7 @@ import { getColumnName } from "../constants/column-display-names";
 import { RoleTableDTO } from "../dtos/roles-table-dto";
 
 import { RoleRowActions } from "./role-row-actions/RoleRowActions";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the users table.
@@ -39,7 +40,11 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
   {
     accessorKey: "fullName",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("fullName")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("fullName")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -51,6 +56,7 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
     accessorKey: "description",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-fit"
         column={column}
         title={getColumnName("description")}
@@ -65,7 +71,11 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
   {
     accessorKey: "users",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("users")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("users")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("users")}</div>
@@ -75,6 +85,7 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
     accessorKey: "totalPermission",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         column={column}
         title={getColumnName("totalPermission")}
       />
@@ -88,7 +99,11 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdBy")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -100,6 +115,7 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
     accessorKey: "createdOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("createdOn")}
@@ -114,7 +130,11 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
   {
     accessorKey: "lastUpdatedBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("lastUpdatedBy")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("lastUpdatedBy")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -126,6 +146,7 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
     accessorKey: "lastUpdatedOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("lastUpdatedOn")}
@@ -140,7 +161,11 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
   {
     accessorKey: "isDefault",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("isDefault")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("isDefault")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">

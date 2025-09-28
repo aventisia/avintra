@@ -10,6 +10,8 @@ const DATA_QUERY_KEY = ["vault"];
  */
 const TABLE_HEADING = "Vault";
 
+const TABLE_KEY = "vault";
+
 /**
  * The column used for searching in the configs.
  */
@@ -33,4 +35,5 @@ export {
   getDialogHeadingDescription,
   SEARCH_COLUMN,
   TABLE_HEADING,
+  TABLE_KEY,
 };

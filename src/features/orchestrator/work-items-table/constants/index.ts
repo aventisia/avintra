@@ -10,6 +10,8 @@ export const DATA_QUERY_KEY = ["queues-work-items"];
  */
 export const TABLE_HEADING = "Work Items";
 
+export const TABLE_KEY = "work-items";
+
 /**
  * The column used for searching in the queues.
  */

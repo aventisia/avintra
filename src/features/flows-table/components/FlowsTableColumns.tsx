@@ -10,6 +10,7 @@ import { FlowsTableDto } from "../dtos/flows-table-dto";
 
 import { FlowRowActions } from "./flow-row-actions/FlowRowActions";
 import { FlowsTableCellLink } from "./FlowsTableCellLink";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the flows table.
@@ -42,7 +43,11 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("name")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("name")}
+      />
     ),
     cell: ({ row }) => (
       <FlowsTableCellLink
@@ -54,7 +59,11 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("type")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("type")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -66,6 +75,7 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
     accessorKey: "flowCommentCount",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         column={column}
         title={getColumnName("flowCommentCount")}
       />
@@ -79,7 +89,11 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdBy")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -91,6 +105,7 @@ export const flowsTableColumns: ColumnDef<FlowsTableDto>[] = [
     accessorKey: "createdOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("createdOn")}

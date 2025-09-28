@@ -10,6 +10,8 @@ const DATA_QUERY_KEY = ["executions"];
  */
 const TABLE_HEADING = "Executions";
 
+const TABLE_KEY = "executions";
+
 /**
  * The column used for searching in the executions.
  */
@@ -33,4 +35,5 @@ export {
   getDialogHeadingDescription,
   SEARCH_COLUMN,
   TABLE_HEADING,
+  TABLE_KEY,
 };

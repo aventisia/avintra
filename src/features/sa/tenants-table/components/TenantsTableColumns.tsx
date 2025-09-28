@@ -8,6 +8,7 @@ import { getColumnName } from "../constants/column-display-names";
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 
 import { TenantRowActions } from "./tenant-row-actions/TenantRowActions";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the tenants table.
@@ -40,7 +41,11 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("name")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("name")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
@@ -49,7 +54,11 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("type")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("type")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
@@ -58,7 +67,11 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
   {
     accessorKey: "effectiveDate",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("effectiveDate")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("effectiveDate")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -69,7 +82,11 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
   {
     accessorKey: "renewalDate",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("renewalDate")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("renewalDate")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -80,7 +97,11 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
   {
     accessorKey: "currency",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("currency")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("currency")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -91,7 +112,11 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
   {
     accessorKey: "expiresOn",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("expiresOn")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("expiresOn")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -102,7 +127,11 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdBy")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -114,6 +143,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     accessorKey: "createdOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("createdOn")}

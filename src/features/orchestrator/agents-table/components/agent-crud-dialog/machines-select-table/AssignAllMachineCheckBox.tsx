@@ -55,7 +55,12 @@ export function AssignAllMachineCheckBox<TData, TValue>({
         className="mt-2 translate-y-[2px]"
         disabled={isReadOnly}
       />
-      <DTColumnHeader className="m-0" column={column} title="Name" />
+      <DTColumnHeader
+        tableKey={"machines-select-table"}
+        className="m-0"
+        column={column}
+        title="Name"
+      />
     </div>
   );
 }

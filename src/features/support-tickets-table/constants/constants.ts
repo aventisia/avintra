@@ -16,6 +16,8 @@ const getTicketQueryKey = (ticketId: string) => ["supportTicket", ticketId];
  */
 const TABLE_HEADING = "Support tickets";
 
+const TABLE_KEY = "support-tickets";
+
 /**
  * The column used for searching in the supportTickets table.
  */
@@ -38,6 +40,7 @@ export {
   DATA_QUERY_KEY,
   getTicketQueryKey,
   TABLE_HEADING,
+  TABLE_KEY,
   SEARCH_COLUMN,
   getDialogHeadingDescription,
 };

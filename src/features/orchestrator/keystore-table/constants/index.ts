@@ -10,6 +10,8 @@ const DATA_QUERY_KEY = ["keystore"];
  */
 const TABLE_HEADING = "Key Store";
 
+const TABLE_KEY = "key-store";
+
 /**
  * The column used for searching in the keystores.
  */
@@ -33,4 +35,5 @@ export {
   getDialogHeadingDescription,
   SEARCH_COLUMN,
   TABLE_HEADING,
+  TABLE_KEY,
 };

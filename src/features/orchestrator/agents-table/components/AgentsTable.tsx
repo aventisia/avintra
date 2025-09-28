@@ -5,10 +5,11 @@ import {
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
-import { SEARCH_COLUMN } from "../constants";
+import { SEARCH_COLUMN, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchAgents } from "../hooks/useFetchAgents";
@@ -28,6 +29,12 @@ export const AgentsTable = () => {
   // Set the document title
   useDocumentTitle("Published");
 
+  // Get data-table preferences from local storage
+  const { columnVisibility, sortState } = getDataTablePreferences(
+    TABLE_KEY,
+    columnVisibilityState,
+  );
+
   // Fetch agents data
   const { data } = useFetchAgents();
 
@@ -35,7 +42,8 @@ export const AgentsTable = () => {
   const table = useDataTable(
     agentsTableColumns,
     data?.data || [],
-    columnVisibilityState,
+    columnVisibility,
+    sortState,
     true,
   );
 
@@ -55,7 +63,9 @@ export const AgentsTable = () => {
                 searchColumn={SEARCH_COLUMN}
                 placeholder="Search agents..."
               />
-              <DTViewOptions {...{ table, columnDisplayNames }} />
+              <DTViewOptions
+                {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
+              />
             </div>
           </div>
 

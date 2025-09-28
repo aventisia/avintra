@@ -7,6 +7,7 @@ import { getColumnName } from "../constants/column-display-names";
 import { VaultsTableDto } from "../dtos/vaults-table-dto";
 
 import { VaultRowActions } from "./vault-row-actions/VaultRowActions";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the configs table.
@@ -39,7 +40,11 @@ export const vaultsTableColumns: ColumnDef<VaultsTableDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("name")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("name")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
@@ -48,18 +53,24 @@ export const vaultsTableColumns: ColumnDef<VaultsTableDto>[] = [
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("type")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("type")}
+      />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        { row.getValue("type")}
-      </div>
+      <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
     ),
   },
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdBy")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -71,6 +82,7 @@ export const vaultsTableColumns: ColumnDef<VaultsTableDto>[] = [
     accessorKey: "createdOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("createdOn")}

@@ -6,6 +6,7 @@ import {
   DTHeading,
   DTPagination,
   DTSearchBox,
+  getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 import { cn } from "@aventisia/ui/lib";
@@ -15,7 +16,11 @@ import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { columnVisibilityState } from "../constants/column-visibility-state";
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants/constants";
+import {
+  SEARCH_COLUMN,
+  TABLE_HEADING,
+  TABLE_KEY,
+} from "../constants/constants";
 import { useFetchSupportTickets } from "../hooks/useFetchSupportTickets";
 import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";
 
@@ -31,6 +36,12 @@ import { supportTicketsTableColumns } from "./SupportTicketsTableColumns";
 export const SupportTicketsTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
+
+  // Get data-table preferences from local storage
+  const { columnVisibility, sortState } = getDataTablePreferences(
+    TABLE_KEY,
+    columnVisibilityState,
+  );
 
   // Fetch support tickets data
   const { data, refetch } = useFetchSupportTickets();
@@ -55,7 +66,8 @@ export const SupportTicketsTable = () => {
   const table = useDataTable(
     supportTicketsTableColumns,
     filteredData,
-    columnVisibilityState,
+    columnVisibility,
+    sortState,
     true,
   );
 

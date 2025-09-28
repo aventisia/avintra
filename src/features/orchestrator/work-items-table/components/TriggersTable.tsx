@@ -25,7 +25,7 @@ export const TriggersTable = () => {
   const { data } = useFetchQueuesWorkItems();
 
   // Create a React table for triggers data
-  const table = useDataTable(triggersTableColumns, data?.data || [], {}, true);
+  const table = useDataTable(triggersTableColumns, data?.data || [], {}, [], true);
 
   // Return the rendered DataTable component.
   return (

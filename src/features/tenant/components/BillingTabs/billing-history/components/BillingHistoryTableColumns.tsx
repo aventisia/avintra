@@ -7,6 +7,7 @@ import { getColumnName } from "../constants/column-display-names";
 import { BillingHistoryDTO } from "../dtos/billing-history-dto";
 
 import { BillingHistoryRowActions } from "./BillingHistoryRowActions";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the model table.
@@ -40,7 +41,11 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
   {
     accessorKey: "invoice",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("invoice")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("invoice")}
+      />
     ),
     cell: ({ row }) => {
       return (
@@ -54,7 +59,11 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
   {
     accessorKey: "paidOn",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("paidOn")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("paidOn")}
+      />
     ),
     cell: ({ row }) => {
       const paidOnValue = row.getValue("paidOn") as Date;
@@ -69,7 +78,11 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
   {
     accessorKey: "amount",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("amount")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("amount")}
+      />
     ),
     cell: ({ row }) => {
       return (
@@ -83,7 +96,11 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("status")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("status")}
+      />
     ),
     cell: ({ row }) => {
       return (
@@ -96,7 +113,9 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
   // Actions
   {
     id: "actions",
-    header: ({ column }) => <DTColumnHeader column={column} title={""} />,
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={""} />
+    ),
     cell: ({ row }) => (
       // Render the model row actions component
       <BillingHistoryRowActions rowId={row.original.id || "rowId"} />

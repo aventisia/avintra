@@ -11,6 +11,7 @@ import { formatSeconds } from "../utils/formatSeconds";
 
 import { ModelRowActions } from "./model-row-actions/ModelRowActions";
 import { ModelsTableCellLink } from "./ModelsTableCellLink";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the model table.
@@ -44,6 +45,7 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
     accessorKey: "name",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="capitalize"
         column={column}
         title={getColumnName("name")}
@@ -58,7 +60,11 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("type")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("type")}
+      />
     ),
     cell: ({ row }) => {
       const typeValue =
@@ -69,7 +75,11 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   {
     accessorKey: "llMs",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("llMs")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("llMs")}
+      />
     ),
     cell: ({ row }) => {
       const value = row.getValue("llMs") as string[];
@@ -86,7 +96,11 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   {
     accessorKey: "docsProcessed",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("docsProcessed")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("docsProcessed")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto font-medium">{row.getValue("docsProcessed")}</div>
@@ -95,7 +109,11 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   {
     accessorKey: "accuracy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("accuracy")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("accuracy")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto font-medium">{row.getValue("accuracy")}</div>
@@ -104,7 +122,11 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   {
     accessorKey: "tokenCount",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("tokenCount")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("tokenCount")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto font-medium">{row.getValue("tokenCount")}</div>
@@ -113,7 +135,11 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   {
     accessorKey: "executionCount",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("executionCount")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("executionCount")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto font-medium">{row.getValue("executionCount")}</div>
@@ -122,7 +148,11 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   {
     accessorKey: "failedCount",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("failedCount")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("failedCount")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto font-medium">{row.getValue("failedCount")}</div>
@@ -131,7 +161,11 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   {
     accessorKey: "executionTime",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("executionTime")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("executionTime")}
+      />
     ),
     cell: ({ row }) => {
       const executionTimeFormattedValue =
@@ -144,7 +178,11 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   {
     accessorKey: "isPublished",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("isPublished")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("isPublished")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto font-medium">
@@ -155,7 +193,11 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   {
     accessorKey: "publishedOn",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("publishedOn")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("publishedOn")}
+      />
     ),
     cell: ({ row }) => {
       const publishedOnValue = row.getValue("publishedOn") as Date;
@@ -169,7 +211,11 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdOn")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdOn")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -180,7 +226,11 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   {
     accessorKey: "trainedOn",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("trainedOn")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("trainedOn")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -191,7 +241,11 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   {
     accessorKey: "setupStatus",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("setupStatus")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("setupStatus")}
+      />
     ),
     cell: ({ row }) => {
       return (
@@ -206,7 +260,9 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
   },
   {
     id: "actions",
-    header: ({ column }) => <DTColumnHeader column={column} title={""} />,
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={""} />
+    ),
     cell: ({ row }) => (
       // Render the model row actions component
       <ModelRowActions rowId={row.original.id || "rowId"} />

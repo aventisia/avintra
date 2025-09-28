@@ -8,6 +8,7 @@ import { ArchivesTableDto } from "../dtos/flows-table-dto";
 
 import { FlowRowActions } from "./FlowRowActions";
 import { FlowsTableCellLink } from "./FlowsTableCellLink";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the flows table.
@@ -40,7 +41,11 @@ export const flowsTableColumns: ColumnDef<ArchivesTableDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("name")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("name")}
+      />
     ),
     cell: ({ row }) => (
       <FlowsTableCellLink
@@ -53,7 +58,11 @@ export const flowsTableColumns: ColumnDef<ArchivesTableDto>[] = [
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("type")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("type")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
@@ -62,7 +71,11 @@ export const flowsTableColumns: ColumnDef<ArchivesTableDto>[] = [
   {
     accessorKey: "versionNumber",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("versionNumber")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("versionNumber")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -73,7 +86,11 @@ export const flowsTableColumns: ColumnDef<ArchivesTableDto>[] = [
   {
     accessorKey: "lastModifiedBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("lastModifiedBy")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("lastModifiedBy")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -85,6 +102,7 @@ export const flowsTableColumns: ColumnDef<ArchivesTableDto>[] = [
     accessorKey: "lastModifiedOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("lastModifiedOn")}

@@ -8,6 +8,7 @@ import { getColumnName } from "../constants/column-display-names";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
 
 import { TableActions } from "./table-actions/TableActions";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the agents table.
@@ -40,7 +41,11 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("name")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("name")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
@@ -49,7 +54,11 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("type")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("type")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
@@ -58,7 +67,11 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   {
     accessorKey: "machineCount",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("machineCount")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("machineCount")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -69,7 +82,11 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   {
     accessorKey: "versionNumber",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("versionNumber")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("versionNumber")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -80,7 +97,11 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("status")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("status")}
+      />
     ),
     cell: ({ row }) => {
       const { isDisabled, machineCount } = row.original;
@@ -112,7 +133,11 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdBy")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -123,7 +148,11 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdOn")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdOn")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">

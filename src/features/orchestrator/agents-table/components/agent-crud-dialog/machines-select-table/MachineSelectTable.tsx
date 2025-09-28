@@ -33,6 +33,7 @@ export function MachineSelectTable({
     machineSelectTableColumns,
     currentMachines ?? [],
     machineSelectTableColumnVisibilityState,
+    [],
     true,
   );
   return isFetching ? (

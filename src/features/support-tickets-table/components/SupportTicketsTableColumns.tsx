@@ -8,6 +8,7 @@ import { Key } from "react";
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
 
 import { SupportTicketsTableCellLink } from "./SupportTicketsTableCellLink";
+import { TABLE_KEY } from "../constants/constants";
 
 /**
  * Array of table columns for the support tickets table.
@@ -55,6 +56,7 @@ export const supportTicketsTableColumns: ColumnDef<SupportTicketsTableDto>[] = [
     accessorKey: "ticketNumber",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="hidden"
         column={column}
         title="Ticket Number"
@@ -67,21 +69,36 @@ export const supportTicketsTableColumns: ColumnDef<SupportTicketsTableDto>[] = [
   {
     accessorKey: "subject",
     header: ({ column }) => (
-      <DTColumnHeader className="hidden" column={column} title="Subject" />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        className="hidden"
+        column={column}
+        title="Subject"
+      />
     ),
     cell: ({ row }) => <div className="hidden">{row.getValue("subject")}</div>,
   },
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DTColumnHeader className="hidden" column={column} title="Status" />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        className="hidden"
+        column={column}
+        title="Status"
+      />
     ),
     cell: ({ row }) => <div className="hidden">{row.getValue("status")}</div>,
   },
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
-      <DTColumnHeader className="hidden" column={column} title="Created On" />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        className="hidden"
+        column={column}
+        title="Created On"
+      />
     ),
     cell: ({ row }) => (
       <div className="hidden">{dateFormatter(row.getValue("createdOn"))}</div>
@@ -90,7 +107,12 @@ export const supportTicketsTableColumns: ColumnDef<SupportTicketsTableDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader className="hidden" column={column} title="Created By" />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        className="hidden"
+        column={column}
+        title="Created By"
+      />
     ),
     cell: ({ row }) => (
       <div className="hidden">{row.getValue("createdBy")}</div>

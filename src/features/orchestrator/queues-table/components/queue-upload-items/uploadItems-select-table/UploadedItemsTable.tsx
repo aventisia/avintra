@@ -84,7 +84,11 @@ export function UploadedItemsTable({
       baseColumns.push({
         id: "status",
         header: ({ column }) => (
-          <DTColumnHeader column={column} title={"Status"} />
+          <DTColumnHeader
+            tableKey={"uploaded-items-table"}
+            column={column}
+            title={"Status"}
+          />
         ),
         cell: ({ row }) => {
           const status = row.original as any;
@@ -139,6 +143,7 @@ export function UploadedItemsTable({
       accessorKey: field.name as keyof TData,
       header: ({ column }) => (
         <DTColumnHeader
+          tableKey={"uploaded-items-table"}
           column={column}
           title={field.name.charAt(0).toUpperCase() + field.name.slice(1)}
         />

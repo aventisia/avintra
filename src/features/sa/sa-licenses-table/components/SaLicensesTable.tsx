@@ -6,10 +6,11 @@ import {
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
+import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchSaLicenses } from "../hooks/useFetchSaLicenses";
@@ -28,6 +29,12 @@ export const SaLicensesTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
+  // Get data-table preferences from local storage
+  const { columnVisibility, sortState } = getDataTablePreferences(
+    TABLE_KEY,
+    columnVisibilityState,
+  );
+
   // Fetch licenses data
   const { data } = useFetchSaLicenses();
 
@@ -35,7 +42,8 @@ export const SaLicensesTable = () => {
   const table = useDataTable(
     saLicensesTableColumns,
     data?.data || [],
-    columnVisibilityState,
+    columnVisibility,
+    sortState,
     true,
   );
 
@@ -56,7 +64,9 @@ export const SaLicensesTable = () => {
                   searchColumn={SEARCH_COLUMN}
                   placeholder="Search licenses..."
                 />
-                <DTViewOptions {...{ table, columnDisplayNames }} />
+                <DTViewOptions
+                  {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
+                />
                 <Separator orientation="vertical" className="mx-2 h-6" />
                 <ManageSaLicenseButton />
               </div>

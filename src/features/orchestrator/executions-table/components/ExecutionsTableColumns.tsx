@@ -7,6 +7,7 @@ import { getColumnName } from "../constants/column-display-names";
 import { ExecutionsTableDto } from "../dtos/executions-table-dto";
 
 import { ExecutionRowActions } from "./execution-row-actions/ExecutionRowActions";
+import { TABLE_KEY } from "../constants";
 
 export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
   {
@@ -35,7 +36,11 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("name")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("name")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
@@ -45,7 +50,11 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("status")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("status")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -58,6 +67,7 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     accessorKey: "startTime",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("startTime")}
@@ -74,6 +84,7 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     accessorKey: "endTime",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("endTime")}
@@ -89,7 +100,11 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
   {
     accessorKey: "duration",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("duration") ?? 0} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("duration") ?? 0}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -102,6 +117,7 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     accessorKey: "retryCount",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         column={column}
         title={getColumnName("retryCount") ?? 0}
       />
@@ -117,6 +133,7 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     accessorKey: "executionLogs",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         column={column}
         title={getColumnName("executionLogs") ?? 0}
       />
@@ -132,6 +149,7 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     accessorKey: "versionNumber",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         column={column}
         title={getColumnName("versionNumber") ?? 0}
       />
@@ -146,7 +164,11 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdBy")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -158,6 +180,7 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     accessorKey: "createdOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("createdOn")}

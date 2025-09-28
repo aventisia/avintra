@@ -13,7 +13,7 @@ const UploadedItemsDT = ({
   columnsVisibilityState: VisibilityState;
 }) => {
   // Initialize the table
-  const table = useDataTable(columns, data, columnsVisibilityState, true);
+  const table = useDataTable(columns, data, columnsVisibilityState,[], true);
 
   return (
     <div className="space-y-3">

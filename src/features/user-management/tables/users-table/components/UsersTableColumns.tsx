@@ -7,6 +7,7 @@ import { getColumnName } from "../constants/column-display-names";
 import { UsersTableDto } from "../dtos/users-table-dto";
 
 import { UserRowActions } from "./user-row-actions/UserRowActions";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the users table.
@@ -39,7 +40,11 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
   {
     accessorKey: "firstName",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("firstName")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("firstName")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -50,7 +55,11 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
   {
     accessorKey: "lastName",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("lastName")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("lastName")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -62,7 +71,11 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
   {
     accessorKey: "email",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("email")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("email")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("email")}</div>
@@ -71,7 +84,11 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
   {
     accessorKey: "userRoles",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("userRoles")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("userRoles")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -83,6 +100,7 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
     accessorKey: "createdOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("createdOn")}

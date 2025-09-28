@@ -10,6 +10,8 @@ const DATA_QUERY_KEY = ["users"];
  */
 const TABLE_HEADING = "Users";
 
+const TABLE_KEY = "users";
+
 /**
  * The column used for searching in the users table.
  */
@@ -31,6 +33,7 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
 export {
   DATA_QUERY_KEY,
   TABLE_HEADING,
+  TABLE_KEY,
   SEARCH_COLUMN,
   getDialogHeadingDescription,
 };

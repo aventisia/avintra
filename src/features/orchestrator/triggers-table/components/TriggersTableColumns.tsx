@@ -10,6 +10,7 @@ import { getColumnName } from "../constants/column-display-names";
 import { TriggersTableDto } from "../dtos/triggers-table-dto";
 
 import { TriggerRowActions } from "./table-actions/TriggerRowActions";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the triggers table.
@@ -42,7 +43,11 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("name")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("name")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
@@ -52,7 +57,11 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
   {
     accessorKey: "environment",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("environment")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("environment")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -64,7 +73,11 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
   {
     accessorKey: "agentIds",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("agentIds")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("agentIds")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -76,7 +89,11 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
   {
     accessorKey: "timezone",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("timezone")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("timezone")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -88,7 +105,11 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
   {
     accessorKey: "startsOn",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("startsOn")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("startsOn")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -100,7 +121,11 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
   {
     accessorKey: "frequency",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("frequency")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("frequency")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -115,7 +140,11 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
   {
     accessorKey: "repeateAt",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("repeateAt")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("repeateAt")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -129,7 +158,11 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
   {
     accessorKey: "repeateOn",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("repeateOn")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("repeateOn")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -143,7 +176,11 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
   {
     accessorKey: "repeateEvery",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("repeateEvery")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("repeateEvery")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -155,7 +192,11 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
   {
     accessorKey: "nonWorkingDays",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("nonWorkingDays")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("nonWorkingDays")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -172,6 +213,7 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
     accessorKey: "hasNonWorkingTime",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         column={column}
         title={getColumnName("hasNonWorkingTime")}
       />
@@ -189,7 +231,11 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
   {
     accessorKey: "endsOn",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("endsOn")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("endsOn")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -202,6 +248,7 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
     accessorKey: "triggerForNewItem",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         column={column}
         title={getColumnName("triggerForNewItem")}
       />
@@ -217,6 +264,7 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
     accessorKey: "triggerForNewEmail",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         column={column}
         title={getColumnName("triggerForNewEmail")}
       />

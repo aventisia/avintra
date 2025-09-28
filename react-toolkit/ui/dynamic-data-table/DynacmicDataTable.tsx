@@ -20,7 +20,7 @@ import { isDate } from "date-fns";
 import Enumerable from "linq";
 import { useMemo, useState } from "react";
 
-import { ColumnHeaderMap } from "./constants";
+import { ColumnHeaderMap, TABLE_KEY } from "./constants";
 import { SearchDataTable } from "./SearchDataTable";
 
 export type DynacmicDataTableProps<TData> = {
@@ -111,7 +111,9 @@ export function DynacmicDataTable<TData extends object>({
       <div className="my-2 flex items-center justify-end">
         {TableHeading?.()}
         <div className="me-5 flex items-center gap-2">
-          <DTViewOptions {...{ table, columnDisplayNames }} />
+          <DTViewOptions
+            {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
+          />
 
           <SearchDataTable
             globalFilter={globalFilter}
@@ -144,6 +146,7 @@ export function GenerateColumnsForDataTable<TData>(
       accessorKey: key as keyof TData,
       header: ({ column }) => (
         <DTColumnHeader
+          tableKey={TABLE_KEY}
           column={column}
           title={
             columsHeaderMap

@@ -7,11 +7,12 @@ import {
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 import { useShallow } from "zustand/react/shallow";
 
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
+import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchVaults } from "../hooks/useFetchVaults";
@@ -30,6 +31,12 @@ export const VaultTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
+  // Get data-table preferences from local storage
+  const { columnVisibility, sortState } = getDataTablePreferences(
+    TABLE_KEY,
+    columnVisibilityState,
+  );
+
   const { setShowDialog, setAction, setRowId, setType } = useVaultDialogStore(
     useShallow((state) => ({
       setShowDialog: state.setShowDialog,
@@ -46,7 +53,8 @@ export const VaultTable = () => {
   const table = useDataTable(
     vaultsTableColumns,
     data?.data || [],
-    columnVisibilityState,
+    columnVisibility,
+    sortState,
     true,
   );
 
@@ -65,7 +73,9 @@ export const VaultTable = () => {
                 searchColumn={SEARCH_COLUMN}
                 placeholder="Search..."
               />
-              <DTViewOptions {...{ table, columnDisplayNames }} />
+              <DTViewOptions
+                {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
+              />
               <Separator orientation="vertical" className="mx-2 h-6" />
               <Button
                 onClick={() => {

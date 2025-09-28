@@ -10,6 +10,8 @@ const DATA_QUERY_KEY = ["machines"];
  */
 const TABLE_HEADING = "Machines";
 
+const TABLE_KEY = "machines";
+
 /**
  * The column used for searching in the machines.
  */
@@ -33,6 +35,7 @@ export {
   getDialogHeadingDescription,
   SEARCH_COLUMN,
   TABLE_HEADING,
+  TABLE_KEY,
 };
 
 export const sortAsAssignedFirst = <

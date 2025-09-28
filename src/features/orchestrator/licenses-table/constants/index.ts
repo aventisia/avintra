@@ -10,6 +10,8 @@ const DATA_QUERY_KEY = ["my-licenses"];
  */
 const TABLE_HEADING = "Licenses & Credits";
 
+const TABLE_KEY = "licenses-and-credits";
+
 /**
  * The column used for searching in the licenses.
  */
@@ -33,4 +35,5 @@ export {
   getDialogHeadingDescription,
   SEARCH_COLUMN,
   TABLE_HEADING,
+  TABLE_KEY,
 };

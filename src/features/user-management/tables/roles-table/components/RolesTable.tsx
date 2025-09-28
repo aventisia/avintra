@@ -7,13 +7,14 @@ import {
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { columnDisplayNames } from "@/features/flows-table/constants/column-display-names";
 
 import { usersTableColumns } from "../../users-table/components/UsersTableColumns";
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
+import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { roleTableColumnvisibilityState } from "../constants/column-visibility-state";
 import { useFetchRoles } from "../hooks/useFetchRoles";
 
@@ -30,6 +31,12 @@ export const RolesTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
+  // Get data-table preferences from local storage
+  const { columnVisibility, sortState } = getDataTablePreferences(
+    TABLE_KEY,
+    roleTableColumnvisibilityState,
+  );
+
   // Fetch users data
   const { data } = useFetchRoles();
 
@@ -37,7 +44,8 @@ export const RolesTable = () => {
   const table = useDataTable(
     RolesTableColumns,
     data?.data || [],
-    roleTableColumnvisibilityState,
+    columnVisibility,
+    sortState,
     true,
   );
 
@@ -58,7 +66,9 @@ export const RolesTable = () => {
                   searchColumn={SEARCH_COLUMN}
                   placeholder="Search users..."
                 />
-                <DTViewOptions {...{ table, columnDisplayNames }} />
+                <DTViewOptions
+                  {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
+                />
                 <Separator orientation="vertical" className="mx-2 h-6" />
                 <DTCreateButton />
               </div>

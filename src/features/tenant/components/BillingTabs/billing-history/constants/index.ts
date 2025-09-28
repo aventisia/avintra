@@ -4,6 +4,8 @@ const BILLING_HISOTRY_QUERY_KEY = ["billing_history"];
 
 const TABLE_HEADING = "Billing History";
 
+const TABLE_KEY = "billing-history";
+
 /**
  * The column used for searching in the models.
  */
@@ -23,8 +25,9 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
 };
 
 export {
-    BILLING_HISOTRY_QUERY_KEY,
+  BILLING_HISOTRY_QUERY_KEY,
   TABLE_HEADING,
+  TABLE_KEY,
   getDialogHeadingDescription,
   SEARCH_COLUMN,
 };

@@ -10,6 +10,7 @@ import { getColumnName } from "../constants/column-display-names";
 import { KeystoresTableDto } from "../dtos/keystores-table-dto";
 
 import { KeystoreRowActions } from "./keystore-row-actions/KeystoreRowActions";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the keystores table.
@@ -42,7 +43,11 @@ export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("name")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("name")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
@@ -51,7 +56,11 @@ export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("type")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("type")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -62,7 +71,11 @@ export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
   {
     accessorKey: "accessLevel",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("accessLevel")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("accessLevel")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -73,7 +86,11 @@ export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
   {
     accessorKey: "isEncrypted",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("isEncrypted")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("isEncrypted")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -84,7 +101,11 @@ export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdBy")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -96,6 +117,7 @@ export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
     accessorKey: "createdOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("createdOn")}

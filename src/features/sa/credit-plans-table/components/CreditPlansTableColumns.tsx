@@ -7,6 +7,7 @@ import { CreditPlansTableDto } from "../dtos/credit-plans-table-dto";
 import { ServiceTypeEnum } from "../enums/service-type-enum";
 import { UnitTypeEnum } from "../enums/unit-type-enum";
 import { CreditPlansRowActions } from "./credit-plans-row-actions/CreditPlansRowActions";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the model table.
@@ -40,7 +41,11 @@ export const creditPlansTableColumns: ColumnDef<CreditPlansTableDto>[] = [
   {
     accessorKey: "serviceType",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("serviceType")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("serviceType")}
+      />
     ),
     cell: ({ row }) => {
       const serviceTypeValue =
@@ -56,7 +61,11 @@ export const creditPlansTableColumns: ColumnDef<CreditPlansTableDto>[] = [
   {
     accessorKey: "unitType",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("unitType")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("unitType")}
+      />
     ),
     cell: ({ row }) => {
       const unitTypeValue =
@@ -68,7 +77,11 @@ export const creditPlansTableColumns: ColumnDef<CreditPlansTableDto>[] = [
   {
     accessorKey: "oneUnit",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("oneUnit")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("oneUnit")}
+      />
     ),
     cell: ({ row }) => {
       return (
@@ -82,7 +95,11 @@ export const creditPlansTableColumns: ColumnDef<CreditPlansTableDto>[] = [
   {
     accessorKey: "credits",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("credits")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("credits")}
+      />
     ),
     cell: ({ row }) => {
       return (
@@ -95,7 +112,9 @@ export const creditPlansTableColumns: ColumnDef<CreditPlansTableDto>[] = [
   // Actiosn
   {
     id: "actions",
-    header: ({ column }) => <DTColumnHeader column={column} title={""} />,
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={""} />
+    ),
     cell: ({ row }) => (
       // Render the model row actions component
       <CreditPlansRowActions rowId={row.original.id || "rowId"} />

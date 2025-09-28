@@ -8,6 +8,7 @@ import { QueuesTableDto } from "../dtos/queues-table-dto";
 
 import { QueueRowActions } from "./queue-row-actions/QueueRowActions";
 import { WorkItemsTableCellLink } from "./WorkItemsTableCellLink";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the queues table.
@@ -40,7 +41,11 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("name")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("name")}
+      />
     ),
     cell: ({ row }) => (
       <WorkItemsTableCellLink rowId={row.original.id}>
@@ -51,7 +56,11 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
   {
     accessorKey: "inProgress",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("inProgress")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("inProgress")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -62,7 +71,11 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
   {
     accessorKey: "pending",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("pending")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("pending")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -73,7 +86,11 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
   {
     accessorKey: "completed",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("completed")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("completed")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -84,7 +101,11 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
   {
     accessorKey: "failed",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("failed")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("failed")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -95,7 +116,11 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
   {
     accessorKey: "total",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("total")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("total")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -107,6 +132,7 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
     accessorKey: "lastModifiedOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("lastModifiedOn")}
@@ -121,7 +147,11 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdBy")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -133,6 +163,7 @@ export const queuesTableColumns: ColumnDef<QueuesTableDto>[] = [
     accessorKey: "createdOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("createdOn")}

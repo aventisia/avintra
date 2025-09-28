@@ -4,6 +4,8 @@ const PLANS_QUERY_KEY = ["subscription-plans"];
 
 const TABLE_HEADING = "Subscription Plans";
 
+const TABLE_KEY = "subscription-plans";
+
 /**
  * The column used for searching in the Subscription Plans.
  */
@@ -31,6 +33,7 @@ function displayValue(value: number) {
 export {
   PLANS_QUERY_KEY,
   TABLE_HEADING,
+  TABLE_KEY,
   SEARCH_COLUMN,
   getDialogHeadingDescription,
   displayValue,

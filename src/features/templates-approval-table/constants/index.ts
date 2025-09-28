@@ -3,9 +3,17 @@ const PTA_QUERY_KEY = ["PUBLIC_TEMPLATES_A"];
 
 const TABLE_HEADING = "Template Approvals";
 
+const TABLE_KEY = "template-approvals";
+
 /**
  * The column used for searching in the flows.
  */
 const SEARCH_COLUMN = "name";
 
-export { TTA_QUERY_KEY, PTA_QUERY_KEY, TABLE_HEADING, SEARCH_COLUMN };
+export {
+  TTA_QUERY_KEY,
+  PTA_QUERY_KEY,
+  TABLE_HEADING,
+  TABLE_KEY,
+  SEARCH_COLUMN,
+};

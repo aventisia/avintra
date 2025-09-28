@@ -7,12 +7,13 @@ import {
   DTPagination,
   DTSearchBox,
   DTViewOptions,
+  getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
 import { useDtCrudQueryAction } from "@/react-toolkit/hooks/useDtCrudQueryAction";
 
-import { SEARCH_COLUMN, TABLE_HEADING } from "../constants";
+import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchMachines } from "../hooks/useFetchMachines";
@@ -32,6 +33,12 @@ export const MachinesTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
+  // Get data-table preferences from local storage
+  const { columnVisibility, sortState } = getDataTablePreferences(
+    TABLE_KEY,
+    columnVisibilityState,
+  );
+
   // Fetch machines data
   const { data } = useFetchMachines();
 
@@ -41,7 +48,8 @@ export const MachinesTable = () => {
   const table = useDataTable(
     machinesTableColumns,
     data?.data || [],
-    columnVisibilityState,
+    columnVisibility,
+    sortState,
     true,
   );
 
@@ -62,7 +70,9 @@ export const MachinesTable = () => {
                   searchColumn={SEARCH_COLUMN}
                   placeholder="Search machines..."
                 />
-                <DTViewOptions {...{ table, columnDisplayNames }} />
+                <DTViewOptions
+                  {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
+                />
                 <Separator orientation="vertical" className="mx-2 h-6" />
                 <DTCreateButton buttonText="Add Machine" />
               </div>

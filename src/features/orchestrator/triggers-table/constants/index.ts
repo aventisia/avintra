@@ -10,6 +10,8 @@ const DATA_QUERY_KEY = ["triggers"];
  */
 const TABLE_HEADING = "Triggers";
 
+const TABLE_KEY = "triggers";
+
 /**
  * The column used for searching in the triggers.
  */
@@ -33,4 +35,5 @@ export {
   getDialogHeadingDescription,
   SEARCH_COLUMN,
   TABLE_HEADING,
+  TABLE_KEY,
 };

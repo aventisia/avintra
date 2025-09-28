@@ -7,6 +7,7 @@ import { getColumnName } from "../constants/column-display-names";
 import { TemplatesApprovalDto } from "../dtos/templates-approval-dtos";
 
 import { PendingTemplatesRowActions } from "./TemplatesApprovalRowActions";
+import { TABLE_KEY } from "../constants";
 
 /**
  * Column definitions for the Templates Approval table.
@@ -44,7 +45,11 @@ export const templatesApprovalTable: ColumnDef<TemplatesApprovalDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("name")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("name")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
@@ -53,7 +58,11 @@ export const templatesApprovalTable: ColumnDef<TemplatesApprovalDto>[] = [
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("type")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("type")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
@@ -62,7 +71,11 @@ export const templatesApprovalTable: ColumnDef<TemplatesApprovalDto>[] = [
   {
     accessorKey: "schemaVersion",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("schemaVersion")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("schemaVersion")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -73,7 +86,11 @@ export const templatesApprovalTable: ColumnDef<TemplatesApprovalDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader column={column} title={getColumnName("createdBy")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdBy")}
+      />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
@@ -85,6 +102,7 @@ export const templatesApprovalTable: ColumnDef<TemplatesApprovalDto>[] = [
     accessorKey: "createdOn",
     header: ({ column }) => (
       <DTColumnHeader
+        tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
         title={getColumnName("createdOn")}
