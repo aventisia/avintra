@@ -6,10 +6,10 @@ from app.core.config import settings
 from app.core.logger import logger
 
 # Warn if required environment variables are missing
-if not settings.ollama_api_url:
+if not settings.OLLAMA_API_URL:
     logger.warning("OLLAMA_API_URL is not set")
 
-if not settings.ollama_api_key:
+if not settings.OLLAMA_API_KEY:
     logger.warning("OLLAMA_API_KEY is not set. Some functionality may be limited.")
 
 class LLMService:
@@ -27,7 +27,7 @@ class LLMService:
         "gemma": "gemma3:12b",
     }
 
-    def __init__(self, api_url: str = settings.ollama_api_url, api_key: str = settings.ollama_api_key) -> None:
+    def __init__(self, api_url: str = settings.OLLAMA_API_URL, api_key: str = settings.OLLAMA_API_KEY) -> None:
         """
         Initialize the LLMService with the Ollama API URL and API key.
         """

@@ -14,7 +14,7 @@ def verify_token(token: str):
         payload = jwt.decode(
             token,
             settings.secret_key,
-            algorithms=[settings.algorithm],
+            algorithms=["HS512"],
             audience=settings.audience,
             issuer=settings.issuer
         )

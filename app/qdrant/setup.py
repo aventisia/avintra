@@ -13,8 +13,8 @@ def initialize_qdrant_and_embedder():
     Raises ValueError or HTTPException if environment variables are not set or initialization fails.
     """
    # Retrieve Qdrant URL and API Key from settings
-    QDRANT_URL = settings.qdrant_url
-    QDRANT_API_KEY = settings.qdrant_api_key
+    QDRANT_URL = settings.QDRANT_URL
+    QDRANT_API_KEY = settings.QDRANT_API_KEY
 
     # Check if QDRANT_URL is set in environment variables
     if not QDRANT_URL:
