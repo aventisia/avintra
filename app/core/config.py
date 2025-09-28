@@ -1,32 +1,52 @@
 import os
 from dotenv import load_dotenv
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings
 
-if os.getenv("ENV") == "development":
-    load_dotenv(".env.localhost")
+# Load base .env
+load_dotenv(".env")
+
+# Load environment-specific .env (e.g., .env.local, .env.development)
+env = os.getenv("ENVIRONMENT", "local")
+load_dotenv(f".env.{env}", override=True)
 
 class Settings(BaseSettings):
-    # JWT settings from environment variables
-    secret_key: str
-    algorithm: str = "HS512"
-    issuer: str = "localhost"
-    audience: str = "localhost"
-
-    # Qdrant settings from environment variables
-    qdrant_api_key: str | None = None
-    qdrant_url: str | None = None
-
-    # Ollama settings from environment variables
-    ollama_api_url: str
-    ollama_api_key: str
-
+    PROJECT_NAME: str
+    PROJECT_VERSION: str
+    
+    # Database
+    APP_DB_CONNECTION_STRING: str
+    TENANT_DB_CONNECTION_STRING: str
+    QDRANT_URL: str
+    QDRANT_API_KEY: str
+    
+    # JWT Settings
+    JWT_ISSUER: str
+    JWT_AUDIENCE: str
+    JWT_SECRET_KEY: str
+    
+    # CORS Settings
+    ALLOWED_ORIGINS: str
+    ALLOWED_HOSTS: str
+    
+    # LLM Providers
+    OLLAMA_API_URL: str
+    OLLAMA_API_KEY: str
+    
     OPENAI_API_URL: str
     OPENAI_API_KEY: str
-    ELEVENLABS_API_KEY: str
     
-    model_config = SettingsConfigDict(
-        extra="allow"
-    )
+    GEMINI_API_URL: str
+    GEMINI_API_KEY: str
+    
+    ANTHROPIC_API_URL: str
+    ANTHROPIC_API_KEY: str
+    
+    # TTS and STT
+    ELEVENLABS_API_KEY: str
+    DEEPGRAM_API_KEY: str
 
-# Initialize the settings class, loading the environment variables
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+
 settings = Settings()
