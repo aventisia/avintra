@@ -66,8 +66,9 @@ export const useDefineCreditPlansForm = () => {
     }>(CREDIT_PLANS_QUERY_KEY);
 
     // Get model data by id
-    const creditPlanData = creditPlansData?.data.find((item) => item.id === rowId);
-
+    const creditPlanData = creditPlansData?.data.find(
+      (item) => item.id === rowId,
+    );
 
     // Set model data to form
     form.reset({
@@ -75,8 +76,8 @@ export const useDefineCreditPlansForm = () => {
       serviceType: creditPlanData?.serviceType ?? "",
       unitType: creditPlanData?.unitType ?? "",
       oneUnit: creditPlanData?.oneUnit ?? 0,
-      credits:  creditPlanData?.credits ?? 0,
-      isDisabled: creditPlanData?.isDisabled ?? false
+      credits: creditPlanData?.credits ?? 0,
+      isDisabled: creditPlanData?.isDisabled ?? false,
     });
 
     // Focus the name field after reset.
@@ -85,10 +86,9 @@ export const useDefineCreditPlansForm = () => {
     }, 0);
   }, [rowId, form, userSession, queryClient]);
 
-
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof creditPlansZodSchema>) => {
-    return formData
+    return formData;
   };
 
   // Save the form dirty state

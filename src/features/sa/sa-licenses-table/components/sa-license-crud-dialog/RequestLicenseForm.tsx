@@ -106,7 +106,7 @@ export const RequestLicenseForm = () => {
 
       {/* new quantity */}
       <div className="rounded-lg bg-slate-100 p-5">
-        <p className="text-md mb-2 pb-2">New Quantity</p>
+        <p className="mb-2 pb-2 text-md">New Quantity</p>
         <InputField {...additionalUnitsRequestedProps} />
       </div>
       <div className="flex flex-row justify-between rounded-lg bg-primary-50 p-[.6rem] px-3">

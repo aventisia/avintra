@@ -6,11 +6,11 @@ import { isBefore } from "date-fns";
 
 import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
 
+import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { TriggersTableDto } from "../dtos/triggers-table-dto";
 
 import { TriggerRowActions } from "./table-actions/TriggerRowActions";
-import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the triggers table.

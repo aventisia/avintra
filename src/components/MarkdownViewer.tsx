@@ -146,7 +146,7 @@ const MarkdownViewer = ({ textValue }: { textValue: string }) => {
   };
 
   return (
-    <div className="prose-sm prose-slate dark:prose-invert max-w-none">
+    <div className="prose-sm prose-slate max-w-none dark:prose-invert">
       <Markdown remarkPlugins={[remarkGfm]} components={components}>
         {textValue}
       </Markdown>

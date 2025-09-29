@@ -11,6 +11,7 @@ import {
 import { X } from "lucide-react";
 
 import { useConnectedIntegrationsDialogStore } from "@/features/app-integrations/store/connected-integration-dialog";
+
 import ConnectedIntegrationDialogContent from "./ConnectedIntegrationDialogContent";
 
 const ConnectedIntegrationsDialog = () => {

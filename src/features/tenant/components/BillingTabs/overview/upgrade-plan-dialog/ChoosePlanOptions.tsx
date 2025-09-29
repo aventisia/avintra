@@ -1,7 +1,8 @@
-import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { Check } from "lucide-react";
+
+import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
 
 const ChoosePlanOptions = () => {
   const { setChosenPlan } = useUpgradePlanDialogStore();
@@ -17,7 +18,7 @@ const ChoosePlanOptions = () => {
           </div>
           <Separator />
           <div className="grid px-5 pb-4">
-            <ul className="text-md space-y-3">
+            <ul className="space-y-3 text-md">
               <li className="flex items-start gap-2">
                 <CheckMark />
                 <div>
@@ -61,7 +62,7 @@ const ChoosePlanOptions = () => {
             </ul>
 
             <Button
-              className="text-md mt-12 w-full self-end"
+              className="mt-12 w-full self-end text-md"
               size={"lg"}
               onClick={() => setChosenPlan("enterprise")}
             >
@@ -79,7 +80,7 @@ const ChoosePlanOptions = () => {
           </div>
           <Separator />
           <div className="grid px-5 pb-4">
-            <ul className="text-md space-y-3">
+            <ul className="space-y-3 text-md">
               <li className="flex items-start gap-2">
                 <CheckMark />
                 <div>
@@ -121,7 +122,7 @@ const ChoosePlanOptions = () => {
             </ul>
 
             <Button
-              className="text-md mt-12 w-full self-end"
+              className="mt-12 w-full self-end text-md"
               size={"lg"}
               onClick={() => setChosenPlan("pro")}
             >

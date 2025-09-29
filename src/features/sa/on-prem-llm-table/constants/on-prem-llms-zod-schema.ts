@@ -1,6 +1,4 @@
-import {
-  reqError,
-} from "@aventisia/ui/utils";
+import { reqError } from "@aventisia/ui/utils";
 import { z } from "zod";
 
 /**
@@ -8,8 +6,8 @@ import { z } from "zod";
  */
 export const onPremLLMZodSchema = z.object({
   id: z.string(),
-  llm: z.string().min(1, {message: reqError("LLM Name")}),
-  displayName: z.string().min(1, {message: reqError("Display Name")}),
+  llm: z.string().min(1, { message: reqError("LLM Name") }),
+  displayName: z.string().min(1, { message: reqError("Display Name") }),
   description: z.string(),
   status: z.string().readonly(),
 });

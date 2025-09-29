@@ -1,13 +1,15 @@
-import { useGeminiIntegrationForm } from "../hooks/useGeminiForm";
-import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
-import { z } from "zod";
-import { geminiIntegrationZodSchema } from "../constants/gemini-zod-schema";
-import { Form, InputField } from "@aventisia/ui/form";
-import { FormProvider } from "react-hook-form";
-import { ScrollArea } from "@aventisia/ui/scroll";
-import { apiKeyProps, hostProps } from "../constants/gemini-field-props";
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
+import { Form, InputField } from "@aventisia/ui/form";
+import { ScrollArea } from "@aventisia/ui/scroll";
+import { FormProvider } from "react-hook-form";
+import { z } from "zod";
+
+import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
+
+import { apiKeyProps, hostProps } from "../constants/gemini-field-props";
+import { geminiIntegrationZodSchema } from "../constants/gemini-zod-schema";
+import { useGeminiIntegrationForm } from "../hooks/useGeminiForm";
 
 const GeminiForm = () => {
   const { form, isDirty, isSubmitting } = useGeminiIntegrationForm();

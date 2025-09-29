@@ -6,11 +6,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import { AccessLevelTypesEnum } from "@/react-toolkit/enums/access-level-types-enum";
 import { KeyStoreTypesEnum } from "@/react-toolkit/enums/key-store-types-enum";
 
+import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { KeystoresTableDto } from "../dtos/keystores-table-dto";
 
 import { KeystoreRowActions } from "./keystore-row-actions/KeystoreRowActions";
-import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the keystores table.

@@ -9,11 +9,11 @@ import {
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
+import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
-
-import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { useFetchBillingHistory } from "../hooks/useFetchBillingHistory";
+
 import { billingHistoryTableColumns } from "./BillingHistoryTableColumns";
 
 /**

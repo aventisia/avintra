@@ -12,8 +12,6 @@ import { ONPREM_LLM_QUERY_KEY } from "../constants";
 import { onPremLLMZodSchema } from "../constants/on-prem-llms-zod-schema";
 import { OnPremLLMTableDTO } from "../dtos/on-prem-llm-table-dto";
 
-
-
 /**
  * Custom hook for defining a model form.
  */
@@ -50,7 +48,7 @@ export const useDefineOnPremLLMForm = () => {
       llm: "",
       displayName: "",
       description: "",
-      status: ""
+      status: "",
     },
   });
 
@@ -67,8 +65,9 @@ export const useDefineOnPremLLMForm = () => {
     }>(ONPREM_LLM_QUERY_KEY);
 
     // Get model data by id
-    const onPremLLMData = onPremLLMsData?.data.find((item) => item.id === rowId);
-
+    const onPremLLMData = onPremLLMsData?.data.find(
+      (item) => item.id === rowId,
+    );
 
     // Set model data to form
     form.reset({
@@ -76,7 +75,7 @@ export const useDefineOnPremLLMForm = () => {
       llm: onPremLLMData?.llm ?? "",
       displayName: onPremLLMData?.displayName ?? "",
       description: onPremLLMData?.description ?? "",
-      status: onPremLLMData?.status ?? ""
+      status: onPremLLMData?.status ?? "",
     });
 
     // Focus the name field after reset.
@@ -85,10 +84,9 @@ export const useDefineOnPremLLMForm = () => {
     }, 0);
   }, [rowId, form, userSession, queryClient]);
 
-
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof onPremLLMZodSchema>) => {
-    return formData
+    return formData;
   };
 
   // Save the form dirty state

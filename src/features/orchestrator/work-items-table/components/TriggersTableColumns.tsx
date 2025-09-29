@@ -2,8 +2,8 @@ import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
 import { TABLE_KEY } from "../constants";
+import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
 
 /**
  * Array of table columns for the triggers table.

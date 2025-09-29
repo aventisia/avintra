@@ -1,7 +1,4 @@
-import {
-  IHttpResponse,
-  IOptimisticMutation,
-} from "@aventisia/ui/dtos";
+import { IHttpResponse, IOptimisticMutation } from "@aventisia/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 

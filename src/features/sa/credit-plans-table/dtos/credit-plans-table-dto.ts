@@ -5,7 +5,6 @@ interface IModelInfo {
   lastModifiedOn?: string;
 }
 
-
 /**
  * Represents a data transfer object (DTO) for a model.
  */

@@ -21,7 +21,7 @@ const PaymentMethodOptions = () => {
             <RadioGroupItem value="paypal" id="paypal" />
             <Label
               htmlFor="paypal"
-              className="text-md flex w-full items-center justify-between"
+              className="flex w-full items-center justify-between text-md"
             >
               Paypal
               <img src={PaypalIcon} alt="" />
@@ -31,7 +31,7 @@ const PaymentMethodOptions = () => {
             <RadioGroupItem value="card" id="card" />
             <Label
               htmlFor="card"
-              className="text-md flex w-full items-center justify-between"
+              className="flex w-full items-center justify-between text-md"
             >
               Credit Card / Debit Card
               <img src={CardIcon} alt="" />
@@ -41,7 +41,7 @@ const PaymentMethodOptions = () => {
             <RadioGroupItem value="netBanking" id="netBanking" />
             <Label
               htmlFor="netBanking"
-              className="text-md flex w-full items-center justify-between"
+              className="flex w-full items-center justify-between text-md"
             >
               Net Banking
               <img src={NetBankingIcon} alt="" />
@@ -51,7 +51,7 @@ const PaymentMethodOptions = () => {
             <RadioGroupItem value="upi" id="upi" />
             <Label
               htmlFor="upi"
-              className="text-md flex w-full items-center justify-between"
+              className="flex w-full items-center justify-between text-md"
             >
               UPI
               <img src={UPIIcon} alt="" />
@@ -61,7 +61,7 @@ const PaymentMethodOptions = () => {
       </div>
 
       <div className="mt-5 flex justify-end">
-        <Button className="text-md px-9" onClick={() => setOpen(false)}>
+        <Button className="px-9 text-md" onClick={() => setOpen(false)}>
           Add
         </Button>
       </div>

@@ -245,9 +245,7 @@ export const SupportTicketEditForm = () => {
           disabled={false}
         />
         <div className="!mt-5 flex w-full justify-end gap-2">
-          {userSession?.userRoles.some((role) =>
-            ["SA"].includes(role),
-          ) && (
+          {userSession?.userRoles.some((role) => ["SA"].includes(role)) && (
             <STStatusUpdateAction
               ticketId={data?.data.id}
               ticketNumber={data?.data.ticketNumber}

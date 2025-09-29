@@ -1,10 +1,10 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 
+import { BillingHistoryTable } from "./billing-history/components/BillingHistoryTable";
+import CompanyDetails from "./comapny-details/CompanyDetails";
 import Overview from "./overview/Overview";
 import PaymentMethods from "./payment-methods/PaymentMethods";
 import Preferences from "./preferences/Preferences";
-import CompanyDetails from "./comapny-details/CompanyDetails";
-import { BillingHistoryTable } from "./billing-history/components/BillingHistoryTable";
 
 const BillingTabs = () => {
   return (

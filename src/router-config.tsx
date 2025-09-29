@@ -69,9 +69,7 @@ const routerConfig: RouteObject[] = [
       },
       {
         path: "/home",
-        element: (
-          <ProtectedRoute persmissions={["SA"]} page={<ComingSoon />} />
-        ),
+        element: <ProtectedRoute persmissions={["SA"]} page={<ComingSoon />} />,
       },
       {
         path: "/account",
@@ -103,9 +101,7 @@ const routerConfig: RouteObject[] = [
       },
       {
         path: "/marketplace",
-        element: (
-          <ProtectedRoute persmissions={["SA"]} page={<ComingSoon />} />
-        ),
+        element: <ProtectedRoute persmissions={["SA"]} page={<ComingSoon />} />,
       },
       {
         path: "/users",

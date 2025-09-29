@@ -66,4 +66,3 @@ const ConfigPanelAutosizeInput = React.forwardRef<
 ConfigPanelAutosizeInput.displayName = "ConfigPanelAutosizeInput";
 
 export { ConfigPanelAutosizeInput, type ConfigPanelAutosizeInputProps };
-

@@ -2,23 +2,22 @@ import { create } from "zustand";
 
 import { ConnectedIntegrationListDTO } from "../dto/connected-integration-list-dto";
 
-
 interface ConnectedIntegrationsDialogState {
   isOpen: boolean;
-  integrationInfo: ConnectedIntegrationListDTO
-  
+  integrationInfo: ConnectedIntegrationListDTO;
 }
 
 interface ConnectedIntegrationsDialogActions {
   setOpen: (open: boolean) => void;
-    setIntegrationInfo: (info: ConnectedIntegrationListDTO) => void;
-  
+  setIntegrationInfo: (info: ConnectedIntegrationListDTO) => void;
 }
 
-export const useConnectedIntegrationsDialogStore = create<ConnectedIntegrationsDialogState & ConnectedIntegrationsDialogActions>((set) => ({
+export const useConnectedIntegrationsDialogStore = create<
+  ConnectedIntegrationsDialogState & ConnectedIntegrationsDialogActions
+>((set) => ({
   isOpen: false,
   integrationInfo: {
-    id : "",
+    id: "",
     name: "",
     value: "",
     icon: "",
@@ -26,5 +25,5 @@ export const useConnectedIntegrationsDialogStore = create<ConnectedIntegrationsD
   },
 
   setOpen: (open) => set({ isOpen: open }),
-  setIntegrationInfo: (info) => set({integrationInfo: info})
+  setIntegrationInfo: (info) => set({ integrationInfo: info }),
 }));

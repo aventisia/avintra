@@ -5,12 +5,12 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
+import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
 
 import { FlowRowActions } from "./flow-row-actions/FlowRowActions";
 import { FlowsTableCellLink } from "./FlowsTableCellLink";
-import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the flows table.

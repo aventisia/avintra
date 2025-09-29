@@ -1,11 +1,14 @@
-import { useOneDriveIntegrationForm } from "../hooks/useOneDriveForm";
-import { z } from "zod";
-import { oneDriveIntegrationZodSchema } from "../constants/onedrive-zod-schema";
-import { Form, InputField } from "@aventisia/ui/form";
-import { FormProvider } from "react-hook-form";
-import { ScrollArea } from "@aventisia/ui/scroll";
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
+import { Form, InputField } from "@aventisia/ui/form";
+import { ScrollArea } from "@aventisia/ui/scroll";
+import { toast } from "@aventisia/ui/sonner";
+import { Copy } from "lucide-react";
+import { FormProvider } from "react-hook-form";
+import { z } from "zod";
+
+import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
+
 import {
   accessTokenURLProps,
   authorizationURLProps,
@@ -13,9 +16,8 @@ import {
   clientSecretProps,
   oAuthRedirectURLProps,
 } from "../constants/onedrive-field-props";
-import { Copy } from "lucide-react";
-import { toast } from "@aventisia/ui/sonner";
-import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
+import { oneDriveIntegrationZodSchema } from "../constants/onedrive-zod-schema";
+import { useOneDriveIntegrationForm } from "../hooks/useOneDriveForm";
 
 const OneDriveForm = () => {
   const { form, isDirty, isSubmitting } = useOneDriveIntegrationForm();

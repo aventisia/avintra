@@ -2,12 +2,13 @@ import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { CreditPlansTableDto } from "../dtos/credit-plans-table-dto";
 import { ServiceTypeEnum } from "../enums/service-type-enum";
 import { UnitTypeEnum } from "../enums/unit-type-enum";
+
 import { CreditPlansRowActions } from "./credit-plans-row-actions/CreditPlansRowActions";
-import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the model table.

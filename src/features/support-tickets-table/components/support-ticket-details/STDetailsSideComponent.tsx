@@ -110,9 +110,9 @@ export const STDetailsSideComponent = () => {
       <Separator />
       {/* Support ticket delete component */}
       {data &&
-        !userSession?.userRoles.some((role) =>
-          ["SA"].includes(role),
-        ) && <SupportTicketTDeleteAction rowId={id} />}
+        !userSession?.userRoles.some((role) => ["SA"].includes(role)) && (
+          <SupportTicketTDeleteAction rowId={id} />
+        )}
     </div>
   );
 };

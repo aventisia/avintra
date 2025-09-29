@@ -5,7 +5,7 @@ import { AvailableIntegrationListDTO } from "../dto/available-integration-list-d
 interface AvailableIntegrationsDialogState {
   isOpen: boolean;
   isFormDirty: boolean;
-  integrationInfo: AvailableIntegrationListDTO
+  integrationInfo: AvailableIntegrationListDTO;
 }
 
 interface AvailableIntegrationsDialogActions {
@@ -14,18 +14,20 @@ interface AvailableIntegrationsDialogActions {
   toggleFormDirty: (isDirty: boolean) => void;
 }
 
-export const useAvailableIntegrationsDialogStore = create<AvailableIntegrationsDialogState & AvailableIntegrationsDialogActions>((set) => ({
+export const useAvailableIntegrationsDialogStore = create<
+  AvailableIntegrationsDialogState & AvailableIntegrationsDialogActions
+>((set) => ({
   isOpen: false,
   isFormDirty: false,
   integrationInfo: {
-    id : "",
+    id: "",
     name: "",
     value: "",
     icon: "",
     description: "",
   },
-  
+
   setOpen: (open) => set({ isOpen: open }),
-  toggleFormDirty: (isDirty) => set({isFormDirty : isDirty}),
-  setIntegrationInfo: (info) => set({integrationInfo: info})
+  toggleFormDirty: (isDirty) => set({ isFormDirty: isDirty }),
+  setIntegrationInfo: (info) => set({ integrationInfo: info }),
 }));

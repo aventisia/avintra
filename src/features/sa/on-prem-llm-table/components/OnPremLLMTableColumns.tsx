@@ -2,10 +2,11 @@ import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { OnPremLLMTableDTO } from "../dtos/on-prem-llm-table-dto";
+
 import { OnPremLLMRowActions } from "./on-prem-llm-row-actions/OnPremLLMRowActions";
-import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the model table.

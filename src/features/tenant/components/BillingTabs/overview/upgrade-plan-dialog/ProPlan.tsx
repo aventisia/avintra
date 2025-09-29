@@ -1,6 +1,7 @@
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { Label } from "@aventisia/ui/label";
+import { cn } from "@aventisia/ui/lib";
 import { RadioGroup, RadioGroupItem } from "@aventisia/ui/radio-group";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
@@ -9,7 +10,6 @@ import { useState } from "react";
 
 import { useFetchSubscriptionPlans } from "@/features/tenant/hooks/useFetchSubscriptionPlans";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
-import { cn } from "@aventisia/ui/lib";
 
 const ProPlan = () => {
   const { data, isLoading } = useFetchSubscriptionPlans("Pro");
@@ -104,7 +104,7 @@ const ProPlan = () => {
                         <p className="text-base font-semibold">
                           Plan Includes:
                         </p>
-                        <ul className="text-md mt-2 space-y-1">
+                        <ul className="mt-2 space-y-1 text-md">
                           <li className="flex items-start gap-2">
                             <CheckMark />
                             <span>

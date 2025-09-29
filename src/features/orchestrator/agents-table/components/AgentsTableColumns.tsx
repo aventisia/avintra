@@ -4,11 +4,11 @@ import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
 
 import { TableActions } from "./table-actions/TableActions";
-import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the agents table.

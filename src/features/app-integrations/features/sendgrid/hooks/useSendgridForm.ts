@@ -7,26 +7,25 @@ import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations
 
 import { sendgridIntegrationZodSchema } from "../constants/sendgrid-zod-schema";
 
-
 export const useSendgridIntegrationForm = () => {
-        const { toggleFormDirty } = useAvailableIntegrationsDialogStore();
+  const { toggleFormDirty } = useAvailableIntegrationsDialogStore();
 
-    const form = useForm<z.infer<typeof sendgridIntegrationZodSchema>>({
-      resolver: zodResolver(sendgridIntegrationZodSchema),
-      defaultValues: {
-        id: "",
-        apiKey: ""
-      },
-    });
-  
-    const {
-      formState: { isSubmitting, isDirty },
-      control,
-    } = form;
+  const form = useForm<z.infer<typeof sendgridIntegrationZodSchema>>({
+    resolver: zodResolver(sendgridIntegrationZodSchema),
+    defaultValues: {
+      id: "",
+      apiKey: "",
+    },
+  });
 
-    useEffect(() => {
-            toggleFormDirty(isDirty);
-    }, [isDirty, toggleFormDirty]);
+  const {
+    formState: { isSubmitting, isDirty },
+    control,
+  } = form;
 
-    return {form, isSubmitting, isDirty, control}
-}
+  useEffect(() => {
+    toggleFormDirty(isDirty);
+  }, [isDirty, toggleFormDirty]);
+
+  return { form, isSubmitting, isDirty, control };
+};

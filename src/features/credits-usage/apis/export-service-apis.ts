@@ -3,13 +3,12 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { AgentModelDTO } from "../dtos/agents-models-dto";
-import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 import { ExportChartDTO } from "../dtos/export-chart-dto";
+import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 
 const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORC_API_URL}`;
 const mlModelBuilderAPIUrl: string = `${import.meta.env.VITE_AISTUDIO_API_URL}`;
 const accountAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/credit-usage`;
-
 
 /**
  * Retrieves all flows users of a flow.
@@ -46,5 +45,4 @@ const exportCreditUsageCSV = (postObj: ExportChartDTO) => {
     .then((res) => res.data); // just return the blob
 };
 
-
-export {getSearchUser, getSearchAgent, getSearchModel, exportCreditUsageCSV}
+export { getSearchUser, getSearchAgent, getSearchModel, exportCreditUsageCSV };

@@ -5,10 +5,10 @@ import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { Key } from "react";
 
+import { TABLE_KEY } from "../constants/constants";
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
 
 import { SupportTicketsTableCellLink } from "./SupportTicketsTableCellLink";
-import { TABLE_KEY } from "../constants/constants";
 
 /**
  * Array of table columns for the support tickets table.

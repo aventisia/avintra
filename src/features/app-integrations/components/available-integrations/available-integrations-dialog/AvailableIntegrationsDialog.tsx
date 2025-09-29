@@ -1,3 +1,5 @@
+import { Separator } from "@aventisia/ui";
+import { buttonVariants } from "@aventisia/ui/buttons";
 import {
   DialogContent,
   DialogDescription,
@@ -8,16 +10,15 @@ import {
 } from "@aventisia/ui/dialog";
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { useAlertDialogStore } from "@aventisia/ui/stores";
+import { X } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
-import { buttonVariants } from "@aventisia/ui/buttons";
-import { Separator } from "@aventisia/ui";
-import { X } from "lucide-react";
-import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
-import SendgridForm from "@/features/app-integrations/features/sendgrid/components/SendgridForm";
+
+import GoogleDriveForm from "@/features/app-integrations/features/google-drive/components/GoogleDriveForm";
 import OneDriveForm from "@/features/app-integrations/features/one-drive/components/OneDriveForm";
 import OpenAIForm from "@/features/app-integrations/features/open-ai/components/OpenAIForm";
-import GoogleDriveForm from "@/features/app-integrations/features/google-drive/components/GoogleDriveForm";
+import SendgridForm from "@/features/app-integrations/features/sendgrid/components/SendgridForm";
+import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
 // import GeminiForm from "@/features/app-integrations/features/gemini/components/GeminiForm";
 
 const AvailableIntegrationsDialog = ({ children }: React.PropsWithChildren) => {

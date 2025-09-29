@@ -3,12 +3,12 @@ import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { ArchivesTableDto } from "../dtos/flows-table-dto";
 
 import { FlowRowActions } from "./FlowRowActions";
 import { FlowsTableCellLink } from "./FlowsTableCellLink";
-import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the flows table.

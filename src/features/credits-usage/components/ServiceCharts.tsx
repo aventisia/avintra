@@ -14,10 +14,11 @@ import {
 } from "@heroicons/react/24/outline";
 import { useMemo, useState } from "react";
 
+import { ServiceTypeEnum } from "@/features/sa/credit-plans-table/enums/service-type-enum";
+
 import { useFetchCreditUsageSummary } from "../hooks/useFetchCreditUsageSummary";
 import { ChartBarInteractive } from "../shared/charts/BarChart";
 import { ChartConfig } from "../shared/charts/Chart";
-import { ServiceTypeEnum } from "@/features/sa/credit-plans-table/enums/service-type-enum";
 
 const totalCreditsChartConfig = {
   views: {

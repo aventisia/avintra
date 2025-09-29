@@ -147,9 +147,7 @@ export const StFilterByStatusOptions = () => {
         </Button>
       </div>
       {/* Toggle button for Reviewer/User */}
-      {userSession?.userRoles.some((role) =>
-        ["SA"].includes(role),
-      ) && (
+      {userSession?.userRoles.some((role) => ["SA"].includes(role)) && (
         <Tabs
           defaultValue="Reviewer"
           onValueChange={(value) => handleRoleChange(value)}

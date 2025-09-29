@@ -5,11 +5,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 
+import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { MyLicensesTableDto } from "../dtos/licenses-table-dto";
 
 import { LicenseRowActions } from "./license-row-actions/LicenseRowActions";
-import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the licenses table.

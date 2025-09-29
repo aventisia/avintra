@@ -30,7 +30,6 @@ export const DCPForm = () => {
   // Watch all form values
   const watchedValues = watch();
 
-
   // Check if output fields should be shown based on node configuration and watched values
   useEffect(() => {
     const renderedOutputFields = nodeConfig.filter((field) =>

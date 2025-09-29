@@ -8,11 +8,11 @@ import { LicenseCreditStatusesEnum } from "@/react-toolkit/enums/license-credit-
 import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 
+import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { LicensesTableDto } from "../dtos/sa-licenses-table-dto";
 
 import { SaLicenseRowActions } from "./sa-license-row-actions/SaLicenseRowActions";
-import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the licenses table.

@@ -21,7 +21,7 @@ export const useDefineDCPForm = () => {
     })),
   );
 
-  console.log(nodeId)
+  console.log(nodeId);
 
   // Local state for node config and zod schema
   const [nodeConfig, setNodeConfig] = useState<DCPFieldSchemaType[]>([]);

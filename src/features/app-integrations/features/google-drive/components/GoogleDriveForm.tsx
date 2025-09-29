@@ -1,12 +1,14 @@
-import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
-import { useGoogleDriveForm } from "../hooks/useGoogleDriveForm";
-import { Form, InputField, SelectField, SwitchField } from "@aventisia/ui/form";
-import { googleDriveIntegrationZodSchema } from "../constants/google-drive-zod-schema";
-import { z } from "zod";
-import { FormProvider } from "react-hook-form";
-import { ScrollArea } from "@aventisia/ui/scroll";
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
+import { Form, InputField, SelectField, SwitchField } from "@aventisia/ui/form";
+import { ScrollArea } from "@aventisia/ui/scroll";
+import { toast } from "@aventisia/ui/sonner";
+import { Copy } from "lucide-react";
+import { FormProvider } from "react-hook-form";
+import { z } from "zod";
+
+import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
+
 import {
   clientIdProps,
   clientSecretProps,
@@ -20,8 +22,8 @@ import {
   scopesProps,
   serviceAccountEmailProps,
 } from "../constants/google-drive-field-props";
-import { toast } from "@aventisia/ui/sonner";
-import { Copy } from "lucide-react";
+import { googleDriveIntegrationZodSchema } from "../constants/google-drive-zod-schema";
+import { useGoogleDriveForm } from "../hooks/useGoogleDriveForm";
 
 const GoogleDriveForm = () => {
   const { form, isDirty, isSubmitting } = useGoogleDriveForm();

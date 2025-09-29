@@ -32,7 +32,7 @@ const CancelPlanDialog = () => {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="text-md space-y-4 px-6 pb-4 pt-1.5">
+        <div className="space-y-4 px-6 pb-4 pt-1.5 text-md">
           <h2 className="text-lg font-semibold">
             You're about to cancel your plan
           </h2>

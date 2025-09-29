@@ -6,6 +6,7 @@ import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { X, ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+
 import { AgentModelDTO } from "../../dtos/agents-models-dto";
 
 interface AgentsMultiSelectorProps {

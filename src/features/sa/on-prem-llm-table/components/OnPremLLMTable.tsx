@@ -16,8 +16,8 @@ import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchOnPremLLMs } from "../hooks/useFetchOnPremLLM";
 
 import { OnPremCrudDialog } from "./on-prem-crud-dialog/OnPremCrudDialog";
-import { onPremLLMsTableColumns } from "./OnPremLLMTableColumns";
 import { OnPremLLMBulkActions } from "./OnPremLLMTableBulkAction";
+import { onPremLLMsTableColumns } from "./OnPremLLMTableColumns";
 
 export const OnPremLLMTable = () => {
   // Set the document title

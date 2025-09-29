@@ -4,11 +4,11 @@ import { CurrenciesEnum } from "@aventisia/ui/enums";
 import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 
 import { TenantRowActions } from "./tenant-row-actions/TenantRowActions";
-import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the tenants table.

@@ -7,29 +7,28 @@ import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations
 
 import { googleDriveIntegrationZodSchema } from "../constants/google-drive-zod-schema";
 
-
-
 export const useGoogleDriveForm = () => {
-    const { toggleFormDirty } = useAvailableIntegrationsDialogStore();
+  const { toggleFormDirty } = useAvailableIntegrationsDialogStore();
 
-    const form = useForm<z.infer<typeof googleDriveIntegrationZodSchema>>({
-      resolver: zodResolver(googleDriveIntegrationZodSchema),
-      defaultValues: {
-        connectUsing: "OAuth2",
-        oAuthRedirectURL: "https://n8n.aventisia.com/rest/oauth2-credential/callback",
-        clientId: "",
-        clientSecret: "",
-      },
-    });
-  
-    const {
-      formState: { isSubmitting, isDirty },
-      control,
-    } = form;
+  const form = useForm<z.infer<typeof googleDriveIntegrationZodSchema>>({
+    resolver: zodResolver(googleDriveIntegrationZodSchema),
+    defaultValues: {
+      connectUsing: "OAuth2",
+      oAuthRedirectURL:
+        "https://n8n.aventisia.com/rest/oauth2-credential/callback",
+      clientId: "",
+      clientSecret: "",
+    },
+  });
 
-    useEffect(() => {
-            toggleFormDirty(isDirty);
-    }, [isDirty, toggleFormDirty]);
+  const {
+    formState: { isSubmitting, isDirty },
+    control,
+  } = form;
 
-    return {form, isSubmitting, isDirty, control}
-}
+  useEffect(() => {
+    toggleFormDirty(isDirty);
+  }, [isDirty, toggleFormDirty]);
+
+  return { form, isSubmitting, isDirty, control };
+};

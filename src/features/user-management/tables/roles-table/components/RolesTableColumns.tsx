@@ -3,11 +3,11 @@ import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { RoleTableDTO } from "../dtos/roles-table-dto";
 
 import { RoleRowActions } from "./role-row-actions/RoleRowActions";
-import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the users table.

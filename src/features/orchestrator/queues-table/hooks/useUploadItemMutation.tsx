@@ -1,10 +1,10 @@
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useShallow } from "zustand/react/shallow";
 
 import { uploadWorkItem } from "../apis/queues-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import { useQueueUploadItemsStore } from "../stores/queues-upload-item-store";
-import { useShallow } from "zustand/react/shallow";
 
 export const useUploadItemMutation = () => {
   // // Get the query client for cache management

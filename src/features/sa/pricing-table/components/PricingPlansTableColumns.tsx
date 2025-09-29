@@ -8,11 +8,11 @@ import { DeploymentTypeEnum } from "@/react-toolkit/enums/deployment-types-enum"
 import { PricingComponentsEnum } from "@/react-toolkit/enums/pricing-components-enum";
 import { currencyFormater } from "@/react-toolkit/utils/currency-formatter";
 
+import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { PricingPlansTableDto } from "../dtos/pricingPlans-table-dto";
 
 import { PricingPlanRowActions } from "./pricingPlan-table-actions/PricingPlanRowActions";
-import { TABLE_KEY } from "../constants";
 
 /**
  * Array of table columns for the pricingplans table.

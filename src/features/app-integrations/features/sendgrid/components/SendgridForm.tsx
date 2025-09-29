@@ -1,13 +1,15 @@
-import { useSendgridIntegrationForm } from "../hooks/useSendgridForm";
-import { Form, InputField } from "@aventisia/ui/form";
-import { FormProvider } from "react-hook-form";
-import { z } from "zod";
-import { sendgridIntegrationZodSchema } from "../constants/sendgrid-zod-schema";
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { apiKeyProps } from "../constants/sendgrid-field-props";
+import { Form, InputField } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
+import { FormProvider } from "react-hook-form";
+import { z } from "zod";
+
 import { useAvailableIntegrationsDialogStore } from "@/features/app-integrations/store/available-integrations-dialog";
+
+import { apiKeyProps } from "../constants/sendgrid-field-props";
+import { sendgridIntegrationZodSchema } from "../constants/sendgrid-zod-schema";
+import { useSendgridIntegrationForm } from "../hooks/useSendgridForm";
 
 const SendgridForm = () => {
   const { form, isDirty, isSubmitting } = useSendgridIntegrationForm();

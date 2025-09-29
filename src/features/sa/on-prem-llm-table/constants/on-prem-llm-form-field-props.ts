@@ -13,27 +13,20 @@ const idProps: InputFieldProps = {
 const llmPops: InputFieldProps = {
   name: "llm",
   label: "LLM Name",
-  isRequired: true
+  isRequired: true,
 };
 
 const displayNamePops: InputFieldProps = {
   name: "displayName",
   label: "Display Name",
-  isRequired: true
+  isRequired: true,
 };
 
 const descriptionProps: AutosizeTextareaFieldProps = {
   name: "description",
   label: "Description",
   isRequired: false,
-  minHeight: 10
-}
-
-
-
-export {
-  idProps,
-  llmPops,
-  displayNamePops,
-  descriptionProps,
+  minHeight: 10,
 };
+
+export { idProps, llmPops, displayNamePops, descriptionProps };

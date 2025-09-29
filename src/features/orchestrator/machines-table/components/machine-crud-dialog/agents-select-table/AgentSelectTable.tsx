@@ -55,7 +55,7 @@ export function AgentSelectTable({
   ) : (
     <>
       <div className="my-2 flex items-center justify-between">
-        <h4 className="text-md ml-1 flex w-full items-center truncate text-foreground">
+        <h4 className="ml-1 flex w-full items-center truncate text-md text-foreground">
           {isReadMode ? "Assigned agents" : "Select agents..."}
         </h4>
 

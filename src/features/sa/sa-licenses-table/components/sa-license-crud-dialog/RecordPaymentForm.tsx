@@ -96,7 +96,7 @@ export const RecordPaymentForm = () => {
 
       {/* record paymnet */}
       <div className="!mt-4 space-y-2 rounded-md bg-slate-100 p-5">
-        <p className="text-md mb-2 pb-2">Payment Details</p>
+        <p className="mb-2 pb-2 text-md">Payment Details</p>
         <Separator className="my-2" />
         <DatePickerField {...dateReceivedProps} />
         <InputField {...amountReceivedProps} />

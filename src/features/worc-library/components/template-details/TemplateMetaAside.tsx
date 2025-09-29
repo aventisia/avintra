@@ -76,7 +76,7 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
                         downloadFile(item);
                       }}
                       variant={"link"}
-                      className="text-start justify-start text-wrap"
+                      className="justify-start text-wrap text-start"
                     >
                       <span>{item.name}</span>
                     </Button>
@@ -84,7 +84,7 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
                     {item.size ? (
                       <div className="flex items-center text-2xs text-muted-foreground">
                         <span>{formatFileSize(item.size)}</span>
-                        <DotSeparator  className="mx-1"/>
+                        <DotSeparator className="mx-1" />
                         <span>{item.extension}</span>
                       </div>
                     ) : null}

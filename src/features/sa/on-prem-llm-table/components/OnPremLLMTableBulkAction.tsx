@@ -10,9 +10,9 @@ import {
 } from "@aventisia/ui/hooks";
 import { Table } from "@tanstack/react-table";
 
-import { OnPremLLMTableDTO } from "../dtos/on-prem-llm-table-dto";
 import { onPremLLMOptimisticMutationFn } from "../apis/on-prem-llm-table-apis";
 import { ONPREM_LLM_QUERY_KEY } from "../constants";
+import { OnPremLLMTableDTO } from "../dtos/on-prem-llm-table-dto";
 
 interface OnPremLLMBulkActionsProps {
   table: Table<OnPremLLMTableDTO>;

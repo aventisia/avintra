@@ -3,11 +3,11 @@ import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { ExecutionsTableDto } from "../dtos/executions-table-dto";
 
 import { ExecutionRowActions } from "./execution-row-actions/ExecutionRowActions";
-import { TABLE_KEY } from "../constants";
 
 export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
   {

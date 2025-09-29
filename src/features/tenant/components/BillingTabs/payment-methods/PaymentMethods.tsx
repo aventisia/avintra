@@ -6,6 +6,7 @@ import { usePaymentMethodsDialogStore } from "@/features/tenant/store/payment-me
 
 import PaypalIcon from "../../../assets/payment-methods/paypal.svg";
 import VisaIcon from "../../../assets/payment-methods/visa.svg";
+
 import PaymentMethodsDialog from "./PaymentMethodsDialog";
 
 const PaymentMethods = () => {
