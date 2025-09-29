@@ -4,11 +4,13 @@ public class LLMDataExtractionService : ILLMDataExtractionService
 {
     private readonly ILogger<LLMDataExtractionService> _logger;
     private readonly ExtractViaLLMConfig _extractViaLLMConfig;
+    private readonly OpenAIConfig _openAIConfig;
 
-    public LLMDataExtractionService(ILogger<LLMDataExtractionService> logger, ExtractViaLLMConfig extractViaLLMConfig)
+    public LLMDataExtractionService(ILogger<LLMDataExtractionService> logger, ExtractViaLLMConfig extractViaLLMConfig, OpenAIConfig openAIConfig)
     {
         _logger = logger;
         _extractViaLLMConfig = extractViaLLMConfig;
+        _openAIConfig = openAIConfig;
     }
 
     // Extracts structured data from a document by retrieving its text and passing it to an LLM for processing.
@@ -31,6 +33,8 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             { "llama3.2", "llama3.2:3b" },
             { "mistral", "mistral:7b" },
             { "gemma", "gemma3:12b" },
+            { "gpt-4o-mini", "gpt-4o-mini" },
+            { "gpt-4o", "gpt-4o" }
         };
 
         try
@@ -74,126 +78,180 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                     // Set timeout to 3 minutes
                     client.Timeout = TimeSpan.FromMinutes(3);
 
-                    client.DefaultRequestHeaders.Add("API_KEY", _extractViaLLMConfig.OllamaAPIKey);
-                    var baseUri = _extractViaLLMConfig.OllamaAPI; // Get the base URI for the API
-
-                    // Step 4: Get currently loaded models from the API
-                    var loadedModelsResponse = await client.GetAsync($"{baseUri}/{OllamaApiRoutes.GetLoadedModels}");
-                    if (!loadedModelsResponse.IsSuccessStatusCode)
+                    if (mappedModel == "gpt-4o-mini" || mappedModel == "gpt-4o")
                     {
-                        // Log the full response details
-                        var responseContent = await loadedModelsResponse.Content.ReadAsStringAsync();
-                        _logger.LogWarning("Failed to get loaded models. StatusCode: {StatusCode}, Headers: {Headers}, Content: {ResponseContent}",
-                            loadedModelsResponse.StatusCode,
-                            loadedModelsResponse.Headers,
-                            responseContent);
-                        continue;
-                    }
-
-                    // Deserialize the list of loaded models from the response
-                    var loadedModels = System.Text.Json.JsonSerializer.Deserialize<OllamaModelResponse>(
-                        await loadedModelsResponse.Content.ReadAsStringAsync(), new JsonSerializerOptions
+                        // Validate the API key
+                        if (string.IsNullOrWhiteSpace(_openAIConfig.OpenAIApiKey))
                         {
-                            PropertyNameCaseInsensitive = true
-                        });
+                            serviceResponse.Message = "API key is required.";
+                            _logger.LogWarning("API key is missing or empty.");
 
-                    _logger.LogInformation($"Loaded models: '{string.Join(", ", loadedModels?.Models.Select(s => s.Model) ?? Enumerable.Empty<string>())}'");
+                            // Exit early if API URL is invalid
+                            return serviceResponse;
+                        }
 
-                    if (loadedModels != null && !loadedModels.Models.Any(s => s.Model != null && s.Model.Contains(mappedModel)))
-                    {
-                        // No exact match found — proceed to unload all currently loaded models
-                        _logger.LogInformation($"No match found for model: '{mappedModel}'");
-
-                        // Unload any currently loaded models
-                        foreach (var modelDetail in loadedModels.Models)
+                        // Validate the API URL
+                        if (string.IsNullOrWhiteSpace(_openAIConfig.OpenAIApiUrl) || !Uri.IsWellFormedUriString(_openAIConfig.OpenAIApiUrl, UriKind.Absolute))
                         {
-                            var unloadRequest = new
-                            {
-                                model = modelDetail.Model,
-                                keep_alive = 0 // Indicate that the model should be unloaded
-                            };
+                            serviceResponse.Message = "A valid API URL is required.";
+                            _logger.LogWarning("API URL is invalid or not well-formed.");
 
-                            // Send the unload request
-                            var unloadContent = new StringContent(System.Text.Json.JsonSerializer.Serialize(unloadRequest), Encoding.UTF8, "application/json");
-                            var unloadResponse = await client.PostAsync($"{baseUri}/{OllamaApiRoutes.Generate}", unloadContent);
+                            // Exit early if API URL is invalid
+                            return serviceResponse;
+                        }
 
-                            if (!unloadResponse.IsSuccessStatusCode)
+                        // Prepare the message list: system prompt (optional) + user input
+                        var messageList = new List<Dictionary<string, string>>()
+                        {
+                            // The system prompt could be included if needed, for example:
+                            // new Dictionary<string, string> { { "role", "system" }, { "content", system_prompt } },
+
+                            // User message to be processed by the OpenAI model
+                            new Dictionary<string, string>
                             {
-                                _logger.LogWarning("Failed to unload model: {Model}", modelDetail.Model);
+                                { "role", "user" },
+                                { "content", prompt + " Please provide the response in JSON format only. " + System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema)}
                             }
-                            else
-                            {
-                                _logger.LogInformation("Successfully unloaded model: {Model}", modelDetail.Model);
-                            }
+                        };
+
+                        _logger.LogInformation("Prepared openai or gemini OutputFormatSchema: {ollamaOutputFormatSchema}", System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema));
+
+                        // Proceed to fetch chat completion from the OpenAI API
+                        llmResponse = await GetChatCompletionAsync(messageList, mappedModel, client, modelTemperature, ollamaOutputFormatSchema);
+
+                        // Process or log the response as needed
+                        if (string.IsNullOrEmpty(llmResponse))
+                        {
+                            serviceResponse.Message = "No response or error from OpenAI.";
+                            _logger.LogWarning("Received empty response from OpenAI.");
+
+                            return serviceResponse;
                         }
                     }
                     else
                     {
+
+                        client.DefaultRequestHeaders.Add("API_KEY", _extractViaLLMConfig.OllamaAPIKey);
+                        var baseUri = _extractViaLLMConfig.OllamaAPI; // Get the base URI for the API
+
+                        // Step 4: Get currently loaded models from the API
+                        var loadedModelsResponse = await client.GetAsync($"{baseUri}/{OllamaApiRoutes.GetLoadedModels}");
+                        if (!loadedModelsResponse.IsSuccessStatusCode)
+                        {
+                            // Log the full response details
+                            var responseContent = await loadedModelsResponse.Content.ReadAsStringAsync();
+                            _logger.LogWarning("Failed to get loaded models. StatusCode: {StatusCode}, Headers: {Headers}, Content: {ResponseContent}",
+                                loadedModelsResponse.StatusCode,
+                                loadedModelsResponse.Headers,
+                                responseContent);
+                            continue;
+                        }
+
+                        // Deserialize the list of loaded models from the response
+                        var loadedModels = System.Text.Json.JsonSerializer.Deserialize<OllamaModelResponse>(
+                            await loadedModelsResponse.Content.ReadAsStringAsync(), new JsonSerializerOptions
+                            {
+                                PropertyNameCaseInsensitive = true
+                            });
+
                         _logger.LogInformation($"Loaded models: '{string.Join(", ", loadedModels?.Models.Select(s => s.Model) ?? Enumerable.Empty<string>())}'");
-                    }
 
-                    // Step 5: Send the generation request to the model with the prompt and temperature
-                    object requestDto;
-                    if (ollamaOutputFormatSchema == null)
-                    {
-                        requestDto = new
+                        if (loadedModels != null && !loadedModels.Models.Any(s => s.Model != null && s.Model.Contains(mappedModel)))
                         {
-                            stream = false,
-                            prompt,
-                            //format = "json",
-                            model = mappedModel,
-                            options = new
+                            // No exact match found — proceed to unload all currently loaded models
+                            _logger.LogInformation($"No match found for model: '{mappedModel}'");
+
+                            // Unload any currently loaded models
+                            foreach (var modelDetail in loadedModels.Models)
                             {
-                                // seed = 1452692,
-                                temperature = modelTemperature
+                                var unloadRequest = new
+                                {
+                                    model = modelDetail.Model,
+                                    keep_alive = 0 // Indicate that the model should be unloaded
+                                };
+
+                                // Send the unload request
+                                var unloadContent = new StringContent(System.Text.Json.JsonSerializer.Serialize(unloadRequest), Encoding.UTF8, "application/json");
+                                var unloadResponse = await client.PostAsync($"{baseUri}/{OllamaApiRoutes.Generate}", unloadContent);
+
+                                if (!unloadResponse.IsSuccessStatusCode)
+                                {
+                                    _logger.LogWarning("Failed to unload model: {Model}", modelDetail.Model);
+                                }
+                                else
+                                {
+                                    _logger.LogInformation("Successfully unloaded model: {Model}", modelDetail.Model);
+                                }
                             }
-                        };
-                    }
-                    else
-                    {
-                        requestDto = new
+                        }
+                        else
                         {
-                            stream = false,
-                            prompt,
-                            format = ollamaOutputFormatSchema ?? "json",
-                            model = mappedModel,
-                            options = new
+                            _logger.LogInformation($"Loaded models: '{string.Join(", ", loadedModels?.Models.Select(s => s.Model) ?? Enumerable.Empty<string>())}'");
+                        }
+
+                        // Step 5: Send the generation request to the model with the prompt and temperature
+                        object requestDto;
+                        if (ollamaOutputFormatSchema == null)
+                        {
+                            requestDto = new
                             {
-                                // seed = 1452692,
-                                temperature = modelTemperature
-                            }
-                        };
+                                stream = false,
+                                prompt,
+                                //format = "json",
+                                model = mappedModel,
+                                options = new
+                                {
+                                    // seed = 1452692,
+                                    temperature = modelTemperature
+                                }
+                            };
+                        }
+                        else
+                        {
+                            requestDto = new
+                            {
+                                stream = false,
+                                prompt,
+                                format = ollamaOutputFormatSchema ?? "json",
+                                model = mappedModel,
+                                options = new
+                                {
+                                    // seed = 1452692,
+                                    temperature = modelTemperature
+                                }
+                            };
+                        }
+
+
+                        _logger.LogInformation("Prepared ollamaOutputFormatSchema: {ollamaOutputFormatSchema}", System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema));
+
+                        var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(requestDto), Encoding.UTF8, "application/json");
+                        _logger.LogInformation("Sending request to LLM model: {MappedModel}", mappedModel);
+
+                        // Step 6: Send POST request to generate the data from the LLM
+                        HttpResponseMessage response = await client.PostAsync($"{baseUri}/{OllamaApiRoutes.Generate}", content);
+
+                        // Step 7: Handle the response from the API
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            _logger.LogError("Failed to get a valid response from LLM model. Status Code: {statusCode}", response.StatusCode);
+                            continue;
+                        }
+
+                        // Parse the LLM API response
+                        var ollamaResponse = await response.Content.ReadAsStringAsync();
+
+                        // Step 8: Ensure the response contains the expected "response" field
+                        if (!ollamaResponse.Contains("response"))
+                        {
+                            _logger.LogWarning("LLM response is missing the 'response' field.");
+                            continue;
+                        }
+
+                        // Step 9: Process and clean the LLM-generated content
+                        using JsonDocument doc = JsonDocument.Parse(ollamaResponse);
+                        llmResponse = doc.RootElement.GetProperty("response").GetString() ?? string.Empty;
                     }
-
-
-                    _logger.LogInformation("Prepared request DTO for LLM model: {ollamaOutputFormatSchema}", System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema));
-
-                    var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(requestDto), Encoding.UTF8, "application/json");
-                    _logger.LogInformation("Sending request to LLM model: {MappedModel}", mappedModel);
-
-                    // Step 6: Send POST request to generate the data from the LLM
-                    HttpResponseMessage response = await client.PostAsync($"{baseUri}/{OllamaApiRoutes.Generate}", content);
-
-                    // Step 7: Handle the response from the API
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        _logger.LogError("Failed to get a valid response from LLM model. Status Code: {statusCode}", response.StatusCode);
-                        continue;
-                    }
-
-                    // Parse the LLM API response
-                    var ollamaResponse = await response.Content.ReadAsStringAsync();
-
-                    // Step 8: Ensure the response contains the expected "response" field
-                    if (!ollamaResponse.Contains("response"))
-                    {
-                        _logger.LogWarning("LLM response is missing the 'response' field.");
-                        continue;
-                    }
-
-                    // Step 9: Process and clean the LLM-generated content
-                    using JsonDocument doc = JsonDocument.Parse(ollamaResponse);
-                    llmResponse = doc.RootElement.GetProperty("response").GetString() ?? string.Empty;
 
                     _logger.LogInformation("Raw LLM response received: {llmResponse}", llmResponse);
 
@@ -277,6 +335,93 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         catch (Exception ex)
         {
             _logger.LogError("An error occurred while retrieving file text: {error}", ex.Message);
+            return string.Empty;
+        }
+    }
+
+    // Retrieves the chat completion from the OpenAI API based on the given list of messages and model.
+    public async Task<string> GetChatCompletionAsync(List<Dictionary<string, string>> messageList, string model, HttpClient client, double temperature, object? outputFormatSchema)
+    {
+        // Validate the input message list before proceeding
+        if (messageList == null || messageList.Count == 0)
+        {
+            _logger.LogWarning("The provided message list is empty.");
+            return "The message list is empty. Please provide valid input.";
+        }
+
+        try
+        {
+            // Log the start of the request
+            _logger.LogInformation("Starting request to OpenAI API...");
+
+            // Add Authorization header with the API key for authentication
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_openAIConfig.OpenAIApiKey}");
+
+            // Prepare the request body with necessary parameters (model, messages, etc.)
+            var requestBody = new
+            {
+                model = model, // Specify the model to use for the request (e.g., "gpt-4o-mini")
+                messages = messageList, // List of messages including user input and system prompts
+                temperature = temperature, // Controls the randomness of the output (0 to 1)
+                // response_format = outputFormatSchema != null ? new { type = "json_object" } : null, // Optional: Specify the response format (JSON object if defined)
+
+                // Optional parameters (commented out for now):
+                // max_tokens = 5000, // Max number of tokens to generate in the response
+                // top_p = 1.0f, // Nucleus sampling: the cumulative probability for token selection
+                // frequency_penalty = 0.0f, // Penalize new tokens based on their frequency in the text
+                // presence_penalty = 0.0f, // Penalize new tokens based on whether they appear in the text
+                // stop = new string[] { "\n" } // Optional: Stop sequence to end the response generation
+            };
+
+            _logger.LogInformation("Prepared request body for OpenAI API: {RequestBody}", JsonConvert.SerializeObject(requestBody));
+
+            // Serialize the request body to JSON format for the POST request
+            var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
+
+            // Send the POST request to the OpenAI API asynchronously
+            var apiResponse = await client.PostAsync(_openAIConfig.OpenAIApiUrl, content);
+
+            // Check if the response status code is successful (200 OK)
+            if (!apiResponse.IsSuccessStatusCode)
+            {
+                // If the response is not successful, log the error and return the status code
+                var errorResponse = await apiResponse.Content.ReadAsStringAsync();
+                _logger.LogError($"API request failed with status code {apiResponse.StatusCode}. Response: {errorResponse}");
+                return string.Empty;
+            }
+
+            // Read and process the response content from the OpenAI API
+            var responseString = await apiResponse.Content.ReadAsStringAsync();
+            // The response from the OpenAI API is usually in JSON format, so we first read it as a string.
+
+            using var jsonDoc = JsonDocument.Parse(responseString);
+            // Parse the response string into a JsonDocument for easier manipulation of JSON data.
+
+
+            // Extract the assistant's reply text from the parsed JSON
+            var completionText = jsonDoc.RootElement
+                .GetProperty("choices")[0]
+                .GetProperty("message")
+                .GetProperty("content")
+                .GetString();
+
+            // If the content is empty or null, log and return an appropriate message
+            if (string.IsNullOrEmpty(completionText))
+            {
+                _logger.LogWarning("No valid response content received from OpenAI.");
+                return string.Empty;
+            }
+
+            // Log the successful completion of the request
+            _logger.LogInformation("Successfully received response from OpenAI.");
+
+            // Return the chat completion text
+            return completionText;
+        }
+        catch (Exception ex)
+        {
+            // Log any exceptions that occur during the process
+            _logger.LogError($"An error occurred while processing the OpenAI API request: {ex.Message}", ex);
             return string.Empty;
         }
     }
