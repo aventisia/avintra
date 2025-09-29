@@ -1,11 +1,11 @@
 namespace MLModelBuilderAPIs.MappingProfiles;
 
-public class UploadedDocMappingProfile : IRegister
+public class VersionResourceMappingProfile : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
         // Mapping of DTO to get list of uploaded docs to show on the UI.
-        config.NewConfig<UploadedDoc, UploadedDocDto>()
+        config.NewConfig<VersionResource, VersionResourceDto>()
         .Map(dest => dest.CreatedBy,
             src => src.CreatedByUser != null
             ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
@@ -15,7 +15,7 @@ public class UploadedDocMappingProfile : IRegister
             : null);
 
         //Mapping entity to insert or update the record
-        config.NewConfig<UploadedDocDto, UploadedDoc>()
+        config.NewConfig<VersionResourceDto, VersionResource>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedByUserId)
             .Ignore(dest => dest.LastModifiedByUserId)
@@ -23,7 +23,7 @@ public class UploadedDocMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
         //Mapping entity to insert or update the record
-        config.NewConfig<FileDetailDto, UploadedDoc>()
+        config.NewConfig<FileDetailDto, VersionResource>()
             .IgnoreNullValues(true);
 
     }

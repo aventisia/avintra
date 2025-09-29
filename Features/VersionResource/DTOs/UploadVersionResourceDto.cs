@@ -1,6 +1,6 @@
 namespace MLModelBuilderAPIs.DTOs;
 
-public class UploadDataDto
+public class UploadVersionResourceDto
 {
     /// <summary>
     /// List of files to be uploaded.
@@ -23,7 +23,7 @@ public class UploadDataDto
     public DocumentPurposeTypesEnum Purpose { get; set; }
 
     /// <summary>
-    /// Gets or sets the ML model record's primary key to which this record is associated.
-    /// </summary>/
-    public Guid MLModelId { get; set; }
+    /// Gets or sets the AI project version record's primary key to which this record is associated.
+    /// </summary>
+    public Guid AIProjectVersionId { get; set; }
 }

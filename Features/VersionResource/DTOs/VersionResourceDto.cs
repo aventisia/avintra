@@ -1,8 +1,7 @@
 namespace MLModelBuilderAPIs.DTOs;
 
-public class UploadedDocDto
+public class VersionResourceDto
 {
-
     /// <summary>
     /// Gets or sets the primary key for the Uploaded doc.
     /// </summary>
@@ -40,9 +39,9 @@ public class UploadedDocDto
     public DocumentStageTypesEnum Stage { get; set; }
 
     /// <summary>
-    /// Gets or sets the ML model record's primary key to which this record is associated.
-    /// </summary>/
-    public Guid MLModelId { get; set; }
+    /// Gets or sets the AI project version record's primary key to which this record is associated.
+    /// </summary>
+    public Guid AIProjectVersionId { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the user who created the record.
