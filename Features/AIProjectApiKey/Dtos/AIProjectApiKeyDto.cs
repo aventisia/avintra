@@ -1,9 +1,9 @@
 namespace MLModelBuilderAPIs.DTOs;
 
 /// <summary>
-/// Represents the data structure for an API key associated with a machine learning model.
+/// Represents the data structure for an API key associated with a AI project.
 /// </summary>
-public class ModelAPIKeyDto
+public class AIProjectApiKeyDto
 {
     /// <summary>
     /// Gets or sets the unique identifier for the API key record.
@@ -11,7 +11,7 @@ public class ModelAPIKeyDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the API key used to access the associated ML model.
+    /// Gets or sets the API key used to access the associated AI project.
     /// </summary>
     [StringLength(256)]
     public string ApiKey { get; set; } = string.Empty;
@@ -27,9 +27,9 @@ public class ModelAPIKeyDto
     /// </summary>
     public string? Description { get; set; }
     /// <summary>
-    /// Gets or sets the type of ML model.
+    /// Gets or sets the type of AI project.
     /// </summary>
-    public ModelTypesEnum? Type { get; set; }
+    public AIProjectTypeEnum? Type { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier of the machine learning model linked to this API key.
