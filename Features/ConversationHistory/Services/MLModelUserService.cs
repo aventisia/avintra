@@ -34,10 +34,10 @@ public class ConversationHistoryService : IConversationHistoryService
             // Fetch conversation history entries linked to the given ML model Id
             var conversationHistories = await _unitOfWork.ConversationHistoryRepo
                 .GetByConditionAsync(w =>
-                    w.MLModelId == mlModelId &&
+                    w.AIProjectId == mlModelId &&
                     (!conversationId.HasValue || w.ConversationId == conversationId)
                 )
-                .Include(i => i.MLModel)
+                .Include(i => i.AIProject)
                 .ProjectToType<ConversationHistoryDto>()
                 .ToListAsync();
 
@@ -76,7 +76,7 @@ public class ConversationHistoryService : IConversationHistoryService
                 .GetByConditionAsync(w =>
                     w.Id == conversationHistoryId
                 )
-                .Include(i => i.MLModel)
+                .Include(i => i.AIProject)
                 .SingleOrDefaultAsync();
 
             // If not found, log and return default response
@@ -139,7 +139,7 @@ public class ConversationHistoryService : IConversationHistoryService
             serviceResponse.Message = "Conversation history added successfully";
 
             // Log the successful addition
-            _logger.LogInformation($"Conversation history for ML model {newConversationHistory.MLModelId} added successfully.");
+            _logger.LogInformation($"Conversation history for ML model {newConversationHistory.AIProjectId} added successfully.");
         }
         catch (Exception ex)
         {
