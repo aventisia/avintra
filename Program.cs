@@ -109,7 +109,6 @@ app.UseMiddleware<TenantResolver>();
 
 app.MapControllers();
 
-app.MapHub<ExtractHub>("/extract-hub");
 app.MapHub<ChatHub>("/chatHub");
 
 app.Run();
