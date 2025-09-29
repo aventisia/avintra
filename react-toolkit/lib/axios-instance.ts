@@ -45,7 +45,7 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   async (response) => {
     // Artificial delay for development
-    if (import.meta.env.DEV) await sleep(import.meta.env.VITE_ARTIFICIAL_DELAY);
+    if (import.meta.env.DEV) await sleep(0);
 
     return response;
   },
