@@ -1,3 +1,5 @@
+import { Badge } from "@aventisia/ui/badge";
+
 import { PlanUsageDto } from "@/features/tenant/dtos/current-plan-dto";
 import { Progress } from "@/features/tenant/shared/Progress";
 
@@ -15,7 +17,17 @@ interface UsageItemProps {
 const UsageItem = ({ name, used, limit, unit }: UsageItemProps) => (
   <div className="space-y-1">
     <div className="flex items-center justify-between text-sm">
-      <p>{name}</p>
+      <p className="flex items-center">
+        {name}{" "}
+        {name == "Spaces" && (
+          <Badge
+            variant={"outline"}
+            className="ml-1 bg-slate-100 text-2xs font-normal"
+          >
+            Coming soon
+          </Badge>
+        )}
+      </p>
       <p className="font-light">
         {used} of {limit} {unit && unit}
       </p>
@@ -27,8 +39,9 @@ const UsageItem = ({ name, used, limit, unit }: UsageItemProps) => (
 const UsageDetails = ({ planUsage }: UsageDetailsProps) => {
   // Default values in case `planUsage` is undefined or empty
   const defaultUsage = [
-    { resourceName: "PublishedItems", used: 0, limit: 50, unit: "" },
-    { resourceName: "Storage", used: 0, limit: 500, unit: "MB" },
+    { resourceName: "PublishedItems", used: 0, limit: 1, unit: "" },
+    { resourceName: "Storage", used: 0, limit: 1, unit: "MB" },
+    { resourceName: "Spaces", used: 0, limit: 1, unit: "" },
   ];
 
   // Use planUsage if available, otherwise fallback to defaultUsage
@@ -41,7 +54,7 @@ const UsageDetails = ({ planUsage }: UsageDetailsProps) => {
         {/* Dynamically render usage items */}
         {usageData.map((item, index) => {
           // Skip the "Spaces" resource if it's not needed
-          if (item.resourceName === "Spaces") return null;
+          // if (item.resourceName === "Spaces") return null;
 
           return (
             <UsageItem
