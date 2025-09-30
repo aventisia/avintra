@@ -507,8 +507,8 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Credits")
-                        .HasColumnType("integer");
+                    b.Property<double>("Credits")
+                        .HasColumnType("double precision");
 
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
@@ -519,8 +519,8 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("OneUnit")
-                        .HasColumnType("integer");
+                    b.Property<double>("OneUnit")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("ServiceType")
                         .IsRequired()
@@ -551,8 +551,8 @@ namespace AccountsAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("CreditsUsed")
-                        .HasColumnType("integer");
+                    b.Property<double>("CreditsUsed")
+                        .HasColumnType("double precision");
 
                     b.Property<Guid?>("RefId")
                         .HasColumnType("uuid");
@@ -570,8 +570,8 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("UnitUsed")
-                        .HasColumnType("integer");
+                    b.Property<double>("UnitUsed")
+                        .HasColumnType("double precision");
 
                     b.Property<DateTimeOffset>("UsedAt")
                         .HasColumnType("timestamp with time zone");
@@ -1142,8 +1142,8 @@ namespace AccountsAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("AvailableCredits")
-                        .HasColumnType("numeric");
+                    b.Property<double>("AvailableCredits")
+                        .HasColumnType("double precision");
 
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
