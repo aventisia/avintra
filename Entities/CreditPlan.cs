@@ -19,10 +19,10 @@ public class CreditPlan : BaseEntity
     /// <summary>
     /// Gets or sets how much usage is in one unit, like 30 seconds or 1000 tokens.
     /// </summary>
-    public int OneUnit { get; set; }
+    public double OneUnit { get; set; }
 
     /// <summary>
     /// Gets or sets how many credits are used for each unit.
     /// </summary>
-    public int Credits { get; set; }
+    public double Credits { get; set; }
 }

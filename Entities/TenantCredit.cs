@@ -13,7 +13,7 @@ public class TenantCredit : BaseEntity
     /// <summary>
     /// Gets or sets the amount of credit available to the tenant for the specified subscription period.
     /// </summary>
-    public decimal AvailableCredits { get; set; }
+    public double AvailableCredits { get; set; }
 
     /// <summary>
     /// Gets or sets the date when the credit was issued or applied to the tenant's account.

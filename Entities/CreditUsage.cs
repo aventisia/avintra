@@ -30,12 +30,12 @@ public class CreditUsage : IMustHaveTenant
     /// <summary>
     /// Gets or sets the number of credits that were consumed.
     /// </summary>
-    public int CreditsUsed { get; set; }
+    public double CreditsUsed { get; set; }
 
     /// <summary>
     /// Gets or sets how much usage is in one unit, like 30 seconds or 1000 tokens.
     /// </summary>
-    public int UnitUsed { get; set; }
+    public double UnitUsed { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the entity or operation the credits were used for (e.g., Agent, Model).
