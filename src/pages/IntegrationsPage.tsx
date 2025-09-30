@@ -1,4 +1,5 @@
 import { DataTableSkeleton } from "@aventisia/ui/data-table";
+import { NotFoundPage } from "@aventisia/ui/layout";
 import { lazy, Suspense } from "react";
 
 // Lazy load the Integrations component.
@@ -15,6 +16,10 @@ const AppIntegrationsComponent = lazy(() =>
  * @returns JSX element representing the LicensesPage component.
  */
 export const AppIntegrationsPage = () => {
+  if (import.meta.env.MODE === "production") {
+    return <NotFoundPage />;
+  }
+
   return (
     <Suspense fallback={<DataTableSkeleton />}>
       <AppIntegrationsComponent />
