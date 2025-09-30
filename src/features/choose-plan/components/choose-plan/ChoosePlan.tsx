@@ -15,7 +15,7 @@ const PLAN_INTERVALS = ["monthly", "yearly"] as const;
 export const ChoosePlan = () => {
   useDocumentTitle("Choose Plan");
 
-  const { data, isLoading } = useFetchSubscriptionPlans();
+  const { data, isLoading } = useFetchSubscriptionPlans("Pro");
 
   const { planType, setPlanType } = useChoosePlanStore(
     useShallow((state) => ({
