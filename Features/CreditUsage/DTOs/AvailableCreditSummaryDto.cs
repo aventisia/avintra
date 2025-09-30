@@ -9,7 +9,7 @@ namespace AccountsAPIs.DTOs
         /// <summary>
         /// Gets or sets the total available credits.
         /// </summary>
-        public decimal AvailableCredits { get; set; }
+        public double AvailableCredits { get; set; }
     }
 
     /// <summary>
@@ -21,7 +21,7 @@ namespace AccountsAPIs.DTOs
         /// <summary>
         /// Gets or sets the total available credits.
         /// </summary>
-        public decimal AvailableCredits { get; set; }
+        public double AvailableCredits { get; set; }
 
         /// <summary>
         /// Gets or sets the list of monthly credit details for each month.
@@ -38,7 +38,7 @@ namespace AccountsAPIs.DTOs
         /// <summary>
         /// Gets or sets the available credits for that specific month.
         /// </summary>
-        public decimal AvailableCredits { get; set; }
+        public double AvailableCredits { get; set; }
 
         /// <summary>
         /// Gets or sets the current status of the credit (e.g., available, used, or expired).

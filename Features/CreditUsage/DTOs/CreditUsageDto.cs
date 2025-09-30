@@ -13,7 +13,7 @@ public class CreditsUsageDto
     /// <summary>
     /// Gets or sets the number of unit consumed for the specified service. 
     /// </summary>
-    public int ConsumedUnit { get; set; }
+    public double ConsumedUnit { get; set; }
 
     /// <summary>
     /// Gets or sets the type of reference entity or operation where the credits were applied (e.g., Agent, AI Model).
@@ -86,7 +86,7 @@ public class UsageSummaryDto
     /// <summary>
     /// Gets or sets the total number of credits consumed in the selected period.
     /// </summary>
-    public int TotalCredits { get; set; }
+    public double TotalCredits { get; set; }
 
     /// <summary>
     /// Gets or sets the total number of transactions consumed in the selected period.
@@ -107,7 +107,7 @@ public class DataUsageDataPointDto
     /// <summary>
     /// Gets or sets the total number of credits used on the specified date.
     /// </summary>
-    public int TotalCredits { get; set; }
+    public double TotalCredits { get; set; }
 
     /// <summary>
     /// Gets or sets the total number of transactions used on the specified date.
@@ -133,17 +133,17 @@ public class ResourceUsageDetailDto
     /// <summary>
     /// Gets or sets how much usage is in one unit, like 30 seconds or 1000 tokens.
     /// </summary>
-    public int OneUnit { get; set; }
+    public double OneUnit { get; set; }
 
     /// <summary>
     /// Gets or sets how many credits are used for each unit.
     /// </summary>
-    public int Credits { get; set; }
+    public double Credits { get; set; }
 
     /// <summary>
     /// Gets or sets how many credits are used by the service.
     /// </summary>
-    public int TotalCredits { get; set; }
+    public double TotalCredits { get; set; }
 
     /// <summary>
     /// Gets or sets the total number of credits used by the service.
@@ -169,7 +169,7 @@ public class ResourceUsageDataPointDto
     /// <summary>
     /// Gets or sets the amount of the resource used at the given timestamp.
     /// </summary>
-    public int UsageValue { get; set; }
+    public double UsageValue { get; set; }
 }
 
 /// <summary>
@@ -200,7 +200,7 @@ public class UserUsageDto
     /// <summary>
     /// Gets or sets the total number of credits used by the user.
     /// </summary>
-    public int TotalCredits { get; set; }
+    public double TotalCredits { get; set; }
 }
 
 /// <summary>
@@ -221,7 +221,7 @@ public class AiModelUsageDto
     /// <summary>
     /// Gets or sets the total number of credits used by the user.
     /// </summary>
-    public int TotalCredits { get; set; }
+    public double TotalCredits { get; set; }
 }
 
 /// <summary>
@@ -242,5 +242,5 @@ public class AgentUsageDto
     /// <summary>
     /// Gets or sets the total number of credits used by the user.
     /// </summary>
-    public int TotalCredits { get; set; }
+    public double TotalCredits { get; set; }
 }

@@ -49,7 +49,7 @@ public class ExportCreditUsageResponseDto
     /// <summary>
     /// Gets or sets the total number of credits consumed.
     /// </summary>
-    public int CreditsUsed { get; set; }
+    public double CreditsUsed { get; set; }
 
     /// <summary>
     /// Gets or sets the timestamp when the credits were used.

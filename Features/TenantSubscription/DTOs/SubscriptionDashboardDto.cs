@@ -44,7 +44,7 @@ public class CurrentSubscriptionPlanDto
     /// <summary>
     /// Gets or sets the number of available credits.
     /// </summary>
-    public decimal AvailableCredits { get; set; }
+    public double AvailableCredits { get; set; }
 
     /// <summary>
     /// Gets or sets a feature included in the current plan.
