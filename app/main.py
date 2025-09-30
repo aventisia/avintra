@@ -12,6 +12,7 @@ from app.dependencies.auth import authenticate_current_user
 from app.qdrant.service import initialize_qdrant_collections
 from app.models.user import User
 from app.features.elevenlabs_tts.elevenlabs_tts_routes import router as elevenlabs_tts_router
+from app.features.llm_providers.llm_providers_routes import router as llm_router
 
 # Initialize the FastAPI application
 app = FastAPI(root_path="/api")
@@ -26,6 +27,7 @@ app.include_router(kokoro_tts_router, tags=["Kokoro TTS"])
 app.include_router(ai_model_document_router, tags=["AI Model Documents"])
 app.include_router(websocket_router, tags=["WebSockets"])
 app.include_router(elevenlabs_tts_router, tags=["Elevenlabs TTS"])
+app.include_router(llm_router, tags=["LLM Providers"])
 
 app.add_middleware(
     CORSMiddleware,
