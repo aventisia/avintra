@@ -25,7 +25,7 @@ const UpgradePlanDialog = () => {
               className={buttonVariants({ variant: "ghost", size: "icon8" })}
               onClick={() => {
                 setTimeout(() => {
-                  setChosenPlan("");
+                  setChosenPlan(null);
                 }, 0);
               }}
             >
