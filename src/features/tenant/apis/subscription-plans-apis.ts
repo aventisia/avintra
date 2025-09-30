@@ -6,7 +6,7 @@ import { SubscriptionPlanDTO } from "../dtos/subscription-plans-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/subscription-plans`;
 
-export const getSubscriptionPlans = (type?: string) =>
+export const getSubscriptionPlans = (type?: string | null) =>
   axiosInstance
     .get<
       IHttpResponse<SubscriptionPlanDTO[]>
