@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Optional, Literal
 
 class LLMRequest(BaseModel):
-    provider: Literal['openai']
+    provider: Literal['openai','ollama']
     model: str
     input: str # User input or prompt for the LLM
     instructions: Optional[str] = None # System-level instructions for the LLM
@@ -16,7 +16,7 @@ class LLMRequest(BaseModel):
     stream: Optional[bool] = False
 
 class LLMResponse(BaseModel):
-    provider: Literal['openai']
+    provider: Literal['openai','ollama']
     model: str
     output: str
     temperature: float = 1.0
