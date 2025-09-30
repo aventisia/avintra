@@ -62,9 +62,9 @@ const ChoosePlanOptions = () => {
             </ul>
 
             <Button
-              className="mt-12 w-full self-end text-md"
+              className="mt-4 w-full self-end text-md"
               size={"lg"}
-              onClick={() => setChosenPlan("enterprise")}
+              onClick={() => setChosenPlan("Enterprise")}
             >
               Choose Plan
             </Button>
@@ -122,9 +122,9 @@ const ChoosePlanOptions = () => {
             </ul>
 
             <Button
-              className="mt-12 w-full self-end text-md"
+              className="w-full self-end text-md"
               size={"lg"}
-              onClick={() => setChosenPlan("pro")}
+              onClick={() => setChosenPlan("Pro")}
             >
               Choose Plan
             </Button>

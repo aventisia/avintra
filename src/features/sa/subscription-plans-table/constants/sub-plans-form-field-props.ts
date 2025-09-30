@@ -76,7 +76,7 @@ const maxUsersProps: InputFieldProps = {
 // Yearly Charge
 const yearlyPriceProps: InputFieldProps = {
   name: "yearlyPrice",
-  label: "Yearly Charge",
+  label: "Yearly Charge (per Month)",
   isRequired: true,
 };
 // Monthly Charge
