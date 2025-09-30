@@ -529,7 +529,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             }
 
             // Fetch the available tenant credits for the current user, considering expiry and availability constraints
-            var availableCredits = await _unitOfWork.TenantCreditRepo
+            double availableCredits = await _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
                     (isNonDefaultTenant || w.CreatedByUserId == _userId) &&

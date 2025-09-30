@@ -253,7 +253,7 @@ public class CreditUsageService : ICreditUsageService
 
             // Calculate how many credits are needed based on the consumed units
             TenantCredit? tenantAvailableCredit = null;
-            int creditUsed = (int)Math.Ceiling((decimal)creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit) * existingCreditPlan.Credits;
+            double creditUsed = (int)Math.Ceiling(creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit) * existingCreditPlan.Credits;
 
             // Attempt to find the first available credit that has enough available credits to cover the usage
             tenantAvailableCredit = await availableCredits.FirstOrDefaultAsync(w => w.AvailableCredits >= creditUsed);
@@ -404,7 +404,7 @@ public class CreditUsageService : ICreditUsageService
             {
                 // Calculate how many credits are needed based on the consumed units
                 var creditPlan = existingCreditPlans.First(p => p.ServiceType == creditUsageDto.ServiceType);
-                int creditUsed = (int)Math.Ceiling((decimal)creditUsageDto.ConsumedUnit / creditPlan.OneUnit) * creditPlan.Credits;
+                double creditUsed = (int)Math.Ceiling(creditUsageDto.ConsumedUnit / creditPlan.OneUnit) * creditPlan.Credits;
 
                 // Attempt to find the first available credit that has enough available credits to cover the usage
                 var tenantAvailableCredit = availableCredits.FirstOrDefault(w => w.AvailableCredits >= creditUsed);
