@@ -1,5 +1,3 @@
-// src/hooks/useFileUpload.ts
-
 import { useState } from "react";
 import { toast } from "@aventisia/ui/sonner";
 import { deepParse } from "@/features/react-flow/utils/deepParse";
@@ -8,8 +6,21 @@ import { useImportStore } from "../stores/import-flow-store";
 import { useShallow } from "zustand/react/shallow";
 
 /**
+ * Type definitions for the imported JSON structure
+ */
+type ReactFlowObject = {
+  nodes: unknown[];
+  edges: unknown[];
+  viewport: unknown;
+};
+
+type ImportFileObject = {
+  reactFlowObject: ReactFlowObject;
+  flowVariablesObject: unknown[];
+};
+
+/**
  * Custom hook to handle file upload, validation, and data parsing.
- * This hook is responsible for reading and validating the uploaded JSON file.
  */
 export const useFileUpload = () => {
   // Local state to store the uploaded data as a string
@@ -53,21 +64,29 @@ export const useFileUpload = () => {
       try {
         // Parse the file content and validate it
         const content = e.target?.result as string;
-        const parsed = deepParse(content) || {};
-        const isValid = REQUIRED_JSON_KEYS.every((key: string) =>
-          Object.prototype.hasOwnProperty.call(parsed, key),
+        const parsed: ImportFileObject =
+          (deepParse(content) as unknown as ImportFileObject) || {};
+
+        // Check for reactFlowObject and validate its keys
+        const isValid = REQUIRED_JSON_KEYS.every((key) =>
+          Object.prototype.hasOwnProperty.call(parsed.reactFlowObject, key),
         );
+
+        // Validate if flowVariablesObject exists and is an array
+        if (!Array.isArray(parsed.flowVariablesObject)) {
+          toast.error("Invalid flow variables object (must be an array)");
+          return;
+        }
 
         // If the parsed data is not valid, show an error
         if (!isValid) {
           toast.error("Please upload valid data");
+          return;
         }
 
-        // If the file is valid, set the uploaded data and show the dialog
-        if (isValid) {
-          setUploadedData(content);
-          setShowDialog(true);
-        }
+        // If valid, set the uploaded data and show the dialog
+        setUploadedData(content);
+        setShowDialog(true);
       } catch (err) {
         // Show error if there was an issue parsing the content
         toast.error("Error parsing file content");
