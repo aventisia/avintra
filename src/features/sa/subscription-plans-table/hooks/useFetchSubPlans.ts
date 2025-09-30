@@ -10,17 +10,43 @@ import { PLANS_QUERY_KEY } from "../constants";
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchSubPlans = () => {
-  // Get plans using react query
-  const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: PLANS_QUERY_KEY,
-    queryFn: () => getSubPlans(),
+  // Get Pro plans using react query
+  const {
+    data: proPlanData,
+    isLoading: isProLoading,
+    isError: isProError,
+    error: proError,
+  } = useQuery({
+    queryKey: [...PLANS_QUERY_KEY, "Pro"],
+    queryFn: () => getSubPlans("Pro"),
+  });
+
+  // Get Enterprise plans using react query
+  const {
+    data: enterprisePlanData,
+    isLoading: isEnterpriseLoading,
+    isError: isEnterpriseError,
+    error: enterpriseError,
+  } = useQuery({
+    queryKey: [...PLANS_QUERY_KEY, "Enterprise"],
+    queryFn: () => getSubPlans("Enterprise"),
   });
 
   // Show toast on fetch error
   useEffect(() => {
-    if (isError) toast.error(error.toString());
-  }, [error, isError]);
+    if (isProError) toast.error(proError.toString());
+    if (isEnterpriseError) toast.error(enterpriseError.toString());
+  }, [enterpriseError, isEnterpriseError, isProError, proError]);
 
-  // Return isFetching and isLoading flag
-  return { data, isFetching, isLoading };
+  // Combine both plans data, make sure to handle undefined
+  const data = [
+    ...(proPlanData?.data || []),
+    ...(enterprisePlanData?.data || []),
+  ];
+
+  // Combine loading state (both must be false for isLoading to be false)
+  const isLoading = isProLoading || isEnterpriseLoading;
+
+  // Return combined data and isLoading flag
+  return { data: data, isLoading };
 };

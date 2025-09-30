@@ -95,7 +95,11 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {displayValue(row.getValue("maxCredits"))}
+        {displayValue(
+          Number(row.getValue("maxCredits")) > 9999999
+            ? -1
+            : row.getValue("maxCredits"),
+        )}
       </div>
     ),
   },

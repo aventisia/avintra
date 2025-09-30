@@ -14,9 +14,9 @@ const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/subscriptio
 /**
  * Retrieves all subPlans created by user
  */
-const getSubPlans = () => {
+const getSubPlans = (type: string) => {
   return axiosInstance
-    .get<IHttpResponse<SubPlansTableDto[]>>(`${baseAPIURL}/list?type=Pro`)
+    .get<IHttpResponse<SubPlansTableDto[]>>(`${baseAPIURL}/list?type=${type}`)
     .then((res) => res.data);
 };
 

@@ -79,7 +79,12 @@ export const CreditPlansCrudForm = () => {
             value={field.value ?? ""}
             label="One Unit"
             type="number"
-            onChange={(e) => field.onChange(Number(e.target.value))}
+            step="any"
+            onChange={(e) => {
+              // Handle both integer and float values
+              const value = parseFloat(e.target.value);
+              field.onChange(isNaN(value) ? 0 : value); // Default to 0 if NaN
+            }}
             onBlur={field.onBlur}
             name={field.name}
             isRequired={true}
@@ -97,7 +102,12 @@ export const CreditPlansCrudForm = () => {
             value={field.value ?? ""}
             label="Credits"
             type="number"
-            onChange={(e) => field.onChange(Number(e.target.value))}
+            step="any"
+            onChange={(e) => {
+              // Handle both integer and float values
+              const value = parseFloat(e.target.value);
+              field.onChange(isNaN(value) ? 0 : value); // Default to 0 if NaN
+            }}
             onBlur={field.onBlur}
             name={field.name}
             isRequired={true}
