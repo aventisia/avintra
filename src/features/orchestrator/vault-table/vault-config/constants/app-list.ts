@@ -4,6 +4,7 @@ export const appList = [
   { label: "Twilio API", value: "TwilioApi" },
   { label: "SendGrid API", value: "SendGridApi" },
   { label: "GitHub API", value: "GitHubApi" },
+  { label: "General Credentials", value: "GeneralCredentials" },
   // { label: "Google Gemini(PaLM)", value: "googleGemini" },
   // { label: "Microsoft Excel OAuth2 API", value: "microsoftExcel" },
   // { label: "Salesforce OAuth2 API", value: "salesforceOAuth2API" },

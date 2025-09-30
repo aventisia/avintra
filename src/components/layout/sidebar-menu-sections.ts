@@ -202,12 +202,17 @@ function getSidebarMenuBasedOnPersmissions(
           item.permissions.some((role: string) => userRoles.includes(role)),
       );
 
+      const productionMenuItems = filteredMenuItems.filter(
+        (item) =>
+          item.name !== "integrations" || import.meta.env.MODE !== "production",
+      );
+
       // Only return the section if it has at least one visible menu item
-      if (filteredMenuItems.length === 0) return null;
+      if (productionMenuItems.length === 0) return null;
 
       return {
         ...section,
-        menuItems: filteredMenuItems,
+        menuItems: productionMenuItems,
       };
     })
     .filter((section): section is SidebarMenuSectionType => section !== null); // Remove null sections with type guard
