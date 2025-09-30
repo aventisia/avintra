@@ -50,7 +50,7 @@ export const SubPlansTable = () => {
   // Create a React table for plans data
   const table = useDataTable(
     subPlansTableColumns,
-    data || [],
+    data?.data || [],
     columnVisibility,
     sortState,
     true,
