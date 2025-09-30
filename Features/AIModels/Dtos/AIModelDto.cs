@@ -3,7 +3,7 @@ namespace MLModelBuilderAPIs.DTOs;
 public class AIModelDto
 {
     /// <summary>
-    /// Gets or sets the primary key for the AI model.
+    /// Gets or sets the primary key for the AI project version.
     /// </summary>
     public Guid Id { get; set; }
 
@@ -16,7 +16,7 @@ public class AIModelDto
     /// <summary>
     /// Gets or sets the type of AI model.
     /// </summary>
-    public ModelTypesEnum Type { get; set; }
+    public AIProjectTypeEnum Type { get; set; }
 
     /// <summary>
     /// Gets or sets the type of LLM.

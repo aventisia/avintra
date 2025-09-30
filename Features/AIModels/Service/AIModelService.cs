@@ -20,47 +20,52 @@ public class AIModelService : IAIModelService
         _apiKey = GetApiKeyOfRequestUtil.GetApiKeyOfRequest(httpContextAccessor.HttpContext);
     }
 
-    // Retrieves a list of published ai models.
+    // Retrieves a list of published AI project versions (AI models).
     public async Task<ServiceResponse<IEnumerable<AIModelDto>>> GetAIModelsAsync()
     {
-        var response = new ServiceResponse<IEnumerable<AIModelDto>>
+        // Initialize the response with a default failure message
+        var serviceResponse = new ServiceResponse<IEnumerable<AIModelDto>>
         {
             Data = null,
-            Message = "Failed to retrieve ai models. Please try again later.",
+            Message = "Failed to retrieve AI models. Please try again later.",
         };
 
         try
         {
-            _logger.LogDebug("Querying the repository for published ai models...");
-            var models = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w =>
-                    w.IsPublished
-                )
+            _logger.LogDebug("Fetching all published AI models from the repository...");
+
+            // Query the repository for published AI project versions with related entities
+            var aiProjectVersions = await _unitOfWork.AIProjectVersionRepo
+                .GetByConditionAsync(w => w.IsPublished)
                 .Include(i => i.Tasks)
-                .Include(i => i.Users)
+                .Include(i => i.AIProject)
+                .Include(i => i.CreatedByUser)
                 .ProjectToType<AIModelDto>()
                 .ToListAsync();
 
-            _logger.LogDebug("Query completed. {Count} models found.", models.Count);
+            _logger.LogDebug("Repository query successful. Found {Count} published AI models.", aiProjectVersions.Count);
 
-            response.Data = models;
-            response.StatusCode = 200;
-            response.Message = "AI models retrieved successfully.";
+            // Populate the service response with retrieved data
+            serviceResponse.Data = aiProjectVersions;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "AI models retrieved successfully.";
 
-            _logger.LogInformation("Successfully retrieved {Count} ai models", models.Count);
+            _logger.LogInformation("Successfully retrieved {Count} published AI models.", aiProjectVersions.Count);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving ai models.");
+            // Log any errors that occur during data retrieval
+            _logger.LogError(ex, "Error occurred while retrieving published AI models.");
         }
 
-        return response;
+        return serviceResponse;
     }
 
-    // Retrieves a list of published ai models.
+    // Searches for published AI models that match the given search key.
     public async Task<ServiceResponse<IEnumerable<AIModelDto>>> SearchAIModelsAsync(string searchKey)
     {
-        var response = new ServiceResponse<IEnumerable<AIModelDto>>
+        // Initialize the service response with a default failure message
+        var serviceResponse = new ServiceResponse<IEnumerable<AIModelDto>>
         {
             Data = null,
             Message = "Failed to search for AI models. Please try again later.",
@@ -68,38 +73,42 @@ public class AIModelService : IAIModelService
 
         try
         {
-            _logger.LogDebug("Starting search for AI models based on the provided search key...");
+            _logger.LogDebug("Initiating search for published AI models with search key: {SearchKey}", searchKey);
 
-            var models = await _unitOfWork.MLModelRepo
+            // Query the repository for published AI project versions whose names match the search key
+            var aiProjectVersions = await _unitOfWork.AIProjectVersionRepo
                 .GetByConditionAsync(w =>
                     w.IsPublished &&
-                    w.Name.ToLower().Contains(searchKey.ToLower())
+                    w.AIProject.Name.ToLower().Contains(searchKey.ToLower())
                 )
+                .Include(i => i.AIProject)
                 .Include(i => i.Tasks)
-                .Include(i => i.Users)
+                .Include(i => i.CreatedByUser)
                 .ProjectToType<AIModelDto>()
                 .ToListAsync();
 
-            _logger.LogDebug("Search completed. Found {Count} AI models matching the search criteria.", models.Count);
+            _logger.LogDebug("Search completed. Found {Count} matching AI models.", aiProjectVersions.Count);
 
-            response.Data = models;
-            response.StatusCode = 200;
-            response.Message = "AI models retrieved successfully.";
+            // Populate the service response with the results
+            serviceResponse.Data = aiProjectVersions;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "AI models retrieved successfully.";
 
-            _logger.LogInformation("Successfully retrieved {Count} AI models.", models.Count);
+            _logger.LogInformation("Successfully retrieved {Count} AI models matching the search key.", aiProjectVersions.Count);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while searching for AI models.");
+            // Log the exception details for troubleshooting
+            _logger.LogError(ex, "An error occurred during the AI model search process.");
         }
 
-        return response;
+        return serviceResponse;
     }
 
-    // Fetches the setup details of a specific AI model using its ID.
-    public async Task<ServiceResponse<object>> GetAIModelSetupByIdAsync(Guid mlModelId)
+    // Retrieves the setup details of a specific AI project version by its ID.
+    public async Task<ServiceResponse<object>> GetAIModelSetupByIdAsync(Guid aiProjectVersionId)
     {
-        // Initialize the response object with a default failure message.
+        // Initialize the response with a default failure message
         var serviceResponse = new ServiceResponse<object>
         {
             Data = null,
@@ -108,84 +117,72 @@ public class AIModelService : IAIModelService
 
         try
         {
-            // Log the debug message about retrieving the model setup for the given ID.
-            _logger.LogDebug("Retrieving AI model with ID {ModelId} from repository...", mlModelId);
+            _logger.LogDebug("Retrieving AI project version with ID: {AIProjectVersionId}", aiProjectVersionId);
 
-            // Fetch the ML model by its ID from the repository.
-            var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(m => m.Id == mlModelId)
+            // Fetch the AI project version including its parent project
+            var aiProjectVersion = await _unitOfWork.AIProjectVersionRepo
+                .GetByConditionAsync(m => m.Id == aiProjectVersionId)
+                .Include(i => i.AIProject)
                 .FirstOrDefaultAsync();
 
-            // If no model is found with the given ID, log a warning and return a response with a not found message.
-            if (mlModel == null)
+            // Handle case when project version is not found
+            if (aiProjectVersion == null)
             {
-                _logger.LogWarning("AI model with ID {ModelId} not found.", mlModelId);
-                serviceResponse.Message = "AI model not found.";
+                _logger.LogWarning("AI project version not found for ID: {AIProjectVersionId}", aiProjectVersionId);
+                serviceResponse.Message = "AI project version not found.";
                 return serviceResponse;
             }
 
-            // Log the successful retrieval of the model.
-            _logger.LogInformation("Found AI model with ID {ModelId}, Type: {ModelType}.", mlModelId, mlModel.Type);
+            _logger.LogInformation("AI project version found for ID: {AIProjectVersionId}", aiProjectVersionId);
 
-            // Initialize the setup data object to null.
             object? setupData = null;
 
-            // Handle different types of AI models and fetch the appropriate setup data.
-            switch (mlModel.Type)
+            // Determine the setup logic based on AI project type
+            switch (aiProjectVersion.AIProject.Type)
             {
-                case ModelTypesEnum.Inferencing:
-                    _logger.LogInformation("Fetching setup for Inferencing model...");
-                    setupData = new
-                    {
-                        Data = await _inferencingModelService.GetSetupByMLModelIdAsync(mlModelId)
-                    };
+                case AIProjectTypeEnum.Inferencing:
+                    _logger.LogInformation("Fetching setup for Inferencing project...");
+                    var inferencingSetupData = await _inferencingModelService.GetAIProjectSetupAsync(aiProjectVersion.AIProjectId, aiProjectVersionId);
+                    setupData = inferencingSetupData.Data;
                     break;
 
-                case ModelTypesEnum.Conversation:
-                    _logger.LogInformation("Fetching setup for Conversation model...");
-                    setupData = new
-                    {
-                        Data = await _inferencingModelService.GetSetupByMLModelIdAsync(mlModelId)
-                    };
-                    break;
+                // case AIProjectTypeEnum.Conversational:
+                //     _logger.LogInformation("Fetching setup for Conversation project...");
+                //     var conversationalSetupData = await _conversationModelService.GetSetupByMLModelIdAsync(aiProjectVersion.AIProjectId);
+                //     setupData = conversationalSetupData.Data;
+                //     break;
 
-                case ModelTypesEnum.Generative:
-                    _logger.LogInformation("Fetching setup for Generative model...");
-                    setupData = new
-                    {
-                        Data = await _inferencingModelService.GetSetupByMLModelIdAsync(mlModelId)
-                    };
-                    break;
+                // case AIProjectTypeEnum.Generative:
+                //     _logger.LogInformation("Fetching setup for Generative project...");
+                //     var generativeSetupData = await _generativeModelService.GetSetupByMLModelIdAsync(aiProjectVersion.AIProjectId);
+                //     setupData = generativeSetupData.Data;
+                //     break;
 
-                // If the model type is not recognized, log a warning and return a failure response.
                 default:
-                    _logger.LogWarning("Unhandled model type: {ModelType}", mlModel.Type);
-                    serviceResponse.Message = $"Unsupported model type: {mlModel.Type}";
+                    _logger.LogWarning("Unsupported AI project type: {ProjectType}", aiProjectVersion.AIProject.Type);
+                    serviceResponse.Message = $"Unsupported AI project type: {aiProjectVersion.AIProject.Type}";
                     return serviceResponse;
             }
 
-            // Set the setup data and successful status in the response.
+            // Populate success response
             serviceResponse.Data = setupData;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Successfully retrieved AI model setup.";
 
-            // Log that the setup retrieval was successful.
-            _logger.LogInformation("Successfully retrieved setup for model ID {ModelId}.", mlModelId);
+            _logger.LogInformation("Successfully retrieved setup for AI project version ID: {AIProjectVersionId}", aiProjectVersionId);
         }
-        catch (Exception ex) // Catch any exceptions that occur during the process
+        catch (Exception ex)
         {
-            // Log the error if an exception is thrown during the process of fetching the model setup.
-            _logger.LogError(ex, "Error occurred while fetching AI model setup for ID {ModelId}", mlModelId);
+            _logger.LogError(ex, "An error occurred while retrieving setup for AI project version ID: {AIProjectVersionId}", aiProjectVersionId);
         }
 
-        // Return the response, whether success or failure.
         return serviceResponse;
     }
 
     // Executes an AI model using LLM logic, based on the provided model content and configuration.
     public async Task<ServiceResponse<object>> ExecuteViaLLMAsync(ModelContentProcessingRequestDto requestDto)
     {
-        // Initialize the response object with a default failure message
+        // Initialize the response with a default failure message
         var serviceResponse = new ServiceResponse<object>
         {
             Data = null,
@@ -194,72 +191,56 @@ public class AIModelService : IAIModelService
 
         try
         {
-            // Log the beginning of the model retrieval process
-            _logger.LogDebug("Attempting to retrieve AI model with ID: {ModelId}", requestDto.ModelId);
+            _logger.LogDebug("Attempting to retrieve published AI model with ID: {ModelId}", requestDto.ModelId);
 
-            // Retrieve the published AI model including its associated API keys
-            var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(m => m.Id == requestDto.ModelId && m.IsPublished)
-                .Include(m => m.ModelAPIKeys)
+            // Retrieve the published AI project version along with its parent project
+            var aiProjectVersion = await _unitOfWork.AIProjectVersionRepo
+                .GetByConditionAsync(m => m.Id == requestDto.AIProjectVersionId && m.IsPublished)
+                .Include(i => i.AIProject)
                 .FirstOrDefaultAsync();
 
-            // Return a failure response if the model does not exist or is not published
-            if (mlModel == null)
+            if (aiProjectVersion == null)
             {
-                _logger.LogWarning("AI model not found for ID: {ModelId}", requestDto.ModelId);
+                _logger.LogWarning("AI model not found or not published. Model ID: {ModelId}", requestDto.ModelId);
                 serviceResponse.Message = "AI model not found.";
                 return serviceResponse;
             }
 
-            // Validate that the provided API key exists among the model's allowed API keys
-            var apiKeyEntry = mlModel.ModelAPIKeys.FirstOrDefault(k => k.ApiKey == _apiKey);
-            if (apiKeyEntry == null)
-            {
-                _logger.LogWarning("Unauthorized request with invalid API key for model ID: {ModelId}", requestDto.ModelId);
-                serviceResponse.Message = "Authorization failed. Invalid API key.";
-                return serviceResponse;
-            }
-
-            // Log the model type before processing
-            _logger.LogInformation("Executing model ID: {ModelId}, Type: {ModelType}", requestDto.ModelId, mlModel.Type);
+            _logger.LogInformation("Retrieved AI model. ID: {ModelId}, Type: {ModelType}", requestDto.ModelId, aiProjectVersion.AIProject.Type);
 
             object? resultData = null;
 
-            // Select appropriate execution logic based on the model's type
-            switch (mlModel.Type)
+            // Determine execution logic based on model type
+            switch (aiProjectVersion.AIProject.Type)
             {
-                case ModelTypesEnum.Inferencing:
-                    _logger.LogInformation("Starting execution of 'Inferencing' model...");
-
-                    // Execute the model via the inferencing service
+                case AIProjectTypeEnum.Inferencing:
+                    _logger.LogInformation("Executing Inferencing model...");
                     var result = await _inferencingModelService.ExecuteLLMByFileContentAsync(requestDto);
-
-                    // Store the resulting data
                     resultData = result.Data;
-
-                    _logger.LogInformation("Execution of 'Inferencing' model completed.");
+                    _logger.LogInformation("Inferencing model execution completed.");
                     break;
 
+                // Future types like Generative or Conversation can be added here
                 default:
-                    // Unsupported model types fall into the default case
-                    _logger.LogWarning("Unsupported model type: {ModelType} for model ID: {ModelId}", mlModel.Type, requestDto.ModelId);
-                    serviceResponse.Message = $"Model type '{mlModel.Type}' is not supported for execution.";
+                    _logger.LogWarning("Unsupported AI project type '{ProjectType}' for model ID: {ModelId}",
+                        aiProjectVersion.AIProject.Type, requestDto.ModelId);
+
+                    serviceResponse.Message = $"Model type '{aiProjectVersion.AIProject.Type}' is not supported for execution.";
                     return serviceResponse;
             }
 
-            // Populate a successful response with the result
+            // Populate the success response
             serviceResponse.Data = resultData;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "AI model executed successfully.";
-            _logger.LogInformation("Model execution completed successfully for model ID: {ModelId}", requestDto.ModelId);
+
+            _logger.LogInformation("Execution completed successfully for model ID: {ModelId}", requestDto.ModelId);
         }
         catch (Exception ex)
         {
-            // Catch and log any unexpected errors during execution
-            _logger.LogError(ex, "An error occurred during execution of the AI model with ID: {ModelId}", requestDto.ModelId);
+            _logger.LogError(ex, "Error occurred while executing AI model with ID: {ModelId}", requestDto.ModelId);
         }
 
         return serviceResponse;
     }
 }
-
