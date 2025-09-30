@@ -22,7 +22,7 @@ public class PublishMLModelTemplateDto
     /// <summary>
     /// Gets or sets the type of ML model.
     /// </summary>
-    public ModelTypesEnum? Type { get; set; }
+    public AIProjectTypeEnum? Type { get; set; }
 
     /// <summary>
     /// Gets or sets the access type, which defines the user's access level within the ml model.

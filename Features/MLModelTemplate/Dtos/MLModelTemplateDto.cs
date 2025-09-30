@@ -22,7 +22,7 @@ public class MLModelTemplateDto
     /// <summary>
     /// Gets or sets the type of ML model.
     /// </summary>
-    public ModelTypesEnum Type { get; set; }
+    public AIProjectTypeEnum Type { get; set; }
 
     /// <summary>
     /// Gets or sets the number of times this template has been used to create ML models.

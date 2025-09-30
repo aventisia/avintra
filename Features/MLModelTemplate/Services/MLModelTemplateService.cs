@@ -118,10 +118,10 @@ public class MLModelTemplateService : IMLModelTemplateService
         try
         {
             // Retrieve the existing ML model based on the provided reference ID
-            var mlModel = await _unitOfWork.MLModelRepo
+            var mlModel = await _unitOfWork.AIProjectRepo
                 .GetByConditionAsync(w => w.Id == publishMLModelTemplateDto.RefId)
-                .Include(i => i.Tasks)
-                .Include(i => i.ConversationalModel)
+                .Include(i => i.Versions!)
+                .   ThenInclude(i2 => i2.Tasks!)
                 .SingleOrDefaultAsync();
 
             // Check if the ML model exists
@@ -132,55 +132,55 @@ public class MLModelTemplateService : IMLModelTemplateService
                 return serviceResponse;
             }
 
-            // Check if the ML model has any associated tasks for Inferencing type
-            if (!mlModel.Tasks.Any() && mlModel.Type == ModelTypesEnum.Inferencing)
-            {
-                _logger.LogError("ML model template with ID {TemplateId} has no associated tasks for inferencing.", publishMLModelTemplateDto.Id);
-                serviceResponse.Message = "The ML model for inferencing has no associated tasks.";
-                return serviceResponse;
-            }
+            // // Check if the ML model has any associated tasks for Inferencing type
+            // if (!mlModel.Tasks.Any() && mlModel.Type == ModelTypesEnum.Inferencing)
+            // {
+            //     _logger.LogError("ML model template with ID {TemplateId} has no associated tasks for inferencing.", publishMLModelTemplateDto.Id);
+            //     serviceResponse.Message = "The ML model for inferencing has no associated tasks.";
+            //     return serviceResponse;
+            // }
 
-            // Check if the ML model has a ConversationalModel for Conversation type
-            if (mlModel.ConversationalModel == null && mlModel.Type == ModelTypesEnum.Conversation)
-            {
-                _logger.LogError("ML model template with ID {TemplateId} has no associated conversational model.", publishMLModelTemplateDto.Id);
-                serviceResponse.Message = "The conversational model setup is incomplete.";
-                return serviceResponse;
-            }
+            // // Check if the ML model has a ConversationalModel for Conversation type
+            // if (mlModel.ConversationalModel == null && mlModel.Type == ModelTypesEnum.Conversation)
+            // {
+            //     _logger.LogError("ML model template with ID {TemplateId} has no associated conversational model.", publishMLModelTemplateDto.Id);
+            //     serviceResponse.Message = "The conversational model setup is incomplete.";
+            //     return serviceResponse;
+            // }
 
-            string setupData = "";
-            var llmNames = new List<string>();
-            // If the model type is 'Inferencing', fetch and serialize its setup configuration
-            if (mlModel.Type == ModelTypesEnum.Inferencing)
-            {
-                var inferencingData = await _inferencingModelService.GetSetupByMLModelIdAsync(mlModel.Id);
-                var templateData = inferencingData.Data.Adapt<InferencingModelTemplateDto>();
-                llmNames = new List<string>
-                {
-                    templateData?.Extraction?.LLM,
-                    templateData?.Classification?.LLM,
-                    templateData?.Summarization?.LLM,
-                    templateData?.SentimentAnalytics?.LLM,
-                    templateData?.QuestionAnswer?.LLM
-                }.Where(x => !string.IsNullOrEmpty(x))
-                .Distinct()
-                .ToList();
-                setupData = JsonSerializer.Serialize(templateData, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            }
+            // string setupData = "";
+            // var llmNames = new List<string>();
+            // // If the model type is 'Inferencing', fetch and serialize its setup configuration
+            // if (mlModel.Type == ModelTypesEnum.Inferencing)
+            // {
+            //     var inferencingData = await _inferencingModelService.GetSetupByMLModelIdAsync(mlModel.Id, null);
+            //     var templateData = inferencingData.Data.Adapt<InferencingModelTemplateDto>();
+            //     llmNames = new List<string>
+            //     {
+            //         templateData?.Extraction?.LLM,
+            //         templateData?.Classification?.LLM,
+            //         templateData?.Summarization?.LLM,
+            //         templateData?.SentimentAnalytics?.LLM,
+            //         templateData?.QuestionAnswer?.LLM
+            //     }.Where(x => !string.IsNullOrEmpty(x))
+            //     .Distinct()
+            //     .ToList();
+            //     setupData = JsonSerializer.Serialize(templateData, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            // }
 
-            // If the model type is 'Conversation', fetch and serialize its setup configuration
-            else if (mlModel.Type == ModelTypesEnum.Conversation)
-            {
-                var conversionData = await _conversationModelService.GetSetupByMLModelIdAsync(mlModel.Id);
-                var templateData = conversionData.Data.Adapt<ConversationModelDto>();
-                llmNames = new List<string>
-                {
-                    templateData?.AIPersona?.LLM,
-                }.Where(w => !string.IsNullOrEmpty(w))
-                .Distinct()
-                .ToList();
-                setupData = JsonSerializer.Serialize(templateData, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            }
+            // // If the model type is 'Conversation', fetch and serialize its setup configuration
+            // else if (mlModel.Type == ModelTypesEnum.Conversation)
+            // {
+            //     var conversionData = await _conversationModelService.GetSetupByMLModelIdAsync(mlModel.Id);
+            //     var templateData = conversionData.Data.Adapt<ConversationModelDto>();
+            //     llmNames = new List<string>
+            //     {
+            //         templateData?.AIPersona?.LLM,
+            //     }.Where(w => !string.IsNullOrEmpty(w))
+            //     .Distinct()
+            //     .ToList();
+            //     setupData = JsonSerializer.Serialize(templateData, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            // }
 
             // Clean all string properties in the input DTO to remove leading/trailing whitespaces
             publishMLModelTemplateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(publishMLModelTemplateDto);
@@ -190,8 +190,8 @@ public class MLModelTemplateService : IMLModelTemplateService
 
             // Set additional configuration and model type
             mlModelTemplate.Type = mlModel.Type;
-            mlModelTemplate.ConfigJson = setupData;
-            mlModelTemplate.Icons = GetServiceItemDetailUtil.GetIconsByDisplayNames(llmNames);
+            // mlModelTemplate.ConfigJson = setupData;
+            // mlModelTemplate.Icons = GetServiceItemDetailUtil.GetIconsByDisplayNames(llmNames);
 
             // Set auditing fields
             mlModelTemplate.CreatedByUserId = _userId;
@@ -447,7 +447,7 @@ public class MLModelTemplateService : IMLModelTemplateService
             }
 
             // Fetch the existing ML model using the RefId from the template.
-            var mlModelEntity = await _unitOfWork.MLModelRepo
+            var mlModelEntity = await _unitOfWork.AIProjectRepo
                 .GetByConditionAsync(w => w.Id == trendingTemplateDto.RefId)
                 .AsNoTracking()
                 .Include(i => i.CreatedByUser)
@@ -457,12 +457,12 @@ public class MLModelTemplateService : IMLModelTemplateService
             {
                 // If the ML model doesn't exist, we create a new one from the template and set user-related fields.
                 _logger.LogInformation("ML Model not found for template ID {TemplateId}. Creating a new model.", trendingTemplateDto.Id);
-                mlModelEntity = trendingTemplateDto.Adapt<MLModel>();
+                mlModelEntity = trendingTemplateDto.Adapt<AIProject>();
                 mlModelEntity.CreatedByUserId = _userId;
                 mlModelEntity.LastModifiedByUserId = _userId;
 
                 // Insert the newly created ML model into the repository.
-                await _unitOfWork.MLModelRepo.InsertAsync(mlModelEntity);
+                await _unitOfWork.AIProjectRepo.InsertAsync(mlModelEntity);
 
                 // Check if the entity was successfully saved; if not, log an error and return the response.
                 if (!await _unitOfWork.SaveAsync())
@@ -476,7 +476,7 @@ public class MLModelTemplateService : IMLModelTemplateService
             }
 
             // Handle specific configurations based on the model type ('Inferencing' or 'Conversation').
-            if (templateEntity.Type == ModelTypesEnum.Inferencing)
+            if (templateEntity.Type == AIProjectTypeEnum.Inferencing)
             {
                 // Deserialize and update the Inferencing model configuration.
                 var templateSetup = JsonSerializer.Deserialize<InferencingModelTemplateDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -489,7 +489,7 @@ public class MLModelTemplateService : IMLModelTemplateService
                 _logger.LogInformation("Updating Inferencing setup for ML model ID: {ModelId}.", mlModelEntity.Id);
                 await _inferencingModelService.UpdateSetupAsync(inferencingData);
             }
-            else if (templateEntity.Type == ModelTypesEnum.Conversation)
+            else if (templateEntity.Type ==  AIProjectTypeEnum.Conversational)
             {
                 // Deserialize and update the Conversation model configuration.
                 var conversationData = JsonSerializer.Deserialize<ConversationModelDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -516,7 +516,7 @@ public class MLModelTemplateService : IMLModelTemplateService
             }
 
             // Fetch the updated ML model entity with the user information included.
-            mlModelEntity = await _unitOfWork.MLModelRepo
+            mlModelEntity = await _unitOfWork.AIProjectRepo
                 .GetByConditionAsync(w => w.Id == mlModelEntity.Id)
                 .AsNoTracking()
                 .Include(i => i.CreatedByUser)
