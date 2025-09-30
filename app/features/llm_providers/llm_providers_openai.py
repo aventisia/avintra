@@ -94,6 +94,7 @@ class OpenAIProvider(BaseLLMProvider):
 
                 # Update llm_response with actual values
                 llm_response.output = output
+                llm_response.created_on = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(response_data.get("created_at")))
                 llm_response.time_taken = round(end_time - start_time, 2)
                 llm_response.input_tokens = usage.get("input_tokens", 0)
                 llm_response.input_cached_tokens = usage.get("input_tokens_details", {}).get("cached_tokens", 0)

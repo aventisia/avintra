@@ -1,6 +1,7 @@
 # Schemas for LLM Providers feature
 from pydantic import BaseModel
 from typing import Optional, Literal
+from datetime import datetime, timezone
 
 class LLMRequest(BaseModel):
     provider: Literal['openai','ollama']
@@ -19,6 +20,7 @@ class LLMResponse(BaseModel):
     provider: Literal['openai','ollama']
     model: str
     output: str
+    created_on: datetime = datetime.now(timezone.utc)
     temperature: float = 1.0
     top_p: float = 1.0
     time_taken: Optional[float] = 0.0
