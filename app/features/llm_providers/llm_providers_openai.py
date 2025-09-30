@@ -1,4 +1,4 @@
-# OpenAI LLM Provider implementation
+# OpenAI LLM Provider implementation. Watch YT video for details on OpenAI new Responses APIs: https://www.youtube.com/watch?v=0pGxoubWI6s
 import json
 import time
 import httpx
@@ -19,7 +19,7 @@ class OpenAIProvider(BaseLLMProvider):
     async def generate_llm_response(self, request: LLMRequest):
         logger.info(f"Prompt sent to OpenAI provider with model: {request.model}")
         
-        # Initialize response_data & Start Time
+        # Initialize
         response_data = {}
         llm_response = LLMResponse(
             provider=request.provider,
@@ -52,12 +52,18 @@ class OpenAIProvider(BaseLLMProvider):
         if request.instructions:
             request_payload["instructions"] = request.instructions
         
-        # If json_schema is provided, include it in the request
+        # If json_schema is provided, set up text as per OpenAI API
         if request.json_schema:
-            request_payload["json_schema"] = request.json_schema
+            schema = json.loads(request.json_schema) if isinstance(request.json_schema, str) else request.json_schema
+            request_payload["text"] = {
+                "format": {
+                    "type": "json_schema",
+                    "name": "strict_json_schema",
+                    "schema": schema,
+                    "strict": True
+                }
+            }
             
-        logger.info(f"OpenAI request payload: {request_payload}")
-        
         # Set a long timeout for potentially lengthy responses
         timeout = httpx.Timeout(600.0) # 10 minutes
         
@@ -74,15 +80,13 @@ class OpenAIProvider(BaseLLMProvider):
                 response.raise_for_status()
                 response_data = response.json()
                 
-                logger.info(f"OpenAI response data: {response_data}")
-                
                 # Handle is_json_output if requested
                 if request.is_json_output:
                     output = extract_json_from_llm_response(response_data["output"][0]["content"][0]["text"])
                 else:
                     output = response_data["output"][0]["content"][0]["text"]
                     
-                # End Time. Get total time taken for LLM response
+                # End Time. To Get total time taken for LLM response
                 end_time = time.perf_counter()
                 
                 # Get token usage details if available
@@ -95,8 +99,8 @@ class OpenAIProvider(BaseLLMProvider):
                 llm_response.input_cached_tokens = usage.get("input_tokens_details", {}).get("cached_tokens", 0)
                 llm_response.output_tokens = usage.get("output_tokens", 0)
                 llm_response.output_reasoning_tokens = usage.get("output_tokens_details", {}).get("reasoning_tokens", 0)
+                
                 # Return the final llm_response
-                logger.info(f"Final response: {llm_response}")
                 return llm_response
         except Exception as e:
             logger.error(f"OpenAI llm transactional request error: {e}, openai error: {response_data.get('error', '')}")
