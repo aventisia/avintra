@@ -16,9 +16,9 @@ public class InferencingModelController : BaseApiController
 
     // Retrieves a specific model setup by ml model ID
     [HttpGet("setup/{mlModelId}")]
-    public async Task<ActionResult<ServiceResponse<InferencingModelDto>>> GetSetupByMLModelId(Guid mlModelId)
+    public async Task<ActionResult<ServiceResponse<InferencingModelDto>>> GetSetupByMLModelId(Guid mlModelId, Guid? mlModelVersionId)
     {
-        return ResultHelper(await _inferencingModelService.GetSetupByMLModelIdAsync(mlModelId));
+        return ResultHelper(await _inferencingModelService.GetAIProjectSetupAsync(mlModelId, mlModelVersionId));
     }
 
     // Updates an existing model setup
@@ -35,11 +35,11 @@ public class InferencingModelController : BaseApiController
         return ResultHelper(await _inferencingModelService.ExecuteLLMByFileIdsAsync(modelExecutionRequestDto));
     }
 
-    // Retrieve a extracted data records associated with a specific machine learning model.
-    [HttpGet("extracted-data/{mlModelId}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<InferencingModelExtractedDataDetailDto>>>> GetExtractedDataByMLModelId(Guid mlModelId)
+    // Retrieve a extracted data records associated with a specific ai projecr version.
+    [HttpGet("extracted-data/{aiProjectVersionId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<InferencingModelExtractedDataDetailDto>>>> GetExtractedDataByMLModelId(Guid aiProjectVersionId)
     {
-        return ResultHelper(await _inferencingModelService.GetExtractedDataByMLModelIdAsync(mlModelId));
+        return ResultHelper(await _inferencingModelService.GetExtractedDataByAIProjectVersionIdAsync(aiProjectVersionId));
     }
 
     // Updates an extracted data record for a machine learning model.

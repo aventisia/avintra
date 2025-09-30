@@ -8,6 +8,11 @@ public class InferencingModelExtractedDataDetailDto
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier of the associated ai project version entity.
+    /// </summary>
+    public Guid AIProjectVersionId { get; set; }
+
+    /// <summary>
     /// Gets or sets the uploaded doc record's primary key to which this record is associated.
     /// </summary>/
     public Guid DocId { get; set; }

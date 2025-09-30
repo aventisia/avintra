@@ -11,6 +11,11 @@ public class InferencingModelResponseDto
     public Guid ModelId { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier of the associated ai project version entity.
+    /// </summary>
+    public Guid AIProjectVersionId { get; set; }
+
+    /// <summary>
     /// Gets or sets the list of extracted data for each processed file.
     /// </summary>
     public required List<InferencingModelTaskResponseDto> ExtractedData { get; set; }

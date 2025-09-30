@@ -24,64 +24,77 @@ public class InferencingModelService : IInferencingModelService
         _fileUploadConfig = fileUploadConfig;
     }
 
-    // Gets the model setup for a specific inferencing model using its unique ML model ID.
-    public async Task<ServiceResponse<InferencingModelDto>> GetSetupByMLModelIdAsync(Guid mlModelId)
+    // Gets the model setup for a specific AI Project using its unique AI Project ID.
+    public async Task<ServiceResponse<InferencingModelDto>> GetAIProjectSetupAsync(Guid aiProjectId, Guid? aiProjectVersionId)
     {
         // Initialize the response with a failure state and default message
         var serviceResponse = new ServiceResponse<InferencingModelDto>
         {
             Data = null,
-            Message = "Failed to retrieve the model setup. Please try again later."
+            Message = "Failed to retrieve the AI project setup. Please try again later."
         };
 
         try
         {
-            // Log the beginning of the retrieval process with the ML model ID
-            _logger.LogInformation("Attempting to retrieve model setup for ML model with ID: {MLModelId}", mlModelId);
+            // Log the beginning of the retrieval process with the AI project ID
+            _logger.LogInformation("Attempting to retrieve AI project setup for AI project with ID: {AIProjectId}", aiProjectId);
 
-            // Fetch the model setup from the database by its ML model ID, including related user and task data
-            var mlModel = await _unitOfWork.MLModelRepo
+            // Fetch the AI project setup from the database by its AI project ID, including related user and task data
+            var aiProject = await _unitOfWork.AIProjectRepo
                 .GetByConditionAsync(w =>
-                    w.Id == mlModelId &&
+                    w.Id == aiProjectId &&
                     (
                         w.CreatedByUserId == _userId ||
-                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
+                        (w.ProjectUsers != null && w.ProjectUsers.Any(a => a.UserId == _userId))
                     )
                 )
-                .Include(i => i.Users)
                 .Include(i => i.CreatedByUser)
-                .Include(i => i.Tasks)
+                .Include(i => i.ProjectUsers)
+                .Include(i => i.Versions!)
+                .ThenInclude(i2 => i2.Tasks)
                 .SingleOrDefaultAsync();
 
-            // If no model setup is found, log a warning and return an appropriate message
-            if (mlModel == null)
+            // If no AI project setup is found, log a warning and return an appropriate message
+            if (aiProject == null)
             {
-                _logger.LogWarning("No model setup found for ML model with ID: {MLModelId}", mlModelId);
-                serviceResponse.Message = "No model setup exists for the provided ML model ID.";
+                _logger.LogWarning("No AI project setup found for AI project with ID: {AIProjectId}", aiProjectId);
+                serviceResponse.Message = "No AI project setup exists for the provided AI project ID.";
                 return serviceResponse;
             }
 
-            // Log the successful retrieval of the model setup
-            _logger.LogInformation("Successfully retrieved model setup for ML model with ID: {MLModelId}", mlModelId);
+            // Log the successful retrieval of the AI project setup
+            _logger.LogInformation("Successfully retrieved AI project setup for AI project with ID: {AIProjectId}", aiProjectId);
 
-            // Adapt the retrieved ML model to the corresponding DTO (Data Transfer Object)
-            var inferencingModelDto = mlModel.Adapt<InferencingModelDto>();
+            // Adapt the retrieved AI project to the corresponding DTO (Data Transfer Object)
+            var aiProjectDto = aiProject.Adapt<InferencingModelDto>();
 
-            // Retrieve the list of inferencing tasks and add it to the model DTO 
+            // Get the AI project version, either by version ID or the latest one
+            AIProjectVersion? aiProjectVersion = null;
+            if (aiProjectVersionId.HasValue)
+                aiProjectVersion = aiProject.Versions.FirstOrDefault(w => w.Id == aiProjectVersionId.Value);
+            else
+                aiProjectVersion = aiProject.Versions.OrderByDescending(o => o.VersionNumber).FirstOrDefault();
+
+            aiProjectDto.AIProjectVersionId = aiProjectVersion?.Id ?? Guid.Empty;
+            aiProjectDto.BusinessContext = aiProjectVersion?.BusinessContext ?? string.Empty;
+
+            var versionTaskList = aiProjectVersion?.Tasks.ToList() ?? new List<VersionTask>();
+
+            // Retrieve the list of inferencing tasks and add it to the AI project DTO
             // This will populate the ModelTasks property with specific task details
-            GetInferencingModelSetup(mlModel, inferencingModelDto);
+            GetInferencingModelSetup(versionTaskList, aiProjectDto);
 
-            // Map the adapted model setup (including tasks) to the response DTO
-            serviceResponse.Data = inferencingModelDto;
+            // Map the adapted project setup (including tasks) to the response DTO
+            serviceResponse.Data = aiProjectDto;
 
             // Set the success response status and message
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Model setup retrieved successfully.";
+            serviceResponse.Message = "AI project setup retrieved successfully.";
         }
         catch (Exception ex)
         {
             // Log the exception details if an error occurs during the process
-            _logger.LogError("Error occurred while retrieving model setup for ML model with ID: {MLModelId}. Exception: {ExceptionMessage}", mlModelId, ex.Message);
+            _logger.LogError("Error occurred while retrieving AI project setup for AI project with ID: {AIProjectId}. Exception: {ExceptionMessage}", aiProjectId, ex.Message);
         }
 
         // Return the service response (either successful or failure)
@@ -111,16 +124,17 @@ public class InferencingModelService : IInferencingModelService
             _logger.LogInformation("Starting update for model setup | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
 
             // Fetch the model including associated tasks
-            var mlModel = await _unitOfWork.MLModelRepo
+            var mlModel = await _unitOfWork.AIProjectRepo
                 .GetByConditionAsync(w =>
                     w.Id == modelSetupDto.Id &&
                     (
                         w.CreatedByUserId == _userId ||
-                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
+                        (w.ProjectUsers != null && w.ProjectUsers.Any(a => a.UserId == _userId))
                     )
                 )
-                .Include(i => i.Users)
-                .Include(i => i.Tasks)
+                .Include(i => i.ProjectUsers)
+                .Include(i => i.Versions!)
+                .ThenInclude(i2 => i2.Tasks)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
@@ -133,10 +147,10 @@ public class InferencingModelService : IInferencingModelService
             }
 
             // Check if the user is the creator or has the required access (Owner/Edit)
-            var modelUserAccess = mlModel.Users?.FirstOrDefault(w =>
-                w.MLModelId == mlModel.Id &&
+            var modelUserAccess = mlModel.ProjectUsers?.FirstOrDefault(w =>
+                w.AIProjectId == mlModel.Id &&
                 w.UserId == _userId &&
-                (w.AccessType == AgentAccessTypesEnum.Owner || w.AccessType == AgentAccessTypesEnum.Edit)
+                (w.AccessType == ProjectUserAccessEnum.Owner || w.AccessType == ProjectUserAccessEnum.Edit)
             );
 
             // Allow access if the user is the creator, else check if they have access
@@ -147,53 +161,71 @@ public class InferencingModelService : IInferencingModelService
                 return serviceResponse;
             }
 
+            AIProjectVersion? aiProjectVersion = mlModel.Versions.FirstOrDefault(w => w.Id == modelSetupDto.AIProjectVersionId);
 
             // Prevent updates to published models
-            if (mlModel.IsPublished)
+            if (aiProjectVersion.IsPublished)
             {
                 _logger.LogWarning("Attempt to modify a published model | ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
                 serviceResponse.Message = "This model is published and cannot be modified.";
                 return serviceResponse;
             }
 
+            if (aiProjectVersion.BusinessContext != modelSetupDto.BusinessContext)
+            {
+                aiProjectVersion.BusinessContext = modelSetupDto.BusinessContext;
+                aiProjectVersion.LastModifiedByUserId = _userId;
+                aiProjectVersion.LastModifiedOn = DateTimeOffset.UtcNow;
+
+                _unitOfWork.AIProjectVersionRepo.Update(aiProjectVersion);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save model changes | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+                    return serviceResponse;
+                }
+            }
             // Clean up string fields in DTO
             modelSetupDto = TrimDtoStringPropsUtil.TrimDtoStringProps(modelSetupDto);
 
-            _logger.LogInformation("Applying DTO changes to model entity | Model ID: {Id}", modelSetupDto.Id);
-            modelSetupDto.Adapt(mlModel);
-            mlModel.Type = ModelTypesEnum.Inferencing;
-            mlModel.SetupStatus = SetupStatusTypesEnum.Completed;
-            mlModel.LastModifiedByUserId = _userId;
-
-            _logger.LogInformation("Saving model changes to database | Model ID: {Id}", modelSetupDto.Id);
-            _unitOfWork.MLModelRepo.Update(mlModel);
-
-            if (!await _unitOfWork.SaveAsync())
+            if (mlModel.Type == null)
             {
-                _logger.LogError("Failed to save model changes | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
-                return serviceResponse;
+                _logger.LogInformation("Applying DTO changes to model entity | Model ID: {Id}", modelSetupDto.Id);
+                modelSetupDto.Adapt(mlModel);
+                mlModel.Type = AIProjectTypeEnum.Inferencing;
+                mlModel.LastModifiedByUserId = _userId;
+
+                _logger.LogInformation("Saving model changes to database | Model ID: {Id}", modelSetupDto.Id);
+                _unitOfWork.AIProjectRepo.Update(mlModel);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save model changes | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
+                    return serviceResponse;
+                }
             }
 
+
+
             // Track new and existing tasks
-            var tasksToBeAdded = new List<ModelTask>();
-            var tasksToBeUpdated = new List<ModelTask>();
-            var tasksToBeDeleted = new List<ModelTask>();
+            var tasksToBeAdded = new List<VersionTask>();
+            var tasksToBeUpdated = new List<VersionTask>();
+            var tasksToBeDeleted = new List<VersionTask>();
 
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
 
-            foreach (var task in mlModel.Tasks.ToList())
+            foreach (var task in aiProjectVersion.Tasks.ToList())
             {
                 // Use a dictionary to map task names to corresponding properties in modelSetupDto
                 var taskPropertyMappings = new Dictionary<string, object?>
                 {
-                    { nameof(InferencingModelTypesEnum.Extraction), modelSetupDto.Extraction },
-                    { nameof(InferencingModelTypesEnum.Classification), modelSetupDto.Classification },
-                    { nameof(InferencingModelTypesEnum.Summarization), modelSetupDto.Summarization },
-                    { nameof(InferencingModelTypesEnum.SentimentAnalytics), modelSetupDto.SentimentAnalytics },
-                    { nameof(InferencingModelTypesEnum.QuestionAnswer), modelSetupDto.QuestionAnswer }
+                    { nameof(AIProjectTaskTypesEnum.Extraction), modelSetupDto.Extraction },
+                    { nameof(AIProjectTaskTypesEnum.Classification), modelSetupDto.Classification },
+                    { nameof(AIProjectTaskTypesEnum.Summarization), modelSetupDto.Summarization },
+                    { nameof(AIProjectTaskTypesEnum.SentimentAnalytics), modelSetupDto.SentimentAnalytics },
+                    { nameof(AIProjectTaskTypesEnum.QuestionAnswer), modelSetupDto.QuestionAnswer }
                 };
 
                 // Check if the task should be deleted
@@ -205,12 +237,14 @@ public class InferencingModelService : IInferencingModelService
 
             if (modelSetupDto.Extraction != null)
             {
-                var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.Extraction.Name);
+                var existingTask = aiProjectVersion.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.Extraction.Name);
                 if (existingTask == null)
                 {
                     // Task does not exist — create a new task entity from the DTO
-                    var newTask = modelSetupDto.Extraction.Adapt<ModelTask>();
-                    newTask.MLModelId = mlModel.Id;
+                    var newTask = modelSetupDto.Extraction.Adapt<VersionTask>();
+                    newTask.AIProjectId = aiProjectVersion.AIProjectId;
+                    newTask.AIProjectVersionId = aiProjectVersion.Id;
+                    newTask.SystemPrompt = modelSetupDto.Extraction.NodePrompt;
                     newTask.GeneratedPrompt = GenerateModelPrompt(newTask.Name, modelSetupDto);
                     newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Extraction.SetupObject, options);
                     newTask.CreatedByUserId = _userId;
@@ -222,6 +256,7 @@ public class InferencingModelService : IInferencingModelService
                 {
                     // Task already exists — update its properties from the DTO
                     modelSetupDto.Extraction.Adapt(existingTask);
+                    existingTask.SystemPrompt = modelSetupDto.Extraction.NodePrompt;
                     existingTask.GeneratedPrompt = GenerateModelPrompt(existingTask.Name, modelSetupDto);
                     existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Extraction.SetupObject, options);
                     existingTask.LastModifiedByUserId = _userId;
@@ -232,13 +267,15 @@ public class InferencingModelService : IInferencingModelService
 
             if (modelSetupDto.Classification != null)
             {
-                var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.Classification.Name);
+                var existingTask = aiProjectVersion.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.Classification.Name);
                 if (existingTask == null)
                 {
                     // Task does not exist — create a new task entity from the DTO
-                    var newTask = modelSetupDto.Classification.Adapt<ModelTask>();
-                    newTask.MLModelId = mlModel.Id;
+                    var newTask = modelSetupDto.Classification.Adapt<VersionTask>();
+                    newTask.AIProjectId = aiProjectVersion.AIProjectId;
+                    newTask.SystemPrompt = modelSetupDto.Classification.NodePrompt;
                     newTask.GeneratedPrompt = GenerateModelPrompt(newTask.Name, modelSetupDto);
+                    newTask.AIProjectVersionId = aiProjectVersion.Id;
                     newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Classification.SetupObject, options);
                     newTask.CreatedByUserId = _userId;
                     newTask.LastModifiedByUserId = _userId;
@@ -249,8 +286,8 @@ public class InferencingModelService : IInferencingModelService
                 {
                     // Task already exists — update its properties from the DTO
                     modelSetupDto.Classification.Adapt(existingTask);
+                    existingTask.SystemPrompt = modelSetupDto.Classification.NodePrompt;
                     existingTask.GeneratedPrompt = GenerateModelPrompt(existingTask.Name, modelSetupDto);
-
                     existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Classification.SetupObject, options);
                     existingTask.LastModifiedByUserId = _userId;
 
@@ -260,12 +297,14 @@ public class InferencingModelService : IInferencingModelService
 
             if (modelSetupDto.SentimentAnalytics != null)
             {
-                var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.SentimentAnalytics.Name);
+                var existingTask = aiProjectVersion.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.SentimentAnalytics.Name);
                 if (existingTask == null)
                 {
                     // Task does not exist — create a new task entity from the DTO
-                    var newTask = modelSetupDto.SentimentAnalytics.Adapt<ModelTask>();
-                    newTask.MLModelId = mlModel.Id;
+                    var newTask = modelSetupDto.SentimentAnalytics.Adapt<VersionTask>();
+                    newTask.AIProjectId = aiProjectVersion.AIProjectId;
+                    newTask.AIProjectVersionId = aiProjectVersion.Id;
+                    newTask.SystemPrompt = modelSetupDto.SentimentAnalytics.NodePrompt;
                     newTask.GeneratedPrompt = GenerateModelPrompt(newTask.Name, modelSetupDto);
                     newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.SentimentAnalytics.SetupObject, options);
                     newTask.CreatedByUserId = _userId;
@@ -277,8 +316,8 @@ public class InferencingModelService : IInferencingModelService
                 {
                     // Task already exists — update its properties from the DTO
                     modelSetupDto.SentimentAnalytics.Adapt(existingTask);
+                    existingTask.SystemPrompt = modelSetupDto.SentimentAnalytics.NodePrompt;
                     existingTask.GeneratedPrompt = GenerateModelPrompt(existingTask.Name, modelSetupDto);
-
                     existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.SentimentAnalytics.SetupObject, options);
                     existingTask.LastModifiedByUserId = _userId;
 
@@ -288,12 +327,14 @@ public class InferencingModelService : IInferencingModelService
 
             if (modelSetupDto.QuestionAnswer != null)
             {
-                var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.QuestionAnswer.Name);
+                var existingTask = aiProjectVersion.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.QuestionAnswer.Name);
                 if (existingTask == null)
                 {
                     // Task does not exist — create a new task entity from the DTO
-                    var newTask = modelSetupDto.QuestionAnswer.Adapt<ModelTask>();
-                    newTask.MLModelId = mlModel.Id;
+                    var newTask = modelSetupDto.QuestionAnswer.Adapt<VersionTask>();
+                    newTask.AIProjectId = aiProjectVersion.AIProjectId;
+                    newTask.AIProjectVersionId = aiProjectVersion.Id;
+                    newTask.SystemPrompt = modelSetupDto.QuestionAnswer.NodePrompt;
                     newTask.GeneratedPrompt = GenerateModelPrompt(newTask.Name, modelSetupDto);
                     newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.QuestionAnswer.SetupObject, options);
                     newTask.CreatedByUserId = _userId;
@@ -305,8 +346,8 @@ public class InferencingModelService : IInferencingModelService
                 {
                     // Task already exists — update its properties from the DTO
                     modelSetupDto.QuestionAnswer.Adapt(existingTask);
+                    existingTask.SystemPrompt = modelSetupDto.QuestionAnswer.NodePrompt;
                     existingTask.GeneratedPrompt = GenerateModelPrompt(existingTask.Name, modelSetupDto);
-
                     existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.QuestionAnswer.SetupObject, options);
                     existingTask.LastModifiedByUserId = _userId;
 
@@ -316,12 +357,14 @@ public class InferencingModelService : IInferencingModelService
 
             if (modelSetupDto.Summarization != null)
             {
-                var existingTask = mlModel.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.Summarization.Name);
+                var existingTask = aiProjectVersion.Tasks.FirstOrDefault(t => t.Name == modelSetupDto.Summarization.Name);
                 if (existingTask == null)
                 {
                     // Task does not exist — create a new task entity from the DTO
-                    var newTask = modelSetupDto.Summarization.Adapt<ModelTask>();
-                    newTask.MLModelId = mlModel.Id;
+                    var newTask = modelSetupDto.Summarization.Adapt<VersionTask>();
+                    newTask.AIProjectId = aiProjectVersion.AIProjectId;
+                    newTask.AIProjectVersionId = aiProjectVersion.Id;
+                    newTask.SystemPrompt = modelSetupDto.Summarization.NodePrompt;
                     newTask.GeneratedPrompt = GenerateModelPrompt(newTask.Name, modelSetupDto);
                     newTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Summarization.SetupObject, options);
                     newTask.CreatedByUserId = _userId;
@@ -334,7 +377,7 @@ public class InferencingModelService : IInferencingModelService
                     // Task already exists — update its properties from the DTO
                     modelSetupDto.Summarization.Adapt(existingTask);
                     existingTask.GeneratedPrompt = GenerateModelPrompt(existingTask.Name, modelSetupDto);
-
+                    existingTask.SystemPrompt = modelSetupDto.Summarization.NodePrompt;
                     existingTask.SetupObject = JsonSerializer.Serialize(modelSetupDto.Summarization.SetupObject, options);
                     existingTask.LastModifiedByUserId = _userId;
 
@@ -346,7 +389,7 @@ public class InferencingModelService : IInferencingModelService
             if (tasksToBeAdded.Any())
             {
                 _logger.LogInformation("Adding new tasks | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
-                await _unitOfWork.ModelTaskRepo.InsertAsync(tasksToBeAdded);
+                await _unitOfWork.VersionTaskRepo.InsertAsync(tasksToBeAdded);
 
                 if (!await _unitOfWork.SaveAsync())
                 {
@@ -359,7 +402,7 @@ public class InferencingModelService : IInferencingModelService
             if (tasksToBeUpdated.Any())
             {
                 _logger.LogInformation("Updating existing tasks | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
-                _unitOfWork.ModelTaskRepo.Update(tasksToBeUpdated);
+                _unitOfWork.VersionTaskRepo.Update(tasksToBeUpdated);
 
                 if (!await _unitOfWork.SaveAsync())
                 {
@@ -372,7 +415,7 @@ public class InferencingModelService : IInferencingModelService
             if (tasksToBeDeleted.Any())
             {
                 _logger.LogInformation("Deleting existing tasks | Model ID: {Id} | User ID: {UserId}", modelSetupDto.Id, _userId);
-                _unitOfWork.ModelTaskRepo.Delete(tasksToBeDeleted);
+                _unitOfWork.VersionTaskRepo.Delete(tasksToBeDeleted);
 
                 if (!await _unitOfWork.SaveAsync())
                 {
@@ -396,7 +439,7 @@ public class InferencingModelService : IInferencingModelService
         return serviceResponse;
     }
 
-    // Extracts data using a Language Learning Model (LLM).
+    // Extracts data using a Language Learning Model (LLM) for a given AI Project.
     public async Task<ServiceResponse<InferencingModelResponseDto>> ExecuteLLMByFileIdsAsync(ModelFileProcessingRequestDto modelExecutionRequestDto)
     {
         // Initialize the response with a default failure message
@@ -408,22 +451,23 @@ public class InferencingModelService : IInferencingModelService
 
         try
         {
-            _logger.LogInformation("Starting execution by file IDs for ModelId: {ModelId}", modelExecutionRequestDto.ModelId);
+            _logger.LogInformation("Starting LLM execution by file IDs for AIProjectId: {AIProjectId}", modelExecutionRequestDto.ModelId);
 
-            // Retrieve the ML model and related data including tasks, extracted data, and uploaded documents
-            var model = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == modelExecutionRequestDto.ModelId)
-                .Include(i => i.Tasks)
-                .Include(i => i.ExtractedData)
-                .Include(i => i.UploadedDocs)
+            // Retrieve the AI project version and related data including tasks, extracted data, and uploaded documents
+            var aiProjectVersion = await _unitOfWork.AIProjectVersionRepo
+                .GetByConditionAsync(w =>
+                    w.Id == modelExecutionRequestDto.AIProjectVersionId)
+                .Include(i => i.Resources)
+                .Include(i => i.Tasks!)
+                .ThenInclude(i2 => i2.ExtractedDatas)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
-            // Return early if the model is not found
-            if (model == null)
+            // Return early if the AI project version is not found
+            if (aiProjectVersion == null)
             {
-                _logger.LogWarning("Model not found for ModelId: {ModelId}", modelExecutionRequestDto.ModelId);
-                serviceResponse.Message = "Model not found";
+                _logger.LogWarning("AI project version not found for AIProjectId: {AIProjectId}", modelExecutionRequestDto.ModelId);
+                serviceResponse.Message = "AI project version not found";
                 return serviceResponse;
             }
 
@@ -433,7 +477,7 @@ public class InferencingModelService : IInferencingModelService
             var extractedDataToUpdate = new List<ExtractedData>();
 
             // Process each file specified in the request
-            foreach (var fileId in modelExecutionRequestDto.FileIds)
+            foreach (var versionResourceId in modelExecutionRequestDto.FileIds)
             {
                 var documentExtractionData = new InferencingModelTaskResponseDto
                 {
@@ -442,42 +486,40 @@ public class InferencingModelService : IInferencingModelService
                     TokenCount = 0,
                     ExecutionTime = 0,
                     ServiceType = "OnPremGpuText", // TODO: Hardcoded for now, will be dynamic later once cloud model provider is implemented.
-                    FileId = fileId,
+                    FileId = versionResourceId,
                     Remarks = string.Empty
                 };
-                // Get the list of model tasks to be executed, filtering by task IDs if provided
-                var modelTaskList = model.Tasks
+
+                // Get the list of AI project tasks to be executed, filtering by task IDs if provided
+                var versionTasks = aiProjectVersion.Tasks
                     .Where(w => modelExecutionRequestDto.ModelTaskIds == null || modelExecutionRequestDto.ModelTaskIds.Contains(w.Id))
                     .ToList();
 
-                // Process each task associated with the model
-                foreach (var modelTask in modelTaskList)
+                // Process each task associated with the AI project
+                foreach (var versionTask in versionTasks)
                 {
-                    _logger.LogInformation("Processing task {TaskId} with {FileCount} files for ModelId: {ModelId}", modelTask.Id, modelExecutionRequestDto.FileIds.Count, model.Id);
+                    _logger.LogInformation("Processing task {TaskId} with {FileCount} files for AIProjectId: {AIProjectId}", versionTask.Id, modelExecutionRequestDto.FileIds.Count, modelExecutionRequestDto.ModelId);
 
                     // Extract data for the current file and task
-                    var (newExtractedData, updatedExtractedData) = await ProcessFileAsync(model, modelTask, fileId, documentExtractionData);
+                    var (newExtractedData, updatedExtractedData) = await ProcessFileAsync(aiProjectVersion, versionTask, versionResourceId, documentExtractionData);
 
-                    // Prepare new extracted data records for insertion
                     if (newExtractedData != null)
                     {
                         extractedDataToInsert.Add(newExtractedData);
                     }
-                    // Prepare existing extracted data records for update
                     if (updatedExtractedData != null)
                     {
                         extractedDataToUpdate.Add(updatedExtractedData);
                     }
                 }
 
-                // Collect the extraction result for the response
                 extractedDataList.Add(documentExtractionData);
             }
 
-            // Insert new extracted data records in bulk if any
             if (extractedDataToInsert.Any())
             {
                 _logger.LogInformation("Inserting {Count} new extracted data records.", extractedDataToInsert.Count);
+
                 await _unitOfWork.ExtractedDataRepo.InsertAsync(extractedDataToInsert);
                 if (!await _unitOfWork.SaveAsync())
                 {
@@ -485,7 +527,6 @@ public class InferencingModelService : IInferencingModelService
                 }
             }
 
-            // Update existing extracted data records in bulk if any
             if (extractedDataToUpdate.Any())
             {
                 _logger.LogInformation("Updating {Count} existing extracted data records.", extractedDataToUpdate.Count);
@@ -496,10 +537,11 @@ public class InferencingModelService : IInferencingModelService
                 }
             }
 
-            // Prepare the successful response including the list of extraction results
+            // Prepare the successful response
             serviceResponse.Data = new InferencingModelResponseDto
             {
-                ModelId = modelExecutionRequestDto.ModelId,
+                ModelId = modelExecutionRequestDto.ModelId, // Optionally rename this property to AIProjectId in DTOs if needed
+                AIProjectVersionId = modelExecutionRequestDto.AIProjectVersionId,
                 ExtractedData = extractedDataList
             };
             serviceResponse.StatusCode = 200;
@@ -507,15 +549,13 @@ public class InferencingModelService : IInferencingModelService
                 ? "Failed to extract data for one or more files"
                 : "Data extracted successfully";
 
-            _logger.LogInformation("Extraction process completed for ModelId: {ModelId}. Summary: {Message}", modelExecutionRequestDto.ModelId, serviceResponse.Message);
+            _logger.LogInformation("LLM extraction completed for AIProjectVersionId: {AIProjectVersionId}. Summary: {Message}", modelExecutionRequestDto.AIProjectVersionId, serviceResponse.Message);
         }
         catch (Exception ex)
         {
-            // Log any unexpected exceptions during processing
-            _logger.LogError(ex, "An exception occurred during the extraction process for ModelId: {ModelId}", modelExecutionRequestDto.ModelId);
+            _logger.LogError(ex, "An exception occurred during the extraction process for AIProjectVersionId: {AIProjectVersionId}", modelExecutionRequestDto.AIProjectVersionId);
         }
 
-        // Return the service response, either success or failure
         return serviceResponse;
     }
 
@@ -531,31 +571,33 @@ public class InferencingModelService : IInferencingModelService
 
         try
         {
-            _logger.LogInformation("Starting model execution for ModelId: {ModelId} using file content.", modelExecutionRequestDto.ModelId);
+            _logger.LogInformation("Starting model execution for AIProjectVersionId: {AIProjectVersionId} using file content.", modelExecutionRequestDto.AIProjectVersionId);
 
             // Retrieve the ML model and related data including tasks, extracted data, and uploaded documents
-            var model = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == modelExecutionRequestDto.ModelId)
-                .Include(i => i.Tasks)
-                .Include(i => i.ExtractedData)
-                .Include(i => i.UploadedDocs)
+            var aiProjectVersion = await _unitOfWork.AIProjectVersionRepo
+                .GetByConditionAsync(w =>
+                    w.Id == modelExecutionRequestDto.AIProjectVersionId)
+                .Include(i => i.Resources)
+                .Include(i => i.Tasks!)
+                .ThenInclude(i => i.ExtractedDatas)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
             // Early return if the model is not found
-            if (model == null)
+            if (aiProjectVersion == null)
             {
-                _logger.LogWarning("Model with ModelId: {ModelId} not found. Execution aborted.", modelExecutionRequestDto.ModelId);
-                serviceResponse.Message = "Model not found.";
+                _logger.LogWarning("Model verion with AIProjectVersionId: {AIProjectVersionId} not found. Execution aborted.", modelExecutionRequestDto.AIProjectVersionId);
+                serviceResponse.Message = "Model verion not found.";
                 return serviceResponse;
             }
 
             // Prepare collections for extracted data and database operations
             var extractedDataList = new List<InferencingModelTaskResponseDto>();
-            var modelTaskList = model.Tasks.Where(w =>
+            var versionTasks = aiProjectVersion.Tasks.Where(w =>
                     modelExecutionRequestDto.ModelTaskIds == null || modelExecutionRequestDto.ModelTaskIds.Contains(w.Id)
                 )
                 .ToList();
+
             var documentExtractionData = new InferencingModelTaskResponseDto
             {
                 ExecutionCount = 0,
@@ -566,19 +608,19 @@ public class InferencingModelService : IInferencingModelService
                 Remarks = string.Empty
             };
             // Process each task associated with the model
-            foreach (var modelTask in modelTaskList)
+            foreach (var versionTask in versionTasks)
             {
                 // Call LLM and process response for each task
-                documentExtractionData = await CallLLMAndProcessResponseAsync(modelTask, modelExecutionRequestDto.Content, documentExtractionData);
+                documentExtractionData = await CallLLMAndProcessResponseAsync(versionTask, modelExecutionRequestDto.Content, documentExtractionData);
 
                 // Log task-specific details
                 if (documentExtractionData.Remarks.Contains("Failed"))
                 {
-                    _logger.LogWarning("Task execution failed for ModelTaskId: {ModelTaskId} while processing content for ModelId: {ModelId}. Remarks: {Remarks}", modelTask.Id, modelExecutionRequestDto.ModelId, documentExtractionData.Remarks);
+                    _logger.LogWarning("Task execution failed for VersionTaskId: {VersionTaskId} while processing content for AIProjectVersionId: {AIProjectVersionId}. Remarks: {Remarks}", versionTask.Id, modelExecutionRequestDto.AIProjectVersionId, documentExtractionData.Remarks);
                 }
                 else
                 {
-                    _logger.LogInformation("Task execution successful for ModelTaskId: {ModelTaskId} for ModelId: {ModelId}. Extracted {TokenCount} tokens.", modelTask.Id, modelExecutionRequestDto.ModelId, documentExtractionData.TokenCount);
+                    _logger.LogInformation("Task execution successful for VersionTaskId: {VersionTaskId} for AIProjectVersionId: {AIProjectVersionId}. Extracted {TokenCount} tokens.", versionTask.Id, modelExecutionRequestDto.AIProjectVersionId, documentExtractionData.TokenCount);
                 }
             }
 
@@ -588,6 +630,7 @@ public class InferencingModelService : IInferencingModelService
             serviceResponse.Data = new InferencingModelResponseDto
             {
                 ModelId = modelExecutionRequestDto.ModelId,
+                AIProjectVersionId = modelExecutionRequestDto.AIProjectVersionId,
                 ExtractedData = extractedDataList
             };
             serviceResponse.StatusCode = 200;
@@ -596,20 +639,20 @@ public class InferencingModelService : IInferencingModelService
                 : "Data extraction completed successfully.";
 
             // Log summary after extraction process
-            _logger.LogInformation("Extraction process completed for ModelId: {ModelId}. Summary: {Message}", modelExecutionRequestDto.ModelId, serviceResponse.Message);
+            _logger.LogInformation("Extraction process completed for AIProjectVersionId: {AIProjectVersionId}. Summary: {Message}", modelExecutionRequestDto.AIProjectVersionId, serviceResponse.Message);
         }
         catch (Exception ex)
         {
             // Log unexpected exceptions during processing
-            _logger.LogError(ex, "An error occurred during the extraction process for ModelId: {ModelId}. Exception: {ExceptionMessage}", modelExecutionRequestDto.ModelId, ex.Message);
+            _logger.LogError(ex, "An error occurred during the extraction process for AIProjectVersionId: {AIProjectVersionId}. Exception: {ExceptionMessage}", modelExecutionRequestDto.AIProjectVersionId, ex.Message);
         }
 
         // Return the service response, whether success or failure
         return serviceResponse;
     }
 
-    // Retrieves extracted data records associated with a specific ML model.
-    public async Task<ServiceResponse<IEnumerable<InferencingModelExtractedDataDetailDto>>> GetExtractedDataByMLModelIdAsync(Guid mlModelId)
+    // Retrieves extracted data records associated with a specific AI project version.
+    public async Task<ServiceResponse<IEnumerable<InferencingModelExtractedDataDetailDto>>> GetExtractedDataByAIProjectVersionIdAsync(Guid aiProjectVersionId)
     {
         // Initialize the response with a default failure message
         var serviceResponse = new ServiceResponse<IEnumerable<InferencingModelExtractedDataDetailDto>>
@@ -620,28 +663,28 @@ public class InferencingModelService : IInferencingModelService
 
         try
         {
-            _logger.LogInformation("Retrieving extracted data for ML model ID: {MLModelId}", mlModelId);
+            _logger.LogInformation("Retrieving extracted data for AI project version ID: {AIProjectVersionId}", aiProjectVersionId);
 
-            // Retrieve the ML model along with associated tasks
-            var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == mlModelId)
+            // Retrieve the AI project version along with associated tasks
+            var aiProjectVersion = await _unitOfWork.AIProjectVersionRepo
+                .GetByConditionAsync(w => w.Id == aiProjectVersionId)
                 .Include(i => i.Tasks)
                 .SingleOrDefaultAsync();
 
-            // Check if the ML model was found, if not return an appropriate message
-            if (mlModel == null)
+            // Check if the AI project version was found
+            if (aiProjectVersion == null)
             {
-                _logger.LogWarning("ML model not found: {MLModelId}", mlModelId);
-                serviceResponse.Message = "ML model not found.";
+                _logger.LogWarning("AI project version not found: {AIProjectVersionId}", aiProjectVersionId);
+                serviceResponse.Message = "AI project version not found.";
                 return serviceResponse;
             }
 
             // Extract task IDs for fast lookup using a HashSet
-            var taskIds = mlModel.Tasks.Select(t => t.Id).ToHashSet();
+            var versionTaskIds = aiProjectVersion.Tasks.Select(t => t.Id).ToHashSet();
 
-            // Fetch all extracted data related to the model's tasks
+            // Fetch all extracted data related to the version's tasks
             var extractedDataList = await _unitOfWork.ExtractedDataRepo
-                .GetByConditionAsync(w => taskIds.Contains(w.ModelTaskId))
+                .GetByConditionAsync(w => versionTaskIds.Contains(w.ModelTaskId))
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.UploadedDoc)
                 .Include(i => i.ModelTask)
@@ -650,46 +693,43 @@ public class InferencingModelService : IInferencingModelService
             // Handle case where no extracted data exists
             if (!extractedDataList.Any())
             {
-                _logger.LogInformation("No extracted data found for ML model ID: {MLModelId}", mlModelId);
+                _logger.LogInformation("No extracted data found for AI project version ID: {AIProjectVersionId}", aiProjectVersionId);
                 serviceResponse.Message = "No extracted data found.";
                 return serviceResponse;
             }
 
             // Group extracted data by DocId
-            var extractedDataByDocId = extractedDataList
+            var extractedDataByDoc = extractedDataList
                 .GroupBy(data => data.DocId)
                 .Select(group =>
                 {
-
-                    // Initialize the list to hold the DTOs for the current group
+                    // Initialize the DTO with the first group item
                     var inferencingModelExtractedDataDetailDto = group.First().Adapt<InferencingModelExtractedDataDetailDto>();
-
-                    // Loop through each item in the group and populate the DTO
+                    inferencingModelExtractedDataDetailDto.AIProjectVersionId = group.First().ModelTaskId;
+                    // Populate the DTO with each extracted data item in the group
                     foreach (var extractedData in group)
                     {
-                        // Deserialize the data object and update the DTO accordingly
-                        inferencingModelExtractedDataDetailDto = DeserializeExtractedDataObject(extractedData.ModelTask?.Name, extractedData.DataObject, inferencingModelExtractedDataDetailDto);
+                        inferencingModelExtractedDataDetailDto = DeserializeExtractedDataObject(
+                            extractedData.ModelTask?.Name,
+                            extractedData.DataObject,
+                            inferencingModelExtractedDataDetailDto);
                     }
 
-                    // Return the list of valid DTOs for this group
                     return inferencingModelExtractedDataDetailDto;
-                    ;
                 })
                 .ToList();
 
             // Log success with the number of grouped records
-            _logger.LogInformation("Successfully grouped {Count} extracted records for ML model ID: {MLModelId}", extractedDataByDocId.Count, mlModelId);
+            _logger.LogInformation("Successfully grouped {Count} extracted records for AI project version ID: {AIProjectVersionId}", extractedDataByDoc.Count, aiProjectVersionId);
 
             // Populate the service response with the grouped data
-            serviceResponse.Data = extractedDataByDocId;
+            serviceResponse.Data = extractedDataByDoc;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Extracted data grouped by document retrieved successfully.";
         }
         catch (Exception ex)
         {
-            // Log any exception details for debugging purposes
-            _logger.LogError(ex, "Error retrieving extracted data for ML model ID: {MLModelId}", mlModelId);
-            serviceResponse.Message = "An error occurred while retrieving data. Please try again later.";
+            _logger.LogError(ex, "Error retrieving extracted data for AI project version ID: {AIProjectVersionId}", aiProjectVersionId);
         }
 
         return serviceResponse;
@@ -706,25 +746,25 @@ public class InferencingModelService : IInferencingModelService
 
         try
         {
-            _logger.LogInformation("Initiating update of extracted data for ML Model ID: {MLModelId}", inferencingModelExtractedDataDetailDto.Id);
+            _logger.LogInformation("Initiating update of extracted data for AIProjectVersionId: {AIProjectVersionId}", inferencingModelExtractedDataDetailDto.AIProjectVersionId);
 
             // Fetch the ML model along with associated tasks
-            var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w => w.Id == inferencingModelExtractedDataDetailDto.Id)
+            var aIProjectVersion = await _unitOfWork.AIProjectVersionRepo
+                .GetByConditionAsync(w => w.Id == inferencingModelExtractedDataDetailDto.AIProjectVersionId)
                 .Include(i => i.Tasks)
                 .SingleOrDefaultAsync();
 
-            if (mlModel == null)
+            if (aIProjectVersion == null)
             {
-                _logger.LogWarning("No ML model found with ID: {MLModelId}", inferencingModelExtractedDataDetailDto.Id);
-                serviceResponse.Message = "ML model not found.";
+                _logger.LogWarning("No version found with ID: {AIProjectVersionId}", inferencingModelExtractedDataDetailDto.Id);
+                serviceResponse.Message = "AI project verison not found.";
                 return serviceResponse;
             }
 
-            var taskIds = mlModel.Tasks.Select(s => s.Id);
-            // Fetch tasks for the model, including associated extracted data
+            var versionTaskIds = aIProjectVersion.Tasks.Select(s => s.Id);
+            // Fetch tasks for the ai project, including associated extracted data
             var existingExtractedDataList = await _unitOfWork.ExtractedDataRepo
-                .GetByConditionAsync(w => taskIds.Contains(w.ModelTaskId))
+                .GetByConditionAsync(w => versionTaskIds.Contains(w.ModelTaskId))
                 .ToListAsync();
 
             var jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
@@ -733,8 +773,8 @@ public class InferencingModelService : IInferencingModelService
             // Update data for each available task type in the input DTO
             if (inferencingModelExtractedDataDetailDto.Extraction != null)
             {
-                var task = mlModel.Tasks.FirstOrDefault(t => t.Name == nameof(ModelTypesEnum.Extraction));
-                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == task.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
+                var versionTask = aIProjectVersion.Tasks.FirstOrDefault(t => t.Name == nameof(AIProjectTaskTypesEnum.Extraction));
+                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == versionTask.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
                 if (extractedData != null)
                 {
                     extractedData.DataObject = JsonSerializer.Serialize(inferencingModelExtractedDataDetailDto.Extraction, jsonOptions);
@@ -745,8 +785,8 @@ public class InferencingModelService : IInferencingModelService
 
             if (inferencingModelExtractedDataDetailDto.Classification != null)
             {
-                var task = mlModel.Tasks.FirstOrDefault(t => t.Name == nameof(ModelTypesEnum.Classification));
-                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == task.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
+                var versionTask = aIProjectVersion.Tasks.FirstOrDefault(t => t.Name == nameof(AIProjectTaskTypesEnum.Classification));
+                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == versionTask.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
                 if (extractedData != null)
                 {
                     extractedData.DataObject = JsonSerializer.Serialize(inferencingModelExtractedDataDetailDto.Classification, jsonOptions);
@@ -757,8 +797,8 @@ public class InferencingModelService : IInferencingModelService
 
             if (inferencingModelExtractedDataDetailDto.SentimentAnalytics != null)
             {
-                var task = mlModel.Tasks.FirstOrDefault(t => t.Name == nameof(ModelTypesEnum.SentimentAnalytics));
-                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == task.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
+                var versionTask = aIProjectVersion.Tasks.FirstOrDefault(t => t.Name == nameof(AIProjectTaskTypesEnum.SentimentAnalytics));
+                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == versionTask.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
                 if (extractedData != null)
                 {
                     extractedData.DataObject = JsonSerializer.Serialize(inferencingModelExtractedDataDetailDto.SentimentAnalytics, jsonOptions);
@@ -769,8 +809,8 @@ public class InferencingModelService : IInferencingModelService
 
             if (inferencingModelExtractedDataDetailDto.QuestionAnswer != null)
             {
-                var task = mlModel.Tasks.FirstOrDefault(t => t.Name == nameof(ModelTypesEnum.QuestionAnswer));
-                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == task.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
+                var versionTask = aIProjectVersion.Tasks.FirstOrDefault(t => t.Name == nameof(AIProjectTaskTypesEnum.QuestionAnswer));
+                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == versionTask.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
                 if (extractedData != null)
                 {
                     extractedData.DataObject = JsonSerializer.Serialize(inferencingModelExtractedDataDetailDto.QuestionAnswer, jsonOptions);
@@ -781,8 +821,8 @@ public class InferencingModelService : IInferencingModelService
 
             if (inferencingModelExtractedDataDetailDto.Summarization != null)
             {
-                var task = mlModel.Tasks.FirstOrDefault(t => t.Name == nameof(ModelTypesEnum.Summarization));
-                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == task.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
+                var versionTask = aIProjectVersion.Tasks.FirstOrDefault(t => t.Name == nameof(AIProjectTaskTypesEnum.Summarization));
+                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == versionTask.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
                 if (extractedData != null)
                 {
                     extractedData.DataObject = JsonSerializer.Serialize(inferencingModelExtractedDataDetailDto.Summarization, jsonOptions);
@@ -1102,27 +1142,27 @@ public class InferencingModelService : IInferencingModelService
             // Choose deserialization strategy based on the inferencing task name
             switch (taskName)
             {
-                case nameof(InferencingModelTypesEnum.Extraction):
+                case nameof(AIProjectTaskTypesEnum.Extraction):
                     // Deserialize extraction task data
                     inferencingModelExtractedDataDetailDto.Extraction = JsonSerializer.Deserialize<ExtractionTaskExtractedDataDto>(dataObject, jsonOptions);
                     break;
 
-                case nameof(InferencingModelTypesEnum.Summarization):
+                case nameof(AIProjectTaskTypesEnum.Summarization):
                     // Deserialize summarization task data
                     inferencingModelExtractedDataDetailDto.Summarization = JsonSerializer.Deserialize<SummarizationTaskExtractedDataDto>(dataObject, jsonOptions);
                     break;
 
-                case nameof(InferencingModelTypesEnum.QuestionAnswer):
+                case nameof(AIProjectTaskTypesEnum.QuestionAnswer):
                     // Deserialize question-answer task data
                     inferencingModelExtractedDataDetailDto.QuestionAnswer = JsonSerializer.Deserialize<List<QuestionAnswerTaskExtractedDataDto>>(dataObject, jsonOptions);
                     break;
 
-                case nameof(InferencingModelTypesEnum.SentimentAnalytics):
+                case nameof(AIProjectTaskTypesEnum.SentimentAnalytics):
                     // Deserialize sentiment analytics task data
                     inferencingModelExtractedDataDetailDto.SentimentAnalytics = JsonSerializer.Deserialize<List<SentimentAnalysisExtractedDataDto>>(dataObject, jsonOptions);
                     break;
 
-                case nameof(InferencingModelTypesEnum.Classification):
+                case nameof(AIProjectTaskTypesEnum.Classification):
                     // Deserialize classification task data
                     inferencingModelExtractedDataDetailDto.Classification = JsonSerializer.Deserialize<List<ClassificationTaskExtractedDataDto>>(dataObject, jsonOptions);
                     break;
@@ -1145,15 +1185,15 @@ public class InferencingModelService : IInferencingModelService
     }
 
     // Processes a document extraction for a model task, creating or updating extracted data based on the document's state.
-    private async Task<(ExtractedData? NewExtractedData, ExtractedData? UpdatedExtractedData)> ProcessFileAsync(MLModel model, ModelTask modelTask, Guid fileId, InferencingModelTaskResponseDto documentExtractionData)
+    private async Task<(ExtractedData? NewExtractedData, ExtractedData? UpdatedExtractedData)> ProcessFileAsync(AIProjectVersion aIProjectVersion, VersionTask versionTask, Guid fileId, InferencingModelTaskResponseDto documentExtractionData)
     {
-        _logger.LogInformation("Starting extraction for DocumentId: {DocumentId} in ModelId: {ModelId}, TaskId: {TaskId}", fileId, model.Id, modelTask.Id);
+        _logger.LogInformation("Starting extraction for DocumentId: {DocumentId} in AIProjectVersionId: {AIProjectVersionId}, VersionTaskId: {VersionTaskId}", fileId, aIProjectVersion.Id, versionTask.Id);
 
         // Retrieve the existing extracted data (if any) for the given document and task
-        var existingData = model.ExtractedData.FirstOrDefault(w => w.ModelTaskId == modelTask.Id && w.DocId == fileId);
+        var existingData = versionTask.ExtractedDatas.FirstOrDefault(w => w.ModelTaskId == versionTask.Id && w.DocId == fileId);
 
         // Retrieve the uploaded document by its file ID
-        var document = model.UploadedDocs.FirstOrDefault(d => d.Id == fileId);
+        var document = aIProjectVersion.Resources.FirstOrDefault(d => d.Id == fileId);
         if (document == null)
         {
             // Log and handle the case where the document is not found
@@ -1180,7 +1220,7 @@ public class InferencingModelService : IInferencingModelService
                 filePath = filePath.Substring("/files/".Length);
 
             // Combine with local storage path
-            filePath = Path.Combine(_fileUploadConfig.UploadDirectory, filePath.TrimStart('/'));
+            filePath = Path.Combine(_fileUploadConfig.TempUploadDirectory, filePath.TrimStart('/'));
         }
 
         // Extract the text from the document using the provided path
@@ -1194,9 +1234,9 @@ public class InferencingModelService : IInferencingModelService
         }
 
         // Call the LLM service to process the extracted text and update the documentExtractionData
-        documentExtractionData = await CallLLMAndProcessResponseAsync(modelTask, documentText, documentExtractionData);
+        documentExtractionData = await CallLLMAndProcessResponseAsync(versionTask, documentText, documentExtractionData);
 
-        string? dataObject = GetSerializedDataObjectBasedOnTaskName(modelTask.Name, documentExtractionData);
+        string? dataObject = GetSerializedDataObjectBasedOnTaskName(versionTask.Name, documentExtractionData);
 
         // If no existing extracted data, create a new record
         if (existingData == null)
@@ -1204,9 +1244,10 @@ public class InferencingModelService : IInferencingModelService
             var newExtracted = new ExtractedData
             {
                 DocId = fileId,
-                Type = document.Type,
-                MLModelId = model.Id,
-                ModelTaskId = modelTask.Id,
+                Type = ExtractedDataType.TestData,
+                MLModelId = aIProjectVersion.AIProjectId,
+                // AIProjectVersionId = aIProjectVersion.Id,
+                ModelTaskId = versionTask.Id,
                 TokenCount = documentExtractionData.TokenCount,
                 ExecutionCount = documentExtractionData.ExecutionCount,
                 ExecutionTime = documentExtractionData.ExecutionTime,
@@ -1247,23 +1288,23 @@ public class InferencingModelService : IInferencingModelService
 
             switch (taskName)
             {
-                case nameof(InferencingModelTypesEnum.Extraction):
+                case nameof(AIProjectTaskTypesEnum.Extraction):
                     dataObject = JsonSerializer.Serialize(documentExtractionData.Extraction, options);
                     break;
 
-                case nameof(InferencingModelTypesEnum.Summarization):
+                case nameof(AIProjectTaskTypesEnum.Summarization):
                     dataObject = JsonSerializer.Serialize(documentExtractionData.Summarization, options);
                     break;
 
-                case nameof(InferencingModelTypesEnum.QuestionAnswer):
+                case nameof(AIProjectTaskTypesEnum.QuestionAnswer):
                     dataObject = JsonSerializer.Serialize(documentExtractionData.QuestionAnswer, options);
                     break;
 
-                case nameof(InferencingModelTypesEnum.SentimentAnalytics):
+                case nameof(AIProjectTaskTypesEnum.SentimentAnalytics):
                     dataObject = JsonSerializer.Serialize(documentExtractionData.SentimentAnalytics, options);
                     break;
 
-                case nameof(InferencingModelTypesEnum.Classification):
+                case nameof(AIProjectTaskTypesEnum.Classification):
                     dataObject = JsonSerializer.Serialize(documentExtractionData.Classification, options);
                     break;
 
@@ -1320,12 +1361,12 @@ public class InferencingModelService : IInferencingModelService
     }
 
     // Calls the LLM with a prompt, processes the response, and populates extraction metadata.
-    private async Task<InferencingModelTaskResponseDto> CallLLMAndProcessResponseAsync(ModelTask modelTask, string fileContent, InferencingModelTaskResponseDto documentExtractionData)
+    private async Task<InferencingModelTaskResponseDto> CallLLMAndProcessResponseAsync(VersionTask versionTask, string fileContent, InferencingModelTaskResponseDto documentExtractionData)
     {
         // Generate the prompt by replacing placeholders with actual content
-        var outputFormatJson = GetOutputFormatJson(modelTask);
-        var ollamaOutputFormatSchema = GetOllamaOutputFormatSchema(modelTask);
-        var prompt = modelTask.GeneratedPrompt.Replace("{{FileContent}}", fileContent).Replace("{{OutputFormat}}", outputFormatJson);
+        var outputFormatJson = GetOutputFormatJson(versionTask);
+        var ollamaOutputFormatSchema = GetOllamaOutputFormatSchema(versionTask);
+        var prompt = versionTask.GeneratedPrompt.Replace("{{FileContent}}", fileContent).Replace("{{OutputFormat}}", outputFormatJson);
 
         // Log the generated prompt for debugging
         _logger.LogInformation("Sending prompt to LLM: {Prompt}", prompt);
@@ -1333,7 +1374,7 @@ public class InferencingModelService : IInferencingModelService
         var startTime = DateTime.UtcNow;
 
         // Call the LLM service to extract data
-        var llmResponse = await _llmDataExtractionService.ExtractDataAsync(prompt, modelTask.LLM, modelTask.Temperature, ollamaOutputFormatSchema);
+        var llmResponse = await _llmDataExtractionService.ExtractDataAsync(prompt, versionTask.LLM, versionTask.Temperature, ollamaOutputFormatSchema);
 
         var endTime = DateTime.UtcNow;
         var executionSeconds = (int)Math.Ceiling((endTime - startTime).TotalSeconds);
@@ -1359,11 +1400,11 @@ public class InferencingModelService : IInferencingModelService
         {
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-            switch (modelTask.Name)
+            switch (versionTask.Name)
             {
-                case nameof(InferencingModelTypesEnum.Extraction):
+                case nameof(AIProjectTaskTypesEnum.Extraction):
                     var llmResponseJsonRoot = JsonDocument.Parse(llmResponse.Data).RootElement;
-                    var extractionSetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(modelTask.SetupObject ?? null, options);
+                    var extractionSetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(versionTask.SetupObject ?? null, options);
 
                     // Prepare the output format with extracted data, mapping from fields and tables
                     if (extractionSetupObject.Tables.Count() > 0)
@@ -1405,16 +1446,16 @@ public class InferencingModelService : IInferencingModelService
                     }
                     break;
 
-                case nameof(InferencingModelTypesEnum.Summarization):
+                case nameof(AIProjectTaskTypesEnum.Summarization):
                     documentExtractionData.Summarization = JsonSerializer.Deserialize<SummarizationTaskExtractedDataDto>(llmResponse.Data, options);
                     break;
 
-                case nameof(InferencingModelTypesEnum.QuestionAnswer):
+                case nameof(AIProjectTaskTypesEnum.QuestionAnswer):
                     documentExtractionData.QuestionAnswer = JsonSerializer.Deserialize<List<QuestionAnswerTaskExtractedDataDto>>(llmResponse.Data, options);
                     break;
 
-                case nameof(InferencingModelTypesEnum.SentimentAnalytics):
-                    var sentimentAnalyticsSetupDto = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(modelTask.SetupObject, options);
+                case nameof(AIProjectTaskTypesEnum.SentimentAnalytics):
+                    var sentimentAnalyticsSetupDto = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(versionTask.SetupObject, options);
                     documentExtractionData.SentimentAnalytics = sentimentAnalyticsSetupDto.Categories.Adapt<List<SentimentAnalysisExtractedDataDto>>();
                     var sentimentAnalyticsCategories = JsonSerializer.Deserialize<List<CategoryDataDto>>(llmResponse.Data, options);
                     foreach (var detectedCategory in sentimentAnalyticsCategories)
@@ -1471,8 +1512,8 @@ public class InferencingModelService : IInferencingModelService
                     }
                     break;
 
-                case nameof(InferencingModelTypesEnum.Classification):
-                    var classificationSetupDto = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(modelTask.SetupObject, options);
+                case nameof(AIProjectTaskTypesEnum.Classification):
+                    var classificationSetupDto = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(versionTask.SetupObject, options);
                     documentExtractionData.Classification = classificationSetupDto.Categories.Adapt<List<ClassificationTaskExtractedDataDto>>();
                     var classificationCategories = JsonSerializer.Deserialize<List<CategoryDataDto>>(llmResponse.Data, options);
                     foreach (var detectedCategory in classificationCategories)
@@ -1530,7 +1571,7 @@ public class InferencingModelService : IInferencingModelService
                     break;
 
                 default:
-                    _logger.LogWarning("Unhandled task type: {TaskName}", modelTask.Name);
+                    _logger.LogWarning("Unhandled task type: {TaskName}", versionTask.Name);
                     break;
             }
 
@@ -1552,10 +1593,10 @@ public class InferencingModelService : IInferencingModelService
 
     // Generates and returns a JSON string representing the output format based on the model task type.
     // TODO: need to remove later since we have GetOllamaOutputFormatSchema
-    private string? GetOutputFormatJson(ModelTask modelTask)
+    private string? GetOutputFormatJson(VersionTask versionTask)
     {
-        // If the modelTask is null, return null immediately
-        if (modelTask == null) return null;
+        // If the versionTask is null, return null immediately
+        if (versionTask == null) return null;
 
         // Declare the variable to store the output
         string? outputFormatJson = null;
@@ -1566,13 +1607,13 @@ public class InferencingModelService : IInferencingModelService
             PropertyNameCaseInsensitive = true
         };
 
-        // Check the type of model task and process accordingly
-        switch (modelTask.Name)
+        // Check the type of version task and process accordingly
+        switch (versionTask.Name)
         {
             // Handle Extraction task type
-            case nameof(InferencingModelTypesEnum.Extraction):
+            case nameof(AIProjectTaskTypesEnum.Extraction):
                 // Deserialize the SetupObject into the ExtractionTaskSetupDto
-                var extractionSetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(modelTask.SetupObject ?? null, jsonOptions);
+                var extractionSetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(versionTask.SetupObject ?? null, jsonOptions);
 
                 // Prepare the output format with extracted data, mapping from fields and tables
 
@@ -1600,9 +1641,9 @@ public class InferencingModelService : IInferencingModelService
                 break;
 
             // Handle Classification task type
-            case nameof(InferencingModelTypesEnum.Classification):
+            case nameof(AIProjectTaskTypesEnum.Classification):
                 // Deserialize the SetupObject into ClassificationTaskSetupDto
-                var classificationSetupObject = JsonSerializer.Deserialize<ClassificationTaskSetupDto>(modelTask.SetupObject ?? null, jsonOptions);
+                var classificationSetupObject = JsonSerializer.Deserialize<ClassificationTaskSetupDto>(versionTask.SetupObject ?? null, jsonOptions);
 
                 // Prepare output for the classification categories and subcategories
                 // var classificationResult = classificationSetupObject.Categories.Select(category => new ClassificationTaskExtractedDataDto()
@@ -1673,9 +1714,9 @@ public class InferencingModelService : IInferencingModelService
                 break;
 
             // Handle Sentiment Analytics task type
-            case nameof(InferencingModelTypesEnum.SentimentAnalytics):
+            case nameof(AIProjectTaskTypesEnum.SentimentAnalytics):
                 // Deserialize the SetupObject into SentimentAnalyticsTaskSetupDto
-                var sentimentAnalyticsSetupObject = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(modelTask.SetupObject ?? null, jsonOptions);
+                var sentimentAnalyticsSetupObject = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(versionTask.SetupObject ?? null, jsonOptions);
 
                 // // Prepare output for sentiment categories and subcategories
                 // var sentimentResult = sentimentAnalyticsSetupObject.Categories.Select(category => new SentimentAnalysisExtractedDataDto()
@@ -1747,9 +1788,9 @@ public class InferencingModelService : IInferencingModelService
                 break;
 
             // Handle Question Answer task type
-            case nameof(InferencingModelTypesEnum.QuestionAnswer):
+            case nameof(AIProjectTaskTypesEnum.QuestionAnswer):
                 // Deserialize the SetupObject into QuestionAnswerTaskSetupDto
-                var questionAnswerSetupObject = JsonSerializer.Deserialize<QuestionAnswerTaskSetupDto>(modelTask.SetupObject ?? null, jsonOptions);
+                var questionAnswerSetupObject = JsonSerializer.Deserialize<QuestionAnswerTaskSetupDto>(versionTask.SetupObject ?? null, jsonOptions);
 
                 // Prepare output for question-answer pairs
                 var questionAnswerResult = questionAnswerSetupObject.QuestionAnswers.Select(questionAnswer => new QuestionAnswerTaskExtractedDataDto()
@@ -1764,9 +1805,9 @@ public class InferencingModelService : IInferencingModelService
                 break;
 
             // Handle Summarization task type
-            case nameof(InferencingModelTypesEnum.Summarization):
+            case nameof(AIProjectTaskTypesEnum.Summarization):
                 // Deserialize the SetupObject into SummarizationTaskSetupDto
-                var summarizationSetupObject = JsonSerializer.Deserialize<SummarizationTaskSetupDto>(modelTask.SetupObject ?? null, jsonOptions);
+                var summarizationSetupObject = JsonSerializer.Deserialize<SummarizationTaskSetupDto>(versionTask.SetupObject ?? null, jsonOptions);
 
                 // Prepare output for summarized data
                 var summarizationResult = new SummarizationTaskExtractedDataDto()
@@ -1788,10 +1829,10 @@ public class InferencingModelService : IInferencingModelService
     }
 
     // Generates and returns a JSON string representing the output format based on the model task type.
-    private object? GetOllamaOutputFormatSchema(ModelTask modelTask)
+    private object? GetOllamaOutputFormatSchema(VersionTask versionTask)
     {
-        // If the modelTask is null, return null immediately
-        if (modelTask == null) return null;
+        // If the versionTask is null, return null immediately
+        if (versionTask == null) return null;
 
         // Configure JSON deserialization options to make property name matching case-insensitive
         var jsonOptions = new JsonSerializerOptions
@@ -1799,13 +1840,13 @@ public class InferencingModelService : IInferencingModelService
             PropertyNameCaseInsensitive = true
         };
 
-        // Check the type of model task and process accordingly
-        switch (modelTask.Name)
+        // Check the type of version task and process accordingly
+        switch (versionTask.Name)
         {
             // Handle Extraction task type
-            case nameof(InferencingModelTypesEnum.Extraction):
+            case nameof(AIProjectTaskTypesEnum.Extraction):
                 // Deserialize the SetupObject into the ExtractionTaskSetupDto
-                var extractionSetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(modelTask.SetupObject ?? null, jsonOptions);
+                var extractionSetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(versionTask.SetupObject ?? null, jsonOptions);
 
                 // Prepare the output format with extracted data, mapping from fields and tables
                 var extractionJsonObj = new
@@ -1875,7 +1916,7 @@ public class InferencingModelService : IInferencingModelService
             // Switch statement to handle different model types and generate the appropriate prompt
             switch (name)
             {
-                case nameof(InferencingModelTypesEnum.Extraction):
+                case nameof(AIProjectTaskTypesEnum.Extraction):
                     // Handling for Data Extraction model
 
                     // Initialize builders for field and table extraction instructions
@@ -1933,7 +1974,7 @@ public class InferencingModelService : IInferencingModelService
                     });
                     break;
 
-                case nameof(InferencingModelTypesEnum.Summarization):
+                case nameof(AIProjectTaskTypesEnum.Summarization):
                     // Handling for Text Summarization model
 
                     // Default prompt for Summarization model, or use the one provided in the DTO
@@ -1950,7 +1991,7 @@ public class InferencingModelService : IInferencingModelService
                     });
                     break;
 
-                case nameof(InferencingModelTypesEnum.SentimentAnalytics):
+                case nameof(AIProjectTaskTypesEnum.SentimentAnalytics):
                     // Handling for Sentiment Analysis model
 
                     // Default prompt for Sentiment Analysis model, or use the one provided in the DTO
@@ -2000,7 +2041,7 @@ public class InferencingModelService : IInferencingModelService
                     });
                     break;
 
-                case nameof(InferencingModelTypesEnum.Classification):
+                case nameof(AIProjectTaskTypesEnum.Classification):
                     // Handling for Classification model (similar to Sentiment Analytics but for general classification tasks)
 
                     // Default prompt for Classification model, or use the one provided in the DTO
@@ -2051,7 +2092,7 @@ public class InferencingModelService : IInferencingModelService
                     });
                     break;
 
-                case nameof(InferencingModelTypesEnum.QuestionAnswer):
+                case nameof(AIProjectTaskTypesEnum.QuestionAnswer):
                     // Handling for Question Answering model
 
                     // Default prompt for Question Answer model, or use the one provided in the DTO
@@ -2098,10 +2139,10 @@ public class InferencingModelService : IInferencingModelService
     }
 
     // Maps tasks from an ML model to the appropriate properties in the InferencingModelDto. Each task is deserialized based on its type into a strongly-typed DTO.
-    private void GetInferencingModelSetup(MLModel mlModel, InferencingModelDto inferencingModelDto)
+    private void GetInferencingModelSetup(List<VersionTask>? modelTasks, InferencingModelDto inferencingModelDto)
     {
-        // Exit early if the ML model or its tasks list is null or empty
-        if (mlModel?.Tasks == null || !mlModel.Tasks.Any())
+        // Exit early if the ML model tasks list is null or empty
+        if (modelTasks == null || !modelTasks.Any())
             return;
 
         // Configure JSON deserialization to ignore case sensitivity in property names
@@ -2111,76 +2152,76 @@ public class InferencingModelService : IInferencingModelService
         };
 
         // Iterate over each task in the ML model
-        foreach (var mlTask in mlModel.Tasks)
+        foreach (var mlTask in modelTasks)
         {
             // Determine the type of task and deserialize accordingly
             switch (mlTask.Name)
             {
-                case nameof(InferencingModelTypesEnum.Extraction):
+                case nameof(AIProjectTaskTypesEnum.Extraction):
                     var extractionDto = new ExtractionTaskDto
                     {
                         Id = mlTask.Id,
                         Name = mlTask.Name,
                         SetupObject = JsonSerializer.Deserialize<ExtractionTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
                         LLM = mlTask.LLM,
-                        ConfigurationType = mlTask.ConfigurationType,
-                        NodePrompt = mlTask.NodePrompt,
+                        ConfigurationType = mlTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        NodePrompt = mlTask.SystemPrompt,
                         Temperature = mlTask.Temperature
                     };
                     inferencingModelDto.Extraction = extractionDto;
                     break;
 
-                case nameof(InferencingModelTypesEnum.Classification):
+                case nameof(AIProjectTaskTypesEnum.Classification):
                     var classificationDto = new ClassificationTaskDto
                     {
                         Id = mlTask.Id,
                         Name = mlTask.Name,
                         SetupObject = JsonSerializer.Deserialize<ClassificationTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
                         LLM = mlTask.LLM,
-                        ConfigurationType = mlTask.ConfigurationType,
-                        NodePrompt = mlTask.NodePrompt,
+                        ConfigurationType = mlTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        NodePrompt = mlTask.SystemPrompt,
                         Temperature = mlTask.Temperature
                     };
                     inferencingModelDto.Classification = classificationDto;
                     break;
 
-                case nameof(InferencingModelTypesEnum.SentimentAnalytics):
+                case nameof(AIProjectTaskTypesEnum.SentimentAnalytics):
                     var sentimentDto = new SentimentAnalyticsTaskSDto
                     {
                         Id = mlTask.Id,
                         Name = mlTask.Name,
                         SetupObject = JsonSerializer.Deserialize<SentimentAnalyticsTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
                         LLM = mlTask.LLM,
-                        ConfigurationType = mlTask.ConfigurationType,
-                        NodePrompt = mlTask.NodePrompt,
+                        ConfigurationType = mlTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        NodePrompt = mlTask.SystemPrompt,
                         Temperature = mlTask.Temperature
                     };
                     inferencingModelDto.SentimentAnalytics = sentimentDto;
                     break;
 
-                case nameof(InferencingModelTypesEnum.QuestionAnswer):
+                case nameof(AIProjectTaskTypesEnum.QuestionAnswer):
                     var questionAnswerDto = new QuestionAnswerTaskDto
                     {
                         Id = mlTask.Id,
                         Name = mlTask.Name,
                         SetupObject = JsonSerializer.Deserialize<QuestionAnswerTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
                         LLM = mlTask.LLM,
-                        ConfigurationType = mlTask.ConfigurationType,
-                        NodePrompt = mlTask.NodePrompt,
+                        ConfigurationType = mlTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        NodePrompt = mlTask.SystemPrompt,
                         Temperature = mlTask.Temperature
                     };
                     inferencingModelDto.QuestionAnswer = questionAnswerDto;
                     break;
 
-                case nameof(InferencingModelTypesEnum.Summarization):
+                case nameof(AIProjectTaskTypesEnum.Summarization):
                     var summarizationDto = new SummarizationTaskDto
                     {
                         Id = mlTask.Id,
                         Name = mlTask.Name,
                         SetupObject = JsonSerializer.Deserialize<SummarizationTaskSetupDto>(mlTask.SetupObject ?? null, jsonOptions),
                         LLM = mlTask.LLM,
-                        ConfigurationType = mlTask.ConfigurationType,
-                        NodePrompt = mlTask.NodePrompt,
+                        ConfigurationType = mlTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        NodePrompt = mlTask.SystemPrompt,
                         Temperature = mlTask.Temperature
                     };
                     inferencingModelDto.Summarization = summarizationDto;

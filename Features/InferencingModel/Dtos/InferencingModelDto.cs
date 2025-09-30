@@ -1,14 +1,19 @@
 namespace MLModelBuilderAPIs.DTOs;
 
-/// <summary>
+/// <summary>x
 /// Represents the details of an inferencing model used in machine learning tasks.
 /// </summary>
 public class InferencingModelDto
 {
     /// <summary>
-    /// Gets or sets the unique identifier for the inferencing model.
+    /// Gets or sets the unique identifier for the inferencing model associated with ai prioject
     /// </summary>
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the associated ai project version entity.
+    /// </summary>
+    public Guid AIProjectVersionId { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the inferencing model.

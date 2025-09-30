@@ -7,7 +7,7 @@ public class InferencingModelMappingProfile : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<MLModel, InferencingModelDto>()
+        config.NewConfig<AIProject, InferencingModelDto>()
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                 ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
@@ -16,9 +16,9 @@ public class InferencingModelMappingProfile : IRegister
                 ? src.CreatedByUser.UserName
                 : null);
 
-        config.NewConfig<ModelTask, DefaultModelSetupDto>();
+        config.NewConfig<VersionTask, DefaultModelSetupDto>();
 
-        config.NewConfig<DefaultModelSetupDto, ModelTask>()
+        config.NewConfig<DefaultModelSetupDto, VersionTask>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedByUserId)
             .Ignore(dest => dest.LastModifiedByUserId)
@@ -28,7 +28,7 @@ public class InferencingModelMappingProfile : IRegister
 
 
         // Mapping DTO to Entity for insert or update
-        config.NewConfig<InferencingModelDto, MLModel>()
+        config.NewConfig<InferencingModelDto, AIProject>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.Name)
             .Ignore(dest => dest.CreatedByUserId)

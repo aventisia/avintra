@@ -7,7 +7,7 @@ public interface IInferencingModelService
     /// </summary>
     /// <param name="mlModelId">The unique ID of the ML model to fetch the setup for.</param>
     /// <returns>A task that represents the asynchronous operation. It returns the model setup DTO for the specified ML model.</returns>
-    Task<ServiceResponse<InferencingModelDto>> GetSetupByMLModelIdAsync(Guid mlModelId);
+    Task<ServiceResponse<InferencingModelDto>> GetAIProjectSetupAsync(Guid mlModelId, Guid? mlModelVersionId);
 
     /// <summary>
     /// Updates the configuration for an inferencing model setup.
@@ -41,12 +41,12 @@ public interface IInferencingModelService
     /// <summary>
     /// Gets the extracted data list linked to a specific machine learning model asynchronously.
     /// </summary>
-    /// <param name="mlModelId">The ID of the machine learning model.</param>
+    /// <param name="aiProjectVersionId">The ID of the ai project version.</param>
     /// <returns>
     /// A task that returns a service response containing a list of 
     /// <see cref="InferencingModelExtractedDataDetailDto"/> records.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<InferencingModelExtractedDataDetailDto>>> GetExtractedDataByMLModelIdAsync(Guid mlModelId);
+    Task<ServiceResponse<IEnumerable<InferencingModelExtractedDataDetailDto>>> GetExtractedDataByAIProjectVersionIdAsync(Guid aiProjectVersionId);
 
     /// <summary>
     /// Updates an extracted data record for a machine learning model.

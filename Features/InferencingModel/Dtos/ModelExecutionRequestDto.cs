@@ -16,6 +16,11 @@ public class ModelFileProcessingRequestDto
     public Guid ModelId { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier of the associated ai project version entity.
+    /// </summary>
+    public Guid AIProjectVersionId { get; set; }
+
+    /// <summary>
     /// Gets or sets the list of task IDs associated with the model execution.
     /// </summary>
     public List<Guid>? ModelTaskIds { get; set; }
@@ -40,6 +45,11 @@ public class ModelContentProcessingRequestDto
     /// Gets or sets the unique identifier for the model used in the extraction process.
     /// </summary>
     public Guid ModelId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the associated ai project version entity.
+    /// </summary>
+    public Guid AIProjectVersionId { get; set; }
 
     /// <summary>
     /// Gets or sets the list of task IDs associated with the model execution.
