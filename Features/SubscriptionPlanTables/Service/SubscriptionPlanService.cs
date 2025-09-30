@@ -37,11 +37,6 @@ public class SubscriptionPlanService : ISubscriptionPlanService
                 // If yes, add a filter for that specific type to the database query.
                 query = query.Where(plan => plan.Type == subscriptionPlanType.Value);
             }
-            else
-            {
-                // If no filter was provided, exclude Enterprise plans by default.
-                query = query.Where(plan => plan.Type != SubscriptionPlanTypeEnum.Enterprise);
-            }
 
             // Execute the final query against the database and get the results.
             var subscriptionPlans = await query
