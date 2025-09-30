@@ -13,5 +13,4 @@ export enum LLMsEnum {
   "mistral" = "Mistral",
   "gemma" = "Gemma 3",
   "gpt-4o-mini" = "GPT 4o mini",
-  "gpt-4o" = "GPT 4o",
 }
