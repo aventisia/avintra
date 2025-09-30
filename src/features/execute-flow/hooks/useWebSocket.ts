@@ -1,7 +1,7 @@
 import { IS_TAURI } from "@/constants";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { invoke } from "@tauri-apps/api/core";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import {
   getExecutionState,
@@ -12,7 +12,10 @@ import {
   WebSocketCommandType,
   WebSocketMessageType,
 } from "..";
-import { useUpdateCreditsUsedMutation } from "@/features/available-credits/updateCreditsUsedMutation";
+import { usePostCreditConsumptionMutation } from "@/features/credits-management/hooks/usePostCreditConsumptionMutation";
+import { generateCreditConsumptionList } from "@/features/credits-management/utils/generateCreditConsumptionList";
+import { getLocalExecutionLog } from "@/features/flow-execution-log/apis/get-version-execution-log";
+import { Execution } from "@/features/flow-execution-log/types/execution-types";
 
 export default function useWebSocket() {
   const socketRef = useRef<WebSocket | null>(null);
@@ -25,7 +28,11 @@ export default function useWebSocket() {
     })),
   );
 
-  const { updateCreditsUsed } = useUpdateCreditsUsedMutation();
+  const { postCreditConsumption } = usePostCreditConsumptionMutation();
+
+  const [pendingPostCommand, setPendingPostCommand] = useState<
+    "abort" | "complete" | null
+  >(null);
 
   // Function to send command to web socket
   const sendCommand = useCallback(
@@ -43,14 +50,8 @@ export default function useWebSocket() {
           }),
         );
 
-        if (command === "complete") {
-          updateCreditsUsed({
-            serviceType: "AgentExecution", //CreditServiceTypesEnum
-            consumedUnit: 1,
-            refType: "Agent", //UsageSourceTypesEnum
-            refId: currentFlow?.id,
-            refName: currentFlow?.name,
-          });
+        if (command === "abort" || command === "complete") {
+          setPendingPostCommand(command);
         }
 
         // Update the execution state based on the command
@@ -59,7 +60,7 @@ export default function useWebSocket() {
         console.warn("WebSocket not connected");
       }
     },
-    [currentFlow?.id, currentFlow?.name, setExecutionState, updateCreditsUsed],
+    [setExecutionState],
   );
 
   // Connect to web socket and handle messages
@@ -139,12 +140,45 @@ export default function useWebSocket() {
         socketRef.current.close(1000, "Component unmounted");
       }
     };
+  }, [sendCommand, setExecutionState]);
+
+  // Post credit consumption data once command is complete/abort
+  useEffect(() => {
+    if (!pendingPostCommand) return;
+
+    const generateAndPostConsumption = async () => {
+      try {
+        const localLogs = await getLocalExecutionLog(currentFlow.versionId);
+
+        const executionData: Execution[] = localLogs ?? [];
+
+        const consumptionList = generateCreditConsumptionList(
+          executionData,
+          currentFlow.id,
+          currentFlow.name,
+          currentFlow.versionId,
+          pendingPostCommand,
+        );
+
+        if (consumptionList) {
+          await postCreditConsumption(consumptionList); // post data
+        } else {
+          console.warn("No credit consumption data generated.");
+        }
+      } catch (error) {
+        console.error("Failed to post credit consumption:", error);
+      } finally {
+        setPendingPostCommand(null); // cleanup
+      }
+    };
+
+    generateAndPostConsumption();
   }, [
-    currentFlow?.id,
-    currentFlow?.name,
-    sendCommand,
-    setExecutionState,
-    updateCreditsUsed,
+    currentFlow.id,
+    currentFlow.name,
+    currentFlow.versionId,
+    pendingPostCommand,
+    postCreditConsumption,
   ]);
 
   return { sendCommand };
