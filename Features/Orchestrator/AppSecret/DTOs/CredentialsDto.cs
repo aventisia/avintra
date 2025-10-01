@@ -169,4 +169,22 @@ public class SendGridCredentialsDto
     public string ApiKey { get; set; } = string.Empty;
 }
 
+
+public class GeneralCredentialsDto
+{
+    /// <summary>
+    /// Gets or sets the username associated with the credentials.
+    /// This may be null if the username is not provided.
+    /// </summary>
+    public string Username { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the password associated with the credentials.
+    /// This may be null if the password is not provided.
+    /// </summary>
+    public string Password { get; set; } = string.Empty;
+
+}
 #endregion
+
+

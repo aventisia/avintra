@@ -715,6 +715,25 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
+                 case nameof(AppSecretTypesEnum.GeneralCredentialApi):
+                {
+                    var generalCredential = System.Text.Json.JsonSerializer.Deserialize<GeneralCredentialsDto>(rawJson, jsonOptions);
+                    if(generalCredential!= null)
+                    {
+                        validationResult.EncryptedValues["Username"] = _encryptionService.EncryptString(generalCredential.Username);
+                         validationResult.EncryptedValues["Password"] = _encryptionService.EncryptString(generalCredential.Password);
+                         generalCredential.Username = string.Empty;
+                         generalCredential.Password = string.Empty;
+
+                         sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(generalCredential, jsonOptions);
+                    }
+                     else
+                    {
+                        validationResult.Remark = "Invalid General credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+
             // Default case for unsupported credential types
             default:
                 // Log an error for unsupported credential types and set an error remark
