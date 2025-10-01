@@ -21,63 +21,50 @@ public class MLModelBuilderDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Global TenantId filters
-        modelBuilder.Entity<MLModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<AIProject>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<AIProjectVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<VersionTask>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ExtractedData>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<UploadedDoc>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<ScheduledModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<FineTuningLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<ModelAPIKey>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<ModelTask>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<AIProject_User>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<VersionResource>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<AIProjectVersionApiKey>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<MLModelTemplate>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<ConversationHistory>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ConversationalModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<GenerativeModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<MLModelVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<MLModelTemplate>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<MLModelUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<ConversationHistory>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<ScheduledModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<FineTuningLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
-        modelBuilder.Entity<MLModel>().HasIndex(index => new { index.Name, index.CreatedByUserId }).IsUnique();
+        modelBuilder.Entity<AIProject>().HasIndex(index => new { index.Name, index.CreatedByUserId }).IsUnique();
 
         // Enum to string conversion
-        modelBuilder.Entity<MLModel>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ModelTypesEnum>());
-        modelBuilder.Entity<MLModel>().Property(e => e.SetupStatus).HasConversion(new EnumToStringConverter<SetupStatusTypesEnum>());
-        modelBuilder.Entity<UploadedDoc>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ExtractedDataType>());
-        modelBuilder.Entity<UploadedDoc>().Property(e => e.Stage).HasConversion(new EnumToStringConverter<DocumentStageTypesEnum>());
-        modelBuilder.Entity<ExtractedData>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ExtractedDataType>());
+        modelBuilder.Entity<AIProject>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AIProjectTypeEnum>());
         modelBuilder.Entity<ScheduledModel>().Property(e => e.ScheduleType).HasConversion(new EnumToStringConverter<ModelOperationTypesEnum>());
         modelBuilder.Entity<ScheduledModel>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ScheduleTypesEnum>());
         modelBuilder.Entity<FineTuningLog>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ScheduleTypesEnum>());
         modelBuilder.Entity<MLModelTemplate>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<AccessTypesEnum>());
-        modelBuilder.Entity<MLModelTemplate>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ModelTypesEnum>());
-        modelBuilder.Entity<MLModelUser>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<AgentAccessTypesEnum>());
-        modelBuilder.Entity<ModelTask>().Property(e => e.ConfigurationType).HasConversion(new EnumToStringConverter<LLMConfigurationTypesEnum>());
+        modelBuilder.Entity<MLModelTemplate>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AIProjectTypeEnum>());
+        modelBuilder.Entity<AIProject_User>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<ProjectUserAccessEnum>());
         modelBuilder.Entity<ConversationalModel>().Property(e => e.ConfigurationType).HasConversion(new EnumToStringConverter<LLMConfigurationTypesEnum>());
         modelBuilder.Entity<GenerativeModel>().Property(e => e.ConfigurationType).HasConversion(new EnumToStringConverter<LLMConfigurationTypesEnum>());
         modelBuilder.Entity<GenerativeModel>().Property(e => e.Name).HasConversion(new EnumToStringConverter<GenerativeModelTypesEnum>());
         modelBuilder.Entity<ConversationHistory>().Property(e => e.ParticipantType).HasConversion(new EnumToStringConverter<ParticipantTypesEnum>());
 
         // Configure One-to-One relationship between Model Library and ModelBuilder User
-        modelBuilder.Entity<MLModel>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<MLModel>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<AIProject>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<AIProject>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
         // Configure One-to-One relationship between Data Model and ModelBuilder User
         modelBuilder.Entity<ExtractedData>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<ExtractedData>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
         // Configure One-to-One relationship between Data Model and ModelBuilder User
-        modelBuilder.Entity<UploadedDoc>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<UploadedDoc>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
-
-        // Configure One-to-Many relationship between data model and model library
-        modelBuilder.Entity<MLModel>().HasMany(many => many.ExtractedData).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
-        modelBuilder.Entity<MLModel>().HasMany(many => many.UploadedDocs).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
-        modelBuilder.Entity<MLModel>().HasMany(many => many.ScheduledModels).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
-        modelBuilder.Entity<MLModel>().HasMany(many => many.Tasks).WithOne(one => one.MLModel).HasForeignKey(fKey => fKey.MLModelId).IsRequired();
-        modelBuilder.Entity<MLModel>().HasOne(one => one.ConversationalModel).WithOne(one => one.MLModel).HasForeignKey<ConversationalModel>(fKey => fKey.MLModelId).IsRequired();
-        modelBuilder.Entity<MLModel>().HasOne(one => one.GenerativeModel).WithOne(one => one.MLModel).HasForeignKey<GenerativeModel>(fKey => fKey.MLModelId).IsRequired();
+        modelBuilder.Entity<VersionResource>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<VersionResource>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
         // Configure One-to-One relationship between Uploaded doc and extracted data
-        modelBuilder.Entity<UploadedDoc>().HasMany(many => many.ExtractedDatas).WithOne(one => one.UploadedDoc).HasForeignKey(fKey => fKey.DocId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<VersionResource>().HasMany(many => many.ExtractedDatas).WithOne(one => one.VersionResource).HasForeignKey(fKey => fKey.VersionResourceId).OnDelete(DeleteBehavior.Restrict);
 
         // Configure One-to-One relationship between Schedule Model and ModelBuilder User
         modelBuilder.Entity<ScheduledModel>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -123,17 +110,17 @@ public class MLModelBuilderDbContext : DbContext
     }
 
     //Db Sets
-    public DbSet<MLModel> MLModels { get; set; }
+    public DbSet<AIProject> AIProjects { get; set; }
+    public DbSet<AIProjectVersion> AIProjectVersions { get; set; }
+    public DbSet<VersionTask> VersionTasks { get; set; }
+    public DbSet<VersionResource> VersionResources { get; set; }
     public DbSet<ExtractedData> ExtractedData { get; set; }
-    public DbSet<UploadedDoc> UploadedDocs { get; set; }
+    public DbSet<AIProject_User> AIProject_Users { get; set; }
+    public DbSet<GenerativeModel> GenerativeModels { get; set; }
+    public DbSet<AIProjectVersionApiKey> AIProjectVersionApiKeys { get; set; }
     public DbSet<ScheduledModel> ScheduledModels { get; set; }
     public DbSet<FineTuningLog> FineTuningLogs { get; set; }
-    public DbSet<ModelAPIKey> ModelAPIKeys { get; set; }
-    public DbSet<ModelTask> ModelTasks { get; set; }
     public DbSet<ConversationalModel> ConversationalModels { get; set; }
-    public DbSet<GenerativeModel> GenerativeModels { get; set; }
-    public DbSet<MLModelVersion> MLModelVersions { get; set; }
     public DbSet<MLModelTemplate> MLModelTemplates { get; set; }
-    public DbSet<MLModelUser> MLModelUsers { get; set; }
     public DbSet<ConversationHistory> ConversationHistories { get; set; }
 }
