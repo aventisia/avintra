@@ -57,5 +57,5 @@ public class ConversationalModel : BaseEntity, IMustHaveTenant
     /// Gets or sets the navigation property for the associated machine learning model.
     /// </summary>
     [ForeignKey("MLModelId")]
-    public virtual MLModel? MLModel { get; set; }
+    public virtual AIProject? AIProject { get; set; }
 }

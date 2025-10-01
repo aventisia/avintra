@@ -25,7 +25,7 @@ public class MLModelTemplate : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the functional purpose of the template (e.g., Inferencing, Conversation, Generative ).
     /// </summary>
-    public ModelTypesEnum? Type { get; set; }
+    public AIProjectTypeEnum? Type { get; set; }
 
     /// <summary>
     /// Gets or sets the structural category of the template (e.g., AIModel).
