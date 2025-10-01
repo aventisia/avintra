@@ -28,5 +28,5 @@ public class APIKeyDbContext : DbContext
     /// <summary>
     /// DbSet for accessing tenant-specific API keys used for validation during API requests.
     /// </summary>
-    public DbSet<ModelAPIKeyReadOnly> ModelAPIKeyReadOnly { get; set; }
+    public DbSet<AIProjectVersionApiKeyReadOnly> AIProjectVersionAPIKeyReadOnly { get; set; }
 }
