@@ -5,12 +5,7 @@ meta {
 }
 
 get {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/inferencing-model/extracted-data/{{MLMODEL_ID}}
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/inferencing-model/extracted-data/{{AI_PROJECT_VERSION_ID}}
   body: json
   auth: none
-}
-
-body:json {
-  {"modelId":"0196f11b-b6e4-7fa7-bae2-2adb2eecd6fe","fileIds":["0196e863-f2bb-742d-b1b2-99719ff15e2a"]}
-  
 }

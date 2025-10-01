@@ -1,11 +1,15 @@
 meta {
   name: Get inferencing model setup data by id
   type: http
-  seq: 3
+  seq: 2
 }
 
 get {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/inferencing-model/setup/{{MLMODEL_ID}}
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/inferencing-model/setup/{{AI_PROJECT_ID}}?mlModelVersionId={{AI_PROJECT_VERSION_ID}}
   body: none
   auth: none
+}
+
+params:query {
+  mlModelVersionId: {{AI_PROJECT_VERSION_ID}}
 }

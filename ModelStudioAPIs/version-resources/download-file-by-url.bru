@@ -1,0 +1,15 @@
+meta {
+  name: Download file by url
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/upload-doc?fileurl={{FILE_URL}}
+  body: none
+  auth: none
+}
+
+params:query {
+  fileurl: {{FILE_URL}}
+}

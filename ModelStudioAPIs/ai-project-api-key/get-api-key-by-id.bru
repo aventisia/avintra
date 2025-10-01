@@ -1,0 +1,11 @@
+meta {
+  name: Get api key by id
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/api-keys/{{AI_PROJECT_API_KEY_ID}}
+  body: none
+  auth: none
+}

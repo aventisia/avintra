@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: {{MLMODELBUILDER_APIS_BASE_URL}}/generative-model/setup/{{MLMODEL_ID}}
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/generative-model/setup/{{AI_PROJECT_ID}}?aiProjectVersionId={{AI_PROJECT_VERSION_ID}}
   body: none
   auth: none
+}
+
+params:query {
+  aiProjectVersionId: {{AI_PROJECT_VERSION_ID}}
 }

@@ -1,0 +1,18 @@
+meta {
+  name: Publish ai project version
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/ai-project-version/publish
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{AI_PROJECT_VERSION_ID}}",
+    "aiProjectId": "{{AI_PROJECT_ID}}"
+  }
+}

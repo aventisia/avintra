@@ -1,0 +1,15 @@
+meta {
+  name: Delete mutiple ai projects
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/ml-model/delete-multiple
+  body: json
+  auth: none
+}
+
+body:json {
+  ["{{AI_PROJECT_ID}}"]
+}

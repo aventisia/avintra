@@ -12,7 +12,7 @@ post {
 
 body:json {
   {
-    "name": "Data Scientist1",
+    "name": "Data Scientist",
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
   }
   
@@ -21,7 +21,7 @@ body:json {
 script:post-response {
   if(res.getStatus() == 200){
     bru.setGlobalEnvVar(
-    "MLMODEL_ID",
+    "AI_PROJECT_ID",
     res.getBody().data.id
     );
   }

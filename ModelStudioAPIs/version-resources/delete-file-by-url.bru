@@ -1,0 +1,15 @@
+meta {
+  name: Delete file by url
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{MLMODELBUILDER_APIS_BASE_URL}}/upload-doc?fileurl={{FILE_URL}}
+  body: none
+  auth: none
+}
+
+params:query {
+  fileurl: {{FILE_URL}}
+}

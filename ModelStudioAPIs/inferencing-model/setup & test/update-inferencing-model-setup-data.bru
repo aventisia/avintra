@@ -12,35 +12,22 @@ put {
 
 body:json {
   {
-    "id": "{{MLMODEL_ID}}",
+    "id": "{{AI_PROJECT_ID}}",
+    "aiProjectVersionId": "{{AI_PROJECT_VERSION_ID}}",
     "businessContext":"test",
-    "extraction": {
-        //id: bru.getGlobalEnvVar("MLMODEL_TASK_ID"),
-        "name": "Extraction",
-        "configurationType": "OnPrem",
-        "llm": "gemma",
-        "nodePrompt": "You are a highly accurate information extraction assistant. Your task is to carefully analyse the provided text and extract specific pieces of information based on predefined fields or entities.Only extract relevant, factual data as it appears in the input. Do not infer, assume, or create information that is not explicitly present in the text.Return the output with clearly labeled fields as per the extraction schema.If a field is not present in the input, return null or without making assumptions.Ensure the extracted data is clean, free from noise, and maintains the original context",
-        "temperature": 0.3,
-        "setupObject": {
-          "tables":[],
-          "fields": [
-            {
-              "name": "Project name",
-              "type": "Text",
-              "instruction":""
-            },
-            {
-              "name": "Document approved by",
-              "type": "Text",
-              "instruction":""
-            },
-            {
-              "name": "Document prepared by",
-              "type": "Text",
-              "instruction":""
-            }]
-        }
-      }
+    "summarization": {
+      "setupObject": {
+        "totalMinimumWords": 200,
+        "totalMaximumWords": 250
+      },
+      "id": "01999961-1510-72fd-b24b-8dfeddda7cc1",
+      "name": "Summarization",
+      "configurationType": "OnPrem",
+      "llm": "gemma",
+      "secretKey": null,
+      "nodePrompt": "You are an expert summarisation assistant. Your task is to read the provided content and generate a clear, concise, and accurate summary that captures the key ideas, main points, and critical information, while removing redundant or unimportant details.\nFocus on preserving the original intent and tone of the content. The summary should be easily understandable and suitable for someone who has not read the full text.\nIf the content is structured (like emails, reports, meeting transcripts, articles), maintain the logical flow and structure in the summary.\nBe objective, factual, and avoid adding personal opinions or interpretations.",
+      "temperature": 0.2
+    }
   }
   
 }
