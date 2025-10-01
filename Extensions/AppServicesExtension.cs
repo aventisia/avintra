@@ -22,7 +22,7 @@ public static class AppServicesExtension
         config.Apply(new ExtractedDataMappingProfile());
         config.Apply(new VersionResourceMappingProfile());
         config.Apply(new ModelBuilderUserMappingProfile());
-        config.Apply(new AIProjectApiKeyMappingProfile());
+        config.Apply(new AIProjectVersionApiKeyMappingProfile());
         config.Apply(new AIModelMappingProfile());
         config.Apply(new InferencingModelMappingProfile());
         config.Apply(new ConversationModelMappingProfile());
@@ -49,7 +49,7 @@ public static class AppServicesExtension
         services.AddScoped<IExtractedDataService, ExtractedDataService>();
         services.AddScoped<IVersionResourceService, VersionResourceService>();
         services.AddScoped<IModelBuilderUserService, ModelBuilderUserService>();
-        services.AddScoped<IAIProjectApiKeyService, AIProjectApiKeyService>();
+        services.AddScoped<IAIProjectVersionApiKeyService, AIProjectVersionApiKeyService>();
         services.AddScoped<IAIModelService, AIModelService>();
         services.AddScoped<IInferencingModelService, InferencingModelService>();
         services.AddScoped<IConversationModelService, ConversationModelService>();

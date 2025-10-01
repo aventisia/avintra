@@ -18,7 +18,7 @@ public class UnitOfWork : IUnitOfWork
     public IModelBuilderUserRepo ModelBuilderUserRepo => new ModelBuilderUserRepo(_mlModelBuilderDbContext);
     public IScheduledModelRepo ScheduledModelRepo => new ScheduledModelRepo(_mlModelBuilderDbContext);
     public IFineTuningLogRepo FineTuningLogRepo => new FineTuningLogRepo(_mlModelBuilderDbContext);
-    public IAIProjectApiKeyRepo AIProjectApiKeyRepo => new AIProjectApiKeyRepo(_mlModelBuilderDbContext);
+    public IAIProjectVersionApiKeyRepo AIProjectVersionApiKeyRepo => new AIProjectVersionApiKeyRepo(_mlModelBuilderDbContext);
     public IVersionTaskRepo VersionTaskRepo => new VersionTaskRepo(_mlModelBuilderDbContext);
     public IConversationalModelRepo ConversationalModelRepo => new ConversationalModelRepo(_mlModelBuilderDbContext);
     public IGenerativeModelRepo GenerativeModelRepo => new GenerativeModelRepo(_mlModelBuilderDbContext);

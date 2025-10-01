@@ -3,7 +3,7 @@ namespace MLModelBuilderAPIs.DTOs;
 /// <summary>
 /// Represents the data structure for an API key associated with a AI project.
 /// </summary>
-public class AIProjectApiKeyDto
+public class AIProjectVersionApiKeyDto
 {
     /// <summary>
     /// Gets or sets the unique identifier for the API key record.
@@ -32,9 +32,9 @@ public class AIProjectApiKeyDto
     public AIProjectTypeEnum? Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the machine learning model linked to this API key.
+    /// Gets or sets the identifier of the ai project verison linked to this API key.
     /// </summary>
-    public required Guid MLModelId { get; set; }
+    public required Guid AIProjectVersionId { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the API key record was created.
