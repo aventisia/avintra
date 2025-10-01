@@ -23,10 +23,244 @@ namespace MLModelBuilderAPIs.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.AIProject", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("Name", "CreatedByUserId")
+                        .IsUnique();
+
+                    b.ToTable("as_AIProjects");
+                });
+
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.AIProjectVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AIProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("Accuracy")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTimeOffset?>("ArchivedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("BusinessContext")
+                        .IsRequired()
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("PublishedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AIProjectId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.ToTable("as_AIProjectVersions");
+                });
+
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.AIProjectVersionApiKey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AIProjectVersionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ApiKey")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AIProjectVersionId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.ToTable("as_AIProjectVersionApiKeys");
+                });
+
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.AIProject_User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AIProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AccessType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AIProjectId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("as_AIProjectUsers");
+                });
+
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ConversationHistory", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AIProjectId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("ConversationId")
@@ -34,9 +268,6 @@ namespace MLModelBuilderAPIs.Migrations
 
                     b.Property<bool>("IsUserMessage")
                         .HasColumnType("boolean");
-
-                    b.Property<Guid>("MLModelId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("Message")
                         .IsRequired()
@@ -60,7 +291,7 @@ namespace MLModelBuilderAPIs.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MLModelId");
+                    b.HasIndex("AIProjectId");
 
                     b.ToTable("ConversationHistories");
                 });
@@ -133,8 +364,7 @@ namespace MLModelBuilderAPIs.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.HasIndex("MLModelId")
-                        .IsUnique();
+                    b.HasIndex("MLModelId");
 
                     b.ToTable("ConversationalModels");
                 });
@@ -143,6 +373,9 @@ namespace MLModelBuilderAPIs.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AIProjectVersionId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal?>("Accuracy")
@@ -156,9 +389,6 @@ namespace MLModelBuilderAPIs.Migrations
 
                     b.Property<string>("DataObject")
                         .HasColumnType("text");
-
-                    b.Property<Guid>("DocId")
-                        .HasColumnType("uuid");
 
                     b.Property<int>("ExecutionCount")
                         .HasColumnType("integer");
@@ -178,12 +408,6 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("MLModelId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ModelTaskId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("SubmitForFineTuning")
                         .HasColumnType("boolean");
 
@@ -193,26 +417,29 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Property<int>("TokenCount")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Type")
-                        .HasColumnType("text");
-
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
 
+                    b.Property<Guid>("VersionResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("VersionTaskId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("AIProjectVersionId");
 
                     b.HasIndex("CreatedByUserId");
 
-                    b.HasIndex("DocId");
-
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.HasIndex("MLModelId");
+                    b.HasIndex("VersionResourceId");
 
-                    b.HasIndex("ModelTaskId");
+                    b.HasIndex("VersionTaskId");
 
                     b.ToTable("ExtractedData");
                 });
@@ -316,91 +543,9 @@ namespace MLModelBuilderAPIs.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.HasIndex("MLModelId")
-                        .IsUnique();
+                    b.HasIndex("MLModelId");
 
                     b.ToTable("GenerativeModels");
-                });
-
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal?>("Accuracy")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("BusinessContext")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("GeneratedPrompt")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsPublished")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("LLM")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<DateTimeOffset?>("PublishedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("SetupObject")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SetupStatus")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("TrainedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("text");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastModifiedByUserId");
-
-                    b.HasIndex("Name", "CreatedByUserId")
-                        .IsUnique();
-
-                    b.ToTable("MLModels");
                 });
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModelTemplate", b =>
@@ -476,178 +621,6 @@ namespace MLModelBuilderAPIs.Migrations
                     b.ToTable("MLModelTemplates");
                 });
 
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModelUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("AccessType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("MLModelId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastModifiedByUserId");
-
-                    b.HasIndex("MLModelId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("MLModelUsers");
-                });
-
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModelVersion", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsArchived")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDraft")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsLocked")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsPublished")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("MLModelId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset?>("PublishedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.Property<int>("VersionNumber")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastModifiedByUserId");
-
-                    b.HasIndex("MLModelId");
-
-                    b.ToTable("MLModelVersions");
-                });
-
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ModelAPIKey", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ApiKey")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("MLModelId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastModifiedByUserId");
-
-                    b.HasIndex("MLModelId");
-
-                    b.ToTable("ModelAPIKeys");
-                });
-
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ModelBuilderUser", b =>
                 {
                     b.Property<Guid>("Id")
@@ -679,79 +652,6 @@ namespace MLModelBuilderAPIs.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ModelBuilderUser");
-                });
-
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ModelTask", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ConfigurationType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("GeneratedPrompt")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("LLM")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("MLModelId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("NodePrompt")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("SecretKey")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SetupObject")
-                        .HasColumnType("text");
-
-                    b.Property<double>("Temperature")
-                        .HasColumnType("double precision");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastModifiedByUserId");
-
-                    b.HasIndex("MLModelId");
-
-                    b.ToTable("ModelTasks");
                 });
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ScheduledModel", b =>
@@ -818,10 +718,13 @@ namespace MLModelBuilderAPIs.Migrations
                     b.ToTable("ScheduledModels");
                 });
 
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.UploadedDoc", b =>
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.VersionResource", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AIProjectVersionId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("CreatedByUserId")
@@ -834,10 +737,13 @@ namespace MLModelBuilderAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("FineTuningLogId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsLocal")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsSetupTest")
                         .HasColumnType("boolean");
 
                     b.Property<Guid>("LastModifiedByUserId")
@@ -845,9 +751,6 @@ namespace MLModelBuilderAPIs.Migrations
 
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("MLModelId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -858,19 +761,14 @@ namespace MLModelBuilderAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("Size")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Stage")
-                        .IsRequired()
+                    b.Property<string>("ResourceText")
                         .HasColumnType("text");
+
+                    b.Property<long?>("Size")
+                        .HasColumnType("bigint");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -880,26 +778,210 @@ namespace MLModelBuilderAPIs.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedByUserId");
+                    b.HasIndex("AIProjectVersionId");
 
-                    b.HasIndex("FineTuningLogId");
+                    b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.HasIndex("MLModelId");
+                    b.ToTable("as_VersionResources");
+                });
 
-                    b.ToTable("UploadedDocs");
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.VersionTask", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AIProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AIProjectVersionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CloudLLMCredentialId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("GeneratedPrompt")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsBYOKEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LLM")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("SetupObject")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SystemPrompt")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("Temperature")
+                        .HasColumnType("double precision");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AIProjectId");
+
+                    b.HasIndex("AIProjectVersionId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.ToTable("as_VersionTasks");
+                });
+
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.AIProject", b =>
+                {
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+                });
+
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.AIProjectVersion", b =>
+                {
+                    b.HasOne("MLModelBuilderAPIs.Entities.AIProject", "AIProject")
+                        .WithMany("Versions")
+                        .HasForeignKey("AIProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AIProject");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+                });
+
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.AIProjectVersionApiKey", b =>
+                {
+                    b.HasOne("MLModelBuilderAPIs.Entities.AIProjectVersion", "AIProjectVersion")
+                        .WithMany()
+                        .HasForeignKey("AIProjectVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AIProjectVersion");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+                });
+
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.AIProject_User", b =>
+                {
+                    b.HasOne("MLModelBuilderAPIs.Entities.AIProject", "AIProject")
+                        .WithMany("ProjectUsers")
+                        .HasForeignKey("AIProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AIProject");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ConversationHistory", b =>
                 {
-                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
-                        .WithMany("ConversationHistories")
-                        .HasForeignKey("MLModelId")
+                    b.HasOne("MLModelBuilderAPIs.Entities.AIProject", "AIProject")
+                        .WithMany()
+                        .HasForeignKey("AIProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("MLModel");
+                    b.Navigation("AIProject");
                 });
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ConversationalModel", b =>
@@ -916,30 +998,30 @@ namespace MLModelBuilderAPIs.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
-                        .WithOne("ConversationalModel")
-                        .HasForeignKey("MLModelBuilderAPIs.Entities.ConversationalModel", "MLModelId")
+                    b.HasOne("MLModelBuilderAPIs.Entities.AIProject", "AIProject")
+                        .WithMany()
+                        .HasForeignKey("MLModelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AIProject");
 
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastModifiedByUser");
-
-                    b.Navigation("MLModel");
                 });
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ExtractedData", b =>
                 {
+                    b.HasOne("MLModelBuilderAPIs.Entities.AIProjectVersion", "AIProjectVersion")
+                        .WithMany()
+                        .HasForeignKey("AIProjectVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.UploadedDoc", "UploadedDoc")
-                        .WithMany("ExtractedDatas")
-                        .HasForeignKey("DocId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -949,27 +1031,27 @@ namespace MLModelBuilderAPIs.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
-                        .WithMany("ExtractedData")
-                        .HasForeignKey("MLModelId")
+                    b.HasOne("MLModelBuilderAPIs.Entities.VersionResource", "VersionResource")
+                        .WithMany("ExtractedDatas")
+                        .HasForeignKey("VersionResourceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.VersionTask", "VersionTask")
+                        .WithMany("ExtractedDatas")
+                        .HasForeignKey("VersionTaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelTask", "ModelTask")
-                        .WithMany("ExtractedData")
-                        .HasForeignKey("ModelTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("AIProjectVersion");
 
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastModifiedByUser");
 
-                    b.Navigation("MLModel");
+                    b.Navigation("VersionResource");
 
-                    b.Navigation("ModelTask");
-
-                    b.Navigation("UploadedDoc");
+                    b.Navigation("VersionTask");
                 });
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.FineTuningLog", b =>
@@ -997,9 +1079,9 @@ namespace MLModelBuilderAPIs.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
-                        .WithOne("GenerativeModel")
-                        .HasForeignKey("MLModelBuilderAPIs.Entities.GenerativeModel", "MLModelId")
+                    b.HasOne("MLModelBuilderAPIs.Entities.AIProject", "MLModel")
+                        .WithMany()
+                        .HasForeignKey("MLModelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1008,25 +1090,6 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Navigation("LastModifiedByUser");
 
                     b.Navigation("MLModel");
-                });
-
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModel", b =>
-                {
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastModifiedByUser");
                 });
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModelTemplate", b =>
@@ -1046,122 +1109,6 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastModifiedByUser");
-                });
-
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModelUser", b =>
-                {
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
-                        .WithMany("Users")
-                        .HasForeignKey("MLModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastModifiedByUser");
-
-                    b.Navigation("MLModel");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModelVersion", b =>
-                {
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
-                        .WithMany("Versions")
-                        .HasForeignKey("MLModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastModifiedByUser");
-
-                    b.Navigation("MLModel");
-                });
-
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ModelAPIKey", b =>
-                {
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
-                        .WithMany("ModelAPIKeys")
-                        .HasForeignKey("MLModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastModifiedByUser");
-
-                    b.Navigation("MLModel");
-                });
-
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ModelTask", b =>
-                {
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
-                        .WithMany("Tasks")
-                        .HasForeignKey("MLModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastModifiedByUser");
-
-                    b.Navigation("MLModel");
                 });
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ScheduledModel", b =>
@@ -1184,8 +1131,8 @@ namespace MLModelBuilderAPIs.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
-                        .WithMany("ScheduledModels")
+                    b.HasOne("MLModelBuilderAPIs.Entities.AIProject", "MLModel")
+                        .WithMany()
                         .HasForeignKey("MLModelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1199,17 +1146,19 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Navigation("MLModel");
                 });
 
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.UploadedDoc", b =>
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.VersionResource", b =>
                 {
+                    b.HasOne("MLModelBuilderAPIs.Entities.AIProjectVersion", "AIProjectVersion")
+                        .WithMany("Resources")
+                        .HasForeignKey("AIProjectVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("MLModelBuilderAPIs.Entities.FineTuningLog", "FineTuningLog")
-                        .WithMany()
-                        .HasForeignKey("FineTuningLogId");
 
                     b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
                         .WithMany()
@@ -1217,19 +1166,60 @@ namespace MLModelBuilderAPIs.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MLModelBuilderAPIs.Entities.MLModel", "MLModel")
-                        .WithMany("UploadedDocs")
-                        .HasForeignKey("MLModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("AIProjectVersion");
 
                     b.Navigation("CreatedByUser");
 
-                    b.Navigation("FineTuningLog");
+                    b.Navigation("LastModifiedByUser");
+                });
+
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.VersionTask", b =>
+                {
+                    b.HasOne("MLModelBuilderAPIs.Entities.AIProject", "AIProject")
+                        .WithMany()
+                        .HasForeignKey("AIProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.AIProjectVersion", "AIProjectVersion")
+                        .WithMany("Tasks")
+                        .HasForeignKey("AIProjectVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MLModelBuilderAPIs.Entities.ModelBuilderUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AIProject");
+
+                    b.Navigation("AIProjectVersion");
+
+                    b.Navigation("CreatedByUser");
 
                     b.Navigation("LastModifiedByUser");
+                });
 
-                    b.Navigation("MLModel");
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.AIProject", b =>
+                {
+                    b.Navigation("ProjectUsers");
+
+                    b.Navigation("Versions");
+                });
+
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.AIProjectVersion", b =>
+                {
+                    b.Navigation("Resources");
+
+                    b.Navigation("Tasks");
                 });
 
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ExtractedData", b =>
@@ -1237,40 +1227,17 @@ namespace MLModelBuilderAPIs.Migrations
                     b.Navigation("ScheduledModels");
                 });
 
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.MLModel", b =>
-                {
-                    b.Navigation("ConversationHistories");
-
-                    b.Navigation("ConversationalModel");
-
-                    b.Navigation("ExtractedData");
-
-                    b.Navigation("GenerativeModel");
-
-                    b.Navigation("ModelAPIKeys");
-
-                    b.Navigation("ScheduledModels");
-
-                    b.Navigation("Tasks");
-
-                    b.Navigation("UploadedDocs");
-
-                    b.Navigation("Users");
-
-                    b.Navigation("Versions");
-                });
-
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.ModelTask", b =>
-                {
-                    b.Navigation("ExtractedData");
-                });
-
             modelBuilder.Entity("MLModelBuilderAPIs.Entities.ScheduledModel", b =>
                 {
                     b.Navigation("FineTuningLogs");
                 });
 
-            modelBuilder.Entity("MLModelBuilderAPIs.Entities.UploadedDoc", b =>
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.VersionResource", b =>
+                {
+                    b.Navigation("ExtractedDatas");
+                });
+
+            modelBuilder.Entity("MLModelBuilderAPIs.Entities.VersionTask", b =>
                 {
                     b.Navigation("ExtractedDatas");
                 });
