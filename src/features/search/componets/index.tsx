@@ -10,6 +10,7 @@ import { useShallow } from "zustand/react/shallow";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { useReactFlow } from "@xyflow/react";
 import { useSearchStore } from "@/features/search/stores/serach-store";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const SearchCommandDialog = () => {
   const { open, setOpen } = useSearchStore(
@@ -19,6 +20,11 @@ const SearchCommandDialog = () => {
     })),
   );
   const { setCenter } = useReactFlow();
+
+  useHotkeys("ctrl+k", (e) => {
+    e.preventDefault();
+    setOpen(true);
+  });
 
   // Get nodes from the store
   const { nodes, setNodes } = useReactFlowExtStore(
@@ -56,7 +62,7 @@ const SearchCommandDialog = () => {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Search..." />
+      <CommandInput placeholder="Search..." autoFocus />
       <ScrollArea className="h-[50vh]">
         <CommandList>
           <CommandGroup heading="Nodes">
