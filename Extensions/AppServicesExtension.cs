@@ -18,24 +18,18 @@ public static class AppServicesExtension
     {
         // Mapster mapping profiles
         var config = TypeAdapterConfig.GlobalSettings;
-        config.Apply(new MLModelMappingProfile());
+        config.Apply(new AIProjecMappingProfile());
         config.Apply(new ExtractedDataMappingProfile());
-        config.Apply(new UploadedDocMappingProfile());
+        config.Apply(new VersionResourceMappingProfile());
         config.Apply(new ModelBuilderUserMappingProfile());
-        config.Apply(new ExtractionSetupMappingProfile());
-        config.Apply(new SentimentAnalyticsMappingProfile());
-        config.Apply(new ClassificationMappingProfile());
-        config.Apply(new SummarizationMappingProfile());
-        config.Apply(new QuestionAnswerMappingProfile());
-        config.Apply(new AIPersonaMappingProfile());
-        config.Apply(new ModelAPIKeyMappingProfile());
+        config.Apply(new AIProjectApiKeyMappingProfile());
         config.Apply(new AIModelMappingProfile());
         config.Apply(new InferencingModelMappingProfile());
         config.Apply(new ConversationModelMappingProfile());
         config.Apply(new GenerativeModelMappingProfile());
-        config.Apply(new MLModelVersionMappingProfile());
+        config.Apply(new AIProjectVersionMappingProfile());
         config.Apply(new MLModelTemplateMappingProfile());
-        config.Apply(new MLModelUserMappingProfile());
+        config.Apply(new AIProjectUserMappingProfile());
         config.Apply(new ConversationHistoryMappingProfile());
 
         services.AddSingleton(config);
@@ -51,25 +45,18 @@ public static class AppServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("OpenAIConfig").Get<OpenAIConfig>(), message: "OpenAIConfig cannot be null"));
 
         //Feature Services
-        services.AddScoped<IMLModelService, MLModelService>();
+        services.AddScoped<IAIProjectService, AIProjectService>();
         services.AddScoped<IExtractedDataService, ExtractedDataService>();
-        services.AddScoped<IUploadedDocService, UploadedDocService>();
+        services.AddScoped<IVersionResourceService, VersionResourceService>();
         services.AddScoped<IModelBuilderUserService, ModelBuilderUserService>();
-        services.AddScoped<IExtractViaLLMService, ExtractViaLLMService>();
-        services.AddScoped<IExtractionSetupService, ExtractionSetupService>();
-        services.AddScoped<ISentimentAnalyticsService, SentimentAnalyticsService>();
-        services.AddScoped<IClassificationService, ClassificationService>();
-        services.AddScoped<ISummarizationService, SummarizationService>();
-        services.AddScoped<IQuestionAnswerService, QuestionAnswerService>();
-        services.AddScoped<IAIPersonaService, AIPersonaService>();
-        services.AddScoped<IModelAPIKeyService, ModelAPIKeyService>();
+        services.AddScoped<IAIProjectApiKeyService, AIProjectApiKeyService>();
         services.AddScoped<IAIModelService, AIModelService>();
         services.AddScoped<IInferencingModelService, InferencingModelService>();
         services.AddScoped<IConversationModelService, ConversationModelService>();
         services.AddScoped<IGenerativeModelService, GenerativeModelService>();
-        services.AddScoped<IMLModelVersionService, MLModelVersionService>();
+        services.AddScoped<IAIProjectVersionService, AIProjectVersionService>();
         services.AddScoped<IMLModelTemplateService, MLModelTemplateService>();
-        services.AddScoped<IMLModelUserService, MLModelUserService>();
+        services.AddScoped<IAIProjectUserService, AIProjectUserService>();
         services.AddScoped<IConversationHistoryService, ConversationHistoryService>();
 
         // Common services
