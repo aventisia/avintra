@@ -49,7 +49,7 @@ export const TemplatePagination = ({
             <SelectValue />
           </SelectTrigger>
           <SelectContent side="top" className="min-w-[4rem]">
-            {[6, 12, 20, 40, 50].map((pageSize) => (
+            {[8, 16, 24, 32, 40].map((pageSize) => (
               <SelectItem key={pageSize} value={`${pageSize}`}>
                 {pageSize}
               </SelectItem>

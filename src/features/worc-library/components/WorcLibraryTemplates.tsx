@@ -14,7 +14,7 @@ const WorcLibraryTemplates = ({
   selectedCategory: string;
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
 
   const { data: agentData, isLoading: isAgentDataLoading } =
     useFetchAgentTemplates();

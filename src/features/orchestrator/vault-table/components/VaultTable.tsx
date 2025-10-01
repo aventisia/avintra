@@ -1,24 +1,25 @@
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import {
-  DataTable,
+  // DataTable,
   DataTableSkeleton,
   DTHeading,
   DTPagination,
   DTSearchBox,
-  DTViewOptions,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+import { dateFormatter } from "@aventisia/ui/utils";
 import { useShallow } from "zustand/react/shallow";
 
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchVaults } from "../hooks/useFetchVaults";
 import { useVaultDialogStore } from "../stores/vault-dialog-store";
+import { vaultIconMapper } from "../vault-config/constants/app-list";
 
 import { VaultCrudDialog } from "./vault-crud-dialog/VaultCrudDialog";
+import { VaultRowActions } from "./vault-row-actions/VaultRowActions";
 import { VaultsBulkActions } from "./vault-row-actions/VaultsBulkActions";
 import { vaultsTableColumns } from "./VaultsTableColumns";
 
@@ -73,9 +74,6 @@ export const VaultTable = () => {
                 searchColumn={SEARCH_COLUMN}
                 placeholder="Search..."
               />
-              <DTViewOptions
-                {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
-              />
               <Separator orientation="vertical" className="mx-2 h-6" />
               <Button
                 onClick={() => {
@@ -89,10 +87,41 @@ export const VaultTable = () => {
               </Button>{" "}
             </div>
           </div>
+          {/* DT with only rows and custom design */}
+          <div className="grid grid-cols-2 gap-4">
+            {table.getRowModel().rows.map((row) => (
+              <div
+                key={row.id}
+                className="flex items-center justify-between rounded-lg border bg-background p-4 shadow-sm transition-shadow hover:shadow-md"
+              >
+                {/* Left icon with rounded border */}
+                <div className="flex items-center space-x-4">
+                  <div className="rounded-lg bg-accent p-2">
+                    <img
+                      src={vaultIconMapper[row.getValue("type") as string]}
+                      alt="icon"
+                      className="h-12 w-12"
+                    />
+                  </div>
 
-          {/* Data table to render data */}
-          <DataTable table={table} columnsLength={vaultsTableColumns.length} />
+                  {/* Name, type, description in flex col */}
+                  <div className="flex flex-col">
+                    <span className="text-sm text-muted-foreground">
+                      {row.getValue("type")}
+                    </span>
+                    <span className="text-lg">{row.getValue("name")}</span>
 
+                    <span className="text-sm text-muted-foreground">
+                      Created on{dateFormatter(row.getValue("createdOn"))}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Action trigger */}
+                <VaultRowActions rowId={row.original.id || "rowId"} />
+              </div>
+            ))}
+          </div>
           {/* Data table Pagination component */}
           <DTPagination table={table} />
 

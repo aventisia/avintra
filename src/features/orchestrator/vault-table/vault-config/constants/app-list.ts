@@ -15,3 +15,12 @@ export const appList = [
   // { label: "Salesforce", value: "salesforce" },
   // { label: "HubSpot", value: "hubspot" },
 ];
+
+export const vaultIconMapper: Record<string, string> = {
+  OpenAiApi: "/brand-img/openai.svg",
+  Aws: "/brand-img/aws.svg",
+  TwilioApi: "/brand-img/twilio.svg",
+  SendGridApi: "/brand-img/sendgrid.svg",
+  GitHubApi: "/brand-img/github.svg",
+  GeneralCredentials: "/assets/CredentialManager.svg",
+};
