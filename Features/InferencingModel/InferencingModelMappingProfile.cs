@@ -40,9 +40,9 @@ public class InferencingModelMappingProfile : IRegister
         config.NewConfig<TaskSetupCategoryDto, SentimentAnalysisExtractedDataDto>();
 
         config.NewConfig<ExtractedData, InferencingModelExtractedDataDetailDto>()
-            .Map(dest => dest.Id, src => src.MLModelId)
-            .Map(dest => dest.DocId, src => src.DocId)
-            .Map(dest => dest.DocName, src => src.UploadedDoc.Name)
+            .Map(dest => dest.Id, src => src.AIProjectVersionId)
+            .Map(dest => dest.DocId, src => src.VersionResourceId)
+            .Map(dest => dest.DocName, src => src.VersionResource.Name)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                 ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName

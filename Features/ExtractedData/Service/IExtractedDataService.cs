@@ -6,9 +6,8 @@ public interface IExtractedDataService
     /// Get list of extracted data
     /// </summary>
     /// <param name="mlModelId">Model Library identifier</param>
-    /// <param name="type">Extracted data type</param>
     /// <returns>A list og extracted data with specific model identifier and extracted data type</returns>
-    Task<ServiceResponse<IEnumerable<ExtractedDataDto>>> GetExtractedDataListAsync(Guid mlModelId, ExtractedDataType type);
+    Task<ServiceResponse<IEnumerable<ExtractedDataDto>>> GetExtractedDataListAsync(Guid mlModelId);
 
     /// <summary>
     /// Inserts an extracted data

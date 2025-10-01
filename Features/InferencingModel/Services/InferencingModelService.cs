@@ -684,10 +684,10 @@ public class InferencingModelService : IInferencingModelService
 
             // Fetch all extracted data related to the version's tasks
             var extractedDataList = await _unitOfWork.ExtractedDataRepo
-                .GetByConditionAsync(w => versionTaskIds.Contains(w.ModelTaskId))
+                .GetByConditionAsync(w => versionTaskIds.Contains(w.VersionTaskId))
                 .Include(i => i.CreatedByUser)
-                .Include(i => i.UploadedDoc)
-                .Include(i => i.ModelTask)
+                .Include(i => i.VersionResource)
+                .Include(i => i.VersionTask)
                 .ToListAsync();
 
             // Handle case where no extracted data exists
@@ -700,17 +700,17 @@ public class InferencingModelService : IInferencingModelService
 
             // Group extracted data by DocId
             var extractedDataByDoc = extractedDataList
-                .GroupBy(data => data.DocId)
+                .GroupBy(data => data.VersionResourceId)
                 .Select(group =>
                 {
                     // Initialize the DTO with the first group item
                     var inferencingModelExtractedDataDetailDto = group.First().Adapt<InferencingModelExtractedDataDetailDto>();
-                    inferencingModelExtractedDataDetailDto.AIProjectVersionId = group.First().ModelTaskId;
+                    inferencingModelExtractedDataDetailDto.AIProjectVersionId = group.First().AIProjectVersionId;
                     // Populate the DTO with each extracted data item in the group
                     foreach (var extractedData in group)
                     {
                         inferencingModelExtractedDataDetailDto = DeserializeExtractedDataObject(
-                            extractedData.ModelTask?.Name,
+                            extractedData.VersionTask?.Name,
                             extractedData.DataObject,
                             inferencingModelExtractedDataDetailDto);
                     }
@@ -764,7 +764,7 @@ public class InferencingModelService : IInferencingModelService
             var versionTaskIds = aIProjectVersion.Tasks.Select(s => s.Id);
             // Fetch tasks for the ai project, including associated extracted data
             var existingExtractedDataList = await _unitOfWork.ExtractedDataRepo
-                .GetByConditionAsync(w => versionTaskIds.Contains(w.ModelTaskId))
+                .GetByConditionAsync(w => versionTaskIds.Contains(w.VersionTaskId))
                 .ToListAsync();
 
             var jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
@@ -774,7 +774,7 @@ public class InferencingModelService : IInferencingModelService
             if (inferencingModelExtractedDataDetailDto.Extraction != null)
             {
                 var versionTask = aIProjectVersion.Tasks.FirstOrDefault(t => t.Name == nameof(AIProjectTaskTypesEnum.Extraction));
-                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == versionTask.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
+                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.VersionResourceId == versionTask.Id && f.VersionResourceId == inferencingModelExtractedDataDetailDto.DocId);
                 if (extractedData != null)
                 {
                     extractedData.DataObject = JsonSerializer.Serialize(inferencingModelExtractedDataDetailDto.Extraction, jsonOptions);
@@ -786,7 +786,7 @@ public class InferencingModelService : IInferencingModelService
             if (inferencingModelExtractedDataDetailDto.Classification != null)
             {
                 var versionTask = aIProjectVersion.Tasks.FirstOrDefault(t => t.Name == nameof(AIProjectTaskTypesEnum.Classification));
-                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == versionTask.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
+                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.VersionResourceId == versionTask.Id && f.VersionResourceId == inferencingModelExtractedDataDetailDto.DocId);
                 if (extractedData != null)
                 {
                     extractedData.DataObject = JsonSerializer.Serialize(inferencingModelExtractedDataDetailDto.Classification, jsonOptions);
@@ -798,7 +798,7 @@ public class InferencingModelService : IInferencingModelService
             if (inferencingModelExtractedDataDetailDto.SentimentAnalytics != null)
             {
                 var versionTask = aIProjectVersion.Tasks.FirstOrDefault(t => t.Name == nameof(AIProjectTaskTypesEnum.SentimentAnalytics));
-                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == versionTask.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
+                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.VersionResourceId == versionTask.Id && f.VersionResourceId == inferencingModelExtractedDataDetailDto.DocId);
                 if (extractedData != null)
                 {
                     extractedData.DataObject = JsonSerializer.Serialize(inferencingModelExtractedDataDetailDto.SentimentAnalytics, jsonOptions);
@@ -810,7 +810,7 @@ public class InferencingModelService : IInferencingModelService
             if (inferencingModelExtractedDataDetailDto.QuestionAnswer != null)
             {
                 var versionTask = aIProjectVersion.Tasks.FirstOrDefault(t => t.Name == nameof(AIProjectTaskTypesEnum.QuestionAnswer));
-                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == versionTask.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
+                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.VersionResourceId == versionTask.Id && f.VersionResourceId == inferencingModelExtractedDataDetailDto.DocId);
                 if (extractedData != null)
                 {
                     extractedData.DataObject = JsonSerializer.Serialize(inferencingModelExtractedDataDetailDto.QuestionAnswer, jsonOptions);
@@ -822,7 +822,7 @@ public class InferencingModelService : IInferencingModelService
             if (inferencingModelExtractedDataDetailDto.Summarization != null)
             {
                 var versionTask = aIProjectVersion.Tasks.FirstOrDefault(t => t.Name == nameof(AIProjectTaskTypesEnum.Summarization));
-                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.ModelTaskId == versionTask.Id && f.DocId == inferencingModelExtractedDataDetailDto.DocId);
+                var extractedData = existingExtractedDataList.FirstOrDefault(f => f.VersionTaskId == versionTask.Id && f.VersionResourceId == inferencingModelExtractedDataDetailDto.DocId);
                 if (extractedData != null)
                 {
                     extractedData.DataObject = JsonSerializer.Serialize(inferencingModelExtractedDataDetailDto.Summarization, jsonOptions);
@@ -1190,7 +1190,7 @@ public class InferencingModelService : IInferencingModelService
         _logger.LogInformation("Starting extraction for DocumentId: {DocumentId} in AIProjectVersionId: {AIProjectVersionId}, VersionTaskId: {VersionTaskId}", fileId, aIProjectVersion.Id, versionTask.Id);
 
         // Retrieve the existing extracted data (if any) for the given document and task
-        var existingData = versionTask.ExtractedDatas.FirstOrDefault(w => w.ModelTaskId == versionTask.Id && w.DocId == fileId);
+        var existingData = versionTask.ExtractedDatas.FirstOrDefault(w => w.VersionTaskId == versionTask.Id && w.VersionResourceId == fileId);
 
         // Retrieve the uploaded document by its file ID
         var document = aIProjectVersion.Resources.FirstOrDefault(d => d.Id == fileId);
@@ -1243,11 +1243,9 @@ public class InferencingModelService : IInferencingModelService
         {
             var newExtracted = new ExtractedData
             {
-                DocId = fileId,
-                Type = ExtractedDataType.TestData,
-                MLModelId = aIProjectVersion.AIProjectId,
-                // AIProjectVersionId = aIProjectVersion.Id,
-                ModelTaskId = versionTask.Id,
+                VersionResourceId = fileId,
+                AIProjectVersionId = aIProjectVersion.Id,
+                VersionTaskId = versionTask.Id,
                 TokenCount = documentExtractionData.TokenCount,
                 ExecutionCount = documentExtractionData.ExecutionCount,
                 ExecutionTime = documentExtractionData.ExecutionTime,
