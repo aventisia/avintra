@@ -3,11 +3,12 @@ namespace MLModelBuilderAPIs.Services;
 public interface IConversationModelService
 {
     /// <summary>
-    /// Gets the model setup for a specific conversation model using its unique ML model ID.
+    /// Retrieves the configuration setup for a specific conversational AI project based on the project ID and optional version ID.
     /// </summary>
-    /// <param name="mlModelId">The unique ID of the ML model to fetch the setup for.</param>
-    /// <returns>A task that represents the asynchronous operation. It returns the model setup DTO for the specified ML model.</returns>
-    Task<ServiceResponse<ConversationModelDto>> GetSetupByMLModelIdAsync(Guid mlModelId);
+    /// <param name="aiProjectId">The unique identifier of the AI project.</param>
+    /// <param name="aiProjectVersionId">The optional version ID of the AI project.</param>
+    /// <returns>A service response containing the conversational model setup if found.</returns>
+    Task<ServiceResponse<ConversationModelDto>> GetSetupByAIProjectIdAsync(Guid aiProjectId, Guid? aiProjectVersionId);
 
     /// <summary>
     /// Updates the configuration for an conversation model setup.

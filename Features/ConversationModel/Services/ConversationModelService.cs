@@ -22,196 +22,212 @@ public class ConversationModelService : IConversationModelService
         _llmDataExtractionService = llmDataExtractionService;
     }
 
-    // Gets the model setup for a specific conversation model using its unique ML model ID.
-    public async Task<ServiceResponse<ConversationModelDto>> GetSetupByMLModelIdAsync(Guid mlModelId)
+    // Retrieves the configuration setup for a specific conversational AI project based on the project ID and optional version ID.
+    public async Task<ServiceResponse<ConversationModelDto>> GetSetupByAIProjectIdAsync(Guid aiProjectId, Guid? aiProjectVersionId)
     {
-        // Initialize the response with a failure state and default message
+        // Initialize the response with a failure default
         var serviceResponse = new ServiceResponse<ConversationModelDto>
         {
             Data = null,
-            Message = "Failed to retrieve the conversational model setup. Please try again later."
+            Message = "Failed to retrieve the conversational AI project setup. Please try again later."
         };
 
         try
         {
-            // Log the beginning of the retrieval process with the ML model ID
-            _logger.LogInformation("Attempting to retrieve conversational model setup for ML model with ID: {MLModelId}", mlModelId);
+            _logger.LogInformation("Fetching conversational model setup | AI Project ID: {AIProjectId} | User ID: {UserId}", aiProjectId, _userId);
 
-            // Fetch the model setup from the database by its ML model ID, including related user and task data
-            var mlModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(w =>
-                    w.Id == mlModelId &&
+            // Retrieve AI project with access validation
+            var aiProject = await _unitOfWork.AIProjectRepo
+                .GetByConditionAsync(p =>
+                    p.Id == aiProjectId &&
                     (
-                        w.CreatedByUserId == _userId ||
-                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
+                        p.CreatedByUserId == _userId ||
+                        (p.ProjectUsers != null && p.ProjectUsers.Any(u => u.UserId == _userId))
                     )
                 )
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.ConversationalModel)
+                .Include(p => p.CreatedByUser)
+                .Include(p => p.ProjectUsers)
+                .Include(p => p.Versions!)
+                .ThenInclude(v => v.Tasks)
                 .SingleOrDefaultAsync();
 
-            // If no model setup is found, log a warning and return an appropriate message
-            if (mlModel == null)
+            if (aiProject == null)
             {
-                _logger.LogWarning("No model setup found for ML model with ID: {MLModelId}", mlModelId);
-                serviceResponse.Message = "No conversational model setup exists for the provided ML model ID.";
+                _logger.LogWarning("AI project not found or access denied | Project ID: {AIProjectId} | User ID: {UserId}", aiProjectId, _userId);
+                serviceResponse.Message = "No conversational model setup exists for the provided AI project ID.";
                 return serviceResponse;
             }
 
-            // Log the successful retrieval of the model setup
-            _logger.LogInformation("Successfully retrieved model setup for ML model with ID: {MLModelId}", mlModelId);
+            _logger.LogInformation("AI project setup retrieved successfully | Project ID: {AIProjectId}", aiProjectId);
 
-            // Adapt the retrieved ML model to the corresponding DTO (Data Transfer Object)
-            var conversationModelDto = mlModel.Adapt<ConversationModelDto>();
+            // Map project to DTO
+            var conversationModelDto = aiProject.Adapt<ConversationModelDto>();
 
-            // Retrieve the list of Conversation tasks and add it to the model DTO
-            if (mlModel.ConversationalModel != null)
+            // Determine correct version
+            AIProjectVersion? aiProjectVersion = aiProjectVersionId.HasValue
+                ? aiProject.Versions.FirstOrDefault(v => v.Id == aiProjectVersionId.Value)
+                : aiProject.Versions.OrderByDescending(v => v.VersionNumber).FirstOrDefault();
+
+            conversationModelDto.AIProjectVersionId = aiProjectVersion?.Id ?? Guid.Empty;
+
+            // Map version task (if available)
+            var versionTask = aiProjectVersion?.Tasks.FirstOrDefault();
+            if (versionTask != null)
             {
-                conversationModelDto.AIPersona = mlModel.ConversationalModel.Adapt<ConversationModelSetupTaskDto>();
+                conversationModelDto.AIPersona = versionTask.Adapt<ConversationModelSetupTaskDto>();
             }
 
-            // Map the adapted model setup (including tasks) to the response DTO
+            // Return success
             serviceResponse.Data = conversationModelDto;
-
-            // Set the success response status and message
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Conversational model setup retrieved successfully.";
+            serviceResponse.Message = "Conversational AI project setup retrieved successfully.";
         }
         catch (Exception ex)
         {
-            // Log the exception details if an error occurs during the process
-            _logger.LogError("Error occurred while retrieving conversational model setup for ML model with ID: {MLModelId}. Exception: {ExceptionMessage}", mlModelId, ex.Message);
+            _logger.LogError(ex, "Error occurred while retrieving AI project setup | Project ID: {AIProjectId} | User ID: {UserId}", aiProjectId, _userId);
         }
 
-        // Return the service response (either successful or failure)
         return serviceResponse;
     }
 
-    // Updates an existing conversational model setup and its associated AI persona configuration.
+    // Updates the configuration of an existing conversational AI project, including its associated AI persona.
     public async Task<ServiceResponse<ConversationModelDto>> UpdateSetupAsync(ConversationModelDto conversationModelDto)
     {
-        // Initialize default failure response
+        // Default response in case of failure
         var serviceResponse = new ServiceResponse<ConversationModelDto>
         {
             Data = null,
-            Message = "Failed to update conversational model. Please try again later."
+            Message = "Failed to update the conversational model. Please try again later."
         };
 
         try
         {
-            _logger.LogInformation("Starting update for conversational model | Model ID: {Id} | User ID: {UserId}", conversationModelDto.Id, _userId);
+            _logger.LogInformation("Initiating conversational model update | AI Project ID: {Id} | User ID: {UserId}", conversationModelDto.Id, _userId);
 
-            // Retrieve the existing ML model from the database, including any associated conversational tasks
-            var existingModel = await _unitOfWork.MLModelRepo
+            // Fetch the existing AI project and associated data
+            var aiProject = await _unitOfWork.AIProjectRepo
                 .GetByConditionAsync(w =>
                     w.Id == conversationModelDto.Id &&
                     (
                         w.CreatedByUserId == _userId ||
-                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
+                        (w.ProjectUsers != null && w.ProjectUsers.Any(a => a.UserId == _userId))
                     )
                 )
-                .Include(i => i.Users)
-                .Include(i => i.ConversationalModel)
+                .Include(i => i.ProjectUsers)
+                .Include(i => i.Versions!)
+                .ThenInclude(i2 => i2.Tasks)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
-            // Handle case where the model does not exist
-            if (existingModel == null)
+            if (aiProject == null)
             {
-                _logger.LogWarning("Conversational model not found | ID: {Id} | User ID: {UserId}", conversationModelDto.Id, _userId);
-                serviceResponse.Message = "Conversational model not found.";
+                _logger.LogWarning("AI project not found or access denied | Project ID: {Id} | User ID: {UserId}", conversationModelDto.Id, _userId);
+                serviceResponse.Message = "Conversational AI project not found.";
                 return serviceResponse;
             }
 
-            // Check if the user is the creator or has the required access (Owner/Edit)
-            var modelUserAccess = existingModel.Users?.FirstOrDefault(w =>
-                w.MLModelId == existingModel.Id &&
-                w.UserId == _userId &&
-                (w.AccessType == AgentAccessTypesEnum.Owner || w.AccessType == AgentAccessTypesEnum.Edit)
+            // Ensure the user has proper access
+            var userAccess = aiProject.ProjectUsers?.FirstOrDefault(f =>
+                f.UserId == _userId &&
+                (f.AccessType == ProjectUserAccessEnum.Owner || f.AccessType == ProjectUserAccessEnum.Edit)
             );
 
-            // Allow access if the user is the creator, else check if they have access
-            if (existingModel.CreatedByUserId != _userId && modelUserAccess == null)
+            if (aiProject.CreatedByUserId != _userId && userAccess == null)
             {
-                _logger.LogWarning("Unauthorized update attempt on model setup | Model ID: {ModelId} | User ID: {UserId}", existingModel.Id, _userId);
-                serviceResponse.Message = "You do not have access to update this model's setup.";
+                _logger.LogWarning("Unauthorized update attempt | Project ID: {Id} | User ID: {UserId}", aiProject.Id, _userId);
+                serviceResponse.Message = "You do not have permission to update this AI project.";
                 return serviceResponse;
             }
 
-            // Prevent modifications to published models
-            if (existingModel.IsPublished)
+            // Determine target version (either specific or latest)
+            var aiProjectVersion = conversationModelDto.AIProjectVersionId.HasValue
+                ? aiProject.Versions.FirstOrDefault(f => f.Id == conversationModelDto.AIProjectVersionId.Value)
+                : aiProject.Versions.OrderByDescending(o => o.VersionNumber).FirstOrDefault();
+
+            conversationModelDto.AIProjectVersionId = aiProjectVersion?.Id ?? Guid.Empty;
+
+            if (aiProjectVersion == null)
             {
-                _logger.LogWarning("Modification blocked for published model | ID: {Id} | User ID: {UserId}", conversationModelDto.Id, _userId);
-                serviceResponse.Message = "Published models cannot be modified.";
+                _logger.LogWarning("No version found for AI project | Project ID: {Id}", conversationModelDto.Id);
+                serviceResponse.Message = "Unable to find a valid version for this AI project.";
                 return serviceResponse;
             }
 
-            // Trim string values from the incoming DTO to avoid invalid whitespace issues
+            if (aiProjectVersion.IsPublished)
+            {
+                _logger.LogWarning("Update blocked for published AI project version | Project ID: {Id} | User ID: {UserId}", conversationModelDto.Id, _userId);
+                serviceResponse.Message = "Published AI project versions cannot be modified.";
+                return serviceResponse;
+            }
+
+            // Clean incoming DTO to ensure valid string formatting
             conversationModelDto = TrimDtoStringPropsUtil.TrimDtoStringProps(conversationModelDto);
 
-            _logger.LogInformation("Applying updates to base model entity | Model ID: {Id}", conversationModelDto.Id);
+            _logger.LogInformation("Updating base project metadata | Project ID: {Id}", conversationModelDto.Id);
 
-            // Map changes from DTO to existing model entity
-            existingModel.Adapt(conversationModelDto);
-            existingModel.Type = ModelTypesEnum.Conversation;
-            existingModel.SetupStatus = SetupStatusTypesEnum.Completed;
-            existingModel.LastModifiedByUserId = _userId;
-
-            // Update base model in the database
-            _unitOfWork.MLModelRepo.Update(existingModel);
-
-            // Save base model changes
-            if (!await _unitOfWork.SaveAsync())
+            if (aiProject.Type == null)
             {
-                _logger.LogError("Failed to save base model changes | Model ID: {Id} | User ID: {UserId}", conversationModelDto.Id, _userId);
-                return serviceResponse;
-            }
+                // Apply changes from DTO to the entity
+                aiProject.Adapt(conversationModelDto);
+                aiProject.Type = AIProjectTypeEnum.Conversational;
+                aiProject.LastModifiedByUserId = _userId;
 
-            // Handle AI persona configuration if provided
-            if (conversationModelDto.AIPersona != null)
-            {
-                // Look for an existing persona task named "AIPersona"
-                var conversationalModel = existingModel.ConversationalModel;
+                _unitOfWork.AIProjectRepo.Update(aiProject);
 
-                if (conversationalModel == null)
-                {
-                    // No existing task — create a new conversational persona
-                    var newPersona = conversationModelDto.AIPersona.Adapt<ConversationalModel>();
-                    newPersona.MLModelId = existingModel.Id;
-                    newPersona.GeneratedPrompt = GenerateConversationModelPrompt(conversationModelDto.AIPersona);
-                    newPersona.CreatedByUserId = _userId;
-                    newPersona.LastModifiedByUserId = _userId;
-
-                    await _unitOfWork.ConversationalModelRepo.InsertAsync(newPersona);
-                }
-                else
-                {
-                    // Existing task found — update it from the DTO
-                    conversationModelDto.AIPersona.Adapt(conversationalModel);
-                    conversationalModel.GeneratedPrompt = GenerateConversationModelPrompt(conversationModelDto.AIPersona);
-                    conversationalModel.LastModifiedByUserId = _userId;
-
-                    _unitOfWork.ConversationalModelRepo.Update(conversationalModel);
-                }
-
-                // Save changes to the persona task
+                // Save updates to the AI project
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogError("Failed to save AI persona changes | Model ID: {Id} | User ID: {UserId}", conversationModelDto.Id, _userId);
+                    _logger.LogError("Failed to persist base project updates | Project ID: {Id} | User ID: {UserId}", conversationModelDto.Id, _userId);
                     return serviceResponse;
                 }
             }
 
-            _logger.LogInformation("Conversational model update successful | Model ID: {Id} | User ID: {UserId}", conversationModelDto.Id, _userId);
+            // Handle AI Persona (task) update if provided
+            if (conversationModelDto.AIPersona != null)
+            {
+                var versionTask = aiProjectVersion.Tasks.FirstOrDefault();
 
-            // Return successful response with updated data
-            serviceResponse.Data = existingModel.Adapt<ConversationModelDto>();
+                if (versionTask == null)
+                {
+                    // Create new persona task
+                    versionTask = conversationModelDto.AIPersona.Adapt<VersionTask>();
+                    versionTask.AIProjectId = aiProject.Id;
+                    versionTask.AIProjectVersionId = aiProjectVersion.Id;
+                    versionTask.GeneratedPrompt = GenerateConversationModelPrompt(conversationModelDto.AIPersona);
+                    versionTask.SystemPrompt = conversationModelDto.AIPersona.NodePrompt;
+                    versionTask.CreatedByUserId = _userId;
+                    versionTask.LastModifiedByUserId = _userId;
+
+                    await _unitOfWork.VersionTaskRepo.InsertAsync(versionTask);
+                }
+                else
+                {
+                    // Update existing persona task
+                    conversationModelDto.AIPersona.Adapt(versionTask);
+                    versionTask.GeneratedPrompt = GenerateConversationModelPrompt(conversationModelDto.AIPersona);
+                    versionTask.SystemPrompt = conversationModelDto.AIPersona.NodePrompt;
+                    versionTask.LastModifiedByUserId = _userId;
+
+                    _unitOfWork.VersionTaskRepo.Update(versionTask);
+                }
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save AI persona updates | Project ID: {Id} | User ID: {UserId}", conversationModelDto.Id, _userId);
+                    return serviceResponse;
+                }
+            }
+
+            _logger.LogInformation("Conversational AI project updated successfully | Project ID: {Id} | User ID: {UserId}", conversationModelDto.Id, _userId);
+
+            // Return success response
+            serviceResponse.Data = aiProject.Adapt<ConversationModelDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Conversational model updated successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating conversational model | Model ID: {Id} | User ID: {UserId}", conversationModelDto.Id, _userId);
+            _logger.LogError(ex, "Unexpected error while updating conversational model | Project ID: {Id} | User ID: {UserId}", conversationModelDto.Id, _userId);
         }
 
         return serviceResponse;
@@ -221,27 +237,27 @@ public class ConversationModelService : IConversationModelService
     {
         return $@"You are {conversationModelSetupTaskDto.SetupObject.Name}, an AI assistant.
 
-### Role & Objective
-Your primary purpose is: {conversationModelSetupTaskDto.SetupObject.RoleOrObjective}.  
-You operate in the category/domain of: {conversationModelSetupTaskDto.SetupObject.CategoryOrDomain}.  
+            ### Role & Objective
+            Your primary purpose is: {conversationModelSetupTaskDto.SetupObject.RoleOrObjective}.  
+            You operate in the category/domain of: {conversationModelSetupTaskDto.SetupObject.CategoryOrDomain}.  
 
-### Tone & Style
-Maintain a {conversationModelSetupTaskDto.SetupObject.ToneOfVoice} tone throughout all responses.
+            ### Tone & Style
+            Maintain a {conversationModelSetupTaskDto.SetupObject.ToneOfVoice} tone throughout all responses.
 
-### Core Instructions
-Follow these instructions when responding:
-{conversationModelSetupTaskDto.SetupObject.Instructions}
+            ### Core Instructions
+            Follow these instructions when responding:
+            {conversationModelSetupTaskDto.SetupObject.Instructions}
 
-### Exclusions & Boundaries
-- Do not engage in: {conversationModelSetupTaskDto.SetupObject.ExclusionsOrBoundaries}  
-- If asked to do something outside these boundaries, politely decline and redirect within allowed scope.
+            ### Exclusions & Boundaries
+            - Do not engage in: {conversationModelSetupTaskDto.SetupObject.ExclusionsOrBoundaries}  
+            - If asked to do something outside these boundaries, politely decline and redirect within allowed scope.
 
-### Core Guidelines:
-1. Always stay in character as {conversationModelSetupTaskDto.SetupObject.Name}.
-2. If the user asks something outside your role or domain, politely redirect or explain your limitations.  
-3. Provide clear, accurate, and contextually relevant responses in line with the role and objective.  
-4. Stick to the defined tone and boundaries at all times.  
-5. When uncertain, ask clarifying questions instead of breaking character.";
+            ### Core Guidelines:
+            1. Always stay in character as {conversationModelSetupTaskDto.SetupObject.Name}.
+            2. If the user asks something outside your role or domain, politely redirect or explain your limitations.  
+            3. Provide clear, accurate, and contextually relevant responses in line with the role and objective.  
+            4. Stick to the defined tone and boundaries at all times.  
+            5. When uncertain, ask clarifying questions instead of breaking character.";
     }
 
     // Retrieves a list of available languages. 

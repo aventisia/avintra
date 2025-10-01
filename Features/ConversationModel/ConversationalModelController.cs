@@ -15,10 +15,10 @@ public class ConversationalModelController : BaseApiController
     // -------------------- Setup & Test Endpoints --------------------
 
     // Retrieves a specific model setup by ml model ID
-    [HttpGet("setup/{mlModelId}")]
-    public async Task<ActionResult<ServiceResponse<ConversationModelDto>>> GetSetupByMLModelId(Guid mlModelId)
+    [HttpGet("setup/{aiProjectId}")]
+    public async Task<ActionResult<ServiceResponse<ConversationModelDto>>> GetSetupByMLModelId(Guid aiProjectId, Guid? aiProjectVersionId)
     {
-        return ResultHelper(await _ConversationModelService.GetSetupByMLModelIdAsync(mlModelId));
+        return ResultHelper(await _ConversationModelService.GetSetupByAIProjectIdAsync(aiProjectId, aiProjectVersionId));
     }
 
     // Updates an existing model setup

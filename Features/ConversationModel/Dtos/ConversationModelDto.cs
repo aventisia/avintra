@@ -11,6 +11,11 @@ public class ConversationModelDto
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier of the associated ai project version entity.
+    /// </summary>
+    public Guid? AIProjectVersionId { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of the conversation model.
     /// </summary>
     [StringLength(255)]
