@@ -1,6 +1,7 @@
 export interface ExecutionNode {
   nodeId: string;
   nodeName: string;
+  nodeUniqueName: string;
   isSuccess: boolean;
   duration: number;
   inputs: { [key: string]: string };

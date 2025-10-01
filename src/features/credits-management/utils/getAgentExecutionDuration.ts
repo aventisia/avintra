@@ -12,6 +12,6 @@ export function getAgentExecutionDuration(
   excludedNodeNames: string[] = [],
 ): number {
   return nodes
-    .filter((node) => !excludedNodeNames.includes(node.nodeName))
+    .filter((node) => !excludedNodeNames.includes(node.nodeUniqueName))
     .reduce((sum, node) => sum + node.duration, 0);
 }

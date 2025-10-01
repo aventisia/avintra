@@ -33,6 +33,7 @@ import { FlowBlockCrudDialog } from "@/features/flow-block/components/flow-block
 import ShareAccessDialog from "@/features/share-access/components";
 import { SaveAsTemplateDialog } from "@/features/save-as-template/components/SaveAsTemplateDialog";
 import ImportFlow from "@/features/import-flow/components/ImportFlow";
+import ShortcutsDialog from "@/features/keyboard-shortcuts/KeyboardShortcutsDialog";
 
 /**
  * A custom extension of the ReactFlow component.
@@ -135,6 +136,7 @@ export const ReactFlowExt = () => {
       <FlowSettings />
       <FlowBlockCrudDialog />
       <SaveAsTemplateDialog />
+      <ShortcutsDialog />
       <ImportFlow />
     </DCPDialog>
   );

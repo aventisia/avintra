@@ -46,7 +46,7 @@ export function generateCreditConsumptionList(
   for (const node of nodes) {
     if (!node.isSuccess) continue;
 
-    const serviceType = nodeToServiceTypeMap[node.nodeName];
+    const serviceType = nodeToServiceTypeMap[node.nodeUniqueName];
     if (!serviceType) continue;
 
     const consumedUnit = serviceTypeToUnitMap[serviceType];
