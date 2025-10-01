@@ -1,7 +1,7 @@
 namespace MLModelBuilderAPIs.Entities;
 
-[Table("ModelAPIKeys")]
-public class ModelAPIKeyReadOnly : BaseEntity
+[Table("as_AIProjectVersionApiKeys")]
+public class AIProjectVersionApiKeyReadOnly : BaseEntity
 {
     /// <summary>
     /// Specifies the primary key of the tenant associated with this record, used for multi-tenancy filtering.
@@ -15,13 +15,14 @@ public class ModelAPIKeyReadOnly : BaseEntity
     public string ApiKey { get; set; } = string.Empty;
 
     /// <summary>
-    /// References the primary key of the associated ML model.
+    /// Gets or sets the unique identifier of the project version this api key belongs to.
     /// </summary>
-    public Guid MLModelId { get; set; }
+    public Guid AIProjectVersionId { get; set; }
 
     /// <summary>
-    /// Navigation property linking to the associated ML model entity.
+    /// Gets or sets the AI project version to which this resource is associated.
     /// </summary>
-    [ForeignKey("MLModelId")]
-    public virtual MLModel? MLModel { get; set; }
+    [ForeignKey("AIProjectVersionId")]
+    public virtual AIProjectVersion? AIProjectVersion { get; set; }
+
 }
