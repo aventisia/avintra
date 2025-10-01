@@ -26,6 +26,7 @@ import { useInputOutputsStore } from "@/features/add-input-output/stores/inputs-
 import { useSaveAsTemplateStore } from "@/features/save-as-template/stores/save-as-template-store";
 import { useExportFlow } from "@/hooks/useExportFlow";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
+import { useKeyboardShortcutsStore } from "@/features/keyboard-shortcuts/stores/keyboard-shortcuts-store";
 
 export const HeaderActionMenu: React.FC = () => {
   // Get flow execution store state & actions
@@ -44,6 +45,12 @@ export const HeaderActionMenu: React.FC = () => {
   const { setUpload } = useImportStore(
     useShallow((state) => ({
       setUpload: state.setUpload,
+    })),
+  );
+
+  const { setShowDialog: keyboardDialog } = useKeyboardShortcutsStore(
+    useShallow((state) => ({
+      setShowDialog: state.setShowDialog,
     })),
   );
 
@@ -170,6 +177,9 @@ export const HeaderActionMenu: React.FC = () => {
               size="md"
               Icon={KeyboardIcon}
               content="Keyboard Shortcuts"
+              onClick={() => {
+                keyboardDialog(true);
+              }}
             />
           </>
         ) : null}
