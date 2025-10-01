@@ -15,10 +15,10 @@ public class GenerativeModelController : BaseApiController
     // -------------------- Setup & Test Endpoints --------------------
 
     // Retrieves a specific model setup by ml model ID
-    [HttpGet("setup/{mlModelId}")]
-    public async Task<ActionResult<ServiceResponse<GenerativeModelDto>>> GetSetupByMLModelId(Guid mlModelId)
+    [HttpGet("setup/{aiProjectId}")]
+    public async Task<ActionResult<ServiceResponse<GenerativeModelDto>>> GetSetupByAIProjectId(Guid aiProjectId, Guid? aiProjectVersionId)
     {
-        return ResultHelper(await _generativeModelService.GetSetupByMLModelIdAsync(mlModelId));
+        return ResultHelper(await _generativeModelService.GetSetupByAIProjectIdAsync(aiProjectId, aiProjectVersionId));
     }
 
     // Updates an existing model setup

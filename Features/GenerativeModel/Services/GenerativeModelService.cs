@@ -22,8 +22,8 @@ public class GenerativeModelService : IGenerativeModelService
         _llmDataExtractionService = llmDataExtractionService;
     }
 
-    // Gets the model setup for a specific generative model using its unique ML model ID.
-    public async Task<ServiceResponse<GenerativeModelDto>> GetSetupByMLModelIdAsync(Guid mlModelId)
+    // Gets the model setup for a specific generative model using its unique AI project ID.
+    public async Task<ServiceResponse<GenerativeModelDto>> GetSetupByAIProjectIdAsync(Guid aiProjectId, Guid? aiProjectVersionId)
     {
         // Initialize the response with a failure state and default message
         var serviceResponse = new ServiceResponse<GenerativeModelDto>
@@ -34,41 +34,51 @@ public class GenerativeModelService : IGenerativeModelService
 
         try
         {
-            // Log the beginning of the retrieval process with the ML model ID
-            _logger.LogInformation("Attempting to retrieve generative model setup for ML model with ID: {MLModelId}", mlModelId);
+            // Log the beginning of the retrieval process with the AI project ID
+            _logger.LogInformation("Attempting to retrieve generative model setup for AI project with ID: {AIProjectId}", aiProjectId);
 
-            // Fetch the model setup from the database by its ML model ID, including related user and task data
-            var mlModel = await _unitOfWork.MLModelRepo
+            // Fetch the AI project from the database by its ID, including related user and task data
+            var aiProject = await _unitOfWork.AIProjectRepo
                 .GetByConditionAsync(w =>
-                    w.Id == mlModelId &&
+                    w.Id == aiProjectId &&
                     (
                         w.CreatedByUserId == _userId ||
-                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
+                        (w.ProjectUsers != null && w.ProjectUsers.Any(a => a.UserId == _userId))
                     )
                 )
-                .Include(i => i.Users)
+                .Include(i => i.ProjectUsers)
                 .Include(i => i.CreatedByUser)
-                .Include(i => i.GenerativeModel)
+                .Include(i => i.Versions!)
+                .ThenInclude(i2 => i2.Tasks)
                 .SingleOrDefaultAsync();
 
-            // If no model setup is found, log a warning and return an appropriate message
-            if (mlModel == null)
+            // If no AI project is found, log a warning and return an appropriate message
+            if (aiProject == null)
             {
-                _logger.LogWarning("No model setup found for ML model with ID: {MLModelId}", mlModelId);
-                serviceResponse.Message = "No generative model setup exists for the provided ML model ID.";
+                _logger.LogWarning("No AI project found with ID: {AIProjectId}", aiProjectId);
+                serviceResponse.Message = "No generative model setup exists for the provided AI project ID.";
                 return serviceResponse;
             }
 
-            // Log the successful retrieval of the model setup
-            _logger.LogInformation("Successfully retrieved model setup for ML model with ID: {MLModelId}", mlModelId);
+            // Log the successful retrieval of the AI project
+            _logger.LogInformation("Successfully retrieved generative model setup for AI project with ID: {AIProjectId}", aiProjectId);
 
-            // Adapt the retrieved ML model to the corresponding DTO (Data Transfer Object)
-            var generativeModelDto = mlModel.Adapt<GenerativeModelDto>();
+            // Adapt the retrieved AI project to the corresponding DTO (Data Transfer Object)
+            var generativeModelDto = aiProject.Adapt<GenerativeModelDto>();
 
-            // Retrieve the list of Generative tasks and add it to the model DTO
-            if (mlModel.GenerativeModel != null)
+            // Get the AI project version, either by version ID or the latest one
+            AIProjectVersion? aiProjectVersion = null;
+            if (aiProjectVersionId.HasValue)
+                aiProjectVersion = aiProject.Versions.Where(w => w.Id == aiProjectVersionId.Value).FirstOrDefault();
+            else
+                aiProjectVersion = aiProject.Versions.OrderByDescending(o => o.VersionNumber).FirstOrDefault();
+
+            generativeModelDto.AIProjectVersionId = aiProjectVersionId;
+
+            // Retrieve the list of generative tasks and add it to the model DTO
+            if (aiProjectVersion?.Tasks?.Any() == true)
             {
-                generativeModelDto.GenerativeModel = mlModel.GenerativeModel.Adapt<GenerativeModelDefaultSetupDto>();
+                generativeModelDto.GenerativeModel = aiProjectVersion.Tasks.FirstOrDefault().Adapt<GenerativeModelDefaultSetupDto>();
             }
 
             // Map the adapted model setup (including tasks) to the response DTO
@@ -81,337 +91,294 @@ public class GenerativeModelService : IGenerativeModelService
         catch (Exception ex)
         {
             // Log the exception details if an error occurs during the process
-            _logger.LogError("Error occurred while retrieving generative model setup for ML model with ID: {MLModelId}. Exception: {ExceptionMessage}", mlModelId, ex.Message);
+            _logger.LogError("Error occurred while retrieving generative model setup for AI project with ID: {AIProjectId}. Exception: {ExceptionMessage}", aiProjectId, ex.Message);
         }
 
         // Return the service response (either successful or failure)
         return serviceResponse;
     }
 
-    // Updates an existing generative model setup and its associated AI persona configuration.
+    // Updates an existing AI project setup and its associated generative model configuration.
     public async Task<ServiceResponse<GenerativeModelDto>> UpdateSetupAsync(GenerativeModelDto generativeModelDto)
     {
         // Initialize default failure response
         var serviceResponse = new ServiceResponse<GenerativeModelDto>
         {
             Data = null,
-            Message = "Failed to update generative model. Please try again later."
+            Message = "Failed to update AI project setup. Please try again later."
         };
 
         try
         {
-            _logger.LogInformation("Starting update for generative model | Model ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
+            _logger.LogInformation("Starting update for AI project | Project ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
 
             // Validate input DTO
             if (!ValidateModelSetupDto(generativeModelDto.GenerativeModel, out string? validationMessage))
             {
-                _logger.LogWarning("Model setup validation failed: {ValidationMessage}", validationMessage);
+                _logger.LogWarning("AI project setup validation failed: {ValidationMessage}", validationMessage);
                 serviceResponse.Message = validationMessage;
                 return serviceResponse;
             }
 
-            // Retrieve the existing ML model from the database, including any associated generative tasks
-            var existingModel = await _unitOfWork.MLModelRepo
+            // Retrieve the existing AI project from the database
+            var aiProject = await _unitOfWork.AIProjectRepo
                 .GetByConditionAsync(w =>
                     w.Id == generativeModelDto.Id &&
                     (
                         w.CreatedByUserId == _userId ||
-                        (w.Users != null && w.Users.Any(a => a.UserId == _userId))
+                        (w.ProjectUsers != null && w.ProjectUsers.Any(a => a.UserId == _userId))
                     )
                 )
-                .Include(i => i.Users)
-                .Include(i => i.GenerativeModel)
+                .Include(i => i.ProjectUsers)
+                .Include(i => i.Versions!)
+                .ThenInclude(i2 => i2.Tasks)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
-            // Handle case where the model does not exist
-            if (existingModel == null)
+            if (aiProject == null)
             {
-                _logger.LogWarning("generative model not found | ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
-                serviceResponse.Message = "generative model not found.";
+                _logger.LogWarning("AI project not found | ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
+                serviceResponse.Message = "AI project not found.";
                 return serviceResponse;
             }
 
-            // Check if the user is the creator or has the required access (Owner/Edit)
-            var modelUserAccess = existingModel.Users?.FirstOrDefault(w =>
-                w.MLModelId == existingModel.Id &&
+            // Check if user is creator or has edit/owner access
+            var userAccess = aiProject.ProjectUsers?.FirstOrDefault(w =>
+                w.AIProjectId == aiProject.Id &&
                 w.UserId == _userId &&
-                (w.AccessType == AgentAccessTypesEnum.Owner || w.AccessType == AgentAccessTypesEnum.Edit)
+                (w.AccessType == ProjectUserAccessEnum.Owner || w.AccessType == ProjectUserAccessEnum.Edit)
             );
 
-            // Allow access if the user is the creator, else check if they have access
-            if (existingModel.CreatedByUserId != _userId && modelUserAccess == null)
+            if (aiProject.CreatedByUserId != _userId && userAccess == null)
             {
-                _logger.LogWarning("Unauthorized update attempt on model setup | Model ID: {ModelId} | User ID: {UserId}", existingModel.Id, _userId);
-                serviceResponse.Message = "You do not have access to update this model's setup.";
+                _logger.LogWarning("Unauthorized update attempt on AI project | Project ID: {ProjectId} | User ID: {UserId}", aiProject.Id, _userId);
+                serviceResponse.Message = "You do not have access to update this AI project.";
                 return serviceResponse;
             }
 
-            // Prevent modifications to published models
-            if (existingModel.IsPublished)
+            // Get the AI project version
+            AIProjectVersion? aiProjectVersion = null;
+            if (generativeModelDto.AIProjectVersionId.HasValue)
+                aiProjectVersion = aiProject.Versions.Where(w => w.Id == generativeModelDto.AIProjectVersionId.Value).FirstOrDefault();
+            else
+                aiProjectVersion = aiProject.Versions.OrderByDescending(o => o.VersionNumber).FirstOrDefault();
+
+            // Prevent updates to published versions
+            if (aiProjectVersion?.IsPublished == true)
             {
-                _logger.LogWarning("Modification blocked for published model | ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
-                serviceResponse.Message = "Published models cannot be modified.";
+                _logger.LogWarning("Modification blocked for published AI project version | Project ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
+                serviceResponse.Message = "Published AI project versions cannot be modified.";
                 return serviceResponse;
             }
 
-            // Trim string values from the incoming DTO to avoid invalid whitespace issues
+            // Trim DTO string properties to prevent whitespace issues
             generativeModelDto = TrimDtoStringPropsUtil.TrimDtoStringProps(generativeModelDto);
 
-            _logger.LogInformation("Applying updates to base model entity | Model ID: {Id}", generativeModelDto.Id);
+            _logger.LogInformation("Applying updates to AI project entity | Project ID: {Id}", generativeModelDto.Id);
 
-            // Map changes from DTO to existing model entity
-            existingModel.Type = ModelTypesEnum.Generative;
-            existingModel.SetupStatus = SetupStatusTypesEnum.Completed;
-            existingModel.LastModifiedByUserId = _userId;
-
-            // Update base model in the database
-            _unitOfWork.MLModelRepo.Update(existingModel);
-
-            // Save base model changes
-            if (!await _unitOfWork.SaveAsync())
+            if (aiProject.Type == null)
             {
-                _logger.LogError("Failed to save base model changes | Model ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
-                return serviceResponse;
+                // Update base AI project
+                aiProject.Type = AIProjectTypeEnum.Generative;
+                aiProject.LastModifiedByUserId = _userId;
+                _unitOfWork.AIProjectRepo.Update(aiProject);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save AI project changes | Project ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
+                    return serviceResponse;
+                }
+
             }
+            // Handle version task (generative model setup)
+            var versionTask = aiProjectVersion?.Tasks.FirstOrDefault();
 
-            var generativeModel = existingModel.GenerativeModel;
-
-            if (generativeModel == null)
+            if (versionTask == null)
             {
-                // No existing task — create a new generative persona
-                var newGenerativeModel = generativeModelDto.GenerativeModel.Adapt<GenerativeModel>();
-                newGenerativeModel.GeneratedPrompt = await GeneratePromptForModelSetupAsync(generativeModelDto.GenerativeModel);
-                newGenerativeModel.MLModelId = existingModel.Id;
-                newGenerativeModel.CreatedByUserId = _userId;
-                newGenerativeModel.LastModifiedByUserId = _userId;
+                // Create a new task (generative persona setup)
+                versionTask = generativeModelDto.GenerativeModel.Adapt<VersionTask>();
+                versionTask.GeneratedPrompt = await GeneratePromptForModelSetupAsync(generativeModelDto.GenerativeModel);
+                versionTask.SystemPrompt = generativeModelDto.GenerativeModel.NodePrompt;
+                versionTask.AIProjectId = aiProject.Id;
+                versionTask.AIProjectVersionId = aiProjectVersion.Id;
+                versionTask.Version = 1;
+                versionTask.CreatedByUserId = _userId;
+                versionTask.LastModifiedByUserId = _userId;
 
-                await _unitOfWork.GenerativeModelRepo.InsertAsync(newGenerativeModel);
+                await _unitOfWork.VersionTaskRepo.InsertAsync(versionTask);
             }
             else
             {
-                // Existing task found — update it from the DTO
-                generativeModelDto.GenerativeModel.Adapt(generativeModel);
-                generativeModel.GeneratedPrompt = await GeneratePromptForModelSetupAsync(generativeModelDto.GenerativeModel);
-                generativeModel.LastModifiedByUserId = _userId;
+                // Update existing task
+                generativeModelDto.GenerativeModel.Adapt(versionTask);
+                versionTask.GeneratedPrompt = await GeneratePromptForModelSetupAsync(generativeModelDto.GenerativeModel);
+                versionTask.SystemPrompt = generativeModelDto.GenerativeModel.NodePrompt;
+                versionTask.LastModifiedByUserId = _userId;
 
-                _unitOfWork.GenerativeModelRepo.Update(generativeModel);
+                _unitOfWork.VersionTaskRepo.Update(versionTask);
             }
 
-            // Save changes to the persona task
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to save AI persona changes | Model ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
+                _logger.LogError("Failed to save generative model task changes | Project ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
                 return serviceResponse;
             }
 
-            _logger.LogInformation("generative model update successful | Model ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
+            _logger.LogInformation("AI project update successful | Project ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
 
-            // Return successful response with updated data
-            serviceResponse.Data = existingModel.Adapt<GenerativeModelDto>();
+            // Return successful result
+            serviceResponse.Data = aiProject.Adapt<GenerativeModelDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "generative model updated successfully.";
+            serviceResponse.Message = "AI project setup updated successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating generative model | Model ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
+            _logger.LogError(ex, "Error updating AI project setup | Project ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
         }
 
         return serviceResponse;
     }
 
-    // Updates an existing generative model setup and its associated AI persona configuration.
+    // Updates the generative model setup and executes it to generate a response using the configured AI persona.
     public async Task<ServiceResponse<ConversationHistoryDto>> UpdateAndExecuteAsync(GenerativeModelDto generativeModelDto, Guid? conversationId)
     {
-        // Initialize default failure response
         var serviceResponse = new ServiceResponse<ConversationHistoryDto>
         {
             Data = null,
-            Message = "Failed to update generative model. Please try again later."
+            Message = "Failed to update and execute generative model. Please try again later."
         };
 
         try
         {
-            _logger.LogInformation("Starting update for generative model | Model ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
+            _logger.LogInformation("Initiating update and execution for Generative Model | Project ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
 
-            // Validate input DTO
+            // Validate the input DTO
             if (!ValidateModelSetupDto(generativeModelDto.GenerativeModel, out string? validationMessage))
             {
-                _logger.LogWarning("Model setup validation failed: {ValidationMessage}", validationMessage);
+                _logger.LogWarning("Validation failed for Generative Model setup | Reason: {ValidationMessage}", validationMessage);
                 serviceResponse.Message = validationMessage;
                 return serviceResponse;
             }
 
-            // Retrieve the existing ML model from the database, including any associated generative tasks
-            var existingModel = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(m => m.Id == generativeModelDto.Id)
-                .Include(m => m.GenerativeModel)
+            // Retrieve the target AI project, including users, versions, and tasks
+            var aiProject = await _unitOfWork.AIProjectRepo
+                .GetByConditionAsync(w => w.Id == generativeModelDto.Id)
                 .AsNoTracking()
+                .Include(i => i.ProjectUsers)
+                .Include(i => i.Versions!)
+                    .ThenInclude(i2 => i2.Tasks)
                 .SingleOrDefaultAsync();
 
-            // Handle case where the model does not exist
-            if (existingModel == null)
+            if (aiProject == null)
             {
-                _logger.LogWarning("generative model not found | ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
-                serviceResponse.Message = "generative model not found.";
+                _logger.LogWarning("AI Project not found | Project ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
+                serviceResponse.Message = "AI Project not found.";
                 return serviceResponse;
             }
 
-            // Prevent modifications to published models
-            if (existingModel.IsPublished)
+            // Select the appropriate project version
+            var aiProjectVersion = generativeModelDto.AIProjectVersionId.HasValue
+                ? aiProject.Versions.FirstOrDefault(v => v.Id == generativeModelDto.AIProjectVersionId.Value)
+                : aiProject.Versions.OrderByDescending(v => v.VersionNumber).FirstOrDefault();
+
+            if (aiProjectVersion?.IsPublished == true)
             {
-                _logger.LogWarning("Modification blocked for published model | ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
-                serviceResponse.Message = "Published models cannot be modified.";
+                _logger.LogWarning("Attempt to modify a published project version blocked | Project ID: {Id} | User ID: {UserId}", aiProject.Id, _userId);
+                serviceResponse.Message = "Modifications to published project versions are not allowed.";
                 return serviceResponse;
             }
 
-            // Trim string values from the incoming DTO to avoid invalid whitespace issues
+            // Sanitize DTO strings
             generativeModelDto = TrimDtoStringPropsUtil.TrimDtoStringProps(generativeModelDto);
 
-            _logger.LogInformation("Applying updates to base model entity | Model ID: {Id}", generativeModelDto.Id);
+            _logger.LogInformation("Updating AI Project metadata | Project ID: {Id}", aiProject.Id);
 
-            // Map changes from DTO to existing model entity
-            existingModel.Type = ModelTypesEnum.Generative;
-            existingModel.SetupStatus = SetupStatusTypesEnum.Completed;
-            existingModel.LastModifiedByUserId = _userId;
-
-            // Update base model in the database
-            _unitOfWork.MLModelRepo.Update(existingModel);
-
-            // Save base model changes
-            if (!await _unitOfWork.SaveAsync())
+            if (aiProject.Type == null)
             {
-                _logger.LogError("Failed to save base model changes | Model ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
-                return serviceResponse;
+                // Update project base information
+                aiProject.Type = AIProjectTypeEnum.Generative;
+                aiProject.LastModifiedByUserId = _userId;
+                _unitOfWork.AIProjectRepo.Update(aiProject);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save updates to AI Project | Project ID: {Id} | User ID: {UserId}", aiProject.Id, _userId);
+                    return serviceResponse;
+                }
             }
 
-            var generativeModel = existingModel.GenerativeModel;
+            // Retrieve or initialize the version task (AI persona setup)
+            var versionTask = aiProjectVersion?.Tasks.FirstOrDefault();
 
-            if (generativeModel == null)
+            if (versionTask == null)
             {
-                // No existing task — create a new generative persona
-                generativeModel = generativeModelDto.GenerativeModel.Adapt<GenerativeModel>();
-                generativeModel.GeneratedPrompt = await GeneratePromptForModelSetupAsync(generativeModelDto.GenerativeModel);
-                generativeModel.MLModelId = existingModel.Id;
-                generativeModel.CreatedByUserId = _userId;
-                generativeModel.LastModifiedByUserId = _userId;
+                _logger.LogInformation("No existing generative task found; creating new one | Project ID: {Id}", aiProject.Id);
 
-                await _unitOfWork.GenerativeModelRepo.InsertAsync(generativeModel);
+                versionTask = generativeModelDto.GenerativeModel.Adapt<VersionTask>();
+                versionTask.GeneratedPrompt = await GeneratePromptForModelSetupAsync(generativeModelDto.GenerativeModel);
+                versionTask.SystemPrompt = generativeModelDto.GenerativeModel.NodePrompt;
+                versionTask.AIProjectId = aiProject.Id;
+                versionTask.AIProjectVersionId = aiProjectVersion?.Id ?? Guid.Empty;
+                versionTask.CreatedByUserId = _userId;
+                versionTask.LastModifiedByUserId = _userId;
+
+                await _unitOfWork.VersionTaskRepo.InsertAsync(versionTask);
             }
             else
             {
-                // Existing task found — update it from the DTO
-                generativeModelDto.GenerativeModel.Adapt(generativeModel);
-                generativeModel.GeneratedPrompt = await GeneratePromptForModelSetupAsync(generativeModelDto.GenerativeModel);
-                generativeModel.LastModifiedByUserId = _userId;
+                _logger.LogInformation("Updating existing generative task | Task ID: {TaskId}", versionTask.Id);
 
-                _unitOfWork.GenerativeModelRepo.Update(generativeModel);
+                generativeModelDto.GenerativeModel.Adapt(versionTask);
+                versionTask.GeneratedPrompt = await GeneratePromptForModelSetupAsync(generativeModelDto.GenerativeModel);
+                versionTask.SystemPrompt = generativeModelDto.GenerativeModel.NodePrompt;
+                versionTask.LastModifiedByUserId = _userId;
+
+                _unitOfWork.VersionTaskRepo.Update(versionTask);
             }
 
-            // Save changes to the persona task
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to save AI persona changes | Model ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
+                _logger.LogError("Failed to save changes to Generative Task | Project ID: {Id} | User ID: {UserId}", aiProject.Id, _userId);
                 return serviceResponse;
             }
 
-            _logger.LogInformation("generative model update successful | Model ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
+            _logger.LogInformation("Generative model update successful | Project ID: {Id}", aiProject.Id);
 
-            // Execute LLM data extraction using the configured prompt and parameters
+            // Execute prompt via LLM
             var llmResponse = await _llmDataExtractionService.ExtractDataAsync(
-                generativeModel.GeneratedPrompt,
-                generativeModel.LLM,
-                generativeModel.Temperature
+                versionTask.GeneratedPrompt,
+                versionTask.LLM,
+                versionTask.Temperature,
+                null
             );
 
-
-            var conversationHistory = new ConversationHistory()
+            // Create conversation history from LLM output
+            var conversationHistory = new ConversationHistory
             {
-                MLModelId = existingModel.Id,
+                AIProjectId = aiProject.Id,
                 Message = llmResponse.Data ?? string.Empty,
                 ParticipantType = ParticipantTypesEnum.Bot,
                 ParticipantName = nameof(ParticipantTypesEnum.Bot),
-                ConversationId = conversationId.HasValue ? conversationId : Guid.NewGuid(),
-                IsUserMessage = false,
+                ConversationId = conversationId ?? Guid.NewGuid(),
+                IsUserMessage = false
             };
 
             await _unitOfWork.ConversationHistoryRepo.InsertAsync(conversationHistory);
 
-            // Save changes to the persona task
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to save conversation history | Model ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
+                _logger.LogError("Failed to persist conversation history | Project ID: {Id} | User ID: {UserId}", aiProject.Id, _userId);
                 return serviceResponse;
             }
 
-            // Update the service response to indicate success
+            // Final success response
             serviceResponse.StatusCode = 200;
             serviceResponse.Data = conversationHistory.Adapt<ConversationHistoryDto>();
-            serviceResponse.Message = "Generative model updated and execution completed successfully.";
-
+            serviceResponse.Message = "Generative model updated and executed successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating generative model | Model ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
-        }
-
-        return serviceResponse;
-    }
-
-    // Executes the specified machine learning model using a large language model (LLM).
-    public async Task<ServiceResponse<string>> ExecuteModelViaLLMAsync(Guid mlModelId)
-    {
-        // Initialize the response with a default failure message
-        var serviceResponse = new ServiceResponse<string>
-        {
-            Data = null,
-            Message = "Failed to execute via LLM. Please try again."
-        };
-
-        try
-        {
-            _logger.LogInformation("Initiating LLM execution for ML Model ID: {ModelId}", mlModelId);
-
-            // Retrieve the ML model along with its generative model configuration
-            var model = await _unitOfWork.MLModelRepo
-                .GetByConditionAsync(m => m.Id == mlModelId)
-                .Include(m => m.GenerativeModel)
-                .AsNoTracking()
-                .SingleOrDefaultAsync();
-
-            // Check if the model exists
-            if (model == null)
-            {
-                _logger.LogWarning("ML Model not found for ID: {ModelId}", mlModelId);
-                serviceResponse.Message = "ML model not found.";
-                return serviceResponse;
-            }
-
-            // Ensure the generative model configuration is present
-            if (model.GenerativeModel == null)
-            {
-                _logger.LogWarning("Generative model setup is incomplete for ML Model ID: {ModelId}", mlModelId);
-                serviceResponse.Message = "Model setup is not completed.";
-                return serviceResponse;
-            }
-
-            // Call the LLM data extraction service with the configured prompt and parameters
-            var llmResponse = await _llmDataExtractionService.ExtractDataAsync(
-                model.GenerativeModel.GeneratedPrompt,
-                model.GenerativeModel.LLM,
-                model.GenerativeModel.Temperature
-            );
-
-            // Update the response with success
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Data = llmResponse.Data;
-            serviceResponse.Message = "Execution completed successfully.";
-
-            _logger.LogInformation("LLM execution completed for ML Model ID: {ModelId}", mlModelId);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred during LLM execution for ML Model ID: {ModelId}", mlModelId);
+            _logger.LogError(ex, "Unexpected error occurred while updating/executing generative model | Project ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
         }
 
         return serviceResponse;

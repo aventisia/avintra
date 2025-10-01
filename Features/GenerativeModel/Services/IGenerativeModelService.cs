@@ -3,11 +3,15 @@ namespace MLModelBuilderAPIs.Services;
 public interface IGenerativeModelService
 {
     /// <summary>
-    /// Gets the model setup for a specific generative model using its unique ML model ID.
+    /// Retrieves the setup configuration for a generative model associated with a specific AI project.
     /// </summary>
-    /// <param name="mlModelId">The unique ID of the ML model to fetch the setup for.</param>
-    /// <returns>A task that represents the asynchronous operation. It returns the model setup DTO for the specified ML model.</returns>
-    Task<ServiceResponse<GenerativeModelDto>> GetSetupByMLModelIdAsync(Guid mlModelId);
+    /// <param name="aiProjectId">The unique identifier of the AI project.</param>
+    /// <param name="aiProjectVersionId">The optional version ID of the AI project. If not provided, the latest version will be used.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The result contains a <see cref="GenerativeModelDto"/> 
+    /// with the setup details of the specified AI project.
+    /// </returns>
+    Task<ServiceResponse<GenerativeModelDto>> GetSetupByAIProjectIdAsync(Guid aiProjectId, Guid? aiProjectVersionId);
 
     /// <summary>
     /// Updates the configuration for an generative model setup.
