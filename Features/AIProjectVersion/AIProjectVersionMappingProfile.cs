@@ -18,6 +18,7 @@ public class AIProjectVersionMappingProfile : IRegister
             .Ignore(dest => dest.CreatedByUserId)
             .Ignore(dest => dest.LastModifiedByUserId)
             .Ignore(dest => dest.CreatedOn)
+            .Ignore(dest => dest.VersionNumber)
             .IgnoreNullValues(true);
     }
 }
