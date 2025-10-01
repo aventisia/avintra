@@ -39,7 +39,7 @@ public class ScheduledModel : BaseEntity, IMustHaveTenant
     /// Gets or sets the navigation property to the related ML model.
     /// </summary>
     [ForeignKey("MLModelId")]
-    public virtual MLModel? MLModel { get; set; }
+    public virtual AIProject? MLModel { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier of the related extracted data.

@@ -5,16 +5,11 @@ namespace MLModelBuilderAPIs.Entities;
 /// </summary>
 public class ExtractedData : BaseEntity, IMustHaveTenant
 {
-    // TODO: Remove model id once transition in completed
-    /// <summary>
-    /// Gets or sets the ML model record's primary key to which this record is associated.
-    /// </summary>/
-    public Guid MLModelId { get; set; }
 
     /// <summary>
-    /// Gets or sets the primary key of the model task associated with this record.
-    /// </summary>/
-    public Guid ModelTaskId { get; set; }
+    /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).
+    /// </summary>
+    public Guid TenantId { get; set; }
 
     /// <summary>
     /// Gets or sets the data model's fields JSON data in string format. The default value will be an empty object.
@@ -22,20 +17,10 @@ public class ExtractedData : BaseEntity, IMustHaveTenant
     public string? DataObject { get; set; }
 
     /// <summary>
-    /// Gets or sets the uploaded doc record's primary key to which this record is associated.
-    /// </summary>/
-    public Guid DocId { get; set; }
-
-    /// <summary>
     /// Gets or sets the accuracy for the record
     /// </summary>
     [Range(1, 100)]
     public decimal? Accuracy { get; set; }
-
-    /// <summary>
-    /// Gets or sets the type of extra
-    /// </summary>
-    public ExtractedDataType? Type { get; set; }
 
     /// <summary>
     /// Gets or sets the token count related to this data record.
@@ -63,27 +48,37 @@ public class ExtractedData : BaseEntity, IMustHaveTenant
     public bool SubmitForFineTuning { get; set; }
 
     /// <summary>
-    /// Gets or sets the model library to which this data model is associated with.
-    /// </summary>
-    [ForeignKey("MLModelId")]
-    public virtual MLModel? MLModel { get; set; }
+    /// Gets or sets the uploaded version resource record's primary key to which this record is associated.
+    /// </summary>/
+    public Guid VersionResourceId { get; set; }
 
     /// <summary>
-    /// Gets or sets the model task that this data model is associated with.
-    /// </summary>
-    [ForeignKey("ModelTaskId")]
-    public virtual ModelTask? ModelTask { get; set; }
+    /// Gets or sets the primary key of the version task associated with this record.
+    /// </summary>/
+    public Guid VersionTaskId { get; set; }
 
     /// <summary>
-    /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).
+    /// Gets or sets the AI project version record's primary key to which this record is associated.
     /// </summary>
-    public Guid TenantId { get; set; }
+    public Guid AIProjectVersionId { get; set; }
 
     /// <summary>
-    /// Gets or sets the uploaded doc to which this data model is associated with.
+    /// Gets or sets the AI project version to which this resource is associated.
     /// </summary>
-    [ForeignKey("DocId")]
-    public virtual UploadedDoc? UploadedDoc { get; set; }
+    [ForeignKey("AIProjectVersionId")]
+    public virtual AIProjectVersion? AIProjectVersion { get; set; }
+
+    /// <summary>
+    /// Gets or sets the AI version task that this extracted data is associated with.
+    /// </summary>
+    [ForeignKey("VersionTaskId")]
+    public virtual VersionTask? VersionTask { get; set; }
+
+    /// <summary>
+    /// Gets or sets the uploaded version resource to which this extracted data is associated with.
+    /// </summary>
+    [ForeignKey("VersionResourceId")]
+    public virtual VersionResource? VersionResource { get; set; }
 
     /// <summary>
     /// Gets or sets the collection of scheduled models related to this schedule model.

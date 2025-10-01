@@ -55,13 +55,13 @@ public class ConversationHistory : IMustHaveTenant
     public Guid? ConversationId { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier for the machine learning model that generated or received this message.
+    /// Gets or sets the unique identifier of the project this version belongs to.
     /// </summary>
-    public Guid MLModelId { get; set; }
+    public required Guid AIProjectId { get; set; }
 
     /// <summary>
-    /// Navigation property for the related machine learning model entity.
+    /// Gets or sets the project entity associated with this version.
     /// </summary>
-    [ForeignKey("MLModelId")]
-    public virtual MLModel? MLModel { get; set; }
+    [ForeignKey("AIProjectId")]
+    public virtual AIProject? AIProject { get; set; }
 }
