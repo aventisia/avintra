@@ -13,10 +13,10 @@ def verify_token(token: str):
     try:
         payload = jwt.decode(
             token,
-            settings.secret_key,
+            settings.JWT_SECRET_KEY,
             algorithms=["HS512"],
-            audience=settings.audience,
-            issuer=settings.issuer
+            audience=settings.JWT_AUDIENCE,
+            issuer=settings.JWT_ISSUER
         )
         logger.info("✅ JWT token successfully verified.")
         return payload
