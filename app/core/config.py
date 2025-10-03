@@ -6,12 +6,14 @@ from pydantic_settings import BaseSettings
 load_dotenv(".env")
 
 # Load environment-specific .env (e.g., .env.local, .env.development)
-env = os.getenv("ENVIRONMENT", "local")
-load_dotenv(f".env.{env}", override=True)
+env = os.getenv("ENV", "local")
+if env and env == "local":
+    load_dotenv(f".env.{env}", override=True)
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str
-    PROJECT_VERSION: str
+    PROJECT_NAME: str = "LLM Pipeline APIs"
+    PROJECT_DESCRIPTION: str = "APIs for managing LLM pipelines"
+    PROJECT_VERSION: str = "0.1.0"
     
     # Database
     APP_DB_CONNECTION_STRING: str
@@ -44,9 +46,5 @@ class Settings(BaseSettings):
     # TTS and STT
     ELEVENLABS_API_KEY: str
     DEEPGRAM_API_KEY: str
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
 
 settings = Settings()
