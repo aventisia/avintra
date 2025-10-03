@@ -201,6 +201,46 @@ async def websocket_chat_handler(websocket: WebSocket):
                 
                 # The last element is the incomplete fragment (or empty if buffer ended with a sentence)
                 buffer = sentences[-1]
+
+            # After the stream ends, send any remaining text in the buffer as a final message
+            final_llm_text = buffer.strip()
+            if final_llm_text:
+                if message_data.get('is_voice_enabled') is True:
+                    text_for_tts = markdown_to_plain(final_llm_text)
+                    text_for_tts = re.sub(r'<[^>]+>', '', text_for_tts)
+                    try:
+                        logger.info(f"Calling Kokoro TTS for text: {text_for_tts}")
+                        request = KokoroTTSRequest(
+                            text=text_for_tts,
+                            voice=message_data.get('voice_id') or 'af_heart',
+                            lang_code=message_data.get('language_id') or 'a',
+                            return_base64=True
+                        )
+                        audio_response = await kokoro_tts_service.synthesize(request)
+                        if isinstance(audio_response, dict):
+                            audio_b64 = audio_response.get("audio_base64")
+                            audio_media_type = audio_response.get("media_type")
+                        else:
+                            audio_b64 = None
+                            audio_media_type = None
+                    except Exception as tts_err:
+                        logger.error(f"Kokoro TTS failed: {tts_err}")
+                        audio_b64 = None
+                        audio_media_type = None
+                else:
+                    audio_b64 = None
+                    audio_media_type = None
+
+                ai_response_message = ChatMessage(
+                    model_id=user_message.model_id,
+                    user_id=user_info.id,
+                    user_type="assistant",
+                    message=final_llm_text,
+                    timestamp=str(datetime.datetime.now(datetime.timezone.utc)),
+                    audio=audio_b64,
+                    audio_media_type=audio_media_type
+                )
+                await connection_manager.send_personal_message(ai_response_message.model_dump_json(), connection_id)
                     
             # End Time. Get total time taken for LLM response
             end_time = time.perf_counter()
