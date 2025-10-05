@@ -48,10 +48,6 @@ class OpenAIProvider(BaseLLMProvider):
             "Authorization": f"Bearer {self.api_key}"
         }
         
-        # If instructions are provided, include them in the request
-        if request.instructions:
-            request_payload["instructions"] = request.instructions
-        
         # If json_schema is provided, set up text as per OpenAI API
         if request.json_schema:
             schema = json.loads(request.json_schema) if isinstance(request.json_schema, str) else request.json_schema

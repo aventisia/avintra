@@ -7,7 +7,6 @@ class LLMRequest(BaseModel):
     provider: Literal['openai','ollama']
     model: str
     input: str # User input or prompt for the LLM
-    instructions: Optional[str] = None # System-level instructions for the LLM
     is_json_output: Optional[bool] = False
     json_schema: Optional[str] = None
     is_byok_enabled: Optional[bool] = False # TODO: Implement BYOK support

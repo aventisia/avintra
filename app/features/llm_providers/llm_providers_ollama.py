@@ -36,8 +36,6 @@ class OllamaProvider(BaseLLMProvider):
         
         # Prepare messages for the Ollama API
         messages = [{"role": "user", "content": request.input}]
-        if request.instructions:
-            messages.insert(0, {"role": "system", "content": request.instructions})
             
         # Build request payload and headers
         request_payload = {
