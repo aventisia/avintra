@@ -1,14 +1,11 @@
 import os
-from dotenv import load_dotenv
-from pydantic_settings import BaseSettings
-
-# Load base .env
-load_dotenv(".env")
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Load environment-specific .env (e.g., .env.local, .env.development)
 env = os.getenv("ENV", "local")
-if env and env == "local":
-    load_dotenv(f".env.{env}", override=True)
+env_files = ['.env']
+if env == "local":
+    env_files.append(f'.env.{env}')
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "LLM Pipeline APIs"
@@ -46,5 +43,12 @@ class Settings(BaseSettings):
     # TTS and STT
     ELEVENLABS_API_KEY: str
     DEEPGRAM_API_KEY: str
+    
+    model_config = SettingsConfigDict(
+        env_file=env_files, # System env vars take precedence over these files
+        env_file_encoding='utf-8',
+        case_sensitive=True,
+        extra='ignore'
+    )
 
 settings = Settings()
