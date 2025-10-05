@@ -28,8 +28,8 @@ def extract_json_from_llm_response(text: str) -> str:
                 if not stack:
                     json_str = text[start:i+1]
                     try:
-                        json.loads(json_str)
-                        return json_str
+                        json_obj = json.loads(json_str)
+                        return json.dumps(json_obj, separators=(',', ':'))
                     except Exception:
                         pass
                     break

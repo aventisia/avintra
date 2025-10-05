@@ -5,6 +5,7 @@ import httpx
 from app.core.config import settings
 from app.core.logger import logger
 from app.features.llm_providers.llm_providers_schemas import LLMRequest, LLMResponse
+from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from .llm_providers_base import BaseLLMProvider
 from datetime import datetime
 
@@ -79,7 +80,11 @@ class OllamaProvider(BaseLLMProvider):
                 response.raise_for_status()
                 response_data = response.json()
                 
-                # Note: No need to extract json from output as Ollama handles it based on the 'format=json' setting
+                # Handle is_json_output if requested
+                if request.is_json_output:
+                    output = extract_json_from_llm_response(response_data["message"]["content"])
+                else:
+                    output = response_data["message"]["content"]
                 
                 # End Time. To Get total time taken for LLM response
                 end_time = time.perf_counter()
@@ -88,7 +93,7 @@ class OllamaProvider(BaseLLMProvider):
                 created_at_datetime = datetime.fromisoformat(response_data.get("created_at").replace('Z', '+00:00'))
                 
                 # Update llm_response with actual values
-                llm_response.output = response_data["message"]["content"]
+                llm_response.output = output
                 llm_response.created_on = created_at_datetime.strftime('%Y-%m-%d %H:%M:%S')
                 llm_response.time_taken = round(end_time - start_time, 2)
                 llm_response.input_tokens = response_data["prompt_eval_count"]
