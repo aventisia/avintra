@@ -2,11 +2,16 @@
 from pydantic import BaseModel
 from typing import Optional, Literal
 from datetime import datetime, timezone
+from typing import Union, List, Dict
+
+class LLMMessage(BaseModel):
+    role: Literal['system', 'developer', 'user', 'assistant']
+    content: str
 
 class LLMRequest(BaseModel):
     provider: Literal['openai','ollama']
     model: str
-    input: str # User input or prompt for the LLM
+    input: Union[str, List[LLMMessage]]  # Accepts string or list of messages
     is_json_output: Optional[bool] = False
     json_schema: Optional[str] = None
     is_byok_enabled: Optional[bool] = False # TODO: Implement BYOK support

@@ -35,9 +35,15 @@ class OllamaProvider(BaseLLMProvider):
         )
         start_time = time.perf_counter()
         
-        # Prepare messages for the Ollama API
-        messages = [{"role": "user", "content": request.input}]
-            
+        # Convert LLMMessage objects to dicts if input is a list
+        if isinstance(request.input, str):
+            messages = [{"role": "user", "content": request.input}]
+        elif isinstance(request.input, list):
+            messages = [msg.model_dump() if hasattr(msg, 'model_dump') else msg for msg in request.input]
+        else:
+            llm_response.error = "Invalid input format. Must be string or list of messages."
+            return llm_response
+        
         # Build request payload and headers
         request_payload = {
             "model": request.model,

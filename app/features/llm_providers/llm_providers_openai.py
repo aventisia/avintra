@@ -34,10 +34,19 @@ class OpenAIProvider(BaseLLMProvider):
         )
         start_time = time.perf_counter()
         
+        # Convert LLMMessage objects to dicts if input is a list
+        if isinstance(request.input, str):
+            input_serialized = request.input
+        elif isinstance(request.input, list):
+            input_serialized = [msg.model_dump() if hasattr(msg, 'model_dump') else msg for msg in request.input]
+        else:
+            llm_response.error = "Invalid input format. Must be string or list of messages."
+            return llm_response
+        
         # Build request payload and headers
         request_payload = {
             "model": request.model,
-            "input": request.input,
+            "input": input_serialized, # Can be string or list of messages (as dicts)
             "temperature": request.temperature,
             "top_p": request.top_p,
             "stream": request.stream,
