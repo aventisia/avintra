@@ -33,5 +33,9 @@ public enum AppSecretTypesEnum
     /// Personal Access Token used to authenticate with the GitHub API.
     /// </summary>
     [Description("GitHub API Key")]
-    GitHubApi
+    GitHubApi,
+
+    [Description ("General Credentials")]
+    GeneralCredentialApi
+
 }
