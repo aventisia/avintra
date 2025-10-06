@@ -1,3 +1,4 @@
+import { ModelVersions } from "@/features/model-versions/components";
 import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 
 import { useLocation } from "react-router-dom";
@@ -28,6 +29,7 @@ const ModelInfo = () => {
           {badgeName}
         </span>
       ) : null}
+      <ModelVersions />
     </div>
   );
 };
