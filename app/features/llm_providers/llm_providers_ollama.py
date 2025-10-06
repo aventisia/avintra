@@ -26,6 +26,8 @@ class OllamaProvider(BaseLLMProvider):
             provider=request.provider,
             model=request.model,
             output="",
+            status=None,
+            finish_reason=None,
             temperature=request.temperature,
             top_p=request.top_p,
             max_output_tokens=request.max_output_tokens,
@@ -103,8 +105,13 @@ class OllamaProvider(BaseLLMProvider):
                 # Get created_at from response and convert to datetime
                 created_at_datetime = datetime.fromisoformat(response_data.get("created_at").replace('Z', '+00:00'))
                 
+                # Get ollama done_reason
+                done_reason = response_data["done_reason"] if response_data.get("done_reason") else None
+                
                 # Update llm_response with actual values
                 llm_response.output = output
+                llm_response.status = self.map_ollama_done_reason_to_status(done_reason)
+                llm_response.finish_reason = self.map_ollama_done_reason_to_finish_reason(done_reason)
                 llm_response.created_on = created_at_datetime.strftime('%Y-%m-%d %H:%M:%S')
                 llm_response.time_taken = round(end_time - start_time, 2)
                 llm_response.input_tokens = response_data["prompt_eval_count"]
@@ -118,3 +125,20 @@ class OllamaProvider(BaseLLMProvider):
             logger.error(f"Ollama llm transactional request error: {e}, ollama error: {response_data.get('error', '')}")
             llm_response.error = f"Failed to generate response: {e}"
             return llm_response
+
+    # Helper: Map Ollama done_reason to LLMResponse status
+    def map_ollama_done_reason_to_status(self, done_reason: str) -> str:
+        mapping = {
+            "stop": "completed",
+            "length": "incomplete",
+            "error": "failed",
+            "cancelled": "cancelled"
+        }
+        return mapping.get(done_reason, "incomplete")
+    
+    # Helper: Map ollama done_reason to LLMResponse finish_reason compatible with OpenAI finish_reason
+    def map_ollama_done_reason_to_finish_reason(self, done_reason: str) -> str:
+        mapping = {
+            "length": "max_output_tokens",
+        }
+        return mapping.get(done_reason, None)

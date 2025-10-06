@@ -25,6 +25,8 @@ class OpenAIProvider(BaseLLMProvider):
             provider=request.provider,
             model=request.model,
             output="",
+            status=None,
+            finish_reason=None,
             temperature=request.temperature,
             top_p=request.top_p,
             max_output_tokens=request.max_output_tokens,
@@ -104,6 +106,8 @@ class OpenAIProvider(BaseLLMProvider):
 
                 # Update llm_response with actual values
                 llm_response.output = output
+                llm_response.status = response_data["status"]
+                llm_response.finish_reason = response_data["incomplete_details"]["reason"] if response_data.get("incomplete_details") else None
                 llm_response.created_on = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(response_data.get("created_at")))
                 llm_response.time_taken = round(end_time - start_time, 2)
                 llm_response.input_tokens = usage.get("input_tokens", 0)

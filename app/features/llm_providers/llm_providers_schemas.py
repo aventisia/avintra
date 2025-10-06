@@ -25,6 +25,8 @@ class LLMResponse(BaseModel):
     provider: Literal['openai','ollama']
     model: str
     output: str
+    status: Optional[Literal['completed', 'failed', 'in_progress', 'cancelled', 'queued', 'incomplete']] = None
+    finish_reason: Optional[str] = None
     created_on: datetime = datetime.now(timezone.utc)
     max_output_tokens: Optional[int] = None
     temperature: float = 1.0
