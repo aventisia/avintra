@@ -48,6 +48,7 @@ const InferenceModelTestForm = () => {
     isUpdatePending,
     updateExtractedFormData,
     initializeFieldNames,
+    versionId,
   } = useInferenceModelTestForm();
   const { setValue, watch } = form;
   const submitForFinetuningValue = watch("submitForFineTuning");
@@ -95,6 +96,7 @@ const InferenceModelTestForm = () => {
     try {
       await updateExtractedFormData({
         id: modelData?.data.id ?? "",
+        aiProjectVersionId: versionId,
         docId: selectedFile?.id ?? "",
         submitForFineTuning: formData.submitForFineTuning ?? false,
         summarization: formData.summarization ?? null,

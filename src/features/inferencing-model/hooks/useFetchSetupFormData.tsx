@@ -13,16 +13,17 @@ import { getInferenceModelDataById } from "../apis/inference-model-setup-apis";
  */
 export const useFetchSetupFormData = () => {
   // Get modelId (mid) from store
-  const { modelId } = useLabelDataStore(
+  const { modelId, versionId } = useLabelDataStore(
     useShallow((state) => ({
       modelId: state.modelId,
+      versionId: state.versionId,
     })),
   );
 
   // Get models using react query
   const { data, isError, error, refetch, isLoading } = useQuery({
-    queryKey: ["INFERENCE_SETUP_FORM_DATA"],
-    queryFn: () => getInferenceModelDataById(modelId),
+    queryKey: ["INFERENCE_SETUP_FORM_DATA", versionId],
+    queryFn: () => getInferenceModelDataById(modelId, versionId),
     enabled: !!modelId, // prevents query from running with empty modelId
   });
 

@@ -13,9 +13,10 @@ import { inferenceModelFormZodSchema } from "../constants/inference-model-zod-sc
 import { InferenceModelSetupDTO } from "../dtos/inference-model-setup-dto";
 
 export const useInferenceModelSetupForm = () => {
-  const { modelId } = useLabelDataStore(
+  const { modelId, versionId } = useLabelDataStore(
     useShallow((state) => ({
       modelId: state.modelId,
+      versionId: state.versionId,
     })),
   );
   const form = useForm<z.infer<typeof inferenceModelFormZodSchema>>({
@@ -39,7 +40,7 @@ export const useInferenceModelSetupForm = () => {
     // Get Setup Form Data
     const data = queryClient.getQueryData<{
       data: InferenceModelSetupDTO;
-    }>(["INFERENCE_SETUP_FORM_DATA"]);
+    }>(["INFERENCE_SETUP_FORM_DATA", versionId]);
 
     const inferenceModelData = data?.data;
 
@@ -54,7 +55,7 @@ export const useInferenceModelSetupForm = () => {
       sentimentAnalytics: inferenceModelData?.sentimentAnalytics ?? null,
       summarization: inferenceModelData?.summarization ?? null,
     });
-  }, [form, queryClient, modelId]);
+  }, [form, queryClient, modelId, versionId]);
 
   const {
     formState: { isSubmitting, isDirty, errors },
@@ -66,7 +67,7 @@ export const useInferenceModelSetupForm = () => {
     mutationFn: updateInferenceModelSetupFormData,
     onSuccess: async () => {
       queryClient.invalidateQueries({
-        queryKey: ["INFERENCE_SETUP_FORM_DATA"],
+        queryKey: ["INFERENCE_SETUP_FORM_DATA", versionId],
       });
       queryClient.invalidateQueries({
         queryKey: ["model", modelId],
@@ -146,7 +147,7 @@ export const useInferenceModelSetupForm = () => {
       }
     }
 
-    return formData;
+    return { ...formData, aiProjectVersionId: versionId };
   };
 
   return {
@@ -158,5 +159,6 @@ export const useInferenceModelSetupForm = () => {
     updateFormData,
     isUpdatePending,
     refineFormData,
+    versionId,
   };
 };

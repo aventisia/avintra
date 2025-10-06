@@ -1,4 +1,5 @@
 import { ITables } from "@/features/information-extractor/dtos/info-extractor-test-dto";
+import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
 import { useExtractedDataStore } from "@/store/extract-via-llm-store";
 
@@ -19,6 +20,12 @@ export const useInferenceModelTestForm = () => {
   const { extractedData } = useExtractedDataStore(
     useShallow((state) => ({
       extractedData: state.extractedData,
+    })),
+  );
+  const { versionId } = useLabelDataStore(
+    useShallow((state) => ({
+      modelId: state.modelId,
+      versionId: state.versionId,
     })),
   );
   const { selectedFile } = useFileListStore(
@@ -51,7 +58,7 @@ export const useInferenceModelTestForm = () => {
   const initializeFieldNames = useCallback(async () => {
     const data = queryClient.getQueryData<{
       data: InferenceModelSetupDTO;
-    }>(["INFERENCE_SETUP_FORM_DATA"]);
+    }>(["INFERENCE_SETUP_FORM_DATA", versionId]);
     if (!data || !data.data) return;
 
     const {
@@ -97,7 +104,7 @@ export const useInferenceModelTestForm = () => {
           }
         : null,
     });
-  }, [form, queryClient]);
+  }, [form, queryClient, versionId]);
 
   // 2. Load TEST_FORM
   const populateFieldValues = useCallback(() => {
@@ -369,5 +376,6 @@ export const useInferenceModelTestForm = () => {
     updateExtractedFormData,
     isUpdatePending,
     initializeFieldNames,
+    versionId,
   };
 };
