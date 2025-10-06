@@ -21,7 +21,7 @@ Input:
     
 Output Format:
     • Title (1 line)
-    • Short Summary (2–3 sentences)
+    • Short Summary (2-3 sentences)
     • How it Works (1-2 short paragraph)
     • How to Use or Customize (1 short paragraph)
     • Optional Enhancements (bullet list, if relevant)
