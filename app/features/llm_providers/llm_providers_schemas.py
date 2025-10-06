@@ -14,6 +14,7 @@ class LLMRequest(BaseModel):
     input: Union[str, List[LLMMessage]]  # Accepts string or list of messages
     is_json_output: Optional[bool] = False
     json_schema: Optional[str] = None
+    max_output_tokens: Optional[int] 
     is_byok_enabled: Optional[bool] = False # TODO: Implement BYOK support
     credential_id: Optional[str] = None # TODO: Implement BYOK support
     temperature: Optional[float] = 1.0
@@ -25,6 +26,7 @@ class LLMResponse(BaseModel):
     model: str
     output: str
     created_on: datetime = datetime.now(timezone.utc)
+    max_output_tokens: Optional[int] = None
     temperature: float = 1.0
     top_p: float = 1.0
     time_taken: Optional[float] = 0.0

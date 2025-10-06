@@ -28,6 +28,7 @@ class OllamaProvider(BaseLLMProvider):
             output="",
             temperature=request.temperature,
             top_p=request.top_p,
+            max_output_tokens=request.max_output_tokens,
             is_json_output=request.is_json_output,
             is_byok_enabled=request.is_byok_enabled,
             credential_id=request.credential_id,
@@ -69,7 +70,11 @@ class OllamaProvider(BaseLLMProvider):
         # If json_schema is provided, update the format to json_schema
         if request.json_schema:
             request_payload["format"] = json.loads(request.json_schema) if isinstance(request.json_schema, str) else request.json_schema
-            
+        
+        # If max_output_tokens is provided, include it in the payload
+        if request.max_output_tokens:
+            request_payload["options"]["num_predict"] = request.max_output_tokens   
+        
         # Set a long timeout for potentially lengthy responses
         timeout = httpx.Timeout(600.0) # 10 minutes
         
