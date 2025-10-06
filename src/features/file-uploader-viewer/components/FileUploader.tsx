@@ -28,9 +28,10 @@ const FileUploader = () => {
     })),
   );
 
-  const { modelId } = useLabelDataStore(
+  const { modelId, versionId } = useLabelDataStore(
     useShallow((state) => ({
       modelId: state.modelId,
+      versionId: state.versionId,
     })),
   );
 
@@ -41,12 +42,14 @@ const FileUploader = () => {
         addFile={addFile}
         addFileToUpload={addFileToUpload}
         modelId={modelId}
+        versionId={versionId}
         updateProgress={updateProgress}
       />
       <FileUploadList
         files={files}
         clearFiles={clearFiles}
         modelId={modelId}
+        versionId={versionId}
         filesToUpload={filesToUpload}
         removeFile={removeFile}
       />

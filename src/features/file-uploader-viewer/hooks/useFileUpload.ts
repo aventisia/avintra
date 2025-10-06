@@ -8,12 +8,14 @@ import { FileUploadDto } from "../dtos/file-upload-dto";
 
 interface FileUploadParams {
   modelId: string;
+  versionId: string;
   addFileToUpload: (file: FileUploadDto) => void;
   updateProgress: (name: string, progress: number) => void;
 }
 
 export const useFileUpload = ({
   modelId,
+  versionId,
   addFileToUpload,
   updateProgress,
 }: FileUploadParams) => {
@@ -53,11 +55,12 @@ export const useFileUpload = ({
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: ["UploadedFiles", "viewer", modelId],
+        queryKey: ["UploadedFiles", "viewer", modelId, versionId],
       });
       addFileToUpload({
         ...(data.data[0] as FileUploadDto),
         mlModelId: modelId,
+        aiProjectVersionId: versionId,
       });
       setCurrentController(null);
     },
