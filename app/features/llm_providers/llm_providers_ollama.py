@@ -3,7 +3,7 @@ import json
 import time
 import httpx
 from app.core.config import settings
-from app.core.logger import logger
+from app.core.logger import log_exception, logger
 from app.features.llm_providers.llm_providers_schemas import LLMRequest, LLMResponse
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from .llm_providers_base import BaseLLMProvider
@@ -122,7 +122,7 @@ class OllamaProvider(BaseLLMProvider):
                 # Return the final llm_response
                 return llm_response
         except Exception as e:
-            logger.error(f"Ollama llm transactional request error: {e}, ollama error: {response_data.get('error', '')}")
+            log_exception(logger, e, "Ollama llm transactional request error: ", response_data.get('error', '')) # TODO: response_data may not have 'error' key. Not clearly documented in Ollama API docs.
             llm_response.error = f"Failed to generate response: {e}"
             return llm_response
 

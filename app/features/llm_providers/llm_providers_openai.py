@@ -3,7 +3,7 @@ import json
 import time
 import httpx
 from app.core.config import settings
-from app.core.logger import logger
+from app.core.logger import log_exception, logger
 from app.features.llm_providers.llm_providers_schemas import LLMRequest, LLMResponse
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from .llm_providers_base import BaseLLMProvider
@@ -119,6 +119,6 @@ class OpenAIProvider(BaseLLMProvider):
                 # Return the final llm_response
                 return llm_response
         except Exception as e:
-            logger.error(f"OpenAI llm transactional request error: {e}, openai error: {response_data.get('error', '')}")
+            log_exception(logger, e, "OpenAI llm transactional request error: ", response_data.get('error', ''))
             llm_response.error = f"Failed to generate response: {e}"
             return llm_response
