@@ -39,16 +39,24 @@ export const useFetchUploadedFiles = (
     }
   }
 
-  const { step, modelId: mid } = useLabelDataStore(
-    useShallow((state) => ({ step: state.step, modelId: state.modelId })),
+  const {
+    step,
+    modelId: mid,
+    versionId,
+  } = useLabelDataStore(
+    useShallow((state) => ({
+      step: state.step,
+      modelId: state.modelId,
+      versionId: state.versionId,
+    })),
   );
 
   // Get models using react query
   const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["UploadedFiles", viewerType, modelId],
+    queryKey: ["UploadedFiles", viewerType, modelId, versionId],
     queryFn: () =>
       viewerType === "viewer"
-        ? getUploadedFiles(modelId)
+        ? getUploadedFiles(versionId)
         : getSetupUploadedFiles(modelId),
     refetchOnMount: true,
   });

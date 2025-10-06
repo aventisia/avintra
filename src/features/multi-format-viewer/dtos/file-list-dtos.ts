@@ -10,6 +10,7 @@ export interface FileViewerDto {
    */
   id?: string;
 
+  aiProjectVersionId: string;
   /**
    * Gets or sets the type based on the stage at which doc is uploaded.
    */
