@@ -1,3 +1,4 @@
+
 namespace WorkspaceAPIs.Services;
 
 public class FlowExecutionLogService : IFlowExecutionLogService
@@ -53,6 +54,38 @@ public class FlowExecutionLogService : IFlowExecutionLogService
         return serviceResponse;
     }
 
+    // Get all list of flow execution logs 
+
+    public async Task<ServiceResponse<IEnumerable<FlowExecutionLogDto>>> GetFlowExecutionLogListAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<FlowExecutionLogDto>>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+            //Try to get flow execution logs
+            var logs = await _unitOfWork.FlowExecutionLogRepo
+            .GetAllAsync()
+            .OrderBy(o => o.ExecutedOn).ToListAsync();
+
+            // Task successful
+            serviceResponse.Data = logs.Adapt<IEnumerable<FlowExecutionLogDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Flow Execution logs retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     //Creates a flow execution log
     public async Task<ServiceResponse<FlowExecutionLogDto>> InsertFlowExecutionLogAsync(FlowExecutionLogDto flowExecutionLogDto)
     {
@@ -69,6 +102,8 @@ public class FlowExecutionLogService : IFlowExecutionLogService
             var newLog = flowExecutionLogDto.Adapt<FlowExecutionLog>();
             newLog.ExecutedBy = _username;
             newLog.ExecutedOn = DateTimeOffset.UtcNow;
+            newLog.StartTime = DateTimeOffset.UtcNow;
+            newLog.EndTime = DateTimeOffset.UtcNow;
 
             //Insert an execution log
             await _unitOfWork.FlowExecutionLogRepo.InsertAsync(newLog);
@@ -197,5 +232,57 @@ public class FlowExecutionLogService : IFlowExecutionLogService
         }
 
         return serviceResponse;
+    }
+
+   
+   //Delete multiple flow execution log
+    public async Task<ServiceResponse<bool>> DeleteFLowExecutionLogListAsync(List<Guid> ids)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to delete flow execution logs. Please try again"
+        };
+
+        try
+        {
+            // Fetch FlowExecutionLogs with Flow and FlowUsers for permission checks
+            var flowExecutionLogs = await _unitOfWork.FlowExecutionLogRepo
+                .GetByConditionAsync(log => ids.Contains(log.Id))
+                .Include(log => log.Flow)
+                    .ThenInclude(flow => flow.FlowUsers)
+                .ToListAsync();
+
+            if (!flowExecutionLogs.Any())
+            {
+                _logger.LogInformation("No flow execution logs found for the provided IDs.");
+                serviceResponse.Message = "No flow execution logs found for deletion.";
+                return serviceResponse;
+            }
+
+            
+
+            // Perform deletion
+            _unitOfWork.FlowExecutionLogRepo.Delete(flowExecutionLogs);
+
+            // Commit to database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("SaveChanges failed while deleting flow execution logs.");
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = $"{flowExecutionLogs.Count} flow execution log(s) deleted successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An exception occurred while deleting flow execution logs.");
+            serviceResponse.Message = "An error occurred while deleting the flow execution logs.";
+        }
+
+        return serviceResponse;
+
     }
 }

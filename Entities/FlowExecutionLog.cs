@@ -14,9 +14,9 @@ public class FlowExecutionLog : IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the duration for the flow execution log
+    /// Gets or sets the name of the flow execution log.
     /// </summary>
-    public int? Duration { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the status for the flow execution log
@@ -24,9 +24,35 @@ public class FlowExecutionLog : IMustHaveTenant
     public FlowExecutionLogStatusEnum? Status { get; set; }
 
     /// <summary>
-    /// Gets or sets the error message for the flow execution log
+    /// Gets or sets the start time of the event, task, or process.
+    /// </summary>
+    public DateTimeOffset StartTime { get; set; } = DateTimeOffset.UtcNow;
+
+    /// <summary>
+    /// Gets or sets the end time of the event, task, or process.
+    /// </summary>
+    public DateTimeOffset EndTime { get; set; } = DateTimeOffset.UtcNow;
+
+    /// <summary>
+    /// Gets or sets the duration for the flow execution log
+    /// </summary>
+    public int? Duration { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the retry count for the flow execution.
+    /// </summary>
+    public int RetryCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the version number of the flow execution log.
+    /// </summary>
+    public int Version { get; set; }
+
+    /// <summary>
+    /// Gets or sets the error message for the flow execution log, if any.
     /// </summary>
     public string? ErrorMessage { get; set; }
+
 
     /// <summary>    
     /// Gets or sets the the execution type who created the executed, such as user actions, automated scheduling, or external events
@@ -58,4 +84,15 @@ public class FlowExecutionLog : IMustHaveTenant
     /// Gets or sets the list of Action Execution Logs to manage the one-to-many relation.
     /// </summary>
     public virtual ICollection<ActionExecutionLog>? ActionExecutionLogs { get; set; }
+
+    /// <summary>
+    /// Represents the flow version associated with this machine.
+    /// </summary>
+    [ForeignKey("FlowVersionId")]
+    public virtual FlowVersion? FlowVersion { get; set; }
+
+    /// <summary>
+    /// Represents the ID of the flow version associated with this machine.
+    /// </summary>
+    public required Guid FlowVersionId { get; set; }
 }
