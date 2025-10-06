@@ -13,9 +13,9 @@ import { updateAPIKeyZodSchema } from "../constants/update-api-key-zod-schema";
 import { useUpdateApiKeyDialogStore } from "../store/update-api-key-dialog-store";
 
 export const useUpdateAPIKeyForm = () => {
-  const { modelId } = useLabelDataStore(
+  const { versionId } = useLabelDataStore(
     useShallow((state) => ({
-      modelId: state.modelId,
+      versionId: state.versionId,
     })),
   );
   const { id, apiKeyName } = useUpdateApiKeyDialogStore();
@@ -23,7 +23,7 @@ export const useUpdateAPIKeyForm = () => {
     resolver: zodResolver(updateAPIKeyZodSchema),
     defaultValues: {
       id: "",
-      mlModelId: modelId,
+      aiProjectVersionId: versionId,
       name: "",
     },
   });
@@ -31,10 +31,10 @@ export const useUpdateAPIKeyForm = () => {
   useEffect(() => {
     form.reset({
       id,
-      mlModelId: modelId,
+      aiProjectVersionId: versionId,
       name: apiKeyName,
     });
-  }, [form, id, modelId, apiKeyName]);
+  }, [form, id, versionId, apiKeyName]);
 
   const {
     formState: { isSubmitting, isDirty },

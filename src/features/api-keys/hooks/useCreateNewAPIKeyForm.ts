@@ -13,15 +13,15 @@ import { createNewAPIKeyZodSchema } from "../constants/create-new-api-key-zod-sc
 import { useCreateNewApiKeyDialogStore } from "../store/create-new-api-key-dialog-store";
 
 export const useCreateNewAPIKeyForm = () => {
-  const { modelId } = useLabelDataStore(
+  const { versionId } = useLabelDataStore(
     useShallow((state) => ({
-      modelId: state.modelId,
+      versionId: state.versionId,
     })),
   );
   const form = useForm<z.infer<typeof createNewAPIKeyZodSchema>>({
     resolver: zodResolver(createNewAPIKeyZodSchema),
     defaultValues: {
-      mlModelId: modelId,
+      aiProjectVersionId: versionId,
       name: "",
     },
   });

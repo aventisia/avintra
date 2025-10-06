@@ -1,4 +1,4 @@
 export interface CreateNewAPIKey {
   name: string;
-  mlModelId: string;
+  aiProjectVersionId: string;
 }
