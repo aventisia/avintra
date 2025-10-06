@@ -13,6 +13,7 @@ export const useLabelDataQueryKey = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   let modelId = queryParams.get("pid");
+  let versionId = queryParams.get("v");
   let modelName = queryParams.get("pn");
 
   // Get store setModelDataState action
@@ -23,18 +24,19 @@ export const useLabelDataQueryKey = () => {
   );
 
   // Throw error if model id or name are not provided
-  if (!modelId || !modelName) {
+  if (!modelId || !modelName || !versionId) {
     const labelData = localStorage.getItem("label_data") || "{}";
     const labelDataObj = JSON.parse(labelData);
     modelId = labelDataObj?.model_id;
     modelName = labelDataObj?.model_name;
-    if (!modelId || !modelName) {
+    versionId = labelDataObj?.version_id;
+    if (!modelId || !modelName || !versionId) {
       throw new Error("Model Id and name are required");
     }
   }
 
   // Set LabelData query key, model id, and model name
   useEffect(() => {
-    setModelDataState(modelId, modelName);
-  }, [modelId, modelName, setModelDataState]);
+    setModelDataState(modelId, modelName, versionId);
+  }, [modelId, modelName, setModelDataState, versionId]);
 };

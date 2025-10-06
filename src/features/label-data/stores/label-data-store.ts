@@ -11,11 +11,17 @@ type State = {
   labelDataQueryKey: string[];
 
   step: number;
+
+  versionId: string;
 };
 
 type Actions = {
   /** Set store state*/
-  setModelDataState: (modelId: string, modelName: string) => void;
+  setModelDataState: (
+    modelId: string,
+    modelName: string,
+    versionId: string,
+  ) => void;
 
   setStepState: (step: number) => void;
 };
@@ -25,12 +31,13 @@ export const useLabelDataStore = create<State & Actions>((set) => ({
   modelName: "",
   labelDataQueryKey: [],
   step: 0,
-
-  setModelDataState: (modelId, modelName) =>
+  versionId: "",
+  setModelDataState: (modelId, modelName, versionId) =>
     set(() => ({
       modelId: modelId,
       modelName: modelName,
-      labelDataQueryKey: ["dataFields", modelId],
+      labelDataQueryKey: ["dataFields", modelId, versionId],
+      versionId,
     })),
   setStepState: (step) =>
     set(() => ({
