@@ -108,6 +108,10 @@ public class WorkspaceDbContext : DbContext
         //Configure one-to-many relationship between Flow and Flow Execution Log
         modelBuilder.Entity<Flow>().HasMany(f => f.FlowExecutionLogs).WithOne(one => one.Flow).HasForeignKey(fKey => fKey.FlowId).IsRequired();
 
+        //Configure one-to-many relationship between Flow Version and Flow Execution Log
+        modelBuilder.Entity<FlowVersion>().HasMany(f => f.FlowExecutionLogs).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
+
+
         // Configure one-to-many relationship between Flow Execution Log and Action Execution Log
         modelBuilder.Entity<FlowExecutionLog>().HasMany(f => f.ActionExecutionLogs).WithOne(one => one.FlowExecutionLog).HasForeignKey(fKey => fKey.FlowExecutionLogId).IsRequired();
 

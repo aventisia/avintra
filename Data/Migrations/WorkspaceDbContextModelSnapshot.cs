@@ -322,6 +322,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<int?>("Duration")
                         .HasColumnType("integer");
 
+                    b.Property<DateTimeOffset>("EndTime")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("ErrorMessage")
                         .HasColumnType("text");
 
@@ -337,15 +340,32 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("FlowId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("FlowVersionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("StartTime")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int?>("Status")
                         .HasColumnType("integer");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("Version")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("FlowId");
+
+                    b.HasIndex("FlowVersionId");
 
                     b.ToTable("FlowExecutionLogs");
                 });
@@ -1747,7 +1767,15 @@ namespace WorkspaceAPIs.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("WorkspaceAPIs.Entities.FlowVersion", "FlowVersion")
+                        .WithMany("FlowExecutionLogs")
+                        .HasForeignKey("FlowVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Flow");
+
+                    b.Navigation("FlowVersion");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.FlowLog", b =>
@@ -2265,6 +2293,8 @@ namespace WorkspaceAPIs.Data.Migrations
             modelBuilder.Entity("WorkspaceAPIs.Entities.FlowVersion", b =>
                 {
                     b.Navigation("Blocks");
+
+                    b.Navigation("FlowExecutionLogs");
 
                     b.Navigation("Jobs");
 

@@ -19,6 +19,13 @@ public class FlowExecutionLogController : BaseApiController
         return ResultHelper(await _flowExecutionLogService.GetFlowExecutionLogsAsync(flowId));
     }
 
+    // Gets list of flow execution logs 
+    [HttpGet("list")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowExecutionLogDto>>>> GetFlowExecutionLogList()
+    {
+        return ResultHelper(await _flowExecutionLogService.GetFlowExecutionLogListAsync());
+    }
+
     // Creates a new flow execution log
     [HttpPost("create")]
     public async Task<ActionResult<ServiceResponse<FlowExecutionLogDto>>> InsertFlowExecutionLog([FromBody] FlowExecutionLogDto flowExecutionLogDto)
@@ -38,5 +45,12 @@ public class FlowExecutionLogController : BaseApiController
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteFLowExecutionLog(Guid id)
     {
         return ResultHelper(await _flowExecutionLogService.DeleteFlowExecutionLogAsync(id));
+    }
+
+    // Delete multiple flow execution log by their IDs.
+    [HttpPost("delete-multiple")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteFLowExecutionLogList([FromBody] List<Guid> ids)
+    {      
+        return ResultHelper(await _flowExecutionLogService.DeleteFLowExecutionLogListAsync(ids));
     }
 }

@@ -8,14 +8,39 @@ public class FlowExecutionLogDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the duration for the flow execution log
+    /// Gets or sets the name of the flow execution log.
     /// </summary>
-    public int? Duration { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the status for the flow execution log
     /// </summary>
     public FlowExecutionLogStatusEnum? Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets the start time of the event, task, or process.
+    /// </summary>
+    public DateTimeOffset StartTime { get; set; } = DateTimeOffset.UtcNow;
+
+    /// <summary>
+    /// Gets or sets the end time of the event, task, or process.
+    /// </summary>
+    public DateTimeOffset EndTime { get; set; } = DateTimeOffset.UtcNow;
+
+    /// <summary>
+    /// Gets or sets the duration for the flow execution log
+    /// </summary>
+    public int? Duration { get; set; }
+
+    /// <summary>
+    /// Gets or sets the retry count for the flow execution.
+    /// </summary>
+    public int RetryCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the version number of the flow execution log.
+    /// </summary>
+    public int Version { get; set; }
 
     /// <summary>
     /// Gets or sets the error message for the flow execution log
@@ -26,6 +51,8 @@ public class FlowExecutionLogDto
     /// Gets or sets the ID of the flow to which the execution log belongs.
     /// </summary>
     public required Guid FlowId { get; set; }
+
+    public required Guid FlowVersionId {get; set;}
 
     /// <summary>
     /// Gets or sets the the user who created the record.

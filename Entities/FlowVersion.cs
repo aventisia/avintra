@@ -88,4 +88,9 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     /// Configures the many-to-many relationship between block and flow versions.
     /// </summary>
     public virtual ICollection<Block>? Blocks { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of Execution Logs to manage the one-to-many relation.
+    /// </summary>
+    public virtual ICollection<FlowExecutionLog>? FlowExecutionLogs { get; set; }
 }
