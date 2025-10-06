@@ -1096,10 +1096,21 @@ namespace WorkspaceAPIs.Services
                 Message = "Failed to generate documentation. Please try again later."
             };
 
-            // Prepare the prompt and LLM parameters for documentation generation
-            var prompt = $@"Please generate a description and usage instructions in Markdown format for the following project template flow:
-        {genereateProjectInstructionRequestDto.Payload}";
+            // Get the Generate Template description prompt file
+            var file = new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "Prompts", "GenerateTemplateDescriptionPrompt.txt"));
+            string promptTemplate;
+            try
+            {
+                promptTemplate = await File.ReadAllTextAsync(file.FullName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to read LLM prompt template from {PromptFilePath}", file.FullName);
+                serviceResponse.Message = "Failed to read prompt template. Please contact support.";
+                return serviceResponse;
+            }
 
+            var prompt = promptTemplate.Replace("{{TEMPLATE_NODES}}", genereateProjectInstructionRequestDto.Payload);
             var model = "gemma";
             var temperature = 0.3;
 

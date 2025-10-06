@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-   <NoWarn> CS8602 </NoWarn>
+    <NoWarn> CS8602 </NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,6 +36,9 @@
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Update="StaticFiles\Prompts\GenerateTemplateDescription.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
