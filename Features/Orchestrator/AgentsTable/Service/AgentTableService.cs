@@ -34,12 +34,13 @@ public class AgentTableService : IAgentTableService
             var publishedFlowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     (flowId == null || w.FlowId == flowId) &&
+                    w.Flow.Type == FlowTypesEnum.Agent &&
                     w.IsPublished &&
                     !w.IsArchived
                 )
-                .Include(f => f.Flow)
-                .Include(mf => mf.MachineFlows)
-                .Include(c => c.CreatedByUser)
+                .Include(i => i.Flow)
+                .Include(i => i.MachineFlows)
+                .Include(i => i.CreatedByUser)
                 .OrderBy(o => o.VersionNumber)
                 .AsNoTracking()
                 .ToListAsync();
