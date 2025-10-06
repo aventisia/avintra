@@ -1220,7 +1220,7 @@ public class InferencingModelService : IInferencingModelService
                 filePath = filePath.Substring("/files/".Length);
 
             // Combine with local storage path
-            filePath = Path.Combine(_fileUploadConfig.TempUploadDirectory, filePath.TrimStart('/'));
+            filePath = Path.Combine(_fileUploadConfig.UploadDirectory, filePath.TrimStart('/'));
         }
 
         // Extract the text from the document using the provided path
