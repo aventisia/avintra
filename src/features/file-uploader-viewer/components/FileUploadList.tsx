@@ -16,7 +16,7 @@ interface FileUploadListProps {
   files: FileState[];
   clearFiles: () => void;
   modelId: string;
-  versionId: string;
+  versionId?: string;
   filesToUpload: FileUploadDto[];
   removeFile: (name: string | undefined) => void;
 }

@@ -36,6 +36,7 @@ const FileUploader = () => {
   return (
     <div className="flex gap-12 rounded-lg border bg-white p-12 shadow">
       <FileDropzone
+        versionId=""
         files={files}
         addFile={addFile}
         addFileToUpload={addFileToUpload}
