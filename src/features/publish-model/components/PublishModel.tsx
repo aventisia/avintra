@@ -17,7 +17,7 @@ import { usePublishDialogStore } from "../stores/usePublishDialogStore";
 
 const PublishModel = () => {
   const location = useLocation();
-  const { modelId: mlModelId, modelName } = useLabelDataStore();
+  const { modelId: mlModelId, modelName, versionId } = useLabelDataStore();
   const { mutate: mutatePublish, isPending } = usePublishModelMutation();
   const { isOpen, setOpen } = usePublishDialogStore();
 
@@ -26,13 +26,10 @@ const PublishModel = () => {
     [location.search],
   );
   const modelId = queryParams.get("pid") || mlModelId || "";
+  const verId = queryParams.get("v") || versionId || "";
 
   const handlePublish = () => {
-    mutatePublish(modelId, {
-      onSuccess: () => {
-        setOpen(false); // Close dialog on success
-      },
-    });
+    mutatePublish({ aiProjectId: modelId, id: verId });
   };
 
   return (
