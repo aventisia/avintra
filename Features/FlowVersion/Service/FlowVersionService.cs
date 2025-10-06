@@ -92,7 +92,7 @@ public class FlowVersionService : IFlowVersionService
             var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
                 w.FlowId == flow.Id &&
                 w.UserId == _userId &&
-                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Edit)
+                (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
             );
 
             // Allow access if the user is the creator, else check if they have access
@@ -182,7 +182,7 @@ public class FlowVersionService : IFlowVersionService
             var flowUserAccess = existingFlowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
                 w.FlowId == existingFlowVersion.Flow.Id &&
                 w.UserId == _userId &&
-                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Edit)
+                (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
             );
 
             // Allow access if the user is the creator, else check if they have access
@@ -269,7 +269,7 @@ public class FlowVersionService : IFlowVersionService
             var flowUserAccess = flowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
                 w.FlowId == flowVersion.Flow.Id &&
                 w.UserId == _userId &&
-                (w.Type == AgentAccessTypesEnum.Owner)
+                (w.Type == ProjectUserAccessEnum.Owner)
             );
 
             // Allow access if the user is the creator, else check if they have access

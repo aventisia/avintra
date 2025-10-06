@@ -44,7 +44,7 @@ public class FlowsTableDto
     /// <summary>
     /// Gets or sets the access type of the user within the flow.
     /// </summary>
-    public AgentAccessTypesEnum AccessType { get; set; }
+    public ProjectUserAccessEnum AccessType { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.

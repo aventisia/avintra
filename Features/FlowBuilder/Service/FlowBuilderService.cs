@@ -64,7 +64,7 @@ public class FlowBuilderService : IFlowBuilderService
             // Set the user's access type in the LoadFlowDto
             // If the user is the creator of the flow, assign 'Owner' access
             // Otherwise, use the access type from FlowUsers or default to null if not found
-            loadFlowDto.AccessType = flowVersion.Flow.CreatedByUserId == _userId ? AgentAccessTypesEnum.Owner : userAccess?.Type;
+            loadFlowDto.AccessType = flowVersion.Flow.CreatedByUserId == _userId ? ProjectUserAccessEnum.Owner : userAccess?.Type;
 
             // Successfully retrieved the flow version, log and return response
             _logger.LogInformation($"Successfully retrieved flow version for FlowId {flowId}. VersionId: {flowVersion.Id}.");
@@ -140,7 +140,7 @@ public class FlowBuilderService : IFlowBuilderService
             var flowUserAccess = flowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
                 w.FlowId == flowVersion.Flow.Id &&
                 w.UserId == _userId &&
-                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Edit)
+                (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
             );
 
             // Allow access if the user is the creator, else check if they have access
@@ -300,7 +300,7 @@ public class FlowBuilderService : IFlowBuilderService
             var flowUserAccess = flowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
                 w.FlowId == flowVersion.Flow.Id &&
                 w.UserId == _userId &&
-                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Edit)
+                (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
             );
 
             // Allow access if the user is the creator, else check if they have access

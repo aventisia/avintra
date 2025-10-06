@@ -74,5 +74,5 @@ public class LoadFlowDto
     /// <summary>
     /// Gets or sets the access type of the user within the flow.
     /// </summary>
-    public AgentAccessTypesEnum? AccessType { get; set; }
+    public ProjectUserAccessEnum? AccessType { get; set; }
 }

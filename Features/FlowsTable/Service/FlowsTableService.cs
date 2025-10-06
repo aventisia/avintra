@@ -64,7 +64,7 @@ public class FlowsTableService : IFlowsTableService
                     if (userAccess != null)
                     {
                         flowDto.AccessType = originalFlow.CreatedByUserId == _userId
-                            ? AgentAccessTypesEnum.Owner
+                            ? ProjectUserAccessEnum.Owner
                             : userAccess.Type;
                     }
                 }
@@ -233,7 +233,7 @@ public class FlowsTableService : IFlowsTableService
             var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
                 w.FlowId == flow.Id &&
                 w.UserId == _userId &&
-                (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Edit)
+                (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
             );
 
             // Allow access if the user is the creator, else check if they have access
@@ -331,7 +331,7 @@ public class FlowsTableService : IFlowsTableService
             var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
                 w.FlowId == flow.Id &&
                 w.UserId == _userId &&
-                w.Type == AgentAccessTypesEnum.Owner
+                w.Type == ProjectUserAccessEnum.Owner
             );
 
             // Allow access if the user is the creator, else check if they have access
@@ -408,7 +408,7 @@ public class FlowsTableService : IFlowsTableService
                 var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
                     w.FlowId == flow.Id &&
                     w.UserId == _userId &&
-                    (w.Type == AgentAccessTypesEnum.Owner || w.Type == AgentAccessTypesEnum.Edit)
+                    (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
                 );
 
                 // Allow access if the user is the creator, else check if they have access
