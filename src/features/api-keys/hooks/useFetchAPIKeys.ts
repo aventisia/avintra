@@ -12,19 +12,21 @@ import { getAPIKeysList } from "../apis/api-keys-api";
  */
 export const useFetchApiKeys = () => {
   // Get modelId (mid) from query params
-  const { modelId: mlModelId } = useLabelDataStore(
+  const { modelId: mlModelId, versionId: vid } = useLabelDataStore(
     useShallow((state) => ({
       modelId: state.modelId,
+      versionId: state.versionId,
     })),
   );
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const modelId = queryParams.get("pid") || mlModelId || "";
+  const versionId = queryParams.get("v") || vid || "";
 
   // Get models using react query
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["api-keys", modelId],
-    queryFn: () => getAPIKeysList(modelId),
+    queryKey: ["api-keys", modelId, versionId],
+    queryFn: () => getAPIKeysList(versionId),
   });
 
   // Return data and refetch

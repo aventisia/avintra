@@ -27,6 +27,8 @@ export interface FileUploadDto {
   type?: "setup" | "viewer";
 
   mlModelId?: string;
+
+  aiProjectVersionId:string;
 }
 
 export interface DeleteFileResponseDto {

@@ -10,6 +10,7 @@ import { FileState } from "../stores/file-uploader-store";
 
 interface FileDropzoneProps {
   modelId: string;
+  versionId: string;
   files: FileState[];
   addFile: (file: FileState) => void;
   addFileToUpload: (file: FileUploadDto) => void;
@@ -21,11 +22,13 @@ const FileDropzone = ({
   addFileToUpload,
   updateProgress,
   modelId,
+  versionId,
 }: FileDropzoneProps) => {
   const { mutate: uploadFile, currentController } = useFileUpload({
     addFileToUpload,
     updateProgress,
     modelId,
+    versionId,
   });
 
   const onDrop = useCallback(
@@ -37,11 +40,12 @@ const FileDropzone = ({
           size: file.size,
           file,
           currentController,
+          aiProjectVersionId: versionId,
         });
         uploadFile(file);
       });
     },
-    [addFile, currentController, uploadFile],
+    [addFile, currentController, uploadFile, versionId],
   );
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({

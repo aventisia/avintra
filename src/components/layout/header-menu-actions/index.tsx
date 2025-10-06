@@ -2,7 +2,7 @@ import { useApiKeyDialogStore } from "@/features/api-keys/store/api-key-dialog-s
 import { usePublishModelMutation } from "@/features/publish-model/hooks/usePublishModel";
 import { usePublishDialogStore } from "@/features/publish-model/stores/usePublishDialogStore";
 import { useSaveAsTemplateDialogStore } from "@/features/save-as-template/store/useSaveAsTemplateDialog";
-import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
+import { useFetchProjectVersionData } from "@/hooks/useFetchProjectVersionData";
 
 import {
   DropdownMenu,
@@ -18,15 +18,11 @@ const HeaderMenuActions = () => {
   const { setOpen: setOpenSaveAsTemplateDialog } =
     useSaveAsTemplateDialogStore();
   const { setOpen: setApiKeyDialogStore } = useApiKeyDialogStore();
-  const { data: modelData, isLoading } = useFetchProjectMetaData();
+  const { data: modelData, isLoading } = useFetchProjectVersionData();
   const { isPending } = usePublishModelMutation();
   const isPublishButtonDisabled =
-    isPending ||
-    isLoading ||
-    modelData?.data?.isPublished ||
-    modelData?.data?.setupStatus === "Pending";
-  const isSaveAsTemplateButtonDisabled =
-    isPending || isLoading || modelData?.data?.setupStatus === "Pending";
+    isPending || isLoading || modelData?.data?.isPublished;
+  const isSaveAsTemplateButtonDisabled = isPending || isLoading;
 
   return (
     <DropdownMenu>

@@ -10,18 +10,18 @@ import { getInferenceModelExtractedDataById } from "../apis/inference-mode-test-
  * @returns An object containing the fetched data, error, and refetch method.
  */
 export const useFetchTestFormData = () => {
-  // Get modelId (mid) from store
-  const { modelId } = useLabelDataStore(
+  // Get versionId (mid) from store
+  const { versionId } = useLabelDataStore(
     useShallow((state) => ({
-      modelId: state.modelId,
+      versionId: state.versionId,
     })),
   );
 
   // Get models using react query
   const { data, isError, refetch, isLoading } = useQuery({
     queryKey: ["INFERENCE_TEST_FORM_DATA"],
-    queryFn: () => getInferenceModelExtractedDataById(modelId),
-    enabled: !!modelId, // prevents query from running with empty modelId
+    queryFn: () => getInferenceModelExtractedDataById(versionId),
+    enabled: !!versionId, // prevents query from running with empty versionId
     staleTime: 0, // ✅ Treat data as immediately stale
   });
 
