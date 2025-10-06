@@ -95,9 +95,9 @@ class OllamaProvider(BaseLLMProvider):
                 
                 # Handle is_json_output if requested
                 if request.is_json_output:
-                    output = extract_json_from_llm_response(response_data["message"]["content"])
+                    output = extract_json_from_llm_response(response_data.get("message", {}).get("content", ""))
                 else:
-                    output = response_data["message"]["content"]
+                    output = response_data.get("message", {}).get("content", "")
                 
                 # End Time. To Get total time taken for LLM response
                 end_time = time.perf_counter()
@@ -106,7 +106,7 @@ class OllamaProvider(BaseLLMProvider):
                 created_at_datetime = datetime.fromisoformat(response_data.get("created_at").replace('Z', '+00:00'))
                 
                 # Get ollama done_reason
-                done_reason = response_data["done_reason"] if response_data.get("done_reason") else None
+                done_reason = response_data.get("done_reason") if response_data.get("done_reason") else None
                 
                 # Update llm_response with actual values
                 llm_response.output = output
@@ -114,9 +114,9 @@ class OllamaProvider(BaseLLMProvider):
                 llm_response.finish_reason = self.map_ollama_done_reason_to_finish_reason(done_reason)
                 llm_response.created_on = created_at_datetime.strftime('%Y-%m-%d %H:%M:%S')
                 llm_response.time_taken = round(end_time - start_time, 2)
-                llm_response.input_tokens = response_data["prompt_eval_count"]
+                llm_response.input_tokens = response_data.get("prompt_eval_count", 0)
                 llm_response.input_cached_tokens = 0 # Ollama does not provide cached tokens info
-                llm_response.output_tokens = response_data["eval_count"]
+                llm_response.output_tokens = response_data.get("eval_count", 0)
                 llm_response.output_reasoning_tokens = 0 # Ollama does not provide reasoning tokens info
                 
                 # Return the final llm_response

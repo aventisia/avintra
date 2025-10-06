@@ -94,20 +94,21 @@ class OpenAIProvider(BaseLLMProvider):
                 
                 # Handle is_json_output if requested
                 if request.is_json_output:
-                    output = extract_json_from_llm_response(response_data["output"][0]["content"][0]["text"])
+                    output = extract_json_from_llm_response(response_data.get("output", [{}])[0].get("content", [{}])[0].get("text", ""))
                 else:
-                    output = response_data["output"][0]["content"][0]["text"]
+                    output = response_data.get("output", [{}])[0].get("content", [{}])[0].get("text", "")
                     
                 # End Time. To Get total time taken for LLM response
                 end_time = time.perf_counter()
                 
-                # Get token usage details if available
+                # Get token usage details and incomplete_details if available
                 usage = response_data.get("usage", {})
-
+                incomplete_details = response_data.get("incomplete_details") or {}
+                
                 # Update llm_response with actual values
                 llm_response.output = output
-                llm_response.status = response_data["status"]
-                llm_response.finish_reason = response_data["incomplete_details"]["reason"] if response_data.get("incomplete_details") else None
+                llm_response.status = response_data.get("status")
+                llm_response.finish_reason = incomplete_details.get("reason", None)
                 llm_response.created_on = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(response_data.get("created_at")))
                 llm_response.time_taken = round(end_time - start_time, 2)
                 llm_response.input_tokens = usage.get("input_tokens", 0)
