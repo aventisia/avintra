@@ -6,7 +6,7 @@ namespace AspNetToolkit.Enums;
 /// <remarks>
 /// IMPORTANT NOTE: Any changes to this file should be manually synced with front-end enum file.
 /// </remarks>
-public enum ModelTypesEnum
+public enum AIProjectTaskTypesEnum
 {
     /// <summary>
     /// Represents a model used for extracting specific data or information from text.
@@ -31,24 +31,5 @@ public enum ModelTypesEnum
     /// <summary>
     /// Represents a model that can answer questions based on provided context or knowledge base.
     /// </summary>
-    QuestionAnswer,
-
-    /// <summary>
-    /// Represents an AI persona model designed to simulate human-like interaction or behavior.
-    /// </summary>
-    AIPersona,
-    /// <summary>
-    /// Represents a model used for inferencing, often applied to predictive tasks.
-    /// </summary>
-    Inferencing,
-
-    /// <summary>
-    /// Represents a model used for conversation generation or dialogue systems.
-    /// </summary>
-    Conversation,
-
-    /// <summary>
-    /// Represents a generative model that produces content, like text or images, based on input data.
-    /// </summary>
-    Generative
+    QuestionAnswer
 }

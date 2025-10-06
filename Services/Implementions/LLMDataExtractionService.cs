@@ -34,7 +34,6 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             { "mistral", "mistral:7b" },
             { "gemma", "gemma3:12b" },
             { "gpt-4o-mini", "gpt-4o-mini" },
-            { "gpt-4o", "gpt-4o" }
         };
 
         try
@@ -78,7 +77,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                     // Set timeout to 3 minutes
                     client.Timeout = TimeSpan.FromMinutes(3);
 
-                    if (mappedModel == "gpt-4o-mini" || mappedModel == "gpt-4o")
+                    if (mappedModel == "gpt-4o-mini")
                     {
                         // Validate the API key
                         if (string.IsNullOrWhiteSpace(_openAIConfig.OpenAIApiKey))
@@ -399,6 +398,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
 
 
             // Extract the assistant's reply text from the parsed JSON
+            _logger.LogInformation($"Parsing response from OpenAI API. {jsonDoc.RootElement}");
             var completionText = jsonDoc.RootElement
                 .GetProperty("choices")[0]
                 .GetProperty("message")
