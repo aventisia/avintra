@@ -13,7 +13,7 @@ public class FlowUserDto
     /// <summary>
     /// Gets or sets the access type of the user within the flow.
     /// </summary>
-    public AgentAccessTypesEnum Type { get; set; }
+    public ProjectUserAccessEnum Type { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier of the flow that the user is linked to.

@@ -14,7 +14,7 @@ public class FlowUser : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Defines the access type for the user within the flow.
     /// </summary>
-    public AgentAccessTypesEnum Type { get; set; }
+    public ProjectUserAccessEnum Type { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the user associated with this flow.

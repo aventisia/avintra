@@ -221,7 +221,7 @@ public class FlowUserService : IFlowUserService
             var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
                 w.FlowId == flowUser.FlowId &&
                 w.UserId == _userId &&
-                w.Type == AgentAccessTypesEnum.Owner
+                w.Type == ProjectUserAccessEnum.Owner
             );
 
             // Check if the user has the required access (Owner/Edit)
@@ -307,7 +307,7 @@ public class FlowUserService : IFlowUserService
             var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
                 w.FlowId == flowUser.FlowId &&
                 w.UserId == _userId &&
-                w.Type == AgentAccessTypesEnum.Owner
+                w.Type == ProjectUserAccessEnum.Owner
             );
 
             // Check if the user has the required access (Owner/Edit)
