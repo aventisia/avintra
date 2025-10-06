@@ -16,6 +16,7 @@ export interface InferenceModelTestDTO extends IModelInfo {
   id: string;
   docId: string;
   docName?: string;
+  aiProjectVersionId: string;
 
   extraction: InfoExtractorTestDTO | null;
   classification: ClassificationTestDTO[] | null;

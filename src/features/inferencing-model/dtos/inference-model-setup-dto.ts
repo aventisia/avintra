@@ -14,6 +14,7 @@ interface IModelInfo {
 
 export interface InferenceModelSetupDTO extends IModelInfo {
   id: string;
+  aiProjectVersionId: string;
   name: string;
   businessContext: string | null;
   description?: string;

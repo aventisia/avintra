@@ -9,11 +9,11 @@ const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/inferencing
 /**
  * Get Form Data by id.
  */
-const getInferenceModelExtractedDataById = (modelId: string) => {
+const getInferenceModelExtractedDataById = (versionId: string) => {
   return axiosInstance
     .get<
       IHttpResponse<InferenceModelTestDTO[]>
-    >(`${baseAPIURL}/extracted-data/${modelId}`)
+    >(`${baseAPIURL}/extracted-data/${versionId}`)
     .then((res) => res.data);
 };
 
