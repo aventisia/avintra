@@ -19,6 +19,16 @@ const getMLModelVersions = (modelId?: string) => {
     .then((res) => res.data);
 };
 
+const getMLModelVersionById = (versionId?: string) => {
+  // Return if versionId is not provided (versionId can be null if not passed in query params)
+  if (!versionId) return Promise.resolve(null);
+
+  // Fetch versions from API
+  return axiosInstance
+    .get<IHttpResponse<ModelVersionDto>>(`${baseAPIURL}/${versionId}`)
+    .then((res) => res.data);
+};
+
 /**
  * Inserts a new version.
  */
@@ -37,4 +47,9 @@ const deleteMLModelVersion = (id: string) => {
     .then((res) => res.data);
 };
 
-export { getMLModelVersions, insertMLModelVersion, deleteMLModelVersion };
+export {
+  getMLModelVersions,
+  getMLModelVersionById,
+  insertMLModelVersion,
+  deleteMLModelVersion,
+};
