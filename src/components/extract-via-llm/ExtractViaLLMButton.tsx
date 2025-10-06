@@ -20,6 +20,7 @@ function ExtractViaLLMButton() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const modelId = queryParams.get("pid") || "";
+  const versionID = queryParams.get("v") || "";
 
   const { selectedPdf } = useFileListStore(
     useShallow((state) => ({
@@ -43,6 +44,7 @@ function ExtractViaLLMButton() {
     extractViaLLMMutation({
       postObj: {
         modelId: modelId,
+        aiProjectVersionId: versionID,
         fileIds: [selectedPdf?.id || ""],
         modelTaskIds: listOfTasksId.length > 0 ? listOfTasksId : null,
       },
