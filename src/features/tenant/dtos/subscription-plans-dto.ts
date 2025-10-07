@@ -11,6 +11,7 @@ export interface SubscriptionPlanDTO {
   maxUsers: number;
   isDisabled: boolean;
   createdBy: string;
+  type: string;
   createdOn: Date;
   lastModifiedBy: string;
   lastModifiedOn: Date;

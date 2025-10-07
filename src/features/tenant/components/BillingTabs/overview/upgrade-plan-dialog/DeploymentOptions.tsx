@@ -7,7 +7,6 @@ const DeploymentOptions = () => {
   const { chosenPlan } = useUpgradePlanDialogStore();
 
   switch (chosenPlan) {
-    case "Enterprise":
     case "Pro":
       return <ChoosePlan />;
 

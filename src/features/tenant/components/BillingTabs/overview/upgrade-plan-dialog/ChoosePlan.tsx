@@ -4,10 +4,11 @@ import { RadioGroup } from "@aventisia/ui/radio-group";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { ArrowLeft, Check } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useFetchCompanyDetails } from "@/features/tenant/hooks/useFetchCompanyDetails";
+import { useFetchCurrentPlan } from "@/features/tenant/hooks/useFetchCurrentPlan";
 import { useFetchSubscriptionPlans } from "@/features/tenant/hooks/useFetchSubscriptionPlans";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
 import { PlanType } from "@/features/tenant/types/plan-type";
@@ -15,9 +16,10 @@ import { PlanType } from "@/features/tenant/types/plan-type";
 import BillingDetails from "./BillingDetails";
 import ChargeSummary from "./ChargeSummary";
 import { PlanItem } from "./choose-plan/PlanItem";
+import TopUp from "./TopUp";
 
 const ChoosePlan = () => {
-  const { choosePlan, setChosenPlan } = useUpgradePlanDialogStore(
+  const { setChosenPlan } = useUpgradePlanDialogStore(
     useShallow((state) => ({
       setChosenPlan: state.setChosenPlan,
       choosePlan: state.chosenPlan,
@@ -27,9 +29,24 @@ const ChoosePlan = () => {
   const [selectedTab, setSelectedTab] = useState("monthly");
   const [selectedPlan, setSelectedPlan] = useState("");
 
-  const { data, isLoading } = useFetchSubscriptionPlans(choosePlan);
+  const { data, isLoading } = useFetchSubscriptionPlans();
+
   const { data: billingData, isLoading: isBillingDataLoading } =
     useFetchCompanyDetails();
+
+  const { data: currPlan } = useFetchCurrentPlan();
+
+  useEffect(() => {
+    const activePlan = data?.data.find(
+      (val) => val.name == currPlan?.data.currentPlan.planName,
+    );
+    setSelectedPlan(activePlan?.id || "");
+    setSelectedTab(currPlan?.data.currentPlan.frequency.toLowerCase() || "");
+  }, [
+    currPlan?.data.currentPlan.frequency,
+    currPlan?.data.currentPlan.planName,
+    data?.data,
+  ]);
 
   if (isLoading || isBillingDataLoading) {
     return (
@@ -40,7 +57,7 @@ const ChoosePlan = () => {
   }
 
   return (
-    <div className="space-y-5 px-8 py-10 pt-3">
+    <div className="space-y-4 p-4 pt-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Button
@@ -66,30 +83,35 @@ const ChoosePlan = () => {
         </Tabs>
       </div>
 
-      <div className="mt-6 grid grid-cols-[55%_45%] gap-4">
-        <div className="rounded-lg border">
-          <ScrollArea className="h-[calc(100vh-22rem)] p-3">
-            <RadioGroup
-              value={selectedPlan}
-              onValueChange={(val) => {
-                setSelectedPlan(val);
-                setSelectedTab(selectedTab);
-              }}
-            >
-              {data?.data?.map((plan) => (
-                <PlanItem
-                  key={plan.id}
-                  plan={plan}
-                  planType={selectedTab as PlanType}
-                  selectedId={selectedPlan}
-                />
-              ))}
-            </RadioGroup>
-          </ScrollArea>
+      <div className="grid grid-cols-7 gap-4">
+        <div className="col-span-4 space-y-4">
+          <div className="rounded-lg border">
+            <ScrollArea className="h-[calc(100vh-35rem)] p-3">
+              <RadioGroup
+                value={selectedPlan}
+                onValueChange={(val) => {
+                  setSelectedPlan(val);
+                  setSelectedTab(selectedTab);
+                }}
+              >
+                {data?.data
+                  ?.filter((plan) => plan.type != "Enterprise")
+                  ?.map((plan) => (
+                    <PlanItem
+                      key={plan.id}
+                      plan={plan}
+                      planType={selectedTab as PlanType}
+                      selectedId={selectedPlan}
+                    />
+                  ))}
+              </RadioGroup>
+            </ScrollArea>
+          </div>
+          <TopUp />
         </div>
 
         {/* Right hand side */}
-        <div className="space-y-4">
+        <div className="col-span-3 space-y-4">
           <BillingDetails billingData={billingData?.data} />
 
           {selectedPlan && (
