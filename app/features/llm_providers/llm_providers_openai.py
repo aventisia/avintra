@@ -9,33 +9,54 @@ from app.features.llm_providers.llm_providers_utils import extract_json_from_llm
 from .llm_providers_base import BaseLLMProvider
 
 class OpenAIProvider(BaseLLMProvider):
-
-    # Constructor to initialize API URL and key
+    # Constructor: To initialize API URL and key
     def __init__(self, api_url: str = settings.OPENAI_API_URL, api_key: str = settings.OPENAI_API_KEY):
         self.api_url = api_url
         self.api_key = api_key
 
-    # Generate a response from the LLM
+    # Method: Generate a response from the LLM
     async def generate_llm_response(self, request: LLMRequest):
-        logger.info(f"Prompt sent to OpenAI provider with model: {request.model}")
+        logger.info(f"[NO STREAMING] Prompt sent to OpenAI provider with model: {request.model}")
         
         # Initialize
         response_data = {}
-        llm_response = LLMResponse(
-            provider=request.provider,
-            model=request.model,
-            output="",
-            status=None,
-            finish_reason=None,
-            temperature=request.temperature,
-            top_p=request.top_p,
-            max_output_tokens=request.max_output_tokens,
-            is_json_output=request.is_json_output,
-            is_byok_enabled=request.is_byok_enabled,
-            credential_id=request.credential_id,
-            error=None
-        )
+        default_llm_response_obj = self.create_initial_llm_response_with_defaults(request)
         start_time = time.perf_counter()
+        
+        # Get request payload and headers
+        request_payload, request_headers = self.create_request_payload_and_headers(request)
+        
+        # Set a long timeout for potentially lengthy responses
+        timeout = httpx.Timeout(600.0) # 10 minutes
+        
+        # Send request to OpenAI API
+        try:
+            async with httpx.AsyncClient(timeout=timeout) as client:
+                response = await client.post(
+                    self.api_url,
+                    json=request_payload,
+                    headers=request_headers,
+                )
+                
+                # Handle response
+                response.raise_for_status()
+                response_data = response.json()
+                
+                # Handle is_json_output if requested
+                if request.is_json_output:
+                    output = extract_json_from_llm_response(response_data.get("output", [{}])[0].get("content", [{}])[0].get("text", ""))
+                else:
+                    output = response_data.get("output", [{}])[0].get("content", [{}])[0].get("text", "")
+                    
+                # Return final llm response
+                return self.create_final_llm_response(default_llm_response_obj, start_time, output, response_data)
+        except Exception as e:
+            log_exception(logger, e, "OpenAI llm transactional request error: ", response_data.get('error', ''))
+            default_llm_response_obj.error = f"Failed to generate response: {e}"
+            return default_llm_response_obj
+
+    # Helper: Create request payload and headers
+    def create_request_payload_and_headers(self, request: LLMRequest) -> tuple:
         
         # Convert LLMMessage objects to dicts if input is a list
         if isinstance(request.input, str):
@@ -43,8 +64,7 @@ class OpenAIProvider(BaseLLMProvider):
         elif isinstance(request.input, list):
             input_serialized = [msg.model_dump() if hasattr(msg, 'model_dump') else msg for msg in request.input]
         else:
-            llm_response.error = "Invalid input format. Must be string or list of messages."
-            return llm_response
+            raise ValueError("Invalid input format. Must be string or list of messages.")
         
         # Build request payload and headers
         request_payload = {
@@ -75,50 +95,49 @@ class OpenAIProvider(BaseLLMProvider):
         # If max_output_tokens is provided, include it in the payload
         if request.max_output_tokens:
             request_payload["max_output_tokens"] = request.max_output_tokens
-            
-        # Set a long timeout for potentially lengthy responses
-        timeout = httpx.Timeout(600.0) # 10 minutes
+
+        # Return both payload and headers
+        return request_payload, request_headers
+    
+    # Helper: Create llm_response object with default values
+    def create_initial_llm_response_with_defaults(self, request: LLMRequest) -> LLMResponse:
+        return LLMResponse(
+            provider=request.provider,
+            model=request.model,
+            output="",
+            status=None,
+            finish_reason=None,
+            temperature=request.temperature,
+            top_p=request.top_p,
+            max_output_tokens=request.max_output_tokens,
+            is_json_output=request.is_json_output,
+            is_byok_enabled=request.is_byok_enabled,
+            credential_id=request.credential_id,
+            error=None
+        )
+     
+    # Helper: Create final llm_response object with actual values
+    def create_final_llm_response(self, default_llm_response_obj: LLMResponse, start_time: float, output: str, response_data) -> LLMResponse: 
+        # Create a copy of the default llm_response_obj
+        llm_response = default_llm_response_obj   
         
-        # Send request to OpenAI API
-        try:
-            async with httpx.AsyncClient(timeout=timeout) as client:
-                response = await client.post(
-                    self.api_url,
-                    json=request_payload,
-                    headers=request_headers,
-                )
-                
-                # Handle response
-                response.raise_for_status()
-                response_data = response.json()
-                
-                # Handle is_json_output if requested
-                if request.is_json_output:
-                    output = extract_json_from_llm_response(response_data.get("output", [{}])[0].get("content", [{}])[0].get("text", ""))
-                else:
-                    output = response_data.get("output", [{}])[0].get("content", [{}])[0].get("text", "")
-                    
-                # End Time. To Get total time taken for LLM response
-                end_time = time.perf_counter()
-                
-                # Get token usage details and incomplete_details if available
-                usage = response_data.get("usage", {})
-                incomplete_details = response_data.get("incomplete_details") or {}
-                
-                # Update llm_response with actual values
-                llm_response.output = output
-                llm_response.status = response_data.get("status")
-                llm_response.finish_reason = incomplete_details.get("reason", None)
-                llm_response.created_on = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(response_data.get("created_at")))
-                llm_response.time_taken = round(end_time - start_time, 2)
-                llm_response.input_tokens = usage.get("input_tokens", 0)
-                llm_response.input_cached_tokens = usage.get("input_tokens_details", {}).get("cached_tokens", 0)
-                llm_response.output_tokens = usage.get("output_tokens", 0)
-                llm_response.output_reasoning_tokens = usage.get("output_tokens_details", {}).get("reasoning_tokens", 0)
-                
-                # Return the final llm_response
-                return llm_response
-        except Exception as e:
-            log_exception(logger, e, "OpenAI llm transactional request error: ", response_data.get('error', ''))
-            llm_response.error = f"Failed to generate response: {e}"
-            return llm_response
+        # End Time. To Get total time taken for LLM response
+        end_time = time.perf_counter()
+        
+        # Get token usage details and incomplete_details if available
+        usage = response_data.get("usage", {})
+        incomplete_details = response_data.get("incomplete_details") or {}
+        
+        # Update llm_response with actual values
+        llm_response.output = output
+        llm_response.status = response_data.get("status")
+        llm_response.finish_reason = incomplete_details.get("reason", None)
+        llm_response.created_on = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(response_data.get("created_at")))
+        llm_response.time_taken = round(end_time - start_time, 2)
+        llm_response.input_tokens = usage.get("input_tokens", 0)
+        llm_response.input_cached_tokens = usage.get("input_tokens_details", {}).get("cached_tokens", 0)
+        llm_response.output_tokens = usage.get("output_tokens", 0)
+        llm_response.output_reasoning_tokens = usage.get("output_tokens_details", {}).get("reasoning_tokens", 0)
+        
+        # Return the final llm_response
+        return llm_response

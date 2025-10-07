@@ -17,7 +17,7 @@ class OllamaProvider(BaseLLMProvider):
 
     # Method: Generate a response from the LLM
     async def generate_llm_response(self, request: LLMRequest):
-        logger.info(f"[Non Streaming] Prompt sent to Ollama provider with model: {request.model}")
+        logger.info(f"[NO STREAMING] Prompt sent to Ollama provider with model: {request.model}")
         
         # Initialize
         response_data = {}
@@ -34,7 +34,7 @@ class OllamaProvider(BaseLLMProvider):
         try:
             async with httpx.AsyncClient(timeout=timeout) as client:
                 response = await client.post(
-                    f"{self.api_url}/chat",
+                    self.api_url,
                     json=request_payload,
                     headers=request_headers,
                 )
