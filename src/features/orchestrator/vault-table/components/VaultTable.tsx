@@ -1,4 +1,4 @@
-import { Separator } from "@aventisia/ui";
+import { DotSeparator, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import {
   // DataTable,
@@ -92,28 +92,35 @@ export const VaultTable = () => {
             {table.getRowModel().rows.map((row) => (
               <div
                 key={row.id}
-                className="flex items-center justify-between rounded-lg border bg-background p-4 shadow-sm transition-shadow hover:shadow-md"
+                className="flex cursor-pointer items-center justify-between rounded-lg border bg-background p-4 shadow-sm transition-shadow hover:shadow-md"
+                onClick={() => {
+                  setShowDialog(true);
+                  setRowId(row.original.id || "");
+                  setAction("read");
+                }}
               >
                 {/* Left icon with rounded border */}
                 <div className="flex items-center space-x-4">
-                  <div className="rounded-lg bg-accent p-2">
+                  <div>
                     <img
                       src={vaultIconMapper[row.getValue("type") as string]}
                       alt="icon"
-                      className="h-12 w-12"
+                      className="h-8 w-8"
                     />
                   </div>
 
                   {/* Name, type, description in flex col */}
                   <div className="flex flex-col">
-                    <span className="text-sm text-muted-foreground">
-                      {row.getValue("type")}
-                    </span>
-                    <span className="text-lg">{row.getValue("name")}</span>
-
-                    <span className="text-sm text-muted-foreground">
-                      Created on{dateFormatter(row.getValue("createdOn"))}
-                    </span>
+                    <span className="text-base">{row.getValue("name")}</span>
+                    <div className="flex items-center">
+                      <span className="text-sm text-muted-foreground">
+                        {(row.getValue("type") as string)?.replace("Api", "")}
+                      </span>
+                      <DotSeparator />
+                      <span className="text-sm text-muted-foreground">
+                        Created on {dateFormatter(row.getValue("createdOn"))}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
