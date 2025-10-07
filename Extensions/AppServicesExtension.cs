@@ -116,4 +116,27 @@ public static class AppServicesExtension
         services.AddScoped<IAuthHelperService, AuthHelperService>();
         services.AddScoped<IAuthService, AuthService>();
     }
+
+    /// <summary>
+    /// Registers the Razorpay client and configuration in the dependency injection container.
+    /// </summary>
+    /// <param name="services">The collection of services to register.</param>
+    /// <param name="config">The configuration provider used to retrieve Razorpay settings.</param>
+    public static void AddRazorpayClient(this IServiceCollection services, IConfiguration config)
+    {
+        // Retrieve and validate the Razorpay configuration settings
+        var razorpayConfig = Guard.Against.Null(config.GetSection("RazorpayConfig").Get<RazorpayConfig>(), "RazorpayConfig cannot be null");
+
+        if (razorpayConfig == null || string.IsNullOrEmpty(razorpayConfig.KeyId) || string.IsNullOrEmpty(razorpayConfig.KeySecret))
+        {
+            throw new InvalidOperationException("Razorpay KeyId and KeySecret must be configured.");
+        }
+
+        // Register the Razorpay client as a singleton service
+        services.AddSingleton<RazorpayClient>(provider =>
+            new RazorpayClient(razorpayConfig.KeyId, razorpayConfig.KeySecret));
+
+        // Optionally, register RazorpayConfig itself for further use
+        services.AddSingleton(razorpayConfig);
+    }
 }
