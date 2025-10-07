@@ -1751,7 +1751,7 @@
             "type": "activityNode",
             "name": "RenameFileActivity",
             "label": "Rename File(s)",
-            "description": "Renames one or more files.",
+            "description": "Renames one or more files with advanced schemes including datetime and sequential numbering.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/File.svg"

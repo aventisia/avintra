@@ -28,5 +28,51 @@
         "description": "Saves the document with a new name or location."
       }
     ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SavePath",
+    "label": "Save Path",
+    "description": "The file path to save the document when \u0027Save Document As\u0027 is selected.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SaveMode",
+          "equals": 1
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "SaveFormat",
+    "label": "Save Format",
+    "description": "Specifies the format to save the document (.docx or .pdf).",
+    "defaultValue": "Docx",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": ".docx",
+        "value": "Docx",
+        "description": "Saves the document as a Word file."
+      },
+      {
+        "label": ".pdf",
+        "value": "Pdf",
+        "description": "Saves the document as a PDF file."
+      }
+    ],
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "SaveMode",
+          "equals": 1
+        }
+      ]
+    }
   }
 ]

@@ -56,15 +56,6 @@
   },
   {
     "direction": "Input",
-    "type": "text",
-    "name": "NewFileName",
-    "label": "New file name",
-    "description": "The new name for the file(s). Required for some rename schemes.",
-    "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Input",
     "type": "switch",
     "name": "KeepExtension",
     "label": "Keep extension",
@@ -92,6 +83,431 @@
         "description": "Deletes the existing file and moves the new file."
       }
     ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "NewFileName",
+    "label": "New file name",
+    "description": "The new name for the file(s). Required for \u0027Set new name\u0027.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "SetNewName"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToAdd",
+    "label": "Text to add",
+    "description": "The text to append or prepend to the filename.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "AddText"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "AddTextPosition",
+    "label": "Add text position",
+    "description": "Where to add the text: before or after the filename.",
+    "defaultValue": "AfterName",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Before name",
+        "value": "BeforeName",
+        "description": "Inserts text before the filename."
+      },
+      {
+        "label": "After name",
+        "value": "AfterName",
+        "description": "Inserts text after the filename."
+      }
+    ],
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "AddText"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToRemove",
+    "label": "Text to remove",
+    "description": "The text to remove from the filename.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "RemoveText"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TextToReplace",
+    "label": "Text to replace",
+    "description": "The text to be replaced in the filename.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "ReplaceText"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ReplaceWith",
+    "label": "Replace with",
+    "description": "The replacement text for the matched string.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "ReplaceText"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "NewExtension",
+    "label": "New extension",
+    "description": "The new file extension (e.g., .pdf). Must include the dot (.).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "ChangeExtension"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "UseCustomDateTime",
+    "label": "Add datetime",
+    "description": "Appends a timestamp to the file name.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "AddDateTime"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "DatetimeSource",
+    "label": "Datetime source",
+    "description": "Choose between current system time or a custom datetime value.",
+    "defaultValue": "CurrentDateTime",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Current datetime",
+        "value": "CurrentDateTime",
+        "description": "Uses the current system datetime."
+      },
+      {
+        "label": "Custom datetime",
+        "value": "CustomDateTime",
+        "description": "Uses a custom datetime value (not yet implemented)."
+      }
+    ],
+    "renderIf": {
+      "op": "AND",
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "AddDateTime"
+        },
+        {
+          "field": "UseCustomDateTime",
+          "equals": true
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "AddDateTimePosition",
+    "label": "Add datetime position",
+    "description": "Where to place the datetime: before or after the filename.",
+    "defaultValue": "AfterName",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Before name",
+        "value": "BeforeName",
+        "description": "Inserts text before the filename."
+      },
+      {
+        "label": "After name",
+        "value": "AfterName",
+        "description": "Inserts text after the filename."
+      }
+    ],
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "AddDateTime"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "DateTimeSeparator",
+    "label": "Separator",
+    "description": "Character used to separate filename from datetime (e.g., \u0027_\u0027, \u0027-\u0027, \u0027.\u0027).",
+    "defaultValue": "Underscore",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Period (.)",
+        "value": "Period",
+        "description": "Uses \u0027.\u0027 as separator."
+      },
+      {
+        "label": "Underscore (_)",
+        "value": "Underscore",
+        "description": "Uses \u0027_\u0027 as separator."
+      },
+      {
+        "label": "Dash (-)",
+        "value": "Dash",
+        "description": "Uses \u0027-\u0027 as separator."
+      },
+      {
+        "label": "Space ( )",
+        "value": "Space",
+        "description": "Uses space as separator."
+      }
+    ],
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "AddDateTime"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DateTimeFormat",
+    "label": "Datetime format",
+    "description": "Custom format for the datetime (e.g., yyyyMMdd_HHmmss). Leave empty for default.",
+    "defaultValue": "yyyyMMdd_HHmmss",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "AddDateTime"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "BaseFileName",
+    "label": "Make sequential",
+    "description": "Renames files with sequential numbers (e.g., File_001, File_002).",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "MakeSequential"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "AddNumberPosition",
+    "label": "Add number position",
+    "description": "Where to place the sequential number: before or after the base name.",
+    "defaultValue": "AfterName",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Before name",
+        "value": "BeforeName",
+        "description": "Inserts text before the filename."
+      },
+      {
+        "label": "After name",
+        "value": "AfterName",
+        "description": "Inserts text after the filename."
+      }
+    ],
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "MakeSequential"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "StartNumber",
+    "label": "Start numbering at",
+    "description": "The first number in the sequence (e.g., 1).",
+    "defaultValue": 1,
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "MakeSequential"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "IncrementBy",
+    "label": "Increment by",
+    "description": "How much to increase the number for each subsequent file (e.g., 1, 5).",
+    "defaultValue": 1,
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "MakeSequential"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "NumberSeparator",
+    "label": "Number separator",
+    "description": "Character used to separate filename from number (e.g., \u0027_\u0027, \u0027-\u0027, space).",
+    "defaultValue": "Underscore",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": "Period (.)",
+        "value": "Period",
+        "description": "Uses \u0027.\u0027 as separator."
+      },
+      {
+        "label": "Underscore (_)",
+        "value": "Underscore",
+        "description": "Uses \u0027_\u0027 as separator."
+      },
+      {
+        "label": "Dash (-)",
+        "value": "Dash",
+        "description": "Uses \u0027-\u0027 as separator."
+      },
+      {
+        "label": "Space ( )",
+        "value": "Space",
+        "description": "Uses space as separator."
+      }
+    ],
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "MakeSequential"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "UsePadding",
+    "label": "Use padding",
+    "description": "Whether to pad numbers with leading zeros (e.g., 001, 010).",
+    "defaultValue": false,
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "MakeSequential"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "MinDigits",
+    "label": "Minimum digits",
+    "description": "Minimum number of digits for padded numbers (e.g., 3 \u2192 001, 002).",
+    "defaultValue": 3,
+    "required": false,
+    "renderIf": {
+      "op": "AND",
+      "conditions": [
+        {
+          "field": "RenameScheme",
+          "equals": "MakeSequential"
+        },
+        {
+          "field": "UsePadding",
+          "equals": true
+        }
+      ]
+    }
   },
   {
     "direction": "Output",

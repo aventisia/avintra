@@ -33,5 +33,51 @@
         "description": "Saves the document with a new name before closing."
       }
     ]
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "SavePath",
+    "label": "Save Path",
+    "description": "The file path to save the document when \u0027Save Document As\u0027 is selected.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "BeforeClosingWord",
+          "equals": "SaveDocumentAs"
+        }
+      ]
+    }
+  },
+  {
+    "direction": "Input",
+    "type": "select",
+    "name": "SaveFormat",
+    "label": "Save Format",
+    "description": "The file format to use when saving the document (.docx or .pdf).",
+    "defaultValue": "Docx",
+    "required": false,
+    "selectOptions": [
+      {
+        "label": ".docx",
+        "value": "Docx",
+        "description": "Saves the document as a Word file."
+      },
+      {
+        "label": ".pdf",
+        "value": "Pdf",
+        "description": "Saves the document as a PDF file."
+      }
+    ],
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "BeforeClosingWord",
+          "equals": 2
+        }
+      ]
+    }
   }
 ]

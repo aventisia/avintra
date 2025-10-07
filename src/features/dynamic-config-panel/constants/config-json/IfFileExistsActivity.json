@@ -34,7 +34,7 @@
     "type": "config-panel-output",
     "name": "Result",
     "label": "Result",
-    "description": "Indicates whether the file meets the specified condition (exists or doesn\u0027t exist).",
+    "description": "True if the file meets the specified condition, otherwise false.",
     "defaultValue": {
       "value": "Result",
       "enabled": true
