@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
     [DisplayName("If File Exists")]
     [Description("Checks if a file exists or does not exist and marks the beginning of a conditional block.")]
     [ActivityMetaData(nodeImg: "/assets/File.svg")]
-    public class IfFileExistsActivity : Extensions.BaseCodeActivity
+    public class IfFileExistsActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments
@@ -28,8 +28,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
         public InArgument<string> FilePath { get; set; }
 
         [DisplayName("Result")]
-        [Description("Indicates whether the file meets the specified condition (exists or doesn't exist).")]
-        public OutArgument<FileExistenceEnum?> Result { get; set; }
+        [Description("True if the file meets the specified condition, otherwise false.")]
+        public OutArgument<bool> Result { get; set; }
 
         // ----------------------
         // Execution Logic
@@ -51,32 +51,32 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
                 // Check file existence
                 var fileExists = File.Exists(filePath);
 
-                // Determine result based on condition
-                FileExistenceEnum? resultEnum = null;
+                bool conditionMet;
 
+                // Classic switch-case (C# 7.3 compatible)
                 switch (condition)
                 {
                     case FileExistenceEnum.Exists:
-                        resultEnum = fileExists ? FileExistenceEnum.Exists : FileExistenceEnum.DoesntExist;
+                        conditionMet = fileExists;
                         break;
 
                     case FileExistenceEnum.DoesntExist:
-                        resultEnum = !fileExists ? FileExistenceEnum.DoesntExist : FileExistenceEnum.Exists;
+                        conditionMet = !fileExists;
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(condition));
+                        throw new ArgumentOutOfRangeException(nameof(condition), condition, "Invalid condition value");
                 }
 
                 // Set result and status
-                Result.Set(context, resultEnum);
+                Result.Set(context, conditionMet);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $"File '{filePath}' {(fileExists ? "exists" : "does not exist")}.");
+                StatusMessage.Set(context, $"File '{filePath}' {(fileExists ? "exists" : "does not exist")}. Condition satisfied: {conditionMet}");
             }
             catch (Exception ex)
             {
                 IsSuccess.Set(context, false);
-                Result.Set(context, null);
+                Result.Set(context, false);
                 StatusMessage.Set(context, $"Error checking file existence: {ex.Message}");
             }
         }

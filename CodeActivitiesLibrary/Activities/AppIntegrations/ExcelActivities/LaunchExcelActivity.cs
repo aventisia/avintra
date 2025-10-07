@@ -77,6 +77,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Success";
+            Excel.Application excelApp = null;
 
             try
             {
@@ -85,59 +86,70 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 var nestUnderNewProcess = NestUnderNewProcess.Get(context);
                 var useMachineLocale = UseMachineLocale.Get(context);
 
-                Excel.Application excelApp = null;
-
+                // Try to get an existing Excel instance
                 try
                 {
+                    excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                    // Optional: Ensure it's visible if requested
+                    if (makeVisible)
+                        excelApp.Visible = true;
+                }
+                catch
+                {
+                    // No existing instance found — create a new one
                     excelApp = new Excel.Application();
                     excelApp.Visible = makeVisible;
+                }
 
-                    switch (launchMode)
-                    {
-                        case ExcelLaunchModeEnum.OpenExisting:
+                // Handle launch mode
+                switch (launchMode)
+                {
+                    case ExcelLaunchModeEnum.OpenExisting:
+                        {
+                            var documentPath = DocumentPath.Get(context);
+                            if (string.IsNullOrWhiteSpace(documentPath))
+                                throw new ArgumentException("Document Path cannot be empty when opening an existing file.");
+
+                            var readOnly = OpenAsReadOnly.Get(context);
+                            var readPassword = ReadProtectionPassword.Get(context) ?? string.Empty;
+                            var writePassword = WriteProtectionPassword.Get(context) ?? string.Empty;
+
+                            // Check if the workbook is already open
+                            bool workbookAlreadyOpen = false;
+                            foreach (Excel.Workbook wb in excelApp.Workbooks)
                             {
-                                var documentPath = DocumentPath.Get(context);
-                                var readOnly = OpenAsReadOnly.Get(context);
-                                var readPassword = ReadProtectionPassword.Get(context);
-                                var writePassword = WriteProtectionPassword.Get(context);
-
-                                if (string.IsNullOrWhiteSpace(documentPath))
-                                    throw new ArgumentException(
-                                        "Document Path cannot be empty when opening an existing file.");
-
-                                excelApp.Workbooks.Open(
-                                    documentPath,
-                                    Type.Missing,
-                                    readOnly,
-                                    Type.Missing,
-                                    readPassword,
-                                    writePassword,
-                                    Type.Missing,
-                                    Type.Missing,
-                                    Type.Missing,
-                                    Type.Missing,
-                                    Type.Missing,
-                                    Type.Missing,
-                                    Type.Missing,
-                                    Type.Missing,
-                                    Type.Missing
-                                );
-                                break;
+                                if (string.Equals(wb.FullName, documentPath, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    // Activate existing workbook
+                                    wb.Activate();
+                                    workbookAlreadyOpen = true;
+                                    break;
+                                }
                             }
 
-                        case ExcelLaunchModeEnum.NewWorkbook:
-                            excelApp.Workbooks.Add(Type.Missing);
+                            if (!workbookAlreadyOpen)
+                            {
+                                excelApp.Workbooks.Open(
+                                    Filename: documentPath,
+                                    ReadOnly: readOnly,
+                                    Password: readPassword,
+                                    WriteResPassword: writePassword
+                                // Other parameters can be omitted if using named args
+                                );
+                            }
                             break;
+                        }
 
-                        default:
-                            throw new InvalidOperationException("Invalid launch mode selected.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    status = $"Error launching Excel: {ex.Message}";
-                    excelApp?.Quit();
-                    excelApp = null;
+                    case ExcelLaunchModeEnum.NewWorkbook:
+                        // Only add a new workbook if none exists (optional logic)
+                        if (excelApp.Workbooks.Count == 0)
+                        {
+                            excelApp.Workbooks.Add();
+                        }
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("Invalid launch mode selected.");
                 }
 
                 ExcelInstance.Set(context, excelApp);
@@ -147,7 +159,12 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             catch (Exception ex)
             {
                 status = $"Error launching Excel: {ex.Message}";
+                excelApp?.Quit();
                 IsSuccess.Set(context, false);
+                ExcelInstance.Set(context, null);
+            }
+            finally
+            {
                 StatusMessage.Set(context, status);
             }
 

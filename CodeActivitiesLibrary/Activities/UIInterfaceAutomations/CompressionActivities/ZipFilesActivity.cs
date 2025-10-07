@@ -174,8 +174,8 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CompressionActivities
                     return;
                 }
 
-                // Optional: Skip if less than 5MB
-                if (totalSizeBytes < 5 * 1024 * 1024)
+                // Optional: Skip if less than 200MB
+                if (totalSizeBytes < 200 * 1024 * 1024)
                 {
                     IsSuccess.Set(context, false);
                     StatusMessage.Set(context, "Total size is less than 5MB. Skipped zipping.");

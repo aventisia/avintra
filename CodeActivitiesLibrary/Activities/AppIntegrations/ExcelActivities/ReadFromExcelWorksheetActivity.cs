@@ -169,8 +169,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 ExcelData.Set(context, dataTable);
 
                 if (dataTable != null)
-                    Log(context, $"Excel read complete. Rows={dataTable.Rows.Count}, Cols={dataTable.Columns.Count}");
+                {
+                    int rowCount = dataTable.Rows.Count;
+                    int colCount = dataTable.Columns.Count;
 
+                    Log(context, $"Excel read complete. Rows={rowCount}, Cols={colCount}");
+
+                    // Optional: preview first few rows for log visibility
+                    int preview = Math.Min(5, rowCount);
+                    for (int i = 0; i < preview; i++)
+                    {
+                        var rowValues = string.Join(", ", dataTable.Rows[i].ItemArray.Select(x => x?.ToString()));
+                        Log(context, $"Row {i + 1}: {rowValues}");
+                    }
+                }
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Excel data read successfully.");
             }

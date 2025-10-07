@@ -1,10 +1,11 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.AppIntegrations.WordActivities.Enum;
+using CodeActivitiesLibrary.Extensions;
 using Microsoft.Office.Interop.Word;
 using System;
 using System.Activities;
-using System.Activities.Statements;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
@@ -24,55 +25,95 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         [DefaultValue(CloseOption.DoNotSaveDocument)]
         public InArgument<CloseOption> BeforeClosingWord { get; set; }
 
+        [DisplayName("Save Path")]
+        [Description("The file path to save the document when 'Save Document As' is selected.")]
+        [RenderIfCondition(nameof(BeforeClosingWord), CloseOption.SaveDocumentAs)]
+        public InArgument<string> SavePath { get; set; }
+
+        [DisplayName("Save Format")]
+        [Description("The file format to use when saving the document (.docx or .pdf).")]
+        [RenderIfCondition(nameof(BeforeClosingWord), (int)CloseOption.SaveDocumentAs)]
+        [DefaultValue(SaveFormatEnum.Docx)]
+        public InArgument<SaveFormatEnum> SaveFormat { get; set; }
+
         protected override void Execute(CodeActivityContext context)
         {
             try
             {
                 // Retrieve input values
                 var wordApp = context.GetValue(WordInstance);
-                var beforeClosingWord = context.GetValue(BeforeClosingWord);
+                var closeOption = context.GetValue(BeforeClosingWord);
+                var savePath = context.GetValue(SavePath);
+                var saveFormat = context.GetValue(SaveFormat);
 
                 if (wordApp == null)
-                {
                     throw new ArgumentNullException(nameof(WordInstance), "WordInstance cannot be null.");
-                }
 
-                // Perform the specified action before closing
-                switch (beforeClosingWord)
+                if (wordApp.Documents.Count == 0)
+                    throw new InvalidOperationException("No active documents are open in the Word instance.");
+
+                var activeDoc = wordApp.ActiveDocument;
+
+                switch (closeOption)
                 {
                     case CloseOption.DoNotSaveDocument:
                         // Close without saving
-                        wordApp.Quit(SaveChanges: WdSaveOptions.wdDoNotSaveChanges);
+                        wordApp.Quit(WdSaveOptions.wdDoNotSaveChanges);
                         break;
 
                     case CloseOption.SaveDocument:
-                        // Save and close
-                        wordApp.Quit(SaveChanges: WdSaveOptions.wdSaveChanges);
+                        activeDoc.Save();
+                        wordApp.Quit(WdSaveOptions.wdSaveChanges);
                         break;
 
                     case CloseOption.SaveDocumentAs:
-                        // Prompt to save as
-                        wordApp.ActiveDocument.SaveAs2(
-                            FileName: "", // User will be prompted to choose a file name
-                            FileFormat: WdSaveFormat.wdFormatDocumentDefault
-                        );
-                        wordApp.Quit(SaveChanges: WdSaveOptions.wdDoNotSaveChanges);
+                        if (string.IsNullOrWhiteSpace(savePath))
+                            throw new ArgumentException("SavePath must be provided when using 'Save Document As'.");
+
+                        WdSaveFormat wordFormat;
+                        string finalPath = savePath;
+
+                        switch (saveFormat)
+                        {
+                            case SaveFormatEnum.Docx:
+                                wordFormat = WdSaveFormat.wdFormatDocumentDefault;
+                                if (!finalPath.EndsWith(".docx", StringComparison.OrdinalIgnoreCase))
+                                    finalPath = Path.ChangeExtension(finalPath, ".docx");
+                                break;
+
+                            case SaveFormatEnum.Pdf:
+                                wordFormat = WdSaveFormat.wdFormatPDF;
+                                if (!finalPath.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+                                    finalPath = Path.ChangeExtension(finalPath, ".pdf");
+                                break;
+
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(SaveFormat), "Invalid save format selected.");
+                        }
+
+                        activeDoc.SaveAs2(FileName: finalPath, FileFormat: wordFormat);
+                        wordApp.Quit(WdSaveOptions.wdDoNotSaveChanges);
                         break;
 
                     default:
-                        throw new ArgumentException("Invalid BeforeClosingWord option.");
+                        throw new ArgumentOutOfRangeException(nameof(BeforeClosingWord), "Invalid close option selected.");
                 }
+
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Word closed successfully.");
+                StatusMessage.Set(context,
+                    $"Word closed successfully. {(closeOption == CloseOption.SaveDocumentAs ? $"Saved as {Path.GetFileName(savePath)}" : string.Empty)}");
             }
             catch (Exception ex)
             {
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error closing Word: {ex.Message}");
-                throw new Exception($"Error closing Word:", ex);
+                throw new Exception($"Error closing Word: {ex.Message}", ex);
             }
         }
     }
+
+    // ENUMS
+
     public enum CloseOption
     {
         [Display(Name = "Do not save document", Description = "Closes the document without saving.")]
