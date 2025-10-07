@@ -187,4 +187,40 @@ public class GeneralCredentialsDto
 }
 #endregion
 
+/// <summary>
+/// Represents the credentials and URLs needed for OAuth authentication with OneDrive.
+/// </summary>
+/// 
+public class OneDriveCredentialsDto
+{
+    /// <summary>
+    /// URL to which the OAuth provider will redirect after successful authentication.
+    /// This is typically used for the callback after the user grants permission.
+    /// </summary>
+    public string OAuthRedirectURL { get; set; } = string.Empty;
+
+    /// <summary>
+    /// URL for the authorization request to obtain an authorization code.
+    /// This is where the user is redirected to grant permission to your application.
+    /// </summary>
+    public string AuthorizationURL { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The access token used to authenticate API requests after the authorization step.
+    /// This token allows the application to access the user's OneDrive data.
+    /// </summary>
+    public string AccessTokenURL { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The client ID assigned to your application by the OAuth provider (e.g., OneDrive).
+    /// This uniquely identifies your application during the authentication process.
+    /// </summary>
+    public string ClientID { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The client secret assigned to your application by the OAuth provider (e.g., OneDrive).
+    /// This secret is used alongside the client ID to authenticate your application.       
+    public string ClientSecret { get; set; } = string.Empty;
+}
+
 

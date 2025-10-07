@@ -734,6 +734,28 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
+
+                 case nameof(AppSecretTypesEnum.OneDriveCredentialApi):
+                {
+                    var oneDriveCredentials = System.Text.Json.JsonSerializer.Deserialize<OneDriveCredentialsDto>(rawJson, jsonOptions);
+                    if(oneDriveCredentials!= null)
+                    {
+                        validationResult.EncryptedValues["ClientSecret"] = _encryptionService.EncryptString(oneDriveCredentials.ClientSecret);
+                       
+                        oneDriveCredentials.OAuthRedirectURL = string.Empty;
+                        oneDriveCredentials.AuthorizationURL = string.Empty;
+                        oneDriveCredentials.AccessTokenURL = string.Empty;
+                        oneDriveCredentials.ClientID = string.Empty;
+
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(oneDriveCredentials, jsonOptions);
+                    }
+                     else
+                    {
+                        validationResult.Remark = "Invalid General credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+
             // Default case for unsupported credential types
             default:
                 // Log an error for unsupported credential types and set an error remark
