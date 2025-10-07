@@ -36,6 +36,12 @@ public enum AppSecretTypesEnum
     GitHubApi,
 
     [Description ("General Credentials")]
-    GeneralCredentialApi
+    GeneralCredentialApi,
+
+    /// <summary>
+    /// Access Token used to authenticate with the One Drive API.
+    /// </summary>
+    [Description ("One Drive Credentials")]
+    OneDriveCredentialApi
 
 }
