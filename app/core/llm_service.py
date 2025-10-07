@@ -73,7 +73,7 @@ class LLMService:
             async with httpx.AsyncClient(timeout=timeout) as client:
                 async with client.stream(
                     "POST",
-                    f"{self.api_url}/chat",
+                    self.api_url,
                     json=request_payload,
                     headers=request_headers,
                 ) as response:
