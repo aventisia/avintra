@@ -38,6 +38,22 @@ if (!IsEnvironmentLocalhost)
         message: "SMTP_API_KEY cannot be null"
     );
 
+    // Ensure all required Razorpay environment variables are present
+    var RAZORPAY_KEY_ID = Guard.Against.Null(
+        Environment.GetEnvironmentVariable("RAZORPAY_KEY_ID"),
+        message: "RAZORPAY_KEY_ID cannot be null"
+    );
+
+    var RAZORPAY_KEY_SECRET = Guard.Against.Null(
+        Environment.GetEnvironmentVariable("RAZORPAY_KEY_SECRET"),
+        message: "RAZORPAY_KEY_SECRET cannot be null"
+    );
+
+    var RAZORPAY_WEBHOOK_SECRET = Guard.Against.Null(
+        Environment.GetEnvironmentVariable("RAZORPAY_WEBHOOK_SECRET"),
+        message: "RAZORPAY_WEBHOOK_SECRET cannot be null"
+    );
+
     // Update sensitive data in configuration
     config = new ConfigurationBuilder()
         .AddConfiguration(config)
@@ -50,6 +66,10 @@ if (!IsEnvironmentLocalhost)
                 { "ConnectionStringConfig:TenantDb:Host", DB_HOST },
                 { "JwtConfig:SecretKey", JWT_SECRET_KEY },
                 { "SmtpConfig:ApiKey", SMTP_API_KEY },
+                { "RazorpayConfig:KeyId", RAZORPAY_KEY_ID },
+                { "RazorpayConfig:KeySecret", RAZORPAY_KEY_SECRET },
+                { "RazorpayConfig:WebhookSecret", RAZORPAY_WEBHOOK_SECRET },
+
             }
         )
         .Build();
@@ -77,6 +97,9 @@ builder.Services.AddAuthenticationConfig(config);
 
 // Database
 builder.Services.AddDbContextConfig(config);
+
+// Razorpay client
+builder.Services.AddRazorpayClient(config);
 
 // ASP.NET & App services
 builder.Services.AddHttpContextAccessor();
