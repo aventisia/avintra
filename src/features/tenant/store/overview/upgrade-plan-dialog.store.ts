@@ -11,7 +11,7 @@ interface TopUp {
 
 interface UpgradePlanState {
   isOpen: boolean;
-  chosenPlan: PlanFilter | null;
+  chosenPlan: PlanFilter | "Credits" | null;
   planId: string;
   planType: PlanType;
   billingCountry: string;
@@ -20,7 +20,7 @@ interface UpgradePlanState {
 
 interface UpgradePlanDialogActions {
   setOpen: (open: boolean) => void;
-  setChosenPlan: (plan: PlanFilter | null) => void;
+  setChosenPlan: (plan: PlanFilter | "Credits" | null) => void;
 
   /** Set the form data for creating an account */
   setPlanId: (planId: string) => void;
@@ -32,6 +32,8 @@ interface UpgradePlanDialogActions {
   setPlanType: (planType: PlanType) => void;
 
   setTopUp: (topUp: Partial<TopUp>) => void; // allows updating one or more fields
+
+  clearTopUp: () => void;
 }
 
 export const useUpgradePlanDialogStore = create<
@@ -62,4 +64,13 @@ export const useUpgradePlanDialogStore = create<
         ...topUp, // merge new topUp values with existing ones
       },
     })),
+  clearTopUp: () =>
+    set({
+      topUp: {
+        credits: 0,
+        spaces: 0,
+        storage: 0,
+        history: 0,
+      },
+    }),
 }));
