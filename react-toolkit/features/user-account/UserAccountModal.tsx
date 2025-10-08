@@ -117,7 +117,7 @@ const UserAccountModal = ({
               <Lucide icon="User" className="h-4 w-4" />
               My Account
             </Button>
-            <Button
+            {/* <Button
               variant={"ghost"}
               className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
               onClick={() => {
@@ -138,7 +138,7 @@ const UserAccountModal = ({
             >
               <Lucide icon="Smartphone" className="h-4 w-4" />
               Device history
-            </Button>
+            </Button> */}
             <Separator className="my-1 h-[0.5px]" />{" "}
           </>
         )}
