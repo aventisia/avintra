@@ -15,19 +15,22 @@ import { PlanType } from "@/features/tenant/types/plan-type";
 import BillingDetails from "./BillingDetails";
 import ChargeSummary from "./ChargeSummary";
 import { PlanItem } from "./choose-plan/PlanItem";
+import TopUp from "./TopUp";
 
 const ChoosePlan = () => {
-  const { choosePlan, setChosenPlan } = useUpgradePlanDialogStore(
+  const { topUp, clearTopUp, setChosenPlan } = useUpgradePlanDialogStore(
     useShallow((state) => ({
       setChosenPlan: state.setChosenPlan,
-      choosePlan: state.chosenPlan,
+      clearTopUp: state.clearTopUp,
+      topUp: state.topUp,
     })),
   );
 
   const [selectedTab, setSelectedTab] = useState("monthly");
   const [selectedPlan, setSelectedPlan] = useState("");
 
-  const { data, isLoading } = useFetchSubscriptionPlans(choosePlan);
+  const { data, isLoading } = useFetchSubscriptionPlans();
+
   const { data: billingData, isLoading: isBillingDataLoading } =
     useFetchCompanyDetails();
 
@@ -40,11 +43,14 @@ const ChoosePlan = () => {
   }
 
   return (
-    <div className="space-y-5 px-8 py-10 pt-3">
+    <div className="space-y-4 p-4 pt-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Button
-            onClick={() => setChosenPlan(null)}
+            onClick={() => {
+              setChosenPlan(null);
+              clearTopUp();
+            }}
             variant={"ghost"}
             className="p-1.5"
             size={"icon9"}
@@ -66,38 +72,43 @@ const ChoosePlan = () => {
         </Tabs>
       </div>
 
-      <div className="mt-6 grid grid-cols-[55%_45%] gap-4">
-        <div className="rounded-lg border">
-          <ScrollArea className="h-[calc(100vh-22rem)] p-3">
-            <RadioGroup
-              value={selectedPlan}
-              onValueChange={(val) => {
-                setSelectedPlan(val);
-                setSelectedTab(selectedTab);
-              }}
-            >
-              {data?.data?.map((plan) => (
-                <PlanItem
-                  key={plan.id}
-                  plan={plan}
-                  planType={selectedTab as PlanType}
-                  selectedId={selectedPlan}
-                />
-              ))}
-            </RadioGroup>
-          </ScrollArea>
+      <div className="grid grid-cols-7 gap-4">
+        <div className="col-span-4 space-y-4">
+          <div className="rounded-lg border">
+            <ScrollArea className="h-[calc(100vh-33rem)] p-3">
+              <RadioGroup
+                value={selectedPlan}
+                onValueChange={(val) => {
+                  setSelectedPlan(val);
+                  setSelectedTab(selectedTab);
+                }}
+              >
+                {data?.data
+                  ?.filter((plan) => plan.type != "Enterprise")
+                  ?.map((plan) => (
+                    <PlanItem
+                      key={plan.id}
+                      plan={plan}
+                      planType={selectedTab as PlanType}
+                      selectedId={selectedPlan}
+                    />
+                  ))}
+              </RadioGroup>
+            </ScrollArea>
+          </div>
+          <TopUp planType={selectedTab as PlanType} />
         </div>
 
         {/* Right hand side */}
-        <div className="space-y-4">
+        <div className="col-span-3 space-y-4">
           <BillingDetails billingData={billingData?.data} />
 
-          {selectedPlan && (
+          {selectedPlan || topUp.history || topUp.spaces || topUp.storage ? (
             <ChargeSummary
               plan={data?.data.find((val) => val.id == selectedPlan)}
               planType={selectedTab as PlanType}
             />
-          )}
+          ) : null}
         </div>
       </div>
     </div>
