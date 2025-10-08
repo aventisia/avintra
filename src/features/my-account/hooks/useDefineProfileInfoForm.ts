@@ -14,7 +14,7 @@ export const useDefineProfileInfoForm = () => {
     defaultValues: {
       firstName: "",
       lastName: "",
-      dateOfBirth: new Date(),
+      // dateOfBirth: new Date(),
       phoneNumber: "",
       addressLine1: "",
       addressLine2: "",
@@ -41,7 +41,7 @@ export const useDefineProfileInfoForm = () => {
         form.reset({
           firstName: profileInfoData?.firstName ?? "",
           lastName: profileInfoData?.lastName ?? "",
-          dateOfBirth: profileInfoData?.dateOfBirth ?? new Date(),
+          dateOfBirth: new Date(profileInfoData?.dateOfBirth) ?? new Date(),
           phoneNumber: profileInfoData?.phoneNumber ?? "",
           addressLine1: profileInfoData?.addressLine1 ?? "",
           addressLine2: profileInfoData?.addressLine2 ?? "",
@@ -59,7 +59,7 @@ export const useDefineProfileInfoForm = () => {
     };
 
     fetchGetMyAccountInfo();
-  }, []);
+  }, [form]);
 
   // Return form and methods
   return {

@@ -1,20 +1,83 @@
-import { Outlet } from "react-router-dom";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@aventisia/ui/accordion";
 
-import { ProfileCover } from "@/features/my-account/components/ProfileCover";
-import { MyAccountSidebar } from "@/features/my-account/components/Sidebar";
+import { AccountDeactivationTab } from "./account-deactivation-tab/AccountDeactivationTab";
+import { DeviceHistoryTab } from "./device-history-tab/DeviceHistoryTab";
+import { EmailSettingsTab } from "./email-settings-tab/EmailSettingsTab";
+import { ProfileInfoTab } from "./profile-info-tab/ProfileInfoTab";
+import { SecurityTab } from "./security-tab/SecurityTab";
 
 export function MyAccount() {
   return (
-    <div className="grid grid-cols-12 gap-x-6 gap-y-10">
-      <div className="col-span-12">
-        <div className="mt-3.5 grid grid-cols-12 gap-x-6 gap-y-10">
-          <MyAccountSidebar />
-          <div className="col-span-12 flex flex-col gap-y-7 xl:col-span-9">
-            <ProfileCover />
-            <Outlet />
-          </div>
-        </div>
-      </div>
-    </div>
+    <Accordion
+      type="single"
+      collapsible
+      className="mx-auto my-6 max-w-5xl space-y-6"
+      defaultValue="profileInfo"
+    >
+      <AccordionItem
+        value={"profileInfo"}
+        className="rounded-lg border-none bg-accent"
+      >
+        <AccordionTrigger className="p-4 text-lg font-medium">
+          Profile Info
+        </AccordionTrigger>
+        <AccordionContent className="border-t">
+          <ProfileInfoTab />
+        </AccordionContent>
+      </AccordionItem>
+
+      <AccordionItem
+        value={"emailSetting"}
+        className="rounded-lg border-none bg-accent"
+      >
+        <AccordionTrigger className="p-4 text-lg font-medium">
+          Email Settings
+        </AccordionTrigger>
+        <AccordionContent className="border-t">
+          <EmailSettingsTab />
+        </AccordionContent>
+      </AccordionItem>
+
+      <AccordionItem
+        value={"changePassword"}
+        className="rounded-lg border-none bg-accent"
+      >
+        <AccordionTrigger className="p-4 text-lg font-medium">
+          Change Password
+        </AccordionTrigger>
+        <AccordionContent className="border-t">
+          <SecurityTab />
+        </AccordionContent>
+      </AccordionItem>
+
+      <AccordionItem
+        value={"deviceHistory"}
+        className="rounded-lg border-none bg-accent"
+      >
+        <AccordionTrigger className="p-4 text-lg font-medium">
+          Device History
+        </AccordionTrigger>
+        <AccordionContent className="border-t">
+          <DeviceHistoryTab />
+        </AccordionContent>
+      </AccordionItem>
+
+      <AccordionItem
+        value={"accountDeactivation"}
+        className="rounded-lg border-none bg-accent"
+      >
+        <AccordionTrigger className="p-4 text-lg font-medium">
+          Account Deactivation
+        </AccordionTrigger>
+        <AccordionContent className="border-t">
+          <AccountDeactivationTab />
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 }
