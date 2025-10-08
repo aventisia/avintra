@@ -15,7 +15,7 @@ const PLAN_INTERVALS = ["monthly", "yearly"] as const;
 export const ChoosePlan = () => {
   useDocumentTitle("Choose Plan");
 
-  const { data, isLoading } = useFetchSubscriptionPlans("Pro");
+  const { data, isLoading } = useFetchSubscriptionPlans();
 
   const { planType, setPlanType } = useChoosePlanStore(
     useShallow((state) => ({
@@ -50,7 +50,12 @@ export const ChoosePlan = () => {
             {isLoading ? (
               <PlanTabSkeleton />
             ) : (
-              data && <PlanTab data={data.data} planType={interval} />
+              data && (
+                <PlanTab
+                  data={data.data?.filter((p) => p.type != "Enterprise")}
+                  planType={interval}
+                />
+              )
             )}
           </TabsContent>
         ))}
