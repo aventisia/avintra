@@ -4,11 +4,10 @@ import { RadioGroup } from "@aventisia/ui/radio-group";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { ArrowLeft, Check } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useFetchCompanyDetails } from "@/features/tenant/hooks/useFetchCompanyDetails";
-import { useFetchCurrentPlan } from "@/features/tenant/hooks/useFetchCurrentPlan";
 import { useFetchSubscriptionPlans } from "@/features/tenant/hooks/useFetchSubscriptionPlans";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
 import { PlanType } from "@/features/tenant/types/plan-type";
@@ -19,10 +18,11 @@ import { PlanItem } from "./choose-plan/PlanItem";
 import TopUp from "./TopUp";
 
 const ChoosePlan = () => {
-  const { setChosenPlan } = useUpgradePlanDialogStore(
+  const { topUp, clearTopUp, setChosenPlan } = useUpgradePlanDialogStore(
     useShallow((state) => ({
       setChosenPlan: state.setChosenPlan,
-      choosePlan: state.chosenPlan,
+      clearTopUp: state.clearTopUp,
+      topUp: state.topUp,
     })),
   );
 
@@ -33,20 +33,6 @@ const ChoosePlan = () => {
 
   const { data: billingData, isLoading: isBillingDataLoading } =
     useFetchCompanyDetails();
-
-  const { data: currPlan } = useFetchCurrentPlan();
-
-  useEffect(() => {
-    const activePlan = data?.data.find(
-      (val) => val.name == currPlan?.data.currentPlan.planName,
-    );
-    setSelectedPlan(activePlan?.id || "");
-    setSelectedTab(currPlan?.data.currentPlan.frequency.toLowerCase() || "");
-  }, [
-    currPlan?.data.currentPlan.frequency,
-    currPlan?.data.currentPlan.planName,
-    data?.data,
-  ]);
 
   if (isLoading || isBillingDataLoading) {
     return (
@@ -61,7 +47,10 @@ const ChoosePlan = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Button
-            onClick={() => setChosenPlan(null)}
+            onClick={() => {
+              setChosenPlan(null);
+              clearTopUp();
+            }}
             variant={"ghost"}
             className="p-1.5"
             size={"icon9"}
@@ -86,7 +75,7 @@ const ChoosePlan = () => {
       <div className="grid grid-cols-7 gap-4">
         <div className="col-span-4 space-y-4">
           <div className="rounded-lg border">
-            <ScrollArea className="h-[calc(100vh-35rem)] p-3">
+            <ScrollArea className="h-[calc(100vh-33rem)] p-3">
               <RadioGroup
                 value={selectedPlan}
                 onValueChange={(val) => {
@@ -107,19 +96,19 @@ const ChoosePlan = () => {
               </RadioGroup>
             </ScrollArea>
           </div>
-          <TopUp />
+          <TopUp planType={selectedTab as PlanType} />
         </div>
 
         {/* Right hand side */}
         <div className="col-span-3 space-y-4">
           <BillingDetails billingData={billingData?.data} />
 
-          {selectedPlan && (
+          {selectedPlan || topUp.history || topUp.spaces || topUp.storage ? (
             <ChargeSummary
               plan={data?.data.find((val) => val.id == selectedPlan)}
               planType={selectedTab as PlanType}
             />
-          )}
+          ) : null}
         </div>
       </div>
     </div>

@@ -25,7 +25,9 @@ const ChoosePlanOptions = () => {
         {/* Enterprise Self hosted Plan */}
         <div className="grid grid-rows-[auto_auto_1fr] space-y-4 rounded-lg border">
           <div className="px-4 pt-4">
-            <h3 className="font-semibold">Enterprise - Self-Hosted</h3>
+            <h3 className="font-semibold">
+              Enterprise/Commercial - Self-Hosted
+            </h3>
           </div>
           <Separator />
           <div className="grid px-5 pb-4">
