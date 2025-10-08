@@ -41,14 +41,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
         {
             try
             {
-                // Retrieve input values
+               // Retrieve input values
                 var wordApp = context.GetValue(WordInstance);
                 var saveMode = context.GetValue(SaveMode);
                 var savePath = context.GetValue(SavePath);
                 var saveFormat = context.GetValue(SaveFormat);
 
                 if (wordApp == null)
-                    throw new ArgumentNullException(nameof(WordInstance), "WordInstance cannot be null.");
+                    throw new ArgumentNullException(nameof(WordInstance),
+                    "WordInstance cannot be null.");
 
                 if (wordApp.Documents.Count == 0)
                     throw new InvalidOperationException("No active documents are open in the Word instance.");

@@ -57,7 +57,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                 switch (closeOption)
                 {
                     case CloseOption.DoNotSaveDocument:
-                        // Close without saving
+                      // Close without saving
                         wordApp.Quit(WdSaveOptions.wdDoNotSaveChanges);
                         break;
 
@@ -88,7 +88,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                                 break;
 
                             default:
-                                throw new ArgumentOutOfRangeException(nameof(SaveFormat), "Invalid save format selected.");
+                                throw new ArgumentOutOfRangeException(nameof(SaveFormat),
+                                 "Invalid save format selected.");
                         }
 
                         activeDoc.SaveAs2(FileName: finalPath, FileFormat: wordFormat);
@@ -96,7 +97,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(BeforeClosingWord), "Invalid close option selected.");
+                        throw new ArgumentOutOfRangeException(nameof(BeforeClosingWord),
+                            "Invalid close option selected.");
                 }
 
                 IsSuccess.Set(context, true);
@@ -124,5 +126,5 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 
         [Display(Name = "Save document as", Description = "Saves the document with a new name before closing.")]
         SaveDocumentAs
-    }
+    }  
 }
