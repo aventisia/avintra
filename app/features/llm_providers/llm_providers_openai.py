@@ -4,7 +4,7 @@ import time
 import httpx
 from app.core.config import settings
 from app.core.logger import log_exception, logger
-from app.features.llm_providers.llm_providers_schemas import LLMRequest, LLMResponse
+from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, LLMRequest, LLMResponse
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from .llm_providers_base import BaseLLMProvider
 
@@ -55,6 +55,82 @@ class OpenAIProvider(BaseLLMProvider):
             default_llm_response_obj.error = f"Failed to generate response: {e}"
             return default_llm_response_obj
 
+    # Method: Streaming response generator for OpenAI
+    async def stream_llm_response(self, request: LLMRequest):
+        logger.info(f"[STREAMING] Prompt sent to OpenAI provider with model: {request.model}")
+        
+        # Initialize
+        chunk_response = LLMChunkResponse(
+            provider=request.provider,
+            model=request.model,
+            output=""
+        )
+        buffer_output = ""  # Buffer to accumulate output if is_json_output is True
+        default_llm_response_obj = self.create_initial_llm_response_with_defaults(request)
+        start_time = time.perf_counter()
+        
+        # Get request payload and headers
+        request_payload, request_headers = self.create_request_payload_and_headers(request)
+        
+        # Set a long timeout for potentially lengthy responses
+        timeout = httpx.Timeout(600.0) # 10 minutes
+        
+        # Send streaming request to OpenAI API
+        try:
+            async with httpx.AsyncClient(timeout=timeout) as client:
+                async with client.stream(
+                    "POST",
+                    self.api_url,
+                    json=request_payload,
+                    headers=request_headers,
+                ) as response:
+                    # Handle response
+                    response.raise_for_status()
+                    
+                    # Stream response lines from OpenAI API
+                    async for line in response.aiter_lines():
+                        line = line.strip()
+                        if not line.startswith("data:"):
+                            continue  # Skip event lines and others
+
+                        # Get content from chunk and yield as LLMChunkResponse
+                        try:
+                            json_str = line[len("data:"):].strip() # Remove the 'data:' prefix
+                            chunk = json.loads(json_str)
+                            chunk_delta = chunk.get("delta", "")
+                            event_type = chunk.get("type")
+                            
+                            # Handle is_json_output if requested
+                            if request.is_json_output:
+                                # Accumulate output in buffer
+                                if event_type == "response.output_text.delta" and chunk_delta:
+                                    buffer_output += chunk_delta
+                                    
+                                # Break if completed and yield the final llm response
+                                if event_type == "response.completed":
+                                    output = extract_json_from_llm_response(buffer_output)
+                                    full_response = chunk.get("response", {})
+                                    final_llm_response = self.create_final_llm_response(default_llm_response_obj, start_time, output, full_response)
+                                    yield final_llm_response.model_dump_json() + "\n"
+                                    break
+                            else:
+                                # Break if completed and yield the final llm response
+                                if event_type == "response.completed":
+                                    full_response = chunk.get("response", {})
+                                    final_llm_response = self.create_final_llm_response(default_llm_response_obj, start_time, "", full_response)
+                                    yield final_llm_response.model_dump_json() + "\n"
+                                    break
+                                
+                                # Get content from chunk
+                                if event_type == "response.output_text.delta":
+                                    chunk_response.output = chunk_delta
+                                    yield chunk_response.model_dump_json() + "\n"
+                        except Exception as chunk_exc:
+                            log_exception(logger, chunk_exc, f"[STREAMING] Failed to parse OpenAI stream chunk: {chunk_exc}")
+        except Exception as e:
+            log_exception(logger, e, "OpenAI provider stream error")
+            yield f"Failed to generate response: {e}"
+            
     # Helper: Create request payload and headers
     def create_request_payload_and_headers(self, request: LLMRequest) -> tuple:
         
@@ -109,6 +185,7 @@ class OpenAIProvider(BaseLLMProvider):
             finish_reason=None,
             temperature=request.temperature,
             top_p=request.top_p,
+            stream=request.stream,
             max_output_tokens=request.max_output_tokens,
             is_json_output=request.is_json_output,
             is_byok_enabled=request.is_byok_enabled,
