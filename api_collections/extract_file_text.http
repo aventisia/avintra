@@ -35,6 +35,14 @@ Content-Type: application/json
   "file_url": "{{testFilesPath}}/pdf-with-images.pdf"
 }
 
+### PDF: electronic pdf with images. OCR failed case
+POST {{extractFileTextEndpoint}}
+Content-Type: application/json
+
+{
+  "file_url": "{{testFilesPath}}/pdf-ocr-fail-case.pdf"
+}
+
 ### PNG: simple portable network graphics (png) file
 POST {{extractFileTextEndpoint}}
 Content-Type: application/json
