@@ -24,9 +24,9 @@ export const SecurityTab = () => {
       disabled={isPending}
       className="box box--stacked flex flex-col p-5"
     >
-      <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
+      {/* <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
         Security
-      </div>
+      </div> */}
       <div>
         <InputDivElement
           headingForInput="Current Password"
@@ -79,7 +79,7 @@ export const SecurityTab = () => {
           />
         </InputDivElement>
       </div>
-      <div className="mt-6 flex border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
+      <div className="flex pt-5 md:justify-end">
         <Button
           variant="default"
           disabled={isPending}

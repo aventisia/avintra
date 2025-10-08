@@ -13,7 +13,7 @@ import type { MyAccountDto } from "../../dtos/my-account-profile-dto";
 import { useDefineProfileInfoForm } from "../../hooks/useDefineProfileInfoForm";
 import { useProfileInfoFormMutation } from "../../hooks/useProfileInfoFormMutation";
 import type { UserProfileZodSchema } from "../../types/profile-zod-schema";
-import CheckboxFeildDiv from "../CheckboxFeildDiv";
+// import CheckboxFeildDiv from "../CheckboxFeildDiv";
 import { InputDivElement } from "../InputDivElement";
 
 export const UserForm = () => {
@@ -33,9 +33,9 @@ export const UserForm = () => {
       className="box flex flex-col p-5"
     >
       <div>
-        <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-xl font-medium">
+        {/* <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-xl font-medium">
           Profile Info
-        </div>
+        </div> */}
 
         {/* Form feilds */}
         <div>
@@ -45,18 +45,18 @@ export const UserForm = () => {
             messageForInput="Enter your full legel name as it appears on your official documentation."
             showSkelaton={isLoading}
           >
-            <div className="flex w-auto flex-col items-center md:flex-row">
+            <div className="flex w-auto flex-col items-center gap-2 md:flex-row">
               <InputField
                 type="text"
                 name="firstName"
-                className="rounded-e-none border-slate-300/60 shadow-sm"
+                className="border-slate-300/60 shadow-sm"
                 size={50}
                 placeholder="First Name"
               />
               <InputField
                 name="lastName"
                 type="text"
-                className="rounded-s-none border-slate-300/60 shadow-sm"
+                className="border-slate-300/60 shadow-sm"
                 size={50}
                 placeholder="Last Name"
               />
@@ -71,7 +71,7 @@ export const UserForm = () => {
             <DatePickerField name="dateOfBirth" />
           </InputDivElement>
 
-          <InputDivElement
+          {/* <InputDivElement
             headingForInput={"Gender"}
             messageForInput={"Select your gender from the options."}
             showSkelaton={isLoading}
@@ -104,7 +104,7 @@ export const UserForm = () => {
                 </div>
               </CheckboxFeildDiv.CheckboxFormField>
             </CheckboxFeildDiv>
-          </InputDivElement>
+          </InputDivElement> */}
 
           <InputDivElement
             headingForInput={"Phone Number"}
@@ -120,7 +120,7 @@ export const UserForm = () => {
             />
           </InputDivElement>
 
-          <InputDivElement
+          {/* <InputDivElement
             headingForInput="Address"
             messageForInput="Please specify the address you are currently residing in."
             showSkelaton={isLoading}
@@ -137,23 +137,23 @@ export const UserForm = () => {
               placeholder="Address Line 2"
               className="mt-3 border-slate-300/60 shadow-sm"
             />
-          </InputDivElement>
+          </InputDivElement> */}
 
           <InputDivElement
             headingForInput="Country"
             messageForInput="Please Specify the country you are currently residing in."
             showSkelaton={isLoading}
           >
-            {form.getValues("country") !== "" && (
+            {
               <SelectField
                 name="country"
                 selectOptions={enumToArray(CountriesEnum)}
                 className="border-slate-300/60 shadow-sm"
               />
-            )}
+            }
           </InputDivElement>
 
-          <InputDivElement
+          {/* <InputDivElement
             headingForInput="State or Province"
             messageForInput="Please specify your state or province you are currently residing in."
             showSkelaton={isLoading}
@@ -164,9 +164,9 @@ export const UserForm = () => {
               placeholder=""
               className="border-slate-300/60 shadow-sm"
             />
-          </InputDivElement>
+          </InputDivElement> */}
 
-          <InputDivElement
+          {/* <InputDivElement
             headingForInput="City"
             messageForInput="Enter the name of the city or locality where your address is located."
             showSkelaton={isLoading}
@@ -177,9 +177,9 @@ export const UserForm = () => {
               placeholder=""
               className="border-slate-300/60 shadow-sm"
             />
-          </InputDivElement>
+          </InputDivElement> */}
 
-          <InputDivElement
+          {/* <InputDivElement
             headingForInput="Zip or Postal Code"
             messageForInput="Please specify your zip or postal code of your current locality."
             showSkelaton={isLoading}
@@ -190,18 +190,17 @@ export const UserForm = () => {
               placeholder="548462"
               className="border-slate-300/60 shadow-sm"
             />
-          </InputDivElement>
+          </InputDivElement> */}
         </div>
 
-        <div className="mt-6 flex border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
+        <div className="flex pt-5 md:justify-end">
           <SubmitButton
             variant="default"
             type="submit"
+            primaryText="Save"
             className="border-primary/50 w-full px-4 md:w-auto"
             isPending={isLoading || isPending}
-          >
-            Save
-          </SubmitButton>
+          />
         </div>
       </div>
     </Form>

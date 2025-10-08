@@ -3,7 +3,7 @@ import { Form, InputField } from "@aventisia/ui/form";
 import type { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
+// import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
@@ -56,61 +56,49 @@ export const EnterEmail = () => {
     <Form
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
-      disabled={
-        userSession?.tenantName != DefaultTenantsEnum.IndividualUsers &&
-        (isSubmitting || isCodePending)
-      }
+      disabled={isSubmitting || isCodePending}
       className="px-2.5 pb-5"
     >
       <div className="box flex flex-col p-5">
-        <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
+        {/* <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
           Email Settings
-        </div>
+        </div> */}
         <div>
-          <div className="inline-flex gap-1 text-sm text-slate-500">
+          <div className="inline-flex gap-1 text-md text-slate-500">
             Your current email address is
             <p className="font-medium">{userSession?.email}</p>
           </div>
           <InputDivElement
             headingForInput={"Email"}
-            isRequired={
-              userSession?.tenantName == DefaultTenantsEnum.IndividualUsers
-            }
-            messageForInput={
-              userSession?.tenantName == DefaultTenantsEnum.IndividualUsers
-                ? "Please provide a valid email where we can reach you if needed."
-                : "Your current tenant email address."
-            }
+            // isRequired={
+            //   userSession?.tenantName == DefaultTenantsEnum.IndividualUsers
+            // }
+            messageForInput={"New Email"}
           >
             <InputField
               name="email"
               type="email"
               className="border-slate-300/60 text-sm shadow-sm"
-              {...(userSession?.tenantName == DefaultTenantsEnum.IndividualUsers
-                ? {
-                    onChangeCapture: (e) =>
-                      handleInputChange(e.currentTarget.value),
-                    nonErrorMessage: availabilityMessage,
-                    isRequired: true,
-                    disabled: false,
-                    placeholder: "new@emai.com",
-                  }
-                : {
-                    disabled: true,
-                    placeholder: userSession?.email,
-                  })}
+              {...{
+                onChangeCapture: (e) =>
+                  handleInputChange(e.currentTarget.value),
+                nonErrorMessage: availabilityMessage,
+                isRequired: false,
+                disabled: false,
+                placeholder: "Email",
+              }}
             />
           </InputDivElement>
         </div>
-        <div className="mt-6 flex border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
-          {userSession?.tenantName == DefaultTenantsEnum.IndividualUsers && (
+        <div className="flex pt-5 md:justify-end">
+          {
             <SubmitButton
               className="text-sm"
               primaryText="Verify"
               isPending={isSubmitting || isCodePending}
               disabled={!isAvailable || isCheckPending}
             />
-          )}
+          }
         </div>
       </div>
     </Form>

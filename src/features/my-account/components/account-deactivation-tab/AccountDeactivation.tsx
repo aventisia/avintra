@@ -44,9 +44,9 @@ export const AccountDeactivation = () => {
       checkDirtyForm={false}
     >
       <div className="box box--stacked flex flex-col p-5">
-        <div className="mb-6 flex items-center border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
+        {/* <div className="mb-6 flex items-center border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
           Account Deactivation
-        </div>
+        </div> */}
         <div>
           {(deactivationStatusData?.deactivating && (
             <div className="mb-4 leading-relaxed">
@@ -79,13 +79,12 @@ export const AccountDeactivation = () => {
             required={true}
           />
         </div>
-        <div className="mt-6 flex flex-col-reverse gap-3 border-t border-dashed border-slate-300/70 pt-5 md:flex-row md:justify-end">
+        <div className=" flex flex-col-reverse gap-3  pt-5 md:flex-row md:justify-end">
           <SubmitButton
             isPending={isLoading || isSubmitting}
             variant="destructive"
-          >
-            Continue
-          </SubmitButton>
+            primaryText="Continue"
+          />
         </div>
       </div>
     </Form>
