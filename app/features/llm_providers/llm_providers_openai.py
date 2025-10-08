@@ -100,29 +100,22 @@ class OpenAIProvider(BaseLLMProvider):
                             chunk_delta = chunk.get("delta", "")
                             event_type = chunk.get("type")
                             
-                            # Handle is_json_output if requested
-                            if request.is_json_output:
-                                # Accumulate output in buffer
-                                if event_type == "response.output_text.delta" and chunk_delta:
-                                    buffer_output += chunk_delta
-                                    
-                                # Break if completed and yield the final llm response
-                                if event_type == "response.completed":
-                                    output = extract_json_from_llm_response(buffer_output)
-                                    full_response = chunk.get("response", {})
-                                    final_llm_response = self.create_final_llm_response(default_llm_response_obj, start_time, output, full_response)
-                                    yield final_llm_response.model_dump_json() + "\n"
-                                    break
-                            else:
-                                # Break if completed and yield the final llm response
-                                if event_type == "response.completed":
-                                    full_response = chunk.get("response", {})
-                                    final_llm_response = self.create_final_llm_response(default_llm_response_obj, start_time, "", full_response)
-                                    yield final_llm_response.model_dump_json() + "\n"
-                                    break
-                                
-                                # Get content from chunk
-                                if event_type == "response.output_text.delta":
+                            # Adjust event_type to remove "response." prefix if present
+                            if event_type and event_type.startswith("response."):
+                                event_type = event_type.replace("response.", "")
+                            
+                            # Break if completed and yield the final llm response
+                            if event_type in ("completed", "incomplete", "failed"):
+                                output = extract_json_from_llm_response(buffer_output) if request.is_json_output else ""
+                                full_response = chunk.get("response", {})
+                                final_llm_response = self.create_final_llm_response(default_llm_response_obj, start_time, output, full_response)
+                                yield final_llm_response.model_dump_json() + "\n"
+                                break
+                            
+                            # Stream chunk delta if available
+                            if event_type == "output_text.delta" and chunk_delta:
+                                buffer_output += chunk_delta # Accumulate output in buffer for json/structured output
+                                if not request.is_json_output:
                                     chunk_response.output = chunk_delta
                                     yield chunk_response.model_dump_json() + "\n"
                         except Exception as chunk_exc:

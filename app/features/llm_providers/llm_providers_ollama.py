@@ -102,21 +102,17 @@ class OllamaProvider(BaseLLMProvider):
                             is_done = chunk.get("done", False)
                             chunk_content = chunk.get("message", {}).get("content", "")
                             
-                            # Handle is_json_output if requested
-                            if request.is_json_output:
-                                if chunk_content:
-                                    buffer_output += chunk_content
-                                if is_done:
-                                    output = extract_json_from_llm_response(buffer_output)
-                                    final_llm_response = self.create_final_llm_response(default_llm_response_obj, start_time, output, chunk)
-                                    yield final_llm_response.model_dump_json() + "\n"
-                                    break
-                            else:
-                                if is_done:
-                                    final_llm_response = self.create_final_llm_response(default_llm_response_obj, start_time, "", chunk)
-                                    yield final_llm_response.model_dump_json() + "\n"
-                                    break
-                                if chunk_content:
+                            # Break if done and yield the final llm response
+                            if is_done:
+                                output = extract_json_from_llm_response(buffer_output) if request.is_json_output else ""
+                                final_llm_response = self.create_final_llm_response(default_llm_response_obj, start_time, output, chunk)
+                                yield final_llm_response.model_dump_json() + "\n"
+                                break
+                            
+                            # Stream chunk content if available
+                            if chunk_content:
+                                buffer_output += chunk_content # Accumulate output in buffer for json/structured output
+                                if not request.is_json_output:
                                     chunk_response.output = chunk_content
                                     yield chunk_response.model_dump_json() + "\n"
                         except Exception as chunk_exc:
