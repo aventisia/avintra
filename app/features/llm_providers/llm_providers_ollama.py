@@ -8,6 +8,7 @@ from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, L
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from .llm_providers_base import BaseLLMProvider
 from datetime import datetime
+from app.features.llm_providers.llm_job_manager import active_llm_jobs
 
 class OllamaProvider(BaseLLMProvider):
     # Constructor: To initialize API URL and key
@@ -58,7 +59,7 @@ class OllamaProvider(BaseLLMProvider):
             return default_llm_response_obj
 
     # Method: Streaming response generator for Ollama
-    async def stream_llm_response(self, request: LLMRequest):
+    async def stream_llm_response(self, request: LLMRequest, job_id: str):
         logger.info(f"[STREAMING] Prompt sent to Ollama provider with model: {request.model}")
         
         # Initialize
@@ -91,6 +92,11 @@ class OllamaProvider(BaseLLMProvider):
                     
                     # Stream response lines from Ollama API
                     async for line in response.aiter_lines():
+                        # Check for job cancellation
+                        if job_id not in active_llm_jobs:
+                            logger.info(f"Job {job_id} cancelled. Stopping OpenAI stream.")
+                            break
+                        
                         # Skip empty lines
                         if not line.strip():
                             continue

@@ -13,7 +13,7 @@ class BaseLLMProvider(ABC):
         pass
     
     @abstractmethod
-    async def stream_llm_response(self, request: LLMRequest):
+    async def stream_llm_response(self, request: LLMRequest, job_id: str):
         """
         Generate a streaming response. Yields parts of the answer as they are generated.
         For chat or long-form generation tasks.

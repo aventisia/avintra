@@ -7,6 +7,7 @@ from app.core.logger import log_exception, logger
 from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, LLMRequest, LLMResponse
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from .llm_providers_base import BaseLLMProvider
+from app.features.llm_providers.llm_job_manager import active_llm_jobs
 
 class OpenAIProvider(BaseLLMProvider):
     # Constructor: To initialize API URL and key
@@ -56,7 +57,7 @@ class OpenAIProvider(BaseLLMProvider):
             return default_llm_response_obj
 
     # Method: Streaming response generator for OpenAI
-    async def stream_llm_response(self, request: LLMRequest):
+    async def stream_llm_response(self, request: LLMRequest, job_id: str):
         logger.info(f"[STREAMING] Prompt sent to OpenAI provider with model: {request.model}")
         
         # Initialize
@@ -89,6 +90,12 @@ class OpenAIProvider(BaseLLMProvider):
                     
                     # Stream response lines from OpenAI API
                     async for line in response.aiter_lines():
+                        # Check for job cancellation
+                        if job_id not in active_llm_jobs:
+                            logger.info(f"Job {job_id} cancelled. Stopping OpenAI stream.")
+                            break
+                        
+                        # Process each line
                         line = line.strip()
                         if not line.startswith("data:"):
                             continue  # Skip event lines and others
