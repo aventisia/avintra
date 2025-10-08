@@ -1,0 +1,47 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TenantId",
+    "label": "Tenant ID",
+    "description": "Azure AD Tenant ID",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ClientId",
+    "label": "Client ID",
+    "description": "Azure AD Application Client ID",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ClientSecret",
+    "label": "Client Secret",
+    "description": "Azure AD Application Client Secret",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "DriveId",
+    "label": "Drive ID",
+    "description": "OneDrive or SharePoint Drive ID",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "FilePath",
+    "label": "File Path",
+    "description": "Relative path in the drive, e.g., /Documents/NewWorkbook.xlsx",
+    "defaultValue": "",
+    "required": true
+  }
+]

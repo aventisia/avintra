@@ -1,0 +1,38 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelApplication",
+    "label": "Excel Application",
+    "description": "The Excel Application object containing the target worksheet.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ValuesToWrite",
+    "label": "Values to Write",
+    "description": "A list or array of values (e.g., from JSON fields).",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "TargetColumns",
+    "label": "Target Columns",
+    "description": "Column letters for each value (e.g., [\u0027A\u0027,\u0027D\u0027,\u0027G\u0027,\u0027E\u0027,\u0027W\u0027,\u0027X\u0027]). Must match value count.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Row",
+    "label": "Row",
+    "description": "The row number to write the data to (e.g., 5).",
+    "defaultValue": "",
+    "required": true
+  }
+]
