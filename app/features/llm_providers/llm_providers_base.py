@@ -11,3 +11,11 @@ class BaseLLMProvider(ABC):
         For extraction or other single-shot tasks.
         """
         pass
+    
+    @abstractmethod
+    async def stream_llm_response(self, request: LLMRequest):
+        """
+        Generate a streaming response. Yields parts of the answer as they are generated.
+        For chat or long-form generation tasks.
+        """
+        pass
