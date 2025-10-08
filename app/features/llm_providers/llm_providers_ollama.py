@@ -4,7 +4,7 @@ import time
 import httpx
 from app.core.config import settings
 from app.core.logger import log_exception, logger
-from app.features.llm_providers.llm_providers_schemas import LLMRequest, LLMResponse
+from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, LLMRequest, LLMResponse
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response
 from .llm_providers_base import BaseLLMProvider
 from datetime import datetime
@@ -57,6 +57,74 @@ class OllamaProvider(BaseLLMProvider):
             default_llm_response_obj.error = f"Failed to generate response: {e}"
             return default_llm_response_obj
 
+    # Method: Streaming response generator for Ollama
+    async def stream_llm_response(self, request: LLMRequest):
+        logger.info(f"[STREAMING] Prompt sent to Ollama provider with model: {request.model}")
+        
+        # Initialize
+        chunk_response = LLMChunkResponse(
+            provider=request.provider,
+            model=request.model,
+            output=""
+        )
+        buffer_output = ""  # Buffer to accumulate output if is_json_output is True
+        default_llm_response_obj = self.create_initial_llm_response_with_defaults(request)
+        start_time = time.perf_counter()
+        
+        # Get request payload and headers
+        request_payload, request_headers = self.create_request_payload_and_headers(request)
+        
+        # Set a long timeout for potentially lengthy responses
+        timeout = httpx.Timeout(600.0) # 10 minutes
+        
+        # Send streaming request to Ollama API
+        try:
+            async with httpx.AsyncClient(timeout=timeout) as client:
+                async with client.stream(
+                    "POST",
+                    self.api_url,
+                    json=request_payload,
+                    headers=request_headers,
+                ) as response:
+                    # Handle response
+                    response.raise_for_status()
+                    
+                    # Stream response lines from Ollama API
+                    async for line in response.aiter_lines():
+                        # Skip empty lines
+                        if not line.strip():
+                            continue
+                        
+                        # Get content from chunk and yield as LLMChunkResponse
+                        try:
+                            # Parse JSON line and get chunk content
+                            chunk = json.loads(line)
+                            is_done = chunk.get("done", False)
+                            chunk_content = chunk.get("message", {}).get("content", "")
+                            
+                            # Handle is_json_output if requested
+                            if request.is_json_output:
+                                if chunk_content:
+                                    buffer_output += chunk_content
+                                if is_done:
+                                    output = extract_json_from_llm_response(buffer_output)
+                                    final_llm_response = self.create_final_llm_response(default_llm_response_obj, start_time, output, chunk)
+                                    yield final_llm_response.model_dump_json() + "\n"
+                                    break
+                            else:
+                                if is_done:
+                                    final_llm_response = self.create_final_llm_response(default_llm_response_obj, start_time, "", chunk)
+                                    yield final_llm_response.model_dump_json() + "\n"
+                                    break
+                                if chunk_content:
+                                    chunk_response.output = chunk_content
+                                    yield chunk_response.model_dump_json() + "\n"
+                        except Exception as chunk_exc:
+                            logger.warning(f"[STREAMING] Failed to parse stream chunk: {chunk_exc}")
+        except Exception as e:
+            log_exception(logger, e, "Ollama provider stream error")
+            yield f"Failed to generate response: {e}"
+            
     # Helper: Create request payload and headers
     def create_request_payload_and_headers(self, request: LLMRequest) -> tuple:
         
@@ -111,6 +179,7 @@ class OllamaProvider(BaseLLMProvider):
             finish_reason=None,
             temperature=request.temperature,
             top_p=request.top_p,
+            stream=request.stream,
             max_output_tokens=request.max_output_tokens,
             is_json_output=request.is_json_output,
             is_byok_enabled=request.is_byok_enabled,
