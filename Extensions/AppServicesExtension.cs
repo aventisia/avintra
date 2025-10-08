@@ -133,8 +133,8 @@ public static class AppServicesExtension
         }
 
         // Register the Razorpay client as a singleton service
-        services.AddSingleton<RazorpayClient>(provider =>
-            new RazorpayClient(razorpayConfig.KeyId, razorpayConfig.KeySecret));
+        services.AddSingleton<Razorpay.Api.RazorpayClient>(provider =>
+            new Razorpay.Api.RazorpayClient(razorpayConfig.KeyId, razorpayConfig.KeySecret));
 
         // Optionally, register RazorpayConfig itself for further use
         services.AddSingleton(razorpayConfig);

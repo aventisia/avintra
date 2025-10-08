@@ -2,10 +2,10 @@ namespace AccountsAPIs.Services;
 
 public class CustomerService : ICustomerService
 {
-    private readonly RazorpayClient _razorpayClient;
+    private readonly Razorpay.Api.RazorpayClient _razorpayClient;
     private readonly ILogger<CustomerService> _logger;
 
-    public CustomerService(RazorpayClient razorpayClient, ILogger<CustomerService> logger)
+    public CustomerService(Razorpay.Api.RazorpayClient razorpayClient, ILogger<CustomerService> logger)
     {
         _razorpayClient = razorpayClient;
         _logger = logger;
