@@ -11,7 +11,7 @@ export const useSelectedPlan = () => {
     })),
   );
   // Get query client
-  const { data: plansData } = useFetchSubscriptionPlans("Pro");
+  const { data: plansData } = useFetchSubscriptionPlans();
 
   // Get config data by id
   const planData = plansData?.data.find((item) => item?.id === planId);
