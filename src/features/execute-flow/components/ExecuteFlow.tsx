@@ -1,4 +1,6 @@
 import { IS_TAURI } from "@/constants";
+import { useFetchFlowToExecute } from "@/features/agents-assist/hooks/useFetchFlowToExecute";
+import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { Button } from "@aventisia/ui/buttons";
@@ -7,11 +9,10 @@ import { Tooltip } from "@aventisia/ui/tooltip";
 import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { invoke } from "@tauri-apps/api/core";
 import { Loader2 } from "lucide-react";
+import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { clearNodeExecutionLog, CURRENT_VERSION_ID_KEY } from "..";
 import useWebSocket from "../hooks/useWebSocket";
-import { useFetchFlowToExecute } from "@/features/agents-assist/hooks/useFetchFlowToExecute";
-import { useEffect } from "react";
 
 const ExecuteFlow = ({
   isAssist = false,
@@ -44,27 +45,35 @@ const ExecuteFlow = ({
   const { sendCommand } = useWebSocket();
 
   // Start execution
-  const startExecution = () => {
+  const startExecution = async () => {
     // Set the execution state to launching executor
     setExecutionState("launching-executor");
 
-    // Open the desktop executor if the app is running in Tauri
-    if (IS_TAURI) {
-      localStorage.removeItem("flowExecutionStack"); //  Clear any previous subflow stack
-      localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
-      localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
-      openDesktopExecutor();
-    } else {
-      toast.info(
-        "Please use our desktop app. Execution in browser is not supported.",
-      );
-      // Reset the execution state to stopped if not in Tauri
-      setExecutionState("stopped");
+    // Get the jwt by calling the getMySession API
+    const userSession = await getMySession();
+
+    // If session is valid, proceed to open the desktop executor
+    if (userSession) {
+      // Get the access token from the session
+      const accessToken = userSession.data?.accessToken;
+      // Open the desktop executor if the app is running in Tauri
+      if (IS_TAURI) {
+        localStorage.removeItem("flowExecutionStack"); //  Clear any previous subflow stack
+        localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
+        localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
+        openDesktopExecutor(accessToken);
+      } else {
+        toast.info(
+          "Please use our desktop app. Execution in browser is not supported.",
+        );
+        // Reset the execution state to stopped if not in Tauri
+        setExecutionState("stopped");
+      }
     }
   };
 
   // Tauri API to open desktop executor
-  const openDesktopExecutor = async () => {
+  const openDesktopExecutor = async (accessToken: string) => {
     try {
       // Get websocket port
       const wsPort = await invoke("get_websocket_port");
@@ -73,6 +82,7 @@ const ExecuteFlow = ({
       const res = await invoke("launch_desktop_executor", {
         wsPort,
         agentName: currentFlow.name,
+        accessToken,
       });
       console.log("Executor launched successfully:", res);
 
@@ -83,7 +93,9 @@ const ExecuteFlow = ({
       localStorage.setItem("edges", JSON.stringify(edges));
     } catch (error) {
       // Inform the user about the failure
-      toast.error(`Failed to launch the executor. Please try again. Error: ${error}`);
+      toast.error(
+        `Failed to launch the executor. Please try again. Error: ${error}`,
+      );
 
       // Reset the executing state on failure
       setExecutionState("stopped");
