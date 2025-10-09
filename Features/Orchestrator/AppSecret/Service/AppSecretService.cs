@@ -714,6 +714,23 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
+                  case nameof(AppSecretTypesEnum.GitHubApi):
+                {
+                    var gitHubCredentials = System.Text.Json.JsonSerializer.Deserialize<GitHubCredentialsDto>(rawJson, jsonOptions);
+                    if (gitHubCredentials != null)
+                    {
+                       
+                        validationResult.EncryptedValues["AccessToken"] = _encryptionService.EncryptString(gitHubCredentials.AccessToken);                     
+                        gitHubCredentials.AccessToken = string.Empty;
+
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(gitHubCredentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid GitHub credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
 
                  case nameof(AppSecretTypesEnum.GeneralCredentialApi):
                 {

@@ -169,6 +169,24 @@ public class SendGridCredentialsDto
     public string ApiKey { get; set; } = string.Empty;
 }
 
+public class GitHubCredentialsDto
+{
+    /// <summary>
+    /// Gets or sets the GitHub username associated with the personal access token.
+    /// </summary>
+    public string Server { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the user identifier in your application or system.
+    /// This may differ from the GitHub username.
+    /// </summary>
+    public string User { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the GitHub Personal Access Token (PAT) used for authenticating requests to the GitHub API.
+    /// </summary>
+    public string AccessToken { get; set; } = string.Empty;
+}
 
 public class GeneralCredentialsDto
 {
