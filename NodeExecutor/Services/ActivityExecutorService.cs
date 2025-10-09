@@ -56,7 +56,7 @@ namespace NodeExecutor.Services
             }
         }
 
-        public static (bool, NodeExecutionLog) ExecuteNode(ActivityNodeData node, ExecutionContext executionContext, Interpreter interpreter, DateTime startTime)
+        public static (bool, NodeExecutionLog) ExecuteNode(string accessToken, ActivityNodeData node, ExecutionContext executionContext, Interpreter interpreter, DateTime startTime)
         {
             // Initiaze the return object
             var nodeExecutionlog = new NodeExecutionLog
@@ -82,6 +82,19 @@ namespace NodeExecutor.Services
 
                 // Get the type of the activity instance
                 var activityType = activityInstance.GetType();
+
+                // Set the AccessToken property if it exists
+                var accessTokenProp = activityType.GetProperty("AccessToken", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                if (accessTokenProp != null)
+                {
+                    var argType = typeof(InArgument<string>);
+                    // Build: ctx => accessToken
+                    var ctxParam = Expression.Parameter(typeof(ActivityContext), "ctx");
+                    var valueExpr = Expression.Constant(accessToken, typeof(string));
+                    var lambda = Expression.Lambda(valueExpr, ctxParam);
+                    var inArgument = Activator.CreateInstance(argType, lambda);
+                    accessTokenProp.SetValue(activityInstance, inArgument);
+                }
 
                 foreach (var input in node.NodeInputs)
                 {
@@ -194,7 +207,7 @@ namespace NodeExecutor.Services
             return (nodeExecutionlog.IsSuccess, nodeExecutionlog);
         }
 
-        public static (bool, string) ExecuteCondition(List<List<ConditionGroup>> conditions, ExecutionContext executionContext, Interpreter interpreter)
+        public static (bool, string) ExecuteCondition(string accessToken, List<List<ConditionGroup>> conditions, ExecutionContext executionContext, Interpreter interpreter)
         {
             // If conditions null or empty return false
             if (conditions == null || conditions.Count == 0)
@@ -290,7 +303,7 @@ namespace NodeExecutor.Services
             }
         }
 
-        public static (bool, string) MoveNextListItem(string listVarName, string currentItemVarName, string currentItemIndexVarName, ExecutionContext executionContext, Interpreter interpreter)
+        public static (bool, string) MoveNextListItem(string accessToken, string listVarName, string currentItemVarName, string currentItemIndexVarName, ExecutionContext executionContext, Interpreter interpreter)
         {
             // If listVarName or currentItemVarName is null or empty, return false
             if (string.IsNullOrEmpty(listVarName) || string.IsNullOrEmpty(currentItemVarName) || string.IsNullOrEmpty(currentItemIndexVarName) || executionContext == null || interpreter == null)
