@@ -52,8 +52,6 @@ const ExecuteFlow = ({
     // Get the jwt by calling the getMySession API
     const userSession = await getMySession();
 
-    console.log("User session:", userSession);
-
     // If session is valid, proceed to open the desktop executor
     if (userSession) {
       // Get the access token from the session
