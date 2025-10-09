@@ -36,7 +36,7 @@
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Update="StaticFiles\Prompts\GenerateTemplateDescription.txt">
+    <None Update="StaticFiles\Prompts\GenerateTemplateDescriptionPrompt.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
