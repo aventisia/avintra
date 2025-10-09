@@ -29,10 +29,14 @@ const UsageItem = ({ name, used, limit, unit }: UsageItemProps) => (
         )}
       </p>
       <p className="font-light">
-        {used} of {limit} {unit && unit}
+        {name == "Published Agents or AI Models"
+          ? used
+          : `${used} of ${limit} ${unit ? unit : ""}`}
       </p>
     </div>
-    <Progress value={(used / limit) * 100} className="!w-full bg-accent" />
+    {name !== "Published Agents or AI Models" && (
+      <Progress value={(used / limit) * 100} className="!w-full bg-accent" />
+    )}
   </div>
 );
 
