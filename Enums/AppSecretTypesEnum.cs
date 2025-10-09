@@ -35,7 +35,10 @@ public enum AppSecretTypesEnum
     [Description("GitHub API Key")]
     GitHubApi,
 
-    [Description ("General Credentials")]
-    GeneralCredentialApi
+    [Description("General Credentials")]
+    GeneralCredentialApi,
 
+    // TODO: @mayuri needs to verify if this is needed or not. Currently added to avoid build errors.
+    [Description("OneDrive API Key")]
+    OneDriveCredentialApi
 }
