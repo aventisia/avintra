@@ -85,7 +85,7 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "credentials-select",
     "name": "SendGridApiKey",
     "label": "SendGrid API Key",
     "description": "The SendGrid API Key.",

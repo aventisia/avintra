@@ -100,7 +100,7 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "password",
     "name": "WriteProtectionPassword",
     "label": "Write Protection Password",
     "description": "Optional password to protect the document from being saved.",
