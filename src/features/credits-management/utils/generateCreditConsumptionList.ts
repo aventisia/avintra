@@ -27,14 +27,12 @@ export function generateCreditConsumptionList(
   executionData: Execution[],
   agentId: string,
   agentName: string,
-  versionId: string,
+  // versionId: string,
   postCommand: "abort" | "complete" | null,
 ): CreditConsumptionDto[] | null {
   if (!postCommand) return null;
 
-  const nodes: ExecutionNode[] =
-    executionData.find((value: Execution) => value.versionId === versionId)
-      ?.nodes || [];
+  const nodes: ExecutionNode[] = executionData[0]?.nodes || [];
 
   if (!agentId || !agentName || !nodes.length) {
     return null;
