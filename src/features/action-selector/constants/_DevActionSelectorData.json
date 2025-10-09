@@ -19,7 +19,7 @@
             "description": "Breaks out of the current loop in the workflow execution.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/BreakLoop.svg"
           },
           {
             "type": "activityNode",
@@ -28,7 +28,7 @@
             "description": "Pauses the workflow execution for a specified number of seconds.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Wait.svg"
           }
         ]
       },
