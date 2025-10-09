@@ -18,7 +18,13 @@ script:pre-request {
   const { faker } = require('@faker-js/faker');
   
   req.setBody({
-    flowId: bru.getGlobalEnvVar("FLOW_ID"),
+    flowId: "b6f680a0-31ec-4128-96df-55b84e1daf2b",//bru.getGlobalEnvVar("FLOW_ID"),
+    flowVersionId:"81363bc4-eee0-4a30-90c8-362f5486fdf8",
+    name: faker.person.firstName(),
+    startTime: new Date(),
+    endTime: new Date(),
+    retryCount: 1,
+    version : 1,
     duration:200,
     status:"Succeeded",
     errorMessage:"No error",
