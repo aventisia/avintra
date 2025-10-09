@@ -6,6 +6,7 @@ type AgentExecutionLogType = {
 type NodeExecutionLogType = {
   nodeId: string;
   nodeName: string;
+  nodeUniqueName: string;
   isSuccess: boolean;
   duration: number; // Duration in seconds
   inputs: Array<{ key: string; value: string }>;
