@@ -2,7 +2,7 @@
 export const columnVisibilityState = {
   id: false,
   name: true,
-  // type: true,
+  type: true,
   flowCommentCount: true,
   createdBy: true,
   createdOn: true,
