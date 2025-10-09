@@ -1,7 +1,7 @@
 use std::process::Command;
 
 #[tauri::command]
-pub fn launch_desktop_executor(ws_port: u16, agent_name: String) -> Result<(), String> {
+pub fn launch_desktop_executor(ws_port: u16, agent_name: String, access_token: String) -> Result<(), String> {
     // Get the directory where tauri_app.exe is running
     let current_exe = std::env::current_exe().map_err(|e| e.to_string())?;
     let exe_dir = current_exe
@@ -24,6 +24,7 @@ pub fn launch_desktop_executor(ws_port: u16, agent_name: String) -> Result<(), S
     Command::new(desktop_executor_path)
         .arg(ws_port.to_string())
         .arg(agent_name)
+        .arg(access_token)
         .spawn()
         .map_err(|e| format!("Failed to start the executor: {}", e))?;
     Ok(())
