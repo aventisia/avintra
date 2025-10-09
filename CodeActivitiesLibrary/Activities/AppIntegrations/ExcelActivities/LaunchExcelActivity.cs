@@ -12,11 +12,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class LaunchExcelActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
-
         [DisplayName("Launch Mode")]
         [Description("Specifies whether to open an existing document or create a new one.")]
         [DefaultValue(ExcelLaunchModeEnum.OpenExisting)]
@@ -60,20 +55,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DisplayName("Write Protection Password")]
         [Description("Optional password to protect the document from being saved.")]
         [RenderIfCondition(nameof(LaunchMode), ExcelLaunchModeEnum.OpenExisting)]
+        [FieldType(FieldType.Password)]
         public InArgument<string> WriteProtectionPassword { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
 
         [DisplayName("Excel Instance")]
         [Description("Returns the launched Excel Application object.")]
         public OutArgument<Excel.Application> ExcelInstance { get; set; }
 
-        // ----------------------
-        // Execution Logic
-        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Success";

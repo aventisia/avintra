@@ -58,6 +58,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SendGridActivities
         [RequiredArgument]
         [DisplayName("SendGrid API Key")]
         [Description("The SendGrid API Key.")]
+        [FieldType(FieldType.CredentialsSelect)]
         public InArgument<string> SendGridApiKey { get; set; }
 
         // ----------------------

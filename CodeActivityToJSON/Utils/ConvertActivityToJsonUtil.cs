@@ -97,6 +97,36 @@ namespace CodeActivityToJSON.Utils
                     }
                 }
 
+                // Get FieldType attribute
+                var fieldTypeAttr = prop.GetCustomAttribute<FieldTypeAttribute>();
+                if (fieldTypeAttr != null)
+                {
+                    // Map FieldType enum to string values
+                    var fieldTypeMapping = new Dictionary<FieldType, string>
+                    {
+                        { FieldType.Number, "number" },
+                        { FieldType.Email, "email" },
+                        { FieldType.File, "file" },
+                        { FieldType.Color, "color" },
+                        { FieldType.Time, "time" },
+                        { FieldType.Password, "password" },
+                        { FieldType.Text, "text" },
+                        { FieldType.Textarea, "textarea" },
+                        { FieldType.Select, "select" },
+                        { FieldType.Switch, "switch" },
+                        { FieldType.ConditionGroups, "condition-groups" },
+                        { FieldType.ConfigPanelOutput, "config-panel-output" },
+                        { FieldType.ModelSelect, "model-select" },
+                        { FieldType.CredentialsSelect, "credentials-select" },
+                        { FieldType.ConfigPanelModelOutput, "config-panel-model-output" }
+                    };
+
+                    if (fieldTypeMapping.TryGetValue(fieldTypeAttr.InputFieldType, out var fieldTypeStr))
+                    {
+                        item["type"] = fieldTypeStr;
+                    }
+                }
+
                 // Get RenderIf attributes
                 var renderIfConditions = prop.GetCustomAttributes<RenderIfConditionAttribute>().ToList();
 

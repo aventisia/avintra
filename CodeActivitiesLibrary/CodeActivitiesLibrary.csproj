@@ -806,6 +806,7 @@
     <Compile Include="Extensions\BaseAsyncCodeActivity.cs" />
     <Compile Include="Extensions\BaseNativeActivity.cs" />
     <Compile Include="Extensions\BaseCodeActivity.cs" />
+    <Compile Include="Extensions\FieldTypeAttribute.cs" />
     <Compile Include="Extensions\RenderIfAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
