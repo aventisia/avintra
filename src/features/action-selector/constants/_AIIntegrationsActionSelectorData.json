@@ -18,8 +18,8 @@
             "label": "Inferencing Model",
             "description": "Perform inference tasks using a trained AI model",
             "docsLink": null,
-            "icon": "BrainCircuitIcon",
-            "img": "/function.png"
+            "icon": "",
+            "img": "/assets/InferencingModel.svg"
           },
           {
             "type": "aiNode",
@@ -27,8 +27,8 @@
             "label": "Conversation Model",
             "description": "Enable natural, AI-powered conversational experiences",
             "docsLink": null,
-            "icon": "BrainCircuitIcon",
-            "img": "/function.png"
+            "icon": "",
+            "img": "/assets/ConversationModel.svg"
           },
           {
             "type": "aiNode",
@@ -36,26 +36,26 @@
             "label": "Generative Model",
             "description": "Generate content such as text, images, or code using AI",
             "docsLink": null,
-            "icon": "BrainCircuitIcon",
-            "img": "/function.png"
+            "icon": "",
+            "img": "/assets/GenerativeModel.svg"
           },
           {
             "type": "aiNode",
             "name": "AIModel",
-            "label": "Speech to Text (STT)",
+            "label": "Speech To Text (STT)",
             "description": "Convert spoken language into written text using AI",
             "docsLink": null,
-            "icon": "BrainCircuitIcon",
-            "img": "/function.png"
+            "icon": "",
+            "img": "/assets/SpeechToText.svg"
           },
           {
             "type": "aiNode",
             "name": "AIModel",
-            "label": "Text to Speech (TTS)",
+            "label": "Text To Speech (TTS)",
             "description": "Convert written text into natural-sounding speech using AI",
             "docsLink": null,
-            "icon": "BrainCircuitIcon",
-            "img": "/function.png"
+            "icon": "",
+            "img": "/assets/TextToSpeech.svg"
           }
         ]
       }
