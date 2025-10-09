@@ -156,7 +156,7 @@ export default function useWebSocket() {
           executionData,
           currentFlow.id,
           currentFlow.name,
-          currentFlow.versionId,
+          // currentFlow.versionId,
           pendingPostCommand,
         );
 
