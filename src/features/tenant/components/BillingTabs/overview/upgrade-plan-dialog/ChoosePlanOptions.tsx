@@ -1,11 +1,22 @@
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { Check } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
 
 const ChoosePlanOptions = () => {
-  const { setChosenPlan } = useUpgradePlanDialogStore();
+  const { setOpen, setChosenPlan } = useUpgradePlanDialogStore(
+    useShallow((state) => ({
+      setChosenPlan: state.setChosenPlan,
+      setOpen: state.setOpen,
+    })),
+  );
+
+  // Get showAlert handler
+  const { showCustomAlertDialog } = useShowAlertHandler();
+
   return (
     <div className="space-y-5 px-8 py-10 pt-3">
       <h2 className="text-lg font-semibold">Our Deployment Options</h2>
@@ -14,7 +25,9 @@ const ChoosePlanOptions = () => {
         {/* Enterprise Self hosted Plan */}
         <div className="grid grid-rows-[auto_auto_1fr] space-y-4 rounded-lg border">
           <div className="px-4 pt-4">
-            <h3 className="font-semibold">Enterprise - Self-Hosted</h3>
+            <h3 className="font-semibold">
+              Enterprise/Commercial - Self-Hosted
+            </h3>
           </div>
           <Separator />
           <div className="grid px-5 pb-4">
@@ -64,7 +77,17 @@ const ChoosePlanOptions = () => {
             <Button
               className="mt-4 w-full self-end text-md"
               size={"lg"}
-              onClick={() => setChosenPlan("Enterprise")}
+              onClick={() => {
+                setOpen(false);
+                showCustomAlertDialog({
+                  confirmActionFn: () => {},
+                  confirmBtnText: "Submit Request",
+                  description:
+                    "Our sales team will get in touch with you shortly.",
+                  title: "Enterprise/Commercial – Self-Hosted",
+                  isDestructive: false,
+                });
+              }}
             >
               Choose Plan
             </Button>

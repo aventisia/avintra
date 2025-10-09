@@ -12,9 +12,9 @@ export const DeviceHistoryTab = () => {
 
   return (
     <div className="box box--stacked flex flex-col p-5">
-      <div className="mb-6 flex items-center border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
+      {/* <div className="mb-6 flex items-center border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
         Device History
-      </div>
+      </div> */}
       <div>
         <div className="text-sm text-slate-500">
           Access and control your currently connected devices.

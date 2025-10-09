@@ -1,5 +1,5 @@
-import { SubmitButton } from "@aventisia/ui/buttons";
-import { Form, InputField, SelectField } from "@aventisia/ui/form";
+// import { SubmitButton } from "@aventisia/ui/buttons";
+import { Form, InputField, } from "@aventisia/ui/form";
 import { useState } from "react";
 import type { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
@@ -7,7 +7,7 @@ import { useShallow } from "zustand/react/shallow";
 import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
-import { countriesSelectProps } from "../../constants/constants";
+// import { countriesSelectProps } from "../../constants/constants";
 import type { UserBillingAddressDto } from "../../dtos/my-account-company-dto";
 import { useCompanyInfoFormMutation } from "../../hooks/useCompanyInfoFormMutation";
 import { useDefineComapnyInfoForm } from "../../hooks/useDefineComapnyInfoForm";
@@ -41,11 +41,11 @@ export const CompanyForm = () => {
       disabled={userSession?.tenantName != DefaultTenantsEnum.IndividualUsers}
     >
       <div>
-        <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-xl font-medium">
+        {/* <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-xl font-medium">
           {userSession?.tenantName == DefaultTenantsEnum.IndividualUsers
             ? "Billing Info"
             : "Tenant Info"}
-        </div>
+        </div> */}
 
         {/* Form feilds */}
         <div>
@@ -66,7 +66,7 @@ export const CompanyForm = () => {
                   size={80}
                 />
               </InputDivElement>
-              <InputDivElement
+              {/* <InputDivElement
                 headingForInput="Designation"
                 messageForInput="Your current designation for you tenant."
                 aria-disabled="true"
@@ -80,11 +80,11 @@ export const CompanyForm = () => {
                   disabled={!hasSpecialPermission}
                   size={80}
                 />
-              </InputDivElement>
+              </InputDivElement> */}
             </>
           )}
 
-          <InputDivElement
+          {/* <InputDivElement
             headingForInput="Address"
             messageForInput=""
             showSkelaton={isPending || isLoading}
@@ -171,11 +171,11 @@ export const CompanyForm = () => {
               placeholder=""
               className="border-slate-300/60 shadow-sm"
             />
-          </InputDivElement>
+          </InputDivElement> */}
         </div>
 
         {/* Save details button */}
-        <div className="mt-6 flex border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
+        {/* <div className="mt-6 flex border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
           {userSession?.tenantName == DefaultTenantsEnum.IndividualUsers && (
             <SubmitButton
               variant="default"
@@ -185,7 +185,7 @@ export const CompanyForm = () => {
               Save
             </SubmitButton>
           )}
-        </div>
+        </div> */}
       </div>
     </Form>
   );

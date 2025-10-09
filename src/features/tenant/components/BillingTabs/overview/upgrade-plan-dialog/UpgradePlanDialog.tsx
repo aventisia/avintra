@@ -13,19 +13,32 @@ import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgr
 import DeploymentOptions from "./DeploymentOptions";
 
 const UpgradePlanDialog = () => {
-  const { isOpen, setOpen, setChosenPlan } = useUpgradePlanDialogStore();
+  const { isOpen, chosenPlan, setOpen, setChosenPlan, clearTopUp } =
+    useUpgradePlanDialogStore();
 
   return (
-    <Dialog open={isOpen} onOpenChange={setOpen}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open: boolean) => {
+        if (!open) {
+          setChosenPlan(null);
+          clearTopUp();
+        }
+        setOpen(open);
+      }}
+    >
       <DialogContent className="!max-w-[60rem] space-y-2 px-1">
         <DialogHeader className="border-b px-6 py-4 pb-2">
           <DialogTitle className="justify-between">
-            <h2 className="text-lg font-semibold">Upgrade</h2>
+            <h2 className="text-lg font-semibold">
+              {chosenPlan == "Credits" ? "Credits Top-up" : "Upgrade"}
+            </h2>
             <DialogPrimitive.Close
               className={buttonVariants({ variant: "ghost", size: "icon8" })}
               onClick={() => {
                 setTimeout(() => {
                   setChosenPlan(null);
+                  clearTopUp();
                 }, 0);
               }}
             >

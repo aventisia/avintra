@@ -2,15 +2,16 @@ import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgr
 
 import ChoosePlan from "./ChoosePlan";
 import ChoosePlanOptions from "./ChoosePlanOptions";
+import CreditTopUp from "./CreditTopUp";
 
 const DeploymentOptions = () => {
   const { chosenPlan } = useUpgradePlanDialogStore();
 
   switch (chosenPlan) {
-    case "Enterprise":
     case "Pro":
       return <ChoosePlan />;
-
+    case "Credits":
+      return <CreditTopUp />;
     default:
       return <ChoosePlanOptions />;
   }

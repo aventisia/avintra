@@ -23,20 +23,23 @@ const PlanFeatures = ({ features }: PlanFeaturesProps) => {
       <h3 className="font-medium">Plan Includes:</h3>
       <ul className="mt-2 space-y-2 text-sm">
         <PlanFeature
-          label="Credits/month"
-          value={`${features?.maxCredits?.toLocaleString()}  credits`}
+          label="credits/month"
+          value={`${features?.maxCredits?.toLocaleString()}`}
         />
         <PlanFeature
-          label="Published agents or AI models"
-          value={features?.maxPublishedItems}
+          label="published agents or AI models"
+          value={`${Number(features?.maxPublishedItems) <= 0 ? "Unlimited" : features?.maxPublishedItems}`}
         />
         <PlanFeature
-          label="History retention"
+          label="history retention"
           value={`${features?.historyRetentionDays} days`}
         />
-        <PlanFeature label="Spaces" value={`${features?.maxSpaces} Spaces`} />
-        <PlanFeature label="Storage" value={`${features?.storageLimitMB} MB`} />
-        <PlanFeature label="Users" value={`${features?.maxUsers} users`} />
+        <PlanFeature label="spaces" value={`${features?.maxSpaces}`} />
+        <PlanFeature label="storage" value={`${features?.storageLimitMB} MB`} />
+        <PlanFeature
+          label="Users"
+          value={`${Number(features?.maxUsers) <= 0 ? "Unlimited" : features?.maxUsers}`}
+        />
       </ul>
     </div>
   );

@@ -8,12 +8,11 @@ import { getSubscriptionPlans } from "../apis/subscription-plans-apis";
  * Custom hook to fetch Subscription Plans using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
-export const useFetchSubscriptionPlans = (type?: string | null) => {
+export const useFetchSubscriptionPlans = (type?: string) => {
   // Get credit Subscription Plans using react query
   const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["SUBSCRIPTION_PLANS", type],
+    queryKey: ["SUBSCRIPTION_PLANS"],
     queryFn: () => getSubscriptionPlans(type),
-    enabled: !!type,
   });
 
   // Show toast on fetch error

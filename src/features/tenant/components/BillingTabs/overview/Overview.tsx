@@ -1,6 +1,8 @@
 import { Separator } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
+import { Tooltip } from "@aventisia/ui/tooltip";
+import { PlusIcon } from "lucide-react";
 
 import { useFetchCurrentPlan } from "@/features/tenant/hooks/useFetchCurrentPlan";
 import { useCancelPlanDialogStore } from "@/features/tenant/store/overview/cancel-plan-dialog-store";
@@ -16,7 +18,9 @@ import UsageDetails from "./UsageDetails";
 
 const Overview = () => {
   const { setOpen } = useCancelPlanDialogStore();
-  const { setOpen: setUpgradePlanDialogOpen } = useUpgradePlanDialogStore();
+
+  const { setOpen: setUpgradePlanDialogOpen, setChosenPlan } =
+    useUpgradePlanDialogStore();
 
   const { data, isLoading } = useFetchCurrentPlan();
 
@@ -43,15 +47,33 @@ const Overview = () => {
               </p>
             </div>
 
-            <Badge
-              className="border-black text-sm font-normal"
-              variant={"outline"}
-            >
-              Available Credits:
-              <span className="ml-1 font-semibold">
-                {data?.data.currentPlan.availableCredits.toLocaleString()}
-              </span>
-            </Badge>
+            <div className="flex items-center gap-1">
+              <Badge
+                className="border-2 text-sm font-normal"
+                variant={"outline"}
+              >
+                <p>
+                  Available Credits:
+                  <span className="ml-1 font-semibold">
+                    {data?.data.currentPlan.availableCredits.toLocaleString()}
+                  </span>
+                </p>
+              </Badge>
+              <Tooltip content="Add credits">
+                <Button
+                  onClick={() => {
+                    setUpgradePlanDialogOpen(true);
+                    setChosenPlan("Credits");
+                  }}
+                  disabled={data?.data.currentPlan.planName == "Starter"}
+                  variant={"default"}
+                  size={"icon6"}
+                  className="rounded-full border-2"
+                >
+                  <PlusIcon className="h-5 w-5 font-normal" />
+                </Button>
+              </Tooltip>
+            </div>
           </div>
 
           <Separator />
