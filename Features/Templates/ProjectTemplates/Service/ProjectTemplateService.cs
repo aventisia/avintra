@@ -1117,7 +1117,7 @@ namespace WorkspaceAPIs.Services
             try
             {
                 // Log initiation of documentation generation using LLM
-                _logger.LogInformation("Starting instruction/documentation generation using LLM. Model: {Model}, Temperature: {Temperature}", model, temperature);
+                _logger.LogInformation("Starting instruction/documentation generation using LLM. Model: {Model}, Temperature: {Temperature}, {Prompt}", model, temperature, prompt);
 
                 // Call the LLM service to generate the documentation
                 var generatedOutput = await _lLMDataExtractionService.ExtractDataAsync(
