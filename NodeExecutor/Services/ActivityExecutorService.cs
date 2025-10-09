@@ -63,6 +63,7 @@ namespace NodeExecutor.Services
             {
                 NodeId = node.Id,
                 NodeName = node.NodeName,
+                NodeUniqueName = node.CodeActivityName,
                 IsSuccess = false,
                 Duration = 0,
                 Inputs = new List<NodeLogKeyValue>(),
@@ -204,6 +205,7 @@ namespace NodeExecutor.Services
             //{
             //    NodeId = node.Id,
             //    NodeName = node.NodeName,
+            //    NodeUniqueName = node.CodeActivityName,
             //    IsSuccess = false,
             //    Duration = 0,
             //    Inputs = new List<NodeLogKeyValue>(),
@@ -299,6 +301,7 @@ namespace NodeExecutor.Services
             //{
             //    NodeId = node.Id,
             //    NodeName = node.NodeName,
+            //    NodeUniqueName = node.CodeActivityName,
             //    IsSuccess = false,
             //    Duration = 0,
             //    Inputs = new List<NodeLogKeyValue>(),
@@ -352,7 +355,7 @@ namespace NodeExecutor.Services
                     executionContext.Remove(indexKey);
                     return (false, ""); // No more items
                 }
-                    
+
                 // Set current item and index in executionContext
                 executionContext.Set(currentItemVarName, items[currentIndex]);
                 executionContext.Set(currentItemIndexVarName, currentIndex); // Expose the current index to the user as well

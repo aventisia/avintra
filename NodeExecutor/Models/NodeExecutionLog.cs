@@ -5,6 +5,7 @@ namespace NodeExecutor.Services
     {
         public string NodeId { get; set; }
         public string NodeName { get; set; }
+        public string NodeUniqueName { get; set; }
         public bool IsSuccess { get; set; }
         public double Duration { get; set; } // Duration in seconds
         public List<NodeLogKeyValue> Inputs { get; set; }
