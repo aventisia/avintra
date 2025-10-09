@@ -722,6 +722,8 @@ public class AppSecretService : IAppSecretService
                        
                         validationResult.EncryptedValues["AccessToken"] = _encryptionService.EncryptString(gitHubCredentials.AccessToken);                     
                         gitHubCredentials.AccessToken = string.Empty;
+                        gitHubCredentials.Server = string.Empty;
+                        gitHubCredentials.User = string.Empty;
 
                         sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(gitHubCredentials, jsonOptions);
                     }
