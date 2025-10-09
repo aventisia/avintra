@@ -89,7 +89,7 @@
         "label": "Variables",
         "description": "Create and manage variables of different datatypes",
         "icon": null,
-        "img": null,
+        "img": "/assets/Variables.svg",
         "listType": null,
         "actions": [
           {
@@ -99,7 +99,7 @@
             "description": "Adds one or more items to a list. Converts types if necessary.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -108,7 +108,7 @@
             "description": "Removes all elements from the specified list.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -117,7 +117,7 @@
             "description": "Converts a custom object into its JSON representation.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -126,7 +126,7 @@
             "description": "Converts a JSON string into a strongly-typed custom object.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -135,7 +135,7 @@
             "description": "Creates a new empty list to be used in other activities.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -144,7 +144,7 @@
             "description": "Decreases a numeric variable by a specified value.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -153,7 +153,7 @@
             "description": "Finds common items between two lists and returns them as a new list.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -162,7 +162,7 @@
             "description": "Generates a random number or list of numbers within a specified range.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -171,7 +171,7 @@
             "description": "Increases a numeric variable by a specified value.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -180,7 +180,7 @@
             "description": "Merges two lists into a new list. The original lists remain unchanged.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -189,7 +189,7 @@
             "description": "Removes duplicate items from a list using case-sensitive or case-insensitive comparison.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -198,7 +198,7 @@
             "description": "Removes an item from a list by index or value.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -207,7 +207,7 @@
             "description": "Extracts data from a specified column of a data table into a list. The column can be identified by name or index.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -216,7 +216,7 @@
             "description": "Reverses the order of items in a list.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -225,7 +225,7 @@
             "description": "Sets the value of a named variable within the workflow context. Supports arithmetic expressions for ValueToSet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -234,7 +234,7 @@
             "description": "Randomly reorders the items in a list.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -243,7 +243,7 @@
             "description": "Sorts a list by one or more properties. Supports ascending or descending order.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -252,7 +252,7 @@
             "description": "Removes items from the first list that exist in the second list.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           },
           {
             "type": "activityNode",
@@ -261,7 +261,7 @@
             "description": "Gets the integral or fractional digits of a numeric value, or rounds up/down the value to a specified number of decimal places.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Variables.svg"
           }
         ]
       },
@@ -269,7 +269,7 @@
         "label": "Text",
         "description": "Text manipulation and transformation.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Text.svg",
         "listType": null,
         "actions": [
           {
@@ -279,7 +279,7 @@
             "description": "Appends a new line of text to the original text.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -288,7 +288,7 @@
             "description": "Converts the input text to the specified case format.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -297,7 +297,7 @@
             "description": "Converts a numeric value into text with specified formatting options.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -306,7 +306,7 @@
             "description": "Converts a text representation of a date and/or time value to a DateTime value.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -315,7 +315,7 @@
             "description": "Converts a text representation of a number to a numeric value.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -324,7 +324,7 @@
             "description": "Generates rich HTML content and stores it in a variable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -333,7 +333,7 @@
             "description": "Generates a text of specified length consisting of random characters.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -342,7 +342,7 @@
             "description": "Escapes a minimal set of characters for use in regular expressions by replacing them with their escape codes.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -351,7 +351,7 @@
             "description": "Retrieves a substring from the original text based on start index and length.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -360,7 +360,7 @@
             "description": "Converts a list into a text value by separating its items with a specified delimiter.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -369,7 +369,7 @@
             "description": "Creates a fixed-length text by adding characters to the left or right of an existing text.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -378,7 +378,7 @@
             "description": "Parses a text to find the first or all occurrences of a specified subtext or regular expression pattern.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -387,7 +387,7 @@
             "description": "Identifies specific entities in text, such as dates, numbers, emails, URLs, etc., across multiple languages.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -396,7 +396,7 @@
             "description": "Replaces all occurrences of a specified subtext with another text. It can also be used with regular expressions.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -405,7 +405,7 @@
             "description": "Reverses the order of characters in a given text string.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -414,7 +414,7 @@
             "description": "Creates a list containing the substrings of a text that is separated by a specified delimiter or regular expression.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           },
           {
             "type": "activityNode",
@@ -423,7 +423,7 @@
             "description": "Removes specified characters from the start, end, or both ends of a text string.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Text.svg"
           }
         ]
       },
@@ -431,7 +431,7 @@
         "label": "OCR",
         "description": "Optical character recognition from images and documents.",
         "icon": null,
-        "img": null,
+        "img": "/assets/OCR.svg",
         "listType": null,
         "actions": [
           {
@@ -441,7 +441,7 @@
             "description": "Extracts text from an image file using Tesseract OCR engine.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/OCR.svg"
           }
         ]
       },
@@ -449,7 +449,7 @@
         "label": "JSON",
         "description": "Transform data to and from JSON format, including parsing, serialization, and deserialization.",
         "icon": null,
-        "img": null,
+        "img": "/assets/JSON.svg",
         "listType": null,
         "actions": [
           {
@@ -459,7 +459,7 @@
             "description": "Parses a JSON string into a JToken object.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/JSON.svg"
           },
           {
             "type": "activityNode",
@@ -468,7 +468,7 @@
             "description": "Recursively searches through a JSON structure and returns the first value associated with the specified key.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/JSON.svg"
           },
           {
             "type": "activityNode",
@@ -477,7 +477,7 @@
             "description": "Recursively searches through a JSON structure and returns all values associated with the specified key.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/JSON.svg"
           },
           {
             "type": "activityNode",
@@ -486,7 +486,7 @@
             "description": "Searches recursively through a JSON structure to find an object where a primary key matches a given value. If found, inserts or updates a specified key-value pair.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/JSON.svg"
           },
           {
             "type": "activityNode",
@@ -495,7 +495,7 @@
             "description": "Reads the contents of a JSON file from the specified file path.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/JSON.svg"
           },
           {
             "type": "activityNode",
@@ -504,7 +504,7 @@
             "description": "Converts a JToken or object into both JSON string and JToken.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/JSON.svg"
           },
           {
             "type": "activityNode",
@@ -513,7 +513,7 @@
             "description": "Writes the provided content as JSON to the specified file path.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/JSON.svg"
           }
         ]
       },
@@ -521,7 +521,7 @@
         "label": "DateTime",
         "description": "Date and time manipulation.",
         "icon": null,
-        "img": null,
+        "img": "/assets/DateTime.svg",
         "listType": null,
         "actions": [
           {
@@ -531,7 +531,7 @@
             "description": "Adds a specified time value to the given DateTime based on the selected time unit.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DateTime.svg"
           },
           {
             "type": "activityNode",
@@ -540,7 +540,7 @@
             "description": "Formats a DateTime value into a standard or custom string format.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DateTime.svg"
           },
           {
             "type": "activityNode",
@@ -549,7 +549,7 @@
             "description": "This activity retrieves the current date and time based on the specified retrieval type and time zone.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DateTime.svg"
           },
           {
             "type": "activityNode",
@@ -558,7 +558,7 @@
             "description": "Checks if the input string matches the specified date and time format.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DateTime.svg"
           },
           {
             "type": "activityNode",
@@ -567,7 +567,7 @@
             "description": "Computes the time difference between two DateTime values in the selected unit (Seconds, Minutes, Hours, or Days).",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DateTime.svg"
           }
         ]
       },
@@ -575,7 +575,7 @@
         "label": "Database",
         "description": "Database operations and data access.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Database.svg",
         "listType": null,
         "actions": [
           {
@@ -585,7 +585,7 @@
             "description": "Close an open connection to a database",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Database.svg"
           },
           {
             "type": "activityNode",
@@ -594,7 +594,7 @@
             "description": "Connect to a database and execute an SQL statement",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Database.svg"
           },
           {
             "type": "activityNode",
@@ -603,7 +603,7 @@
             "description": "Open a new connection to a database",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Database.svg"
           }
         ]
       },
@@ -611,7 +611,7 @@
         "label": "Data Table",
         "description": "Manipulate and transform data tables.",
         "icon": null,
-        "img": null,
+        "img": "/assets/DataTable.svg",
         "listType": null,
         "actions": [
           {
@@ -621,7 +621,7 @@
             "description": "Removes all rows from a data table while preserving its structure.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           },
           {
             "type": "activityNode",
@@ -630,7 +630,7 @@
             "description": "Converts a data table into a CSV (comma-separated values) text representation.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           },
           {
             "type": "activityNode",
@@ -639,7 +639,7 @@
             "description": "Creates a new data table. If an existing data table is provided, it will be cloned.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           },
           {
             "type": "activityNode",
@@ -648,7 +648,7 @@
             "description": "Deletes a data table column at the specified column index or column name.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           },
           {
             "type": "activityNode",
@@ -657,7 +657,7 @@
             "description": "Deletes all rows that are exact duplicates from the data table.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           },
           {
             "type": "activityNode",
@@ -666,7 +666,7 @@
             "description": "Deletes rows from a data table where one or more cells are empty.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           },
           {
             "type": "activityNode",
@@ -675,7 +675,7 @@
             "description": "Deletes a row from a data table based on its zero-based index.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           },
           {
             "type": "activityNode",
@@ -684,7 +684,7 @@
             "description": "Filters the data table rows based on the applied rules.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           },
           {
             "type": "activityNode",
@@ -693,7 +693,7 @@
             "description": "Finds and/or replaces data table values.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           },
           {
             "type": "activityNode",
@@ -702,7 +702,7 @@
             "description": "Inserts a new column into the data table either at the end or before a specific column index.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           },
           {
             "type": "activityNode",
@@ -711,7 +711,7 @@
             "description": "Inserts a new row into the data table at the specified location.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           },
           {
             "type": "activityNode",
@@ -720,7 +720,7 @@
             "description": "Joins two data tables based on the specified join rule.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           },
           {
             "type": "activityNode",
@@ -729,7 +729,7 @@
             "description": "Merges two data tables together, specifying the merging behavior in case their columns are different.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           },
           {
             "type": "activityNode",
@@ -738,7 +738,7 @@
             "description": "Generates a data table from a CSV text.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           },
           {
             "type": "activityNode",
@@ -747,7 +747,7 @@
             "description": "Sorts the data table rows in ascending or descending order by the specified column, provided that all its values have the same data type.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           },
           {
             "type": "activityNode",
@@ -756,7 +756,7 @@
             "description": "Updates a specific cell in a DataTable by specifying the column, row, and new value.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/DataTable.svg"
           }
         ]
       },
@@ -764,7 +764,7 @@
         "label": "Cryptography",
         "description": "Encrypt, decrypt, and hash data.",
         "icon": null,
-        "img": null,
+        "img": "/assets/Cryptography.svg",
         "listType": null,
         "actions": [
           {
@@ -774,7 +774,7 @@
             "description": "Decrypts a Base64-encoded string using AES with optional key hashing for short keys.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Cryptography.svg"
           },
           {
             "type": "activityNode",
@@ -783,7 +783,7 @@
             "description": "Decrypts an encrypted file using AES. Supports Base64, Hex, and UTF8-encoded inputs.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Cryptography.svg"
           },
           {
             "type": "activityNode",
@@ -792,7 +792,7 @@
             "description": "Encrypts the contents of a file using AES. Supports Base64, Hex encoding for output.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Cryptography.svg"
           },
           {
             "type": "activityNode",
@@ -801,7 +801,7 @@
             "description": "Encrypts a string using AES encryption. Short keys are hashed securely to 32 bytes.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Cryptography.svg"
           },
           {
             "type": "activityNode",
@@ -810,7 +810,7 @@
             "description": "Hash the contents of a file, using a specified algorithm",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Cryptography.svg"
           },
           {
             "type": "activityNode",
@@ -819,7 +819,7 @@
             "description": "Hash the contents of a file with a key, using a specified algorithm",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Cryptography.svg"
           },
           {
             "type": "activityNode",
@@ -828,7 +828,7 @@
             "description": "Hash a string, using a specified algorithm",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Cryptography.svg"
           },
           {
             "type": "activityNode",
@@ -837,7 +837,7 @@
             "description": "Hash a string with a key, using a specified algorithm",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Cryptography.svg"
           }
         ]
       }
