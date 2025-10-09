@@ -65,6 +65,7 @@ const Overview = () => {
                     setUpgradePlanDialogOpen(true);
                     setChosenPlan("Credits");
                   }}
+                  disabled={data?.data.currentPlan.planName == "Starter"}
                   variant={"default"}
                   size={"icon6"}
                   className="rounded-full border-2"
