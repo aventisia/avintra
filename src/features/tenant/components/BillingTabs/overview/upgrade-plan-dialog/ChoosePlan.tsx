@@ -29,7 +29,7 @@ const ChoosePlan = () => {
   const [selectedTab, setSelectedTab] = useState("monthly");
   const [selectedPlan, setSelectedPlan] = useState("");
 
-  const { data, isLoading } = useFetchSubscriptionPlans();
+  const { data, isLoading } = useFetchSubscriptionPlans("Pro");
 
   const { data: billingData, isLoading: isBillingDataLoading } =
     useFetchCompanyDetails();
