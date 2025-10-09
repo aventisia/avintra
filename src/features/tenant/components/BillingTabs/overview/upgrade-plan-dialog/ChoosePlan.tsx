@@ -15,7 +15,7 @@ import { PlanType } from "@/features/tenant/types/plan-type";
 import BillingDetails from "./BillingDetails";
 import ChargeSummary from "./ChargeSummary";
 import { PlanItem } from "./choose-plan/PlanItem";
-import TopUp from "./TopUp";
+// import TopUp from "./TopUp";
 
 const ChoosePlan = () => {
   const { topUp, clearTopUp, setChosenPlan } = useUpgradePlanDialogStore(
@@ -75,7 +75,7 @@ const ChoosePlan = () => {
       <div className="grid grid-cols-7 gap-4">
         <div className="col-span-4 space-y-4">
           <div className="rounded-lg border">
-            <ScrollArea className="h-[calc(100vh-33rem)] p-3">
+            <ScrollArea className="h-[calc(100vh-22rem)] p-3">
               <RadioGroup
                 value={selectedPlan}
                 onValueChange={(val) => {
@@ -96,7 +96,7 @@ const ChoosePlan = () => {
               </RadioGroup>
             </ScrollArea>
           </div>
-          <TopUp planType={selectedTab as PlanType} />
+          {/* <TopUp planType={selectedTab as PlanType} /> */}
         </div>
 
         {/* Right hand side */}
