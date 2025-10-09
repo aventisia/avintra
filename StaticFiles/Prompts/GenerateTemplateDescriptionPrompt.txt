@@ -13,10 +13,9 @@ Focus on:
 
 Use simple, professional language. Keep it user-focused rather than technical.
 
-Example instruction to the LLM:
-“Explain this automation template as if you're writing for a business or technical user who wants to know what it does and how to use it — but doesn't need to know every node detail.”
+Explain this automation template as if you're writing for a business or technical user who wants to know what it does and how to use it — but doesn't need to know every node detail
 
-Input:
+Input automation nodes:
     {{TEMPLATE_NODES}}
     
 Output Format:
