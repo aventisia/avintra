@@ -7,6 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Decrease Variable")]
     [Description("Decreases a numeric variable by a specified value.")]
+    [ActivityMetaData(nodeImg: "/assets/Variables.svg")]
     public class DecreaseVariableActivity : BaseCodeActivity
     {
         // ----------------------

@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
 {
     [DisplayName("Wait")]
     [Description("Pauses the workflow execution for a specified number of seconds.")]
+    [ActivityMetaData(nodeImg: "/assets/Wait.svg")]
     public class WaitActivity : BaseCodeActivity
     {
         [RequiredArgument]

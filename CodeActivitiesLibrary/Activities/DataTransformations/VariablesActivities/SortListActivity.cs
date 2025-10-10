@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Sort List")]
     [Description("Sorts a list by one or more properties. Supports ascending or descending order.")]
+    [ActivityMetaData(nodeImg: "/assets/Variables.svg")]
     public class SortListActivity : BaseCodeActivity
     {
         // ----------------------

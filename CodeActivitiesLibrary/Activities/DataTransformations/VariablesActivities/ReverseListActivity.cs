@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Reverse List")]
     [Description("Reverses the order of items in a list.")]
+    [ActivityMetaData(nodeImg: "/assets/Variables.svg")]
     public class ReverseListActivity : BaseCodeActivity
     {
         // ----------------------

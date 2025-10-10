@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 
     [DisplayName("Set Variable")]
     [Description("Sets the value of a named variable within the workflow context. Supports arithmetic expressions for ValueToSet.")]
+    [ActivityMetaData(nodeImg: "/assets/Variables.svg")]
     public class SetVariableActivity : BaseCodeActivity
     {
         [RequiredArgument]

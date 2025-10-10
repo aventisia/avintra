@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Merge Lists")]
     [Description("Merges two lists into a new list. The original lists remain unchanged.")]
+    [ActivityMetaData(nodeImg: "/assets/Variables.svg")]
     public class MergeListsActivity : BaseCodeActivity
     {
         // ----------------------

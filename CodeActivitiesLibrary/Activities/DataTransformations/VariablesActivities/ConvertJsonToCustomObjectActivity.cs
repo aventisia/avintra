@@ -9,6 +9,8 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Convert JSON to Custom Object")]
     [Description("Converts a JSON string into a strongly-typed custom object.")]
+    [ActivityMetaData(nodeImg: "/assets/Variables.svg")]
+    
     public class ConvertJsonToCustomObjectActivity : BaseCodeActivity
     {
         // ----------------------

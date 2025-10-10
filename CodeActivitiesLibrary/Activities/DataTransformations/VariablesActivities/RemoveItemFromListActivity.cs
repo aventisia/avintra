@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Remove Item From List")]
     [Description("Removes an item from a list by index or value.")]
+    [ActivityMetaData(nodeImg: "/assets/Variables.svg")]
     public class RemoveItemFromListActivity : BaseCodeActivity
     {
         [RequiredArgument]

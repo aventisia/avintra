@@ -8,6 +8,8 @@ namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
     [ActivityMetaData(nodeType: "forLoopNode", nodeIcon: "LoopNodeIcon")]
     [DisplayName("Loop")]
     [Description("Use this to keep doing something again and again, as long as certain conditions are met.")]
+    [ActivityMetaData(nodeImg:"/function.png")]
+
     public class LoopActivity : BaseCodeActivity
     {
         [Required]

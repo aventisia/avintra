@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
     [ActivityMetaData(nodeType: "callAgentNode", nodeIcon: "CallAgentIcon")]
     [DisplayName("Call Agent")]
     [Description("Use this to call another agent within the current agent")]
+    [ActivityMetaData(nodeImg:"/function.png")]
     public class CallAgentActivity : BaseCodeActivity
     {
         protected override void Execute(CodeActivityContext context)

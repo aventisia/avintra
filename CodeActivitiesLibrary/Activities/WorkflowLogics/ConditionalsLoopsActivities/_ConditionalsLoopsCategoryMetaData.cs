@@ -6,6 +6,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
         primaryCategory: "Workflow Logics",
         label: "Conditionals",
         description: "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.",
-        listType: "list")]
+        listType: "list",
+        img: "/function.png")]
     internal sealed class _ConditionalsLoopsCategoryMetaData { }
 }
