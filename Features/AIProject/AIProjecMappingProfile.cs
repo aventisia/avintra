@@ -20,6 +20,10 @@ public class AIProjecMappingProfile : IRegister
         //     src => src.ExtractedData != null ? src.ExtractedData.Sum(s => s.ExecutionTime) : 0)
         // .Map(dest => dest.DocsProcessed,
         //     src => src.ExtractedData != null ? src.ExtractedData.Count : 0)
+        .Map(dest => dest.LatestVersionId,
+            src => src.Versions != null && src.Versions.Any()
+                ? src.Versions.OrderByDescending(v => v.CreatedOn).First().Id
+                : Guid.Empty)
         .Map(dest => dest.CreatedBy,
             src => src.CreatedByUser != null
             ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName

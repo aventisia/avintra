@@ -8,6 +8,11 @@ public class AIProjectDto
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the latest version ID of the ai project
+    /// </summary>
+    public Guid LatestVersionId { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of ML model. Max character is 50.
     /// </summary>
     [StringLength(50)]
