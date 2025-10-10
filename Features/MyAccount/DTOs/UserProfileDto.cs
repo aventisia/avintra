@@ -34,44 +34,42 @@ public class UserProfileDto
     public string? PhoneNumber { get; set; }
 
     /// <summary>
-    /// Gets or sets the address of the user. Max-100.
-    /// </summary>
-    [StringLength(100)]
-    public string? AddressLine1 { get; set; }
-
-    /// <summary>
-    /// Gets or sets the address of the user. Max-100.
-    /// </summary>
-    [StringLength(100)]
-    public string? AddressLine2 { get; set; }
-
-    /// <summary>
     /// Gets or sets the gender of the user profile
     /// </summary>
     public GenderTypeEnum Gender { get; set; } = GenderTypeEnum.PreferNotToSay;
 
-
     /// <summary>
     /// Gets or sets the country of the user. Max-100.
     /// </summary>
-    [StringLength(100)]
-    public string? Country { get; set; }
+    public CountriesEnum? Country { get; set; }
 
-    /// <summary>
-    /// Gets or sets the state or province of the user. Max-100.
-    /// </summary>
-    [StringLength(100)]
-    public string? StateOrProvince { get; set; }
+    // /// <summary>
+    // /// Gets or sets the address of the user. Max-100.
+    // /// </summary>
+    // [StringLength(100)]
+    // public string? AddressLine1 { get; set; }
 
-    /// <summary>
-    /// Gets or sets the city of the user. Max-100.
-    /// </summary>
-    [StringLength(100)]
-    public string? City { get; set; }
+    // /// <summary>
+    // /// Gets or sets the address of the user. Max-100.
+    // /// </summary>
+    // [StringLength(100)]
+    // public string? AddressLine2 { get; set; }
 
-    /// <summary>
-    /// Gets or sets the Zip or postal code of the user. Max-10.
-    /// </summary>
-    [StringLength(10)]
-    public string? ZipOrPostalCode { get; set; }
+    // /// <summary>
+    // /// Gets or sets the state or province of the user. Max-100.
+    // /// </summary>
+    // [StringLength(100)]
+    // public string? StateOrProvince { get; set; }
+
+    // /// <summary>
+    // /// Gets or sets the city of the user. Max-100.
+    // /// </summary>
+    // [StringLength(100)]
+    // public string? City { get; set; }
+
+    // /// <summary>
+    // /// Gets or sets the Zip or postal code of the user. Max-10.
+    // /// </summary>
+    // [StringLength(10)]
+    // public string? ZipOrPostalCode { get; set; }
 }

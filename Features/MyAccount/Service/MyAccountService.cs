@@ -992,6 +992,7 @@ public class MyAccountService(
             user.DateOfBirth = userProfileDto.DateOfBirth;
             user.PhoneNumber = userProfileDto.PhoneNumber;
             user.Gender = userProfileDto.Gender;
+            user.Country = userProfileDto.Country;
             var updateUserResult = await _userManager.UpdateAsync(user);
 
             // User Update-Job failed
@@ -1028,8 +1029,6 @@ public class MyAccountService(
 
         try
         {
-            //set method name
-            var methodName = nameof(UpdateUserProfileAsync);
 
             // Get user
             var user = await _userManager.FindByNameAsync(_userName);
@@ -1037,7 +1036,7 @@ public class MyAccountService(
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation(userNotFoundTemplate, methodName, _userName);
+                _logger.LogInformation(userNotFoundTemplate, "GetUserProfileAsync()",_userName);
                 serviceResponse.Message = userDoesNotExists;
                 return serviceResponse;
             }
@@ -1048,21 +1047,12 @@ public class MyAccountService(
                 LastName = user.LastName,
                 DateOfBirth = user.DateOfBirth,
                 PhoneNumber = user.PhoneNumber,
-                Gender = user.Gender
+                Gender = user.Gender,
+                Country = user.Country
             };
 
-            var updateUserResult = await _userManager.UpdateAsync(user);
-
-            // User Update-Job failed
-            if (!updateUserResult.Succeeded)
-            {
-                _logger.LogInformation("Failed while getting user's profile");
-                serviceResponse.Message = "User's profile get failed";
-                return serviceResponse;
-            }
-
             // Task successful
-            _logger.LogInformation("{MethodName}: profile has been fetched for account {_UserName}", methodName, _userName);
+            _logger.LogInformation("{MethodName}: profile has been fetched for account {_UserName}", "GetUserProfileAsync()", _userName);
             serviceResponse.Data = userProfileDetails;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your profile has been fetched successfully";
