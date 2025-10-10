@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DatabaseActivities
 {
     [DisplayName("Open SQL Connection")]
     [Description("Open a new connection to a database")]
+    [ActivityMetaData(nodeImg: "/assets/Database.svg")]
     public class OpenSqlConnectionActivity : BaseCodeActivity
     {
         [RequiredArgument]

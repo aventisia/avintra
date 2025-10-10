@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Read From CSV Text")]
     [Description("Generates a data table from a CSV text.")]
+    [ActivityMetaData(nodeImg: "/assets/DataTable.svg")]
     public class ReadFromCsvTextActivity : BaseCodeActivity
     {
         // ----------------------

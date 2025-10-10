@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Hash from File")]
     [Description("Hash the contents of a file, using a specified algorithm")]
+    [ActivityMetaData(nodeImg: "/assets/Cryptography.svg")]
     public class HashFromFileActivity : BaseCodeActivity
     {
         [RequiredArgument]

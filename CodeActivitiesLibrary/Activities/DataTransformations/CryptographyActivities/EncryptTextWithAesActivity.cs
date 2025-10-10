@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Encrypt Text with AES")]
     [Description("Encrypts a string using AES encryption. Short keys are hashed securely to 32 bytes.")]
+    [ActivityMetaData(nodeImg: "/assets/Cryptography.svg")]
     public class EncryptTextWithAesActivity : BaseCodeActivity
     {
         [RequiredArgument]

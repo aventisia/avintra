@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DatabaseActivities
 {
     [DisplayName("Close SQL Connection")]
     [Description("Close an open connection to a database")]
+    [ActivityMetaData(nodeImg: "/assets/Database.svg")]
     public class CloseSqlConnectionActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Delete Duplicate Rows From Data Table")]
     [Description("Deletes all rows that are exact duplicates from the data table.")]
+    [ActivityMetaData(nodeImg: "/assets/DataTable.svg")]
     public sealed class DeleteDuplicateRowsFromDataTable : BaseCodeActivity
     {
         // ----------------------

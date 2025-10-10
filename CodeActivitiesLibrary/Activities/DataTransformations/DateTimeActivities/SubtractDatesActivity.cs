@@ -9,16 +9,19 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
     [DisplayName("Subtract Dates")]
     [Description(
         "Computes the time difference between two DateTime values in the selected unit (Seconds, Minutes, Hours, or Days).")]
+    [ActivityMetaData(nodeImg:"/assets/DateTime.svg")]
     public class SubtractDatesActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Start DateTime")]
         [Description("The earlier DateTime value to subtract from.")]
+        [FieldType(FieldType.DateTime)]
         public InArgument<DateTime> StartDateTime { get; set; }
 
         [RequiredArgument]
         [DisplayName("End DateTime")]
         [Description("The later DateTime value to subtract.")]
+        [FieldType(FieldType.DateTime)]
         public InArgument<DateTime> EndDateTime { get; set; }
 
         [RequiredArgument]

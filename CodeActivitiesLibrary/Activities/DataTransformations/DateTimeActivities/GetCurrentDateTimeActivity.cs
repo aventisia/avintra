@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
     [DisplayName("Get Current Date and Time")]
     [Description(
         "This activity retrieves the current date and time based on the specified retrieval type and time zone.")]
+    [ActivityMetaData(nodeImg:"/assets/DateTime.svg")]
     public class GetCurrentDateTimeActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DatabaseActivities
 {
     [DisplayName("Execute SQL Statement")]
     [Description("Connect to a database and execute an SQL statement")]
+    [ActivityMetaData(nodeImg: "/assets/Database.svg")]
     public class ExecuteSqlStatementActivity : BaseCodeActivity
     {
         [RequiredArgument]

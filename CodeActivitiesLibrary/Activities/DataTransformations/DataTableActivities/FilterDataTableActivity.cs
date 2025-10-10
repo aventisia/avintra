@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Filter Data Table")]
     [Description("Filters the data table rows based on the applied rules.")]
+    [ActivityMetaData(nodeImg: "/assets/DataTable.svg")]
     public sealed class FilterDataTableActivity : BaseCodeActivity
     {
        // ----------------------

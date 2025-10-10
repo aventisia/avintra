@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     [DisplayName("Sort Data Table")]
     [Description(
         "Sorts the data table rows in ascending or descending order by the specified column, provided that all its values have the same data type.")]
+    [ActivityMetaData(nodeImg: "/assets/DataTable.svg")]
     public class SortDataTableActivity : BaseCodeActivity
     {
         [RequiredArgument]

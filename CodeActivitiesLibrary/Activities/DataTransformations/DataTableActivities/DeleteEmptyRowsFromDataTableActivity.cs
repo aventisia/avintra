@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Delete Empty Rows From Data Table")]
     [Description("Deletes rows from a data table where one or more cells are empty.")]
+    [ActivityMetaData(nodeImg: "/assets/DataTable.svg")]
     public sealed class DeleteEmptyRowsFromDataTableActivity : BaseCodeActivity
     {
         // ----------------------

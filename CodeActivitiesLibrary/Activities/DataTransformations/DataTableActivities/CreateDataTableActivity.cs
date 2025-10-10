@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Create Data Table")]
     [Description("Creates a new data table. If an existing data table is provided, it will be cloned.")]
+    [ActivityMetaData(nodeImg: "/assets/DataTable.svg")]
     public class CreateDataTableActivity : BaseCodeActivity
     {
         // ----------------------

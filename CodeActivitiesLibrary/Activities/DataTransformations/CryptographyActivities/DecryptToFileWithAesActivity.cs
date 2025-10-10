@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Decrypt to File with AES")]
     [Description("Decrypts an encrypted file using AES. Supports Base64, Hex, and UTF8-encoded inputs.")]
+    [ActivityMetaData(nodeImg: "/assets/Cryptography.svg")]
     public class DecryptToFileWithAesActivity : BaseCodeActivity
     {
         [RequiredArgument]
