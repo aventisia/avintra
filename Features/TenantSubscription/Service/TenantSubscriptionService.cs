@@ -134,6 +134,18 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 return serviceResponse;
             }
 
+            // Retrieve the subscription plan by its ID and return an error if not found
+            var subscriptionPlan = await _unitOfWork.SubscriptionPlanRepo
+                .GetByConditionAsync(w => w.Id == tenantSubscriptionDto.PlanId)
+                .SingleOrDefaultAsync();
+
+            if (subscriptionPlan == null)
+            {
+                _logger.LogWarning("Subscription plan not found for PlanId: {PlanId}.", tenantSubscriptionDto.PlanId);
+                serviceResponse.Message = "Subscription plan not found.";
+                return serviceResponse;
+            }
+
             // Ensure string properties in the DTO are trimmed
             tenantSubscriptionDto = TrimDtoStringPropsUtil.TrimDtoStringProps(tenantSubscriptionDto);
 
@@ -145,6 +157,12 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Map DTO to entity
             var newSubscription = tenantSubscriptionDto.Adapt<TenantSubscription>();
+            newSubscription.MaxCredits = subscriptionPlan.MaxCredits;
+            newSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
+            newSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
+            newSubscription.MaxUsers = subscriptionPlan.MaxUsers;
+            newSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
+            newSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
 
             // Set audit fields
             newSubscription.CreatedByUserId = _userId;
@@ -384,6 +402,12 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             var tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
             tenantSubscription.Frequency = tenantSubscriptionPurchaseDto.Frequency;
             tenantSubscription.IsActive = true;
+            tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
+            tenantSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
+            tenantSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
+            tenantSubscription.MaxUsers = subscriptionPlan.MaxUsers;
+            tenantSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
+            tenantSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
 
             // Set audit fields for tracking user actions
             tenantSubscription.CreatedByUserId = _userId;
@@ -404,6 +428,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             {
                 // Map the subscription purchase DTO to a new BillingDetail entity
                 var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
+                billingDetail.Amount = subscriptionPlan.Price * billingDetail.TaxRate;
 
                 // Fetch the current user's information based on their User ID
                 var currentUser = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.Id == _userId).FirstOrDefaultAsync();
@@ -421,12 +446,10 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 {
                     case SubscriptionFrequenciesEnum.Monthly:
                         billingDetail.NextBillingDate = DateTimeOffset.UtcNow.Date.AddMonths(1);
-                        billingDetail.Amount = subscriptionPlan.MonthlyPrice * billingDetail.TaxRate;
                         break;
 
                     case SubscriptionFrequenciesEnum.Yearly:
                         billingDetail.NextBillingDate = DateTimeOffset.UtcNow.Date.AddYears(1);
-                        billingDetail.Amount = subscriptionPlan.YearlyPrice * billingDetail.TaxRate;
                         break;
                 }
 
@@ -451,7 +474,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 var tenantCredit = new TenantCredit()
                 {
                     CreditedOn = DateTimeOffset.UtcNow.Date,
-                    ExpiredOn = DateTimeOffset.UtcNow.Date.AddMonths(1).AddDays(-1),
+                    ExpiredOn = DateTimeOffset.UtcNow.Date.AddMonths(1),
                     SubscriptionId = tenantSubscription.Id,
                     AvailableCredits = subscriptionPlan.MaxCredits,
                     TenantId = _tenantId,
@@ -554,9 +577,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 {
                     PlanName = currentPlan.Name,
                     Frequency = tenantSubscription.Frequency,
-                    Price = tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
-                        ? currentPlan.MonthlyPrice
-                        : currentPlan.YearlyPrice,
+                    Price = currentPlan.Price,
                     Currency = CurrencyTypesEnum.USD,
                     AvailableCredits = availableCredits,
                     Feature = new CurrentSubscriptionPlanDetailDto()
@@ -601,9 +622,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             if (billingDetail != null)
             {
                 // Calculate the subscription fee based on the plan's frequency
-                var subscriptionFee = tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
-                    ? currentPlan.MonthlyPrice
-                    : currentPlan.YearlyPrice;
+                var subscriptionFee = currentPlan.Price;
 
                 // Calculate the tax (18% of the subscription fee)
                 var tax = subscriptionFee * 0.18m;  // 'm' denotes decimal literal
@@ -706,6 +725,12 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             tenantSubscription.IsActive = true;
             tenantSubscription.CreatedByUserId = _userId;
             tenantSubscription.LastModifiedByUserId = _userId;
+            tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
+            tenantSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
+            tenantSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
+            tenantSubscription.MaxUsers = subscriptionPlan.MaxUsers;
+            tenantSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
+            tenantSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
 
             await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
 
@@ -722,18 +747,17 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             {
                 // Map the subscription purchase DTO to a new BillingDetail entity
                 var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
+                billingDetail.Amount = subscriptionPlan.Price * billingDetail.TaxRate;
 
                 // Set pricing and next billing date based on the selected subscription frequency
-                switch (tenantSubscriptionPurchaseDto.Frequency)
+                switch (subscriptionPlan.Frequency)
                 {
                     case SubscriptionFrequenciesEnum.Monthly:
                         billingDetail.NextBillingDate = DateTimeOffset.UtcNow.Date.AddMonths(1);
-                        billingDetail.Amount = subscriptionPlan.MonthlyPrice * billingDetail.TaxRate;
                         break;
 
                     case SubscriptionFrequenciesEnum.Yearly:
                         billingDetail.NextBillingDate = DateTimeOffset.UtcNow.Date.AddYears(1);
-                        billingDetail.Amount = subscriptionPlan.YearlyPrice * billingDetail.TaxRate;
                         break;
                 }
 
@@ -758,7 +782,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 var tenantCredit = new TenantCredit()
                 {
                     CreditedOn = DateTimeOffset.UtcNow,
-                    ExpiredOn = DateTimeOffset.UtcNow.Date.AddMonths(1).AddDays(-1),
+                    ExpiredOn = DateTimeOffset.UtcNow.Date.AddMonths(1),
                     SubscriptionId = tenantSubscription.Id,
                     AvailableCredits = subscriptionPlan.MaxCredits,
                     TenantId = _tenantId,
