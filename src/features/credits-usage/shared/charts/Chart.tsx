@@ -233,7 +233,9 @@ function ChartTooltipContent({
                     </div>
                     {item.value && (
                       <span className="font-mono font-medium tabular-nums text-foreground">
-                        {item.value.toLocaleString("en-US")}
+                        {item.value.toLocaleString("en-US", {
+                          maximumFractionDigits: 2,
+                        })}
                       </span>
                     )}
                   </div>

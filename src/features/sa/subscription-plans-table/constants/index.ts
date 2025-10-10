@@ -27,7 +27,9 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
 function displayValue(value: number) {
   if (value === -1) return "Unlimited";
   if (value === 0) return "N/A";
-  return value.toLocaleString("en-US");
+  return value.toLocaleString("en-US", {
+    maximumFractionDigits: 2,
+  });
 }
 
 export {
