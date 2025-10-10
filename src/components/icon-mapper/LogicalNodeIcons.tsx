@@ -11,7 +11,7 @@ const IconContainer = ({ children }: React.PropsWithChildren) => {
 const ConditionalNodeIcon = () => {
   return (
     <IconContainer>
-      <SplitIcon className="h-4 w-4 rotate-180" />
+      <SplitIcon className="h-5 w-5 rotate-180" />
     </IconContainer>
   );
 };
@@ -19,7 +19,7 @@ const ConditionalNodeIcon = () => {
 const LoopNodeIcon = () => {
   return (
     <IconContainer>
-      <Repeat2Icon className="h-4 w-4" />
+      <Repeat2Icon className="h-5 w-5" />
     </IconContainer>
   );
 };
@@ -27,7 +27,7 @@ const LoopNodeIcon = () => {
 const CallAgentIcon = () => {
   return (
     <IconContainer>
-      <BotIcon className="h-4 w-4" />
+      <BotIcon className="h-5 w-5" />
     </IconContainer>
   );
 };
@@ -35,7 +35,7 @@ const CallAgentIcon = () => {
 const BlockNodeIcon = () => {
   return (
     <IconContainer>
-      <BoxesIcon className="h-4 w-4" />
+      <BoxesIcon className="h-5 w-5" />
     </IconContainer>
   );
 };

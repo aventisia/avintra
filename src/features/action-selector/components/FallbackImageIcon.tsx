@@ -11,7 +11,7 @@ export const FallbackImageIcon = ({
   ...props
 }: FallbackImageIconProps) => {
   return (
-    <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-md bg-slate-100">
+    <div className="flex h-7 w-7 items-center justify-center overflow-hidden">
       <img
         alt="template"
         loading="lazy"

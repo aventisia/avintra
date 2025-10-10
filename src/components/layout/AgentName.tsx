@@ -28,7 +28,7 @@ const AgentName = () => {
       <div className="flex items-center">
         <AutoSizeInput
           name="label"
-          className="rounded-none !border-0 !border-none bg-transparent !p-0 !text-xs !shadow-none !outline-none !ring-0"
+          className="max-w-80 truncate rounded-none !border-0 !border-none bg-transparent !p-0 !text-xs !shadow-none !outline-none !ring-0"
           value={currentFlow.name}
           onChange={(e) => {
             setCurrentFlow({ ...currentFlow, name: e.target.value });
