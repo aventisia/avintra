@@ -423,9 +423,9 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             if (string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId) && subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                var razorpaSubscription = await CreateOrUpdateRazorpaySubscriptionAsync(tenantSubscription, subscriptionPlan, tenantSubscriptionPurchaseDto.IsRecurringPayment);
-                tenantSubscription.RazorpaySubscriptionId = razorpaSubscription.RazorpaySubscriptionId;
-                paymentUrl = razorpaSubscription.RazorpayPaymentUrl;
+                // var razorpaSubscription = await CreateOrUpdateRazorpaySubscriptionAsync(tenantSubscription, subscriptionPlan, tenantSubscriptionPurchaseDto.IsRecurringPayment);
+                // tenantSubscription.RazorpaySubscriptionId = razorpaSubscription.RazorpaySubscriptionId;
+                // paymentUrl = razorpaSubscription.RazorpayPaymentUrl;
             }
 
             // Insert the new subscription into the repository
@@ -760,9 +760,9 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             if (string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId) && subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                var razorpaSubscription = await CreateOrUpdateRazorpaySubscriptionAsync(tenantSubscription, subscriptionPlan, tenantSubscriptionPurchaseDto.IsRecurringPayment);
-                tenantSubscription.RazorpaySubscriptionId = razorpaSubscription.RazorpaySubscriptionId;
-                paymentUrl = razorpaSubscription.RazorpayPaymentUrl;
+                // var razorpaSubscription = await CreateOrUpdateRazorpaySubscriptionAsync(tenantSubscription, subscriptionPlan, tenantSubscriptionPurchaseDto.IsRecurringPayment);
+                // tenantSubscription.RazorpaySubscriptionId = razorpaSubscription.RazorpaySubscriptionId;
+                // paymentUrl = razorpaSubscription.RazorpayPaymentUrl;
             }
 
 

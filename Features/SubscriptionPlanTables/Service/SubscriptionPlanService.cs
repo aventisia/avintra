@@ -176,11 +176,11 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             // and ensure the plan type is not 'Starter' (which may not require a Razorpay plan)
             if (string.IsNullOrEmpty(newSubscriptionPlan.RazorpayPlanId) && newSubscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                // Create a new Razorpay plan asynchronously for the subscription plan
-                string? razorpayPlanId = await CreateRazorpayPlanAsync(newSubscriptionPlan);
+                // // Create a new Razorpay plan asynchronously for the subscription plan
+                // string? razorpayPlanId = await CreateRazorpayPlanAsync(newSubscriptionPlan);
 
-                // Assign the newly created Razorpay plan ID to the existing subscription plan
-                existingPlan.RazorpayPlanId = razorpayPlanId;
+                // // Assign the newly created Razorpay plan ID to the existing subscription plan
+                // existingPlan.RazorpayPlanId = razorpayPlanId;
             }
 
             // Insert and save changes
@@ -305,11 +305,11 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             // and ensure the plan type is not 'Starter' (which may not require a Razorpay plan)
             if (string.IsNullOrEmpty(existingPlan.RazorpayPlanId) && existingPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                // Create a new Razorpay plan asynchronously for the subscription plan
-                string? razorpayPlanId = await CreateRazorpayPlanAsync(existingPlan);
+                // // Create a new Razorpay plan asynchronously for the subscription plan
+                // string? razorpayPlanId = await CreateRazorpayPlanAsync(existingPlan);
 
-                // Assign the newly created Razorpay plan ID to the existing subscription plan
-                existingPlan.RazorpayPlanId = razorpayPlanId;
+                // // Assign the newly created Razorpay plan ID to the existing subscription plan
+                // existingPlan.RazorpayPlanId = razorpayPlanId;
             }
 
             // Apply update and save
