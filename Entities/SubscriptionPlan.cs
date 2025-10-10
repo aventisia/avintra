@@ -12,19 +12,29 @@ public class SubscriptionPlan : BaseEntity
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of the subscription plan (e.g., Free, Pro, Enterprise).
+    /// Gets or sets the type of the subscription plan (e.g., Starter, Pro, Enterprise, Commercial).
     /// </summary>
     public required SubscriptionPlanTypeEnum Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the monthly price of the subscription plan.
+    /// Gets or sets the billing frequency for the subscription plan (e.g., monthly or yearly).
     /// </summary>
-    public required decimal MonthlyPrice { get; set; }
+    public SubscriptionFrequenciesEnum Frequency { get; set; }
 
     /// <summary>
-    /// Gets or sets the yearly price of the subscription plan.
+    /// Gets or sets the currency used for the subscription plan pricing, with a default value of USD.
     /// </summary>
-    public required decimal YearlyPrice { get; set; }
+    public required CurrencyTypesEnum Currency { get; set; }
+
+    /// <summary>
+    /// Gets or sets a unique name for the subscription plan, combining its Name, Frequency, and Currency.
+    /// </summary>
+    public string UniqueName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the price of the subscription plan.
+    /// </summary>
+    public required decimal Price { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum number of credits allocated.
