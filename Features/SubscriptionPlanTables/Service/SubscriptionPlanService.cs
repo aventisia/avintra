@@ -3,12 +3,14 @@ namespace AccountsAPIs.Services;
 public class SubscriptionPlanService : ISubscriptionPlanService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPlanService _planService;
     private readonly ILogger<SubscriptionPlanService> _logger;
     private readonly Guid _userId;
 
-    public SubscriptionPlanService(IUnitOfWork unitOfWork, ILogger<SubscriptionPlanService> logger, IHttpContextAccessor httpContextAccessor)
+    public SubscriptionPlanService(IUnitOfWork unitOfWork, ILogger<SubscriptionPlanService> logger, IHttpContextAccessor httpContextAccessor, IPlanService planService)
     {
         _unitOfWork = unitOfWork;
+        _planService = planService;
         _logger = logger;
 
         // Extract user ID from the JWT token in the HTTP context
@@ -166,8 +168,16 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
             // Map DTO to entity and assign creator/modifier IDs
             var newSubscriptionPlan = subscriptionPlanDto.Adapt<SubscriptionPlan>();
+            newSubscriptionPlan.UniqueName = $"{newSubscriptionPlan.Name}-{newSubscriptionPlan.Frequency}-{newSubscriptionPlan.Currency}";
             newSubscriptionPlan.CreatedByUserId = _userId;
             newSubscriptionPlan.LastModifiedByUserId = _userId;
+
+            // Check if the Razorpay Plan ID has not been set yet
+            if (string.IsNullOrEmpty(existingPlan.RazorpayPlanId))
+            {
+                // Create a new Razorpay plan and assign its ID to the subscription plan
+                existingPlan.RazorpayPlanId = await CreateRazorpayPlanAsync(existingPlan);
+            }
 
             // Insert and save changes
             await _unitOfWork.SubscriptionPlanRepo.InsertAsync(newSubscriptionPlan);
@@ -284,7 +294,15 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             // Trim and update fields
             subscriptionPlanDto = TrimDtoStringPropsUtil.TrimDtoStringProps(subscriptionPlanDto);
             subscriptionPlanDto.Adapt(existingPlan);
+            existingPlan.UniqueName = $"{existingPlan.Name}-{existingPlan.Frequency}-{existingPlan.Currency}";
             existingPlan.LastModifiedByUserId = _userId;
+
+            // Check if the Razorpay Plan ID has not been set yet
+            if (string.IsNullOrEmpty(existingPlan.RazorpayPlanId))
+            {
+                // Create a new Razorpay plan and assign its ID to the subscription plan
+                existingPlan.RazorpayPlanId = await CreateRazorpayPlanAsync(existingPlan);
+            }
 
             // Apply update and save
             _unitOfWork.SubscriptionPlanRepo.Update(existingPlan);
@@ -404,5 +422,31 @@ public class SubscriptionPlanService : ISubscriptionPlanService
         }
 
         return serviceResponse;
+    }
+
+    // Creates a new Razorpay plan based on the provided subscription plan details.
+    public async Task<string?> CreateRazorpayPlanAsync(SubscriptionPlan subscriptionPlan)
+    {
+        // Prepare the request DTO with the required Razorpay plan details
+        var razorpayPlan = await _planService.CreatePlanAsync(new PlanRequestDto()
+        {
+            // Billing frequency (e.g., monthly/yearly) - converted to lowercase as expected by Razorpay
+            Period = subscriptionPlan.Frequency.ToString().ToLower(),
+
+            // Interval is set to 1 (e.g., every 1 month or 1 year)
+            Interval = 1,
+
+            // Define the item details including name, currency, and amount
+            Item = new PlanItemDto()
+            {
+                Name = subscriptionPlan.Name, // Name of the plan
+                Currency = subscriptionPlan.Currency.ToString().ToUpper(), // Currency in uppercase (e.g., USD)
+                Description = "", // Optional description field
+                Amount = (int)(subscriptionPlan.Price * 100), // Amount in the smallest currency unit (e.g., cents or paise)
+            }
+        });
+
+        // Return the Razorpay plan ID if the creation was successful
+        return razorpayPlan.Data?.Id;
     }
 }

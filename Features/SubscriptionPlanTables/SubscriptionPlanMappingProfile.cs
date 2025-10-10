@@ -17,10 +17,11 @@ public class SubscriptionPlanMappingProfile : IRegister
 
         // Mapping for inserting or updating a subscription plan record.
         config.NewConfig<SubscriptionPlanDto, SubscriptionPlan>()
-                   .Ignore(dest => dest.Id)
-                   .Ignore(dest => dest.CreatedOn)
-                   .Ignore(dest => dest.LastModifiedOn)
-                   .IgnoreNullValues(true);
+            .Ignore(dest => dest.UniqueName)
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.CreatedOn)
+            .Ignore(dest => dest.LastModifiedOn)
+            .IgnoreNullValues(true);
 
         // Get subscription plans in SelectOptionDto format
         config.NewConfig<SubscriptionPlan, SelectOptionDto>()
