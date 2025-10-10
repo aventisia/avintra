@@ -3,6 +3,8 @@ namespace AccountsAPIs.Services;
 public class TenantSubscriptionService : ITenantSubscriptionService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ISubscriptionService _subscriptionService;
+    private readonly ICustomerService _customerService;
     private readonly ILogger<TenantSubscriptionService> _logger;
     private readonly DefaultTenantConfig _defaultTenantConfig;
     private readonly Guid _userId;
@@ -11,9 +13,12 @@ public class TenantSubscriptionService : ITenantSubscriptionService
     public TenantSubscriptionService(IUnitOfWork unitOfWork,
     ILogger<TenantSubscriptionService> logger,
     IHttpContextAccessor httpContextAccessor,
-    DefaultTenantConfig defaultTenantConfig)
+    DefaultTenantConfig defaultTenantConfig,
+    ISubscriptionService subscriptionService,
+    ICustomerService customerService)
     {
         _unitOfWork = unitOfWork;
+        _subscriptionService = subscriptionService;
         _defaultTenantConfig = defaultTenantConfig;
         _logger = logger;
 
@@ -22,6 +27,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         // Extract tenant ID from JWT token claims
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
+        _customerService = customerService;
     }
 
     // Retrieves all tenant subscriptions from the database including the creator user.
@@ -378,7 +384,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Attempting to purchase a new tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
+            _logger.LogInformation("Attempting to purchase a new tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto);
 
             // Retrieve the subscription plan by its ID and return an error if not found
             var subscriptionPlan = await _unitOfWork.SubscriptionPlanRepo
@@ -412,6 +418,15 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Set audit fields for tracking user actions
             tenantSubscription.CreatedByUserId = _userId;
             tenantSubscription.LastModifiedByUserId = _userId;
+
+            string? paymentUrl = null;
+
+            if (string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId) && subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
+            {
+                var razorpaSubscription = await CreateOrUpdateRazorpaySubscriptionAsync(tenantSubscription, subscriptionPlan, tenantSubscriptionPurchaseDto.IsRecurringPayment);
+                tenantSubscription.RazorpaySubscriptionId = razorpaSubscription.RazorpaySubscriptionId;
+                paymentUrl = razorpaSubscription.RazorpayPaymentUrl;
+            }
 
             // Insert the new subscription into the repository
             await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
@@ -497,8 +512,14 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Log the successful creation of the tenant subscription
             _logger.LogInformation("Tenant subscription successfully created with ID: {TenantSubscriptionId}", tenantSubscription.Id);
 
-            // Map the newly created subscription entity to a DTO and return a successful response
-            serviceResponse.Data = tenantSubscription.Adapt<TenantSubscriptionDto>();
+            // Map the tenant subscription entity to a DTO for response
+            var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
+
+            // Attach the Razorpay payment URL to the DTO for client-side use
+            tenantSubscriptionDto.RazorpayPaymentUrl = paymentUrl;
+
+            // Set the service response with the DTO and success metadata
+            serviceResponse.Data = tenantSubscriptionDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Tenant subscription completed successfully.";
         }
@@ -719,9 +740,12 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 _logger.LogInformation("Tenant subscription updated. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, tenantSubscription.Id);
             }
 
+            var razorpaSubscriptionId = tenantSubscription.RazorpaySubscriptionId;
+
             // No existing subscription — create new
             tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
             tenantSubscription.PlanId = subscriptionPlan.Id;
+            tenantSubscription.RazorpaySubscriptionId = razorpaSubscriptionId;
             tenantSubscription.IsActive = true;
             tenantSubscription.CreatedByUserId = _userId;
             tenantSubscription.LastModifiedByUserId = _userId;
@@ -731,6 +755,16 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             tenantSubscription.MaxUsers = subscriptionPlan.MaxUsers;
             tenantSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
             tenantSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
+
+            string? paymentUrl = null;
+
+            if (string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId) && subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
+            {
+                var razorpaSubscription = await CreateOrUpdateRazorpaySubscriptionAsync(tenantSubscription, subscriptionPlan, tenantSubscriptionPurchaseDto.IsRecurringPayment);
+                tenantSubscription.RazorpaySubscriptionId = razorpaSubscription.RazorpaySubscriptionId;
+                paymentUrl = razorpaSubscription.RazorpayPaymentUrl;
+            }
+
 
             await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
 
@@ -802,8 +836,14 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 _logger.LogInformation("Tenant credit successfully saved. TenantId: {TenantId}, TenantCreditId: {TenantCreditId}", _tenantId, tenantCredit.Id);
             }
 
-            // Prepare successful response
-            serviceResponse.Data = tenantSubscription.Adapt<TenantSubscriptionDto>();
+            // Map the tenant subscription entity to a DTO for response
+            var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
+
+            // Attach the Razorpay payment URL to the DTO for client-side use
+            tenantSubscriptionDto.RazorpayPaymentUrl = paymentUrl;
+
+            // Set the service response with the DTO and success metadata
+            serviceResponse.Data = tenantSubscriptionDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Tenant subscription upgraded successfully.";
         }
@@ -813,5 +853,105 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         }
 
         return serviceResponse;
+    }
+
+    // Creates a new Razorpay subscription for the tenant if one does not already exist, updates the tenant subscription record, and returns the subscription details.
+    private async Task<RazorpaySubscriptionResult?> CreateOrUpdateRazorpaySubscriptionAsync(
+        TenantSubscription tenantSubscription,
+        SubscriptionPlan subscriptionPlan, bool isRecurringPayment = false)
+    {
+        int totalCount = 1;
+        if (isRecurringPayment)
+        {
+            // Calculate billing cycle count based on the plan frequency.
+            totalCount = (subscriptionPlan.Frequency == SubscriptionFrequenciesEnum.Monthly)
+                ? 36 // 3 years = 36 months
+                : 5;  // Default to 5 cycles for non-monthly plans}
+        }
+        // Determine whether to create a new subscription or update an existing one.
+        if (string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId))
+        {
+
+            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
+
+            // Check if the tenant's Razorpay customer ID is missing or empty
+            if (string.IsNullOrEmpty(tenant?.RazorpayCustomerId))
+            {
+                // Retrieve the current user from the database based on the user ID
+                var currentUser = await _unitOfWork.AccountUserRepo
+                    .GetByConditionAsync(w => w.Id == _userId)
+                    .FirstOrDefaultAsync();
+
+                // Create a new Razorpay customer using the user's details
+                var customer = await _customerService.CreateCustomerAsync(new CustomerRequestDto()
+                {
+                    Name = $"{currentUser.FirstName} {currentUser.LastName}",
+                    Email = currentUser.Email,
+                    Contact = "",     // TODO: Populate with user's contact number
+                    GstNumber = ""    // TODO: Populate with user's GST number if available
+                });
+
+                // If the Razorpay customer was created successfully
+                if (customer.Data != null)
+                {
+                    // Assign the newly created customer ID to the tenant
+                    tenant.RazorpayCustomerId = customer.Data.Id;
+                    tenant.LastModifiedByUserId = _userId;
+
+                    // Mark the tenant entity for update in the repository
+                    _unitOfWork.TenantRepo.Update(tenant);
+
+                    // Commit the changes to the database
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogError("Failed to update tenant for TenantId: {TenantId}", tenant.Id);
+                    }
+                }
+            }
+
+            // Create a new Razorpay subscription
+            var createRequest = new SubscriptionRequestDto
+            {
+                PlanId = subscriptionPlan.RazorpayPlanId,
+                Quantity = 1,
+                CustomerId = tenant.RazorpayCustomerId,
+                TotalCount = totalCount,
+                CustomerNotify = true
+            };
+
+            var createSubscriptionResponse = await _subscriptionService.CreateSubscriptionAsync(createRequest);
+            if (createSubscriptionResponse.Data != null)
+            {
+                return new RazorpaySubscriptionResult()
+                {
+                    RazorpaySubscriptionId = createSubscriptionResponse.Data.Id,
+                    RazorpayPaymentUrl = createSubscriptionResponse.Data.ShortUrl
+                };
+            }
+        }
+        else
+        {
+            // Update the existing Razorpay subscription
+            var updateRequest = new UpdateSubscriptionRequestDto
+            {
+                PlanId = subscriptionPlan.RazorpayPlanId,
+                Quantity = 1,
+                RemainingCount = totalCount,
+                CustomerNotify = true
+            };
+
+            var updateSubscriptionResponse = await _subscriptionService.UpdateSubscriptionAsync(tenantSubscription.RazorpaySubscriptionId, updateRequest);
+            if (updateSubscriptionResponse.Data != null)
+            {
+                return new RazorpaySubscriptionResult()
+                {
+                    RazorpaySubscriptionId = updateSubscriptionResponse.Data.Id,
+                    RazorpayPaymentUrl = updateSubscriptionResponse.Data.ShortUrl
+                };
+            }
+        }
+
+        // Return null if creation or update failed
+        return null;
     }
 }
