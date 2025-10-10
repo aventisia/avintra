@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Change Text Case")]
     [Description("Converts the input text to the specified case format.")]
+    [ActivityMetaData(nodeImg: "/assets/Text.svg")]
     public class ChangeTextCaseActivity : BaseCodeActivity
     {
         #region Inputs

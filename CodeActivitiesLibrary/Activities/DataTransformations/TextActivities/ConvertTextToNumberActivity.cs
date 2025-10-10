@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Convert Text to Number")]
     [Description("Converts a text representation of a number to a numeric value.")]
+    [ActivityMetaData(nodeImg: "/assets/Text.svg")]
     public class ConvertTextToNumberActivity : BaseCodeActivity
     {
         // ----------------------

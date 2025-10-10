@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.OcrActivities
 {
     [DisplayName("Extract Text with OCR")]
     [Description("Extracts text from an image file using Tesseract OCR engine.")]
+    [ActivityMetaData(nodeImg: "/assets/OCR.svg")]
     public class ExtractTextWithOcrActivity : BaseCodeActivity
     {
         [RequiredArgument]

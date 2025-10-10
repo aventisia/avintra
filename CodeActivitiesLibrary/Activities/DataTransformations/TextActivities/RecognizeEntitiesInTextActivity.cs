@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [DisplayName("Recognize Entities in Text")]
     [Description(
         "Identifies specific entities in text, such as dates, numbers, emails, URLs, etc., across multiple languages.")]
+    [ActivityMetaData(nodeImg: "/assets/Text.svg")]
     public class RecognizeEntitiesInTextActivity : BaseCodeActivity
     {
         // ----------------------

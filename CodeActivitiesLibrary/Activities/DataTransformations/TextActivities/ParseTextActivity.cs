@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [DisplayName("Parse Text")]
     [Description(
         "Parses a text to find the first or all occurrences of a specified subtext or regular expression pattern.")]
+    [ActivityMetaData(nodeImg: "/assets/Text.svg")]
     public class ParseTextActivity : BaseCodeActivity
     {
         // ----------------------

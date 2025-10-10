@@ -11,6 +11,8 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
 {
     [DisplayName("Write Text to JSON File")]
     [Description("Writes the provided content as JSON to the specified file path.")]
+    [ActivityMetaData(nodeImg:"/assets/JSON.svg")]
+
     public class WriteTextToJSONFileActivity : BaseCodeActivity
     {
         [RequiredArgument]

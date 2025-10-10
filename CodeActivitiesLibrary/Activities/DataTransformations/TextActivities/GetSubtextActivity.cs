@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Extract Substring from Text")]
     [Description("Retrieves a substring from the original text based on start index and length.")]
+    [ActivityMetaData(nodeImg: "/assets/Text.svg")]
     public class GetSubtextActivity : BaseCodeActivity
     {
         // ----------------------

@@ -7,6 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Create HTML Content")]
     [Description("Generates rich HTML content and stores it in a variable.")]
+    [ActivityMetaData(nodeImg: "/assets/Text.svg")]
     public class CreateHtmlContentActivity : BaseCodeActivity
     {
         #region Arguments

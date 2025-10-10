@@ -9,6 +9,8 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
 {
     [DisplayName("Serialize JSON Token")]
     [Description("Converts a JToken or object into both JSON string and JToken.")]
+    [ActivityMetaData(nodeImg:"/assets/JSON.svg")]
+
     public class SerializeJSONActivity : BaseCodeActivity
     {
         // ----------------------

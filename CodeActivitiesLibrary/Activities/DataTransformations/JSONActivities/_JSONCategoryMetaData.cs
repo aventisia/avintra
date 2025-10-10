@@ -10,7 +10,8 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
     [ActivityCategoryMetadata(
         primaryCategory: "Data Transformations",
         label: "JSON",
-        description: "Transform data to and from JSON format, including parsing, serialization, and deserialization.")]
+        description: "Transform data to and from JSON format, including parsing, serialization, and deserialization.",
+        img: "/assets/JSON.svg")]
     internal sealed class _JSONCategoryMetaData
     {
     }

@@ -10,6 +10,7 @@ namespace CodeActaivitiesLibrary.DataTransformations.JSONActivities
 {
     [DisplayName("Delete JSON Node by Primary Key")]
     [Description("Recursively searches for an object with a matching primary key-value pair and deletes it from the structure.")]
+    [ActivityMetaData(nodeImg:"/assets/JSON.svg")]
     public class DeleteJSONNodeWithPrimaryKeyActivity : BaseCodeActivity
     {
         [RequiredArgument]

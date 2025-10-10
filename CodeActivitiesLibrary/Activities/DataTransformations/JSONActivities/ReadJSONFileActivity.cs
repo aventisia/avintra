@@ -10,6 +10,8 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
 {
     [DisplayName("Read JSON File")]
     [Description("Reads the contents of a JSON file from the specified file path.")]
+    [ActivityMetaData(nodeImg:"/assets/JSON.svg")]
+
     public class ReadJSONFileActivity : BaseCodeActivity
     {
         [RequiredArgument]
