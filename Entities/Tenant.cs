@@ -165,4 +165,11 @@ public class Tenant : BaseEntity
     /// Gets or sets the role of the user who registered or manages the tenant.
     /// </summary>
     public string? Role { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Razorpay customer ID associated with this tenant.
+    /// This is used to manage the tenant's billing and subscriptions through Razorpay.
+    /// </summary>
+    public string? RazorpayCustomerId { get; set; }
+
 }
