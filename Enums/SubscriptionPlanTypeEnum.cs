@@ -21,5 +21,11 @@ public enum SubscriptionPlanTypeEnum
     /// A full-featured plan designed for large businesses or organizations.
     /// </summary>
     [Description("Full-featured plan for businesses or organizations")]
-    Enterprise
+    Enterprise,
+
+    /// <summary>
+    /// A commercial plan designed for large-scale business use or high-volume transactions.
+    /// </summary>
+    [Description("Commercial plan for large-scale business or high-volume use")]
+    Commercial
 }
