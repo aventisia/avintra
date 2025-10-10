@@ -16,6 +16,10 @@ import { usePostCreditConsumptionMutation } from "@/features/credits-management/
 import { generateCreditConsumptionList } from "@/features/credits-management/utils/generateCreditConsumptionList";
 import { getLocalExecutionLog } from "@/features/flow-execution-log/apis/get-version-execution-log";
 import { Execution } from "@/features/flow-execution-log/types/execution-types";
+import { useExecutionLogTableStore } from "@/features/flow-execution-log/stores/execution-log-table-store";
+import { ExecutionStatusTypesEnum } from "@/features/flow-execution-log/constants/execution-status-type-enum";
+import { insertExecution } from "@/features/flow-execution-log/apis/executions-table-apis";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 export default function useWebSocket() {
   const socketRef = useRef<WebSocket | null>(null);
@@ -28,10 +32,30 @@ export default function useWebSocket() {
     })),
   );
 
+  const { startTime, endTime, status, updateField } = useExecutionLogTableStore(
+    useShallow((state) => ({
+      updateField: state.updateField,
+      startTime: state.startTime,
+      endTime: state.endTime,
+      status: state.status,
+    })),
+  );
+
+  // Get user session state and actions
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
   const { postCreditConsumption } = usePostCreditConsumptionMutation();
 
   const [pendingPostCommand, setPendingPostCommand] = useState<
     "abort" | "complete" | null
+  >(null);
+
+  const [pendingInsertCommand, setPendingInsertCommand] = useState<
+    "abort" | "complete" | "error" | null
   >(null);
 
   // Function to send command to web socket
@@ -51,7 +75,27 @@ export default function useWebSocket() {
         );
 
         if (command === "abort" || command === "complete") {
-          setPendingPostCommand(command);
+          setPendingPostCommand(command); // for credits
+        }
+
+        if (command === "start") {
+          updateField("startTime", new Date());
+        }
+
+        if (
+          command === "abort" ||
+          command === "error" ||
+          command === "complete"
+        ) {
+          const endTime = new Date();
+          const status =
+            command === "complete"
+              ? ExecutionStatusTypesEnum.Succeeded
+              : ExecutionStatusTypesEnum.Failed;
+
+          updateField("endTime", endTime);
+          updateField("status", status);
+          setPendingInsertCommand(command); // trigger insert effect
         }
 
         // Update the execution state based on the command
@@ -179,6 +223,52 @@ export default function useWebSocket() {
     currentFlow.versionId,
     pendingPostCommand,
     postCreditConsumption,
+  ]);
+
+  useEffect(() => {
+    if (!pendingInsertCommand) return;
+
+    const insertExecutionData = async () => {
+      try {
+        const duration = Math.max(
+          0,
+          (endTime.getTime() - startTime.getTime()) / 1000,
+        ); // in seconds
+
+        await insertExecution({
+          flowVersionId: currentFlow.versionId,
+          name: currentFlow.name,
+          status,
+          endTime,
+          startTime,
+          duration,
+          version: currentFlow.versionNumber,
+          flowId: currentFlow.id,
+          executedBy: `${userSession?.firstName} ${userSession?.lastName}`,
+          executedOn: startTime,
+          executionType: "Manual", //TODO:
+        });
+
+        console.log("Execution inserted successfully");
+      } catch (err) {
+        console.error("Failed to insert execution:", err);
+      } finally {
+        setPendingInsertCommand(null);
+      }
+    };
+
+    insertExecutionData();
+  }, [
+    currentFlow.id,
+    currentFlow.name,
+    currentFlow.versionId,
+    currentFlow.versionNumber,
+    endTime,
+    pendingInsertCommand,
+    startTime,
+    status,
+    userSession?.firstName,
+    userSession?.lastName,
   ]);
 
   return { sendCommand };
