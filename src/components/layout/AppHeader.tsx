@@ -41,7 +41,7 @@ const AppHeader: React.FC = () => {
   return (
     <HeaderContainer className="bg-slate-200">
       <Header>
-        <div className="flex w-1/3 items-center gap-3 text-white">
+        <div className="flex w-2/5 items-center gap-3 text-white">
           {/* Back Button */}
           {!isAssist && (
             <Tooltip content="Back">
@@ -64,10 +64,10 @@ const AppHeader: React.FC = () => {
           {/* Version selector */}
           {!isAssist && <FlowVersions />}{" "}
         </div>
-        <div className="flex w-1/3 justify-center">
+        <div className="flex w-1/5 justify-center">
           <AvailableCredits />
         </div>
-        <div className="flex w-1/3 justify-end">
+        <div className="flex w-2/5 justify-end">
           <div>
             {isIndividualUser ? (
               <Avatar className={cn("flex h-7 w-7")}>
