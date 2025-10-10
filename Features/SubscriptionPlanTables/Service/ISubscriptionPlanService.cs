@@ -6,13 +6,15 @@ namespace AccountsAPIs.Services;
 public interface ISubscriptionPlanService
 {
     /// <summary>
-    /// Retrieves all subscription plans in the system.
+    /// Retrieves all available subscription plans from the system.
     /// </summary>
-    /// <param name="subscriptionPlanType">An optional filter to return only subscription plans of a specific type.</param>
+    /// <param name="subscriptionPlanType">The type of the subscription plans to filter by (e.g., Basic, Pro, Starter).</param>
+    /// <param name="frequency">The frequency of the subscription plans (e.g., monthly, yearly).</param>
+    /// <param name="currency">The currency type of the subscription plans (e.g., USD, EUR).</param>
     /// <returns>
-    /// A task representing the asynchronous operation. The result contains a collection of all <see cref="SubscriptionPlanDto"/>.
+    /// A task representing the asynchronous operation. The task result contains a list of <see cref="SubscriptionPlanDto"/> objects.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<SubscriptionPlanDto>>> GetAllSubscriptionPlansAsync(SubscriptionPlanTypeEnum? subscriptionPlanType);
+    Task<ServiceResponse<IEnumerable<SubscriptionPlanDto>>> GetAllSubscriptionPlansAsync(SubscriptionPlanTypeEnum subscriptionPlanType, SubscriptionFrequenciesEnum frequency, CurrencyTypesEnum currency);
 
     /// <summary>
     /// Retrieves a list of subscription plans formatted as selectable options, typically used in dropdowns or selection lists.

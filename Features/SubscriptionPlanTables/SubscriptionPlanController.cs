@@ -14,9 +14,9 @@ public class SubscriptionPlanController : BaseApiController
 
     // Retrieves all subscription plans.
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SubscriptionPlanDto>>>> GetAllSubscriptionPlans(SubscriptionPlanTypeEnum? type)
+    public async Task<IActionResult> GetAllSubscriptionPlans(SubscriptionPlanTypeEnum type = SubscriptionPlanTypeEnum.Pro, SubscriptionFrequenciesEnum frequency = SubscriptionFrequenciesEnum.Monthly, CurrencyTypesEnum currency = CurrencyTypesEnum.USD)
     {
-        return ResultHelper(await _subscriptionPlanService.GetAllSubscriptionPlansAsync(type));
+        return ResultHelper(await _subscriptionPlanService.GetAllSubscriptionPlansAsync(type, frequency, currency));
     }
 
     // Gets a list of subscription plans for selection options.

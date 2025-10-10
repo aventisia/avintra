@@ -18,7 +18,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
     }
 
     // Retrieves all subscription plans from the database including the creator user.
-    public async Task<ServiceResponse<IEnumerable<SubscriptionPlanDto>>> GetAllSubscriptionPlansAsync(SubscriptionPlanTypeEnum? subscriptionPlanType)
+    public async Task<ServiceResponse<IEnumerable<SubscriptionPlanDto>>> GetAllSubscriptionPlansAsync(SubscriptionPlanTypeEnum subscriptionPlanType, SubscriptionFrequenciesEnum frequency, CurrencyTypesEnum currency)
     {
         // Initialize a default failure response
         var serviceResponse = new ServiceResponse<IEnumerable<SubscriptionPlanDto>>
@@ -33,11 +33,25 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             IQueryable<SubscriptionPlan> query = _unitOfWork.SubscriptionPlanRepo.GetAllAsync()
                 .Include(plan => plan.CreatedByUser);
 
-            // Check if a filter was provided.
-            if (subscriptionPlanType.HasValue)
+            // Check if a filter for subscription plan type (Pro or Starter) was provided.
+            if (subscriptionPlanType == SubscriptionPlanTypeEnum.Pro || subscriptionPlanType == SubscriptionPlanTypeEnum.Starter)
             {
-                // If yes, add a filter for that specific type to the database query.
-                query = query.Where(plan => plan.Type == subscriptionPlanType.Value);
+                // If yes, filter for plans of type Pro or Starter, and match frequency and currency
+                query = query.Where(w =>
+                    (
+                        w.Type == SubscriptionPlanTypeEnum.Starter || w.Type == SubscriptionPlanTypeEnum.Pro) &&
+                        w.Frequency == frequency &&
+                        w.Currency == currency
+                    );
+            }
+            else
+            {
+                // For any other subscription plan type, filter based on the exact type, frequency, and currency
+                query = query.Where(w =>
+                    w.Type == subscriptionPlanType &&
+                    w.Frequency == frequency &&
+                    w.Currency == currency
+                );
             }
 
             // Execute the final query against the database and get the results.
@@ -180,7 +194,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
                 // string? razorpayPlanId = await CreateRazorpayPlanAsync(newSubscriptionPlan);
 
                 // // Assign the newly created Razorpay plan ID to the existing subscription plan
-                // existingPlan.RazorpayPlanId = razorpayPlanId;
+                // newSubscriptionPlan.RazorpayPlanId = razorpayPlanId;
             }
 
             // Insert and save changes
@@ -453,8 +467,8 @@ public class SubscriptionPlanService : ISubscriptionPlanService
                 Amount = (int)(subscriptionPlan.Price * 100), // Amount in the smallest currency unit (e.g., cents or paise)
             }
         });
-        
-         // Return the Razorpay plan ID if the creation was successful
+
+        // Return the Razorpay plan ID if the creation was successful
         return razorpayPlan.Data?.Id;
     }
 }
