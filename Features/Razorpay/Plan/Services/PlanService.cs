@@ -38,7 +38,7 @@ public class PlanService : IPlanService
             // Prepare the request dictionary for creating a new plan
             var planRequest = new Dictionary<string, object>
             {
-                { "period", request.Period.ToString().ToLower() },   // Convert period to lowercase string
+                { "period", request.Period },
                 { "interval", request.Interval },
                 { "notes", request.Notes ?? new Dictionary<string, string>() },
                 { "item", new Dictionary<string, object>
@@ -46,7 +46,7 @@ public class PlanService : IPlanService
                         { "name", request.Item.Name },
                         { "description", request.Item.Description ?? string.Empty },
                         { "amount", request.Item.Amount },
-                        { "currency", request.Item.Currency.ToString() }
+                        { "currency", request.Item.Currency }
                     }
                 }
             };
@@ -65,13 +65,13 @@ public class PlanService : IPlanService
             var createdPlan = new PlanResponseDto
             {
                 Id = plan["id"].ToString(),
-                Period = (SubscriptionFrequenciesEnum)Enum.Parse(typeof(SubscriptionFrequenciesEnum), plan["period"].ToString(), true),
+                Period = plan["period"].ToString(),
                 Interval = int.Parse(plan["interval"].ToString()),
                 Item = new PlanItemDto
                 {
                     Name = plan["item"]?["name"]?.ToString(),
                     Amount = int.Parse(plan["item"]?["amount"]?.ToString() ?? "0"),
-                    Currency = (CurrencyTypesEnum)Enum.Parse(typeof(CurrencyTypesEnum), plan["item"]?["currency"]?.ToString() ?? "INR", true),
+                    Currency = plan["item"]?["currency"]?.ToString(),
                 },
                 Notes = plan["notes"] != null ? plan["notes"].ToObject<Dictionary<string, string>>() : new Dictionary<string, string>(),
                 CreatedAt = plan["created_at"] != null ? DateTimeOffset.FromUnixTimeSeconds(long.Parse(plan["created_at"].ToString())) : null
@@ -117,13 +117,13 @@ public class PlanService : IPlanService
             var retrievedPlan = new PlanResponseDto
             {
                 Id = plan["id"].ToString(),
-                Period = (SubscriptionFrequenciesEnum)Enum.Parse(typeof(SubscriptionFrequenciesEnum), plan["period"].ToString(), true),
+                Period = plan["period"].ToString(),
                 Interval = int.Parse(plan["interval"].ToString()),
                 Item = new PlanItemDto
                 {
                     Name = plan["item"]?["name"]?.ToString(),
                     Amount = int.Parse(plan["item"]?["amount"]?.ToString() ?? "0"),
-                    Currency = (CurrencyTypesEnum)Enum.Parse(typeof(CurrencyTypesEnum), plan["item"]?["currency"]?.ToString() ?? "INR", true),
+                    Currency = plan["item"]?["currency"]?.ToString(),
                 },
                 Notes = plan["notes"] != null ? plan["notes"].ToObject<Dictionary<string, string>>() : new Dictionary<string, string>(),
                 CreatedAt = plan["created_at"] != null ? DateTimeOffset.FromUnixTimeSeconds(long.Parse(plan["created_at"].ToString())) : null
@@ -168,13 +168,13 @@ public class PlanService : IPlanService
             var retrievedPlanList = plans.Select(plan => new PlanResponseDto
             {
                 Id = plan["id"].ToString(),
-                Period = (SubscriptionFrequenciesEnum)Enum.Parse(typeof(SubscriptionFrequenciesEnum), plan["period"].ToString(), true),
+                Period = plan["period"].ToString(),
                 Interval = int.Parse(plan["interval"].ToString()),
                 Item = new PlanItemDto
                 {
                     Name = plan["item"]?["name"]?.ToString(),
                     Amount = int.Parse(plan["item"]?["amount"]?.ToString() ?? "0"),
-                    Currency = (CurrencyTypesEnum)Enum.Parse(typeof(CurrencyTypesEnum), plan["item"]?["currency"]?.ToString() ?? "INR", true),
+                    Currency = plan["item"]?["currency"]?.ToString()
                 },
                 Notes = plan["notes"] != null ? plan["notes"].ToObject<Dictionary<string, string>>() : new Dictionary<string, string>(),
                 CreatedAt = plan["created_at"] != null ? DateTimeOffset.FromUnixTimeSeconds(long.Parse(plan["created_at"].ToString())) : null

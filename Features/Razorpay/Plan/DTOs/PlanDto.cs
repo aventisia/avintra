@@ -9,7 +9,7 @@ public class PlanRequestDto
     /// Gets or sets the frequency period of the subscription (e.g., Monthly, Yearly).
     /// </summary>
     [Required]
-    public SubscriptionFrequenciesEnum Period { get; set; }
+    public required string Period { get; set; }
 
     /// <summary>
     /// Gets or sets the interval for the subscription frequency. Default is 1.
@@ -60,7 +60,7 @@ public class PlanItemDto
     /// Gets or sets the currency type of the plan amount.
     /// </summary>
     [Required]
-    public CurrencyTypesEnum Currency { get; set; } = CurrencyTypesEnum.USD;
+    public required string Currency { get; set; }
 }
 
 /// <summary>
@@ -76,7 +76,7 @@ public class PlanResponseDto
     /// <summary>
     /// Gets or sets the frequency period of the plan.
     /// </summary>
-    public required SubscriptionFrequenciesEnum Period { get; set; }
+    public required string Period { get; set; }
 
     /// <summary>
     /// Gets or sets the interval of the subscription frequency.
