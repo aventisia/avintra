@@ -12,6 +12,16 @@ const UsageTabs = () => {
   const aiModels = data?.data.aiModels || [];
   const agents = data?.data.agents || [];
 
+  const renderRow = (label: string, value: string | undefined) => (
+    <div
+      key={label + value}
+      className="flex items-center justify-between gap-1 text-sm"
+    >
+      <div className="w-4/5">{label}</div>
+      <div className="w-1/5 text-end">{value}</div>
+    </div>
+  );
+
   return (
     <div className="rounded-lg rounded-tl-none border-l bg-white pb-2">
       <Tabs
@@ -56,10 +66,10 @@ const UsageTabs = () => {
             const fullName = user.firstName + " " + user.lastName;
             return (
               <div
-                className="flex items-center justify-between"
+                className="flex items-center justify-between gap-1"
                 key={user.username}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex w-4/5 items-center gap-3">
                   <Avatar className="flex h-7 w-7">
                     <AvatarFallback className="border-none bg-primary-200 text-2xs capitalize tracking-wider text-secondary">
                       {fullName
@@ -68,12 +78,16 @@ const UsageTabs = () => {
                         .join("") ?? "--"}
                     </AvatarFallback>
                   </Avatar>
-                  <p className="text-sm">{fullName}</p>
+                  <p className="text-sm">{fullName + fullName}</p>
                 </div>
-                <p className="text-sm">
+                <p className="w-1/5 text-end text-sm">
                   {selectedTab == "totalCredits"
-                    ? user.totalCredits
-                    : user.totalTransactions}
+                    ? user.totalCredits.toLocaleString("en-US", {
+                        maximumFractionDigits: 2,
+                      })
+                    : user.totalTransactions.toLocaleString("en-US", {
+                        maximumFractionDigits: 2,
+                      })}
                 </p>
               </div>
             );
@@ -83,18 +97,15 @@ const UsageTabs = () => {
         {/* Tabs Content for AI Models */}
         <TabsContent value="aiModels" className="space-y-4 px-4 py-2">
           {aiModels.map((user) => {
-            return (
-              <div
-                className="flex items-center justify-between"
-                key={user.modelName + user.totalCredits}
-              >
-                <p className="text-sm">{user.modelName}</p>
-                <p className="text-sm">
-                  {selectedTab == "totalCredits"
-                    ? user.totalCredits
-                    : user.totalTransactions}
-                </p>
-              </div>
+            return renderRow(
+              user.modelName,
+              selectedTab == "totalCredits"
+                ? user.totalCredits.toLocaleString("en-US", {
+                    maximumFractionDigits: 2,
+                  })
+                : user.totalTransactions.toLocaleString("en-US", {
+                    maximumFractionDigits: 2,
+                  }),
             );
           })}
         </TabsContent>
@@ -102,18 +113,15 @@ const UsageTabs = () => {
         {/* Tabs Content for Agents */}
         <TabsContent value="agents" className="space-y-4 px-4 py-2">
           {agents.map((user) => {
-            return (
-              <div
-                className="flex items-center justify-between"
-                key={user.agentName + user.totalCredits}
-              >
-                <p className="text-sm">{user.agentName}</p>
-                <p className="text-sm">
-                  {selectedTab == "totalCredits"
-                    ? user.totalCredits
-                    : user.totalTransactions}
-                </p>
-              </div>
+            return renderRow(
+              user.agentName + user.agentName + user.agentName,
+              selectedTab == "totalCredits"
+                ? user.totalCredits.toLocaleString("en-US", {
+                    maximumFractionDigits: 2,
+                  })
+                : user.totalTransactions.toLocaleString("en-US", {
+                    maximumFractionDigits: 2,
+                  }),
             );
           })}
         </TabsContent>

@@ -39,6 +39,10 @@ const ServiceCharts = () => {
     return items.slice(start, start + itemsPerPage);
   }, [currentPage, items, itemsPerPage]);
 
+  function formatUnit(unit: string) {
+    return unit.endsWith("s") ? unit.slice(0, -1) + "/s" : unit + "/s";
+  }
+
   return (
     <div className="min-h-[33vh] rounded-lg pb-4">
       <div className="grid grid-cols-2 gap-4 rounded-lg bg-white px-6 py-6">
@@ -51,7 +55,7 @@ const ServiceCharts = () => {
                   item.serviceType as keyof typeof ServiceTypeEnum
                 ]
               }
-              label={`${item.credits} ${item.credits > 1 ? "Credits" : "Credit"} per ${item.oneUnit > 1 ? item.oneUnit : ""} ${item.unitType}`}
+              label={`${item.credits} ${item.credits > 1 ? "Credits" : "Credit"} per ${item.oneUnit > 1 ? item.oneUnit : ""} ${formatUnit(item.unitType)}`}
               data={item.usageTimeline}
               chartConfig={totalCreditsChartConfig}
               valueKey="totalCredits"
