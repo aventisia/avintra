@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
 {
     [DisplayName("Retrieve Exchange Email Messages")]
     [Description("Retrieves email messages from the specified Exchange server.")]
+    [ActivityMetaData(nodeImg:"/assets/ExchangeServer.svg")]
     public class RetrieveExchangeEmailMessagesActivity : BaseCodeActivity
     {
         // ----------------------

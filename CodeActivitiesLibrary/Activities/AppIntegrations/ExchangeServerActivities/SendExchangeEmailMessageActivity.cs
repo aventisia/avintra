@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
 {
     [DisplayName("Send Exchange Email Message")]
     [Description("Creates and sends a new email message using an Exchange connection.")]
+    [ActivityMetaData(nodeImg:"/assets/ExchangeServer.svg")]
     public class SendExchangeEmailMessageActivity : BaseCodeActivity
     {
         // ----------------------

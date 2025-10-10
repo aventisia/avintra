@@ -26,6 +26,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
         [RequiredArgument]
         [DisplayName("Password")]
         [Description("The password associated with the account to be stored securely.")]
+        [FieldType(FieldType.Password)]
         public InArgument<string> Password { get; set; }
 
 

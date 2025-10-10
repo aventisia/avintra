@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
 {
     [DisplayName("Connect to Exchange Server")]
     [Description("Open a new connection to an Exchange server.")]
+    [ActivityMetaData(nodeImg:"/assets/ExchangeServer.svg")]
     public class ConnectToExchangeServerActivity : BaseCodeActivity
     {
         // ----------------------
@@ -54,6 +55,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
         [DisplayName("Password")]
         [Description("The password for user-defined credentials (required if 'Credentials' is 'User defined').")]
         [RenderIfCondition(nameof(Credentials), CredentialsEnum.UserDefined)]
+        [FieldType(FieldType.Password)]
         public InArgument<string> Password { get; set; }
 
         [DisplayName("Timeout")]

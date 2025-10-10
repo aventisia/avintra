@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.TwilioActivities
 {
     [DisplayName("Send WhatsApp Message via Messaging Service")]
     [Description("Sends a WhatsApp message using Twilio Messaging Service.")]
+     [ActivityMetaData(nodeImg: "/assets/Twilio.svg")]
     public class SendWhatsAppMessageViaMessagingServiceActivity : BaseCodeActivity
     {
         [RequiredArgument]

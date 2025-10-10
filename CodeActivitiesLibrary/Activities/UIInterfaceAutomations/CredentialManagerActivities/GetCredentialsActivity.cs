@@ -29,6 +29,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
 
         [DisplayName("Secure Password")]
         [Description("The password associated with the retrieved credential, returned as a SecureString.")]
+        [FieldType(FieldType.Password)]
         public OutArgument<SecureString> Password { get; set; }
 
         protected override void Execute(CodeActivityContext context)

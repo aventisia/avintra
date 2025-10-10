@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExchangeServerActivities
 {
     [DisplayName("Process Exchange Email Messages")]
     [Description("Move, delete, or mark as unread an email message (or a list of email messages).")]
+    [ActivityMetaData(nodeImg:"/assets/ExchangeServer.svg")]
     public class ProcessExchangeEmailMessagesActivity : BaseCodeActivity
     {
         // ----------------------

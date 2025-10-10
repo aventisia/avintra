@@ -43,6 +43,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.FileActivities
 
         [DisplayName("Creation Date Time")]
         [Description("The creation date and time of the source file.")]
+        [FieldType(FieldType.DateTime)]
         public OutArgument<DateTime> CreationDateTime { get; set; }
 
         protected override void Execute(CodeActivityContext context)
