@@ -168,15 +168,19 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
             // Map DTO to entity and assign creator/modifier IDs
             var newSubscriptionPlan = subscriptionPlanDto.Adapt<SubscriptionPlan>();
-            newSubscriptionPlan.UniqueName = $"{newSubscriptionPlan.Name}-{newSubscriptionPlan.Frequency}-{newSubscriptionPlan.Currency}";
+            newSubscriptionPlan.UniqueName = $"{newSubscriptionPlan.Name}-{newSubscriptionPlan.Frequency}-{newSubscriptionPlan.Currency}".ToLower();
             newSubscriptionPlan.CreatedByUserId = _userId;
             newSubscriptionPlan.LastModifiedByUserId = _userId;
 
             // Check if the Razorpay Plan ID has not been set yet
-            if (string.IsNullOrEmpty(existingPlan.RazorpayPlanId))
+            // and ensure the plan type is not 'Starter' (which may not require a Razorpay plan)
+            if (string.IsNullOrEmpty(newSubscriptionPlan.RazorpayPlanId) && newSubscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                // Create a new Razorpay plan and assign its ID to the subscription plan
-                existingPlan.RazorpayPlanId = await CreateRazorpayPlanAsync(existingPlan);
+                // Create a new Razorpay plan asynchronously for the subscription plan
+                string? razorpayPlanId = await CreateRazorpayPlanAsync(newSubscriptionPlan);
+
+                // Assign the newly created Razorpay plan ID to the existing subscription plan
+                existingPlan.RazorpayPlanId = razorpayPlanId;
             }
 
             // Insert and save changes
@@ -294,14 +298,18 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             // Trim and update fields
             subscriptionPlanDto = TrimDtoStringPropsUtil.TrimDtoStringProps(subscriptionPlanDto);
             subscriptionPlanDto.Adapt(existingPlan);
-            existingPlan.UniqueName = $"{existingPlan.Name}-{existingPlan.Frequency}-{existingPlan.Currency}";
+            existingPlan.UniqueName = $"{existingPlan.Name}-{existingPlan.Frequency}-{existingPlan.Currency}".ToLower();
             existingPlan.LastModifiedByUserId = _userId;
 
             // Check if the Razorpay Plan ID has not been set yet
-            if (string.IsNullOrEmpty(existingPlan.RazorpayPlanId))
+            // and ensure the plan type is not 'Starter' (which may not require a Razorpay plan)
+            if (string.IsNullOrEmpty(existingPlan.RazorpayPlanId) && existingPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                // Create a new Razorpay plan and assign its ID to the subscription plan
-                existingPlan.RazorpayPlanId = await CreateRazorpayPlanAsync(existingPlan);
+                // Create a new Razorpay plan asynchronously for the subscription plan
+                string? razorpayPlanId = await CreateRazorpayPlanAsync(existingPlan);
+
+                // Assign the newly created Razorpay plan ID to the existing subscription plan
+                existingPlan.RazorpayPlanId = razorpayPlanId;
             }
 
             // Apply update and save
@@ -445,8 +453,8 @@ public class SubscriptionPlanService : ISubscriptionPlanService
                 Amount = (int)(subscriptionPlan.Price * 100), // Amount in the smallest currency unit (e.g., cents or paise)
             }
         });
-
-        // Return the Razorpay plan ID if the creation was successful
+        
+         // Return the Razorpay plan ID if the creation was successful
         return razorpayPlan.Data?.Id;
     }
 }
