@@ -104,6 +104,9 @@ namespace AccountsAPIs.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
+                    b.Property<int?>("Country")
+                        .HasColumnType("integer");
+
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
 
@@ -958,6 +961,12 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("Currency")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnType("integer");
+
                     b.Property<int>("HistoryRetentionDays")
                         .HasColumnType("integer");
 
@@ -982,11 +991,14 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<int>("MaxUsers")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("MonthlyPrice")
-                        .HasColumnType("numeric");
-
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("RazorpayPlanId")
                         .HasColumnType("text");
 
                     b.Property<int>("StorageLimitMB")
@@ -996,14 +1008,15 @@ namespace AccountsAPIs.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("UniqueName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
-
-                    b.Property<decimal>("YearlyPrice")
-                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
@@ -1106,6 +1119,9 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<int>("NumberOfEmployees")
                         .HasColumnType("integer");
 
+                    b.Property<string>("RazorpayCustomerId")
+                        .HasColumnType("text");
+
                     b.Property<DateTimeOffset>("RenewalDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -1205,6 +1221,9 @@ namespace AccountsAPIs.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("HistoryRetentionDays")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -1217,8 +1236,26 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<decimal>("MaxCredits")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.Property<int>("MaxPublishedItems")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaxSpaces")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaxUsers")
+                        .HasColumnType("integer");
+
                     b.Property<Guid>("PlanId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("RazorpaySubscriptionId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("StorageLimitMB")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
