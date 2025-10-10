@@ -126,4 +126,9 @@ public class AccountUser : IdentityUser<Guid>
     /// Gets or sets the duration to deactivate the account
     /// </summary>
     public DateTime DeactivatedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the country where the tenant is located.
+    /// </summary>
+    public CountriesEnum? Country { get; set; }
 }
