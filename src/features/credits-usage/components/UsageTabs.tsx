@@ -78,7 +78,7 @@ const UsageTabs = () => {
                         .join("") ?? "--"}
                     </AvatarFallback>
                   </Avatar>
-                  <p className="text-sm">{fullName + fullName}</p>
+                  <p className="text-sm">{fullName}</p>
                 </div>
                 <p className="w-1/5 text-end text-sm">
                   {selectedTab == "totalCredits"
@@ -114,7 +114,7 @@ const UsageTabs = () => {
         <TabsContent value="agents" className="space-y-4 px-4 py-2">
           {agents.map((user) => {
             return renderRow(
-              user.agentName + user.agentName + user.agentName,
+              user.agentName,
               selectedTab == "totalCredits"
                 ? user.totalCredits.toLocaleString("en-US", {
                     maximumFractionDigits: 2,
