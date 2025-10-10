@@ -67,6 +67,11 @@ public class SubscriptionPlan : BaseEntity
     public int MaxUsers { get; set; }
 
     /// <summary>
+    /// Gets or sets the Razorpay plan ID associated with this subscription plan.
+    /// </summary>
+    public string? RazorpayPlanId { get; set; }
+
+    /// <summary>
     /// Gets or sets the list of users associated with the space.
     /// </summary>
     public virtual ICollection<BillingDetail>? BillingDetails { get; set; }

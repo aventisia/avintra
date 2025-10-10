@@ -50,6 +50,11 @@ public class TenantSubscription : BaseEntity
     /// </summary>
     public int MaxUsers { get; set; }
 
+      /// <summary>
+    /// Gets or sets the Razorpay subscription ID associated with this tenant's subscription.
+    /// </summary>
+    public string? RazorpaySubscriptionId { get; set; }
+
     /// <summary>
     /// Gets or sets the ID of the subscription plan assigned to the tenant.
     /// </summary>
