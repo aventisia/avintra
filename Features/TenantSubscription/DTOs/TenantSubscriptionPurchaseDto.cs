@@ -70,4 +70,9 @@ public class TenantSubscriptionPurchaseDto
     /// Gets or sets the tax rate as a percentage (e.g., 18 for 18%).
     /// </summary>
     public decimal TaxRate { get; set; } = 18;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the subscription has recurring payments enabled.
+    /// </summary>
+    public bool IsRecurringPayment { get; set; }
 }

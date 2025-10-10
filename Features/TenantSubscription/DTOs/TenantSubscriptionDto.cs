@@ -75,4 +75,9 @@ public class TenantSubscriptionDto
     /// For audit and tracking purposes.
     /// </summary>
     public DateTimeOffset? LastModifiedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Razorpay payment URL for subscribing to this plan.
+    /// </summary>
+    public string? RazorpayPaymentUrl { get; set; }
 }
