@@ -55,7 +55,9 @@ const Overview = () => {
                 <p>
                   Available Credits:
                   <span className="ml-1 font-semibold">
-                    {data?.data.currentPlan.availableCredits.toLocaleString()}
+                    {data?.data.currentPlan.availableCredits.toLocaleString(
+                      "en-US",
+                    )}
                   </span>
                 </p>
               </Badge>

@@ -24,7 +24,7 @@ const PlanFeatures = ({ features }: PlanFeaturesProps) => {
       <ul className="mt-2 space-y-2 text-sm">
         <PlanFeature
           label="credits/month"
-          value={`${features?.maxCredits?.toLocaleString()}`}
+          value={`${features?.maxCredits?.toLocaleString("en-US")}`}
         />
         <PlanFeature
           label="published agents or AI models"
