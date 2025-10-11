@@ -54,9 +54,9 @@ export const VerifyEmail = () => {
       checkDirtyForm={false}
     >
       <div className="box flex flex-col p-5">
-        <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
+        {/* <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
           Email Settings
-        </div>
+        </div> */}
         <div>
           <InputDivElement
             headingForInput="Verify Your Email"
@@ -69,7 +69,7 @@ export const VerifyEmail = () => {
             />
           </InputDivElement>
         </div>
-        <div className="mt-6 flex flex-wrap border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
+        <div className="flex flex-wrap pt-5 md:justify-end">
           <Button
             className="me-auto text-sm font-normal"
             variant={"link"}

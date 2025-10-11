@@ -15,10 +15,7 @@ export const useChargeSummary = (
   const isTaxApplicable = billingCountry === "India";
 
   // Calculate the base price depending on the planType (monthly or yearly)
-  const basePrice =
-    planType === "monthly"
-      ? (plan?.monthlyPrice ?? 0)
-      : (plan?.yearlyPrice ?? 0) * 12;
+  const basePrice = plan?.price ?? 0;
 
   // Calculate the total top-up charges based on the frequency (monthly/yearly)
   const topUpTotal = Object.entries(topUp).reduce((acc, [key, value]) => {

@@ -78,7 +78,7 @@ export const DeviceHistoryTab = () => {
                               />
                             )}
                           </div>
-                          <div className="ml-3.5">
+                          <div className="ml-2 max-w-36 truncate">
                             {session.browserType} on {session.operatingSystem}
                           </div>
                         </div>
@@ -88,9 +88,11 @@ export const DeviceHistoryTab = () => {
                         <div className="flex max-w-md items-center truncate whitespace-nowrap">
                           <Lucide
                             icon="Smartphone"
-                            className="mr-2 h-4 w-4 stroke-[1.3]"
+                            className="mr-1 h-4 w-4 stroke-[1.3]"
                           />
-                          <p className="truncate">{session.deviceId}</p>
+                          <p className="max-w-48 truncate">
+                            {session.deviceId}
+                          </p>
                           {session.refreshToken ===
                             currentSession?.refreshToken && (
                             <div className="bg-primary/10 border-primary/10 ml-3 flex items-center rounded-md border px-1.5 py-px text-xs font-medium text-primary">

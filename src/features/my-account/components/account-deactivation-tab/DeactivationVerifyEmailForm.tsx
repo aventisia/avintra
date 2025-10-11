@@ -91,7 +91,7 @@ export const DeactivationVerifyEmailForm = () => {
             />
           </InputDivElement>
         </div>
-        <div className="mt-6 flex flex-wrap border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
+        <div className="flex flex-wrap pt-5 md:justify-end">
           <Button
             className="me-auto text-sm font-normal"
             variant="link"
