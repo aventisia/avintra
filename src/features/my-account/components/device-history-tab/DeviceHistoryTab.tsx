@@ -1,15 +1,21 @@
-import { Skeleton } from "@aventisia/ui";
+import { LoadingSpinner, Skeleton } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
+import { XCircleIcon } from "lucide-react";
+import { useState } from "react";
 
 import Lucide from "@/react-toolkit/ui/Lucide";
 
 import useGetDeviceHistory from "../../hooks/useGetDeviceHistory";
+import { useTerminateSessionMutation } from "../../hooks/useTerminateSessionMutation";
 
 import DeviceHistoryTable from "./DeviceHistoryTable";
 
 export const DeviceHistoryTab = () => {
+  const [currTermination, setCurrTermination] = useState<string>("");
+
   const { isLoading, activeSessions, currentSession, getImageSourceOfBrowser } =
     useGetDeviceHistory();
-
+  const { mutate: terminateSession, isPending } = useTerminateSessionMutation();
   return (
     <div className="box box--stacked flex flex-col p-5">
       {/* <div className="mb-6 flex items-center border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
@@ -35,6 +41,9 @@ export const DeviceHistoryTab = () => {
                   </DeviceHistoryTable.Td> */}
                   <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 text-sm font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
                     Status
+                  </DeviceHistoryTable.Td>
+                  <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 text-sm font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
+                    Terminate
                   </DeviceHistoryTable.Td>
                 </DeviceHistoryTable.Tr>
               </DeviceHistoryTable.Thead>
@@ -103,6 +112,23 @@ export const DeviceHistoryTab = () => {
                             ? "Ended"
                             : "Active"}
                         </div>
+                      </DeviceHistoryTable.Td>
+                      <DeviceHistoryTable.Td className="dark:bg-darkmode-600 flex items-center justify-center border-dashed border-slate-300/70 py-4">
+                        <Button
+                          onClick={() => {
+                            setCurrTermination(session.id);
+                            terminateSession([session.id]);
+                          }}
+                          variant="caution"
+                          size="icon7"
+                          disabled={isPending && currTermination == session.id}
+                        >
+                          {isPending && currTermination == session.id ? (
+                            <LoadingSpinner className="h-4 w-4" />
+                          ) : (
+                            <XCircleIcon className="h-4 w-4" />
+                          )}
+                        </Button>
                       </DeviceHistoryTable.Td>
                     </DeviceHistoryTable.Tr>
                   ))}
