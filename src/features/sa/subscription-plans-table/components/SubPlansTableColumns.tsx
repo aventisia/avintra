@@ -51,36 +51,42 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
     ),
   },
   {
-    accessorKey: "monthlyPrice",
+    accessorKey: "currency",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("monthlyPrice")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Currency" />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("monthlyPrice") == 0
-          ? "Free"
-          : "$" + row.getValue("monthlyPrice")}
+        {row.getValue("currency")}
       </div>
     ),
   },
   {
-    accessorKey: "yearlyPrice",
+    accessorKey: "price",
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Price" />
+    ),
+    cell: ({ row }) => {
+      const price = row.getValue<number>("price");
+      return (
+        <div className="w-auto truncate font-medium">
+          {price === 0 ? "Free" : `${price}`}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "frequency",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("yearlyPrice")}
+        title="Billing Frequency"
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("yearlyPrice") == 0
-          ? "Free"
-          : "$" + row.getValue("yearlyPrice")}
+        {row.getValue("frequency")}
       </div>
     ),
   },

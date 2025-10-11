@@ -22,8 +22,9 @@ import {
   maxSpacesProps,
   maxUsersProps,
   storageLimitMBProps,
-  monthlyPriceProps,
-  yearlyPriceProps,
+  priceProps,
+  currencyProps,
+  frequencyProps,
   typeProps,
 } from "../../constants/sub-plans-form-field-props";
 import { subPlansZodSchema } from "../../constants/sub-plans-zod-schema";
@@ -96,11 +97,11 @@ export const SubPlansCrudForm = () => {
 
       <SelectField {...typeProps} />
 
-      {/* Storage Limit */}
-      <InputField {...monthlyPriceProps} />
+      <InputField {...priceProps} />
 
-      {/* Users */}
-      <InputField {...yearlyPriceProps} />
+      <SelectField {...currencyProps} />
+
+      <SelectField {...frequencyProps} />
 
       {/* No of Credits */}
       <InputField {...maxCreditsProps} />
