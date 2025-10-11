@@ -5,7 +5,7 @@ import {
   AccordionTrigger,
 } from "@aventisia/ui/accordion";
 
-import { AccountDeactivationTab } from "./account-deactivation-tab/AccountDeactivationTab";
+// import { AccountDeactivationTab } from "./account-deactivation-tab/AccountDeactivationTab";
 import { DeviceHistoryTab } from "./device-history-tab/DeviceHistoryTab";
 import { EmailSettingsTab } from "./email-settings-tab/EmailSettingsTab";
 import { ProfileInfoTab } from "./profile-info-tab/ProfileInfoTab";
@@ -60,14 +60,14 @@ export function MyAccount() {
         className="rounded-lg border-none bg-accent"
       >
         <AccordionTrigger className="p-4 text-lg font-medium">
-          Device History
+          Connected Devices
         </AccordionTrigger>
         <AccordionContent className="border-t">
           <DeviceHistoryTab />
         </AccordionContent>
       </AccordionItem>
 
-      <AccordionItem
+      {/* <AccordionItem
         value={"accountDeactivation"}
         className="rounded-lg border-none bg-accent"
       >
@@ -77,7 +77,7 @@ export function MyAccount() {
         <AccordionContent className="border-t">
           <AccountDeactivationTab />
         </AccordionContent>
-      </AccordionItem>
+      </AccordionItem> */}
     </Accordion>
   );
 }

@@ -1,8 +1,10 @@
 export interface SubscriptionPlanDTO {
   id: string;
   name: string;
-  monthlyPrice: number;
-  yearlyPrice: number;
+  frequency: string;
+  currency: string;
+  uniqueName: string;
+  price: number;
   maxCredits: number;
   maxPublishedItems: number;
   historyRetentionDays: number;
@@ -12,7 +14,7 @@ export interface SubscriptionPlanDTO {
   isDisabled: boolean;
   createdBy: string;
   type: string;
-  createdOn: Date;
-  lastModifiedBy: string;
-  lastModifiedOn: Date;
+  createdOn: Date | string;
+  lastModifiedBy: string | null;
+  lastModifiedOn: Date | string;
 }
