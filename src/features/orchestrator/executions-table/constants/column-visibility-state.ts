@@ -9,5 +9,5 @@ export const columnVisibilityState = {
   retryCount: false,
   versionNumber: false,
   executedBy: true,
-  executedOn: true,
+  executedOn: false,
 };
