@@ -16,7 +16,7 @@ export function MyAccount() {
     <Accordion
       type="single"
       collapsible
-      className="mx-auto my-6 max-w-5xl space-y-6"
+      className="mx-auto my-6 max-w-3xl space-y-6"
       defaultValue="profileInfo"
     >
       <AccordionItem
