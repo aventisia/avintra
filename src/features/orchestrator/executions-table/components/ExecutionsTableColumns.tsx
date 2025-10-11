@@ -90,7 +90,7 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {format(row.getValue("startTime"), "d MMM, h:mm:ss a")}
+        {format(row.getValue("startTime"), "dd MMM yyyy, h:mm:ss a")}
       </div>
     ),
   },
@@ -107,7 +107,7 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {format(row.getValue("endTime"), "dd MMM, h:mm:ss a")}
+        {format(row.getValue("endTime"), "dd MMM yyyy, h:mm:ss a")}
       </div>
     ),
   },
