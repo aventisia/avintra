@@ -66,7 +66,7 @@ const InferenceModelSetupForm = () => {
             allowMultipleClasses: false,
           },
           configurationType: "OnPrem",
-          llm: "gemma",
+          llm: import.meta.env.MODE !== "production" ? "gemma" : "gpt-4o-mini",
           nodePrompt: `You are a reliable text classification assistant. Your task is to analyse the given input text and accurately classify it into the predefined categories based on its content, tone, and intent.\nIf “multiple classification mode” is True, you may return more than one applicable category label. Otherwise, return only the single most appropriate category\nSelect the category (or categories) strictly based on the information present in the input. Do not infer or guess beyond the given content.`,
           temperature: 0.2,
         });
@@ -80,7 +80,7 @@ const InferenceModelSetupForm = () => {
             totalMinimumWords: 0,
           },
           configurationType: "OnPrem",
-          llm: "gemma",
+          llm: import.meta.env.MODE !== "production" ? "gemma" : "gpt-4o-mini",
           nodePrompt: `You are an expert summarisation assistant. Your task is to read the provided content and generate a clear, concise, and accurate summary that captures the key ideas, main points, and critical information, while removing redundant or unimportant details.\nFocus on preserving the original intent and tone of the content. The summary should be easily understandable and suitable for someone who has not read the full text.\nIf the content is structured (like emails, reports, meeting transcripts, articles), maintain the logical flow and structure in the summary.\nBe objective, factual, and avoid adding personal opinions or interpretations.`,
           temperature: 0.2,
         });
@@ -92,7 +92,7 @@ const InferenceModelSetupForm = () => {
             categories: [{ name: "", instructions: "", subCategories: [] }],
           },
           configurationType: "OnPrem",
-          llm: "gemma",
+          llm: import.meta.env.MODE !== "production" ? "gemma" : "gpt-4o-mini",
           nodePrompt: `You are a sentiment analysis assistant. Your task is to evaluate the emotional tone of the provided text and classify its overall sentiment into one of the predefined categories.\nAnalyse the text based on the language, tone, and implied emotion, not just the presence of specific keywords.\nReturn only the sentiment label as the output. If the sentiment is ambiguous or mixed, return "Neutral".`,
           temperature: 0.2,
         });
@@ -104,7 +104,7 @@ const InferenceModelSetupForm = () => {
             questionAnswers: [{ name: "", instructions: "" }],
           },
           configurationType: "OnPrem",
-          llm: "gemma",
+          llm: import.meta.env.MODE !== "production" ? "gemma" : "gpt-4o-mini",
           nodePrompt: `You are an assistant that extracts information from documents. You will receive: \n1. The text content of a document.\n2. A list of questions with instructions on how to answer them.\n\nYour task is to carefully read the document and answer each question based ONLY on the document text.\n- Always follow the instructions for formatting each answer.\n- If an answer is not explicitly available in the document, respond with: "Not found in document".\n- Do not add extra information or assumptions.\n- Keep answers concise and accurate.`,
           temperature: 0.2,
         });
@@ -117,7 +117,7 @@ const InferenceModelSetupForm = () => {
             tables: null,
           },
           configurationType: "OnPrem",
-          llm: "gemma",
+          llm: import.meta.env.MODE !== "production" ? "gemma" : "gpt-4o-mini",
           nodePrompt: `You are a highly accurate information extraction assistant. Your task is to carefully analyse the provided text and extract specific pieces of information based on predefined fields or entities.\nOnly extract relevant, factual data as it appears in the input. Do not infer, assume, or create information that is not explicitly present in the text.\nReturn the output with clearly labeled fields as per the extraction schema.\nIf a field is not present in the input, return null or "" without making assumptions.\nEnsure the extracted data is clean, free from noise, and maintains the original context.`,
           temperature: 0.2,
         });

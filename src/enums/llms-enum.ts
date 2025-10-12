@@ -14,3 +14,7 @@ export enum LLMsEnum {
   "gemma" = "Gemma 3",
   "gpt-4o-mini" = "GPT 4o mini",
 }
+
+export enum LLMsEnumForProduction {
+  "gpt-4o-mini" = "GPT 4o mini",
+}

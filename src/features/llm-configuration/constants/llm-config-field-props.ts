@@ -1,4 +1,4 @@
-import { LLMsEnum } from "@/enums/llms-enum";
+import { LLMsEnum, LLMsEnumForProduction } from "@/enums/llms-enum";
 import { SelectFieldProps } from "@/shared/select-field/SelectField";
 
 import { AutosizeTextareaFieldProps } from "@aventisia/ui/form";
@@ -15,7 +15,10 @@ const nodePromptProps: AutosizeTextareaFieldProps = {
 const baseLlmProps: SelectFieldProps = {
   name: "",
   label: "Base LLM",
-  selectOptions: enumToArray(LLMsEnum),
+  selectOptions:
+    import.meta.env.MODE !== "production"
+      ? enumToArray(LLMsEnum)
+      : enumToArray(LLMsEnumForProduction),
   placeholder: "Select",
   isRequired: true,
   className: "text-sm resize-none",
