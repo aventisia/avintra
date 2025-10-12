@@ -73,13 +73,13 @@ const FileUploaderWrapper = () => {
             )}
           </div>
 
-          <div className="flex items-center justify-center gap-1">
+          <div className="hidden items-center justify-center gap-1">
             <Separator className="w-[47%]" />
             <p className="w-[6%] text-center">OR</p>
             <Separator className="w-[47%]" />
           </div>
 
-          <div className="grid justify-center content-center text-center gap-6">
+          <div className="hidden justify-center content-center text-center gap-6">
             <p className="text-lg">Connect to Cloud Storage</p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
