@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UglyToad.PdfPig;
 
-namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
+namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
     [DisplayName("Get PDF Pages Text in List")]
     [Description("Extracts text from each page of a PDF file and returns a list of page texts.")]

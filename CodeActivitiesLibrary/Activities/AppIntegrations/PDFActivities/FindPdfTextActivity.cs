@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using UglyToad.PdfPig;
 
-namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
+namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
     [DisplayName("PDF Regex Contains")]
     [Description("Checks if the PDF contains text matching a regular expression pattern (case-sensitive).")]
