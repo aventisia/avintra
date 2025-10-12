@@ -27,13 +27,13 @@ export const useOpenModel = () => {
     let url = "";
     switch (stage) {
       case "Label":
-        url = `${import.meta.env.VITE_AISTUDIO_URL}/project?pid=${rowId}&pn=${modelData?.name}&t=setup`;
+        url = `${import.meta.env.VITE_AISTUDIO_URL}/project?pid=${rowId}&v=${modelData?.latestVersionId}&pn=${modelData?.name}&t=setup`;
         break;
       case "Test":
-        url = `${import.meta.env.VITE_AISTUDIO_URL}/project?pid=${rowId}&pn=${modelData?.name}&t=setup`;
+        url = `${import.meta.env.VITE_AISTUDIO_URL}/project?pid=${rowId}&v=${modelData?.latestVersionId}&pn=${modelData?.name}&t=setup`;
         break;
       case "View":
-        url = `${import.meta.env.VITE_AISTUDIO_URL}/project?pid=${rowId}&pn=${modelData?.name}&t=setup`;
+        url = `${import.meta.env.VITE_AISTUDIO_URL}/project?pid=${rowId}&v=${modelData?.latestVersionId}&pn=${modelData?.name}&t=setup`;
         break;
     }
 
