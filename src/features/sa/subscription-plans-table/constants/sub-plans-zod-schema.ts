@@ -26,9 +26,19 @@ const numberTextFieldSchema = z
  * Represents the Zod schema for a Subscription Plans.
  */
 export const subPlansZodSchema = z.object({
-  id: z.string(), // UUID format validation
+  id: z.string(),
   name: subPlanNameSchema,
   type: z.string(),
+  price: numberTextFieldSchema.refine((num) => num >= 0, {
+    message: "Value must be greater than or equal to 0",
+  }),
+  currency: z
+    .string()
+    .min(1, { message: reqError("Currency") })
+    .max(10, { message: maxLenError("Currency", 10) }),
+  frequency: z.enum(["Monthly", "Yearly"], {
+    errorMap: () => ({ message: "Select a valid frequency" }),
+  }),
   maxCredits: numberTextFieldSchema.refine((num) => num >= -1, {
     message: "Value must be greater than or equal to -1",
   }),
@@ -47,14 +57,7 @@ export const subPlansZodSchema = z.object({
   maxUsers: numberTextFieldSchema.refine((num) => num >= -1, {
     message: "Value must be greater than or equal to -1",
   }),
-  monthlyPrice: numberTextFieldSchema.refine((num) => num >= 0, {
-    message: "Value must be greater than or equal to 0",
-  }),
-  yearlyPrice: numberTextFieldSchema.refine((num) => num >= 0, {
-    message: "Value must be greater than or equal to 0",
-  }),
   isDisabled: z.boolean().default(false),
-  // Read (view) only fields
   createdBy: z.string(),
   createdOn: z.date(),
   lastModifiedBy: z.string(),

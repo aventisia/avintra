@@ -16,7 +16,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "executionCount", value: "Execution Count" },
   { key: "failedCount", value: "Failed Count" },
   { key: "executionTime", value: "Total Execution Time" },
-  { key: "isPublished", value: "Is Published?" },
+  { key: "isPublished", value: "Is Published" },
   { key: "publishedOn", value: "Published On" },
 ];
 

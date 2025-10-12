@@ -1,8 +1,8 @@
-import { Separator } from "@aventisia/ui";
+// import { Separator } from "@aventisia/ui";
 import {
   DataTable,
   DataTableSkeleton,
-  DTCreateButton,
+  // DTCreateButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
@@ -16,8 +16,8 @@ import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchExecutions } from "../hooks/useFetchExecutions";
 
-import { ExecutionCrudDialog } from "./execution-crud-dialog/ExecutionCrudDialog";
-import { ExecutionBulkActions } from "./execution-row-actions/ExecutionBulkActions";
+// import { ExecutionCrudDialog } from "./execution-crud-dialog/ExecutionCrudDialog";
+// import { ExecutionBulkActions } from "./execution-row-actions/ExecutionBulkActions";
 import { executionsTableColumns } from "./ExecutionsTableColumns";
 
 /**
@@ -53,37 +53,37 @@ export const ExecutionsTable = () => {
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Crud ops dialog */}
-          <ExecutionCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
+          {/* <ExecutionCrudDialog> */}
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            <DTHeading heading={TABLE_HEADING} />
 
-              <div className="flex items-center gap-2">
-                <DTSearchBox
-                  table={table}
-                  searchColumn={SEARCH_COLUMN}
-                  placeholder="Search executions..."
-                />
-                <DTViewOptions
-                  {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
-                />
-                <Separator orientation="vertical" className="mx-2 h-6" />
-                <DTCreateButton />
-              </div>
+            <div className="flex items-center gap-2">
+              <DTSearchBox
+                table={table}
+                searchColumn={SEARCH_COLUMN}
+                placeholder="Search executions..."
+              />
+              <DTViewOptions
+                {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
+              />
+              {/* <Separator orientation="vertical" className="mx-2 h-6" />
+                <DTCreateButton /> */}
             </div>
+          </div>
 
-            {/* Data table to render data */}
-            <DataTable
-              table={table}
-              columnsLength={executionsTableColumns.length}
-            />
-          </ExecutionCrudDialog>
+          {/* Data table to render data */}
+          <DataTable
+            table={table}
+            columnsLength={executionsTableColumns.length}
+          />
+          {/* </ExecutionCrudDialog> */}
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />
 
           {/* Bulk actions for data table */}
-          <ExecutionBulkActions table={table} />
+          {/* <ExecutionBulkActions table={table} /> */}
         </div>
       ) : (
         // Show data table skeleton while fetching the executions data

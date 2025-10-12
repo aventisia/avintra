@@ -38,11 +38,16 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         name: "AI Models",
         route: "/ai-models",
       },
-      {
-        Icon: LibraryIcon,
-        name: "Library",
-        route: "/library",
-      },
+      // Add Library only if not production
+      ...(import.meta.env.MODE !== "production"
+        ? [
+            {
+              Icon: LibraryIcon,
+              name: "Library",
+              route: "/library",
+            },
+          ]
+        : []),
     ],
   },
   {
@@ -66,12 +71,17 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         name: "queues",
         route: "/orchestrator/queues",
       },
-      {
-        permissions: ["SA", "TA", "OM"],
-        Icon: AiOutlineThunderbolt,
-        name: "triggers",
-        route: "/orchestrator/triggers",
-      },
+      // Add triggers only if not production
+      ...(import.meta.env.MODE !== "production"
+        ? [
+            {
+              permissions: ["SA", "TA", "OM"],
+              Icon: AiOutlineThunderbolt,
+              name: "triggers",
+              route: "/orchestrator/triggers",
+            },
+          ]
+        : []),
       {
         permissions: ["SA", "TA", "OM"],
         Icon: MonitorPlayIcon,
@@ -101,24 +111,34 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         name: "tenant",
         route: "/tenant",
       },
-      {
-        permissions: ["SA", "TA"],
-        Icon: Workflow,
-        name: "integrations",
-        route: "/integrations",
-      },
+      // Add integrations only if not production
+      ...(import.meta.env.MODE !== "production"
+        ? [
+            {
+              permissions: ["SA", "TA"],
+              Icon: Workflow,
+              name: "integrations",
+              route: "/integrations",
+            },
+          ]
+        : []),
       {
         permissions: ["SA", "TA"],
         Icon: Wallet,
         name: "credits Usage",
         route: "/credits-usage",
       },
-      {
-        permissions: ["SA", "TA"],
-        Icon: CheckCheckIcon,
-        name: "Approvals",
-        route: "/approvals",
-      },
+      // Add Approvals only if not production
+      ...(import.meta.env.MODE !== "production"
+        ? [
+            {
+              permissions: ["SA", "TA"],
+              Icon: CheckCheckIcon,
+              name: "Approvals",
+              route: "/approvals",
+            },
+          ]
+        : []),
       {
         permissions: ["SA", "TA"],
         Icon: UsersIcon,

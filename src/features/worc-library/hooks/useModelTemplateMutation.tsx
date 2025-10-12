@@ -27,8 +27,9 @@ export const useModelTemplateMutation = () => {
     },
 
     // Handle successful application: open Model in new tab with template ID and name
+    // TODO: Need to pass version id while cloning the ai project template
     onSuccess: (data) => {
-      const url = `${import.meta.env.VITE_AISTUDIO_URL}/project?pid=${data.data.id}&pn=${data.data.name}&t=setup`;
+      const url = `${import.meta.env.VITE_AISTUDIO_URL}/project?pid=${data.data.id}&v=${data.data.id}&pn=${data.data.name}&t=setup`;
       window.open(url, "_blank");
     },
   });

@@ -8,11 +8,29 @@ export interface SubPlansTableDto {
   id?: string;
 
   /**
+   * Gets or sets the unique name identifier of the subscription plan.
+   */
+  uniqueName: string;
+
+  /**
    * Gets or sets the name of the subscription plan.
    */
   name: string;
 
+  /**
+   * Gets or sets the type of the subscription plan.
+   */
   type: "Starter" | "Pro" | "Enterprise";
+
+  /**
+   * Gets or sets the billing frequency of the plan.
+   */
+  frequency: "Monthly" | "Yearly";
+
+  /**
+   * Gets or sets the currency in which the plan is priced.
+   */
+  currency: string;
 
   /**
    * Gets or sets the maximum number of credits allowed in the plan.
@@ -30,14 +48,9 @@ export interface SubPlansTableDto {
   historyRetentionDays: number;
 
   /**
-   * Gets or sets the monthly price.
+   * Gets or sets the price of the plan based on frequency.
    */
-  monthlyPrice: number;
-
-  /**
-   * Gets or sets the yearly price.
-   */
-  yearlyPrice: number;
+  price: number;
 
   /**
    * Gets or sets the maximum number of spaces allowed.

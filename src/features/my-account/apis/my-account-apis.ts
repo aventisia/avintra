@@ -62,6 +62,13 @@ export const getActiveSessions = () =>
     .get<IHttpResponse<ActiveSessionDto[]>>(`${baseAPIURL}/active-sessions`)
     .then((res) => res.data);
 
+export const postTerminateSessions = (postObj: string[]) =>
+  axiosInstance
+    .post<
+      IHttpResponse<string[]>
+    >(`${baseAPIURL}/terminate-sessions`, { howSessionEnded: "SessionHasExpired", sessionIdList: postObj })
+    .then((res) => res.data);
+
 export const deactivateMyAccount = (
   deactivateUserAccountDto: DeactivateUserAccountDto,
 ) =>

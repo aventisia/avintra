@@ -92,6 +92,39 @@ const isDisabledProps: SwitchFieldProps = {
   description: "Disable this plan if it’s no longer available.",
 };
 
+// Price
+const priceProps: InputFieldProps = {
+  name: "price",
+  label: "Price",
+  isRequired: true,
+};
+
+// Currency
+const currencyProps: SelectFieldProps = {
+  name: "currency",
+  label: "Currency",
+  selectOptions: [
+    { label: "INR", value: "INR" },
+    { label: "USD", value: "USD" },
+    { label: "EUR", value: "EUR" },
+    { label: "GBP", value: "GBP" },
+  ],
+  defaultValue: "USD",
+  isRequired: true,
+};
+
+// Frequency
+const frequencyProps: SelectFieldProps = {
+  name: "frequency",
+  label: "Billing Frequency",
+  selectOptions: [
+    { label: "Monthly", value: "Monthly" },
+    { label: "Yearly", value: "Yearly" },
+  ],
+  defaultValue: "Monthly",
+  isRequired: true,
+};
+
 export {
   idProps,
   nameProps,
@@ -105,4 +138,7 @@ export {
   yearlyPriceProps,
   monthlyPriceProps,
   typeProps,
+  frequencyProps,
+  currencyProps,
+  priceProps,
 };

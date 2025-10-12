@@ -9,6 +9,8 @@ export interface ModelsTableDto {
    */
   id?: string;
 
+  latestVersionId?: string;
+
   /**
    * Gets or sets the type of the model.
    */

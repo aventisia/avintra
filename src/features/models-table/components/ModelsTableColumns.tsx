@@ -8,7 +8,6 @@ import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { ModelsTableDto } from "../dtos/models-table-dto";
 import { TaskTypesEnum } from "../enums/tasks-type-enum";
-import { formatSeconds } from "../utils/formatSeconds";
 
 import { ModelRowActions } from "./model-row-actions/ModelRowActions";
 import { ModelsTableCellLink } from "./ModelsTableCellLink";
@@ -93,87 +92,138 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
       );
     },
   },
+  // TODO: Clean up commented code if not needed
+  // {
+  //   accessorKey: "docsProcessed",
+  //   header: ({ column }) => (
+  //     <DTColumnHeader
+  //       tableKey={TABLE_KEY}
+  //       column={column}
+  //       title={getColumnName("docsProcessed")}
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="w-auto font-medium">{row.getValue("docsProcessed")}</div>
+  //   ),
+  // },
+  // {
+  //   accessorKey: "accuracy",
+  //   header: ({ column }) => (
+  //     <DTColumnHeader
+  //       tableKey={TABLE_KEY}
+  //       column={column}
+  //       title={getColumnName("accuracy")}
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="w-auto font-medium">{row.getValue("accuracy")}</div>
+  //   ),
+  // },
+  // {
+  //   accessorKey: "tokenCount",
+  //   header: ({ column }) => (
+  //     <DTColumnHeader
+  //       tableKey={TABLE_KEY}
+  //       column={column}
+  //       title={getColumnName("tokenCount")}
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="w-auto font-medium">{row.getValue("tokenCount")}</div>
+  //   ),
+  // },
+  // {
+  //   accessorKey: "executionCount",
+  //   header: ({ column }) => (
+  //     <DTColumnHeader
+  //       tableKey={TABLE_KEY}
+  //       column={column}
+  //       title={getColumnName("executionCount")}
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="w-auto font-medium">{row.getValue("executionCount")}</div>
+  //   ),
+  // },
+  // {
+  //   accessorKey: "failedCount",
+  //   header: ({ column }) => (
+  //     <DTColumnHeader
+  //       tableKey={TABLE_KEY}
+  //       column={column}
+  //       title={getColumnName("failedCount")}
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="w-auto font-medium">{row.getValue("failedCount")}</div>
+  //   ),
+  // },
+  // {
+  //   accessorKey: "executionTime",
+  //   header: ({ column }) => (
+  //     <DTColumnHeader
+  //       tableKey={TABLE_KEY}
+  //       column={column}
+  //       title={getColumnName("executionTime")}
+  //     />
+  //   ),
+  //   cell: ({ row }) => {
+  //     const executionTimeFormattedValue =
+  //       formatSeconds(row.getValue("executionTime")) || "0s";
+  //     return (
+  //       <div className="w-auto font-medium">{executionTimeFormattedValue}</div>
+  //     );
+  //   },
+  // },
+  // {
+  //   accessorKey: "trainedOn",
+  //   header: ({ column }) => (
+  //     <DTColumnHeader
+  //       tableKey={TABLE_KEY}
+  //       column={column}
+  //       title={getColumnName("trainedOn")}
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="w-auto truncate font-medium">
+  //       {dateFormatter(row.getValue("trainedOn"))}
+  //     </div>
+  //   ),
+  // },
   {
-    accessorKey: "docsProcessed",
+    accessorKey: "setupStatus",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("docsProcessed")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto font-medium">{row.getValue("docsProcessed")}</div>
-    ),
-  },
-  {
-    accessorKey: "accuracy",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("accuracy")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto font-medium">{row.getValue("accuracy")}</div>
-    ),
-  },
-  {
-    accessorKey: "tokenCount",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("tokenCount")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto font-medium">{row.getValue("tokenCount")}</div>
-    ),
-  },
-  {
-    accessorKey: "executionCount",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("executionCount")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto font-medium">{row.getValue("executionCount")}</div>
-    ),
-  },
-  {
-    accessorKey: "failedCount",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("failedCount")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto font-medium">{row.getValue("failedCount")}</div>
-    ),
-  },
-  {
-    accessorKey: "executionTime",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("executionTime")}
+        title={getColumnName("setupStatus")}
       />
     ),
     cell: ({ row }) => {
-      const executionTimeFormattedValue =
-        formatSeconds(row.getValue("executionTime")) || "0s";
       return (
-        <div className="w-auto font-medium">{executionTimeFormattedValue}</div>
+        <Badge
+          variant={"outline"}
+          className={`w-auto truncate px-2.5 py-1.5 font-medium capitalize`}
+        >
+          {row.getValue("setupStatus")}
+        </Badge>
       );
     },
+  },
+  {
+    accessorKey: "createdOn",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("createdOn")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {dateFormatter(row.getValue("createdOn"))}
+      </div>
+    ),
   },
   {
     accessorKey: "isPublished",
@@ -205,56 +255,6 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
         <div className="w-auto font-medium">
           {publishedOnValue ? dateFormatter(publishedOnValue) : "N/A"}
         </div>
-      );
-    },
-  },
-  {
-    accessorKey: "createdOn",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("createdOn")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("createdOn"))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "trainedOn",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("trainedOn")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("trainedOn"))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "setupStatus",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("setupStatus")}
-      />
-    ),
-    cell: ({ row }) => {
-      return (
-        <Badge
-          variant={"outline"}
-          className={`w-auto truncate px-2.5 py-1.5 font-medium capitalize`}
-        >
-          {row.getValue("setupStatus")}
-        </Badge>
       );
     },
   },

@@ -1,15 +1,21 @@
-import { Skeleton } from "@aventisia/ui";
+import { LoadingSpinner, Skeleton } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
+import { XCircleIcon } from "lucide-react";
+import { useState } from "react";
 
 import Lucide from "@/react-toolkit/ui/Lucide";
 
 import useGetDeviceHistory from "../../hooks/useGetDeviceHistory";
+import { useTerminateSessionMutation } from "../../hooks/useTerminateSessionMutation";
 
 import DeviceHistoryTable from "./DeviceHistoryTable";
 
 export const DeviceHistoryTab = () => {
+  const [currTermination, setCurrTermination] = useState<string>("");
+
   const { isLoading, activeSessions, currentSession, getImageSourceOfBrowser } =
     useGetDeviceHistory();
-
+  const { mutate: terminateSession, isPending } = useTerminateSessionMutation();
   return (
     <div className="box box--stacked flex flex-col p-5">
       {/* <div className="mb-6 flex items-center border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
@@ -35,6 +41,9 @@ export const DeviceHistoryTab = () => {
                   </DeviceHistoryTable.Td> */}
                   <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 text-sm font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
                     Status
+                  </DeviceHistoryTable.Td>
+                  <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 text-sm font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
+                    Terminate
                   </DeviceHistoryTable.Td>
                 </DeviceHistoryTable.Tr>
               </DeviceHistoryTable.Thead>
@@ -69,7 +78,7 @@ export const DeviceHistoryTab = () => {
                               />
                             )}
                           </div>
-                          <div className="ml-3.5">
+                          <div className="ml-2 max-w-36 truncate">
                             {session.browserType} on {session.operatingSystem}
                           </div>
                         </div>
@@ -79,9 +88,11 @@ export const DeviceHistoryTab = () => {
                         <div className="flex max-w-md items-center truncate whitespace-nowrap">
                           <Lucide
                             icon="Smartphone"
-                            className="mr-2 h-4 w-4 stroke-[1.3]"
+                            className="mr-1 h-4 w-4 stroke-[1.3]"
                           />
-                          <p className="truncate">{session.deviceId}</p>
+                          <p className="max-w-48 truncate">
+                            {session.deviceId}
+                          </p>
                           {session.refreshToken ===
                             currentSession?.refreshToken && (
                             <div className="bg-primary/10 border-primary/10 ml-3 flex items-center rounded-md border px-1.5 py-px text-xs font-medium text-primary">
@@ -103,6 +114,23 @@ export const DeviceHistoryTab = () => {
                             ? "Ended"
                             : "Active"}
                         </div>
+                      </DeviceHistoryTable.Td>
+                      <DeviceHistoryTable.Td className="dark:bg-darkmode-600 flex items-center justify-center border-dashed border-slate-300/70 py-4">
+                        <Button
+                          onClick={() => {
+                            setCurrTermination(session.id);
+                            terminateSession([session.id]);
+                          }}
+                          variant="caution"
+                          size="icon7"
+                          disabled={isPending && currTermination == session.id}
+                        >
+                          {isPending && currTermination == session.id ? (
+                            <LoadingSpinner className="h-4 w-4" />
+                          ) : (
+                            <XCircleIcon className="h-4 w-4" />
+                          )}
+                        </Button>
                       </DeviceHistoryTable.Td>
                     </DeviceHistoryTable.Tr>
                   ))}

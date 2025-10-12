@@ -89,7 +89,11 @@ export function ChartLineInteractive({
     <Card className="py-4 sm:py-0">
       <CardHeader className="!px-8 !pb-0 !pt-4">
         <CardDescription>{title}</CardDescription>
-        <CardTitle>{total.toLocaleString()}</CardTitle>
+        <CardTitle>
+          {total.toLocaleString("en-US", {
+            maximumFractionDigits: 2,
+          })}
+        </CardTitle>
       </CardHeader>
 
       <CardContent className="px-2 sm:p-6">

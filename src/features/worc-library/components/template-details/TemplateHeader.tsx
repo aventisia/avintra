@@ -57,7 +57,10 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
               <div className="flex items-center gap-1">
                 <Download className="h-4 w-4" />
                 <span className="leading-4">
-                  {template?.usageCount?.toLocaleString()} uses
+                  {template?.usageCount?.toLocaleString("en-US", {
+                    maximumFractionDigits: 2,
+                  })}{" "}
+                  uses
                 </span>
               </div>
 

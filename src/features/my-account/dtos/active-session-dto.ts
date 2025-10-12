@@ -1,4 +1,5 @@
 export interface ActiveSessionDto {
+  id: string;
   deviceId: string;
   IPAddress: string;
   refreshToken: string;
