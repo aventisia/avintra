@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { LLMsEnum } from "@/enums/llms-enum";
+import { LLMsEnum, LLMsEnumForProduction } from "@/enums/llms-enum";
 import {
   Select,
   SelectContent,
@@ -77,11 +77,19 @@ const LLMConfiguration = ({
                         </span>
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(LLMsEnum).map(([value, label]) => (
-                          <SelectItem key={value} value={value}>
-                            {label}
-                          </SelectItem>
-                        ))}
+                        {import.meta.env.MODE !== "production"
+                          ? Object.entries(LLMsEnum).map(([value, label]) => (
+                              <SelectItem key={value} value={value}>
+                                {label}
+                              </SelectItem>
+                            ))
+                          : Object.entries(LLMsEnumForProduction).map(
+                              ([value, label]) => (
+                                <SelectItem key={value} value={value}>
+                                  {label}
+                                </SelectItem>
+                              ),
+                            )}
                       </SelectContent>
                     </Select>
                   </FormItem>
@@ -91,32 +99,39 @@ const LLMConfiguration = ({
           </AccordionTrigger>
 
           <AccordionContent className="flex flex-col gap-4 text-balance px-1 !border-none">
-            <Tabs defaultValue="OnPrem">
-              <TabsList
-                className={cn("grid grid-cols-2 rounded-none mb-4", className)}
-              >
-                <TabsTrigger
-                  value="OnPrem"
-                  className="border-b-slate-200 data-[state=active]:bg-transparent data-[state=active]:border-b data-[state=active]:border-b-black rounded-none"
+            {import.meta.env.MODE !== "production" ? (
+              <Tabs defaultValue="OnPrem">
+                <TabsList
+                  className={cn(
+                    "grid grid-cols-2 rounded-none mb-4",
+                    className,
+                  )}
                 >
-                  Aventisia on-prem LLMs
-                </TabsTrigger>
-                <TabsTrigger
-                  value="Cloud"
-                  className="border-b-slate-200 data-[state=active]:bg-transparent data-[state=active]:border-b data-[state=active]:border-b-black rounded-none"
-                >
-                  Connect to your cloud LLMs
-                </TabsTrigger>
-              </TabsList>
+                  <TabsTrigger
+                    value="OnPrem"
+                    className="border-b-slate-200 data-[state=active]:bg-transparent data-[state=active]:border-b data-[state=active]:border-b-black rounded-none"
+                  >
+                    Aventisia on-prem LLMs
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="Cloud"
+                    className="border-b-slate-200 data-[state=active]:bg-transparent data-[state=active]:border-b data-[state=active]:border-b-black rounded-none"
+                  >
+                    Connect to your cloud LLMs
+                  </TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="OnPrem">
-                <OnPremConfig form={form} modelType={modelType} />
-              </TabsContent>
+                <TabsContent value="OnPrem">
+                  <OnPremConfig form={form} modelType={modelType} />
+                </TabsContent>
 
-              <TabsContent value="Cloud">
-                <CloudConfig form={form} modelType={modelType} />
-              </TabsContent>
-            </Tabs>
+                <TabsContent value="Cloud">
+                  <CloudConfig form={form} modelType={modelType} />
+                </TabsContent>
+              </Tabs>
+            ) : (
+              <OnPremConfig form={form} modelType={modelType} />
+            )}
           </AccordionContent>
         </AccordionItem>
       </Accordion>
