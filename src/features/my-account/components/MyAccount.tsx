@@ -21,9 +21,9 @@ export function MyAccount() {
     >
       <AccordionItem
         value={"profileInfo"}
-        className="rounded-lg border-none bg-accent"
+        className="rounded-xl border-none bg-slate-100/80"
       >
-        <AccordionTrigger className="p-4 text-lg font-medium">
+        <AccordionTrigger className="p-4 text-base font-medium">
           Profile Info
         </AccordionTrigger>
         <AccordionContent className="border-t">
@@ -33,9 +33,9 @@ export function MyAccount() {
 
       <AccordionItem
         value={"emailSetting"}
-        className="rounded-lg border-none bg-accent"
+        className="rounded-xl border-none bg-slate-100/80"
       >
-        <AccordionTrigger className="p-4 text-lg font-medium">
+        <AccordionTrigger className="p-4 text-base font-medium">
           Email Settings
         </AccordionTrigger>
         <AccordionContent className="border-t">
@@ -45,9 +45,9 @@ export function MyAccount() {
 
       <AccordionItem
         value={"changePassword"}
-        className="rounded-lg border-none bg-accent"
+        className="rounded-xl border-none bg-slate-100/80"
       >
-        <AccordionTrigger className="p-4 text-lg font-medium">
+        <AccordionTrigger className="p-4 text-base font-medium">
           Change Password
         </AccordionTrigger>
         <AccordionContent className="border-t">
@@ -57,9 +57,9 @@ export function MyAccount() {
 
       <AccordionItem
         value={"deviceHistory"}
-        className="rounded-lg border-none bg-accent"
+        className="rounded-xl border-none bg-slate-100/80"
       >
-        <AccordionTrigger className="p-4 text-lg font-medium">
+        <AccordionTrigger className="p-4 text-base font-medium">
           Connected Devices
         </AccordionTrigger>
         <AccordionContent className="border-t">
@@ -69,9 +69,9 @@ export function MyAccount() {
 
       {/* <AccordionItem
         value={"accountDeactivation"}
-        className="rounded-lg border-none bg-accent"
+        className="rounded-xl border-none bg-slate-100/80"
       >
-        <AccordionTrigger className="p-4 text-lg font-medium">
+        <AccordionTrigger className="p-4 text-base font-medium">
           Account Deactivation
         </AccordionTrigger>
         <AccordionContent className="border-t">
