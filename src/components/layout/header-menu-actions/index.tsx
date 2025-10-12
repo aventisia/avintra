@@ -43,15 +43,21 @@ const HeaderMenuActions = () => {
           }}
           disabled={isPublishButtonDisabled}
         />
-        <SimpleDDMenuItem
-          size="md"
-          Icon={LayoutTemplate}
-          content="Save as Template"
-          onClick={() => {
-            setOpenSaveAsTemplateDialog(true);
-          }}
-          disabled={isSaveAsTemplateButtonDisabled}
-        />
+
+        {import.meta.env.MODE !== "production" ? (
+          <>
+            <SimpleDDMenuItem
+              size="md"
+              Icon={LayoutTemplate}
+              content="Save as Template"
+              onClick={() => {
+                setOpenSaveAsTemplateDialog(true);
+              }}
+              disabled={isSaveAsTemplateButtonDisabled}
+            />
+          </>
+        ) : null}
+
         {/* <FlowLogHeader /> */}
         <SimpleDDMenuItem
           size="md"
