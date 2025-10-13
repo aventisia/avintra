@@ -35,7 +35,6 @@ const tableContextProps: InputFieldProps = {
 const tableNameProps: InputFieldProps = {
   name: "tableName",
   fieldSize: "sm",
-  maxLength: 20,
   className: "h-7 w-24 bg-transparent",
 };
 
