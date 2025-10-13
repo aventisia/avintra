@@ -1371,8 +1371,14 @@ public class InferencingModelService : IInferencingModelService
 
         var startTime = DateTime.UtcNow;
 
+        // Get ai project details
+        var aIProjectVersion = await _unitOfWork.AIProjectVersionRepo
+                .GetByConditionAsync(w => w.Id == versionTask.AIProjectVersionId)
+                .Include(i => i.AIProject)
+                .SingleOrDefaultAsync();
+
         // Call the LLM service to extract data
-        var llmResponse = await _llmDataExtractionService.ExtractDataAsync(prompt, versionTask.LLM, versionTask.Temperature, ollamaOutputFormatSchema);
+        var llmResponse = await _llmDataExtractionService.ExtractDataAsync(prompt, versionTask.LLM, versionTask.Temperature, ollamaOutputFormatSchema, versionTask.AIProjectVersionId, aIProjectVersion.AIProject.Name);
 
         var endTime = DateTime.UtcNow;
         var executionSeconds = (int)Math.Ceiling((endTime - startTime).TotalSeconds);
