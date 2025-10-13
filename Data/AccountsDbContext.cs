@@ -63,6 +63,7 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<TenantSubscription>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<SubscriptionFrequenciesEnum>());
         builder.Entity<BillingDetail>().Property(e => e.Country).HasConversion(new EnumToStringConverter<CountriesEnum>());
         builder.Entity<SubscriptionPlan>().Property(e => e.Type).HasConversion(new EnumToStringConverter<SubscriptionPlanTypeEnum>());
+        // builder.Entity<TenantSubscription>().Property(e => e.Status).HasConversion(new EnumToStringConverter<SubscriptionStatusTypesEnum>());
 
         // Configure One-to-One relationship between AccountUser and AccountUser
         builder.Entity<AccountUser>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);

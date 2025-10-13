@@ -50,10 +50,20 @@ public class TenantSubscription : BaseEntity
     /// </summary>
     public int MaxUsers { get; set; }
 
-      /// <summary>
+    /// <summary>
     /// Gets or sets the Razorpay subscription ID associated with this tenant's subscription.
     /// </summary>
     public string? RazorpaySubscriptionId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the current status of the tenant's subscription.
+    /// </summary>
+    public SubscriptionStatusTypesEnum Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets the next billing date for the tenant's subscription.
+    /// </summary>
+    public DateTimeOffset? NextBillingDate { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the subscription plan assigned to the tenant.
