@@ -72,14 +72,14 @@ public class SubscriptionPlanDto
     public int MaxUsers { get; set; }
 
     /// <summary>
-    /// Gets or sets the current status of the subscription plan.
+    /// Gets or sets the current status of the subscription plan. The default value is Current.
     /// </summary>
-    public PlanStatusTypesEnum Status { get; set; }
+    public PlanStatusTypesEnum Status { get; set; } = PlanStatusTypesEnum.Current;
 
     /// <summary>
     /// Gets or sets a value indicating whether this plan is the default plan in the system.
     /// </summary>
-    public bool IsDefault { get; set; } 
+    public bool IsDefault { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether this plan is allowed in Razorpay.

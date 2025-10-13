@@ -220,8 +220,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
             // Map DTO to entity and assign creator/modifier IDs
             var newSubscriptionPlan = subscriptionPlanDto.Adapt<SubscriptionPlan>();
-            newSubscriptionPlan.Status = PlanStatusTypesEnum.Current;
-            newSubscriptionPlan.UniqueName = $"{newSubscriptionPlan.Name}-{newSubscriptionPlan.Frequency}-{newSubscriptionPlan.Currency}".ToLower();
+            newSubscriptionPlan.UniqueName = $"{newSubscriptionPlan.Type}-{newSubscriptionPlan.Frequency}-{newSubscriptionPlan.Currency}".ToLower();
             newSubscriptionPlan.CreatedByUserId = _userId;
             newSubscriptionPlan.LastModifiedByUserId = _userId;
 
