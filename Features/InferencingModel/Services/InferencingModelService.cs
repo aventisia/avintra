@@ -1384,7 +1384,7 @@ public class InferencingModelService : IInferencingModelService
         var executionSeconds = (int)Math.Ceiling((endTime - startTime).TotalSeconds);
 
         // Log the generated response for debugging
-        _logger.LogInformation("LLM response received for prompt: {llmResponse}", llmResponse);
+        _logger.LogInformation("LLM response received for prompt: {llmResponse}", llmResponse.Data);
 
         // Log the LLM response status and execution time
         _logger.LogInformation("LLM response for prompt status: {ResponseStatus}, Execution Time: {ExecutionTime}s", llmResponse.StatusCode, executionSeconds);
