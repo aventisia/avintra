@@ -67,13 +67,13 @@ public class PlanService : IPlanService
                 Id = plan["id"].ToString(),
                 Period = plan["period"].ToString(),
                 Interval = int.Parse(plan["interval"].ToString()),
-                Item = new PlanItemDto
+                Item = new PlanItemDto()
                 {
                     Name = plan["item"]?["name"]?.ToString(),
-                    Amount = int.Parse(plan["item"]?["amount"]?.ToString() ?? "0"),
+                    Amount = plan["item"]?["amount"] != null ? int.Parse(plan["item"]["amount"].ToString()) : 0,
                     Currency = plan["item"]?["currency"]?.ToString(),
                 },
-                Notes = plan["notes"] != null ? plan["notes"].ToObject<Dictionary<string, string>>() : new Dictionary<string, string>(),
+                // Notes = plan["notes"] != null ? plan["notes"].ToObject<Dictionary<string, string>>() : new Dictionary<string, string>(),
                 CreatedAt = plan["created_at"] != null ? DateTimeOffset.FromUnixTimeSeconds(long.Parse(plan["created_at"].ToString())) : null
             };
 
@@ -125,7 +125,7 @@ public class PlanService : IPlanService
                     Amount = int.Parse(plan["item"]?["amount"]?.ToString() ?? "0"),
                     Currency = plan["item"]?["currency"]?.ToString(),
                 },
-                Notes = plan["notes"] != null ? plan["notes"].ToObject<Dictionary<string, string>>() : new Dictionary<string, string>(),
+                // Notes = plan["notes"] != null ? plan["notes"].ToObject<Dictionary<string, string>>() : new Dictionary<string, string>(),
                 CreatedAt = plan["created_at"] != null ? DateTimeOffset.FromUnixTimeSeconds(long.Parse(plan["created_at"].ToString())) : null
             };
 
@@ -176,7 +176,7 @@ public class PlanService : IPlanService
                     Amount = int.Parse(plan["item"]?["amount"]?.ToString() ?? "0"),
                     Currency = plan["item"]?["currency"]?.ToString()
                 },
-                Notes = plan["notes"] != null ? plan["notes"].ToObject<Dictionary<string, string>>() : new Dictionary<string, string>(),
+                // Notes = plan["notes"] != null ? plan["notes"].ToObject<Dictionary<string, string>>() : new Dictionary<string, string>(),
                 CreatedAt = plan["created_at"] != null ? DateTimeOffset.FromUnixTimeSeconds(long.Parse(plan["created_at"].ToString())) : null
             }).ToList();
 
