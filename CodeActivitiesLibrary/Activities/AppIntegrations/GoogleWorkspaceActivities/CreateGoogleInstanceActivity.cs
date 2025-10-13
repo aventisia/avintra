@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.GoogleWorkspaceActivities
 {
     [DisplayName("Create Google Sheets Service Instance")]
     [Description("Creates and returns a SheetsService instance using Google service account credentials.")]
+    [ActivityMetaData(nodeImg:"/assets/GoogleWorkspace.svg")]
   
     public class CreateGoogleInstanceActivity : BaseCodeActivity
     {

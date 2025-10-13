@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Get AWS Certificate Manager Certificate")]
     [Description("Retrieves the certificate body and chain from AWS Certificate Manager using the Certificate ARN.")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class GetCertificateActivity : BaseCodeActivity
     {
         #region Inputs

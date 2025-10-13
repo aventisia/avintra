@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Renew AWS ACM Certificate")]
     [Description("Renews an AWS Certificate Manager (ACM) certificate using AWS credentials from AWE Credential Vault.")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class RenewAcmCertificateActivity : BaseCodeActivity
     {
         #region Inputs

@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AzureActivities
 {
     [DisplayName("Get Blob Container Client Instance")]
     [Description("Creates and returns a BlobContainerClient instance for the specified container and connection string.")]
+    [ActivityMetaData(nodeImg:"/assets/Azure.svg")]
 
     public class GetBlobContainerClientInstanceActivity : BaseCodeActivity
     {

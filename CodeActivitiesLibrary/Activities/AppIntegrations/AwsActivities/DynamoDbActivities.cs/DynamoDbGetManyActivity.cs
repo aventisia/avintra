@@ -16,6 +16,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Get Many AWS DynamoDB Items")]
     [Description("Retrieves multiple items from AWS DynamoDB using Query or Scan API.")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class DynamoDbGetManyActivity : BaseCodeActivity
     {
         #region Inputs

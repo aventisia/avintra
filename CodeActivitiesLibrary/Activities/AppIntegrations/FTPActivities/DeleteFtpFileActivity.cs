@@ -8,6 +8,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Delete FTP File")]
     [Description("Deletes a single file from an FTP server.")]
+    [ActivityMetaData(nodeImg:"/assets/FTP.svg")]
+
     public class DeleteFtpFileActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Delete AWS ELB Load Balancer")]
     [Description("Deletes an Application or Network Load Balancer in AWS Elastic Load Balancing (ALB/NLB).")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class DeleteLoadBalancerActivity : BaseCodeActivity
     {
         #region Inputs

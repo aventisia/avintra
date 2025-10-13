@@ -10,6 +10,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Upload File to FTP")]
     [Description("Uploads a single file to an FTP server.")]
+    [ActivityMetaData(nodeImg:"/assets/FTP.svg")]
+
     public class UploadFilesToFtpActivity : BaseCodeActivity
     {
         // ----------------------

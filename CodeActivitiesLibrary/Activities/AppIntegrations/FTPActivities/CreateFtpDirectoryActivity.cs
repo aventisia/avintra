@@ -8,6 +8,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Create FTP Directory")]
     [Description("Creates a directory on an FTP server.")]
+    [ActivityMetaData(nodeImg:"/assets/FTP.svg")]
+
     public class CreateFtpDirectoryActivity : BaseCodeActivity
     {
         [RequiredArgument]

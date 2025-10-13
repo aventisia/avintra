@@ -17,6 +17,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Create or Update AWS DynamoDB Item")]
     [Description("Creates or updates an item in AWS DynamoDB using the PutItem API.")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class DynamoDbCreateOrUpdateActivity : BaseCodeActivity
     {
         #region Inputs

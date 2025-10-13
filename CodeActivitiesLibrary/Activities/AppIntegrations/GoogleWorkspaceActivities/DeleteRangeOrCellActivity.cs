@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.GoogleWorkspaceActivities
 {
     [DisplayName("Delete Range or Cell in Google Sheet")]
     [Description("Deletes (clears) the values from a specified cell or range in a Google Sheet. Formatting, formulas, and comments are preserved.")]
+    [ActivityMetaData(nodeImg:"/assets/GoogleWorkspace.svg")]
     public class DeleteRangeOrCellActivity : BaseCodeActivity
     {
         // Input Arguments

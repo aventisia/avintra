@@ -10,7 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AzureActivities
 {
     [DisplayName("Download File from Blob Storage")]
     [Description("Downloads a file from an Azure Blob container to a specified local path.")]
-    [Category("Azure Blob Storage")]
+    [ActivityMetaData(nodeImg:"/assets/Azure.svg")]
     public class DownloadFileFromBlobStorageActivity : BaseCodeActivity
     {
         // Input Arguments

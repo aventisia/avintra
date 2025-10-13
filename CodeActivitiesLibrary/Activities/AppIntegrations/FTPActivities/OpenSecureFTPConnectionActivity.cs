@@ -11,6 +11,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Open Secure FTP Connection")]
     [Description("Establishes a secure connection to an FTP server using SSL/TLS or SSH.")]
+    [ActivityMetaData(nodeImg:"/assets/FTP.svg")]
+
     public class OpenSecureFtpConnectionActivity : BaseCodeActivity
     {
         // ----------------------

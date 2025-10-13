@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Add AWS ELB Listener Certificate")]
     [Description("Adds a certificate to an AWS Elastic Load Balancer (ALB/NLB) listener.")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class AddListenerCertificateActivity : BaseCodeActivity
     {
         #region Inputs

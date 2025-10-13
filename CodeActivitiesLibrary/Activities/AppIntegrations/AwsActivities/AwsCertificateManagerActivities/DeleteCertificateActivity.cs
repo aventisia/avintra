@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Delete AWS ACM Certificate")]
     [Description("Deletes an AWS Certificate Manager (ACM) certificate using AWS credentials resolved from environment or IAM role.")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class DeleteCertificateActivity : BaseCodeActivity
     {
         #region Inputs

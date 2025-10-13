@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Get Many AWS ELB Listener Certificates")]
     [Description("Retrieves all certificates associated with an AWS Elastic Load Balancer (ALB/NLB) listener.")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class GetManyListenerCertificatesActivity : BaseCodeActivity
     {
         #region Inputs

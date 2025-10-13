@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.GoogleWorkspaceActivities
 {
     [DisplayName("Read Google Sheet Range")]
     [Description("Reads data from a specified range in a Google Sheet using the Sheets API.")]
+    [ActivityMetaData(nodeImg:"/assets/GoogleWorkspace.svg")]
 
     public class ReadGoogleSheetRangeActivity : BaseCodeActivity
     {
