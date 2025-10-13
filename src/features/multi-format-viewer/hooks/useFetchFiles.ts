@@ -27,46 +27,39 @@ export const useFetchUploadedFiles = (
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
 
-  let modelId = queryParams.get("pid");
+  const queryVersionId = queryParams.get("v");
 
-  // Throw error if model id or name are not provided
-  if (!modelId) {
-    const labelData = localStorage.getItem("label_data") || "{}";
-    const labelDataObj = JSON.parse(labelData);
-    modelId = labelDataObj?.model_id;
-    if (!modelId) {
-      throw new Error("Model Id and name are required");
-    }
+  // Throw error if queryVersionId id or name are not provided
+  if (!queryVersionId) {
+    throw new Error("Model Id and name are required");
   }
 
-  const {
-    step,
-    modelId: mid,
-    versionId,
-  } = useLabelDataStore(
+  const { step, versionId } = useLabelDataStore(
     useShallow((state) => ({
       step: state.step,
-      modelId: state.modelId,
       versionId: state.versionId,
     })),
   );
 
   // Get models using react query
   const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["UploadedFiles", viewerType, modelId, versionId],
+    queryKey: ["UploadedFiles", viewerType, versionId],
     queryFn: () =>
       viewerType === "viewer"
         ? getUploadedFiles(versionId)
-        : getSetupUploadedFiles(modelId),
+        : getSetupUploadedFiles(versionId),
     refetchOnMount: true,
   });
 
   useEffect(() => {}, [step]);
 
   useEffect(() => {
-    if (data?.data && (!selectedFile || selectedFile?.mlModelId != modelId))
+    if (
+      data?.data &&
+      (!selectedFile || selectedFile?.aiProjectVersionId != versionId)
+    )
       setSelectedFile(data?.data[0]);
-  }, [data, selectedFile, setSelectedFile, mid, modelId]);
+  }, [data, selectedFile, setSelectedFile, versionId]);
 
   // Show toast on fetch error
   useEffect(() => {
