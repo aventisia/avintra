@@ -1,3 +1,5 @@
+import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
+import { AvailableCreditDto } from "@/features/available-credits/available-credits-dto";
 import { useTasksToExecuteStore } from "@/features/inferencing-model/store/tasks-to-execute";
 import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import { useExtractedDataStore } from "@/store/extract-via-llm-store";
@@ -7,7 +9,9 @@ import { formatSeconds } from "@/utils/formatSeconds";
 // import { formatSeconds } from "@/utils/formatSeconds";
 
 import { Button } from "@aventisia/ui/buttons";
+import { toast } from "@aventisia/ui/sonner";
 import { Tooltip } from "@aventisia/ui/tooltip";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, SparklesIcon, Timer } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -16,6 +20,9 @@ import { useFileListStore } from "../../features/multi-format-viewer/store/file-
 import { useExtractViaLLMMutation } from "../../hooks/useExtractViaLLMMutation";
 
 function ExtractViaLLMButton() {
+  // Get query client
+  const queryClient = useQueryClient();
+
   // Get modelId from query params
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -41,6 +48,18 @@ function ExtractViaLLMButton() {
     useExtractViaLLMMutation();
 
   const handleExtract = () => {
+    // Fetch available credits from dataquery cache
+    const availableCredits = queryClient.getQueryData<{
+      data: AvailableCreditDto;
+    }>(AC_QUERY_KEY);
+
+    // Check if available credits are more than zero
+    if (availableCredits && availableCredits?.data?.availableCredits <= 10) {
+      // Show toast notification for insufficient credits
+      toast.error("Insufficient credits. Please top up to continue.");
+      return;
+    }
+
     extractViaLLMMutation({
       postObj: {
         modelId: modelId,
