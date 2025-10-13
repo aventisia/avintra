@@ -227,27 +227,27 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             if (string.IsNullOrEmpty(newSubscriptionPlan.RazorpayPlanId) &&
                 newSubscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                _logger.LogInformation("No Razorpay Plan ID found for subscription plan '{PlanName}' (ID: {PlanId}). Attempting to create one.",
-                    newSubscriptionPlan.Name, newSubscriptionPlan.Id);
+                // _logger.LogInformation("No Razorpay Plan ID found for subscription plan '{PlanName}' (ID: {PlanId}). Attempting to create one.",
+                //     newSubscriptionPlan.Name, newSubscriptionPlan.Id);
 
-                // Attempt to create a Razorpay plan for the subscription
-                var razorpayPlanResponse = await CreateRazorpayPlanAsync(newSubscriptionPlan);
+                // // Attempt to create a Razorpay plan for the subscription
+                // var razorpayPlanResponse = await CreateRazorpayPlanAsync(newSubscriptionPlan);
 
-                // Check if plan creation failed
-                if (razorpayPlanResponse.Data == null || razorpayPlanResponse.StatusCode != 200)
-                {
-                    _logger.LogWarning("Failed to create Razorpay plan for '{PlanName}' (ID: {PlanId}). Reason: {Reason}",
-                        newSubscriptionPlan.Name, newSubscriptionPlan.Id, razorpayPlanResponse.Message);
+                // // Check if plan creation failed
+                // if (razorpayPlanResponse.Data == null || razorpayPlanResponse.StatusCode != 200)
+                // {
+                //     _logger.LogWarning("Failed to create Razorpay plan for '{PlanName}' (ID: {PlanId}). Reason: {Reason}",
+                //         newSubscriptionPlan.Name, newSubscriptionPlan.Id, razorpayPlanResponse.Message);
 
-                    serviceResponse.Message = razorpayPlanResponse.Message;
-                    return serviceResponse;
-                }
+                //     serviceResponse.Message = razorpayPlanResponse.Message;
+                //     return serviceResponse;
+                // }
 
-                // Assign the newly created Razorpay Plan ID to the subscription plan
-                newSubscriptionPlan.RazorpayPlanId = razorpayPlanResponse.Data.Id;
+                // // Assign the newly created Razorpay Plan ID to the subscription plan
+                // newSubscriptionPlan.RazorpayPlanId = razorpayPlanResponse.Data.Id;
 
-                _logger.LogInformation("Successfully created Razorpay plan with ID '{RazorpayPlanId}' for subscription plan '{PlanName}' (ID: {PlanId}).",
-                    newSubscriptionPlan.RazorpayPlanId, newSubscriptionPlan.Name, newSubscriptionPlan.Id);
+                // _logger.LogInformation("Successfully created Razorpay plan with ID '{RazorpayPlanId}' for subscription plan '{PlanName}' (ID: {PlanId}).",
+                //     newSubscriptionPlan.RazorpayPlanId, newSubscriptionPlan.Name, newSubscriptionPlan.Id);
             }
 
             // Insert and save changes
@@ -373,27 +373,27 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             if (string.IsNullOrEmpty(existingPlan.RazorpayPlanId) &&
                 existingPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                _logger.LogInformation("Razorpay plan ID is missing for SubscriptionPlan '{PlanName}' (ID: {PlanId}). Attempting to create a new Razorpay plan.",
-                    existingPlan.Name, existingPlan.Id);
+                // _logger.LogInformation("Razorpay plan ID is missing for SubscriptionPlan '{PlanName}' (ID: {PlanId}). Attempting to create a new Razorpay plan.",
+                //     existingPlan.Name, existingPlan.Id);
 
-                // Attempt to create a Razorpay plan for the given subscription plan
-                var razorpayPlanResponse = await CreateRazorpayPlanAsync(existingPlan);
+                // // Attempt to create a Razorpay plan for the given subscription plan
+                // var razorpayPlanResponse = await CreateRazorpayPlanAsync(existingPlan);
 
-                // Check if plan creation was unsuccessful
-                if (razorpayPlanResponse.Data == null || razorpayPlanResponse.StatusCode != 200)
-                {
-                    _logger.LogWarning("Failed to create Razorpay plan for SubscriptionPlan '{PlanName}' (ID: {PlanId}). Reason: {Message}",
-                        existingPlan.Name, existingPlan.Id, razorpayPlanResponse.Message);
+                // // Check if plan creation was unsuccessful
+                // if (razorpayPlanResponse.Data == null || razorpayPlanResponse.StatusCode != 200)
+                // {
+                //     _logger.LogWarning("Failed to create Razorpay plan for SubscriptionPlan '{PlanName}' (ID: {PlanId}). Reason: {Message}",
+                //         existingPlan.Name, existingPlan.Id, razorpayPlanResponse.Message);
 
-                    serviceResponse.Message = razorpayPlanResponse.Message;
-                    return serviceResponse;
-                }
+                //     serviceResponse.Message = razorpayPlanResponse.Message;
+                //     return serviceResponse;
+                // }
 
-                // Assign the successfully created Razorpay plan ID to the existing subscription plan
-                existingPlan.RazorpayPlanId = razorpayPlanResponse.Data.Id;
+                // // Assign the successfully created Razorpay plan ID to the existing subscription plan
+                // existingPlan.RazorpayPlanId = razorpayPlanResponse.Data.Id;
 
-                _logger.LogInformation("Successfully created Razorpay plan with ID '{RazorpayPlanId}' for SubscriptionPlan '{PlanName}' (ID: {PlanId}).",
-                    existingPlan.RazorpayPlanId, existingPlan.Name, existingPlan.Id);
+                // _logger.LogInformation("Successfully created Razorpay plan with ID '{RazorpayPlanId}' for SubscriptionPlan '{PlanName}' (ID: {PlanId}).",
+                //     existingPlan.RazorpayPlanId, existingPlan.Name, existingPlan.Id);
             }
 
             // Apply update and save
