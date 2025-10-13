@@ -12,8 +12,8 @@ export const onPremModelTypes = [
   },
   {
     id: window.crypto.randomUUID(),
-    name: "Conversation Model",
-    type: "conversation",
+    name: "Conversational Model",
+    type: "conversational",
     model: "Gemma 3",
     description:
       "How an AI agent manages dialogue with users storing the context, message history, user intents.",

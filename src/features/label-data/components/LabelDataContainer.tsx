@@ -83,7 +83,7 @@ export const LabelDataContainer = () => {
       ) : (
         (() => {
           switch (effectiveModelType) {
-            case "conversation":
+            case "conversational":
               return <AIPersonaModel />;
             case "inferencing":
               return (
