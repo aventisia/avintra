@@ -186,15 +186,32 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             newSubscriptionPlan.CreatedByUserId = _userId;
             newSubscriptionPlan.LastModifiedByUserId = _userId;
 
-            // Check if the Razorpay Plan ID has not been set yet
-            // and ensure the plan type is not 'Starter' (which may not require a Razorpay plan)
-            if (string.IsNullOrEmpty(newSubscriptionPlan.RazorpayPlanId) && newSubscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
+            // Check if the Razorpay Plan ID is not already set and the plan type is not 'Starter'
+            // 'Starter' plans may not require integration with Razorpay (e.g., free or internal plans)
+            if (string.IsNullOrEmpty(newSubscriptionPlan.RazorpayPlanId) &&
+                newSubscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                // // Create a new Razorpay plan asynchronously for the subscription plan
-                // string? razorpayPlanId = await CreateRazorpayPlanAsync(newSubscriptionPlan);
+                _logger.LogInformation("No Razorpay Plan ID found for subscription plan '{PlanName}' (ID: {PlanId}). Attempting to create one.",
+                    newSubscriptionPlan.Name, newSubscriptionPlan.Id);
 
-                // // Assign the newly created Razorpay plan ID to the existing subscription plan
-                // newSubscriptionPlan.RazorpayPlanId = razorpayPlanId;
+                // Attempt to create a Razorpay plan for the subscription
+                var razorpayPlanResponse = await CreateRazorpayPlanAsync(newSubscriptionPlan);
+
+                // Check if plan creation failed
+                if (razorpayPlanResponse.Data == null || razorpayPlanResponse.StatusCode != 200)
+                {
+                    _logger.LogWarning("Failed to create Razorpay plan for '{PlanName}' (ID: {PlanId}). Reason: {Reason}",
+                        newSubscriptionPlan.Name, newSubscriptionPlan.Id, razorpayPlanResponse.Message);
+
+                    serviceResponse.Message = razorpayPlanResponse.Message;
+                    return serviceResponse;
+                }
+
+                // Assign the newly created Razorpay Plan ID to the subscription plan
+                newSubscriptionPlan.RazorpayPlanId = razorpayPlanResponse.Data.Id;
+
+                _logger.LogInformation("Successfully created Razorpay plan with ID '{RazorpayPlanId}' for subscription plan '{PlanName}' (ID: {PlanId}).",
+                    newSubscriptionPlan.RazorpayPlanId, newSubscriptionPlan.Name, newSubscriptionPlan.Id);
             }
 
             // Insert and save changes
@@ -315,15 +332,32 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             existingPlan.UniqueName = $"{existingPlan.Name}-{existingPlan.Frequency}-{existingPlan.Currency}".ToLower();
             existingPlan.LastModifiedByUserId = _userId;
 
-            // Check if the Razorpay Plan ID has not been set yet
-            // and ensure the plan type is not 'Starter' (which may not require a Razorpay plan)
-            if (string.IsNullOrEmpty(existingPlan.RazorpayPlanId) && existingPlan.Type != SubscriptionPlanTypeEnum.Starter)
+            // Check if the Razorpay Plan ID is not already set and the plan type is not 'Starter'
+            // Starter plans may be free or internal and might not require integration with Razorpay
+            if (string.IsNullOrEmpty(existingPlan.RazorpayPlanId) &&
+                existingPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                // // Create a new Razorpay plan asynchronously for the subscription plan
-                // string? razorpayPlanId = await CreateRazorpayPlanAsync(existingPlan);
+                _logger.LogInformation("Razorpay plan ID is missing for SubscriptionPlan '{PlanName}' (ID: {PlanId}). Attempting to create a new Razorpay plan.",
+                    existingPlan.Name, existingPlan.Id);
 
-                // // Assign the newly created Razorpay plan ID to the existing subscription plan
-                // existingPlan.RazorpayPlanId = razorpayPlanId;
+                // Attempt to create a Razorpay plan for the given subscription plan
+                var razorpayPlanResponse = await CreateRazorpayPlanAsync(existingPlan);
+
+                // Check if plan creation was unsuccessful
+                if (razorpayPlanResponse.Data == null || razorpayPlanResponse.StatusCode != 200)
+                {
+                    _logger.LogWarning("Failed to create Razorpay plan for SubscriptionPlan '{PlanName}' (ID: {PlanId}). Reason: {Message}",
+                        existingPlan.Name, existingPlan.Id, razorpayPlanResponse.Message);
+
+                    serviceResponse.Message = razorpayPlanResponse.Message;
+                    return serviceResponse;
+                }
+
+                // Assign the successfully created Razorpay plan ID to the existing subscription plan
+                existingPlan.RazorpayPlanId = razorpayPlanResponse.Data.Id;
+
+                _logger.LogInformation("Successfully created Razorpay plan with ID '{RazorpayPlanId}' for SubscriptionPlan '{PlanName}' (ID: {PlanId}).",
+                    existingPlan.RazorpayPlanId, existingPlan.Name, existingPlan.Id);
             }
 
             // Apply update and save
@@ -446,29 +480,28 @@ public class SubscriptionPlanService : ISubscriptionPlanService
         return serviceResponse;
     }
 
-    // Creates a new Razorpay plan based on the provided subscription plan details.
-    public async Task<string?> CreateRazorpayPlanAsync(SubscriptionPlan subscriptionPlan)
+    // Creates a Razorpay subscription plan using the provided subscription plan details.
+    public async Task<ServiceResponse<PlanResponseDto>> CreateRazorpayPlanAsync(SubscriptionPlan subscriptionPlan)
     {
-        // Prepare the request DTO with the required Razorpay plan details
-        var razorpayPlan = await _planService.CreatePlanAsync(new PlanRequestDto()
+        // Build the Razorpay plan request with necessary details
+        var razorpayPlanRequest = new PlanRequestDto
         {
-            // Billing frequency (e.g., monthly/yearly) - converted to lowercase as expected by Razorpay
             Period = subscriptionPlan.Frequency.ToString().ToLower(),
-
-            // Interval is set to 1 (e.g., every 1 month or 1 year)
             Interval = 1,
-
-            // Define the item details including name, currency, and amount
-            Item = new PlanItemDto()
+            Item = new PlanItemDto
             {
-                Name = subscriptionPlan.Name, // Name of the plan
-                Currency = subscriptionPlan.Currency.ToString().ToUpper(), // Currency in uppercase (e.g., USD)
-                Description = "", // Optional description field
-                Amount = (int)(subscriptionPlan.Price * 100), // Amount in the smallest currency unit (e.g., cents or paise)
+                Name = subscriptionPlan.Name,
+                Currency = subscriptionPlan.Currency.ToString().ToUpper(),
+                Description = string.Empty,
+                Amount = (int)(subscriptionPlan.Price * 100)
             }
-        });
+        };
 
-        // Return the Razorpay plan ID if the creation was successful
-        return razorpayPlan.Data?.Id;
+        // Call the plan service to create the Razorpay plan
+        var razorpayPlan = await _planService.CreatePlanAsync(razorpayPlanRequest);
+
+        // Return the Razorpay plan ID if creation succeeded
+        return razorpayPlan;
     }
+
 }
