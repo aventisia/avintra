@@ -16,6 +16,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
 {
     [DisplayName("Inspect UltraTax Form")]
     [Description("Get inspection details of a UI element in an UltraTax CS form, such as name, position etc.")]
+    [ActivityMetaData(nodeImg: "/assets/ThomsonReuters.svg")]
     public class InspectUltraTaxFormActivity : BaseCodeActivity
     {
         [RequiredArgument]

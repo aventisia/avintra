@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Convert Text to DateTime")]
     [Description("Converts a text representation of a date and/or time value to a DateTime value.")]
+    [ActivityMetaData(nodeImg: "/assets/Text.svg")]
     public class ConvertTextToDateTimeActivity : BaseCodeActivity
     {
         [RequiredArgument]
@@ -30,6 +31,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         [DisplayName("Result DateTime")]
         [Description("Returns the resulting DateTime value after conversion.")]
+        [FieldType(FieldType.DateTime)]
         public OutArgument<DateTime> ResultDateTime { get; set; }
 
 

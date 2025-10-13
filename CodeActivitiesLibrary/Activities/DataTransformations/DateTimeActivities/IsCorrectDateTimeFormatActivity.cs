@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 {
     [DisplayName("Validate DateTime Format")]
     [Description("Checks if the input string matches the specified date and time format.")]
+    [ActivityMetaData(nodeImg:"/assets/DateTime.svg")]
     public class IsCorrectDateTimeFormatActivity : BaseCodeActivity
     {
         [RequiredArgument]

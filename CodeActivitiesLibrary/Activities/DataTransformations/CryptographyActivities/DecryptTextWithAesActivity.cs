@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Decrypt Text with AES")]
     [Description("Decrypts a Base64-encoded string using AES with optional key hashing for short keys.")]
+    [ActivityMetaData(nodeImg: "/assets/Cryptography.svg")]
     public class DecryptTextWithAesActivity : BaseCodeActivity
     {
         [RequiredArgument]

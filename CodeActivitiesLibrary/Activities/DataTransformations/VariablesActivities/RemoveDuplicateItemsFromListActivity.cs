@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Remove Duplicate Items From List")]
     [Description("Removes duplicate items from a list using case-sensitive or case-insensitive comparison.")]
+    [ActivityMetaData(nodeImg: "/assets/Variables.svg")]
     public class RemoveDuplicateItemsFromListActivity : BaseCodeActivity
     {
         // ----------------------

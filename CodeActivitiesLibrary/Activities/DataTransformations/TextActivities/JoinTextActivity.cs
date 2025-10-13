@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Join Text")]
     [Description("Converts a list into a text value by separating its items with a specified delimiter.")]
+    [ActivityMetaData(nodeImg: "/assets/Text.svg")]
     public class JoinTextActivity : BaseCodeActivity
     {
         // ----------------------

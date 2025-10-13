@@ -7,6 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Create Random Text")]
     [Description("Generates a text of specified length consisting of random characters.")]
+    [ActivityMetaData(nodeImg: "/assets/Text.svg")]
     public class CreateRandomTextActivity : BaseCodeActivity
     {
         // ----------------------

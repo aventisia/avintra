@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Shuffle List")]
     [Description("Randomly reorders the items in a list.")]
+    [ActivityMetaData(nodeImg: "/assets/Variables.svg")]
     public class ShuffleListActivity : BaseCodeActivity
     {
         // ----------------------

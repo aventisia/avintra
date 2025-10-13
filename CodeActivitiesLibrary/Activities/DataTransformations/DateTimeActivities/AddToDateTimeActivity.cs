@@ -8,11 +8,13 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 {
     [DisplayName("Add Time to DateTime")]
     [Description("Adds a specified time value to the given DateTime based on the selected time unit.")]
+    [ActivityMetaData(nodeImg:"/assets/DateTime.svg")]
     public class AddToDateTimeActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Base DateTime")]
         [Description("The original DateTime value to which the time should be added.")]
+        [FieldType(FieldType.DateTime)]
         public InArgument<DateTime> BaseDateTime { get; set; }
 
         [RequiredArgument]

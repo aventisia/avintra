@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Clear List")]
     [Description("Removes all elements from the specified list.")]
+    [ActivityMetaData(nodeImg: "/assets/Variables.svg")]
     public class ClearListActivity : BaseCodeActivity
     {
         // ----------------------

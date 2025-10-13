@@ -17,6 +17,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
 {
     [DisplayName("Fill UltraTax Form")]
     [Description("Fill an UltraTax CS form by inspecting UI elements and mapping them to a JSON content")]
+    [ActivityMetaData(nodeImg: "/assets/ThomsonReuters.svg")]
     public class FillUltraTaxFormActivity : BaseCodeActivity
     {
         [RequiredArgument]

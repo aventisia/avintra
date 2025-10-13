@@ -7,6 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Reverse Text")]
     [Description("Reverses the order of characters in a given text string.")]
+    [ActivityMetaData(nodeImg: "/assets/Text.svg")]
     public class ReverseTextActivity : BaseCodeActivity
     {
         // ----------------------

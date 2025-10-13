@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Find or Replace in Data Table")]
     [Description("Finds and/or replaces data table values.")]
+    [ActivityMetaData(nodeImg: "/assets/DataTable.svg")]
     public sealed class FindAndReplaceInDataTableActivity : BaseCodeActivity
     {
         // ----------------------

@@ -8,6 +8,8 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Clear Data Table")]
     [Description("Removes all rows from a data table while preserving its structure.")]
+    [ActivityMetaData(nodeImg: "/assets/DataTable.svg")]
+
     public class ClearDataTableActivity : BaseCodeActivity
     {
         // ----------------------

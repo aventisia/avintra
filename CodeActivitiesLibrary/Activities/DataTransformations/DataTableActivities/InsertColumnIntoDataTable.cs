@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Insert Column Into Data Table")]
     [Description("Inserts a new column into the data table either at the end or before a specific column index.")]
+    [ActivityMetaData(nodeImg: "/assets/DataTable.svg")]
     public sealed class InsertColumnIntoDataTable : BaseCodeActivity
     {
         [RequiredArgument]

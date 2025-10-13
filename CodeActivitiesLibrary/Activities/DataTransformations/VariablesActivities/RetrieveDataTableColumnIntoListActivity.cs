@@ -9,8 +9,8 @@ using System.Linq;
 namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Retrieve Data Table Column Into List")]
-    [Description(
-        "Extracts data from a specified column of a data table into a list. The column can be identified by name or index.")]
+    [Description("Extracts data from a specified column of a data table into a list. The column can be identified by name or index.")]
+    [ActivityMetaData(nodeImg: "/assets/Variables.svg")]
     public class RetrieveDataTableColumnIntoListActivity : BaseCodeActivity
     {
         // ----------------------

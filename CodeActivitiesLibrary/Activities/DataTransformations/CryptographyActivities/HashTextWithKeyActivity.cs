@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.DataTransformations.CryptographyActivities
 {
     [DisplayName("Hash Text with Key")]
     [Description("Hash a string with a key, using a specified algorithm")]
+    [ActivityMetaData(nodeImg: "/assets/Cryptography.svg")]
     public class HashTextWithKeyActivity : BaseCodeActivity
     {
         [RequiredArgument]

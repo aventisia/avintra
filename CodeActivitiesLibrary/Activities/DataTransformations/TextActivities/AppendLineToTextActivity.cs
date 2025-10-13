@@ -7,6 +7,8 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Append Line to Text")]
     [Description("Appends a new line of text to the original text.")]
+    [ActivityMetaData(nodeImg: "/assets/Text.svg")]
+    
     public class AppendLineToTextActivity : BaseCodeActivity
     {
         #region Inputs

@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Update Data Table Item")]
     [Description("Updates a specific cell in a DataTable by specifying the column, row, and new value.")]
+    [ActivityMetaData(nodeImg: "/assets/DataTable.svg")]
     public class UpdateDataTableItemActivity : BaseCodeActivity
     {
         [RequiredArgument]

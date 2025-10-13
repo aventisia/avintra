@@ -10,7 +10,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.UltraTaxCSActivities
     [ActivityCategoryMetadata(
         primaryCategory: "App Integrations",
         label: "UltraTax CS (Thomson Reuters)",
-        description: "Activities for integrating with UltraTax CS by Thomson Reuters.")]
+        description: "Activities for integrating with UltraTax CS by Thomson Reuters.",
+        img: "/assets/ThomsonReuters.svg")]
     internal sealed class _UltraTaxCSCategoryMetaData
     {
     }

@@ -9,7 +9,8 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Add Item to List")]
     [Description("Adds one or more items to a list. Converts types if necessary.")]
-    public class AddItemToListActivity : BaseCodeActivity
+    [ActivityMetaData(nodeImg:"/assets/Variables.svg")]
+       public class AddItemToListActivity : BaseCodeActivity
     {
         // ----------------------
         // Input Arguments

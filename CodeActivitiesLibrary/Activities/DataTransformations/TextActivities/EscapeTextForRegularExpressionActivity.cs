@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [DisplayName("Escape Text for Regular Expression")]
     [Description(
         "Escapes a minimal set of characters for use in regular expressions by replacing them with their escape codes.")]
+    [ActivityMetaData(nodeImg: "/assets/Text.svg")]
     public class EscapeTextForRegularExpressionActivity : BaseCodeActivity
     {
         // ----------------------

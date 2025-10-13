@@ -8,6 +8,8 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
 {
     [DisplayName("Insert or Update JSON Node by Primary Key")]
     [Description("Searches recursively through a JSON structure to find an object where a primary key matches a given value. If found, inserts or updates a specified key-value pair.")]
+    [ActivityMetaData(nodeImg:"/assets/JSON.svg")]
+    
     public class InsertOrUpdateJSONNodeWithPrimaryKeyActivity : BaseCodeActivity
     {
         [RequiredArgument]

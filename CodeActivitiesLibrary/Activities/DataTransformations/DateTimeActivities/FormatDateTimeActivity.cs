@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DateTimeActivities
 {
     [DisplayName("Format DateTime")]
     [Description("Formats a DateTime value into a standard or custom string format.")]
+    [ActivityMetaData(nodeImg:"/assets/DateTime.svg")]
     public class FormatDateTimeActivity : BaseCodeActivity
     {
         #region Inputs

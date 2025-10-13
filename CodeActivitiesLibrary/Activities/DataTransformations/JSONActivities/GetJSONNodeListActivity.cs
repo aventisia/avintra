@@ -9,6 +9,8 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
 {
     [DisplayName("Find JSON Nodes by Key")]
     [Description("Recursively searches through a JSON structure and returns all values associated with the specified key.")]
+    [ActivityMetaData(nodeImg:"/assets/JSON.svg")]
+
     public class GetJSONNodeListActivity : BaseCodeActivity
     {
         [RequiredArgument]

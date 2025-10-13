@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Delete Row From Data Table")]
     [Description("Deletes a row from a data table based on its zero-based index.")]
+    [ActivityMetaData(nodeImg: "/assets/DataTable.svg")]
     public sealed class DeleteRowFromDataTableActivity : BaseCodeActivity
     {
         // ----------------------

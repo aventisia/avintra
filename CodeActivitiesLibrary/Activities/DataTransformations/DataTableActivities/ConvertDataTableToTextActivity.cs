@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Convert Data Table to CSV Text")]
     [Description("Converts a data table into a CSV (comma-separated values) text representation.")]
+    [ActivityMetaData(nodeImg: "/assets/DataTable.svg")]
     public class ConvertDataTableToCsvTextActivity : BaseCodeActivity
     {
         // ----------------------

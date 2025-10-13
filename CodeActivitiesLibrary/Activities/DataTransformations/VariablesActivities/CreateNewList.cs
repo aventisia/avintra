@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Create New List")]
     [Description("Creates a new empty list to be used in other activities.")]
+    [ActivityMetaData(nodeImg: "/assets/Variables.svg")]
     public class CreateNewList : BaseCodeActivity
     {
         [DisplayName("New List")]

@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.TwilioActivities
 
     [Description("Sends an SMS using Twilio service.")]
     [DisplayName("Send SMS (Twilio)")]
+    [ActivityMetaData(nodeImg: "/assets/Twilio.svg")]
     public class SendTextSmsActivity : BaseCodeActivity
     {
 

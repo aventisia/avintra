@@ -23,6 +23,7 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
         [RequiredArgument]
         [DisplayName("New Password")]
         [Description("The new password value to be assigned to the credential.")]
+        [FieldType(FieldType.Password)]
         public InArgument<string> NewPassword { get; set; }
 
         protected override void Execute(CodeActivityContext context)

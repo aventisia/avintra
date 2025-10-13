@@ -7,6 +7,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Increase Variable")]
     [Description("Increases a numeric variable by a specified value.")]
+    [ActivityMetaData(nodeImg: "/assets/Variables.svg")]
     public class IncreaseVariableActivity : BaseCodeActivity
     {
         // ----------------------

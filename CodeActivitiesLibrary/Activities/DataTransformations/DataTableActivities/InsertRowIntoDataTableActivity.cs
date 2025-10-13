@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Insert Row Into Data Table")]
     [Description("Inserts a new row into the data table at the specified location.")]
+    [ActivityMetaData(nodeImg: "/assets/DataTable.svg")]
     public sealed class InsertRowIntoDataTableActivity : BaseCodeActivity
     {
         // ----------------------

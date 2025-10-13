@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
     [DisplayName("Merge Data Tables")]
     [Description(
         "Merges two data tables together, specifying the merging behavior in case their columns are different.")]
+    [ActivityMetaData(nodeImg: "/assets/DataTable.svg")]
     public class MergeDataTablesActivity : BaseCodeActivity
     {
         [RequiredArgument]

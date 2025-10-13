@@ -7,6 +7,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.FlowControlActivities
     [DisplayName("Break Loop")]
     [Description("Breaks out of the current loop in the workflow execution.")]
     [ActivityMetaData(nodeType: "breakLoopNode")]
+    [ActivityMetaData(nodeImg:"/assets/BreakLoop.svg")]
     public class BreakLoopActivity : BaseCodeActivity
     {
         protected override void Execute(CodeActivityContext context)

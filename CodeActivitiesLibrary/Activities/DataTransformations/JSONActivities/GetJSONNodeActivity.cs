@@ -8,6 +8,8 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
 {
     [DisplayName("Get First JSON Node by Key")]
     [Description("Recursively searches through a JSON structure and returns the first value associated with the specified key.")]
+    [ActivityMetaData(nodeImg:"/assets/JSON.svg")]
+
     public class GetJSONNodeActivity : BaseCodeActivity
     {
         [RequiredArgument]

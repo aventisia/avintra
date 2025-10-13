@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Subtract Lists")]
     [Description("Removes items from the first list that exist in the second list.")]
+    [ActivityMetaData(nodeImg: "/assets/Variables.svg")]
     public class SubtractListsActivity : BaseCodeActivity
     {
         // ----------------------

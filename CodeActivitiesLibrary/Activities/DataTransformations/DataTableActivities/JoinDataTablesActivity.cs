@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.DataTransformations.DataTableActivities
 {
     [DisplayName("Join Data Tables")]
     [Description("Joins two data tables based on the specified join rule.")]
+    [ActivityMetaData(nodeImg: "/assets/DataTable.svg")]
     public class JoinDataTablesActivity : BaseCodeActivity
     {
         [RequiredArgument]

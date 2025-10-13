@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Trim Text")]
     [Description("Removes specified characters from the start, end, or both ends of a text string.")]
+    [ActivityMetaData(nodeImg: "/assets/Text.svg")]
     public class TrimTextActivity : BaseCodeActivity
     {
         // ----------------------

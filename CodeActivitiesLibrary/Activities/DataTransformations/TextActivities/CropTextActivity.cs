@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [DisplayName("Crop Text")]
     [Description("Extracts text before, after, or between specified flags.")]
+    [ActivityMetaData(nodeImg: "/assets/Text.svg")]
     public class CropTextActivity : BaseCodeActivity
     {
         // ----------------------

@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
 {
     [DisplayName("Deserialize JSON Text")]
     [Description("Parses a JSON string into a JToken object.")]
+    [ActivityMetaData(nodeImg:"/assets/JSON.svg")]
 
     public class DeserializeJSONTextActivity : BaseCodeActivity
     {

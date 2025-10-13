@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.VariablesActivities
 {
     [DisplayName("Find Common List Items")]
     [Description("Finds common items between two lists and returns them as a new list.")]
+    [ActivityMetaData(nodeImg: "/assets/Variables.svg")]
     public class FindCommonListItemsActivity : BaseCodeActivity
     {
         // ----------------------

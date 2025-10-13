@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
     [DisplayName("Replace Text")]
     [Description(
         "Replaces all occurrences of a specified subtext with another text. It can also be used with regular expressions.")]
+    [ActivityMetaData(nodeImg: "/assets/Text.svg")]
     public class ReplaceTextActivity : BaseCodeActivity
     {
         // ----------------------

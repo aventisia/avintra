@@ -7,7 +7,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
 {
     // Activity to move the cursor on a terminal session
     [DisplayName("Move Cursor on Terminal Session"),
-     Description("Move the terminal's cursor to the specified position.")]
+    Description("Move the terminal's cursor to the specified position.")],
+    [ActivityMetaData(nodeImg:"/assets/TerminalEmulation.svg")]
     public class MoveCursorOnTerminalSessionActivity : BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The session ID of the terminal session.")]
