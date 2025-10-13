@@ -36,6 +36,13 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             { "gpt-4o-mini", "gpt-4o-mini" },
         };
 
+        var startTime = DateTime.UtcNow;
+        var totalExecutionTime = TimeSpan.Zero;
+        var inputTokens = 0;
+        var inputCachedTokens = 0;
+        var outputTokens = 0;
+        var outputReasoningTokens = 0;
+
         try
         {
             // Step 1: Validate input parameters
@@ -116,16 +123,31 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                         _logger.LogInformation("Prepared openai or gemini OutputFormatSchema: {ollamaOutputFormatSchema}", System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema));
 
                         // Proceed to fetch chat completion from the OpenAI API
-                        llmResponse = await GetChatCompletionAsync(messageList, mappedModel, client, modelTemperature, ollamaOutputFormatSchema);
+                        var openaiRawResponse = await GetChatCompletionAsync(messageList, mappedModel, client, modelTemperature, ollamaOutputFormatSchema);
 
-                        // Process or log the response as needed
-                        if (string.IsNullOrEmpty(llmResponse))
+                        // Parse the response string into a JsonDocument for easier manipulation of JSON data.
+                        using var jsonDoc = JsonDocument.Parse(openaiRawResponse);
+
+                        // Extract the assistant's reply text from the parsed JSON
+                        llmResponse = jsonDoc.RootElement
+                            .GetProperty("choices")[0]
+                            .GetProperty("message")
+                            .GetProperty("content")
+                            .GetString() ?? "";
+
+                        // Log the successful completion of the request
+                        _logger.LogInformation("Successfully received response from OpenAI.{llmResponse}", llmResponse);
+
+                        // Get token usage details if available
+                        if (jsonDoc.RootElement.TryGetProperty("usage", out JsonElement usageElement))
                         {
-                            serviceResponse.Message = "No response or error from OpenAI.";
-                            _logger.LogWarning("Received empty response from OpenAI.");
-
-                            return serviceResponse;
+                            inputTokens = usageElement.GetProperty("prompt_tokens").GetInt32();
+                            outputTokens = usageElement.GetProperty("completion_tokens").GetInt32();
+                            inputCachedTokens = usageElement.GetProperty("prompt_tokens_details").GetProperty("cached_tokens").GetInt32();
+                            outputReasoningTokens = usageElement.GetProperty("completion_tokens_details").GetProperty("reasoning_tokens").GetInt32();
                         }
+
+                        break; // Exit retry loop if the extraction was successful
                     }
                     else
                     {
@@ -254,34 +276,38 @@ public class LLMDataExtractionService : ILLMDataExtractionService
 
                     _logger.LogInformation("Raw LLM response received: {llmResponse}", llmResponse);
 
-                    // Clean up known debug or formatting tags from the response
-                    if (llmResponse.Contains("</think>"))
-                    {
-                        // Remove <think> tags and content between them
-                        llmResponse = llmResponse.Remove(llmResponse.IndexOf("<think>"), llmResponse.IndexOf("</think>") - llmResponse.IndexOf("<think>") + 8);
-                        _logger.LogInformation("Removed <think> tag content from response.");
-                    }
-
-                    if (llmResponse.Contains("```json"))
-                    {
-                        // Remove the "```json" code block tag
-                        llmResponse = llmResponse.Remove(llmResponse.IndexOf("```json"), 7);
-                        _logger.LogInformation("Removed ```json tag from response.");
-                    }
-
-                    if (llmResponse.Contains("```"))
-                    {
-                        // Remove any remaining "```" code block tag
-                        llmResponse = llmResponse.Remove(llmResponse.IndexOf("```"), 3);
-                        _logger.LogInformation("Removed ``` tag from response.");
-                    }
-
-                    llmResponse = llmResponse.Trim(); // Clean up any excess whitespace
-                    _logger.LogInformation("Final cleaned LLM response: {llmResponse}", llmResponse);
-
                     break; // Exit retry loop if the extraction was successful
                 }
             }
+
+            // Clean up known debug or formatting tags from the response
+            if (llmResponse.Contains("</think>"))
+            {
+                // Remove <think> tags and content between them
+                llmResponse = llmResponse.Remove(llmResponse.IndexOf("<think>"), llmResponse.IndexOf("</think>") - llmResponse.IndexOf("<think>") + 8);
+                _logger.LogInformation("Removed <think> tag content from response.");
+            }
+
+            if (llmResponse.Contains("```json"))
+            {
+                // Remove the "```json" code block tag
+                llmResponse = llmResponse.Remove(llmResponse.IndexOf("```json"), 7);
+                _logger.LogInformation("Removed ```json tag from response.");
+            }
+
+            if (llmResponse.Contains("```"))
+            {
+                // Remove any remaining "```" code block tag
+                llmResponse = llmResponse.Remove(llmResponse.IndexOf("```"), 3);
+                _logger.LogInformation("Removed ``` tag from response.");
+            }
+
+            llmResponse = llmResponse.Trim(); // Clean up any excess whitespace
+            _logger.LogInformation("Final cleaned LLM response: {llmResponse}", llmResponse);
+
+            // TODO: Call the credits usages API here and log the usage details
+            totalExecutionTime = DateTime.UtcNow - startTime;
+
 
             // Step 10: Return a successful response with the extracted data
             serviceResponse.Data = llmResponse;
@@ -391,32 +417,9 @@ public class LLMDataExtractionService : ILLMDataExtractionService
 
             // Read and process the response content from the OpenAI API
             var responseString = await apiResponse.Content.ReadAsStringAsync();
-            // The response from the OpenAI API is usually in JSON format, so we first read it as a string.
-
-            using var jsonDoc = JsonDocument.Parse(responseString);
-            // Parse the response string into a JsonDocument for easier manipulation of JSON data.
-
-
-            // Extract the assistant's reply text from the parsed JSON
-            _logger.LogInformation($"Parsing response from OpenAI API. {jsonDoc.RootElement}");
-            var completionText = jsonDoc.RootElement
-                .GetProperty("choices")[0]
-                .GetProperty("message")
-                .GetProperty("content")
-                .GetString();
-
-            // If the content is empty or null, log and return an appropriate message
-            if (string.IsNullOrEmpty(completionText))
-            {
-                _logger.LogWarning("No valid response content received from OpenAI.");
-                return string.Empty;
-            }
-
-            // Log the successful completion of the request
-            _logger.LogInformation("Successfully received response from OpenAI.");
 
             // Return the chat completion text
-            return completionText;
+            return responseString;
         }
         catch (Exception ex)
         {
