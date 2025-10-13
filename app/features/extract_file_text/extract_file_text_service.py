@@ -143,11 +143,19 @@ def extract_text_from_pdf(pdf_path: str) -> str:
                 if page.images:
                     for img_index, img in enumerate(page.images):
                         try:
-                            cropped = page.crop((img["x0"], img["top"], img["x1"], img["bottom"]))
-                            pil_image = cropped.to_image(resolution=300).original
-                            ocr_result = pytesseract.image_to_string(pil_image)
-                            if ocr_result.strip():
-                                ocr_texts.append(ocr_result.strip())
+                            # Clamp bounding box to page bounds
+                            x0 = max(img["x0"], 0)
+                            x1 = min(img["x1"], page.width)
+                            top = max(img["top"], 0)
+                            bottom = min(img["bottom"], page.height)
+                            if x0 < x1 and top < bottom:
+                                cropped = page.crop((x0, top, x1, bottom))
+                                pil_image = cropped.to_image(resolution=300).original
+                                ocr_result = pytesseract.image_to_string(pil_image)
+                                if ocr_result.strip():
+                                    ocr_texts.append(ocr_result.strip())
+                            else:
+                                logger.warning(f"OCR skipped for image {img_index+1} on page {i+1}: Invalid bounding box after clamping.")
                         except Exception as e:
                             logger.warning(f"OCR failed for image {img_index+1} on page {i+1}: {e}")
                 combined = page_text.strip()
