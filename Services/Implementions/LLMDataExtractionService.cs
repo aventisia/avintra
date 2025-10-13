@@ -5,16 +5,23 @@ public class LLMDataExtractionService : ILLMDataExtractionService
     private readonly ILogger<LLMDataExtractionService> _logger;
     private readonly ExtractViaLLMConfig _extractViaLLMConfig;
     private readonly OpenAIConfig _openAIConfig;
+    private readonly string _jwt;
 
-    public LLMDataExtractionService(ILogger<LLMDataExtractionService> logger, ExtractViaLLMConfig extractViaLLMConfig, OpenAIConfig openAIConfig)
+    public LLMDataExtractionService(
+        ILogger<LLMDataExtractionService> logger,
+        ExtractViaLLMConfig extractViaLLMConfig,
+        OpenAIConfig openAIConfig,
+        IHttpContextAccessor httpContextAccessor)
     {
+        _jwt = httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Replace("Bearer ", "") ?? string.Empty;
+
         _logger = logger;
         _extractViaLLMConfig = extractViaLLMConfig;
         _openAIConfig = openAIConfig;
     }
 
     // Extracts structured data from a document by retrieving its text and passing it to an LLM for processing.
-    public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature, object? ollamaOutputFormatSchema = null)
+    public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature, object? ollamaOutputFormatSchema = null, Guid? aiProjectVersionId = null, string? aiProjectName = null)
     {
         var serviceResponse = new ServiceResponse<string>()
         {
@@ -23,6 +30,20 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         };
 
         _logger.LogInformation("Initiating data extraction process.");
+
+        if (string.IsNullOrEmpty(aiProjectName))
+        {
+            serviceResponse.Message = "Project Name is required.";
+            _logger.LogWarning("Project Name is missing or empty.");
+            return serviceResponse;
+        }
+
+        if (!aiProjectVersionId.HasValue || aiProjectVersionId.Value == Guid.Empty)
+        {
+            serviceResponse.Message = "Project Version Id is required.";
+            _logger.LogWarning("Project Version Id is missing or empty.");
+            return serviceResponse;
+        }
 
         // Mapping model identifiers to the actual model versions
         var llmModelMapper = new Dictionary<string, string>
@@ -37,11 +58,13 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         };
 
         var startTime = DateTime.UtcNow;
-        var totalExecutionTime = TimeSpan.Zero;
+        double totalExecutionTime = 0;
         var inputTokens = 0;
         var inputCachedTokens = 0;
         var outputTokens = 0;
         var outputReasoningTokens = 0;
+
+        List<object> creditsUsageList = new List<object>();
 
         try
         {
@@ -145,6 +168,35 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                             outputTokens = usageElement.GetProperty("completion_tokens").GetInt32();
                             inputCachedTokens = usageElement.GetProperty("prompt_tokens_details").GetProperty("cached_tokens").GetInt32();
                             outputReasoningTokens = usageElement.GetProperty("completion_tokens_details").GetProperty("reasoning_tokens").GetInt32();
+                        }
+
+                        // Get total execution time
+                        totalExecutionTime = (DateTime.UtcNow - startTime).TotalSeconds;
+
+                        // Add input tokens usage to the credits usage list
+                        if (inputTokens > 0)
+                        {
+                            creditsUsageList.Add(new
+                            {
+                                serviceType = "Gpt4oMiniInput",
+                                consumedUnit = inputTokens,
+                                refType = "AIModel",
+                                refId = "bd48c1fe-dca2-4523-ac65-650dcbad49a2",
+                                refName = "Test AIModel"
+                            });
+                        }
+
+                        // Add output tokens usage to the credits usage list
+                        if (outputTokens > 0)
+                        {
+                            creditsUsageList.Add(new
+                            {
+                                serviceType = "Gpt4oMiniOutput",
+                                consumedUnit = outputTokens,
+                                refType = "AIModel",
+                                refId = "bd48c1fe-dca2-4523-ac65-650dcbad49a2",
+                                refName = "Test AIModel"
+                            });
                         }
 
                         break; // Exit retry loop if the extraction was successful
@@ -305,9 +357,35 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             llmResponse = llmResponse.Trim(); // Clean up any excess whitespace
             _logger.LogInformation("Final cleaned LLM response: {llmResponse}", llmResponse);
 
-            // TODO: Call the credits usages API here and log the usage details
-            totalExecutionTime = DateTime.UtcNow - startTime;
+            // Get total execution time
+            totalExecutionTime = (DateTime.UtcNow - startTime).TotalSeconds;
 
+            // Add total execution time usage to the credits usage list
+            if (totalExecutionTime > 0)
+            {
+                creditsUsageList.Add(new
+                {
+                    serviceType = "AiModelExecution",
+                    consumedUnit = totalExecutionTime,
+                    refType = "AIModel",
+                    refId = aiProjectVersionId,
+                    refName = aiProjectName
+                });
+            }
+
+            // Log token usage details
+            _logger.LogInformation("Token usage - Input Tokens: {inputTokens}, Input Cached Tokens: {inputCachedTokens}, Output Tokens: {outputTokens}, Output Reasoning Tokens: {outputReasoningTokens}, Total Execution Time (s): {totalExecutionTime}",
+                inputTokens, inputCachedTokens, outputTokens, outputReasoningTokens, totalExecutionTime);
+
+            // Create credits usage in AccountsDb database
+            HttpResponseMessage creditUsagesResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Create, "http://localhost:4000/api/credit-usage/bulk", _jwt, creditsUsageList);
+
+            // Failed to add credit usage
+            if (!creditUsagesResponse.IsSuccessStatusCode)
+            {
+                string errorContent = await creditUsagesResponse.Content.ReadAsStringAsync();
+                _logger.LogError($"Failed to create credit usage records. Response: {creditUsagesResponse.StatusCode} - {errorContent}");
+            }
 
             // Step 10: Return a successful response with the extracted data
             serviceResponse.Data = llmResponse;
