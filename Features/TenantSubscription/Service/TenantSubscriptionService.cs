@@ -425,26 +425,26 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             if (string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId) &&
                 subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                // // Attempt to create or update a Razorpay subscription
-                // var razorpaySubscriptionResult = await CreateOrUpdateRazorpaySubscriptionAsync(
-                //     tenantSubscription,
-                //     subscriptionPlan,
-                //     tenantSubscriptionPurchaseDto.IsRecurringPayment
-                // );
+                // Attempt to create or update a Razorpay subscription
+                var razorpaySubscriptionResult = await CreateOrUpdateRazorpaySubscriptionAsync(
+                    tenantSubscription,
+                    subscriptionPlan,
+                    tenantSubscriptionPurchaseDto.IsRecurringPayment
+                );
 
-                // // Assign the newly generated subscription ID and payment URL if the creation succeeded
-                // if (razorpaySubscriptionResult?.Data != null || razorpaySubscriptionResult.StatusCode == 200)
-                // {
-                //     tenantSubscription.RazorpaySubscriptionId = razorpaySubscriptionResult.Data.Id;
-                //     paymentUrl = razorpaySubscriptionResult.Data.ShortUrl;
-                // }
-                // else
-                // {
-                //     _logger.LogWarning("Failed to create Razorpay subscription for tenant {TenantId}. Reason: {Message}",
-                //         tenantSubscription.TenantId, razorpaySubscriptionResult?.Message ?? "Unknown error");
-                //     serviceResponse.Message = razorpaySubscriptionResult.Message;
-                //     return serviceResponse;
-                // }
+                // Assign the newly generated subscription ID and payment URL if the creation succeeded
+                if (razorpaySubscriptionResult?.Data != null || razorpaySubscriptionResult.StatusCode == 200)
+                {
+                    tenantSubscription.RazorpaySubscriptionId = razorpaySubscriptionResult.Data.Id;
+                    paymentUrl = razorpaySubscriptionResult.Data.ShortUrl;
+                }
+                else
+                {
+                    _logger.LogWarning("Failed to create Razorpay subscription for tenant {TenantId}. Reason: {Message}",
+                        tenantSubscription.TenantId, razorpaySubscriptionResult?.Message ?? "Unknown error");
+                    serviceResponse.Message = razorpaySubscriptionResult.Message;
+                    return serviceResponse;
+                }
             }
 
             // Insert the new subscription into the repository
@@ -781,26 +781,26 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             if (string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId) &&
                 subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                // // Attempt to create or update a Razorpay subscription
-                // var razorpaySubscriptionResult = await CreateOrUpdateRazorpaySubscriptionAsync(
-                //     tenantSubscription,
-                //     subscriptionPlan,
-                //     tenantSubscriptionPurchaseDto.IsRecurringPayment
-                // );
+                // Attempt to create or update a Razorpay subscription
+                var razorpaySubscriptionResult = await CreateOrUpdateRazorpaySubscriptionAsync(
+                    tenantSubscription,
+                    subscriptionPlan,
+                    tenantSubscriptionPurchaseDto.IsRecurringPayment
+                );
 
-                // // Assign the newly generated subscription ID and payment URL if the creation succeeded
-                // if (razorpaySubscriptionResult?.Data != null || razorpaySubscriptionResult.StatusCode == 200)
-                // {
-                //     tenantSubscription.RazorpaySubscriptionId = razorpaySubscriptionResult.Data.Id;
-                //     paymentUrl = razorpaySubscriptionResult.Data.ShortUrl;
-                // }
-                // else
-                // {
-                //     _logger.LogWarning("Failed to update Razorpay subscription for tenant {TenantId}. Reason: {Message}",
-                //         tenantSubscription.TenantId, razorpaySubscriptionResult?.Message ?? "Unknown error");
-                //     serviceResponse.Message = razorpaySubscriptionResult.Message;
-                //     return serviceResponse;
-                // }
+                // Assign the newly generated subscription ID and payment URL if the creation succeeded
+                if (razorpaySubscriptionResult?.Data != null || razorpaySubscriptionResult.StatusCode == 200)
+                {
+                    tenantSubscription.RazorpaySubscriptionId = razorpaySubscriptionResult.Data.Id;
+                    paymentUrl = razorpaySubscriptionResult.Data.ShortUrl;
+                }
+                else
+                {
+                    _logger.LogWarning("Failed to update Razorpay subscription for tenant {TenantId}. Reason: {Message}",
+                        tenantSubscription.TenantId, razorpaySubscriptionResult?.Message ?? "Unknown error");
+                    serviceResponse.Message = razorpaySubscriptionResult.Message;
+                    return serviceResponse;
+                }
             }
 
             await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
