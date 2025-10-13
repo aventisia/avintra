@@ -480,28 +480,59 @@ public class SubscriptionPlanService : ISubscriptionPlanService
         return serviceResponse;
     }
 
-    // Creates a Razorpay subscription plan using the provided subscription plan details.
-    public async Task<ServiceResponse<PlanResponseDto>> CreateRazorpayPlanAsync(SubscriptionPlan subscriptionPlan)
+    // Creates a new Razorpay plan based on the provided subscription plan details.
+    private async Task<ServiceResponse<PlanResponseDto>> CreateRazorpayPlanAsync(SubscriptionPlan subscriptionPlan)
     {
-        // Build the Razorpay plan request with necessary details
-        var razorpayPlanRequest = new PlanRequestDto
+        // Initialize a response object to hold the result from Razorpay
+        var serviceResponse = new ServiceResponse<PlanResponseDto>
         {
-            Period = subscriptionPlan.Frequency.ToString().ToLower(),
-            Interval = 1,
-            Item = new PlanItemDto
-            {
-                Name = subscriptionPlan.Name,
-                Currency = subscriptionPlan.Currency.ToString().ToUpper(),
-                Description = string.Empty,
-                Amount = (int)(subscriptionPlan.Price * 100)
-            }
+            Data = null,
+            Message = "Failed to create Razorpay plan. Please try again."
         };
 
-        // Call the plan service to create the Razorpay plan
-        var razorpayPlan = await _planService.CreatePlanAsync(razorpayPlanRequest);
+        try
+        {
+            // Build the Razorpay plan request using details from the local subscription plan
+            var razorpayPlanRequest = new PlanRequestDto
+            {
+                Period = subscriptionPlan.Frequency.ToString().ToLower(),
+                Interval = 1,
+                Item = new PlanItemDto
+                {
+                    Name = subscriptionPlan.Name,
+                    Currency = subscriptionPlan.Currency.ToString().ToUpper(),
+                    Description = string.Empty,
+                    Amount = (int)(subscriptionPlan.Price * 100)
+                }
+            };
 
-        // Return the Razorpay plan ID if creation succeeded
-        return razorpayPlan;
+            _logger.LogInformation("Creating Razorpay plan for subscription plan '{PlanName}' with amount {Amount} {Currency}.",
+                subscriptionPlan.Name, subscriptionPlan.Price, subscriptionPlan.Currency);
+
+            // Call the plan service to create the plan in Razorpay
+            var razorpayPlanResponse = await _planService.CreatePlanAsync(razorpayPlanRequest);
+
+            // If plan creation succeeded, log success
+            if (razorpayPlanResponse?.Data != null && razorpayPlanResponse.StatusCode == 200)
+            {
+                _logger.LogInformation("Successfully created Razorpay plan with ID: {PlanId} for plan '{PlanName}'.",
+                    razorpayPlanResponse.Data.Id, subscriptionPlan.Name);
+            }
+            else
+            {
+                _logger.LogWarning("Failed to create Razorpay plan for plan '{PlanName}'. Message: {Message}",
+                    subscriptionPlan.Name, razorpayPlanResponse?.Message ?? "No message");
+            }
+
+            // Return the Razorpay service response to the caller
+            return razorpayPlanResponse;
+        }
+        catch (Exception ex)
+        {
+            // Log any unexpected exceptions
+            _logger.LogError(ex, "An error occurred while creating Razorpay plan for plan '{PlanName}'.", subscriptionPlan.Name);
+            return serviceResponse;
+        }
     }
 
 }
