@@ -17,6 +17,15 @@ public interface ISubscriptionPlanService
     Task<ServiceResponse<IEnumerable<SubscriptionPlanDto>>> GetAllSubscriptionPlansAsync(SubscriptionPlanTypeEnum subscriptionPlanType, SubscriptionFrequenciesEnum frequency, CurrencyTypesEnum currency);
 
     /// <summary>
+    /// Retrieves all subscription plans available in the system.
+    /// </summary>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The result contains a <see cref="ServiceResponse{T}"/> 
+    /// with a collection of <see cref="SubscriptionPlanDto"/> instances.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<SubscriptionPlanDto>>> GetListSubscriptionPlansAsync();
+
+    /// <summary>
     /// Retrieves a list of subscription plans formatted as selectable options, typically used in dropdowns or selection lists.
     /// </summary>
     /// <param name="subscriptionPlanType">An optional filter to return only subscription plans of a specific type.</param>

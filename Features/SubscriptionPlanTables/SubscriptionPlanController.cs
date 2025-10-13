@@ -13,10 +13,17 @@ public class SubscriptionPlanController : BaseApiController
     }
 
     // Retrieves all subscription plans.
-    [HttpGet("list")]
+    [HttpGet("all")]
     public async Task<IActionResult> GetAllSubscriptionPlans(SubscriptionPlanTypeEnum type = SubscriptionPlanTypeEnum.Pro, SubscriptionFrequenciesEnum frequency = SubscriptionFrequenciesEnum.Monthly, CurrencyTypesEnum currency = CurrencyTypesEnum.USD)
     {
         return ResultHelper(await _subscriptionPlanService.GetAllSubscriptionPlansAsync(type, frequency, currency));
+    }
+
+    // Retrieves list subscription plans.
+    [HttpGet("list")]
+    public async Task<IActionResult> GetAllSubscriptionPlans()
+    {
+        return ResultHelper(await _subscriptionPlanService.GetListSubscriptionPlansAsync());
     }
 
     // Gets a list of subscription plans for selection options.

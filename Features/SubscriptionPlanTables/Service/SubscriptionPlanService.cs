@@ -74,6 +74,42 @@ public class SubscriptionPlanService : ISubscriptionPlanService
         return serviceResponse;
     }
 
+    // Retrieves all subscription plans from the database
+    public async Task<ServiceResponse<IEnumerable<SubscriptionPlanDto>>> GetListSubscriptionPlansAsync()
+    {
+        // Initialize a default failure response
+        var serviceResponse = new ServiceResponse<IEnumerable<SubscriptionPlanDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve subscription plans. Please try again."
+        };
+
+        try
+        {
+            // Start building the database query; nothing is executed yet.
+            IQueryable<SubscriptionPlan> query = _unitOfWork.SubscriptionPlanRepo.GetAllAsync()
+                .Include(plan => plan.CreatedByUser);
+
+            // Execute the final query against the database and get the results.
+            var subscriptionPlans = await query
+                .OrderByDescending(plan => plan.CreatedOn)
+                .ToListAsync();
+
+            // Map the plans to DTOs for safe transfer
+            serviceResponse.Data = subscriptionPlans.Adapt<IEnumerable<SubscriptionPlanDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Subscription plans retrieved successfully.";
+
+            _logger.LogInformation("Retrieved {Count} subscription plan(s).", subscriptionPlans.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while retrieving subscription plans.");
+        }
+
+        return serviceResponse;
+    }
+
     // Retrieves all subscription plans as selectable options for UI components.
     public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableSubscriptionPlanOptionsAsync(SubscriptionPlanTypeEnum? subscriptionPlanType)
     {
