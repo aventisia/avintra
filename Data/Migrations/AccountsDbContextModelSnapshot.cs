@@ -970,6 +970,9 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<int>("HistoryRetentionDays")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
@@ -999,6 +1002,10 @@ namespace AccountsAPIs.Data.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<string>("RazorpayPlanId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("StorageLimitMB")
@@ -1248,10 +1255,17 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<int>("MaxUsers")
                         .HasColumnType("integer");
 
+                    b.Property<DateTimeOffset?>("NextBillingDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("PlanId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("RazorpaySubscriptionId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("StorageLimitMB")
