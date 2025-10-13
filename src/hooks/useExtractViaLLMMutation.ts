@@ -21,7 +21,7 @@ export const useExtractViaLLMMutation = () => {
       extractedData: state.extractedData,
     })),
   );
-  const { modelId: mlModelId, modelName } = useLabelDataStore();
+  const { modelId: mlModelId } = useLabelDataStore();
   const location = useLocation();
   const queryParams = useMemo(
     () => new URLSearchParams(location.search),
@@ -80,14 +80,7 @@ export const useExtractViaLLMMutation = () => {
         });
         toast.success("Data extracted successfully");
 
-        // TODO: Update units/credits used. For now we are making an api call due to database split but later we should update it from the backend itself
-        updateCreditsUsed({
-          serviceType: httpResponse?.data?.extractedData[0]?.serviceType,
-          consumedUnit: httpResponse?.data?.extractedData[0]?.executionTime,
-          refType: "AIModel",
-          refId: mlModelId,
-          refName: modelName,
-        });
+        queryClient.invalidateQueries({ queryKey: ["available-credits"] });
       },
 
       onError: (error) => {
