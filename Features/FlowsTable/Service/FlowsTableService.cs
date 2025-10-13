@@ -48,25 +48,23 @@ public class FlowsTableService : IFlowsTableService
 
             // Map the list of flows to a list of FlowsTableDto using the Adapt method
             var flowDtoList = flows.Adapt<List<FlowsTableDto>>();
-
             foreach (var flowDto in flowDtoList)
             {
-                // Find the corresponding original flow by ID
+                // Try to find the original flow by matching ID
                 var originalFlow = flows.FirstOrDefault(f => f.Id == flowDto.Id);
+                if (originalFlow is null)
+                    continue;
 
-                if (originalFlow?.FlowUsers != null)
+                // Assign 'Owner' if the current user is the creator
+                if (originalFlow.CreatedByUserId == _userId)
                 {
-                    // Get the user's access information for this flow
-                    var userAccess = originalFlow.FlowUsers.FirstOrDefault(fu => fu.UserId == _userId);
-
-                    // Set the AccessType on the DTO
-                    // If the current user is the creator, assign 'Owner'; otherwise, use the user's assigned access type
-                    if (userAccess != null)
-                    {
-                        flowDto.AccessType = originalFlow.CreatedByUserId == _userId
-                            ? ProjectUserAccessEnum.Owner
-                            : userAccess.Type;
-                    }
+                    flowDto.AccessType = ProjectUserAccessEnum.Owner;
+                }
+                else
+                {
+                    // Otherwise, find the user's access type in FlowUsers, defaulting to 'View'
+                    var userAccess = originalFlow.FlowUsers?.FirstOrDefault(fu => fu.UserId == _userId);
+                    flowDto.AccessType = userAccess?.Type ?? ProjectUserAccessEnum.View;
                 }
             }
 
