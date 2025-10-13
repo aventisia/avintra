@@ -13,7 +13,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         OpenAIConfig openAIConfig,
         IHttpContextAccessor httpContextAccessor)
     {
-        _jwt = httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Replace("Bearer ", "") ?? string.Empty;
+        _jwt = httpContextAccessor.HttpContext?.Request.Cookies["AccessToken"] ?? string.Empty;
 
         _logger = logger;
         _extractViaLLMConfig = extractViaLLMConfig;
