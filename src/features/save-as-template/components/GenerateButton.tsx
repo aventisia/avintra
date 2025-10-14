@@ -11,6 +11,8 @@ import { z } from "zod";
 import { saveAsTemplateSchema } from "../constants/save-as-template-zod-schema";
 import { cn } from "@aventisia/ui/lib";
 import { useEffect } from "react";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
 const GenerateButton = ({
   setVal,
@@ -20,6 +22,12 @@ const GenerateButton = ({
   // Get nodes from the react flow store
   const { nodes } = useReactFlowExtStore(
     useShallow((state) => ({ nodes: state.nodes })),
+  );
+
+  const { currentFlow } = useCurrentFlowStore(
+    useShallow((state) => ({
+      currentFlow: state.currentFlow,
+    })),
   );
 
   // Mutation hook to generate the template instruction
@@ -45,9 +53,14 @@ const GenerateButton = ({
       disabled={isPending}
       onClick={() => {
         // Trigger mutation with serialized prompt data extracted from nodes
-        mutate(
-          JSON.stringify(getPromptDataFromNodes(nodes as Node<NodeDataType>[])),
-        );
+        mutate({
+          refType: FlowTypesEnum.Agent, // Block is not supported by credits usages api
+          refId: currentFlow.versionId,
+          refName: currentFlow.name,
+          payload: JSON.stringify(
+            getPromptDataFromNodes(nodes as Node<NodeDataType>[]),
+          ),
+        });
       }}
     >
       {/* Icon with pulse animation while generating */}

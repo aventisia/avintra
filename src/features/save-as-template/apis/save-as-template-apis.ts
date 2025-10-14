@@ -2,6 +2,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { SaveAsTemplateDto } from "../dto/save-as-template";
 import { ValidateTemplateDto } from "../dto/validate-template-dto";
+import { GenerateInstructionRequestDto } from "../dto/genereate-instruction-request-dto";
 
 // Base API URL for all project-template related endpoints
 const baseAPIURL = `${import.meta.env.VITE_WORC_API_URL}/project-template`;
@@ -41,11 +42,11 @@ const validateTemplate = (templateData: ValidateTemplateDto[]) => {
  * @param payload - Serialized prompt data (usually from nodes).
  * @returns Generated instruction as a string.
  */
-const generateTemplateInstruction = (payload: string) => {
+const generateTemplateInstruction = (postObj: GenerateInstructionRequestDto) => {
   return axiosInstance
     .post<IHttpResponse<string>>(
       `${baseAPIURL}/generate`,
-      { payload },
+      postObj,
       { timeout: 5 * 60000 }, // Allow long-running generation (up to 5min)
     )
     .then((res) => res.data);
