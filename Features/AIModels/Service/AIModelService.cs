@@ -191,7 +191,7 @@ public class AIModelService : IAIModelService
 
         try
         {
-            _logger.LogDebug("Attempting to retrieve published AI model with ID: {ModelId}", requestDto.ModelId);
+            _logger.LogDebug("Attempting to retrieve published AI model verison with ID: {AIProjectVersionId}", requestDto.AIProjectVersionId);
 
             // Retrieve the published AI project version along with its parent project
             var aiProjectVersion = await _unitOfWork.AIProjectVersionRepo
@@ -201,12 +201,12 @@ public class AIModelService : IAIModelService
 
             if (aiProjectVersion == null)
             {
-                _logger.LogWarning("AI model not found or not published. Model ID: {ModelId}", requestDto.ModelId);
-                serviceResponse.Message = "AI model not found.";
+                _logger.LogWarning("AI model not found or not published. Model version ID: {AIProjectVersionId}", requestDto.AIProjectVersionId);
+                serviceResponse.Message = "AI model version not found.";
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Retrieved AI model. ID: {ModelId}, Type: {ModelType}", requestDto.ModelId, aiProjectVersion.AIProject.Type);
+            _logger.LogInformation("Retrieved AI model version. ID: {AIProjectVersionId}, Type: {ModelType}", requestDto.AIProjectVersionId, aiProjectVersion.AIProject.Type);
 
             object? resultData = null;
 
@@ -222,8 +222,8 @@ public class AIModelService : IAIModelService
 
                 // Future types like Generative or Conversation can be added here
                 default:
-                    _logger.LogWarning("Unsupported AI project type '{ProjectType}' for model ID: {ModelId}",
-                        aiProjectVersion.AIProject.Type, requestDto.ModelId);
+                    _logger.LogWarning("Unsupported AI project type '{ProjectType}' for model version ID: {AIProjectVersionId}",
+                        aiProjectVersion.AIProject.Type, requestDto.AIProjectVersionId);
 
                     serviceResponse.Message = $"Model type '{aiProjectVersion.AIProject.Type}' is not supported for execution.";
                     return serviceResponse;
@@ -234,11 +234,11 @@ public class AIModelService : IAIModelService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "AI model executed successfully.";
 
-            _logger.LogInformation("Execution completed successfully for model ID: {ModelId}", requestDto.ModelId);
+            _logger.LogInformation("Execution completed successfully for model version ID: {AIProjectVersionId}", requestDto.AIProjectVersionId);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while executing AI model with ID: {ModelId}", requestDto.ModelId);
+            _logger.LogError(ex, "Error occurred while executing AI model with version ID: {AIProjectVersionId}", requestDto.AIProjectVersionId);
         }
 
         return serviceResponse;
