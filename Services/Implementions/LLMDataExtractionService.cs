@@ -21,7 +21,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
     }
 
     // Extracts structured data from a document by retrieving its text and passing it to an LLM for processing.
-    public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature, object? ollamaOutputFormatSchema = null, Guid? aiProjectVersionId = null, string? aiProjectName = null)
+    public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature, UsageSourceTypesEnum refType, Guid refId, string refName, object? ollamaOutputFormatSchema = null)
     {
         var serviceResponse = new ServiceResponse<string>()
         {
@@ -30,20 +30,6 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         };
 
         _logger.LogInformation("Initiating data extraction process.");
-
-        if (string.IsNullOrEmpty(aiProjectName))
-        {
-            serviceResponse.Message = "Project Name is required.";
-            _logger.LogWarning("Project Name is missing or empty.");
-            return serviceResponse;
-        }
-
-        if (!aiProjectVersionId.HasValue || aiProjectVersionId.Value == Guid.Empty)
-        {
-            serviceResponse.Message = "Project Version Id is required.";
-            _logger.LogWarning("Project Version Id is missing or empty.");
-            return serviceResponse;
-        }
 
         // Mapping model identifiers to the actual model versions
         var llmModelMapper = new Dictionary<string, string>
@@ -180,9 +166,9 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                             {
                                 serviceType = "Gpt4oMiniInput",
                                 consumedUnit = inputTokens,
-                                refType = "AIModel",
-                                refId = "bd48c1fe-dca2-4523-ac65-650dcbad49a2",
-                                refName = "Test AIModel"
+                                refType = refType.ToString(),
+                                refId = refId.ToString(),
+                                refName = refName
                             });
                         }
 
@@ -193,9 +179,9 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                             {
                                 serviceType = "Gpt4oMiniOutput",
                                 consumedUnit = outputTokens,
-                                refType = "AIModel",
-                                refId = "bd48c1fe-dca2-4523-ac65-650dcbad49a2",
-                                refName = "Test AIModel"
+                                refType = refType.ToString(),
+                                refId = refId.ToString(),
+                                refName = refName
                             });
                         }
 
@@ -367,9 +353,9 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 {
                     serviceType = "AiModelExecution",
                     consumedUnit = totalExecutionTime,
-                    refType = "AIModel",
-                    refId = aiProjectVersionId,
-                    refName = aiProjectName
+                    refType = refType.ToString(),
+                    refId = refId.ToString(),
+                    refName = refName
                 });
             }
 
