@@ -6,7 +6,7 @@ using System.ComponentModel;
 namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
 {
     // Activity to close an open terminal session
-    [DisplayName("Close Terminal Session"), Description("Close an open terminal session.")],
+    [DisplayName("Close Terminal Session"), Description("Close an open terminal session.")]
     [ActivityMetaData(nodeImg:"/assets/TerminalEmulation.svg")]
     public class CloseTerminalSessionActivity : BaseCodeActivity
     {

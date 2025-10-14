@@ -6,8 +6,8 @@ using System.ComponentModel;
 namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
 {
     // Activity to send a control key to a terminal session
-    [DisplayName("Send Key to Terminal Session")],
-    [Description("Send a control key to a terminal session.")],
+    [DisplayName("Send Key to Terminal Session")]
+    [Description("Send a control key to a terminal session.")]
     [ActivityMetaData(nodeImg:"/assets/TerminalEmulation.svg")]
     public class SendKeyToTerminalSessionActivity : BaseCodeActivity
     {

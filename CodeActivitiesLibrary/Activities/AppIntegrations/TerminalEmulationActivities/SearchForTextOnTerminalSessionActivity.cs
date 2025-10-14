@@ -7,8 +7,8 @@ using System.ComponentModel;
 namespace CodeActivitiesLibrary.AppIntegrations.TerminalEmulationActivities
 {
     // Activity to search for text on a terminal session
-    [DisplayName("Search for Text on Terminal Session")],
-    [Description("Search for all occurrences of a specific text on a terminal session.")],
+    [DisplayName("Search for Text on Terminal Session")]
+    [Description("Search for all occurrences of a specific text on a terminal session.")]
     [ActivityMetaData(nodeImg:"/assets/TerminalEmulation.svg")]
     public class SearchForTextOnTerminalSessionActivity : BaseCodeActivity
     {
