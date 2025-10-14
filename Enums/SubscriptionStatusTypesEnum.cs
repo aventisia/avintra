@@ -33,6 +33,12 @@ public enum SubscriptionStatusTypesEnum
     Halted,
 
     /// <summary>
+    /// The subscription has been paused, temporarily suspending the service.
+    /// </summary>
+    [Description("Subscription has been paused, temporarily suspending the service.")]
+    Paused,
+
+    /// <summary>
     /// The subscription has been cancelled, either by the user or due to a payment failure.
     /// </summary>
     [Description("Subscription has been cancelled, either by the user or due to a payment failure.")]
