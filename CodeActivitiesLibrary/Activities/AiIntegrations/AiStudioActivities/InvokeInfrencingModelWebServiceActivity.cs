@@ -90,6 +90,7 @@ namespace CodeActivitiesLibrary.AIIntegrations.AIStudioActivities
             object requestBodyObj = new
             {
                 modelId = selectModel,
+                aiProjectVersionId = selectModel,
                 content = inputText,
             };
 
