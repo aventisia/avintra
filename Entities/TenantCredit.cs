@@ -26,6 +26,11 @@ public class TenantCredit : BaseEntity
     public DateTimeOffset ExpiredOn { get; set; }
 
     /// <summary>
+    /// Gets or sets the type of credit allocated to the tenant (e.g., Subscription, Top-up, Addon).
+    /// </summary>
+    public CreditTypesEnum Type { get; set; }
+
+    /// <summary>
     /// Gets or sets the unique identifier of the subscription associated with this credit.
     /// </summary>
     public Guid SubscriptionId { get; set; }

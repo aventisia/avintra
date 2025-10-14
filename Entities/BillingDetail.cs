@@ -1,16 +1,11 @@
 namespace AccountsAPIs.Entities;
 
-public class BillingDetail : BaseEntity, IMustHaveTenant
+public class BillingDetail : BaseEntity
 {
     /// <summary>
     /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).
     /// </summary>
     public Guid TenantId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the date of the next scheduled billing for the subscription. This indicates when the next payment will be charged or invoiced.
-    /// </summary>
-    public DateTimeOffset NextBillingDate { get; set; }
 
     /// <summary>
     /// Gets or sets the email address for billing communications with the tenant.
@@ -20,7 +15,7 @@ public class BillingDetail : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the contact person phone number for the tenant.
     /// </summary>
-    public string? ContactPerson { get; set; } 
+    public string? ContactPerson { get; set; }
 
     /// <summary>
     /// Gets or sets the first line of the billing address.
@@ -68,18 +63,33 @@ public class BillingDetail : BaseEntity, IMustHaveTenant
     public decimal Amount { get; set; }
 
     /// <summary>
-    /// Gets or sets the tax rate as a percentage (e.g., 18 for 18%).
+    /// Gets or sets the Razorpay payment ID associated with the billing.
     /// </summary>
-    public decimal TaxRate { get; set; } = 18;
+    public string? RazorpayPaymentId { get; set; }
 
     /// <summary>
-    /// Gets or sets the ID of the assigned subscription plan.
+    /// Gets or sets the Razorpay order ID associated with the billing.
     /// </summary>
-    public required Guid PlanId { get; set; }
+    public string? RazorpayOrderId { get; set; }
 
     /// <summary>
-    /// Gets or sets the subscription plan assigned to the tenant.
+    /// Gets or sets the Razorpay invoice ID associated with the billing.
     /// </summary>
-    [ForeignKey("PlanId")]
-    public virtual SubscriptionPlan? Plan { get; set; }
+    public string? RazorpayInvoiceId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the payment status for the billing. Possible values: Created, Authorized, Captured, Refunded, Failed.
+    /// </summary>
+    public PaymentStatusTypesEnum PaymentStatus { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique identifier of the subscription associated with this billing.
+    /// </summary>
+    public Guid SubscriptionId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the navigation property to the tenant's subscription associated with this billing.
+    /// </summary>
+    [ForeignKey("SubscriptionId")]
+    public virtual TenantSubscription? TenantSubscription { get; set; }
 }
