@@ -62,7 +62,7 @@ public class TenantAccountService : ITenantAccountService
             var billingDetail = await _unitOfWork.BillingDetailRepo
                 .GetByConditionAsync(w => w.TenantId == _tenantId)
                 .AsNoTracking()
-                .OrderByDescending(o => o.NextBillingDate)
+                .OrderByDescending(o => o.CreatedOn)
                 .FirstOrDefaultAsync();
 
             // Map billing details and populate response DTO
@@ -135,7 +135,7 @@ public class TenantAccountService : ITenantAccountService
             // Attempt to retrieve billing detail
             var billingDetail = await _unitOfWork.BillingDetailRepo
                 .GetByConditionAsync(w => w.TenantId == _tenantId)
-                .OrderByDescending(o => o.NextBillingDate)
+                .OrderByDescending(o => o.CreatedOn)
                 .FirstOrDefaultAsync();
 
             if (billingDetail == null)

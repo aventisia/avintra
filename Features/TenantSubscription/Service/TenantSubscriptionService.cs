@@ -462,7 +462,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             {
                 // Map the subscription purchase DTO to a new BillingDetail entity
                 var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
-                billingDetail.Amount = subscriptionPlan.Price * billingDetail.TaxRate;
 
                 // Fetch the current user's information based on their User ID
                 var currentUser = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.Id == _userId).FirstOrDefaultAsync();
@@ -473,18 +472,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
                     // Set the ContactPerson to the full name (First and Last Name) of the current user
                     billingDetail.ContactPerson = $"{currentUser?.FirstName} {currentUser.LastName}";
-                }
-
-                // Set pricing and next billing date based on the selected subscription frequency
-                switch (tenantSubscriptionPurchaseDto.Frequency)
-                {
-                    case SubscriptionFrequenciesEnum.Monthly:
-                        billingDetail.NextBillingDate = DateTimeOffset.UtcNow.Date.AddMonths(1);
-                        break;
-
-                    case SubscriptionFrequenciesEnum.Yearly:
-                        billingDetail.NextBillingDate = DateTimeOffset.UtcNow.Date.AddYears(1);
-                        break;
                 }
 
                 // Set audit fields
@@ -511,6 +498,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     ExpiredOn = DateTimeOffset.UtcNow.Date.AddMonths(1),
                     SubscriptionId = tenantSubscription.Id,
                     AvailableCredits = subscriptionPlan.MaxCredits,
+                    Type = CreditTypesEnum.Subscription,
                     TenantId = _tenantId,
                     CreatedByUserId = _userId,
                     LastModifiedByUserId = _userId
@@ -604,7 +592,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Fetch the latest billing details for the current tenant
             var billingDetail = await _unitOfWork.BillingDetailRepo
                 .GetAllAsync()
-                .OrderByDescending(o => o.NextBillingDate)
+                .OrderByDescending(o => o.CreatedOn)
                 .FirstOrDefaultAsync();
 
             // Extract the current subscription plan for easier reference
@@ -673,7 +661,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 // Populate the next payment details
                 subscriptionDashboardDto.NextPayment = new NextPaymentDetailDto()
                 {
-                    DueDate = billingDetail.NextBillingDate,
+                    DueDate = tenantSubscription.NextBillingDate,
                     SubscriptionFee = subscriptionFee,
                     Tax = tax,
                     TotalAmount = totalAmount,
@@ -818,19 +806,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             {
                 // Map the subscription purchase DTO to a new BillingDetail entity
                 var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
-                billingDetail.Amount = subscriptionPlan.Price * billingDetail.TaxRate;
-
-                // Set pricing and next billing date based on the selected subscription frequency
-                switch (subscriptionPlan.Frequency)
-                {
-                    case SubscriptionFrequenciesEnum.Monthly:
-                        billingDetail.NextBillingDate = DateTimeOffset.UtcNow.Date.AddMonths(1);
-                        break;
-
-                    case SubscriptionFrequenciesEnum.Yearly:
-                        billingDetail.NextBillingDate = DateTimeOffset.UtcNow.Date.AddYears(1);
-                        break;
-                }
+                billingDetail.SubscriptionId = tenantSubscription.Id;
 
                 // Set audit fields
                 billingDetail.CreatedByUserId = _userId;

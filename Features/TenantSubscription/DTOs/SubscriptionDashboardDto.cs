@@ -91,7 +91,7 @@ public class NextPaymentDetailDto
     /// <summary>
     /// Gets or sets the date the next payment is due.
     /// </summary>
-    public DateTimeOffset DueDate { get; set; }
+    public DateTimeOffset? DueDate { get; set; }
 
     /// <summary>
     /// Gets or sets the base cost of the subscription.
