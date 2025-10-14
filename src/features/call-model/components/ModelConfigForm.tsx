@@ -30,6 +30,7 @@ export default function ModelConfigForm() {
   const onSubmit = (data: modelFormData) => {
     const RequestBody = {
       modelId: data.MLModel.id,
+      aiProjectVersionId: data.MLModel.id,
       content: data.inputText,
       modelTaskIds: null,
     };
