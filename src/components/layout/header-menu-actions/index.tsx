@@ -102,14 +102,6 @@ export const HeaderActionMenu: React.FC = () => {
           onClick={() => setShowDialog(true)}
         />
 
-        {/* <Save As Template /> */}
-        <SimpleDDMenuItem
-          size="md"
-          Icon={BookCopyIcon}
-          content="Save As Template"
-          onClick={() => setSATDialog(true)}
-        />
-
         {IS_TAURI ? (
           <SimpleDDMenuItem
             size="md"
@@ -131,26 +123,57 @@ export const HeaderActionMenu: React.FC = () => {
             }}
           />
         ) : null}
+
+        <SimpleDDMenuItem
+          size="md"
+          Icon={ImportIcon}
+          content="Import"
+          onClick={() => {
+            setUpload(true);
+          }}
+        />
+
+        <SimpleDDMenuItem
+          size="md"
+          Icon={UploadIcon}
+          content="Export"
+          onClick={() => {
+            exportFlow();
+          }}
+        />
+
+        <DropdownMenuSeparator />
+
+        <SimpleDDMenuItem
+          onClick={() => setExportDialog(true)}
+          size="md"
+          Icon={ArrowLeftRightIcon}
+          content="Add Input/Output"
+        />
+
+        <DropdownMenuSeparator />
+        
+        <SimpleDDMenuItem
+          size="md"
+          Icon={KeyboardIcon}
+          content="Keyboard Shortcuts"
+          onClick={() => {
+            keyboardDialog(true);
+          }}
+        />
+
         {import.meta.env.MODE !== "production" ? (
           <>
+            {/* <Save As Template /> */}
+            <SimpleDDMenuItem
+              size="md"
+              Icon={BookCopyIcon}
+              content="Save As Template"
+              onClick={() => setSATDialog(true)}
+            />
+
             <DropdownMenuSeparator />
 
-            <SimpleDDMenuItem
-              size="md"
-              Icon={ImportIcon}
-              content="Import"
-              onClick={() => {
-                setUpload(true);
-              }}
-            />
-            <SimpleDDMenuItem
-              size="md"
-              Icon={UploadIcon}
-              content="Export"
-              onClick={() => {
-                exportFlow();
-              }}
-            />
             <SimpleDDMenuItem
               size="md"
               Icon={UploadIcon}
@@ -161,26 +184,8 @@ export const HeaderActionMenu: React.FC = () => {
             />
             <DropdownMenuSeparator />
 
-            <SimpleDDMenuItem
-              onClick={() => setExportDialog(true)}
-              size="md"
-              Icon={ArrowLeftRightIcon}
-              content="Add Input/Output"
-            />
-            {/* DropdownMenuSeparator component */}
-            <DropdownMenuSeparator />
             <SimpleDDMenuItem size="md" Icon={LockOpenIcon} content="Lock" />
             <SimpleDDMenuItem size="md" Icon={DockIcon} content="Archive" />
-            {/* DropdownMenuSeparator component */}
-            <DropdownMenuSeparator />
-            <SimpleDDMenuItem
-              size="md"
-              Icon={KeyboardIcon}
-              content="Keyboard Shortcuts"
-              onClick={() => {
-                keyboardDialog(true);
-              }}
-            />
           </>
         ) : null}
       </DropdownMenuContent>
