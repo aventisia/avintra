@@ -20,6 +20,7 @@ import { useExecutionLogTableStore } from "@/features/flow-execution-log/stores/
 import { ExecutionStatusTypesEnum } from "@/features/flow-execution-log/constants/execution-status-type-enum";
 import { insertExecution } from "@/features/flow-execution-log/apis/executions-table-apis";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { getAgentExecutionDuration } from "@/features/credits-management/utils/getAgentExecutionDuration";
 
 export default function useWebSocket() {
   const socketRef = useRef<WebSocket | null>(null);
@@ -186,78 +187,70 @@ export default function useWebSocket() {
     };
   }, [sendCommand, setExecutionState]);
 
-  // Post credit consumption data once command is complete/abort
   useEffect(() => {
-    if (!pendingPostCommand) return;
+    // Only run if one of the commands is pending
+    if (!pendingPostCommand && !pendingInsertCommand) return;
 
-    const generateAndPostConsumption = async () => {
+    const handleExecutionData = async () => {
       try {
+        // Fetch execution logs for the current flow version
         const localLogs = await getLocalExecutionLog(currentFlow.versionId);
-
         const executionData: Execution[] = localLogs ?? [];
 
-        const consumptionList = generateCreditConsumptionList(
-          executionData,
-          currentFlow.id,
-          currentFlow.name,
-          // currentFlow.versionId,
-          pendingPostCommand,
-        );
+        // Handle Credit Consumption
+        if (pendingPostCommand) {
+          const consumptionList = generateCreditConsumptionList(
+            executionData,
+            currentFlow.id,
+            currentFlow.name,
+            pendingPostCommand,
+          );
 
-        if (consumptionList) {
-          await postCreditConsumption(consumptionList); // post data
-        } else {
-          console.warn("No credit consumption data generated.");
+          if (consumptionList) {
+            await postCreditConsumption(consumptionList); // Post the consumption data
+            console.log("Credit consumption posted successfully.");
+          } else {
+            console.warn("No credit consumption data generated.");
+          }
+        }
+
+        // Handle Execution Log Insertion
+        if (pendingInsertCommand) {
+          // Calculate execution duration
+          const duration = getAgentExecutionDuration(
+            executionData[0]?.nodes || [],
+          );
+          await insertExecution({
+            flowVersionId: currentFlow.versionId,
+            name: currentFlow.name,
+            status,
+            endTime,
+            startTime,
+            duration,
+            version: currentFlow.versionNumber,
+            flowId: currentFlow.id,
+            executedBy: `${userSession?.firstName} ${userSession?.lastName}`,
+            executedOn: startTime,
+            executionType: "Manual", // TODO: Update based on actual execution type
+          });
+
+          console.log("Execution log inserted successfully.");
         }
       } catch (error) {
-        console.error("Failed to post credit consumption:", error);
+        // Log any errors that occur during the process
+        console.error(
+          "Error during execution or posting credit consumption:",
+          error,
+        );
       } finally {
-        setPendingPostCommand(null); // cleanup
-      }
-    };
-
-    generateAndPostConsumption();
-  }, [
-    currentFlow.id,
-    currentFlow.name,
-    currentFlow.versionId,
-    pendingPostCommand,
-    postCreditConsumption,
-  ]);
-
-  useEffect(() => {
-    if (!pendingInsertCommand) return;
-
-    const insertExecutionData = async () => {
-      try {
-        const duration = Math.max(
-          0,
-          (endTime.getTime() - startTime.getTime()) / 1000,
-        ); // in seconds
-
-        await insertExecution({
-          flowVersionId: currentFlow.versionId,
-          name: currentFlow.name,
-          status,
-          endTime,
-          startTime,
-          duration,
-          version: currentFlow.versionNumber,
-          flowId: currentFlow.id,
-          executedBy: `${userSession?.firstName} ${userSession?.lastName}`,
-          executedOn: startTime,
-          executionType: "Manual", //TODO:
-        });
-
-        console.log("Execution inserted successfully");
-      } catch (err) {
-        console.error("Failed to insert execution:", err);
-      } finally {
+        // Reset both commands after execution is done
+        setPendingPostCommand(null);
         setPendingInsertCommand(null);
       }
     };
 
-    insertExecutionData();
+    // Run the function to handle both tasks
+    handleExecutionData();
   }, [
     currentFlow.id,
     currentFlow.name,
@@ -265,6 +258,8 @@ export default function useWebSocket() {
     currentFlow.versionNumber,
     endTime,
     pendingInsertCommand,
+    pendingPostCommand,
+    postCreditConsumption,
     startTime,
     status,
     userSession?.firstName,
