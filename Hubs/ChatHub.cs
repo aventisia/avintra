@@ -82,7 +82,15 @@ public class ChatHub : Hub
             var modelTemperature = 0.7;
 
             // Send the full prompt to the LLM for response
-            var response = await _llmDataExtractionService.ExtractDataAsync(prompt, llmModel, modelTemperature);
+            // TODO: Remove this code or pass the correct parameters
+            var response = await _llmDataExtractionService.ExtractDataAsync(
+                                    prompt,
+                                    llmModel,
+                                    modelTemperature,
+                                    UsageSourceTypesEnum.AIModel,
+                                    Guid.Empty,
+                                    "ChatBot",
+                                    null);
 
             // Return the response to the client
             await Clients.Client(receiverConnection.Key)

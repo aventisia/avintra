@@ -67,13 +67,8 @@ public class GenerativeModelService : IGenerativeModelService
             var generativeModelDto = aiProject.Adapt<GenerativeModelDto>();
 
             // Get the AI project version, either by version ID or the latest one
-            AIProjectVersion? aiProjectVersion = null;
-            if (aiProjectVersionId.HasValue)
-                aiProjectVersion = aiProject.Versions.Where(w => w.Id == aiProjectVersionId.Value).FirstOrDefault();
-            else
-                aiProjectVersion = aiProject.Versions.OrderByDescending(o => o.VersionNumber).FirstOrDefault();
-
-            generativeModelDto.AIProjectVersionId = aiProjectVersionId;
+            var aiProjectVersion = aiProject.Versions.FirstOrDefault(v => v.Id == generativeModelDto.AIProjectVersionId)
+                ?? aiProject.Versions.OrderByDescending(o => o.VersionNumber).FirstOrDefault();
 
             // Retrieve the list of generative tasks and add it to the model DTO
             if (aiProjectVersion?.Tasks?.Any() == true)
@@ -157,11 +152,8 @@ public class GenerativeModelService : IGenerativeModelService
             }
 
             // Get the AI project version
-            AIProjectVersion? aiProjectVersion = null;
-            if (generativeModelDto.AIProjectVersionId.HasValue)
-                aiProjectVersion = aiProject.Versions.Where(w => w.Id == generativeModelDto.AIProjectVersionId.Value).FirstOrDefault();
-            else
-                aiProjectVersion = aiProject.Versions.OrderByDescending(o => o.VersionNumber).FirstOrDefault();
+            var aiProjectVersion = aiProject.Versions.FirstOrDefault(v => v.Id == generativeModelDto.AIProjectVersionId)
+                ?? aiProject.Versions.OrderByDescending(o => o.VersionNumber).FirstOrDefault();
 
             // Prevent updates to published versions
             if (aiProjectVersion?.IsPublished == true)
@@ -277,9 +269,8 @@ public class GenerativeModelService : IGenerativeModelService
             }
 
             // Select the appropriate project version
-            var aiProjectVersion = generativeModelDto.AIProjectVersionId.HasValue
-                ? aiProject.Versions.FirstOrDefault(v => v.Id == generativeModelDto.AIProjectVersionId.Value)
-                : aiProject.Versions.OrderByDescending(v => v.VersionNumber).FirstOrDefault();
+            var aiProjectVersion = aiProject.Versions.FirstOrDefault(v => v.Id == generativeModelDto.AIProjectVersionId)
+                ?? aiProject.Versions.OrderByDescending(o => o.VersionNumber).FirstOrDefault();
 
             if (aiProjectVersion?.IsPublished == true)
             {
@@ -349,6 +340,9 @@ public class GenerativeModelService : IGenerativeModelService
                 versionTask.GeneratedPrompt,
                 versionTask.LLM,
                 versionTask.Temperature,
+                UsageSourceTypesEnum.AIModel,
+                generativeModelDto.AIProjectVersionId,
+                generativeModelDto.Name,
                 null
             );
 

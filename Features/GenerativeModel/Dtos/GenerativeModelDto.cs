@@ -13,13 +13,13 @@ public class GenerativeModelDto
     /// <summary>
     /// Gets or sets the identifier of the associated ai project version entity.
     /// </summary>
-    public Guid? AIProjectVersionId { get; set; }
+    public Guid AIProjectVersionId { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the generative model.
     /// </summary>
     [StringLength(255)]
-    public string? Name { get; set; }
+    public string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the description of the generative model. 

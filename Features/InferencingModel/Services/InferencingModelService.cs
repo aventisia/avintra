@@ -1378,7 +1378,14 @@ public class InferencingModelService : IInferencingModelService
                 .SingleOrDefaultAsync();
 
         // Call the LLM service to extract data
-        var llmResponse = await _llmDataExtractionService.ExtractDataAsync(prompt, versionTask.LLM, versionTask.Temperature, ollamaOutputFormatSchema, versionTask.AIProjectVersionId, aIProjectVersion.AIProject.Name);
+        var llmResponse = await _llmDataExtractionService.ExtractDataAsync(
+            prompt,
+            versionTask.LLM,
+            versionTask.Temperature,
+            UsageSourceTypesEnum.AIModel,
+            versionTask.AIProjectVersionId,
+            aIProjectVersion.AIProject.Name,
+            ollamaOutputFormatSchema);
 
         var endTime = DateTime.UtcNow;
         var executionSeconds = (int)Math.Ceiling((endTime - startTime).TotalSeconds);
