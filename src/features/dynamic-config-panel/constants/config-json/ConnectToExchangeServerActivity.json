@@ -152,7 +152,7 @@
   },
   {
     "direction": "Input",
-    "type": "text",
+    "type": "password",
     "name": "Password",
     "label": "Password",
     "description": "The password for user-defined credentials (required if \u0027Credentials\u0027 is \u0027User defined\u0027).",

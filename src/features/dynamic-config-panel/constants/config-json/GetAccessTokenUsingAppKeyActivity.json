@@ -29,11 +29,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "AccessToken",
+    "name": "MS365AccessToken",
     "label": "Access Token",
     "description": "The access token retrieved from Microsoft Graph using application permissions.",
     "defaultValue": {
-      "value": "AccessToken",
+      "value": "MS365AccessToken",
       "enabled": true
     },
     "required": false
