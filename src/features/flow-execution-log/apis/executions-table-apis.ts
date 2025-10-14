@@ -19,6 +19,8 @@ export const getExecutions = () => {
  */
 export const insertExecution = (newExecution: ExecutionsTableDto) => {
   return axiosInstance
-    .post<IHttpResponse<ExecutionsTableDto>>(`${baseAPIURL}`, newExecution)
+    .post<
+      IHttpResponse<ExecutionsTableDto>
+    >(`${baseAPIURL}/create`, newExecution)
     .then((res) => res.data);
 };
