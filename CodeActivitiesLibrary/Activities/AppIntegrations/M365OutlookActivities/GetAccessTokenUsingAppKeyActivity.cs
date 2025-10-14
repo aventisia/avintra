@@ -29,7 +29,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 
         [DisplayName("Access Token")]
         [Description("The access token retrieved from Microsoft Graph using application permissions.")]
-        public OutArgument<string> AccessToken { get; set; }
+        public OutArgument<string> MS365AccessToken { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {

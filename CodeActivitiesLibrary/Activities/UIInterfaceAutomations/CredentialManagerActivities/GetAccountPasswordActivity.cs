@@ -25,7 +25,6 @@ namespace CodeActivitiesLibrary.UiInterfaceAutomations.CredentialManagerActiviti
         // Output Arguments
         [DisplayName("Password")]
         [Description("The retrieved password for the specified credential target.")]
-        [FieldType(FieldType.Password)]
         public OutArgument<string> Password { get; set; }
 
         protected override void Execute(CodeActivityContext context)

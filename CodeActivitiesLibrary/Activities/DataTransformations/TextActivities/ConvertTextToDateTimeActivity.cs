@@ -31,7 +31,6 @@ namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 
         [DisplayName("Result DateTime")]
         [Description("Returns the resulting DateTime value after conversion.")]
-        [FieldType(FieldType.DateTime)]
         public OutArgument<DateTime> ResultDateTime { get; set; }
 
 
