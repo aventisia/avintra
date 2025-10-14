@@ -1,4 +1,5 @@
-﻿using CodeActivitiesLibrary.Extensions;
+﻿using AngleSharp.Dom;
+using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.Activities.Expressions;
@@ -102,6 +103,12 @@ namespace CodeActivityToJSON.Utils
                 var fieldTypeAttr = prop.GetCustomAttribute<FieldTypeAttribute>();
                 if (fieldTypeAttr != null)
                 {
+                    if (!prop.PropertyType.Name.StartsWith("InArgument"))
+                    {
+                        throw new InvalidOperationException(
+                            $"FieldTypeAttribute can only be applied to InArgument properties. Activity: {activityType.Name} and Property: {prop.Name}");
+                    }
+
                     // Map FieldType enum to string values
                     var fieldTypeMapping = new Dictionary<FieldType, string>
                     {
