@@ -1123,7 +1123,11 @@ namespace WorkspaceAPIs.Services
                 var generatedOutput = await _lLMDataExtractionService.ExtractDataAsync(
                     prompt: prompt,
                     llmModel: model,
-                    modelTemperature: temperature
+                    modelTemperature: temperature,
+                    genereateProjectInstructionRequestDto.RefType,
+                    genereateProjectInstructionRequestDto.RefId,
+                    genereateProjectInstructionRequestDto.RefName,
+                    null
                 );
 
                 // Handle null or empty response
