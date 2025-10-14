@@ -8,8 +8,6 @@ namespace CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities
     [ActivityMetaData(nodeType: "conditionalNode", nodeIcon: "ConditionalNodeIcon")]
     [DisplayName("Router")]
     [Description("Use conditions to decide which direction the flow should take")]
-    [ActivityMetaData(nodeImg:"/function.png")]
-
     public class ConditionalActivity : BaseCodeActivity
     {
         [RequiredArgument]
