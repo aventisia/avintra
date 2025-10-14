@@ -341,6 +341,11 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             }
 
             llmResponse = llmResponse.Trim(); // Clean up any excess whitespace
+            serviceResponse.Data = llmResponse;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Data = llmResponse;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Data successfully extracted.";
             _logger.LogInformation("Final cleaned LLM response: {llmResponse}", llmResponse);
 
             // Get total execution time
@@ -374,9 +379,6 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             }
 
             // Step 10: Return a successful response with the extracted data
-            serviceResponse.Data = llmResponse;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Data successfully extracted.";
             _logger.LogInformation("Data extraction completed successfully.");
         }
         catch (Exception ex)
