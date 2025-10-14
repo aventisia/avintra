@@ -12,7 +12,10 @@ post {
 
 body:json {
   {
-    "payload": "Test"
+    "refType": "AIModel",
+    "refId": "9fcd9b3d-0674-421c-a21e-58befafd329f",
+    "refName": "test_access_token",
+    "payload": "Generate something wonderfull"
   }
 }
 
@@ -24,13 +27,4 @@ body:multipart-form {
   RefId: 516b6972-bd80-4174-94b1-a00d64d81032
   Tags: ["Test","Template"]
   Files: @file(/home/rahmat/Gitea/Test/Bakery_Store_Invoice_Format.pdf)
-}
-
-script:post-response {
-  if(res.getStatus() == 200){
-    bru.setGlobalEnvVar(
-    "PROJECT_TEMPLATE_ID",
-    res.getBody().data.id
-    );
-  }
 }
