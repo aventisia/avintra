@@ -23,10 +23,10 @@ export const billingInfoSchema = z
 
     state: z
       .string()
-      .min(1, reqError("State"))
       .regex(nameRegex, {
         message: nameError("State"),
-      }),
+      })
+      .optional(),
 
     city: z
       .string()
