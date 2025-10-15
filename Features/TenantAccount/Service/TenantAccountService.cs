@@ -157,8 +157,25 @@ public class TenantAccountService : ITenantAccountService
                 // No billing detail exists - create a new one
                 _logger.LogInformation("No billing detail found. Creating new billing detail for TenantId: {TenantId}", _tenantId);
 
+                // Fetch the active tenant subscription from the repository based on TenantId
+                var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                    .GetByConditionAsync(w => w.TenantId == _tenantId && w.IsActive)
+                    .FirstOrDefaultAsync();
+
+                // Check if the tenant subscription is null (i.e., no active subscription found for the tenant)
+                if (tenantSubscription == null)
+                {
+                    // Log the warning that the tenant organization was not found
+                    serviceResponse.Message = "Tenant organization not found.";
+                    _logger.LogWarning("No active subscription found for TenantId: {TenantId}", _tenantId);
+                }
+
+                // Map the organization billing data to the BillingDetail object
                 billingDetail = organizationBillingDto.Adapt<BillingDetail>();
+
+                // Set necessary properties for the billing detail
                 billingDetail.TenantId = _tenantId;
+                billingDetail.SubscriptionId = tenantSubscription.Id;
                 billingDetail.CreatedByUserId = _userId;
                 billingDetail.LastModifiedByUserId = _userId;
                 billingDetail.CreatedOn = DateTimeOffset.UtcNow;
