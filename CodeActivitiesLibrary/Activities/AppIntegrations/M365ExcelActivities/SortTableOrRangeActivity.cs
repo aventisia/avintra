@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Sort Table or Range")]
     [Description("Applies sorting to a table or range in the workbook.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class SortTableOrRangeActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
 {
     [DisplayName("Get PDF Pages Text in List")]
     [Description("Extracts text from each page of a PDF file and returns a list of page texts.")]
+    [ActivityMetaData(nodeImg:"/assets/PDF.svg")]
     public class GetPdfPagesTextToListActivity : BaseCodeActivity
     {
         #region Input Arguments

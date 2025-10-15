@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Get Workbook Info (HTTP)")]
     [Description("Gets metadata (author, created date, modified date) for a workbook.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class GetWorkbookInfoActivity : BaseCodeActivity
     {
         [RequiredArgument]

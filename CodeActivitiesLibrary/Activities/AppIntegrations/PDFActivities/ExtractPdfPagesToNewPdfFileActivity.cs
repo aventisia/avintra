@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
     //[DisplayName("Extract PDF Pages to New File")]
     //[Description("Extracts specific pages from a PDF file and saves them as a new PDF.")]
+    //[ActivityMetaData(nodeImg:"/assets/PDF.svg")]
     public class ExtractPdfPagesToNewPdfFileActivity : BaseCodeActivity
     {
         [RequiredArgument]

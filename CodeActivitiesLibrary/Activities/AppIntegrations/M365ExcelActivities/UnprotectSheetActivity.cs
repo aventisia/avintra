@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Unprotect Sheet (HTTP)")]
     [Description("Removes protection from an Excel worksheet.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class UnprotectSheetActivity : BaseCodeActivity
     {
         [RequiredArgument]

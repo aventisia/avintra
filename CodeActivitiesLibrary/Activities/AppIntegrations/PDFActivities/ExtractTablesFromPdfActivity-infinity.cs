@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
     [DisplayName("Extract Tables from PDF"),
      Description(
          "Extracts tables from a PDF file by specifying the source PDF file and the range of pages to extract from.")]
+    [ActivityMetaData(nodeImg:"/assets/PDF.svg")]
     public class ExtractTablesFromPdfActivity : Extensions.BaseCodeActivity
     {
         [RequiredArgument, Category("Input"), Description("The path to the source PDF file.")]

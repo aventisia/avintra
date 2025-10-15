@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Search Emails")]
     [Description("Searches inbox emails using a filter query (e.g., subject eq 'Test')")]
-    [ActivityMetaData(nodeImg: "/assets/Outlook.svg")]
+    [ActivityMetaData(nodeImg: "/assets/M365.svg")]
     public class SearchEmailsActivity : BaseCodeActivity
     {
         [RequiredArgument]

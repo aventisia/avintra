@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Export Worksheet to PDF (HTTP)")]
     [Description("Exports an Excel worksheet to PDF.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class ExportToPDFActivity : BaseCodeActivity
     {
         [RequiredArgument]

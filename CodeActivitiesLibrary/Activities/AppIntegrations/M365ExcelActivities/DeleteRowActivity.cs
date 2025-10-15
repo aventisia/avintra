@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Delete Row from Table")]
     [Description("Deletes a row from a table in Excel using Microsoft Graph HTTP POST.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class DeleteRowActivity : BaseCodeActivity
     {
         [RequiredArgument]

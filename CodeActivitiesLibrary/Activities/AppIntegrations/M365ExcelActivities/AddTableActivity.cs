@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Add Table to Worksheet")]
     [Description("Adds a table to a worksheet in Excel using Microsoft Graph HTTP POST.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class AddTableActivity : BaseCodeActivity
     {
         [RequiredArgument]

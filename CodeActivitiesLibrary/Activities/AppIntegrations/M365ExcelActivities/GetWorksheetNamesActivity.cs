@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Get Worksheet Names")]
     [Description("Returns all worksheet names in the workbook.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class GetWorksheetNamesActivity : BaseCodeActivity
     {
         [RequiredArgument]

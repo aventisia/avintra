@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Unmerge Cells (HTTP)")]
     [Description("Unmerges a previously merged range of Excel cells in a workbook stored in OneDrive or SharePoint.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class UnmergeCellsActivity : BaseCodeActivity
     {
         [RequiredArgument]

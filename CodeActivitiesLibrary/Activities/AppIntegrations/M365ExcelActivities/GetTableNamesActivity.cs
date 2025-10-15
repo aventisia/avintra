@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Get Table Names")]
     [Description("Returns all table names in the workbook.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class GetTableNamesActivity : BaseCodeActivity
     {
         [RequiredArgument]

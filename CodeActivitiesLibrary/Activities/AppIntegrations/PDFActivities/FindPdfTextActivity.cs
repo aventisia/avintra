@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PDFActivities
 {
     [DisplayName("PDF Regex Contains")]
     [Description("Checks if the PDF contains text matching a regular expression pattern (case-sensitive).")]
+    [ActivityMetaData(nodeImg:"/assets/PDF.svg")]
     public class FindPdfTextActivity : BaseCodeActivity
     {
         #region Input Arguments

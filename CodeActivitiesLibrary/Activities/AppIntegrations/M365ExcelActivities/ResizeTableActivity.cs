@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Resize Table (HTTP)")]
     [Description("Resizes an existing Excel table to a new range.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class ResizeTableActivity : BaseCodeActivity
     {
         [RequiredArgument]

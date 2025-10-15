@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Insert Row into Table")]
     [Description("Inserts a new row into a table in Excel using Microsoft Graph HTTP POST.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class InsertRowInTableActivity : BaseCodeActivity
     {
         [RequiredArgument]

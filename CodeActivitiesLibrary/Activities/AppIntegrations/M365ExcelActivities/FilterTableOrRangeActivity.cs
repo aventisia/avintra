@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Filter Table or Range")]
     [Description("Applies filter conditions to a table or range in the workbook.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class FilterTableOrRangeActivity : BaseCodeActivity
     {
         [RequiredArgument]

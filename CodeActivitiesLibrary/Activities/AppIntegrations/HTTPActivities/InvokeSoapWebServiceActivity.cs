@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
 {
     //[DisplayName("Invoke SOAP Web Service")]
     //[Description("Invokes a specified method from a SOAP web service and returns the response.")]
+    //[ActivityMetaDat(nodeImg:"/assets/HTTP.svg")]
     public class InvokeSoapWebServiceActivity : BaseCodeActivity
     {
         // ----------------------

@@ -5,7 +5,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
     [ActivityCategoryMetadata(
         primaryCategory: "App Integrations",
         label: "M365 Outlook",
-        description: "Activities for integrating with Microsoft 365 Outlook services.")]
+        description: "Activities for integrating with Microsoft 365 Outlook services.",
+        img: "/assets/M365.svg")]
     internal sealed class _M365OutlookCategoryMetaData
     {
     }

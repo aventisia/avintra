@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Delete Worksheet")]
     [Description("Deletes a worksheet from the workbook using Microsoft Graph HTTP DELETE.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class DeleteWorksheetActivity : BaseCodeActivity
     {
         [RequiredArgument]
