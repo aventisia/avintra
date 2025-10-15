@@ -17,7 +17,7 @@ export const BackToCreateAccount = () => {
 
   return (
     <div className="w-full overflow-hidden">
-      <div className="mb-2 flex items-center text-sm">
+      <div className=" flex items-center text-sm">
         <Button
           variant="outline"
           size="icon8"
@@ -30,7 +30,6 @@ export const BackToCreateAccount = () => {
           {verifyEmailData?.email}
         </h2>
       </div>
-      <h1 className="text-3xl font-medium">Enter password</h1>
     </div>
   );
 };
