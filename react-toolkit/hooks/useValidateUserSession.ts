@@ -13,7 +13,7 @@ import { useShallow } from "zustand/react/shallow";
  * Custom hook to validate user session and handle session refresh.
  * @returns An object containing the `isPending` state.
  */
-export const useValidateUserSession = () => {
+export const useValidateUserSession = (checkMySession?: boolean) => {
   const { userSession, setUserSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
@@ -23,7 +23,8 @@ export const useValidateUserSession = () => {
 
   // Validate user session
   const { mutate, isPending } = useMutation({
-    mutationFn: import.meta.env.DEV ? getMySession : refreshSession,
+    mutationFn:
+      import.meta.env.DEV || checkMySession ? getMySession : refreshSession,
     onSuccess: (httpResponse) => {
       // Return, If response is null
       if (!httpResponse) return;
