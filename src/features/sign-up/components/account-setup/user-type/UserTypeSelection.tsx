@@ -55,8 +55,8 @@ export default function UserTypeSelection() {
       {/* Header */}
       <div className="text-center mb-8">
         <ContentHeader
-          biggerHeading="Thank you for signing up!"
-          smallerHeading="Tell us who you are to get started"
+          biggerHeading="Tell us about yourself"
+          smallerHeading="Choose the type of account that best fits you."
         />
       </div>
 
@@ -80,7 +80,10 @@ export default function UserTypeSelection() {
               }`}
             />
           </div>
-          <div className="font-medium text-gray-900">Individual</div>
+          <div className="font-semibold text-md text-gray-900">Individual</div>
+          <span className=" text-muted-foreground">
+            For personal use or managing your own projects.
+          </span>
         </CustomRadioItem>
 
         <CustomRadioItem
@@ -97,7 +100,12 @@ export default function UserTypeSelection() {
               }`}
             />
           </div>
-          <div className="font-medium text-gray-900">Organization</div>
+          <div className="font-semibold text-md text-gray-900">
+            Organization
+          </div>
+          <span className="text-muted-foreground ">
+            For companies, teams, or groups managing multiple users.
+          </span>
         </CustomRadioItem>
       </RadioGroup>
 
