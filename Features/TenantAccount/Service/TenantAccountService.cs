@@ -65,6 +65,20 @@ public class TenantAccountService : ITenantAccountService
                 .OrderByDescending(o => o.CreatedOn)
                 .FirstOrDefaultAsync();
 
+            if (billingDetail == null)
+            {
+                billingDetail = new BillingDetail()
+                {
+                    AddressLine1 = string.Empty,
+                    AddressLine2 = string.Empty,
+                    City = string.Empty,
+                    State = string.Empty,
+                    PostalCode = string.Empty,
+                    Country = CountriesEnum.India,
+                    Currency = CurrencyTypesEnum.INR
+                };
+            }
+
             // Map billing details and populate response DTO
             var tenantOrganizationBillingDto = billingDetail?.Adapt<TenantOrganizationBillingDto>();
             tenantOrganizationBillingDto.OrganizationName = tenant.Name;
