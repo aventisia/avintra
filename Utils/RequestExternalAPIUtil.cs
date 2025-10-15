@@ -15,13 +15,13 @@ public static class RequestExternalAPIUtil
         };
 
         // Create HttpClient
-        var HttpClient = new HttpClient();
+        var httpClient = new HttpClient();
 
         // If jwt is not null
         if (jwt != null)
         {
             // Set the Bearer token in Authorization header
-            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
         }
 
         // Create HttpRequestMessage
@@ -35,6 +35,6 @@ public static class RequestExternalAPIUtil
         }
 
         // Send request
-        return await HttpClient.SendAsync(request);
+        return await httpClient.SendAsync(request);
     }
 }
