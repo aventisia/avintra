@@ -516,7 +516,20 @@ public class CreditUsageService : ICreditUsageService
 
         try
         {
-            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
+            // Check if the StartDate or EndDate are not provided (null)
+            if (!exportCreditUsageRequestDto.StartDate.HasValue || !exportCreditUsageRequestDto.EndDate.HasValue)
+            {
+                // If dates are missing, set default values: 
+                // - StartDate is 6 days before today
+                // - EndDate is today
+                exportCreditUsageRequestDto.EndDate = DateTime.UtcNow.Date;
+                exportCreditUsageRequestDto.StartDate = DateTime.UtcNow.Date.AddDays(-6);
+            }
+
+            // Fetch the tenant details from the repository based on the TenantId
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(w => w.Id == _tenantId)
+                .FirstOrDefaultAsync();
 
             // If no tenant is found, log a warning and return failure message
             if (tenant == null)
