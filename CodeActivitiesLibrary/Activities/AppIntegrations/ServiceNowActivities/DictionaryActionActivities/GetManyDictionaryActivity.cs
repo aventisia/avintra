@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Get Many Dictionary Entries")]
     [Description("Retrieves multiple Dictionary entries from ServiceNow using a stored credential. Supports pagination.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class GetManyDictionaryActivity : BaseCodeActivity
     {
         #region Inputs

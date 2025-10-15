@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Update ServiceNow Table Record")]
     [Description("Updates an existing record in a specified ServiceNow table by sys_id using a stored credential.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class UpdateServiceNowTableRecordActivity : BaseCodeActivity
     {
         #region Inputs

@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Get Many Configuration Items")]
     [Description("Retrieves multiple Configuration Items (CIs) from ServiceNow using a stored credential. Supports pagination.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class GetManyConfigurationItemsActivity : BaseCodeActivity
     {
         #region Inputs

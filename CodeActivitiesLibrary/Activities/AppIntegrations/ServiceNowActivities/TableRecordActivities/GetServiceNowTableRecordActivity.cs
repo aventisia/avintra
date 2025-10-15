@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Get ServiceNow Table Record")]
     [Description("Retrieves a specific record from a ServiceNow table by sys_id using a stored credential.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class GetServiceNowTableRecordActivity : BaseCodeActivity
     {
         #region Inputs

@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 
     [DisplayName("Create ServiceNow Credential")]
     [Description("Creates a new ServiceNow credential using either Basic Auth or OAuth2.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class CreateServiceNowCredentialActivity : BaseCodeActivity
     {
         #region Inputs

@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SendGridActivities
 {
     [DisplayName("Send Email with SendGrid")]
     [Description("Sends an email using SendGrid's API.")]
+    [ActivityMetaData(nodeImg:"/assets/SendGrid.svg")]
     public class SendEmailThroughSendGridActivity : BaseCodeActivity
     {
         // ----------------------

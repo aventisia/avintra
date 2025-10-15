@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Update ServiceNow Incident")]
     [Description("Updates an existing ServiceNow incident by sys_id using a stored credential.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class UpdateServiceNowIncidentActivity : BaseCodeActivity
     {
         #region Inputs

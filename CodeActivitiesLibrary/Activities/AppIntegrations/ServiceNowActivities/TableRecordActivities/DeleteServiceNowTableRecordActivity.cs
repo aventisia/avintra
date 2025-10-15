@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Delete ServiceNow Table Record")]
     [Description("Deletes a record from a ServiceNow table using the record sys_id and credential ID (BasicAuth → Base64(username:password) or OAuth2 → Bearer token).")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class DeleteServiceNowTableRecordActivity : BaseCodeActivity
     {
         #region Inputs

@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Update ServiceNow User")]
     [Description("Updates an existing user in ServiceNow by sys_id using the provided CredentialId directly.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class UpdateServiceNowUserActivity : BaseCodeActivity
     {
         #region Inputs

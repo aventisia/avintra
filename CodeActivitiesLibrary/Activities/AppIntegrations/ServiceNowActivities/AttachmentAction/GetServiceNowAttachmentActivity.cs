@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Get ServiceNow Attachment")]
     [Description("Retrieves metadata for a ServiceNow attachment by sys_id using a stored credential (Bearer token). Optionally downloads the file content.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class GetServiceNowAttachmentActivity : BaseCodeActivity
     {
         #region Inputs

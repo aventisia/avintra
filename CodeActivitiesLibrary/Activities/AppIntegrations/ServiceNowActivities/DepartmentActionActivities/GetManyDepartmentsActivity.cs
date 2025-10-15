@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Get Many Departments")]
     [Description("Retrieves multiple Departments from ServiceNow using a stored credential. Supports pagination.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class GetManyDepartmentsActivity : BaseCodeActivity
     {
         #region Inputs

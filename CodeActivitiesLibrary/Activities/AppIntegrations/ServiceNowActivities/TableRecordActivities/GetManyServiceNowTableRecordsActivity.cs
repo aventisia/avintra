@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Get Many ServiceNow Table Records")]
     [Description("Retrieves multiple records from a ServiceNow table using only the provided Credential ID or token. Supports pagination.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class GetManyServiceNowTableRecordsActivity : BaseCodeActivity
     {
         #region Inputs
