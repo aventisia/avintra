@@ -17,13 +17,13 @@ export const PlanFeatures = ({
       plan.maxCredits,
       plan.name == "Starter" ? "monthly" : planType,
     ),
-    `${plan.maxPublishedItems} Published Agents or AI Models`,
+    `${plan.maxPublishedItems <= 0 ? "Unlimited" : plan.maxPublishedItems} Published Agents or AI Models`,
     `${plan.historyRetentionDays} days of insights & workflow history`,
     `${plan.maxSpaces} Worc Spaces`,
     plan.storageLimitMB < 0
       ? "Unlimited Storage"
       : `${plan.storageLimitMB} MB storage`,
-    plan.maxUsers < 0 ? "Unlimited Users" : `${plan.maxUsers} Users`,
+    plan.maxUsers <= 0 ? "Unlimited Users" : `${plan.maxUsers} User/s`,
   ];
 
   return (
