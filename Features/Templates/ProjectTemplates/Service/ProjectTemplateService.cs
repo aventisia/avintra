@@ -6,7 +6,7 @@ namespace WorkspaceAPIs.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAutoNotificationService _autoNotificationService;
         private readonly IUserManagementGuardService _userManagementGuardService;
-        private readonly ILLMDataExtractionService _lLMDataExtractionService;
+        private readonly ILLMDataExtractionService _llmDataExtractionService;
         private readonly Guid _userId;
         private readonly Guid _tenantId;
         private readonly Guid _spaceId;
@@ -17,7 +17,7 @@ namespace WorkspaceAPIs.Services
             IHttpContextAccessor httpContextAccessor,
             IAutoNotificationService autoNotificationService,
             IUserManagementGuardService userManagementGuardService,
-            ILLMDataExtractionService lLMDataExtractionService)
+            ILLMDataExtractionService llmDataExtractionService)
         {
             // Set _userId
             _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -28,7 +28,7 @@ namespace WorkspaceAPIs.Services
             _unitOfWork = unitOfWork;
             _autoNotificationService = autoNotificationService;
             _userManagementGuardService = userManagementGuardService;
-            _lLMDataExtractionService = lLMDataExtractionService;
+            _llmDataExtractionService = llmDataExtractionService;
         }
 
         // Retrieve all project templates list
@@ -1097,7 +1097,7 @@ namespace WorkspaceAPIs.Services
             };
 
             // Check for credits availability
-            var hasSufficientCredits = await _lLMDataExtractionService.HasSufficientCreditsAsync();
+            var hasSufficientCredits = await _llmDataExtractionService.HasSufficientCreditsAsync();
             if (!hasSufficientCredits.Data)
             {
                 serviceResponse.Message = "Unable to generate documentation due to insufficient credits.";
@@ -1128,7 +1128,7 @@ namespace WorkspaceAPIs.Services
                 _logger.LogInformation("Starting instruction/documentation generation using LLM. Model: {Model}, Temperature: {Temperature}, {Prompt}", model, temperature, prompt);
 
                 // Call the LLM service to generate the documentation
-                var generatedOutput = await _lLMDataExtractionService.ExtractDataAsync(
+                var generatedOutput = await _llmDataExtractionService.ExtractDataAsync(
                     prompt: prompt,
                     llmModel: model,
                     modelTemperature: temperature,
