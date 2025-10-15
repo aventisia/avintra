@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Wait for an Event on SAP Concur and Resume")]
     [Description("Pauses and resumes a workflow based on specific events occurring in SAP Concur.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class WaitForEventOnSapConcurActivity : BaseCodeActivity
     {
         [RequiredArgument]

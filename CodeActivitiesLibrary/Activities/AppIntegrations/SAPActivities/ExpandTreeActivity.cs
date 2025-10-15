@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.UIActivities
    
     [DisplayName("Expand Tree")]
     [Description("Expands a tree node using a specified path (e.g., 'Menu → Submenu → Item').")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class ExpandTreeActivity : BaseCodeActivity
     {        
         [RequiredArgument]

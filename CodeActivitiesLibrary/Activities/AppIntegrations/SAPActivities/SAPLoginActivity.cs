@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("SAP Login")]
     [Description("Logs into SAP GUI using provided credentials.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class SAPLoginActivity : BaseCodeActivity
     {
         [RequiredArgument]

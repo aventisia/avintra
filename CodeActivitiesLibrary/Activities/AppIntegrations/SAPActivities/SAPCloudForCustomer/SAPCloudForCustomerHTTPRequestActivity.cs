@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("SAP Cloud for Customer HTTP Request")]
     [Description("Performs HTTP requests to interact with SAP Cloud for Customer using OAuth 2.0 authentication.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class SAPCloudForCustomerHTTPRequestActivity : BaseCodeActivity
     {
         // ----------------------

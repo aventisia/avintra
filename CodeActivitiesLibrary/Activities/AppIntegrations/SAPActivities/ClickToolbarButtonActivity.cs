@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.UIActivities
 {
     [DisplayName("Click Toolbar Button")]
     [Description("Clicks a specified toolbar button. Supports Healing Agent mode.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
 
     public class ClickToolbarButtonActivity : BaseCodeActivity
     {

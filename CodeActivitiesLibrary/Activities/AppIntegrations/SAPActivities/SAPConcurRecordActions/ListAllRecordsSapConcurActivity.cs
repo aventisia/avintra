@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("List All Records in SAP Concur")]
     [Description("Retrieves a list of all records from a specified endpoint.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class ListAllRecordsSapConcurActivity : BaseCodeActivity
     {
         [RequiredArgument]

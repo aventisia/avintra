@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Create Account")]
     [Description("Creates a new account in SAP Cloud for Customer.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class CreateAccountActivity : BaseCodeActivity
     {
         [RequiredArgument]

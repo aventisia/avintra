@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Click Picture on Screen")]
     [Description("Clicks a picture displayed on an SAP GUI screen.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class ClickPictureOnScreenActivity : BaseCodeActivity
     {
         [RequiredArgument]

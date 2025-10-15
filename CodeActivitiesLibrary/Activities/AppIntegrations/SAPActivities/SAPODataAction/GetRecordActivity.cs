@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.Activities.AppIntegrations.SAPActivities
 {
     [DisplayName("Get Record")]
     [Description("Retrieves a record in SAP OData.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class GetRecordActivity : BaseCodeActivity
     {
         [RequiredArgument]

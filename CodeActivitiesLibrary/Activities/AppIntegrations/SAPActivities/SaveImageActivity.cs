@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Save Image")]
     [Description("Saves a screenshot of a UI element or region to disk.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class SaveImageActivity : BaseCodeActivity
     {
         [RequiredArgument]

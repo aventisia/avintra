@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Expand ALV Tree")]
     [Description("Expands parent ALV tree to the selected node.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class ExpandALVTreeActivity : BaseCodeActivity
     {
         [RequiredArgument]

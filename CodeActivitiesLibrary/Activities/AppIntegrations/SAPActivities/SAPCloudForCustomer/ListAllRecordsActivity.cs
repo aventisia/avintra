@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("List All Records")]
     [Description("Lists all records for a specified entity in SAP Cloud for Customer.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class ListAllRecordsActivity : BaseCodeActivity
     {
         [RequiredArgument]

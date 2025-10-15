@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Insert Record")]
     [Description("Inserts a new record in SAP Cloud for Customer.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class InsertRecordCustomerActivity : BaseCodeActivity
     {
         [RequiredArgument]

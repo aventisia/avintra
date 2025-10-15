@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Expand ALV Hierarchical Table")]
     [Description("Expands a row in an SAP ALV Hierarchical Table by clicking the expansion icon.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class ExpandALVHierarchicalTableActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Update Record")]
     [Description("Updates a record in SAP OData.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class UpdateRecordActivity : BaseCodeActivity
     {
         [RequiredArgument]
