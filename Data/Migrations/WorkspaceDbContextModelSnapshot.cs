@@ -319,8 +319,8 @@ namespace WorkspaceAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int?>("Duration")
-                        .HasColumnType("integer");
+                    b.Property<double?>("Duration")
+                        .HasColumnType("double precision");
 
                     b.Property<DateTimeOffset>("EndTime")
                         .HasColumnType("timestamp with time zone");

@@ -36,7 +36,7 @@ public class FlowExecutionLog : IMustHaveTenant
     /// <summary>
     /// Gets or sets the duration for the flow execution log
     /// </summary>
-    public int? Duration { get; set; }
+    public double? Duration { get; set; }
     
     /// <summary>
     /// Gets or sets the retry count for the flow execution.
