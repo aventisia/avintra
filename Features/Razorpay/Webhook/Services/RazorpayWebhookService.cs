@@ -262,54 +262,6 @@ public class WebhookService : IWebhookService
         await AssignCreditAsync(tenantSubscription);
     }
 
-    private async Task AssignCreditAsync(TenantSubscription? tenantSubscription)
-    {
-        if (tenantSubscription == null)
-        {
-            _logger.LogError("Tenant subscription is null. Cannot assign credit.");
-            return;
-        }
-
-        // Create the TenantCredit object with relevant details
-        var tenantCredit = new TenantCredit()
-        {
-            SubscriptionId = tenantSubscription.Id,
-            CreditedOn = DateTimeOffset.UtcNow,
-            ExpiredOn = tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
-                ? DateTimeOffset.UtcNow.AddMonths(1).Date
-                : DateTimeOffset.UtcNow.AddYears(1).Date,
-            AvailableCredits = tenantSubscription.MaxCredits,
-            Type = CreditTypesEnum.Subscription,
-            TenantId = tenantSubscription.TenantId
-        };
-
-        try
-        {
-            // Log the creation of the credit entry
-            _logger.LogInformation("Assigning {AvailableCredits} credits to TenantId {TenantId} for SubscriptionId {SubscriptionId}. Expiry Date: {ExpiredOn}",
-                tenantCredit.AvailableCredits, tenantCredit.TenantId, tenantCredit.SubscriptionId, tenantCredit.ExpiredOn);
-
-            // Insert the credit into the database
-            await _unitOfWork.TenantCreditRepo.InsertAsync(tenantCredit);
-
-            // Persist the changes to the database
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Failed to save the credit for TenantId {TenantId} and SubscriptionId {SubscriptionId}.", tenantCredit.TenantId, tenantCredit.SubscriptionId);
-            }
-            else
-            {
-                // Log successful credit assignment
-                _logger.LogInformation("Successfully assigned credits to TenantId {TenantId} for SubscriptionId {SubscriptionId}.", tenantCredit.TenantId, tenantCredit.SubscriptionId);
-            }
-        }
-        catch (Exception ex)
-        {
-            // Log any unexpected errors during the credit assignment
-            _logger.LogError($"An error occurred while assigning credits to TenantId {tenantSubscription.TenantId} for SubscriptionId {tenantSubscription.Id}: {ex.Message}");
-        }
-    }
-
     private async Task HandleSubscriptionCompleted(JObject json)
     {
         // Log the incoming request for subscription completed event
@@ -541,6 +493,7 @@ public class WebhookService : IWebhookService
                     RazorpayPaymentId = paymentEntity["id"]?.ToObject<string?>() ?? string.Empty,
                     RazorpayOrderId = paymentEntity["order_id"]?.ToObject<string?>() ?? string.Empty,
                     PaymentStatus = (PaymentStatusTypesEnum)Enum.Parse(typeof(PaymentStatusTypesEnum), paymentEntity["status"]?.ToString(), ignoreCase: true),
+                    Currency = (CurrencyTypesEnum)Enum.Parse(typeof(CurrencyTypesEnum), paymentEntity["currency"]?.ToString(), ignoreCase: true),
                     BillingEmail = paymentEntity["email"]?.ToObject<string?>() ?? string.Empty,
                     ContactPerson = paymentEntity["contact"]?.ToObject<string?>() ?? string.Empty,
                     AddressLine1 = lastBillingDetail?.AddressLine1 ?? string.Empty,
@@ -567,6 +520,51 @@ public class WebhookService : IWebhookService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception while processing billing details for Razorpay Subscription ID {SubscriptionId}", subscriptionId);
+        }
+    }
+
+    private async Task AssignCreditAsync(TenantSubscription? tenantSubscription)
+    {
+        if (tenantSubscription == null)
+        {
+            _logger.LogError("Tenant subscription is null. Cannot assign credit.");
+            return;
+        }
+
+        // Create the TenantCredit object with relevant details
+        var tenantCredit = new TenantCredit()
+        {
+            SubscriptionId = tenantSubscription.Id,
+            CreditedOn = DateTimeOffset.UtcNow,
+            ExpiredOn = tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
+                ? DateTimeOffset.UtcNow.AddMonths(1).Date
+                : DateTimeOffset.UtcNow.AddYears(1).Date,
+            AvailableCredits = tenantSubscription.MaxCredits,
+            Type = CreditTypesEnum.Subscription,
+            TenantId = tenantSubscription.TenantId,
+            CreatedByUserId = tenantSubscription.CreatedByUserId,
+            LastModifiedByUserId = tenantSubscription.LastModifiedByUserId,
+        };
+
+        try
+        {
+            // Log the creation of the credit entry
+            _logger.LogInformation("Assigning {AvailableCredits} credits to TenantId {TenantId} for SubscriptionId {SubscriptionId}. Expiry Date: {ExpiredOn}",
+                tenantCredit.AvailableCredits, tenantCredit.TenantId, tenantCredit.SubscriptionId, tenantCredit.ExpiredOn);
+
+            // Insert the credit into the database
+            await _unitOfWork.TenantCreditRepo.InsertAsync(tenantCredit);
+
+            // Persist the changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save the credit for TenantId {TenantId} and SubscriptionId {SubscriptionId}.", tenantCredit.TenantId, tenantCredit.SubscriptionId);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log any unexpected errors during the credit assignment
+            _logger.LogError($"An error occurred while assigning credits to TenantId {tenantSubscription.TenantId} for SubscriptionId {tenantSubscription.Id}: {ex.Message}");
         }
     }
 }
