@@ -377,6 +377,10 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 string errorContent = await creditUsagesResponse.Content.ReadAsStringAsync();
                 _logger.LogError($"Failed to create credit usage records. Response: {creditUsagesResponse.StatusCode} - {errorContent}");
             }
+            else
+            {
+                _logger.LogInformation("Successfully created credit usage records.");
+            }
 
             // Step 10: Return a successful response with the extracted data
             _logger.LogInformation("Data extraction completed successfully.");
