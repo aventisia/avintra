@@ -766,7 +766,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             string? paymentUrl = null;
 
             // Only create a Razorpay subscription if it doesn't already exist and the plan is not 'Starter'
-            if (string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId) &&
+            if (!string.IsNullOrEmpty(subscriptionPlan.RazorpayPlanId) &&
                 subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
                 // Attempt to create or update a Razorpay subscription
@@ -787,6 +787,28 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     _logger.LogWarning("Failed to update Razorpay subscription for tenant {TenantId}. Reason: {Message}",
                         tenantSubscription.TenantId, razorpaySubscriptionResult?.Message ?? "Unknown error");
                     serviceResponse.Message = razorpaySubscriptionResult.Message;
+                    return serviceResponse;
+                }
+            }
+            else
+            {
+                // Attempt to cancel the existing Razorpay subscription if it exists
+                var cancelSubscriptionResult = await CancelExistingPlanAsync(tenantSubscription);
+
+                // Check if the cancellation was successful
+                if (cancelSubscriptionResult.Data != null || cancelSubscriptionResult.StatusCode == 200)
+                {
+                    _logger.LogInformation("Successfully cancelled the Razorpay subscription for TenantSubscriptionId: {TenantSubscriptionId}",
+                        tenantSubscription.Id);
+                }
+                else
+                {
+                    // Log failure if cancellation did not succeed
+                    _logger.LogWarning("Failed to cancel Razorpay subscription for TenantSubscriptionId: {TenantSubscriptionId}. Reason: {Message}",
+                        tenantSubscription.Id, cancelSubscriptionResult?.Message ?? "Unknown error");
+
+                    // Set failure message for the response
+                    serviceResponse.Message = cancelSubscriptionResult.Message;
                     return serviceResponse;
                 }
             }
@@ -1038,6 +1060,62 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         }
 
         // Return default failure response if all else fails
+        return serviceResponse;
+    }
+
+    // Cancels the existing Razorpay subscription for the given tenant subscription immediately.
+    private async Task<ServiceResponse<SubscriptionResponseDto>> CancelExistingPlanAsync(TenantSubscription tenantSubscription)
+    {
+        // Initialize the service response with a default failure message
+        var serviceResponse = new ServiceResponse<SubscriptionResponseDto>
+        {
+            Data = null,
+            Message = "Failed to cancel the subscription. Please try again."
+        };
+
+        try
+        {
+            // Check if the tenant has a Razorpay subscription ID; if not, log a warning and return early
+            if (string.IsNullOrEmpty(tenantSubscription?.RazorpaySubscriptionId))
+            {
+                _logger.LogWarning("No Razorpay subscription ID found for the tenant. Cancellation skipped.");
+                serviceResponse.Message = "No active subscription found to cancel.";
+                return serviceResponse;
+            }
+
+            // Log the attempt to cancel the subscription, including the subscription ID and tenant ID
+            _logger.LogInformation("Attempting to cancel Razorpay subscription with ID: {SubscriptionId} for TenantSubscriptionId: {TenantSubscriptionId}",
+                tenantSubscription.RazorpaySubscriptionId, tenantSubscription.Id);
+
+            // Attempt to cancel the subscription by calling the Razorpay service with the subscription ID
+            var cancelResponse = await _subscriptionService.CancelSubscriptionAsync(
+                tenantSubscription.RazorpaySubscriptionId,
+                SubscriptionActionTimingEnum.Now);
+
+            // Check if the cancellation request was successful
+            if (cancelResponse.Data != null && cancelResponse.StatusCode == 200)
+            {
+                // If the cancellation was successful, log the success and update the response message
+                _logger.LogInformation("Successfully cancelled Razorpay subscription with ID: {SubscriptionId}", tenantSubscription.RazorpaySubscriptionId);
+                cancelResponse.Message = "Subscription cancelled successfully.";
+                return cancelResponse;
+            }
+            else
+            {
+                // If cancellation failed, log the error with the failure message from the Razorpay service
+                _logger.LogError("Failed to cancel Razorpay subscription with ID: {SubscriptionId}. Message: {Message}",
+                    tenantSubscription.RazorpaySubscriptionId, cancelResponse.Message);
+                return cancelResponse;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log any unexpected errors or exceptions that occur during the cancellation process
+            _logger.LogError(ex, "An exception occurred while cancelling Razorpay subscription with ID: {SubscriptionId}",
+                tenantSubscription?.RazorpaySubscriptionId);
+        }
+
+        // Return the default failure response if any exception or unexpected error occurred
         return serviceResponse;
     }
 }
