@@ -1,6 +1,7 @@
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 
+import { currencySymbols } from "../../constants/currency-symbol-map";
 import { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
 import { useChargeSummary } from "../../hooks/useChargeSummary";
 import { useInsertSubscriptionMutation } from "../../hooks/useInsertSubscriptionMutation";
@@ -38,15 +39,18 @@ const ChargeSummary = ({
       <div className="space-y-2 py-2 text-sm">
         <SummaryRow
           label="Subscription Fee"
-          value={`$${basePrice.toFixed(2)}`}
+          value={`${currencySymbols[plan?.currency ?? "USD"]}${basePrice.toFixed(2)}`}
         />
         {isTaxApplicable && (
-          <SummaryRow label="Tax" value={`$${tax.toFixed(2)}`} />
+          <SummaryRow
+            label="Tax"
+            value={`${currencySymbols[plan?.currency ?? "USD"]}${tax.toFixed(2)}`}
+          />
         )}
         <Separator />
         <SummaryRow
           label="Amount Due"
-          value={`$${total.toFixed(2)}`}
+          value={`${currencySymbols[plan?.currency ?? "USD"]}${total.toFixed(2)}`}
           className="font-medium"
         />
       </div>
