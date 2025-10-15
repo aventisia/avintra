@@ -2,6 +2,7 @@ import CustomRadioItem from "@/components/ui/CustomRadioItem";
 import { useUpdateTenantInfoMutation } from "@/features/sign-up/hooks/useUpdateTenantInfoMutation";
 import { useCompanyInfoStore } from "@/features/sign-up/stores/company-info-store";
 import { USER_NAME_LS_KEY } from "@/react-toolkit/constants";
+import { useCarryParams } from "@/react-toolkit/hooks/useForwardQueryParams";
 
 import { Button } from "@aventisia/ui/buttons";
 import { RadioGroup } from "@aventisia/ui/radio-group";
@@ -13,6 +14,8 @@ import { ContentHeader } from "../ContentHeader";
 
 export default function UserTypeSelection() {
   const navigate = useNavigate();
+
+  const withQueryParams = useCarryParams(["plan", "currency", "frequency"]);
 
   const { setStepNo, userType, setUserType } = useCompanyInfoStore(
     useShallow((state) => ({
@@ -33,7 +36,7 @@ export default function UserTypeSelection() {
       });
 
       setTimeout(() => {
-        navigate("/choose-plan");
+        navigate(withQueryParams("/choose-plan"));
       }, 300);
     } catch (error) {
       console.error(error instanceof Error ? error.message : String(error));

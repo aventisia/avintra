@@ -10,6 +10,7 @@ import { companyInfoSchema } from "@/features/sign-up/constants/company-info-zod
 import { useDefineCompanyInfoForm } from "@/features/sign-up/hooks/useDefineCompanyInfoForm";
 import { useUpdateTenantInfoMutation } from "@/features/sign-up/hooks/useUpdateTenantInfoMutation";
 import { useCompanyInfoStore } from "@/features/sign-up/stores/company-info-store";
+import { useCarryParams } from "@/react-toolkit/hooks/useForwardQueryParams";
 import { Form } from "@/react-toolkit/ui/form/Form";
 
 import { Button, SubmitButton } from "@aventisia/ui/buttons";
@@ -25,6 +26,7 @@ export const CompanyInfoForm = () => {
   // Get navigate
   const navigate = useNavigate();
 
+  const withQueryParams = useCarryParams(["plan", "currency", "frequency"]);
   // Define form
   const { form, isSubmitting } = useDefineCompanyInfoForm();
 
@@ -47,7 +49,7 @@ export const CompanyInfoForm = () => {
       form.reset(form.getValues());
 
       setTimeout(() => {
-        navigate("/choose-plan");
+        navigate(withQueryParams("/choose-plan"));
       }, 300);
     } catch (error) {
       // Optional: If you're not already handling error in useMutation
