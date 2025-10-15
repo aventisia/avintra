@@ -63,6 +63,7 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<TenantSubscription>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<SubscriptionFrequenciesEnum>());
         builder.Entity<BillingDetail>().Property(e => e.Country).HasConversion(new EnumToStringConverter<CountriesEnum>());
         builder.Entity<BillingDetail>().Property(e => e.PaymentStatus).HasConversion(new EnumToStringConverter<PaymentStatusTypesEnum>());
+        builder.Entity<BillingDetail>().Property(e => e.Currency).HasConversion(new EnumToStringConverter<CurrencyTypesEnum>());
         builder.Entity<SubscriptionPlan>().Property(e => e.Type).HasConversion(new EnumToStringConverter<SubscriptionPlanTypeEnum>());
         builder.Entity<SubscriptionPlan>().Property(e => e.Status).HasConversion(new EnumToStringConverter<PlanStatusTypesEnum>());
         builder.Entity<TenantSubscription>().Property(e => e.Status).HasConversion(new EnumToStringConverter<SubscriptionStatusTypesEnum>());

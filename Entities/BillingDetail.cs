@@ -58,7 +58,12 @@ public class BillingDetail : BaseEntity
     public string? GstNumber { get; set; }
 
     /// <summary>
-    /// Gets or sets the base subscription amount, excluding tax.
+    /// Gets or sets the currency for the billing transaction.
+    /// </summary>
+    public required CurrencyTypesEnum Currency { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total billing amount, including applicable taxes.
     /// </summary>
     public decimal Amount { get; set; }
 
