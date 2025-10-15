@@ -204,7 +204,12 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
             // Check if plan name already exists (case-insensitive)
             var existingPlan = await _unitOfWork.SubscriptionPlanRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == subscriptionPlanDto.Name.ToLower())
+                .GetByConditionAsync(w =>
+                    w.Status == PlanStatusTypesEnum.Current &&
+                    w.Type == subscriptionPlanDto.Type &&
+                    w.Frequency == subscriptionPlanDto.Frequency &&
+                    w.Currency == subscriptionPlanDto.Currency
+                )
                 .SingleOrDefaultAsync();
 
             if (existingPlan != null)
@@ -560,6 +565,12 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
         try
         {
+            // Define the default tax rate (18%)
+            var defaultTax = 18;
+
+            // Calculate the amount in cents (multiplied by 100) and apply the tax rate
+            var amount = (int)(subscriptionPlan.Price * 100) * defaultTax;
+
             // Build the Razorpay plan request using details from the local subscription plan
             var razorpayPlanRequest = new PlanRequestDto
             {
@@ -570,7 +581,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
                     Name = subscriptionPlan.Name,
                     Currency = subscriptionPlan.Currency.ToString().ToUpper(),
                     Description = string.Empty,
-                    Amount = (int)(subscriptionPlan.Price * 100)
+                    Amount = amount
                 }
             };
 
