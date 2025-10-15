@@ -11,6 +11,8 @@ type State = {
 
   planType: PlanType;
 
+  currency: string;
+
   billingData: IBillingData | null;
 };
 
@@ -25,6 +27,9 @@ type Actions = {
   setPlanId: (planId: string) => void;
 
   /** Set the form data for creating an account */
+  setCurrency: (currency: string) => void;
+
+  /** Set the form data for creating an account */
   setPlanType: (planType: PlanType) => void;
 };
 
@@ -33,6 +38,9 @@ export const useChoosePlanStore = create<State & Actions>((set) => ({
   planId: "",
   billingData: null,
   planType: "monthly",
+  currency: "USD",
+
+  setCurrency: (currency) => set({ currency }),
   setPlanType: (planType) => set({ planType }),
   setStepNo: (stepNo) => set({ stepNo }),
   setPlanId: (planId) => set({ planId }),
