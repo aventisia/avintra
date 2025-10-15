@@ -172,4 +172,14 @@ public class Tenant : BaseEntity
     /// </summary>
     public string? RazorpayCustomerId { get; set; }
 
+    /// <summary>
+    /// Gets or sets the multiplier applied to the tenant's credits for discount or inflation.
+    /// 
+    /// - Null: No multiplier applied (default, no change in credits).
+    /// - 1: No effect on credits (no discount or inflation).
+    /// - Values less than 1: Apply a discount (e.g., 0.9 represents a 10% discount).
+    /// - Values greater than 1: Apply an inflation (e.g., 1.1 represents a 10% inflation).
+    /// </summary>
+    [Range(0, 10)]
+    public double? Discount { get; set; } = null;
 }
