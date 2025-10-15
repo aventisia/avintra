@@ -1,4 +1,5 @@
 import { ADD_TENANT, USER_NAME_LS_KEY } from "@/react-toolkit/constants";
+import { useCarryParams } from "@/react-toolkit/hooks/useForwardQueryParams";
 
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +12,8 @@ import { useCreateAccountStore } from "../stores/create-account-store";
 export const useCreateAccountMutation = () => {
   // Get navigate function
   const navigate = useNavigate();
+
+  const withQueryParams = useCarryParams(["plan", "currency", "frequency"]);
 
   // Get store state and actions
   const {
@@ -39,7 +42,7 @@ export const useCreateAccountMutation = () => {
         setCreateAccountData(null);
 
         if (httpResponse.message.includes(ADD_TENANT)) {
-          navigate("/account-setup");
+          navigate(withQueryParams("/account-setup"));
         }
       },
       onError: (error) => {

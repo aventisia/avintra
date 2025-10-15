@@ -10,9 +10,14 @@ export const useInsertSubscriptionMutation = () => {
   // Define mutation to purchase subscription plan
   const { mutate: insertSubscriptionMutation, isPending } = useMutation({
     mutationFn: purchasePlan,
-    onSuccess: () => {
-      localStorage.clear();
-      navigate("/redirect?url=" + import.meta.env.VITE_WORC_URL);
+    onSuccess: (res, variables) => {
+      if (res.data.razorpayPaymentUrl) {
+        window.location.href = res.data.razorpayPaymentUrl;
+      }
+      if (variables.amount == 0) {
+        localStorage.clear();
+        navigate("/redirect?url=" + import.meta.env.VITE_WORC_URL);
+      }
     },
     onError: (error) => {
       toast.error(error.toString());

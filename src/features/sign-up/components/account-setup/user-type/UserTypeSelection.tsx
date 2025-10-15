@@ -2,6 +2,7 @@ import CustomRadioItem from "@/components/ui/CustomRadioItem";
 import { useUpdateTenantInfoMutation } from "@/features/sign-up/hooks/useUpdateTenantInfoMutation";
 import { useCompanyInfoStore } from "@/features/sign-up/stores/company-info-store";
 import { USER_NAME_LS_KEY } from "@/react-toolkit/constants";
+import { useCarryParams } from "@/react-toolkit/hooks/useForwardQueryParams";
 
 import { Button } from "@aventisia/ui/buttons";
 import { RadioGroup } from "@aventisia/ui/radio-group";
@@ -13,6 +14,8 @@ import { ContentHeader } from "../ContentHeader";
 
 export default function UserTypeSelection() {
   const navigate = useNavigate();
+
+  const withQueryParams = useCarryParams(["plan", "currency", "frequency"]);
 
   const { setStepNo, userType, setUserType } = useCompanyInfoStore(
     useShallow((state) => ({
@@ -33,7 +36,7 @@ export default function UserTypeSelection() {
       });
 
       setTimeout(() => {
-        navigate("/choose-plan");
+        navigate(withQueryParams("/choose-plan"));
       }, 300);
     } catch (error) {
       console.error(error instanceof Error ? error.message : String(error));
@@ -52,8 +55,8 @@ export default function UserTypeSelection() {
       {/* Header */}
       <div className="text-center mb-8">
         <ContentHeader
-          biggerHeading="Thank you for signing up!"
-          smallerHeading="Tell us who you are to get started"
+          biggerHeading="Tell us about yourself"
+          smallerHeading="Choose the type of account that best fits you."
         />
       </div>
 
@@ -77,7 +80,10 @@ export default function UserTypeSelection() {
               }`}
             />
           </div>
-          <div className="font-medium text-gray-900">Individual</div>
+          <div className="font-semibold text-md text-gray-900">Individual</div>
+          <span className=" text-muted-foreground">
+            For personal use or managing your own projects.
+          </span>
         </CustomRadioItem>
 
         <CustomRadioItem
@@ -94,7 +100,12 @@ export default function UserTypeSelection() {
               }`}
             />
           </div>
-          <div className="font-medium text-gray-900">Organization</div>
+          <div className="font-semibold text-md text-gray-900">
+            Organization
+          </div>
+          <span className="text-muted-foreground ">
+            For companies, teams, or groups managing multiple users.
+          </span>
         </CustomRadioItem>
       </RadioGroup>
 

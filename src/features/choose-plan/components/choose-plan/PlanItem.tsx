@@ -21,10 +21,7 @@ export const PlanItem = ({
   const timeUnit =
     planType === "monthly" || plan.name == "Starter" ? "month" : "year";
 
-  const price =
-    planType === "monthly" || plan.name == "Starter"
-      ? plan.monthlyPrice
-      : plan.yearlyPrice * 12;
+  const price = plan.price;
 
   return (
     <CustomRadioItem

@@ -13,12 +13,13 @@ export const VerifyEmail = () => {
   // Return component
   return (
     <ContentContainer className="fadeInRTL">
+      {/* Back to create account link */}
+      <BackToCreateAccount />
+
       <ContentHeader
         biggerHeading="Verify your email"
         smallerHeading="Please enter the verification code sent to your email"
       />
-      {/* Back to create account link */}
-      <BackToCreateAccount />
 
       {/* Verify email form to enter verification Code */}
       <VerifyEmailForm />

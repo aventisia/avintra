@@ -2,7 +2,6 @@ import { useChoosePlanStore } from "@/features/choose-plan/stores/choose-plan-st
 import { BILLING_INFO_KEY } from "@/react-toolkit/constants";
 
 import { SubscriptionPlanDTO } from "../dtos/subscription-plans-dto";
-import { PlanType } from "../types/plan-type";
 
 const DEFAULT_BILLING = {
   country: "",
@@ -15,10 +14,7 @@ const DEFAULT_BILLING = {
   gstNumber: "",
 };
 
-export const useChargeSummary = (
-  plan: SubscriptionPlanDTO | undefined,
-  planType: PlanType,
-) => {
+export const useChargeSummary = (plan: SubscriptionPlanDTO | undefined) => {
   const { billingData } = useChoosePlanStore((state) => ({
     billingData: state.billingData,
   }));
@@ -32,10 +28,7 @@ export const useChargeSummary = (
 
   const isTaxApplicable = effectiveBilling.country === "India";
 
-  const basePrice =
-    planType === "monthly"
-      ? (plan?.monthlyPrice ?? 0)
-      : (plan?.yearlyPrice ?? 0) * 12;
+  const basePrice = plan?.price ?? 0;
 
   const GST = 0.18;
   const tax = isTaxApplicable ? +(basePrice * GST).toFixed(2) : 0;
