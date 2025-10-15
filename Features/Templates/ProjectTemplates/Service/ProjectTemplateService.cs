@@ -1096,6 +1096,14 @@ namespace WorkspaceAPIs.Services
                 Message = "Failed to generate documentation. Please try again later."
             };
 
+            // Check for credits availability
+            var hasSufficientCredits = await _lLMDataExtractionService.HasSufficientCreditsAsync();
+            if (!hasSufficientCredits.Data)
+            {
+                serviceResponse.Message = "Unable to generate documentation due to insufficient credits.";
+                return serviceResponse;
+            }
+
             // Get the Generate Template description prompt file
             var file = new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "Prompts", "GenerateTemplateDescriptionPrompt.txt"));
             string promptTemplate;
