@@ -451,6 +451,14 @@ public class InferencingModelService : IInferencingModelService
 
         try
         {
+            // Check for credits availability
+            var hasSufficientCredits = await _llmDataExtractionService.HasSufficientCreditsAsync();
+            if (!hasSufficientCredits.Data)
+            {
+                serviceResponse.Message = "Unable to execute AI model due to insufficient credits.";
+                return serviceResponse;
+            }
+
             _logger.LogInformation("Starting LLM execution by file IDs for AIProjectId: {AIProjectId}", modelExecutionRequestDto.ModelId);
 
             // Retrieve the AI project version and related data including tasks, extracted data, and uploaded documents

@@ -242,6 +242,14 @@ public class GenerativeModelService : IGenerativeModelService
 
         try
         {
+            // Check for credits availability
+            var hasSufficientCredits = await _llmDataExtractionService.HasSufficientCreditsAsync();
+            if (!hasSufficientCredits.Data)
+            {
+                serviceResponse.Message = "Unable to execute generative model due to insufficient credits.";
+                return serviceResponse;
+            }
+
             _logger.LogInformation("Initiating update and execution for Generative Model | Project ID: {Id} | User ID: {UserId}", generativeModelDto.Id, _userId);
 
             // Validate the input DTO

@@ -5,17 +5,20 @@ public class AIModelService : IAIModelService
     private readonly ILogger<AIModelService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IInferencingModelService _inferencingModelService;
+    private readonly ILLMDataExtractionService _llmDataExtractionService;
     private readonly string? _apiKey;
 
     public AIModelService(
         ILogger<AIModelService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IInferencingModelService inferencingModelService)
+        IInferencingModelService inferencingModelService,
+        ILLMDataExtractionService llmDataExtractionService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _inferencingModelService = inferencingModelService;
+        _llmDataExtractionService = llmDataExtractionService;
 
         _apiKey = GetApiKeyOfRequestUtil.GetApiKeyOfRequest(httpContextAccessor.HttpContext);
     }
@@ -191,6 +194,14 @@ public class AIModelService : IAIModelService
 
         try
         {
+            // Check for credits availability
+            var hasSufficientCredits = await _llmDataExtractionService.HasSufficientCreditsAsync();
+            if (!hasSufficientCredits.Data)
+            {
+                serviceResponse.Message = "Unable to execute AI model due to insufficient credits.";
+                return serviceResponse;
+            }
+
             _logger.LogDebug("Attempting to retrieve published AI model verison with ID: {AIProjectVersionId}", requestDto.AIProjectVersionId);
 
             // Retrieve the published AI project version along with its parent project
