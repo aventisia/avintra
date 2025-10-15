@@ -37,37 +37,47 @@ public class ExportCreditUsageRequestDto
 }
 
 /// <summary>
-/// Represents a single record of exported credit usage, including details such as service type, amount used, reference entity, and user information.
+/// Represents a record of credit usage, providing details such as the service type, amount of credits consumed, the reference entity, and the user involved.
 /// </summary>
 public class ExportCreditUsageResponseDto
 {
     /// <summary>
-    /// Gets or sets the type of service for which credits were used.
-    /// </summary>
-    public CreditServiceTypesEnum ServiceType { get; set; }
-
-    /// <summary>
-    /// Gets or sets the total number of credits consumed.
-    /// </summary>
-    public double CreditsUsed { get; set; }
-
-    /// <summary>
-    /// Gets or sets the timestamp when the credits were used.
+    /// Gets or sets the timestamp indicating when the credits were consumed.
     /// </summary>
     public string? UsedOn { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of reference entity associated with the credit usage (e.g., Agent, AI Model).
+    /// Gets or sets the type of service for which the credits were utilized.
+    /// </summary>
+    public CreditServiceTypesEnum ServiceType { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unit of measurement for the usage, such as seconds, tokens, or messages.
+    /// </summary>
+    public UnitTypesEnum? UnitType { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the quantity of usage measured in one unit (e.g., 30 seconds or 1000 tokens).
+    /// </summary>
+    public double UnitUsed { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of credits consumed for the usage.
+    /// </summary>
+    public double CreditsUsed { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of reference entity linked to the credit usage, such as Agent or AI Model.
     /// </summary>
     public UsageSourceTypesEnum? RefType { get; set; }
 
     /// <summary>
-    /// Gets or sets the name or label of the reference entity associated with the usage.
+    /// Gets or sets the name or label associated with the reference entity.
     /// </summary>
     public string? RefName { get; set; }
 
     /// <summary>
-    /// Gets or sets the username of the user who consumed the credits.
+    /// Gets or sets the username of the individual who consumed the credits.
     /// </summary>
     public string? Username { get; set; }
 }

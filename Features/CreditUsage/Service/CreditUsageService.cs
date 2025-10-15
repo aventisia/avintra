@@ -538,18 +538,33 @@ public class CreditUsageService : ICreditUsageService
             // Fetch and map filtered credit usage records to DTOs for export
             var creditUsages = await creditUsageQuery
                 .ProjectToType<ExportCreditUsageResponseDto>()
-                .ToListAsync();
+                .ToListAsync(); 
 
+            // Log the count of credit usage records being exported
             _logger.LogInformation("Exporting {Count} credit usage record(s) based on applied filters.", creditUsages.Count);
+
+            // Fetch all credit plans without including navigation properties (simpler data)
+            var creditPlans = await _unitOfWork.CreditPlanRepo
+                .GetAllAsync() 
+                .ToListAsync(); 
+
+            // Map the correct UnitType from credit plans to each credit usage record
+            creditUsages.ForEach(f =>
+            {
+                // Find the matching credit plan based on the ServiceType and assign its UnitType to the credit usage
+                f.UnitType = creditPlans.FirstOrDefault(plan => plan.ServiceType == f.ServiceType)?.UnitType;
+            });
 
             // Convert the retrieved data to CSV byte array for file export
             var csvBytes = CsvDataExporterUtil.ExportToCsvBytes(creditUsages, new List<string>
             {
-                "Service",
-                "Credits Used",
                 "Date",
-                "Project Type",
-                "AI Model",
+                "Service",
+                "Service Unit",
+                "Unit Consumed",
+                "Credits Used",
+                "Type",
+                "Agent/AI Model",
                 "User",
             });
             var stream = new MemoryStream(csvBytes);
