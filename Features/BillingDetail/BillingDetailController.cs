@@ -13,7 +13,7 @@ public class BillingDetailController : BaseApiController
     }
 
     // Gets a list of billing accounts
-    [HttpGet]
+    [HttpGet("list")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<BillingAccountDetailsDto>>>> GetBillingDetailList()
     {
         return ResultHelper(await _BillingDetailService.GetBillingDetailListAsync());
