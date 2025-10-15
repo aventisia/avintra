@@ -53,21 +53,16 @@ export const ChoosePlan = () => {
     if (paramCurrency) {
       setCurrency(paramCurrency.toUpperCase());
     }
+  }, [paramCurrency, frequency]);
+
+  useEffect(() => {
     if (plan && data?.data) {
       const queryPlanId =
         data.data.find((item) => item.name.toLowerCase() == plan.toLowerCase())
           ?.id || "";
       setPlanId(queryPlanId);
     }
-  }, [
-    paramCurrency,
-    frequency,
-    setCurrency,
-    setPlanType,
-    plan,
-    data?.data,
-    setPlanId,
-  ]);
+  }, [data?.data, plan, setPlanId]);
 
   return (
     <ContentContainer className="fadeInRTL">
@@ -90,10 +85,10 @@ export const ChoosePlan = () => {
                 <SelectValue placeholder="Select Currency" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="USD">USD</SelectItem>
-                <SelectItem value="INR">INR</SelectItem>
-                <SelectItem value="EUR">EUR</SelectItem>
-                <SelectItem value="GBP">GBP</SelectItem>
+                <SelectItem value="USD">USD ($)</SelectItem>
+                <SelectItem value="INR">INR (₹)</SelectItem>
+                <SelectItem value="EUR">EUR (€)</SelectItem>
+                <SelectItem value="GBP">GBP (£)</SelectItem>
               </SelectContent>
             </Select>
             <TabsList>
