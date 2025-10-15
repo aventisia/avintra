@@ -80,9 +80,9 @@ public class SubscriptionPlan : BaseEntity
     /// Gets or sets the Razorpay plan ID associated with this subscription plan.
     /// </summary>
     public string? RazorpayPlanId { get; set; }
-
+    
     /// <summary>
-    /// Gets or sets the list of users associated with the plan.
+    /// Gets or sets the collection of tenants associated with the plan.
     /// </summary>
-    public virtual ICollection<BillingDetail>? BillingDetails { get; set; }
+    public virtual ICollection<TenantSubscription>? TenantSubscriptions { get; set; }
 }
