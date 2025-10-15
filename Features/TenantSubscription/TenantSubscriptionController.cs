@@ -74,4 +74,11 @@ public class TenantSubscriptionController : BaseApiController
     {
         return ResultHelper(await _tenantSubscriptionService.UpgradeSubscriptionPlanAsync(tenantSubscriptionPurchaseDto));
     }
+
+    // Cancel a tenant's subscription plan using the provided subscription ID.
+    [HttpPut("cancel-plan/{tenantSubscriptionId}")]
+    public async Task<ActionResult<ServiceResponse<TenantSubscriptionDto>>> CancelSubscription(Guid tenantSubscriptionId)
+    {
+        return ResultHelper(await _tenantSubscriptionService.CancelSubscriptionPlanAsync(tenantSubscriptionId));
+    }
 }

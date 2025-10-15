@@ -800,6 +800,9 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 {
                     _logger.LogInformation("Successfully cancelled the Razorpay subscription for TenantSubscriptionId: {TenantSubscriptionId}",
                         tenantSubscription.Id);
+
+                    // Clear the Razorpay subscription ID after cancellation
+                    tenantSubscription.RazorpaySubscriptionId = null;
                 }
                 else
                 {
@@ -887,6 +890,116 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             _logger.LogError(ex, "An error occurred while upgrading the subscription. TenantId: {TenantId}, PlanId: {PlanId}", _tenantId, tenantSubscriptionPurchaseDto.PlanId);
         }
 
+        return serviceResponse;
+    }
+
+    // Cancels the subscription plan for a tenant. If no active subscription exists, the cancellation is skipped.
+    public async Task<ServiceResponse<TenantSubscriptionDto>> CancelSubscriptionPlanAsync(Guid tenantSubscriptionId)
+    {
+        // Initialize the service response with a default failure message
+        var serviceResponse = new ServiceResponse<TenantSubscriptionDto>
+        {
+            Data = null,
+            Message = "Failed to cancel tenant subscription. Please try again later.",
+        };
+
+        try
+        {
+            // Log the start of the cancellation process for tracking purposes
+            _logger.LogInformation("Processing subscription cancellation for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, tenantSubscriptionId);
+
+            // Fetch the existing tenant subscription to be canceled
+            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w => w.Id == tenantSubscriptionId && w.IsActive)
+                .SingleOrDefaultAsync();
+
+            // If no active subscription is found, return an appropriate message
+            if (tenantSubscription == null)
+            {
+                _logger.LogWarning("No active subscription found for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}.", _tenantId, tenantSubscriptionId);
+                serviceResponse.Message = "No active subscription found to cancel.";
+                return serviceResponse;
+            }
+
+            // Deactivate the subscription (mark it as inactive)
+            tenantSubscription.IsActive = false;
+            tenantSubscription.LastModifiedByUserId = _userId;
+
+            // Cancel the associated Razorpay subscription if it exists
+            if (!string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId))
+            {
+                // Call external service to cancel the Razorpay subscription
+                var cancelSubscriptionResult = await CancelExistingPlanAsync(tenantSubscription);
+
+                // Check if the Razorpay cancellation was successful
+                if (cancelSubscriptionResult.Data != null || cancelSubscriptionResult.StatusCode == 200)
+                {
+                    _logger.LogInformation("Successfully cancelled Razorpay subscription for TenantSubscriptionId: {TenantSubscriptionId}",
+                        tenantSubscription.Id);
+
+                    // Clear the Razorpay subscription ID after cancellation
+                    tenantSubscription.RazorpaySubscriptionId = null;
+                    tenantSubscription.Status = SubscriptionStatusTypesEnum.Cancelled;
+                }
+                else
+                {
+                    // Log failure if Razorpay cancellation did not succeed
+                    _logger.LogWarning("Failed to cancel Razorpay subscription for TenantSubscriptionId: {TenantSubscriptionId}. Reason: {Message}",
+                        tenantSubscription.Id, cancelSubscriptionResult?.Message ?? "Unknown error");
+
+                    // Set failure message for the response
+                    serviceResponse.Message = cancelSubscriptionResult.Message;
+                    return serviceResponse;
+                }
+            }
+
+            _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
+
+            // Save changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to deactivate tenant subscription. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, tenantSubscriptionId);
+                return serviceResponse;
+            }
+
+            // Log success for deactivating the subscription
+            _logger.LogInformation("Tenant subscription deactivated. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, tenantSubscriptionId);
+
+            // Optionally, delete any associated billing details for the subscription
+            var billingDetail = await _unitOfWork.BillingDetailRepo
+                .GetByConditionAsync(w => w.SubscriptionId == tenantSubscriptionId)
+                .SingleOrDefaultAsync();
+
+            // If billing details exist, delete them
+            if (billingDetail != null)
+            {
+                _unitOfWork.BillingDetailRepo.Delete(billingDetail);
+
+                // Save the deletion changes to the database
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to delete billing details for TenantSubscriptionId: {TenantSubscriptionId}.", tenantSubscription.Id);
+                    return serviceResponse;
+                }
+
+                _logger.LogInformation("Billing details deleted for TenantSubscriptionId: {TenantSubscriptionId}.", tenantSubscription.Id);
+            }
+
+            // Map the tenant subscription entity to a DTO for response (so client gets details of canceled subscription)
+            var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
+
+            // Set the service response with the DTO and success metadata
+            serviceResponse.Data = tenantSubscriptionDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Tenant subscription cancelled successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log any unexpected exceptions that occur during the cancellation process
+            _logger.LogError(ex, "An error occurred while cancelling the subscription. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, tenantSubscriptionId);
+        }
+
+        // Return the service response (either success or failure)
         return serviceResponse;
     }
 
