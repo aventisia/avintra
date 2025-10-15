@@ -407,6 +407,10 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("GstNumber")
                         .HasColumnType("text");
 
@@ -422,22 +426,29 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset>("NextBillingDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("PlanId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RazorpayInvoiceId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RazorpayOrderId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RazorpayPaymentId")
                         .HasColumnType("text");
 
                     b.Property<string>("State")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("TaxRate")
-                        .HasColumnType("numeric");
+                    b.Property<Guid>("SubscriptionId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -454,7 +465,7 @@ namespace AccountsAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.HasIndex("PlanId");
+                    b.HasIndex("SubscriptionId");
 
                     b.ToTable("BillingDetails");
                 });
@@ -1195,6 +1206,10 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
@@ -1532,9 +1547,9 @@ namespace AccountsAPIs.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AccountsAPIs.Entities.SubscriptionPlan", "Plan")
+                    b.HasOne("AccountsAPIs.Entities.TenantSubscription", "TenantSubscription")
                         .WithMany("BillingDetails")
-                        .HasForeignKey("PlanId")
+                        .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1542,7 +1557,7 @@ namespace AccountsAPIs.Data.Migrations
 
                     b.Navigation("LastModifiedByUser");
 
-                    b.Navigation("Plan");
+                    b.Navigation("TenantSubscription");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.CreditPlan", b =>
@@ -1810,7 +1825,7 @@ namespace AccountsAPIs.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("AccountsAPIs.Entities.SubscriptionPlan", "Plan")
-                        .WithMany()
+                        .WithMany("TenantSubscriptions")
                         .HasForeignKey("PlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1882,12 +1897,17 @@ namespace AccountsAPIs.Data.Migrations
 
             modelBuilder.Entity("AccountsAPIs.Entities.SubscriptionPlan", b =>
                 {
-                    b.Navigation("BillingDetails");
+                    b.Navigation("TenantSubscriptions");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.Tenant", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("AccountsAPIs.Entities.TenantSubscription", b =>
+                {
+                    b.Navigation("BillingDetails");
                 });
 #pragma warning restore 612, 618
         }
