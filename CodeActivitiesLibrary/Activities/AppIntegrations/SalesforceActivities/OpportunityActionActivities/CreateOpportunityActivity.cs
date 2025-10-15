@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Create Opportunity")]
     [Description("Creates a new opportunity in Salesforce.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class CreateOpportunityActivity : BaseCodeActivity
     {
         [RequiredArgument]

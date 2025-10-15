@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Update Salesforce Account")]
     [Description("Updates an existing Account record in Salesforce using the provided credentials and account details.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class UpdateAccountActivity : BaseCodeActivity
     {
         [RequiredArgument]

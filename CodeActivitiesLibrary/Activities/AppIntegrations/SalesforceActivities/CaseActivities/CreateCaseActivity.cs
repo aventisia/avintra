@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Create Salesforce Case")]
     [Description("Creates a new Case record in Salesforce using the provided credentials and case details.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class CreateCaseActivity : BaseCodeActivity
     {
 

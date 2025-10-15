@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Add a note to a lead")]
     [Description("Adds a text note to a Salesforce lead.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class AddNoteToLeadActivity : BaseCodeActivity
     {
         [RequiredArgument]

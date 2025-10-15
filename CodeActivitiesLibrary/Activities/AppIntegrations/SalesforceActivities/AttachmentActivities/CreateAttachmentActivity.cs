@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Create Salesforce Attachment")]
     [Description("Creates a new Attachment record in Salesforce linked to a parent record (e.g., Account, Contact).")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class CreateAttachmentActivity : BaseCodeActivity
     {
         [RequiredArgument]

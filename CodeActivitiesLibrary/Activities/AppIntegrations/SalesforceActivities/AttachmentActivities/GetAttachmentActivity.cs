@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get Salesforce Attachment")]
     [Description("Retrieves a single Attachment record from Salesforce by its ID.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class GetAttachmentActivity : BaseCodeActivity
     {
         [RequiredArgument]

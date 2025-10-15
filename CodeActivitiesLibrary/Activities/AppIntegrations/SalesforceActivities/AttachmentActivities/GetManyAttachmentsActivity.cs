@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get Many Salesforce Attachments")]
     [Description("Retrieves multiple Attachment records from Salesforce using SOQL query.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class GetManyAttachmentsActivity : BaseCodeActivity
     {
         [RequiredArgument]

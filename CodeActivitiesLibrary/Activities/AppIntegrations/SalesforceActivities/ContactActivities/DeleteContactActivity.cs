@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 
     [DisplayName("Delete Salesforce Contact")]
     [Description("Deletes an existing Contact record in Salesforce by its ID.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class DeleteContactActivity : BaseCodeActivity
     {
         [RequiredArgument]

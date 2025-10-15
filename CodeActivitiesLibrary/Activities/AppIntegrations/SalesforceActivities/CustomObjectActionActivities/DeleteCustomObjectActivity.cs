@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Delete a custom object")]
     [Description("Deletes a custom object in Salesforce by its ID.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class DeleteCustomObjectActivity : BaseCodeActivity
     {
         [RequiredArgument]

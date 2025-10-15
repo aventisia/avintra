@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Update a lead")]
     [Description("Updates an existing lead in Salesforce.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class UpdateLeadActivity : BaseCodeActivity
     {
         [RequiredArgument]

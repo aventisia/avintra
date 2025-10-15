@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get Task")]
     [Description("Retrieves a Salesforce task by its ID.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class GetTaskActivity : BaseCodeActivity
     {
         [RequiredArgument]

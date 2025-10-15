@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get Task Summary")]
     [Description("Retrieves a summary of a Salesforce task by its ID.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class GetTaskSummaryActivity : BaseCodeActivity
     {
         [RequiredArgument]

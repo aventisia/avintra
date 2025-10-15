@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Delete Salesforce Account")]
     [Description("Deletes an existing Account record from Salesforce by its ID.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class DeleteAccountActivity : BaseCodeActivity
     {
         [RequiredArgument]

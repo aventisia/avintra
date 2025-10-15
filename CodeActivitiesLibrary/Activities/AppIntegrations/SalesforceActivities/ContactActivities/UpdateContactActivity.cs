@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Update Salesforce Contact")]
     [Description("Updates an existing Contact record in Salesforce.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class UpdateContactActivity : BaseCodeActivity
     {
         [RequiredArgument]

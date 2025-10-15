@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Add a Comment to a Case")]
     [Description("Adds a comment to an existing Case in Salesforce.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class AddCommentToCaseActivity : BaseCodeActivity
     {
         [RequiredArgument]

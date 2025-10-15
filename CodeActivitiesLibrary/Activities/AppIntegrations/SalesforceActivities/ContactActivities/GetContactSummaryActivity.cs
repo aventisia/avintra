@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get Salesforce Contact Summary")]
     [Description("Retrieves summary information about a Contact, such as count of related opportunities, cases, etc.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class GetContactSummaryActivity : BaseCodeActivity
     {
         [RequiredArgument]

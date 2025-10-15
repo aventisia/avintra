@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Performs A Search Query")]
     [Description("Performs a search query in Salesforce using SOQL-like syntax.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class PerformAQueryActivity  : BaseCodeActivity
     {
         [RequiredArgument]

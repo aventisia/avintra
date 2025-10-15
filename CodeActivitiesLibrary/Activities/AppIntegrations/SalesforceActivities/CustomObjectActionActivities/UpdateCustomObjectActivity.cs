@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Update a custom object")]
     [Description("Updates an existing custom object in Salesforce with new field values.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class UpdateCustomObjectActivity : BaseCodeActivity
     {
         [RequiredArgument]

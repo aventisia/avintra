@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Invoke Flow")]
     [Description("Invokes a Salesforce flow with input variables or JSON parameters.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class InvokeFlowActivity : BaseCodeActivity
     {
         [RequiredArgument]

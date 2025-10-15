@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Upload Document")]
     [Description("Uploads a document to Salesforce as a ContentVersion (Salesforce File).")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class UploadDocumentActivity : BaseCodeActivity
     {
         [RequiredArgument]

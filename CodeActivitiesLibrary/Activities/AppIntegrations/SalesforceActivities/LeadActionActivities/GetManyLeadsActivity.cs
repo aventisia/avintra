@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get many leads")]
     [Description("Retrieves multiple leads from Salesforce using SOQL or default query.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class GetManyLeadsActivity : BaseCodeActivity
     {
         [RequiredArgument]

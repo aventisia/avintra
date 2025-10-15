@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Create a lead")]
     [Description("Creates a new lead in Salesforce.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class CreateLeadActivity : BaseCodeActivity
     {
         [RequiredArgument]

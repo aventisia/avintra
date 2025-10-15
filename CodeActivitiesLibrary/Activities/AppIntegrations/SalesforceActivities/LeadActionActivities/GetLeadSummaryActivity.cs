@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get a lead summary")]
     [Description("Retrieves a summary of a lead's information from Salesforce.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class GetLeadSummaryActivity : BaseCodeActivity
     {
         [RequiredArgument]

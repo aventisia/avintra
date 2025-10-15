@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get Many Flows")]
     [Description("Retrieves multiple Salesforce flows. Use 'Return All' to get all records without limit.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class GetManyFlowsActivity : BaseCodeActivity
     {
         [RequiredArgument]
