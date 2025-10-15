@@ -1082,6 +1082,9 @@ namespace AccountsAPIs.Data.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("character varying(15)");
 
+                    b.Property<double?>("Discount")
+                        .HasColumnType("double precision");
+
                     b.Property<string>("Domain")
                         .IsRequired()
                         .HasMaxLength(100)
