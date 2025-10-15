@@ -1,7 +1,9 @@
 import { SubmitButton } from "@aventisia/ui/buttons";
 import {
   AutherCard,
+  CheckboxField,
   Form,
+  FormLabel,
   InputField,
   SelectField,
   SwitchField,
@@ -26,6 +28,7 @@ import {
   currencyProps,
   frequencyProps,
   typeProps,
+  statusProps,
 } from "../../constants/sub-plans-form-field-props";
 import { subPlansZodSchema } from "../../constants/sub-plans-zod-schema";
 import { SubPlansTableDto } from "../../dtos/sub-plans-table-dto";
@@ -78,16 +81,18 @@ export const SubPlansCrudForm = () => {
       {/* Plan Id */}
       {isReadMode && <InputField {...idProps} />}
 
+      <SelectField {...currencyProps} />
+
+      <SelectField {...frequencyProps} />
+
       {/* Name */}
       <InputField {...nameProps} />
 
       <SelectField {...typeProps} />
 
+      <SelectField {...statusProps} />
+
       <InputField {...priceProps} />
-
-      <SelectField {...currencyProps} />
-
-      <SelectField {...frequencyProps} />
 
       {/* No of Credits */}
       <InputField {...maxCreditsProps} />
@@ -106,6 +111,14 @@ export const SubPlansCrudForm = () => {
 
       {/* Users */}
       <InputField {...maxUsersProps} />
+
+      <CheckboxField
+        name="isRazorpay"
+        className="mt-1"
+        label={
+          <FormLabel className="mt-0.5 text-sm">Create Razorpay Plan</FormLabel>
+        }
+      />
 
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
