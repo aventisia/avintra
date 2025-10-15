@@ -14,12 +14,12 @@ const ChargeSummary = ({
   planType: PlanType;
 }) => {
   const { basePrice, tax, total, isTaxApplicable, effectiveBilling } =
-    useChargeSummary(plan, planType);
+    useChargeSummary(plan);
 
   const { isPending, insertSubscriptionMutation } =
     useInsertSubscriptionMutation();
 
-  const handleFreePlan = () => {
+  const handleSubscription = () => {
     insertSubscriptionMutation({
       planId: plan?.id || "",
       amount: total,
@@ -55,7 +55,7 @@ const ChargeSummary = ({
         <Button
           className="mt-2 w-full"
           disabled={isPending}
-          onClick={handleFreePlan}
+          onClick={handleSubscription}
         >
           {isPending ? (
             <>
@@ -67,7 +67,20 @@ const ChargeSummary = ({
           )}
         </Button>
       ) : (
-        <Button className="mt-2 w-full">Make Payment</Button>
+        <Button
+          disabled={isPending}
+          onClick={handleSubscription}
+          className="mt-2 w-full"
+        >
+          {isPending ? (
+            <>
+              <LoadingSpinner className="h-4 w-4 mr-2" />
+              Initiating Payment...
+            </>
+          ) : (
+            "Make Payment"
+          )}
+        </Button>
       )}
     </div>
   );
