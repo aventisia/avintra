@@ -33,18 +33,8 @@ import { useDefineSubPlansForm } from "../../hooks/useDefineSubPlansForm";
 
 export const SubPlansCrudForm = () => {
   // Define Subscription plan form
-  const {
-    form,
-    rowId,
-    isDirty,
-    crudAction,
-    isAvailable,
-    availabilityMessage,
-    isCheckPending,
-    handleInputChange,
-    setShowDialog,
-    refineFormData,
-  } = useDefineSubPlansForm();
+  const { form, rowId, isDirty, crudAction, setShowDialog, refineFormData } =
+    useDefineSubPlansForm();
 
   // Define optimistic mutation to crete or update the subscription plan
   const {
@@ -89,11 +79,7 @@ export const SubPlansCrudForm = () => {
       {isReadMode && <InputField {...idProps} />}
 
       {/* Name */}
-      <InputField
-        {...nameProps}
-        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-        nonErrorMessage={availabilityMessage}
-      />
+      <InputField {...nameProps} />
 
       <SelectField {...typeProps} />
 
@@ -144,7 +130,7 @@ export const SubPlansCrudForm = () => {
             primaryText={crudAction === "create" ? "Create" : "Save changes"}
             secondaryText="Creating..."
             isPending={isPending}
-            disabled={!isDirty || !isAvailable || isCheckPending}
+            disabled={!isDirty}
           />
         </div>
       )}
