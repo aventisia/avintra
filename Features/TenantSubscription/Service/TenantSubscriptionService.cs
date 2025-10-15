@@ -646,27 +646,32 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 };
             }
 
-            // If billing details are available, calculate the next payment breakdown
-            if (billingDetail != null)
+            // Calculate the subscription fee based on the plan's frequency
+            var subscriptionFee = currentPlan.Price;
+
+            // Calculate the tax (18% of the subscription fee)
+            var tax = subscriptionFee * 0.18m;  // 'm' denotes decimal literal
+
+            // Calculate the total amount (subscription fee + tax)
+            var totalAmount = subscriptionFee + tax;
+            // Check if the NextBillingDate is not set (i.e., it's null)
+            if (tenantSubscription.NextBillingDate == null)
             {
-                // Calculate the subscription fee based on the plan's frequency
-                var subscriptionFee = currentPlan.Price;
-
-                // Calculate the tax (18% of the subscription fee)
-                var tax = subscriptionFee * 0.18m;  // 'm' denotes decimal literal
-
-                // Calculate the total amount (subscription fee + tax)
-                var totalAmount = subscriptionFee + tax;
-
-                // Populate the next payment details
-                subscriptionDashboardDto.NextPayment = new NextPaymentDetailDto()
-                {
-                    DueDate = tenantSubscription.NextBillingDate,
-                    SubscriptionFee = subscriptionFee,
-                    Tax = tax,
-                    TotalAmount = totalAmount,
-                };
+                // If the subscription frequency is Monthly, set the NextBillingDate to 1 month after the CreatedOn date
+                // Otherwise, if it's Annual, set the NextBillingDate to 1 year after the CreatedOn date
+                tenantSubscription.NextBillingDate = tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
+                    ? tenantSubscription.CreatedOn.AddMonths(1).Date
+                    : tenantSubscription.CreatedOn.AddYears(1).Date;
             }
+
+            // Populate the next payment details
+            subscriptionDashboardDto.NextPayment = new NextPaymentDetailDto()
+            {
+                DueDate = tenantSubscription.NextBillingDate,
+                SubscriptionFee = subscriptionFee,
+                Tax = tax,
+                TotalAmount = totalAmount,
+            };
 
             // Log success message after retrieving the subscription details successfully
             _logger.LogInformation("Successfully retrieved the current tenant subscription plan for tenant ID: {TenantId}", _tenantId);
