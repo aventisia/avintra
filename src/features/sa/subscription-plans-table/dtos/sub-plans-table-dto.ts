@@ -1,3 +1,6 @@
+import { PlanStatusEnum } from "../enums/plan-status-enum";
+import { PlanTypeEnum } from "../enums/plan-type-enum";
+
 /**
  * Represents a data transfer object (DTO) for Subscription Plans.
  */
@@ -20,13 +23,16 @@ export interface SubPlansTableDto {
   /**
    * Gets or sets the type of the subscription plan.
    */
-  type: "Starter" | "Pro" | "Enterprise";
+  type: PlanTypeEnum;
 
   /**
    * Gets or sets the billing frequency of the plan.
    */
   frequency: "Monthly" | "Yearly";
 
+  status: PlanStatusEnum;
+
+  isRazorpay?: boolean;
   /**
    * Gets or sets the currency in which the plan is priced.
    */

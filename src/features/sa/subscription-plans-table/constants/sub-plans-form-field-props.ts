@@ -3,6 +3,10 @@ import {
   SelectFieldProps,
   SwitchFieldProps,
 } from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
+
+import { PlanStatusEnum } from "../enums/plan-status-enum";
+import { PlanTypeEnum } from "../enums/plan-type-enum";
 
 // ID (read-only)
 const idProps: InputFieldProps = {
@@ -23,11 +27,7 @@ const nameProps: InputFieldProps = {
 const typeProps: SelectFieldProps = {
   name: "type",
   label: "Type",
-  selectOptions: [
-    { label: "Starter", value: "Starter" },
-    { label: "Pro", value: "Pro" },
-    { label: "Enterprise", value: "Enterprise" },
-  ],
+  selectOptions: enumToArray(PlanTypeEnum),
   defaultValue: "Pro",
   isRequired: true,
 };
@@ -125,6 +125,15 @@ const frequencyProps: SelectFieldProps = {
   isRequired: true,
 };
 
+// Status
+const statusProps: SelectFieldProps = {
+  name: "status",
+  label: "Plan Status",
+  selectOptions: enumToArray(PlanStatusEnum),
+  defaultValue: "Current",
+  isRequired: true,
+};
+
 export {
   idProps,
   nameProps,
@@ -141,4 +150,5 @@ export {
   frequencyProps,
   currencyProps,
   priceProps,
+  statusProps,
 };

@@ -1,7 +1,9 @@
 import { SubmitButton } from "@aventisia/ui/buttons";
 import {
   AutherCard,
+  CheckboxField,
   Form,
+  FormLabel,
   InputField,
   SelectField,
   SwitchField,
@@ -26,6 +28,7 @@ import {
   currencyProps,
   frequencyProps,
   typeProps,
+  statusProps,
 } from "../../constants/sub-plans-form-field-props";
 import { subPlansZodSchema } from "../../constants/sub-plans-zod-schema";
 import { SubPlansTableDto } from "../../dtos/sub-plans-table-dto";
@@ -33,18 +36,8 @@ import { useDefineSubPlansForm } from "../../hooks/useDefineSubPlansForm";
 
 export const SubPlansCrudForm = () => {
   // Define Subscription plan form
-  const {
-    form,
-    rowId,
-    isDirty,
-    crudAction,
-    isAvailable,
-    availabilityMessage,
-    isCheckPending,
-    handleInputChange,
-    setShowDialog,
-    refineFormData,
-  } = useDefineSubPlansForm();
+  const { form, rowId, isDirty, crudAction, setShowDialog, refineFormData } =
+    useDefineSubPlansForm();
 
   // Define optimistic mutation to crete or update the subscription plan
   const {
@@ -88,20 +81,18 @@ export const SubPlansCrudForm = () => {
       {/* Plan Id */}
       {isReadMode && <InputField {...idProps} />}
 
-      {/* Name */}
-      <InputField
-        {...nameProps}
-        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-        nonErrorMessage={availabilityMessage}
-      />
-
-      <SelectField {...typeProps} />
-
-      <InputField {...priceProps} />
-
       <SelectField {...currencyProps} />
 
       <SelectField {...frequencyProps} />
+
+      {/* Name */}
+      <InputField {...nameProps} />
+
+      <SelectField {...typeProps} />
+
+      <SelectField {...statusProps} />
+
+      <InputField {...priceProps} />
 
       {/* No of Credits */}
       <InputField {...maxCreditsProps} />
@@ -120,6 +111,14 @@ export const SubPlansCrudForm = () => {
 
       {/* Users */}
       <InputField {...maxUsersProps} />
+
+      <CheckboxField
+        name="isRazorpay"
+        className="mt-1"
+        label={
+          <FormLabel className="mt-0.5 text-sm">Create Razorpay Plan</FormLabel>
+        }
+      />
 
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
@@ -144,7 +143,7 @@ export const SubPlansCrudForm = () => {
             primaryText={crudAction === "create" ? "Create" : "Save changes"}
             secondaryText="Creating..."
             isPending={isPending}
-            disabled={!isDirty || !isAvailable || isCheckPending}
+            disabled={!isDirty}
           />
         </div>
       )}

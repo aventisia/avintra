@@ -1,29 +1,21 @@
-import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
-import { isSubPlanNameAvailable } from "../apis/sub-plans-table-apis";
 import { PLANS_QUERY_KEY } from "../constants";
-import {
-  subPlanNameSchema,
-  subPlansZodSchema,
-} from "../constants/sub-plans-zod-schema";
+import { subPlansZodSchema } from "../constants/sub-plans-zod-schema";
 import { SubPlansTableDto } from "../dtos/sub-plans-table-dto";
 
 /**
  * Custom hook for defining a Subscription Plans form.
  */
 export const useDefineSubPlansForm = () => {
-  // Set subPlan name state (required for avaialbility check)
-  const [subPlanName, setSubPlanName] = useState("");
-
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
@@ -33,7 +25,7 @@ export const useDefineSubPlansForm = () => {
 
   // Get data-table crud dialog store state and actions
   const {
-    crudDialogOptions: { showDialog, rowId, crudAction },
+    crudDialogOptions: { rowId, crudAction },
     toggleFormDirty,
     setShowDialog,
   } = useDTCrudDialogStore(
@@ -57,6 +49,7 @@ export const useDefineSubPlansForm = () => {
       type: "Starter",
       currency: "USD",
       frequency: "Monthly",
+      status: "Current",
       isDisabled: false,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
@@ -80,23 +73,22 @@ export const useDefineSubPlansForm = () => {
     // Get subPlan data by id
     const subPlanData = subPlansData?.data.find((item) => item.id === rowId);
 
-    // Set subPlan name
-    setSubPlanName(subPlanData?.name ?? "");
-
     // Set subPlan data to form
     form.reset({
       id: rowId,
       name: subPlanData?.name ?? "",
       maxCredits: subPlanData?.maxCredits,
-      type: subPlanData?.type,
+      type: subPlanData?.type ?? "Pro",
       maxPublishedItems: subPlanData?.maxPublishedItems,
       maxUsers: subPlanData?.maxUsers,
       historyRetentionDays: subPlanData?.historyRetentionDays,
       storageLimitMB: subPlanData?.storageLimitMB,
       maxSpaces: subPlanData?.maxSpaces,
       price: subPlanData?.price,
-      currency: subPlanData?.currency,
-      frequency: subPlanData?.frequency,
+      currency: subPlanData?.currency ?? "USD",
+      frequency: subPlanData?.frequency ?? "Monthly",
+      status: subPlanData?.status ?? "Current",
+      isRazorpay: subPlanData?.isRazorpay,
       isDisabled: subPlanData?.isDisabled ?? false,
       // Read (view) only fields
       createdBy:
@@ -119,21 +111,6 @@ export const useDefineSubPlansForm = () => {
     }, 0);
   }, [rowId, form, queryClient, userSession]);
 
-  // Get check availability state and methods
-  const {
-    isAvailable,
-    isCheckPending,
-    handleInputChange,
-    availabilityMessage,
-    setAvailabilityMessage,
-  } = useCheckAvailability<z.infer<typeof subPlansZodSchema>, z.ZodString>({
-    defaultInputValue: subPlanName,
-    fieldName: "name",
-    form,
-    fieldSchema: subPlanNameSchema,
-    checkAvailabilityAPIFn: isSubPlanNameAvailable,
-  });
-
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof subPlansZodSchema>) => {
     return {
@@ -148,11 +125,6 @@ export const useDefineSubPlansForm = () => {
     toggleFormDirty(isDirty);
   }, [isDirty, toggleFormDirty]);
 
-  // Reset availability message when dialog closes
-  useEffect(() => {
-    if (!showDialog) setAvailabilityMessage(null);
-  }, [setAvailabilityMessage, showDialog]);
-
   // Return form and methods
   return {
     form,
@@ -161,9 +133,5 @@ export const useDefineSubPlansForm = () => {
     crudAction,
     setShowDialog,
     refineFormData,
-    isAvailable,
-    availabilityMessage,
-    isCheckPending,
-    handleInputChange,
   };
 };
