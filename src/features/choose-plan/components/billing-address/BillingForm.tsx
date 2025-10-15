@@ -20,7 +20,6 @@ import {
   stateProps,
 } from "../../constants/form-field-props";
 import { useDefineBillingInfoForm } from "../../hooks/useDefineBillingInfoForm";
-import { useInsertBillingDetailsMutation } from "../../hooks/useInsertBillingDetailsMutation";
 import { useChoosePlanStore } from "../../stores/choose-plan-store";
 
 /**
@@ -30,7 +29,7 @@ export const BillingForm = () => {
   const { form, isSubmitting, isIndividualUser, disableCountryDD } =
     useDefineBillingInfoForm();
 
-  const { planId, planType, setStepNo, setBillingData } = useChoosePlanStore(
+  const { setStepNo, setBillingData } = useChoosePlanStore(
     useShallow((state) => ({
       setStepNo: state.setStepNo,
       planId: state.planId,
@@ -38,9 +37,6 @@ export const BillingForm = () => {
       setBillingData: state.setBillingData,
     })),
   );
-
-  const { insetBillingDetailsMutation, isPending } =
-    useInsertBillingDetailsMutation();
 
   const onSubmit = (formData: z.infer<typeof billingInfoSchema>) => {
     let existingData = {};
@@ -66,21 +62,7 @@ export const BillingForm = () => {
     setBillingData({
       ...formData,
     });
-
-    insetBillingDetailsMutation({
-      addressLine1: formData.addressLine1,
-      amount: 0,
-      city: formData.city,
-      country: formData.country,
-      frequency: planType,
-      isWillingToFileGst: !!formData.isWillingToFileGst,
-      planId: planId,
-      postalCode: formData.postalCode,
-      state: formData.state,
-      taxRate: 18,
-      addressLine2: formData.addressLine2,
-      gstNumber: formData.gstNumber,
-    });
+    setStepNo(3);
   };
   const isGSTRegistered = form.watch("isWillingToFileGst");
   const applyGST = form.watch("country") == "India";
@@ -131,7 +113,7 @@ export const BillingForm = () => {
         >
           Back
         </Button>
-        <SubmitButton isPending={isPending} primaryText="Continue" />
+        <SubmitButton isPending={false} primaryText="Continue" />
       </div>
     </Form>
   );

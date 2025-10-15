@@ -32,8 +32,8 @@ const addressLine2Props: InputFieldProps = {
 // State
 const stateProps: InputFieldProps = {
   name: "state",
-  label: "State",
-  isRequired: true,
+  label: "State/Province",
+  isRequired: false,
 };
 
 // City
