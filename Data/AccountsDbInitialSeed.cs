@@ -29,14 +29,14 @@ public static class AccountsDbInitialSeed
                 // Seed Roles
                 if (!await SeedRolesAsync(_roleManager)) return app;
 
-                // Seed Permissions
-                if (!await SeedPermissionsAsync(_accountsDbContext)) return app;
-
                 // Seed Super User without tenant
                 var superUser = await SeedSuperUserAsync(_userManager, defaultUsersConfig.SuperUser);
 
                 // Super user not seeded
                 if (superUser == null) return app;
+
+                // Seed Permissions
+                if (!await SeedPermissionsAsync(_accountsDbContext, superUser)) return app;
 
                 // Seed default tenants
                 if (!await SeedDefaultTenantsAsync(_accountsDbContext, tenantDefaultConfig, superUser.Id)) return app;
@@ -46,6 +46,18 @@ public static class AccountsDbInitialSeed
 
                 // Update Super user tenant Id
                 if (!await UpdateSuperUserTenantId(_accountsDbContext, superUser.Id)) return app;
+
+                // Seed the default Subscription Plan (create or ensure the default subscription plan exists)
+                if (!await SeedSubscriptionPlanAsync(_accountsDbContext, superUser))
+                    return app;
+
+                // Seed the Tenant Subscription (this associates the super user with a subscription plan for their tenant)
+                if (!await SeedTenantSubscriptionAsync(_accountsDbContext, superUser))
+                    return app;
+
+                // Seed the Tenant Credits (this associates the super user with a subscription plan for their tenant)
+                if (!await SeedTenantCreditsAsync(_accountsDbContext, superUser))
+                    return app;
 
             }
             catch (Exception ex)
@@ -287,7 +299,7 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed permissions
-    private async static Task<bool> SeedPermissionsAsync(AccountsDbContext dbContext)
+    private async static Task<bool> SeedPermissionsAsync(AccountsDbContext dbContext, AccountUser superUser)
     {
         try
         {
@@ -303,7 +315,9 @@ public static class AccountsDbInitialSeed
                 {
                     Name = permission.ToString(),
                     FullName = splitContent[1].Trim(),
-                    Description = splitContent[2].Trim()
+                    Description = splitContent[2].Trim(),
+                    CreatedByUserId = superUser.Id,
+                    LastModifiedByUserId = superUser.Id
                 });
 
             }
@@ -361,6 +375,219 @@ public static class AccountsDbInitialSeed
         catch (Exception ex)
         {
             Console.WriteLine("Error: Error occurred while tyring to update super user tenant : " + ex.Message);
+            return false;
+        }
+    }
+
+    private static async Task<bool> SeedSubscriptionPlanAsync(AccountsDbContext accountsDbContext, AccountUser superUser)
+    {
+        try
+        {
+            // Define the name of the subscription plan to seed
+            var subscriptionPlanName = "Default";
+
+            // Check if the default subscription plan already exists in the database
+            var existingPlan = await accountsDbContext.SubscriptionPlans
+                .Where(w => w.Name == subscriptionPlanName && w.IsDefault)
+                .SingleOrDefaultAsync();
+
+            // If the subscription plan already exists, skip seeding and return true
+            if (existingPlan != null)
+            {
+                Console.WriteLine($"Subscription plan '{subscriptionPlanName}' already exists.");
+                return true;
+            }
+
+            // If the plan doesn't exist, create the default subscription plan
+            var newSubscriptionPlan = new SubscriptionPlan
+            {
+                Name = subscriptionPlanName,
+                Type = SubscriptionPlanTypeEnum.Enterprise,
+                Currency = CurrencyTypesEnum.INR,
+                Frequency = SubscriptionFrequenciesEnum.Yearly,
+                Status = PlanStatusTypesEnum.Custom,
+                UniqueName = $"{SubscriptionPlanTypeEnum.Enterprise}-{SubscriptionFrequenciesEnum.Yearly}-{CurrencyTypesEnum.INR}".ToLower(),
+                MaxPublishedItems = int.MaxValue,
+                MaxSpaces = int.MaxValue,
+                MaxUsers = int.MaxValue,
+                StorageLimitMB = int.MaxValue,
+                HistoryRetentionDays = int.MaxValue,
+                Price = 0,
+                IsDefault = true,
+                CreatedByUserId = superUser.Id,
+                LastModifiedByUserId = superUser.Id,
+            };
+
+            // Add the newly created subscription plan to the database context
+            await accountsDbContext.SubscriptionPlans.AddAsync(newSubscriptionPlan);
+
+            // Save the changes to the database
+            await accountsDbContext.SaveChangesAsync();
+
+            // Successfully seeded the subscription plan
+            Console.WriteLine("Default subscription plan seeded successfully.");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            // Log the error and return false if seeding failed
+            Console.WriteLine($"Error: An error occurred while trying to seed the subscription plan: {ex.Message}");
+            return false;
+        }
+    }
+
+    private static async Task<bool> SeedTenantSubscriptionAsync(AccountsDbContext accountsDbContext, AccountUser superUser)
+    {
+        try
+        {
+            // Define the tenant name to be used for the super user (this could be fetched from an enum or config)
+            var tenantName = GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia);
+
+            // Get the default tenant associated with the super user
+            var defaultTenant = await accountsDbContext.Tenants
+                .Where(w => w.IsDefault && w.Name == tenantName)
+                .SingleOrDefaultAsync();
+
+            // If the default tenant is not found, log the error and return false
+            if (defaultTenant == null)
+            {
+                Console.WriteLine("Error: Default Tenant not found for super user");
+                return false;
+            }
+
+            // Define the subscription plan name (could also be retrieved from config)
+            var subscriptionPlanName = "Default";
+
+            // Check if a subscription plan already exists for the super user's tenant
+            var existingSubscription = await accountsDbContext.TenantSubscriptions
+                .Where(w => w.TenantId == superUser.TenantId && w.IsActive)
+                .SingleOrDefaultAsync();
+
+            // If a subscription plan already exists, skip seeding and return true
+            if (existingSubscription != null)
+            {
+                Console.WriteLine($"Subscription plan '{subscriptionPlanName}' already exists for the super user's tenant.");
+                return true;
+            }
+
+            // Get the default subscription plan to be associated with the tenant
+            var subscriptionPlan = await accountsDbContext.SubscriptionPlans
+                .Where(w => w.Name == subscriptionPlanName && w.IsDefault)
+                .SingleOrDefaultAsync();
+
+            // If the subscription plan is not found, log the error and return false
+            if (subscriptionPlan == null)
+            {
+                Console.WriteLine($"Error: Subscription plan '{subscriptionPlanName}' not found.");
+                return false;
+            }
+
+            // Create the new TenantSubscription with necessary details
+            var tenantSubscription = new TenantSubscription
+            {
+                TenantId = defaultTenant.Id,
+                PlanId = subscriptionPlan.Id,
+                Frequency = SubscriptionFrequenciesEnum.Yearly,
+                IsActive = true,
+                Status = SubscriptionStatusTypesEnum.Active,
+                NextBillingDate = DateTimeOffset.UtcNow.AddYears(1),
+                MaxCredits = ulong.MaxValue,
+                MaxPublishedItems = int.MaxValue,
+                MaxSpaces = int.MaxValue,
+                MaxUsers = int.MaxValue,
+                StorageLimitMB = int.MaxValue,
+                HistoryRetentionDays = int.MaxValue,
+                CreatedByUserId = superUser.Id,
+                LastModifiedByUserId = superUser.Id
+            };
+
+            // Add the new tenant subscription to the database context
+            await accountsDbContext.TenantSubscriptions.AddAsync(tenantSubscription);
+
+            // Save the changes to the database
+            await accountsDbContext.SaveChangesAsync();
+
+            // Successfully seeded the tenant subscription
+            Console.WriteLine("Subscription plan seeded successfully for super user's tenant.");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            // Log the error and return false if seeding failed
+            Console.WriteLine($"Error: An error occurred while trying to seed the tenant subscription: {ex.Message}");
+            return false;
+        }
+    }
+
+    private static async Task<bool> SeedTenantCreditsAsync(AccountsDbContext accountsDbContext, AccountUser superUser)
+    {
+        try
+        {
+            // Define the tenant name associated with the super user
+            var tenantName = GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.Aventisia);
+
+            // Fetch the default tenant associated with the super user
+            var defaultTenant = await accountsDbContext.Tenants
+                .Where(w => w.IsDefault && w.Name == tenantName)
+                .SingleOrDefaultAsync();
+
+            // If the default tenant is not found, log the error and return false
+            if (defaultTenant == null)
+            {
+                Console.WriteLine("Error: Default Tenant not found for super user");
+                return false;
+            }
+
+            // Check if the tenant already has an active subscription
+            var tenantSubscription = await accountsDbContext.TenantSubscriptions
+                .Where(w => w.TenantId == superUser.TenantId && w.IsActive)
+                .SingleOrDefaultAsync();
+
+            // If no active subscription is found, log the error and return false
+            if (tenantSubscription == null)
+            {
+                Console.WriteLine("Error: No active subscription found for the super user's tenant.");
+                return false;
+            }
+
+            // Check if the tenant already has credits
+            var existingCredits = await accountsDbContext.TenantCredits
+                .Where(w => w.TenantId == superUser.TenantId)
+                .SingleOrDefaultAsync();
+
+            // If tenant credits already exist, skip seeding and return true
+            if (existingCredits != null)
+            {
+                Console.WriteLine($"Tenant credits already exist for the super user's tenant.");
+                return true;
+            }
+
+            // Create a new TenantCredits entry
+            var tenantCredits = new TenantCredit
+            {
+                TenantId = defaultTenant.Id,
+                SubscriptionId = tenantSubscription.Id,
+                AvailableCredits = ulong.MaxValue,
+                ExpiredOn = DateTimeOffset.UtcNow.AddYears(1),
+                Type = CreditTypesEnum.Subscription,
+                CreatedByUserId = superUser.Id,
+                LastModifiedByUserId = superUser.Id
+            };
+
+            // Add the new tenant credits record to the database
+            await accountsDbContext.TenantCredits.AddAsync(tenantCredits);
+
+            // Save the changes to the database
+            await accountsDbContext.SaveChangesAsync();
+
+            // Successfully seeded the tenant credits
+            Console.WriteLine("Tenant credits seeded successfully for super user's tenant.");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            // Log the error and return false if seeding failed
+            Console.WriteLine($"Error: An error occurred while trying to seed tenant credits: {ex.Message}");
             return false;
         }
     }
