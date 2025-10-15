@@ -63,9 +63,9 @@ public class BillingDetailDto
     public decimal TaxRate { get; set; } = 18;
 
     /// <summary>
-    /// Gets or sets the ID of the assigned subscription plan.
+    /// Gets or sets the unique identifier of the subscription associated with this billing.
     /// </summary>
-    public Guid PlanId { get; set; }
+    public Guid SubscriptionId { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the assigned subscription plan.
