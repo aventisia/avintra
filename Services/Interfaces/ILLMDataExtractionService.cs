@@ -4,7 +4,16 @@ namespace AspNetToolkit.Services;
 /// Service for extracting text and data from documents using a language model (LLM).
 /// </summary>
 public interface ILLMDataExtractionService
-{
+{   
+    /// <summary>
+    /// Determines whether the user has sufficient credits to perform the requested operation.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="Task{TResult}"/> that represents the asynchronous operation. 
+    /// The task result contains a <see cref="ServiceResponse{Boolean}"/> indicating whether sufficient credits are available.
+    /// </returns>
+    Task<ServiceResponse<bool>> HasSufficientCreditsAsync();
+
     /// <summary>
     /// Sends text to an LLM with a prompt and returns the result as plain text.
     /// </summary>

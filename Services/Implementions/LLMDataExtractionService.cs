@@ -20,6 +20,53 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         _openAIConfig = openAIConfig;
     }
 
+    // To check if credits are available to continue.
+    public async Task<ServiceResponse<bool>> HasSufficientCreditsAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Insufficient credits to continue. Please top up your credits.",
+            StatusCode = 400
+        };
+
+        try
+        {
+            // Create credits usage in AccountsDb database
+            var response = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Read, "http://localhost:4000/api/credit-usage/available-credits", _jwt);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            // Failed to add credit usage
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError($"Failed to retrieve available credits. Response: {response.StatusCode} - {responseContent}");
+                return serviceResponse;
+            }
+
+            serviceResponse.StatusCode = 200;
+            dynamic availableCredits = JsonConvert.DeserializeObject<dynamic>(responseContent) ?? new { data = new { AvailableCredits = 0 } };
+            _logger.LogInformation($"Successfully retrieved available credits: {availableCredits.data.availableCredits}");
+
+            if (availableCredits.data.availableCredits <= 10)
+            {
+                serviceResponse.Message = "Insufficient credits to continue. Please top up your credits.";
+                _logger.LogWarning($"Insufficient credits available: {availableCredits.data.availableCredits}");
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = true;
+            serviceResponse.Message = "Credits are available to continue.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Extracts structured data from a document by retrieving its text and passing it to an LLM for processing.
     public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature, UsageSourceTypesEnum refType, Guid refId, string refName, object? ollamaOutputFormatSchema = null)
     {
