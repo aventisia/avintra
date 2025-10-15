@@ -39,6 +39,15 @@ public class CreditUsageService : ICreditUsageService
                 endDate = DateTime.UtcNow.Date;
             }
 
+            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
+
+            // If no tenant is found, log a warning and return failure message
+            if (tenant == null)
+            {
+                _logger.LogWarning("Tenant not found with ID: {TenantId}", _tenantId);
+                serviceResponse.Message = "Tenant not found.";
+                return serviceResponse;
+            }
             // Log the incoming request and filters for traceability
             _logger.LogInformation("Starting credit usage fetch. Filters - StartDate: {Start}, EndDate: {End}",
                 startDate, endDate);
@@ -56,7 +65,13 @@ public class CreditUsageService : ICreditUsageService
             _logger.LogInformation("Fetched {Count} credit usage records after filtering.", creditUsages.Count);
 
             // Load all credit plan definitions from DB (used to match service type details)
-            var creditPlans = await _unitOfWork.CreditPlanRepo.GetAllAsync().ToListAsync();
+            var creditPlans = await _unitOfWork.CreditPlanRepo.GetAllAsync().Select(s => new
+            {
+                ServiceType = s.ServiceType,
+                UnitType = s.UnitType,
+                OneUnit = s.OneUnit,
+                Credits = tenant.Discount.HasValue ? s.Credits * tenant.Discount.Value : s.Credits
+            }).ToListAsync();
 
             // Generate a sequence of all dates in the requested range.
             // var totalDays = (endDate.Value - startDate.Value).Days + 1;
@@ -201,6 +216,16 @@ public class CreditUsageService : ICreditUsageService
             // Check if the tenant is non-default
             var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
 
+            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
+
+            // If no tenant is found, log a warning and return failure message
+            if (tenant == null)
+            {
+                _logger.LogWarning("Tenant not found with ID: {TenantId}", _tenantId);
+                serviceResponse.Message = "Tenant not found.";
+                return serviceResponse;
+            }
+
             // Query the current tenant's subscription, including related plan and creator details
             var subscriptionPlan = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
@@ -254,6 +279,9 @@ public class CreditUsageService : ICreditUsageService
             // Calculate how many credits are needed based on the consumed units
             TenantCredit? tenantAvailableCredit = null;
             double creditUsed = (int)Math.Ceiling(creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit) * existingCreditPlan.Credits;
+
+            // Apply the tenant's discount to creditUsed if it exists; otherwise, leave it unchanged.
+            creditUsed = tenant.Discount.HasValue ? creditUsed * tenant.Discount.Value : creditUsed;
 
             // Attempt to find the first available credit that has enough available credits to cover the usage
             tenantAvailableCredit = await availableCredits.FirstOrDefaultAsync(w => w.AvailableCredits >= creditUsed);
@@ -342,13 +370,19 @@ public class CreditUsageService : ICreditUsageService
             // Variable to track if there are available credits
             bool hasAvailableCredits = true;
 
-            // Check if the tenant is non-default
-            var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
+            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
+
+            // If no tenant is found, log a warning and return failure message
+            if (tenant == null)
+            {
+                _logger.LogWarning("Tenant not found with ID: {TenantId}", _tenantId);
+                serviceResponse.Message = "Tenant not found.";
+                return serviceResponse;
+            }
 
             // Query the current tenant's subscription, including related plan and creator details
             var subscriptionPlan = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
-                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
                     w.IsActive &&
                     w.TenantId == _tenantId
                 )
@@ -368,7 +402,6 @@ public class CreditUsageService : ICreditUsageService
             var availableCreditsQuery = _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
-                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
                     w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date &&
                     w.AvailableCredits > 0
                 ).OrderByDescending(o => o.ExpiredOn);
@@ -405,6 +438,9 @@ public class CreditUsageService : ICreditUsageService
                 // Calculate how many credits are needed based on the consumed units
                 var creditPlan = existingCreditPlans.First(p => p.ServiceType == creditUsageDto.ServiceType);
                 double creditUsed = (int)Math.Ceiling(creditUsageDto.ConsumedUnit / creditPlan.OneUnit) * creditPlan.Credits;
+
+                // Apply the tenant's discount to creditUsed if it exists; otherwise, leave it unchanged.
+                creditUsed = tenant.Discount.HasValue ? creditUsed * tenant.Discount.Value : creditUsed;
 
                 // Attempt to find the first available credit that has enough available credits to cover the usage
                 var tenantAvailableCredit = availableCredits.FirstOrDefault(w => w.AvailableCredits >= creditUsed);
@@ -480,6 +516,16 @@ public class CreditUsageService : ICreditUsageService
 
         try
         {
+            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
+
+            // If no tenant is found, log a warning and return failure message
+            if (tenant == null)
+            {
+                _logger.LogWarning("Tenant not found with ID: {TenantId}", _tenantId);
+                serviceResponse.Message = "Tenant not found.";
+                return serviceResponse;
+            }
+
             // Initialize base query and include related user information
             var creditUsageQuery = _unitOfWork.CreditUsageRepo
                 .GetByConditionAsync(w =>
@@ -538,15 +584,19 @@ public class CreditUsageService : ICreditUsageService
             // Fetch and map filtered credit usage records to DTOs for export
             var creditUsages = await creditUsageQuery
                 .ProjectToType<ExportCreditUsageResponseDto>()
-                .ToListAsync(); 
+                .ToListAsync();
 
             // Log the count of credit usage records being exported
             _logger.LogInformation("Exporting {Count} credit usage record(s) based on applied filters.", creditUsages.Count);
 
-            // Fetch all credit plans without including navigation properties (simpler data)
-            var creditPlans = await _unitOfWork.CreditPlanRepo
-                .GetAllAsync() 
-                .ToListAsync(); 
+            // Load all credit plan definitions from DB (used to match service type details)
+            var creditPlans = await _unitOfWork.CreditPlanRepo.GetAllAsync().Select(s => new
+            {
+                ServiceType = s.ServiceType,
+                UnitType = s.UnitType,
+                OneUnit = s.OneUnit,
+                Credits = tenant.Discount.HasValue ? s.Credits * tenant.Discount.Value : s.Credits
+            }).ToListAsync();
 
             // Map the correct UnitType from credit plans to each credit usage record
             creditUsages.ForEach(f =>
