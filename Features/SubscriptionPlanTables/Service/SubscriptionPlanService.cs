@@ -30,7 +30,8 @@ public class SubscriptionPlanService : ISubscriptionPlanService
         try
         {
             // Start building the database query; nothing is executed yet.
-            IQueryable<SubscriptionPlan> query = _unitOfWork.SubscriptionPlanRepo.GetAllAsync()
+            IQueryable<SubscriptionPlan> query = _unitOfWork.SubscriptionPlanRepo
+                .GetByConditionAsync(w => w.Status == PlanStatusTypesEnum.Current)
                 .Include(plan => plan.CreatedByUser);
 
             // Check if a filter for subscription plan type (Pro or Starter) was provided.
