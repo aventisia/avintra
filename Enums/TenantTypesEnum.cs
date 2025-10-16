@@ -1,25 +1,25 @@
 namespace AccountsAPIs.Enums;
 
 /// <summary>
-/// Represents the types of tenants in the system.
+/// Represents the different types of tenants in the system.
 /// </summary>
 public enum TenantTypesEnum
 {
     /// <summary>
-    /// Indicates a shared tenant type, where multiple users share the same resources.
+    /// Represents an individual tenant type, where resources are allocated to a single user.
     /// </summary>
-    [Description("Shared tenant type, where multiple users share the same resources.")]
-    Shared,
+    [Description("Individual tenant type where resources are allocated to a single user.")]
+    Individual,
 
     /// <summary>
-    /// Indicates an on-premises tenant type, where resources are hosted locally.
+    /// Represents an organization tenant type, where resources are allocated to a specific organization.
     /// </summary>
-    [Description("On-premises tenant type, where resources are hosted locally.")]
-    OnPrem,
+    [Description("Organization tenant type where resources are allocated to a specific organization.")]
+    Organization,
 
     /// <summary>
-    /// Indicates a dedicated tenant type, where resources are allocated exclusively to a single user or organization.
+    /// Represents a tenant type that has not been specified yet.
     /// </summary>
-    [Description("Dedicated tenant type, where resources are allocated exclusively to a single user or organization.")]
-    Dedicated,
+    [Description("Tenant type not yet specified.")]
+    Unspecified,
 }
