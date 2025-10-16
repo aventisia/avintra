@@ -1,4 +1,4 @@
-import { ContentContainer } from "@/features/sign-up/components/account-setup/ContentContainer";
+import { ContentContainer } from "@/features/on-boarding/components/account-setup/ContentContainer";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 
 import {
@@ -15,7 +15,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { useFetchSubscriptionPlans } from "../../hooks/useFetchSubscriptionPlans";
 import { useChoosePlanStore } from "../../stores/choose-plan-store";
-import { PlanType } from "../../types/plan-type";
+import { PlanFrequency } from "../../types/plan-type";
 import PlanTab from "./PlanTab";
 import { PlanTabSkeleton } from "./PlanTabSkeleton";
 
@@ -30,11 +30,11 @@ export const ChoosePlan = () => {
   const paramCurrency = searchParams.get("currency") || "";
   const frequency = searchParams.get("frequency") || "";
 
-  const { planType, currency, setCurrency, setPlanId, setPlanType } =
+  const { planFrequency, currency, setCurrency, setPlanId, setPlanFrequency } =
     useChoosePlanStore(
       useShallow((state) => ({
-        planType: state.planType,
-        setPlanType: state.setPlanType,
+        planFrequency: state.planFrequency,
+        setPlanFrequency: state.setPlanFrequency,
         planId: state.planId,
         setPlanId: state.setPlanId,
         currency: state.currency,
@@ -43,12 +43,12 @@ export const ChoosePlan = () => {
     );
 
   const { data, isLoading } = useFetchSubscriptionPlans(
-    `?currency=${currency}&frequency=${planType}`,
+    `?currency=${currency}&frequency=${planFrequency}`,
   );
 
   useEffect(() => {
     if (frequency) {
-      setPlanType(frequency.toLowerCase() as PlanType);
+      setPlanFrequency(frequency.toLowerCase() as PlanFrequency);
     }
     if (paramCurrency) {
       setCurrency(paramCurrency.toUpperCase());
@@ -67,9 +67,9 @@ export const ChoosePlan = () => {
   return (
     <ContentContainer className="fadeInRTL">
       <Tabs
-        value={planType}
+        value={planFrequency}
         onValueChange={(value) =>
-          setPlanType(value as (typeof PLAN_INTERVALS)[number])
+          setPlanFrequency(value as (typeof PLAN_INTERVALS)[number])
         }
         className="w-full"
       >
@@ -109,7 +109,7 @@ export const ChoosePlan = () => {
               data && (
                 <PlanTab
                   data={data.data?.filter((p) => p.type != "Enterprise")}
-                  planType={interval}
+                  planFrequency={interval}
                 />
               )
             )}

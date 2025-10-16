@@ -6,20 +6,20 @@ import { useShallow } from "zustand/react/shallow";
 
 import { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
 import { useChoosePlanStore } from "../../stores/choose-plan-store";
-import { PlanType } from "../../types/plan-type";
+import { PlanFrequency } from "../../types/plan-type";
 import { PlanItem } from "./PlanItem";
 
 type PlanTabProps = {
   data?: SubscriptionPlanDTO[];
-  planType: PlanType;
+  planFrequency: PlanFrequency;
 };
 
-export default function PlanTab({ data, planType }: PlanTabProps) {
-  const { planId, setPlanId, setPlanType, setStepNo } = useChoosePlanStore(
+export default function PlanTab({ data, planFrequency }: PlanTabProps) {
+  const { planId, setPlanId, setPlanFrequency, setStepNo } = useChoosePlanStore(
     useShallow((state) => ({
       planId: state.planId,
       setPlanId: state.setPlanId,
-      setPlanType: state.setPlanType,
+      setPlanFrequency: state.setPlanFrequency,
       setStepNo: state.setStepNo,
     })),
   );
@@ -35,14 +35,14 @@ export default function PlanTab({ data, planType }: PlanTabProps) {
           value={planId}
           onValueChange={(val) => {
             setPlanId(val);
-            setPlanType(planType);
+            setPlanFrequency(planFrequency);
           }}
         >
           {data?.map((plan) => (
             <PlanItem
               key={plan.id}
               plan={plan}
-              planType={planType}
+              planFrequency={planFrequency}
               selectedId={planId}
             />
           ))}

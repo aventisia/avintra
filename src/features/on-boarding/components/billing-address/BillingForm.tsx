@@ -1,4 +1,4 @@
-import { organizationNameProps } from "@/features/sign-up/constants/company-form-field-props";
+import { organizationNameProps } from "@/features/on-boarding/constants/company-form-field-props";
 import { BILLING_INFO_KEY } from "@/react-toolkit/constants";
 import { Form } from "@/react-toolkit/ui/form/Form";
 
@@ -33,7 +33,7 @@ export const BillingForm = () => {
     useShallow((state) => ({
       setStepNo: state.setStepNo,
       planId: state.planId,
-      planType: state.planType,
+      planFrequency: state.planFrequency,
       setBillingData: state.setBillingData,
     })),
   );

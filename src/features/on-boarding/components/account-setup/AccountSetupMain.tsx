@@ -2,12 +2,10 @@ import { HeaderContainer } from "@/components/layout/HeaderContainer";
 import { LeftContainer } from "@/components/ui/LeftContainer";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { RightContainer } from "@/components/ui/RightContainer";
-import { useCompanyInfoStore } from "@/features/sign-up/stores/company-info-store";
-// import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
+import { useCompanyInfoStore } from "@/features/on-boarding/stores/company-info-store";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 import { cn } from "@/react-toolkit/lib/utils";
-// import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 
 import { useShallow } from "zustand/react/shallow";
@@ -23,15 +21,9 @@ export const AccountSetupMain = () => {
     })),
   );
 
-  // Validate user session
-  // const { isPending } = useValidateUserSession(true);
-
   // Return component
   return (
     <>
-      {/* {isPending ? (
-        <RedirectPage className="h-auto p-3" />
-      ) : ( */}
       <PageContainer>
         <LeftContainer className="lg:w-[60%]">
           <HeaderContainer>
@@ -65,7 +57,6 @@ export const AccountSetupMain = () => {
           className="lg:w-[40%]"
         />
       </PageContainer>
-      {/* )} */}
     </>
   );
 };

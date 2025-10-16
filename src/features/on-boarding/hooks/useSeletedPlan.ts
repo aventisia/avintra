@@ -4,10 +4,10 @@ import { useChoosePlanStore } from "../stores/choose-plan-store";
 import { useFetchSubscriptionPlans } from "./useFetchSubscriptionPlans";
 
 export const useSelectedPlan = () => {
-  const { planId, planType } = useChoosePlanStore(
+  const { planId, planFrequency } = useChoosePlanStore(
     useShallow((state) => ({
       planId: state.planId,
-      planType: state.planType,
+      planFrequency: state.planFrequency,
     })),
   );
   // Get query client
@@ -16,5 +16,5 @@ export const useSelectedPlan = () => {
   // Get config data by id
   const planData = plansData?.data.find((item) => item?.id === planId);
 
-  return { planData, planType };
+  return { planData, planFrequency };
 };

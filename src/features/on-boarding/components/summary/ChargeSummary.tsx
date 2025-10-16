@@ -5,14 +5,14 @@ import { currencySymbols } from "../../constants/currency-symbol-map";
 import { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
 import { useChargeSummary } from "../../hooks/useChargeSummary";
 import { useInsertSubscriptionMutation } from "../../hooks/useInsertSubscriptionMutation";
-import { PlanType } from "../../types/plan-type";
+import { PlanFrequency } from "../../types/plan-type";
 
 const ChargeSummary = ({
   plan,
-  planType,
+  planFrequency,
 }: {
   plan: SubscriptionPlanDTO | undefined;
-  planType: PlanType;
+  planFrequency: PlanFrequency;
 }) => {
   const { basePrice, tax, total, isTaxApplicable, effectiveBilling } =
     useChargeSummary(plan);
@@ -25,7 +25,7 @@ const ChargeSummary = ({
       planId: plan?.id || "",
       amount: total,
       taxRate: tax,
-      frequency: planType,
+      frequency: planFrequency,
       ...effectiveBilling,
       isWillingToFileGst: !!effectiveBilling.isWillingToFileGst,
     });

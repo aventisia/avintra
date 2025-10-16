@@ -6,11 +6,11 @@ import {
   organizationDomainProps,
   organizationNameProps,
   roleProps,
-} from "@/features/sign-up/constants/company-form-field-props";
-import { companyInfoSchema } from "@/features/sign-up/constants/company-info-zod-schema";
-import { useDefineCompanyInfoForm } from "@/features/sign-up/hooks/useDefineCompanyInfoForm";
-import { useUpdateTenantInfoMutation } from "@/features/sign-up/hooks/useUpdateTenantInfoMutation";
-import { useCompanyInfoStore } from "@/features/sign-up/stores/company-info-store";
+} from "@/features/on-boarding/constants/company-form-field-props";
+import { companyInfoSchema } from "@/features/on-boarding/constants/company-info-zod-schema";
+import { useDefineCompanyInfoForm } from "@/features/on-boarding/hooks/useDefineCompanyInfoForm";
+import { useUpdateTenantInfoMutation } from "@/features/on-boarding/hooks/useUpdateTenantInfoMutation";
+import { useCompanyInfoStore } from "@/features/on-boarding/stores/company-info-store";
 import { Form } from "@/react-toolkit/ui/form/Form";
 
 import { Button, SubmitButton } from "@aventisia/ui/buttons";

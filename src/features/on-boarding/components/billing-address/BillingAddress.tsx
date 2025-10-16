@@ -1,6 +1,6 @@
-import { ContentContainer } from "@/features/sign-up/components/account-setup/ContentContainer";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 
+import { ContentContainer } from "../account-setup/ContentContainer";
 import { BillingForm } from "./BillingForm";
 
 export const BillingAddress = () => {

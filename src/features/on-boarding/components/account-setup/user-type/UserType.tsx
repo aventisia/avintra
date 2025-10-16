@@ -4,7 +4,7 @@ import { ContentContainer } from "../ContentContainer";
 import UserTypeSelection from "./UserTypeSelection";
 
 export const UserType = () => {
-  // Set dcoument title
+  // Set document title
   useDocumentTitle("Create Account");
 
   // Return component
