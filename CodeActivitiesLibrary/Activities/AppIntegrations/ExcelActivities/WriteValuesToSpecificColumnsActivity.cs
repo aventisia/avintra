@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Write Values to Specific Excel Columns")]
     [Description("Writes a list of values to user-specified Excel columns in a single row (e.g., value1→A, value2→D, value3→G).")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class WriteValuesToSpecificColumnsActivity : BaseCodeActivity
     {
         [RequiredArgument]

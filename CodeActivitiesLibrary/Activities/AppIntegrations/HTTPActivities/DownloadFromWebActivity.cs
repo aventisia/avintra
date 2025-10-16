@@ -9,7 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
 {
     [DisplayName("Download from Web")]
     [Description("Downloads text or a file from the web and stores it in memory or saves it to a file.")]
-    [ActivityMetaDat(nodeImg:"/assets/HTTP.svg")]
+    [ActivityMetaData(nodeImg:"/assets/HTTP.svg")]
     public class DownloadFromWebActivity : BaseCodeActivity
     {
         // ----------------------

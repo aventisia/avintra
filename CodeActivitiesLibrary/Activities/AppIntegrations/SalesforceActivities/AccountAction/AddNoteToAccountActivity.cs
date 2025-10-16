@@ -15,12 +15,12 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Add Note to Salesforce Account")]
     [Description("Adds a note (CaseComment or custom) to a Salesforce Account via related object or custom logic.")]
+    [ActivityMetaData(nodeImg: "/assets/Salesforce.svg")]
     public sealed class AddNoteToAccountActivity : BaseCodeActivity
     {
         [RequiredArgument]
         [DisplayName("Credential to Connect With")]
         [Description("The Salesforce connection credential to use for authentication.")]
-        [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
         public InArgument<string> Credential { get; set; }
 
         [RequiredArgument]

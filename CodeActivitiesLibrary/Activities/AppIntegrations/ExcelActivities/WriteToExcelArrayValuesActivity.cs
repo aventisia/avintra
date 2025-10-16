@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Write to Excel Worksheet")]
     [Description("Writes a value or array of values to a row in an Excel worksheet.")]
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class WriteToExcelArrayValuesActivity : BaseCodeActivity
     {
         [RequiredArgument]
