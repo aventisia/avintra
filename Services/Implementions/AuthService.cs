@@ -305,7 +305,7 @@ public class AuthService : IAuthService
             };
 
             // Check if the user is associated with an organization (tenant)
-            if (user.TenantId == null)
+            if (user.Tenant.Type == TenantTypesEnum.Unspecified)
             {
                 serviceResponse.Message = "Complete organization setup to continue.";
             }

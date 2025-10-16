@@ -200,7 +200,8 @@ public static class AccountsDbInitialSeed
                 // Initialize default tenant
                 var newTenant = new Tenant()
                 {
-                    Type = TenantTypesEnum.Shared,
+                    ResourceType = TenantResourceTypesEnum.Shared,
+                    Type = defaultTenant.Equals(DefaultTenantsEnum.IndividualUsers) ? TenantTypesEnum.Individual : TenantTypesEnum.Organization,
                     Currency = CurrencyTypesEnum.USD,
                     Name = GetEnumDescriptionUtil.GetEnumDescription(defaultTenant),
                     ExpiresOn = DateTimeOffset.UtcNow.AddDays(tenantDefaultConfig.InactiveDaysBeforeDataExpires),
