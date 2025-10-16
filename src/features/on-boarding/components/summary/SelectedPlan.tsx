@@ -1,22 +1,22 @@
 import { RadioGroup } from "@aventisia/ui/radio-group";
 
 import { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
-import { PlanType } from "../../types/plan-type";
+import { PlanFrequency } from "../../types/plan-type";
 import { PlanItem } from "../choose-plan/PlanItem";
 
 const SelectedPlan = ({
   plan,
-  planType,
+  planFrequency,
 }: {
   plan: SubscriptionPlanDTO | undefined;
-  planType: PlanType;
+  planFrequency: PlanFrequency;
 }) => {
   return (
     <RadioGroup value={plan?.id}>
       {plan && (
         <PlanItem
           plan={plan}
-          planType={planType}
+          planFrequency={planFrequency}
           selectedId={plan.id}
           highlightSelected={false}
         />

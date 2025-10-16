@@ -33,7 +33,7 @@ export const BillingForm = () => {
     useShallow((state) => ({
       setStepNo: state.setStepNo,
       planId: state.planId,
-      planType: state.planType,
+      planFrequency: state.planFrequency,
       setBillingData: state.setBillingData,
     })),
   );

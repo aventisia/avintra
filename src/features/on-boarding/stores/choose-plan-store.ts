@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 import { IBillingData } from "../types/billing-data";
-import { PlanType } from "../types/plan-type";
+import { PlanFrequency } from "../types/plan-type";
 
 type State = {
   /** The current step number of the form */
@@ -9,7 +9,7 @@ type State = {
 
   planId: string;
 
-  planType: PlanType;
+  planFrequency: PlanFrequency;
 
   currency: string;
 
@@ -30,18 +30,18 @@ type Actions = {
   setCurrency: (currency: string) => void;
 
   /** Set the form data for creating an account */
-  setPlanType: (planType: PlanType) => void;
+  setPlanFrequency: (planFrequency: PlanFrequency) => void;
 };
 
 export const useChoosePlanStore = create<State & Actions>((set) => ({
   stepNo: 1,
   planId: "",
   billingData: null,
-  planType: "monthly",
+  planFrequency: "monthly",
   currency: "USD",
 
   setCurrency: (currency) => set({ currency }),
-  setPlanType: (planType) => set({ planType }),
+  setPlanFrequency: (planFrequency) => set({ planFrequency }),
   setStepNo: (stepNo) => set({ stepNo }),
   setPlanId: (planId) => set({ planId }),
   setBillingData: (billingData) => set({ billingData }),
