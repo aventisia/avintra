@@ -7,6 +7,11 @@
 public class TenantOrganizationDto
 {
     /// <summary>
+    /// Gets or sets the type of the tenant.
+    /// </summary>
+    public TenantTypesEnum Type { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of the organization.
     /// </summary>
     [StringLength(50)]

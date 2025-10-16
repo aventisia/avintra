@@ -131,9 +131,9 @@ public class Tenant : BaseEntity
     public DateTimeOffset RenewalDate { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of tenant.
+    /// Gets or sets the resource type associated with the tenant.
     /// </summary>
-    public required TenantTypesEnum Type { get; set; }
+    public required TenantResourceTypesEnum ResourceType { get; set; }
 
     /// <summary>
     /// Gets or sets the currency for the pricing plan, defaulting to USD.
@@ -182,4 +182,9 @@ public class Tenant : BaseEntity
     /// </summary>
     [Range(0, 10)]
     public double? Discount { get; set; } = null;
+
+    /// <summary>
+    /// Gets or sets the type of the tenant.
+    /// </summary>
+    public required TenantTypesEnum Type { get; set; }
 }

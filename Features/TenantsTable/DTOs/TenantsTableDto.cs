@@ -141,6 +141,11 @@ public class TenantsTableDto
     public DateTimeOffset RenewalDate { get; set; }
 
     /// <summary>
+    /// Gets or sets the resource type associated with the tenant.
+    /// </summary>
+    public TenantResourceTypesEnum ResourceType { get; set; }
+
+    /// <summary>
     /// Gets or sets the type of tenant.
     /// </summary>
     public required TenantTypesEnum Type { get; set; }
