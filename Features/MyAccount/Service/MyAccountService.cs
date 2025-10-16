@@ -354,11 +354,36 @@ public class MyAccountService(
                 RTExpiresOn = refreshTokenExpiresOn
             };
 
+            // Check if the user is associated with an organization (tenant)
+            if (user.Tenant.Type == TenantTypesEnum.Unspecified)
+            {
+                serviceResponse.Message = "Complete organization setup to continue.";
+            }
+            else
+            {
+                // Query the current tenant's subscription, including related plan and creator details
+                var subscription = await _unitOfWork.TenantSubscriptionRepo
+                    .GetByConditionAsync(w =>
+                        w.TenantId == user.TenantId
+                    )
+                    .FirstOrDefaultAsync();
+
+                // Check if a valid subscription was found
+                if (subscription == null)
+                {
+                    _logger.LogWarning("No active subscription found for user {UserId} in tenant {TenantId}.", user.Id, user.TenantId);
+                    serviceResponse.Message = "Tenant has no active subscription.";
+                }
+                else
+                {
+                    serviceResponse.Message = "Session has been refreshed successfully.";
+                }
+            }
+
             // UserSessionDto is ready
             _logger.LogInformation($"Session has been refreshed successfully for {user.UserName} and session Id {sessionIdString}");
             serviceResponse.Data = userSessionDto;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Session has been refreshed successfully";
         }
         catch (Exception ex)
         {
@@ -1036,7 +1061,7 @@ public class MyAccountService(
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation(userNotFoundTemplate, "GetUserProfileAsync()",_userName);
+                _logger.LogInformation(userNotFoundTemplate, "GetUserProfileAsync()", _userName);
                 serviceResponse.Message = userDoesNotExists;
                 return serviceResponse;
             }
