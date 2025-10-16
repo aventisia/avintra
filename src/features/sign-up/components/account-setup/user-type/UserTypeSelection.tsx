@@ -1,21 +1,23 @@
 import CustomRadioItem from "@/components/ui/CustomRadioItem";
+import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
 import { useUpdateTenantInfoMutation } from "@/features/sign-up/hooks/useUpdateTenantInfoMutation";
 import { useCompanyInfoStore } from "@/features/sign-up/stores/company-info-store";
 import { USER_NAME_LS_KEY } from "@/react-toolkit/constants";
-import { useCarryParams } from "@/react-toolkit/hooks/useForwardQueryParams";
 
 import { Button } from "@aventisia/ui/buttons";
 import { RadioGroup } from "@aventisia/ui/radio-group";
 import { Building2, User } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { ContentHeader } from "../ContentHeader";
 
 export default function UserTypeSelection() {
-  const navigate = useNavigate();
-
-  const withQueryParams = useCarryParams(["plan", "currency", "frequency"]);
+  const { setOnBoardingStep } = useOnboardingStore(
+    useShallow((state) => ({
+      onBoardingStep: state.onBoardingStep,
+      setOnBoardingStep: state.setOnBoardingStep,
+    })),
+  );
 
   const { setStepNo, userType, setUserType } = useCompanyInfoStore(
     useShallow((state) => ({
@@ -32,11 +34,12 @@ export default function UserTypeSelection() {
     try {
       await updateTenantInfoMutation({
         domain: localStorage.getItem(USER_NAME_LS_KEY)?.split("@")[1] ?? "",
-        organizationName: localStorage.getItem(USER_NAME_LS_KEY) ?? "",
+        organizationName: "Individual Users",
+        type: "Individual",
       });
 
       setTimeout(() => {
-        navigate(withQueryParams("/choose-plan"));
+        setOnBoardingStep("choose-plan");
       }, 300);
     } catch (error) {
       console.error(error instanceof Error ? error.message : String(error));

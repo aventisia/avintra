@@ -1,3 +1,4 @@
+import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
 import {
   getMySession,
   refreshSession,
@@ -9,11 +10,24 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import {
+  ADD_TENANT,
+  DEV_JWT_LS_KEY,
+  NO_ACTIVE_SUBSCRIPTION,
+} from "../constants";
+
 /**
  * Custom hook to validate user session and handle session refresh.
  * @returns An object containing the `isPending` state.
  */
-export const useValidateUserSession = (checkMySession?: boolean) => {
+export const useValidateUserSession = () => {
+  const { onBoardingStep, setOnBoardingStep } = useOnboardingStore(
+    useShallow((state) => ({
+      onBoardingStep: state.onBoardingStep,
+      setOnBoardingStep: state.setOnBoardingStep,
+    })),
+  );
+
   const { userSession, setUserSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
@@ -23,28 +37,39 @@ export const useValidateUserSession = (checkMySession?: boolean) => {
 
   // Validate user session
   const { mutate, isPending } = useMutation({
-    mutationFn:
-      import.meta.env.DEV || checkMySession ? getMySession : refreshSession,
-    onSuccess: (httpResponse) => {
+    mutationFn: import.meta.env.DEV ? getMySession : refreshSession,
+    onSuccess: (data) => {
       // Return, If response is null
-      if (!httpResponse) return;
+      if (!data) return;
+
+      // ----------User is authenticated Now----------
+
+      // TODO: To be removed
+      if (import.meta.env.DEV) {
+        localStorage.setItem(DEV_JWT_LS_KEY, data.data.accessToken);
+      }
 
       // Set authenticated user locally and session obj in store
-      setUserSession(setUserSessionLocally(httpResponse.data));
+      setUserSession(setUserSessionLocally(data.data));
+
+      // Check if backend message indicates incomplete tenant setup
+      if (data.message.includes(ADD_TENANT)) {
+        setOnBoardingStep("account-setup");
+      } else if (data.message.includes(NO_ACTIVE_SUBSCRIPTION)) {
+        setOnBoardingStep("choose-plan");
+      }
     },
     onError: () => {
       // Remove user session from store
       setUserSession(null);
-
-      // Toaster and redirection are not required since axios instance handles 401 error and redirects to login page
     },
   });
 
   // Refresh the session on app-load.
   useEffect(() => {
     mutate();
-  }, [mutate]);
+  }, []);
 
   // return isPending state
-  return { isPending, userSession };
+  return { isPending, userSession, onBoardingStep };
 };

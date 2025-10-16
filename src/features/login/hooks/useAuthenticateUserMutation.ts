@@ -70,10 +70,10 @@ export const useAuthenticateUserMutation = () => {
         // Check if backend message indicates incomplete tenant setup
         if (message.includes(ADD_TENANT)) {
           window.location.href =
-            import.meta.env.VITE_ACCOUNTS_URL + "/account-setup";
+            import.meta.env.VITE_ACCOUNTS_URL + "/onboarding";
         } else if (message.includes(NO_ACTIVE_SUBSCRIPTION)) {
           window.location.href =
-            import.meta.env.VITE_ACCOUNTS_URL + "/choose-plan";
+            import.meta.env.VITE_ACCOUNTS_URL + "/onboarding";
         } else {
           // Reset login process
           resetLoginProcess();
