@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get Many Cases")]
     [Description("Retrieves multiple Case records using a SOQL query.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class GetManyCasesActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -10,7 +10,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
     [ActivityCategoryMetadata(
         primaryCategory: "App Integrations",
         label: "Salesforce",
-        description: "Work with Salesforce Actions.")]
+        description: "Work with Salesforce Actions.",
+        img:"/assets/Salesforce.svg")]
     internal class _SalesforceCategoryMetaData
     {
     }

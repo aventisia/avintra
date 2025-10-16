@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Delete ServiceNow User")]
     [Description("Deletes a user from ServiceNow by sys_id using a stored credential.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class DeleteServiceNowUserActivity : BaseCodeActivity
     {
         #region Inputs

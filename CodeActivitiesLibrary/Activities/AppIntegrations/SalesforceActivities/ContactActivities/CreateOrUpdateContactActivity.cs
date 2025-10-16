@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Create or Update Salesforce Contact")]
     [Description("Creates a new Contact in Salesforce if it doesn't exist, or updates it if it does. Uses Email as the identifier.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class CreateOrUpdateContactActivity : BaseCodeActivity
     {
         [RequiredArgument]

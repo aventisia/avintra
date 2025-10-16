@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get Multiple Salesforce Accounts")]
     [Description("Retrieves multiple Account records from Salesforce using SOQL query.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class GetManyAccountsActivity : BaseCodeActivity
     {
         [RequiredArgument]

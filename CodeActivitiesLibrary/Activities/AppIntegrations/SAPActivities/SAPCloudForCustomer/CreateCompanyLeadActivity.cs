@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Create Company Lead")]
     [Description("Creates a company-associated lead in SAP Cloud for Customer.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class CreateCompanyLeadActivity : BaseCodeActivity
     {
         [RequiredArgument]

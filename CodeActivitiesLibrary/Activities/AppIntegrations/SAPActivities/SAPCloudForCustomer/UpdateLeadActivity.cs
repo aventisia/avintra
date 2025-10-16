@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Update Lead")]
     [Description("Updates lead information in SAP Cloud for Customer.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class UpdateLeadActivity : BaseCodeActivity
     {
         [RequiredArgument]

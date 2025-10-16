@@ -11,6 +11,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Download File(s) from FTP")]
     [Description("Downloads one or more files from an FTP server.")]
+    [ActivityMetaData(nodeImg:"/assets/FTP.svg")]
+
     public class DownloadFilesFromFtpActivity : BaseCodeActivity
     {   
         [RequiredArgument]

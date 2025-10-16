@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
     [DisplayName("Extract Text from PDF")]
     [Description("Extracts text or images from a PDF file based on selection.")]
+    [ActivityMetaData(nodeImg:"/assets/PDF.svg")]
     public class ExtractTextFromPdfActivity : BaseCodeActivity
     {
         [RequiredArgument]

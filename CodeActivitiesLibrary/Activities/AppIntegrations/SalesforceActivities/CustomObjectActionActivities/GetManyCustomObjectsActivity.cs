@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get many custom objects")]
     [Description("Retrieves multiple custom objects from Salesforce using SOQL or default query.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class GetManyCustomObjectsActivity : BaseCodeActivity
     {
         [RequiredArgument]

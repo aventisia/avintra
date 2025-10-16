@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Delete Record")]
     [Description("Deletes a record in SAP OData.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class DeleteRecordActivity : BaseCodeActivity
     {
         [RequiredArgument]

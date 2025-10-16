@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Update Excel Range (HTTP)")]
     [Description("Updates values in a specified Excel range using Microsoft Graph HTTP PATCH.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class UpdateExcelRangeActivity : BaseCodeActivity
     {
         [RequiredArgument]

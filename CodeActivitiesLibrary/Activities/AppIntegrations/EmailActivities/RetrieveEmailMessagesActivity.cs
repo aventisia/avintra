@@ -17,6 +17,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 {
     [DisplayName("Retrieve Email Messages")]
     [Description("Retrieves email messages from an IMAP server.")]
+    [ActivityMetaData(nodeImg:"/assets/Email.svg")]
     public class RetrieveEmailMessagesActivity : BaseCodeActivity
     {
         // ----------------------

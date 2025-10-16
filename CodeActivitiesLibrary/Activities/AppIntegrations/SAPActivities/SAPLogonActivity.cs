@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("SAP Logon")]
     [Description("Logs on to an SAP system by interacting with the SAP Logon Pad.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class SAPLogonActivity : BaseCodeActivity
     {
         [RequiredArgument]

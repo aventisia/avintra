@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.GoogleWorkspaceActivities
 {
     [DisplayName("Update Cell or Range in Google Sheet")]
     [Description("Updates a specific cell or range in a Google Sheet with the provided values.")]
+    [ActivityMetaData(nodeImg:"/assets/GoogleWorkspace.svg")]
     
     public class UpdateCellOrRangeActivity : BaseCodeActivity
     {

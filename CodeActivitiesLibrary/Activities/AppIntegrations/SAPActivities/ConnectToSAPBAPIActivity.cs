@@ -13,6 +13,7 @@
 //{
 //    [DisplayName("Connect to SAP BAPI")]
 //    [Description("Establishes a connection to an on-premise SAP system using RFC for BAPI operations.")]
+//    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
 //    public class ConnectToSAPBAPIActivity : BaseCodeActivity
 //    {
 //        // ======================= INPUT ARGUMENTS =======================

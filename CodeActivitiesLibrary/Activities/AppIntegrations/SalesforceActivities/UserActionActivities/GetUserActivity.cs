@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
         [DisplayName("Get User")]
         [Description("Retrieves a Salesforce user record by its ID.")]
+        [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
         public class GetUserActivity : BaseCodeActivity
         {
             [RequiredArgument]

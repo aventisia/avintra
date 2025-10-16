@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get a custom object")]
     [Description("Retrieves a single custom object from Salesforce by its ID.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class GetCustomObjectActivity : BaseCodeActivity
     {
         [RequiredArgument]

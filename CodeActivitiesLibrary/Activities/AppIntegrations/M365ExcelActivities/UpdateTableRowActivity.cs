@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Update Table Row")]
     [Description("Updates a row in a table in the workbook.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class UpdateTableRowActivity : BaseCodeActivity
     {
         [RequiredArgument]

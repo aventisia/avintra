@@ -12,6 +12,7 @@
 //{
 //    [DisplayName("Connect to SAP OData")]
 //    [Description("Establishes a connection to SAP OData service (C4C or S/4HANA) using Basic Authentication.")]
+//    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
 //    public class ConnectToSAPODATAActivity : BaseCodeActivity
 //    {
 //        // ======================= INPUT ARGUMENTS =======================

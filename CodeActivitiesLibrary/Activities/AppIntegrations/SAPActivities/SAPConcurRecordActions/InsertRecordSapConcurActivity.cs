@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Insert Record to SAP Concur")]
     [Description("Inserts a new expense or quick expense record into SAP Concur using OAuth 2.0.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class InsertRecordSapConcurActivity : BaseCodeActivity
     {
         // ----------------------

@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Set Column Width (HTTP)")]
     [Description("Sets the width of a specific column in an Excel worksheet.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class SetColumnWidthActivity : BaseCodeActivity
     {
 

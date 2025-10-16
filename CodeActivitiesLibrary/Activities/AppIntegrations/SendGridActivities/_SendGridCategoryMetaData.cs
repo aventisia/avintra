@@ -10,7 +10,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.SendGridActivities
     [ActivityCategoryMetadata(
         primaryCategory: "App Integrations",
         label: "SendGrid",
-        description: "Send, receive, and manage emails.")]
+        description: "Send, receive, and manage emails.",
+        img: "/assets/SendGrid.svg")]
     internal sealed class _SendGridCategoryMetaData
     {
     }

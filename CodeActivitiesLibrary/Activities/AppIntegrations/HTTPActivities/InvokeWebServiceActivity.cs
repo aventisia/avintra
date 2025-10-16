@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.HttpActivities
 {
     [DisplayName("Invoke Web Service")]
     [Description("Invokes a web service (REST or SOAP) and returns the response text.")]
+    [ActivityMetaDat(nodeImg:"/assets/HTTP.svg")]
     public class InvokeWebServiceActivity : BaseAsyncCodeActivity
     {
         [RequiredArgument]

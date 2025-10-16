@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Get AWS ELB Load Balancer")]
     [Description("Retrieves details of an Application or Network Load Balancer in AWS Elastic Load Balancing (ALB/NLB).")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class GetLoadBalancerActivity : BaseCodeActivity
     {
         #region Inputs

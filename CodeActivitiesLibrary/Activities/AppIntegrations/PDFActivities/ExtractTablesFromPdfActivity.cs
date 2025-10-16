@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
     //[DisplayName("Extract Tables From PDF")]
     //[Description("Extracts tables from a PDF file.")]
+    //[ActivityMetaData(nodeImg:"/assets/PDF.svg")]
     public class ExtractTablesFromPdfActivity : BaseCodeActivity
     {
         [RequiredArgument]

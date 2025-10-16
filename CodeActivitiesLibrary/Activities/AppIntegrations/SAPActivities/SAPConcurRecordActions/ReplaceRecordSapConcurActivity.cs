@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Replace Record in SAP Concur")]
     [Description("Updates an existing record in SAP Concur using PUT request.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class ReplaceRecordSapConcurActivity : BaseCodeActivity
     {
         // ----------------------

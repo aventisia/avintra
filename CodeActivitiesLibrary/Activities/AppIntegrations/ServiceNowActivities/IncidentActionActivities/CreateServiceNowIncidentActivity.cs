@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Create ServiceNow Incident")]
     [Description("Creates a new incident in ServiceNow using a stored credential ID or token.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class CreateServiceNowIncidentActivity : BaseCodeActivity
     {
         #region Inputs

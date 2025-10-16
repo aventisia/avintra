@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get Salesforce Account")]
     [Description("Retrieves a single Account record from Salesforce by its ID.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class GetAccountActivity : BaseCodeActivity
     {
         [RequiredArgument]

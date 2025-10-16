@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Delete a Case")]
     [Description("Deletes an existing Case record in Salesforce.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class DeleteCaseActivity : BaseCodeActivity
     {
         [RequiredArgument]

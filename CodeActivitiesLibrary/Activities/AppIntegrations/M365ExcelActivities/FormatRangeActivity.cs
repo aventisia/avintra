@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Format Excel Range (HTTP)")]
     [Description("Applies font color, fill color, and bold formatting to an Excel range using Microsoft Graph HTTP PATCH.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class FormatRangeActivity : BaseCodeActivity
     {
         [RequiredArgument]

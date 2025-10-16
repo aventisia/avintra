@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Get All ServiceNow Users")]
     [Description("Retrieves multiple users from ServiceNow using a stored credential. Supports pagination.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class GetAllServiceNowUsersActivity : BaseCodeActivity
     {
         #region Inputs

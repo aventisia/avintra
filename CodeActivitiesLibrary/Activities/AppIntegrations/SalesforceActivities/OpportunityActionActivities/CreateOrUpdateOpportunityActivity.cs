@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Create or Update Opportunity")]
     [Description("Creates a new opportunity or updates an existing one using an external ID field.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class CreateOrUpdateOpportunityActivity : BaseCodeActivity
     {
         [RequiredArgument]

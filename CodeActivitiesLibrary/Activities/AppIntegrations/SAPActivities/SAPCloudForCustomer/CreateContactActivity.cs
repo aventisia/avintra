@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Create Contact")]
     [Description("Creates a new contact in SAP Cloud for Customer.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class CreateContactActivity : BaseCodeActivity
     {
         [RequiredArgument]

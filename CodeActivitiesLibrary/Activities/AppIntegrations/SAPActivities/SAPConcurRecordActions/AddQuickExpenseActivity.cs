@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Add Quick Expense")]
     [Description("Adds a quick expense in SAP Concur for later linking to a report.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class AddQuickExpenseActivity : BaseCodeActivity
     {
         [RequiredArgument]

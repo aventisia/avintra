@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Delete Salesforce Attachment")]
     [Description("Deletes an existing Attachment record in Salesforce by its ID.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class DeleteAttachmentActivity : BaseCodeActivity
     {
         [RequiredArgument]

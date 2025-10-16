@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Add a lead to a campaign")]
     [Description("Adds an existing lead to a Salesforce campaign.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class AddLeadToCampaignActivity : BaseCodeActivity
     {
         [RequiredArgument]

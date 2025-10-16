@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Merge Cells (HTTP)")]
     [Description("Merges a range of Excel cells.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class MergeCellsActivity : BaseCodeActivity
     {
         [RequiredArgument]

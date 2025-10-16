@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Get AWS DynamoDB Item")]
     [Description("Retrieves an item from AWS DynamoDB using the GetItem API. Always returns all attributes.")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class DynamoDbGetActivity : BaseCodeActivity
     {
         #region Inputs

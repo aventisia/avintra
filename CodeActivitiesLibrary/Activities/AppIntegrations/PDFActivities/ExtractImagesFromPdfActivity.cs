@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 {
     //[DisplayName("Extract Images from PDF")]
     //[Description("Extracts images from a PDF file by specifying the source PDF file and the target folder.")]
+    //[ActivityMetaData(nodeImg:"/assets/PDF.svg")]
     public class ExtractImagesFromPdfActivity : BaseCodeActivity
     {
         [RequiredArgument]

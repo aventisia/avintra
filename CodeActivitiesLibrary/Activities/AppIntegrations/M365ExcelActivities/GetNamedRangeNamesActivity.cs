@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Get Named Range Names")]
     [Description("Returns all named ranges in the workbook.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class GetNamedRangeNamesActivity : BaseCodeActivity
     {
         [RequiredArgument]

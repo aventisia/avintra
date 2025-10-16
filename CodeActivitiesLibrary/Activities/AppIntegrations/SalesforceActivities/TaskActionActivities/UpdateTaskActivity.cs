@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Update Task")]
     [Description("Updates an existing task in Salesforce.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class UpdateTaskActivity : BaseCodeActivity
     {
         [RequiredArgument]

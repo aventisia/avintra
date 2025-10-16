@@ -13,6 +13,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Upload Folder(s) to FTP")]
     [Description("Uploads one or more local folders to a remote FTP/FTPS server.")]
+    [ActivityMetaData(nodeImg:"/assets/FTP.svg")]
+
     public class UploadFoldersToFtpActivity : BaseCodeActivity
     {
         // ----------------------

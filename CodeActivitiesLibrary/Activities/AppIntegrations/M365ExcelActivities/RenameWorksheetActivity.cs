@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Rename Worksheet (HTTP)")]
     [Description("Renames an existing worksheet in a workbook.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
 
     public class RenameWorksheetActivity : BaseCodeActivity
     {

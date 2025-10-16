@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get Many Salesforce Contacts")]
     [Description("Retrieves multiple Contact records from Salesforce using SOQL query.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class GetManyContactsActivity : BaseCodeActivity
     {
         [RequiredArgument]

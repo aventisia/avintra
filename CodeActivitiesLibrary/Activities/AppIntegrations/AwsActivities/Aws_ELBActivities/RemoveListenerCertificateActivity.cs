@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Remove AWS ELB Listener Certificate")]
     [Description("Removes a certificate from an AWS Elastic Load Balancer (ALB/NLB) listener.")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class RemoveListenerCertificateActivity : BaseCodeActivity
     {
         #region Inputs

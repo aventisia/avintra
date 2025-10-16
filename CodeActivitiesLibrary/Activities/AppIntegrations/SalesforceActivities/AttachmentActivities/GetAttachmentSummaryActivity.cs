@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get Salesforce Attachment Summary")]
     [Description("Retrieves summary information about attachments linked to a parent record, such as the total count.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class GetAttachmentSummaryActivity : BaseCodeActivity
     {
         [RequiredArgument]

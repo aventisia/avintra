@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AzureActivities
 {
     [DisplayName("Upload File to Blob Storage")]
     [Description("Uploads a file from the local system to an Azure Blob container.")]
+     [ActivityMetaData(nodeImg:"/assets/Azure.svg")]
 
     public class UploadFileToBlobStorageActivity : BaseCodeActivity
     {

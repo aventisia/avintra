@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Protect Sheet (HTTP)")]
     [Description("Protects an Excel worksheet with an optional password.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class ProtectSheetActivity : BaseCodeActivity
     {
         [RequiredArgument]

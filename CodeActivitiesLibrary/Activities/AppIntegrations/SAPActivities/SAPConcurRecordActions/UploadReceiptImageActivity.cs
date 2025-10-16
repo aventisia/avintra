@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Upload Receipt Image")]
     [Description("Uploads receipt files to SAP Concur, supporting formats like PDF, JPG, JPEG, and PNG.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class UploadReceiptImageActivity : BaseCodeActivity
     {
         [RequiredArgument]

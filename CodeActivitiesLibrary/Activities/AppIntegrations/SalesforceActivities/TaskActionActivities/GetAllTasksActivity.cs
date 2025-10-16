@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get All Tasks")]
     [Description("Retrieves multiple Salesforce tasks using SOQL.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class GetAllTasksActivity : BaseCodeActivity
     {
         [RequiredArgument]

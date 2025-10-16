@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Create Named Range (HTTP)")]
     [Description("Creates a named range in an Excel workbook using Microsoft Graph HTTP POST.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class CreateNamedRangeActivity : BaseCodeActivity
     {
         [RequiredArgument]

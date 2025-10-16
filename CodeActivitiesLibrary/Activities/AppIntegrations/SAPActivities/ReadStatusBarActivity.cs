@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.Activities.AppIntegrations.SAPActivities
 {
     [DisplayName("Read Status Bar")]
     [Description("Reads the status bar message from the active SAP session.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class ReadStatusBarActivity : CodeActivity
     {
         [DisplayName("Delay Before")]

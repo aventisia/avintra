@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Upload ServiceNow Attachment")]
     [Description("Uploads a file as an attachment to a record in ServiceNow using a Bearer token.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class UploadServiceNowAttachmentActivity : BaseCodeActivity
     {
         #region Inputs

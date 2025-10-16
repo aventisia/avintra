@@ -9,6 +9,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
     [DisplayName("Open FTP Connection")]
     [Description(
         "Establishes a specific connection to a remote FTP server and stores that connection as a variable for later use.")]
+    [ActivityMetaData(nodeImg:"/assets/FTP.svg")]
+
     public class OpenFtpConnectionActivity : BaseCodeActivity
     {
         // ----------------------

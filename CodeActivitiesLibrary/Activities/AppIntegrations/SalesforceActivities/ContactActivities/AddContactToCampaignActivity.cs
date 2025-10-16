@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Add Contact to Campaign")]
     [Description("Adds a Contact to a Salesforce Campaign by creating a CampaignMember record.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class AddContactToCampaignActivity : BaseCodeActivity
     {
         [RequiredArgument]

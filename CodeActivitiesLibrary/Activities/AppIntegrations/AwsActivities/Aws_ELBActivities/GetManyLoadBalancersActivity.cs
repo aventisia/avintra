@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Get Many AWS ELB Load Balancers")]
     [Description("Retrieves multiple load balancers from AWS Elastic Load Balancing (ALB/NLB).")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class GetManyLoadBalancersActivity : BaseCodeActivity
     {
         #region Inputs

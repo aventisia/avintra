@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Set Row Height (HTTP)")]
     [Description("Sets the height of a specific row in an Excel worksheet.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class SetRowHeightActivity : BaseCodeActivity
     {
         [RequiredArgument]

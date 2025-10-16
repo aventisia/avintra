@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Create or update a custom object")]
     [Description("Creates a new custom object or updates an existing one in Salesforce using an external ID field.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class CreateOrUpdateCustomObjectActivity : BaseCodeActivity
     {
         [RequiredArgument]

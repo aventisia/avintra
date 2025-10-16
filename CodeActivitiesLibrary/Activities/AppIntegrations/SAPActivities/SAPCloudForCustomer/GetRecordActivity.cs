@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Get Record")]
     [Description("Retrieves a record in SAP Cloud for Customer.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class GetRecordCustomerActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Add Note to Opportunity")]
     [Description("Adds a text note to a Salesforce opportunity.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class AddNoteToOpportunityActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Delete Record in SAP Concur")]
     [Description("Deletes a record in SAP Concur using DELETE request.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class DeleteRecordSapConcurActivity : BaseCodeActivity
     {
         [RequiredArgument]

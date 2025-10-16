@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Update Salesforce Case")]
     [Description("Updates an existing Case record in Salesforce using the provided credentials and updated field values.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class UpdateCaseActivity : BaseCodeActivity
     {
         // Input: Credential to connect with

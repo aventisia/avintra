@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Delete a lead")]
     [Description("Deletes a lead from Salesforce by its ID.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class DeleteLeadActivity : BaseCodeActivity
     {
         [RequiredArgument]

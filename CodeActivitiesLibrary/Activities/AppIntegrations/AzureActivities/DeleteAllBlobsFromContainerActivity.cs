@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AzureActivities
 {
     [DisplayName("Delete All Blobs from Container")]
     [Description("Deletes all blobs in the specified Azure Blob container. Returns the number of successfully deleted blobs.")]
+    [ActivityMetaData(nodeImg:"/assets/Azure.svg")]
     public class DeleteAllBlobsFromContainerActivity : BaseCodeActivity
     {
         // Input Arguments

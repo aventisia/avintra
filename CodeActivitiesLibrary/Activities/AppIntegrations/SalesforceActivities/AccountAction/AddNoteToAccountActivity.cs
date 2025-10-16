@@ -20,6 +20,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
         [RequiredArgument]
         [DisplayName("Credential to Connect With")]
         [Description("The Salesforce connection credential to use for authentication.")]
+        [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
         public InArgument<string> Credential { get; set; }
 
         [RequiredArgument]

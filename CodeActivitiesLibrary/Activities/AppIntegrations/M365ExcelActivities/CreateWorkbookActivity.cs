@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Create Workbook (HTTP)")]
     [Description("Creates a new Excel workbook in OneDrive/SharePoint using Microsoft Graph HTTP PUT.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class CreateWorkbookActivity : BaseCodeActivity
     {
         [RequiredArgument]

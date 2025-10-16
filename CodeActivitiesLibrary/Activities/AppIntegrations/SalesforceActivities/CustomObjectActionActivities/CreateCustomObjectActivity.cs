@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Create a custom object")]
     [Description("Creates a new custom object record in Salesforce.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class CreateCustomObjectActivity : BaseCodeActivity
     {
         [RequiredArgument]

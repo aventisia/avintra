@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Create Salesforce Account")]
     [Description("Creates a new Account record in Salesforce using the provided credentials and account details.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class CreateAccountActivity : BaseCodeActivity
     {
         // Input: Credential to connect with

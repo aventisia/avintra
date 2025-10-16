@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AzureActivities
 {
     [DisplayName("Delete Blob from Container")]
     [Description("Deletes a specified blob from the Azure Blob container.")]
+    [ActivityMetaData(nodeImg:"/assets/Azure.svg")]
     public class DeleteBlobFromContainerActivity : BaseCodeActivity
     {
         // Input Arguments

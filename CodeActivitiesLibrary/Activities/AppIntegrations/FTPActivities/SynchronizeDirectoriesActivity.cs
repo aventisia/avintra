@@ -12,6 +12,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Synchronize Directories")]
     [Description("Synchronizes the local directory with a remote FTP directory.")]
+    [ActivityMetaData(nodeImg:"/assets/FTP.svg")]
+
     public class SynchronizeDirectoriesActivity : BaseCodeActivity
     {
         // ----------------------

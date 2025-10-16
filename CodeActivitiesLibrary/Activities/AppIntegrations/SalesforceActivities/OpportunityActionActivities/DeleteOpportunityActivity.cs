@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities.Opportunity
 {
     [DisplayName("Delete Opportunity")]
     [Description("Deletes a Salesforce opportunity by its ID.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class DeleteOpportunityActivity : BaseCodeActivity
     {
         [RequiredArgument]

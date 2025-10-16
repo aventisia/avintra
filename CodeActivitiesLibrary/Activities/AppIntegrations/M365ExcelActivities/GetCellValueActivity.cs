@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Get Cell Value (HTTP)")]
     [Description("Reads the value of a single Excel cell using Microsoft Graph HTTP GET.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class GetCellValueActivity : BaseCodeActivity
     {
         [RequiredArgument]
