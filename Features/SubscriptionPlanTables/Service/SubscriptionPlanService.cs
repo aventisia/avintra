@@ -566,11 +566,11 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
         try
         {
-            // Define the default tax rate (18%)
-            var defaultTax = 18;
+            // Define the default tax rate (1.18 means 18% tax is already included)
+            decimal defaultTax = 1.18m;
 
             // Calculate the amount in cents (multiplied by 100) and apply the tax rate
-            var amount = (int)(subscriptionPlan.Price * 100) * defaultTax;
+            int amount = (int)((subscriptionPlan.Price * defaultTax) * 100);
 
             // Build the Razorpay plan request using details from the local subscription plan
             var razorpayPlanRequest = new PlanRequestDto
