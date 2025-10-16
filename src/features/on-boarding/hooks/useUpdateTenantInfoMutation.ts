@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 // import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-import { updateTenantInfo } from "../apis/tenant-info-apis";
+import { updateTenantInfo } from "../constants/tenant-info-apis";
 
 export const useUpdateTenantInfoMutation = () => {
   // Get navigate function

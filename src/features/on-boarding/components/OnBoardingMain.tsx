@@ -1,4 +1,4 @@
-import { AccountSetupMain } from "@/features/sign-up/components/account-setup/AccountSetupMain";
+import { AccountSetupMain } from "@/features/on-boarding/components/account-setup/AccountSetupMain";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 

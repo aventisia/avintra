@@ -1,4 +1,4 @@
-import { ContentContainer } from "@/features/sign-up/components/account-setup/ContentContainer";
+import { ContentContainer } from "@/features/on-boarding/components/account-setup/ContentContainer";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 
 import {

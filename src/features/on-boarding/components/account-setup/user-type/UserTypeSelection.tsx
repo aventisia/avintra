@@ -1,7 +1,7 @@
 import CustomRadioItem from "@/components/ui/CustomRadioItem";
 import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
-import { useUpdateTenantInfoMutation } from "@/features/sign-up/hooks/useUpdateTenantInfoMutation";
-import { useCompanyInfoStore } from "@/features/sign-up/stores/company-info-store";
+import { useUpdateTenantInfoMutation } from "@/features/on-boarding/hooks/useUpdateTenantInfoMutation";
+import { useCompanyInfoStore } from "@/features/on-boarding/stores/company-info-store";
 import { USER_NAME_LS_KEY } from "@/react-toolkit/constants";
 
 import { Button } from "@aventisia/ui/buttons";

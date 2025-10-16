@@ -1,4 +1,4 @@
-import { companyInfoSchema } from "@/features/sign-up/constants/company-info-zod-schema";
+import { companyInfoSchema } from "@/features/on-boarding/constants/company-info-zod-schema";
 import { USER_NAME_LS_KEY } from "@/react-toolkit/constants";
 
 import { zodResolver } from "@hookform/resolvers/zod";
