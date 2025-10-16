@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Delete Table (HTTP)")]
     [Description("Deletes an Excel table from a workbook.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class DeleteTableActivity : BaseCodeActivity
     {
         [RequiredArgument]

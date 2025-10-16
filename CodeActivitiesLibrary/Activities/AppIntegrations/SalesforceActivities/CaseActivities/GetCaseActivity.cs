@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get a Case")]
     [Description("Retrieves a single Case record by ID from Salesforce.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class GetCaseActivity : BaseCodeActivity
     {
         [RequiredArgument]

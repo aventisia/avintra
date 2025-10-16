@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 
     [DisplayName("Get a Case Summary")]
     [Description("Retrieves metadata about the Case object (fields, types, etc.).")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class GetCaseSummaryActivity : BaseCodeActivity
     {
         [RequiredArgument]

@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
     [DisplayName("Process Email Messages")]
     [Description(
         "Moves, deletes, or marks as unread an email (or a list of emails) retrieved by a Retrieve email messages action.")]
+        [ActivityMetaData(nodeImg:"/assets/Email.svg")]
     public class ProcessEmailMessagesActivity : BaseCodeActivity
     {
         // ----------------------

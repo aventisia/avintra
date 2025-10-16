@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Wait for an Event on SAP Cloud for Customer and Resume")]
     [Description("Pauses and resumes a workflow based on specific events occurring in SAP Cloud for Customer.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class WaitForEventOnSAPCloudForCustomerActivity : BaseCodeActivity
     {
         // ----------------------

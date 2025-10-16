@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Insert Record")]
     [Description("Inserts a new record in SAP OData.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class InsertRecordActivity : BaseCodeActivity
     {
         [RequiredArgument]

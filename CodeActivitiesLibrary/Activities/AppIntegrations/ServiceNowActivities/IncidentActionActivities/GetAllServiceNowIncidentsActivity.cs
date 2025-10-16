@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Get All ServiceNow Incidents")]
     [Description("Retrieves all or limited incidents from ServiceNow using a stored credential. Supports pagination.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class GetAllServiceNowIncidentsActivity : BaseCodeActivity
     {
         #region Inputs

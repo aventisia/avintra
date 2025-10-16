@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("SAP OData HTTP Request")]
     [Description("Perform HTTP requests to interact with SAP OData using existing connector and connection.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class SapODataHttpRequestActivity : BaseCodeActivity
     {
         [RequiredArgument]

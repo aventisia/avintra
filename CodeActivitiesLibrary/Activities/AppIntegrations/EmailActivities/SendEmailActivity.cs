@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.EmailActivities
 {
     [DisplayName("Send Email")]
     [Description("Creates and sends a new email message using MailKit.")]
+    [ActivityMetaData(nodeImg:"/assets/Email.svg")]
     public class SendEmailActivity : BaseCodeActivity
     {
         // ----------------------

@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Read Excel Range (HTTP)")]
     [Description("Reads values from an Excel range using Microsoft Graph HTTP GET.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class ReadExcelRangeActivity : BaseCodeActivity
     {
         [RequiredArgument]

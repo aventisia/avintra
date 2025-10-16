@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Write Excel Range (HTTP)")]
     [Description("Writes values to an Excel range using Microsoft Graph HTTP PATCH.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class WriteExcelRangeActivity : BaseCodeActivity
     {
         [RequiredArgument]

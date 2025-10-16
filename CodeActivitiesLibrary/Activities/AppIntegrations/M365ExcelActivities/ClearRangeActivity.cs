@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Clear Excel Range (HTTP)")]
     [Description("Clears all values in an Excel range using Microsoft Graph HTTP PATCH.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class ClearRangeActivity : BaseCodeActivity
     {
         [RequiredArgument]

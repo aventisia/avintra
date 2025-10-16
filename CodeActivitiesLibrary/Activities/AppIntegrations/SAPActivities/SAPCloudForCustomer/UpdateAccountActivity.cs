@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Update Account")]
     [Description("Updates account information in SAP Cloud for Customer.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class UpdateAccountActivity : BaseCodeActivity
     {
         [RequiredArgument]

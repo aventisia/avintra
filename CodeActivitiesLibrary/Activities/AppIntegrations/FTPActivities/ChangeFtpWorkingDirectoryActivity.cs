@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Change Working Directory")]
     [Description("Sets the current working directory for an FTP connection.")]
+    [ActivityMetaData(nodeImg:"/assets/FTP.svg")]
     public class ChangeFtpWorkingDirectoryActivity : BaseCodeActivity
     {
         [RequiredArgument]

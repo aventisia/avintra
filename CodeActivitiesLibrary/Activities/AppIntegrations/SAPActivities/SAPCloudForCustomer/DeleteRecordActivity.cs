@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Delete Record")]
     [Description("Deletes a record in SAP Cloud for Customer.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class DeleteRecordCustomerActivity  : BaseCodeActivity
     {
         [RequiredArgument]

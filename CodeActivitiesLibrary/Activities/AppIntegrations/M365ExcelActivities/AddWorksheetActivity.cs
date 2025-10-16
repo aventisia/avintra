@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Add Worksheet (HTTP)")]
     [Description("Adds a new worksheet to an Excel workbook using Microsoft Graph HTTP POST.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class AddWorksheetActivity : BaseCodeActivity
     {
         [RequiredArgument]

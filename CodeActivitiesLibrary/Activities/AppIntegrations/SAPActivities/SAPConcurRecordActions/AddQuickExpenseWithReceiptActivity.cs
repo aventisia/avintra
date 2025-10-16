@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Add Quick Expense with Receipt")]
     [Description("Adds a quick expense entry with a receipt file in SAP Concur.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class AddQuickExpenseWithReceiptActivity : BaseCodeActivity
     {
         [RequiredArgument]

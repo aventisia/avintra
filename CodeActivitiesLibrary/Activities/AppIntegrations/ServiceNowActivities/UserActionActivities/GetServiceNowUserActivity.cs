@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Get ServiceNow User")]
     [Description("Retrieves a user from ServiceNow by sys_id or username using a stored credential.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class GetServiceNowUserActivity : BaseCodeActivity
     {
         #region Inputs

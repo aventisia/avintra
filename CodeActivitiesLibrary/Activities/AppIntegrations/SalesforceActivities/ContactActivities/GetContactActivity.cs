@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get Salesforce Contact")]
     [Description("Retrieves a single Contact record from Salesforce by its ID.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class GetContactActivity : BaseCodeActivity
     {
         [RequiredArgument]

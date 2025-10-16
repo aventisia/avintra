@@ -12,6 +12,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("List FTP Directory")]
     [Description("Retrieves subdirectories and files in the current directory of an FTP connection.")]
+    [ActivityMetaData(nodeImg:"/assets/FTP.svg")]
+
     public class ListFtpDirectoryActivity : BaseCodeActivity
     {
         [RequiredArgument]

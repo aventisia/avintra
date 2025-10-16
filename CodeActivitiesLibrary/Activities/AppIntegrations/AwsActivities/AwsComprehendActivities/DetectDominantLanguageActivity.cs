@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Detect Dominant Language (AWS Comprehend)")]
     [Description("Identifies the dominant language of a given text using AWS Comprehend.")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class DetectDominantLanguageActivity : BaseCodeActivity
     {
         #region Inputs

@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Get Many ServiceNow Attachments")]
     [Description("Retrieves multiple attachments from a ServiceNow table or record using a stored credential. Optionally downloads file contents.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class GetManyServiceNowAttachmentsActivity : BaseCodeActivity
     {
         #region Inputs

@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Detect Entities (AWS Comprehend)")]
     [Description("Identifies named entities (e.g., PERSON, ORGANIZATION, LOCATION) in a given text using AWS Comprehend.")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class DetectEntitiesActivity : BaseCodeActivity
     {
         #region Inputs

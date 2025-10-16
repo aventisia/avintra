@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get Opportunity")]
     [Description("Retrieves a Salesforce opportunity by its ID.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class GetOpportunityActivity : BaseCodeActivity
     {
         [RequiredArgument]

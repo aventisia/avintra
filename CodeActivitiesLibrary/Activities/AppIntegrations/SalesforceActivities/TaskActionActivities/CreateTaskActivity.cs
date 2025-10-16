@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Create Task")]
     [Description("Creates a new task in Salesforce.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class CreateTaskActivity : BaseCodeActivity
     {
         [RequiredArgument]

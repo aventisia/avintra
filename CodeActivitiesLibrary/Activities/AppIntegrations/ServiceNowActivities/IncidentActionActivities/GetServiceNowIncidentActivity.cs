@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Get ServiceNow Incident")]
     [Description("Retrieves a single incident from ServiceNow by sys_id using a stored credential.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class GetServiceNowIncidentActivity : BaseCodeActivity
     {
         #region Inputs

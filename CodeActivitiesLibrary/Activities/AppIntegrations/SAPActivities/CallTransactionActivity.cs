@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Call Transaction")]
     [Description("Calls an SAP transaction code with optional prefix (/n, /o, or none).")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
 
     public class CallTransactionActivity : BaseCodeActivity
     {

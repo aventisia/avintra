@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("SAP Concur HTTP Request")]
     [Description("Perform custom HTTP requests to SAP Concur using existing connector and connection.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class SAPConcurHttpRequestActivity : BaseCodeActivity
     {
         [RequiredArgument]

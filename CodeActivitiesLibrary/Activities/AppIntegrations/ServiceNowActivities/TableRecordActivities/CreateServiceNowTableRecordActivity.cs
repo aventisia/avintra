@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Create ServiceNow Table Record")]
     [Description("Creates a new record in a specified ServiceNow table using InstanceUrl + Credential ID/Token.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class CreateServiceNowTableRecordActivity : BaseCodeActivity
     {
         #region Inputs

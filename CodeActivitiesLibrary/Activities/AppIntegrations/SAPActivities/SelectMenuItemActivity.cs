@@ -10,6 +10,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Select Menu Item")]
     [Description("Selects a menu item from the SAP GUI menu bar using a path (e.g., 'System → Log Off').")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class SelectMenuItemActivity : BaseCodeActivity
     {
         [RequiredArgument]

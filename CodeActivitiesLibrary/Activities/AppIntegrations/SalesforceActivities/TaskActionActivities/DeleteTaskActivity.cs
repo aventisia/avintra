@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Delete Task")]
     [Description("Deletes a Salesforce task by its ID.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class DeleteTaskActivity : BaseCodeActivity
     {
         [RequiredArgument]

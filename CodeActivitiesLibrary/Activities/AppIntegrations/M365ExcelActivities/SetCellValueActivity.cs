@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Set Cell Value (HTTP)")]
     [Description("Sets the value of a single Excel cell using Microsoft Graph HTTP PATCH.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class SetCellValueActivity : BaseCodeActivity
     {
         [RequiredArgument]

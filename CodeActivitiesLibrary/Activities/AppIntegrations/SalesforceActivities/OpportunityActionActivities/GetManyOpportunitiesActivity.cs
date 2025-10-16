@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get Many Opportunities")]
     [Description("Retrieves multiple Salesforce opportunities using SOQL.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class GetManyOpportunitiesActivity : BaseCodeActivity
     {
         [RequiredArgument]

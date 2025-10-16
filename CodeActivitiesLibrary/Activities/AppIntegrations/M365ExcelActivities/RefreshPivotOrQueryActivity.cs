@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Refresh PivotTable or Query")]
     [Description("Refreshes a PivotTable or data query in the workbook.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class RefreshPivotOrQueryActivity : BaseCodeActivity
     {
         [RequiredArgument]

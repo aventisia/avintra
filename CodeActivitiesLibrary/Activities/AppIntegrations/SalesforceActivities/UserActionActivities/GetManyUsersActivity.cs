@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get Many Users")]
     [Description("Retrieves multiple Salesforce user records using SOQL.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class GetManyUsersActivity : BaseCodeActivity
     {
         [RequiredArgument]

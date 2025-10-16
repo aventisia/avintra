@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Check If File Exists (HTTP)")]
     [Description("Checks if a workbook exists in OneDrive or SharePoint.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class CheckIfFileExistsActivity : BaseCodeActivity
     {
         [RequiredArgument]

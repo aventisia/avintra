@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Update Opportunity")]
     [Description("Updates an existing opportunity in Salesforce.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class UpdateOpportunityActivity : BaseCodeActivity
     {
         [RequiredArgument]

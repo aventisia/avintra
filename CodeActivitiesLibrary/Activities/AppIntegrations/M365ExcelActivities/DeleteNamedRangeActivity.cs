@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Delete Named Range (HTTP)")]
     [Description("Deletes a named range in an Excel workbook using Microsoft Graph HTTP DELETE.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class DeleteNamedRangeActivity : BaseCodeActivity
     {
         [RequiredArgument]

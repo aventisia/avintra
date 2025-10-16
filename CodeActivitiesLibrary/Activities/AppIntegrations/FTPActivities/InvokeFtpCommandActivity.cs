@@ -9,6 +9,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Invoke FTP Command")]
     [Description("Invokes the given literal FTP command on the server.")]
+    [ActivityMetaData(nodeImg:"/assets/FTP.svg")]
+
     public class InvokeFtpCommandActivity : BaseCodeActivity
     {
         [RequiredArgument]

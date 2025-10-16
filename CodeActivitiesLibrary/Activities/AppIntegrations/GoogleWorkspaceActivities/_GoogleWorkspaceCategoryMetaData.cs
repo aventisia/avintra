@@ -10,7 +10,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.GoogleWorkspaceActivities
     [ActivityCategoryMetadata(
         primaryCategory: "App Integrations",
         label: "Google Workspace",
-        description: "Perform Google Workspace requests and integrations.")]
+        description: "Perform Google Workspace requests and integrations.",
+        img: "/assets/GoogleWorkspace.svg")]
 
     internal class _AWSCategoryMetaData
     {

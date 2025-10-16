@@ -9,6 +9,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Rename FTP File")]
     [Description("Renames a file that resides on an FTP server.")]
+    [ActivityMetaData(nodeImg:"/assets/FTP.svg")]
+
     public class RenameFtpFileActivity : BaseCodeActivity
     {
         // ----------------------

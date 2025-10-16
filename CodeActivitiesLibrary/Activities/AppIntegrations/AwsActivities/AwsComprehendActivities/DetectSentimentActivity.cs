@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Detect Sentiment (AWS Comprehend)")]
     [Description("Analyzes the sentiment of a given text using AWS Comprehend.")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class DetectSentimentActivity : BaseCodeActivity
     {
         #region Inputs

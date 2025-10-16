@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Create or update a lead")]
     [Description("Creates a new lead or updates an existing one using external ID field.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class CreateOrUpdateLeadActivity : BaseCodeActivity
     {
         [RequiredArgument]

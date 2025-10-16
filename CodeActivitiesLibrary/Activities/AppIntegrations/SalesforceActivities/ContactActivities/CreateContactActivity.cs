@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Create Salesforce Contact")]
     [Description("Creates a new Contact record in Salesforce using the provided credentials and contact details.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class CreateContactActivity : BaseCodeActivity
     {
         [RequiredArgument]

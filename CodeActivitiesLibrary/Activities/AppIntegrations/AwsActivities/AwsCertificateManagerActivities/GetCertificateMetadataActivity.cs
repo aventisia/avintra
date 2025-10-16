@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Get AWS Certificate Manager Certificate Metadata")]
     [Description("Retrieves metadata for an AWS Certificate Manager (ACM) certificate using the DescribeCertificate API.")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class GetCertificateMetadataActivity : BaseCodeActivity
     {
         #region Inputs

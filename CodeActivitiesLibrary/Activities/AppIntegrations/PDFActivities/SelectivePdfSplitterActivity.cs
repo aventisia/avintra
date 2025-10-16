@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.PdfActivities
 
     [DisplayName("Smart PDF Page Splitter")]
     [Description("Splits a PDF into pages based on selection mode: All, Odd, Even, Range, Specific Pages, or By Chunk Size.")]
+    [ActivityMetaData(nodeImg:"/assets/PDF.svg")]
     public class SelectivePdfSplitterActivity : BaseCodeActivity
     {
         #region Input Arguments

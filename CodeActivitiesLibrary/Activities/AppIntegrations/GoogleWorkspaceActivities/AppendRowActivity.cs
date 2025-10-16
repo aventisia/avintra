@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.GoogleWorkspaceActivities
 {
     [DisplayName("Append Row to Google Sheet")]
     [Description("Appends a single row of data to a Google Sheet at the next available row in the specified range.")]
+    [ActivityMetaData(nodeImg:"/assets/GoogleWorkspace.svg")]
    
     public class AppendRowActivity : BaseCodeActivity
     {

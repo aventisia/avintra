@@ -16,6 +16,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Delete AWS DynamoDB Item")]
     [Description("Deletes an item from AWS DynamoDB using the DeleteItem API.")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class DynamoDbDeleteActivity : BaseCodeActivity
     {
         #region Inputs

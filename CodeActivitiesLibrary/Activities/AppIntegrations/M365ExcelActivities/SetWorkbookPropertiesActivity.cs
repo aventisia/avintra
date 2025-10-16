@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Set Workbook Properties (HTTP)")]
     [Description("Sets metadata properties like Title, Author, and Keywords for a workbook.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class SetWorkbookPropertiesActivity : BaseCodeActivity
     {
         [RequiredArgument]

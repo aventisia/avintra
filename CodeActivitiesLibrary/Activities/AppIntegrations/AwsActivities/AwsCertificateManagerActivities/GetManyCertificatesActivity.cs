@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.AwsActivities
 {
     [DisplayName("Get Many AWS Certificate Manager Certificates")]
     [Description("Lists multiple AWS Certificate Manager (ACM) certificates using the ListCertificates API.")]
+    [ActivityMetaData(nodeImg:"/assets/AWS.svg")]
     public class GetManyCertificatesActivity : BaseCodeActivity
     {
         #region Inputs

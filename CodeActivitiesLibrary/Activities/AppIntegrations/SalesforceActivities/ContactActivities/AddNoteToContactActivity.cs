@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Add Note to Salesforce Contact")]
     [Description("Adds a note (CaseComment or custom) to a Salesforce Contact via related object or custom logic.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class AddNoteToContactActivity : BaseCodeActivity
     {
         [RequiredArgument]

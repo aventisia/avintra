@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Get Many Business Services")]
     [Description("Retrieves multiple Business Services from ServiceNow using a stored credential. Supports pagination.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class GetManyBusinessServicesActivity : BaseCodeActivity
     {
         #region Inputs

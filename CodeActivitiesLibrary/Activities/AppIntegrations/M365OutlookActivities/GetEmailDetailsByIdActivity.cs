@@ -12,7 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365OutlookActivities
 {
     [DisplayName("Get Email Details by ID")]
     [Description("Fetches full email details (including attachments) from Outlook using the Graph API by message ID.")]
-    [ActivityMetaData(nodeImg: "/assets/Outlook.svg")]
+    [ActivityMetaData(nodeImg: "/assets/M365.svg")]
     public class GetEmailDetailsByIdActivity : BaseCodeActivity
     {
         [RequiredArgument]

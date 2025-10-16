@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Import CSV to Worksheet (HTTP)")]
     [Description("Imports CSV data into an Excel worksheet starting from cell A1.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class ImportFromCSVActivity : BaseCodeActivity
     {
 

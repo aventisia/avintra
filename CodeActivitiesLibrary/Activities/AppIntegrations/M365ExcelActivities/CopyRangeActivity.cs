@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Copy Range (HTTP)")]
     [Description("Copies a range of cells to another location in the workbook.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class CopyRangeActivity : BaseCodeActivity
     {
         [RequiredArgument]

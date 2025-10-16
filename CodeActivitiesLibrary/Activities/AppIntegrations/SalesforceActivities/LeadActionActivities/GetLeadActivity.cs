@@ -11,6 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Get a lead")]
     [Description("Retrieves a single lead from Salesforce by its ID using the Salesforce REST API.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public class GetLeadActivity : BaseCodeActivity
     {
         [RequiredArgument]

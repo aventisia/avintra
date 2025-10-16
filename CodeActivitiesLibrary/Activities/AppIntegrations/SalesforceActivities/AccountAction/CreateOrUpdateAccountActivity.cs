@@ -13,6 +13,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Create or Update Salesforce Account")]
     [Description("Creates a new Account in Salesforce if it doesn't exist, or updates it if it does. Uses Name as the identifier.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class CreateOrUpdateAccountActivity : BaseCodeActivity
     {
         // Input: Credential to connect with

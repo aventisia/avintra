@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("List All Entity Records")]
     [Description("Lists all records for a specified entity using SAP OData services.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class ListAllEntityRecordsActivity : BaseCodeActivity
     {
         [RequiredArgument]

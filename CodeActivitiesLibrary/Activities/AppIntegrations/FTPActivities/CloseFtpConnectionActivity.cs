@@ -8,6 +8,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.FtpActivities
 {
     [DisplayName("Close Connection")]
     [Description("Closes an open FTP connection.")]
+    [ActivityMetaData(nodeImg:"/assets/FTP.svg")]
     public class CloseFtpConnectionActivity : BaseCodeActivity
     {
         [RequiredArgument]

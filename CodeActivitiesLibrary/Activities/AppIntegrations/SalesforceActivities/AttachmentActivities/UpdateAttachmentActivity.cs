@@ -15,6 +15,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SalesforceActivities
 {
     [DisplayName("Update Salesforce Attachment")]
     [Description("Updates an existing Attachment record in Salesforce.")]
+    [ActivityMetaData(nodeImg:"/assets/Salesforce.svg")]
     public sealed class UpdateAttachmentActivity : BaseCodeActivity
     {
         [RequiredArgument]

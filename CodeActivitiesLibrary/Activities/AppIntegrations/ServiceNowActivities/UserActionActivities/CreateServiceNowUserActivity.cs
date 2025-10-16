@@ -14,6 +14,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Create ServiceNow User")]
     [Description("Creates a new user in ServiceNow using a stored credential.")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class CreateServiceNowUserActivity : BaseCodeActivity
     {
         #region Inputs

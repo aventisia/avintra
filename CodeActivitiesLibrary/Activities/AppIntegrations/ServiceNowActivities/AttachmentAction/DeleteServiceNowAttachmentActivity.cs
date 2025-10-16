@@ -9,6 +9,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ServiceNowActivities
 {
     [DisplayName("Delete ServiceNow Attachment")]
     [Description("Deletes an attachment from ServiceNow using only Credential ID (BasicAuth token or OAuth2 token).")]
+    [ActivityMetaData(nodeImg:"/assets/ServiceNow.svg")]
     public class DeleteServiceNowAttachmentByIdActivity : BaseCodeActivity
     {
         #region Inputs

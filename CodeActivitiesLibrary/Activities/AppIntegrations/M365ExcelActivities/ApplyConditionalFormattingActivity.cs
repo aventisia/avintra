@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities
 {
     [DisplayName("Apply Conditional Formatting (HTTP)")]
     [Description("Applies conditional formatting to a range of cells.")]
+    [ActivityMetaData(nodeImg:"/assets/M365.svg")]
     public class ApplyConditionalFormattingActivity : BaseCodeActivity
     {
         [RequiredArgument]

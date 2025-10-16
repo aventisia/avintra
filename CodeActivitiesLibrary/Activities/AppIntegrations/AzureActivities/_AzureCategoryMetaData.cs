@@ -10,7 +10,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.AzureActivities
     [ActivityCategoryMetadata(
         primaryCategory: "App Integrations",
         label: "Azure",
-        description: "Perform Azure requests and integrations.")]
+        description: "Perform Azure requests and integrations.",
+        img: "/assets/Azure.svg")]
 
     internal class _AzureCategoryMetaData
     {

@@ -12,6 +12,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.SAPActivities
 {
     [DisplayName("Get Record in SAP Concur")]
     [Description("Retrieves a single record by ID from SAP Concur.")]
+    [ActivityMetaData(nodeImg: "/assets/SAP.svg")]
     public class GetRecordSapConcurActivity : BaseCodeActivity
     {
         [RequiredArgument]
