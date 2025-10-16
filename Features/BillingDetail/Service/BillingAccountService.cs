@@ -33,7 +33,7 @@ public class BillingDetailService : IBillingDetailService
             //Try to get billing account details
             var BillingDetails = await _unitOfWork.BillingDetailRepo
             .GetAllAsync()
-            .Include(i => i.SubscriptionId)
+            .Include(i => i.TenantSubscription)
             .OrderByDescending(o => o.Id)
             .ToListAsync();
 
