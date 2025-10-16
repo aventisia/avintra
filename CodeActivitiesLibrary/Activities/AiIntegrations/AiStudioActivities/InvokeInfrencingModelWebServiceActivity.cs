@@ -4,7 +4,6 @@ using System.Activities;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -84,6 +83,7 @@ namespace CodeActivitiesLibrary.AIIntegrations.AIStudioActivities
             var contentType = ContentType.Get(context) ?? "application/json";
             var acceptType = AcceptHeader.Get(context) ?? "application/json";
             var headers = Headers.Get(context);
+            var jwt = AccessToken.Get(context);
 
             // Build the request body as an object, not a string
             inputText = inputText?.ToString()?.Trim() ?? "";
@@ -108,7 +108,7 @@ namespace CodeActivitiesLibrary.AIIntegrations.AIStudioActivities
 
             var task = InvokeWebServiceAsync(
                 url, httpMethodEnum, body, contentType, acceptType,
-                headers
+                headers, jwt
                );
 
             var tcs = new TaskCompletionSource<HttpResponseMessage>(state);
@@ -181,7 +181,7 @@ namespace CodeActivitiesLibrary.AIIntegrations.AIStudioActivities
         // Corrected method signature to accept HttpMethodsEnum
         private static async Task<HttpResponseMessage> InvokeWebServiceAsync(
            string url, HttpMethodEnum method, string body, string contentType, string acceptType,
-            Dictionary<string, string> headers
+            Dictionary<string, string> headers, string jwt
           )
         {
             var handler = new HttpClientHandler();
@@ -190,6 +190,13 @@ namespace CodeActivitiesLibrary.AIIntegrations.AIStudioActivities
 
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptType));
+
+                // If jwt is not null
+                if (jwt != null)
+                {
+                    // Set the Bearer token in Authorization header
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+                }
 
                 // Add custom headers
                 if (headers != null)
