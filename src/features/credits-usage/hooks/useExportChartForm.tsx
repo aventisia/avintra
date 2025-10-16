@@ -1,6 +1,7 @@
 import { toast } from "@aventisia/ui/sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { startOfDay, subDays } from "date-fns";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -18,8 +19,8 @@ export const useExportChartForm = () => {
       agents: [],
       aiModels: [],
       users: [],
-      startDate: null,
-      endDate: null,
+      startDate: startOfDay(subDays(new Date(), 7)), // 7 days ago, at start of the day (midnight)
+      endDate: new Date(), // Current date
     },
   });
 

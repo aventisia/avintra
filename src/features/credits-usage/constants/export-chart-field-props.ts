@@ -8,7 +8,7 @@ import { ServiceTypeEnum } from "@/features/sa/credit-plans-table/enums/service-
 
 const serviceTypeProps: MultiSelectFieldProps = {
   name: "serviceType",
-  isRequired: true,
+  isRequired: false,
   className: "text-sm",
   label: "Service Type",
   selectOptions: enumToArray(ServiceTypeEnum),
