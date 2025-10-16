@@ -1146,14 +1146,19 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("RenewalDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("ResourceType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Role")
                         .HasColumnType("text");
 
                     b.Property<string>("SSOConfigJson")
                         .HasColumnType("text");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
