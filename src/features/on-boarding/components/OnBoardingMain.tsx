@@ -5,8 +5,6 @@ import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 import { ChoosePlanMain } from "./ChoosePlanMain";
 
 export const OnBoardingMain = () => {
-  // eslint-disable-next-line no-debugger
-  debugger;
   // Validate user session
   const { isPending, onBoardingStep } = useValidateUserSession();
 
