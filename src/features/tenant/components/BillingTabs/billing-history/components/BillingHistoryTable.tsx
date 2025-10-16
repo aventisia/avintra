@@ -32,7 +32,7 @@ export const BillingHistoryTable = () => {
   );
 
   // Fetch models data
-  const { data } = useFetchBillingHistory();
+  const { data, isLoading } = useFetchBillingHistory();
 
   const table = useDataTable(
     billingHistoryTableColumns,
@@ -46,7 +46,7 @@ export const BillingHistoryTable = () => {
   return (
     <>
       {/* Remove the ! operator once we have the actual data */}
-      {!data ? (
+      {!isLoading ? (
         <div className="space-y-4 pb-4">
           {/* Crud ops dialog */}
           {/* Table toolbar */}

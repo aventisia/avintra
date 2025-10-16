@@ -22,7 +22,7 @@ import { UsersMultiSelector } from "./UsersMultiSelector";
 
 const ExportDialogForm = () => {
   const { setOpen } = useExportDialogStore();
-  const { form, isSubmitting, isDirty, mutateExportChartCSV, isPending } =
+  const { form, isSubmitting, mutateExportChartCSV, isPending } =
     useExportChartForm();
   // Users Search
   const {
@@ -158,7 +158,7 @@ const ExportDialogForm = () => {
       <div className="flex items-center justify-end px-6 pb-4">
         <Button
           type="submit"
-          disabled={isSubmitting || !isDirty || isPending}
+          disabled={isSubmitting || isPending}
           className="w-28"
           onClick={(e) => submitHandler(e)}
         >
