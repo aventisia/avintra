@@ -8,6 +8,7 @@ import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils"
 
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import {
@@ -21,6 +22,9 @@ import {
  * @returns An object containing the `isPending` state.
  */
 export const useValidateUserSession = () => {
+  // Get navigate function
+  const navigate = useNavigate();
+
   const { onBoardingStep, setOnBoardingStep } = useOnboardingStore(
     useShallow((state) => ({
       onBoardingStep: state.onBoardingStep,
@@ -57,6 +61,11 @@ export const useValidateUserSession = () => {
         setOnBoardingStep("account-setup");
       } else if (data.message.includes(NO_ACTIVE_SUBSCRIPTION)) {
         setOnBoardingStep("choose-plan");
+      } else {
+        //User already onboarded
+        navigate(
+          "/redirect?msg=Logging in...&url=" + import.meta.env.VITE_WORC_URL,
+        );
       }
     },
     onError: () => {
@@ -68,7 +77,7 @@ export const useValidateUserSession = () => {
   // Refresh the session on app-load.
   useEffect(() => {
     mutate();
-  }, []);
+  }, [mutate]);
 
   // return isPending state
   return { isPending, userSession, onBoardingStep };
