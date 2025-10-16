@@ -122,6 +122,25 @@ public class UserRegistrationService : IUserRegistrationService
                 return serviceResponse;
             }
 
+            // Initialize user roles for tenant admin assignment
+            var userRoles = new List<string> { nameof(CustomRolesEnum.TA), nameof(CustomRolesEnum.OM), nameof(CustomRolesEnum.TU) };
+
+            // Assign roles to user
+            var addToRolesResult = await _userManager.AddToRolesAsync(newUser, userRoles);
+
+            // Log errors if role assignment fails
+            if (!addToRolesResult.Succeeded)
+            {
+                foreach (var error in addToRolesResult.Errors)
+                {
+                    _logger.LogError("Role assignment failed for user ID {UserId}. Error Code: {Code}, Description: {Description}",
+                        user.Id, error.Code, error.Description);
+                }
+
+                serviceResponse.Message = "Failed to assign roles to user. Please try again later.";
+                return serviceResponse;
+            }
+
             // Saving pwd (if available) in ObsoletePwd failed
             if (!await _authHelperService.SavePwdInObsoletePwdList(newUser, createAccountDto.Pwd, newPwdSetOn))
             {
@@ -184,7 +203,10 @@ public class UserRegistrationService : IUserRegistrationService
             // Fetch the newly created user with their tenant details
             var newlyAddedUser = await _unitOfWork.AccountUserRepo
                 .GetByConditionAsync(w => EF.Functions.ILike(createAccountDto.Email, w.UserName))
-                .Include(i => i.Tenant)
+                .Include(i => i.UserRoles)
+                        .ThenInclude(i1 => i1.Role)
+                            .ThenInclude(i2 => i2.RolePermissions)
+                                .ThenInclude(i3 => i3.Permission)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
@@ -276,7 +298,10 @@ public class UserRegistrationService : IUserRegistrationService
             // Retrieve the updated user with tenant details for the response
             var updatedUser = await _unitOfWork.AccountUserRepo
                 .GetByConditionAsync(w => w.Id == _userId)
-                .Include(u => u.Tenant)
+                .Include(i => i.UserRoles)
+                        .ThenInclude(i1 => i1.Role)
+                            .ThenInclude(i2 => i2.RolePermissions)
+                                .ThenInclude(i3 => i3.Permission)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
