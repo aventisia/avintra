@@ -1,7 +1,7 @@
-import { useChoosePlanStore } from "@/features/choose-plan/stores/choose-plan-store";
 import { BILLING_INFO_KEY } from "@/react-toolkit/constants";
 
 import { SubscriptionPlanDTO } from "../dtos/subscription-plans-dto";
+import { useChoosePlanStore } from "../stores/choose-plan-store";
 
 const DEFAULT_BILLING = {
   country: "",

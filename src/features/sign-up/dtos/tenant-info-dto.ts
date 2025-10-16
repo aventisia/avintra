@@ -17,6 +17,8 @@ interface TenantInfoDto {
 
   /** The verification code or OTP provided by user */
   role?: string;
+
+  type: "Individual" | "Organization" | "Unspecified";
 }
 
 export { type TenantInfoDto };

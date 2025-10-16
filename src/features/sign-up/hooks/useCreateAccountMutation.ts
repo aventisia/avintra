@@ -42,7 +42,7 @@ export const useCreateAccountMutation = () => {
         setCreateAccountData(null);
 
         if (httpResponse.message.includes(ADD_TENANT)) {
-          navigate(withQueryParams("/account-setup"));
+          navigate(withQueryParams("/onboarding"));
         }
       },
       onError: (error) => {
