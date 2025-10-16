@@ -9,7 +9,7 @@
         "label": "Flow control",
         "description": "Set rules and manage the course of the flow",
         "icon": null,
-        "img": null,
+        "img": "/assets/BreakLoop.svg",
         "listType": "list",
         "actions": [
           {
@@ -36,7 +36,7 @@
         "label": "Conditionals",
         "description": "Control the flow of execution based on predefined rules, enabling decision-making, repetition of actions, and iteration through collections.",
         "icon": null,
-        "img": null,
+        "img": "/function.png",
         "listType": "list",
         "actions": [
           {
