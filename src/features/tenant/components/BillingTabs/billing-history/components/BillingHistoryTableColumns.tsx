@@ -39,18 +39,18 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
   },
   // Invoice
   {
-    accessorKey: "invoice",
+    accessorKey: "name",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("invoice")}
+        title={getColumnName("name")}
       />
     ),
     cell: ({ row }) => {
       return (
         <div className="w-auto font-medium">
-          {row.getValue("invoice") || "N/A"}
+          {row.getValue("name") || "N/A"}
         </div>
       );
     },
@@ -94,18 +94,18 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
   },
   // Status
   {
-    accessorKey: "status",
+    accessorKey: "paymentStatus",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("status")}
+        title={getColumnName("paymentStatus")}
       />
     ),
     cell: ({ row }) => {
       return (
-        <div className="w-24 rounded-md bg-green-200 px-2 py-1 text-center font-medium text-green-600">
-          {row.getValue("status") || "N/A"}
+        <div className="w-24 rounded-md px-2 py-1 text-center font-medium">
+          {row.getValue("paymentStatus") || "N/A"}
         </div>
       );
     },

@@ -1,7 +1,7 @@
 export interface BillingHistoryDTO {
   id?: string;
-  invoice: string;
+  name: string;
   paidOn: string;
   amount: string;
-  status: string;
+  paymentStatus: string;
 }
