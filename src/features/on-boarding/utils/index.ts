@@ -13,10 +13,9 @@ function getCreditsLabel(
 ): string {
   const timeUnit = planFrequency === "monthly" ? "month" : "year";
 
-  const credits = planFrequency === "monthly" ? maxCredits : maxCredits * 12;
-  const creditLabel = credits === 1 ? "credit" : "credits";
+  const creditLabel = maxCredits === 1 ? "credit" : "credits";
 
-  return `${displayValue(credits)} ${creditLabel} per ${timeUnit}`;
+  return `${displayValue(maxCredits)} ${creditLabel} per ${timeUnit}`;
 }
 
 const getParsedBillingFromStorage = (tenantId?: string) => {
