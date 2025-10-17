@@ -37,16 +37,21 @@ public class SubscriptionService : ISubscriptionService
 
             // Prepare the subscription request
             var subscriptionRequest = new Dictionary<string, object>
-                {
-                    { "plan_id", subscriptionRequestDto.PlanId },
-                    { "total_count", subscriptionRequestDto.TotalCount },
-                    { "quantity", subscriptionRequestDto.Quantity },
-                    { "customer_notify", subscriptionRequestDto.CustomerNotify }
-                };
+            {
+                { "plan_id", subscriptionRequestDto.PlanId },
+                { "total_count", subscriptionRequestDto.TotalCount },
+                { "customer_notify", subscriptionRequestDto.CustomerNotify }
+            };
 
+            // Check if the quantity is greater than 1 before adding to the subscription request.
+            if (subscriptionRequestDto.Quantity > 1)
+            {
+                subscriptionRequest.Add("quantity", subscriptionRequestDto.Quantity);
+            }
+
+            // Check if a customer ID is provided (i.e., not null or empty).
             if (!string.IsNullOrEmpty(subscriptionRequestDto.CustomerId))
             {
-                // Adding customer_id to request if provided
                 subscriptionRequest.Add("customer_id", subscriptionRequestDto.CustomerId);
             }
 
@@ -175,25 +180,26 @@ public class SubscriptionService : ISubscriptionService
             // Log the incoming update request
             _logger.LogInformation("Updating subscription with ID: {SubscriptionId}, New PlanId: {PlanId}, Quantity: {Quantity}",
                 subscriptionId, request.PlanId, request.Quantity);
-
+            
             // Prepare the update request dictionary
             var updateRequest = new Dictionary<string, object>();
 
+            // Check if a new PlanId is provided (not null or empty)
             if (!string.IsNullOrEmpty(request.PlanId))
             {
-                // Add new PlanId if provided
+                // Add the new plan_id to the update request
                 updateRequest.Add("plan_id", request.PlanId);
             }
 
-            if (request.Quantity > 0)
+            // Check if the quantity is greater than 1 before adding to the update request
+            if (request.Quantity > 1)
             {
-                // Add new Quantity if valid
                 updateRequest.Add("quantity", request.Quantity);
             }
 
+            // Check if a new RemainingCount is provided
             if (request.RemainingCount.HasValue)
             {
-                // Add new RemainingCount if provided
                 updateRequest.Add("remaining_count", request.RemainingCount.Value);
             }
 
