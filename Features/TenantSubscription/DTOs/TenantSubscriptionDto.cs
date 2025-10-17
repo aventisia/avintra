@@ -80,4 +80,9 @@ public class TenantSubscriptionDto
     /// Gets or sets the Razorpay payment URL for subscribing to this plan.
     /// </summary>
     public string? RazorpayPaymentUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Razorpay subscription ID associated with this tenant's subscription.
+    /// </summary>
+    public string? RazorpaySubscriptionId { get; set; }
 }
