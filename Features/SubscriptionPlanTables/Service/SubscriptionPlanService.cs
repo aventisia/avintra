@@ -230,9 +230,11 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             newSubscriptionPlan.CreatedByUserId = _userId;
             newSubscriptionPlan.LastModifiedByUserId = _userId;
 
-            // Check if Razorpay integration is enabled (IsRazorpay = true),
+            // Proceed only if Razorpay integration is enabled (IsRazorpay = true), the plan is currently active (Status = Current),
             // and the plan type is not 'Starter' (which typically doesn’t require a Razorpay plan, e.g., free/internal plans)
-            if (subscriptionPlanDto.IsRazorpay && newSubscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
+            if (subscriptionPlanDto.Status == PlanStatusTypesEnum.Current &&
+                subscriptionPlanDto.IsRazorpay &&
+                newSubscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
                 _logger.LogInformation("No Razorpay Plan ID found for subscription plan '{PlanName}' (ID: {PlanId}). Attempting to create one.",
                     newSubscriptionPlan.Name, newSubscriptionPlan.Id);
@@ -360,7 +362,14 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
             // Check for duplicate name (excluding itself)
             var duplicatePlan = await _unitOfWork.SubscriptionPlanRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == subscriptionPlanDto.Name.ToLower() && w.Id != subscriptionPlanDto.Id)
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == subscriptionPlanDto.Name.ToLower() &&
+                    w.Currency == subscriptionPlanDto.Currency &&
+                    w.Frequency == subscriptionPlanDto.Frequency &&
+                    w.Type == subscriptionPlanDto.Type &&
+                    w.Status == subscriptionPlanDto.Status &&
+                    w.Id != subscriptionPlanDto.Id
+                )
                 .SingleOrDefaultAsync();
 
             if (duplicatePlan != null)
@@ -382,7 +391,6 @@ public class SubscriptionPlanService : ISubscriptionPlanService
                 existingPlan.Price = subscriptionPlanDto.Price;
                 existingPlan.Type = subscriptionPlanDto.Type;
                 existingPlan.Frequency = subscriptionPlanDto.Frequency;
-                // Construct unique name from type, frequency, and currency, in lowercase for consistency
                 existingPlan.UniqueName = $"{existingPlan.Type}-{existingPlan.Frequency}-{existingPlan.Currency}".ToLower();
             }
 
@@ -391,6 +399,8 @@ public class SubscriptionPlanService : ISubscriptionPlanService
                 existingPlan.IsDisabled = subscriptionPlanDto.IsDisabled.Value;
 
             // Update usage limits and feature settings
+            existingPlan.Name = subscriptionPlanDto.Name;
+            existingPlan.Status = subscriptionPlanDto.Status;
             existingPlan.MaxCredits = subscriptionPlanDto.MaxCredits;
             existingPlan.MaxPublishedItems = subscriptionPlanDto.MaxPublishedItems;
             existingPlan.MaxSpaces = subscriptionPlanDto.MaxSpaces;
@@ -398,16 +408,15 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             existingPlan.StorageLimitMB = subscriptionPlanDto.StorageLimitMB;
             existingPlan.HistoryRetentionDays = subscriptionPlanDto.HistoryRetentionDays;
 
-            // Update plan name and lifecycle status
-            existingPlan.Name = subscriptionPlanDto.Name;
-            existingPlan.Status = subscriptionPlanDto.Status;
-
             // Set the user who last modified the plan (audit tracking)
             existingPlan.LastModifiedByUserId = _userId;
 
-            // Check if Razorpay integration is enabled (IsRazorpay = true), RazorpayPlanId is not set,
+            // Proceed only if Razorpay integration is enabled (IsRazorpay = true), the plan is currently active (Status = Current), there is no RazorpayPlanId set yet,
             // and the plan type is not 'Starter' (which typically doesn’t require a Razorpay plan, e.g., free/internal plans)
-            if (subscriptionPlanDto.IsRazorpay && string.IsNullOrEmpty(existingPlan.RazorpayPlanId) && existingPlan.Type != SubscriptionPlanTypeEnum.Starter)
+            if (subscriptionPlanDto.Status == PlanStatusTypesEnum.Current &&
+                subscriptionPlanDto.IsRazorpay &&
+                string.IsNullOrEmpty(existingPlan.RazorpayPlanId) &&
+                existingPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
                 _logger.LogInformation("Razorpay plan ID is missing for SubscriptionPlan '{PlanName}' (ID: {PlanId}). Attempting to create a new Razorpay plan.",
                                     existingPlan.Name, existingPlan.Id);
