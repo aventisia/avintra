@@ -429,7 +429,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 var razorpaySubscriptionResult = await CreateOrUpdateRazorpaySubscriptionAsync(
                     tenantSubscription,
                     subscriptionPlan,
-                    tenantSubscriptionPurchaseDto.IsRecurringPayment
+                    tenantSubscriptionPurchaseDto
                 );
 
                 // Assign the newly generated subscription ID and payment URL if the creation succeeded
@@ -779,7 +779,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 var razorpaySubscriptionResult = await CreateOrUpdateRazorpaySubscriptionAsync(
                     tenantSubscription,
                     subscriptionPlan,
-                    tenantSubscriptionPurchaseDto.IsRecurringPayment
+                    tenantSubscriptionPurchaseDto
                 );
 
                 // Assign the newly generated subscription ID and payment URL if the creation succeeded
@@ -1013,7 +1013,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
     private async Task<ServiceResponse<SubscriptionResponseDto>> CreateOrUpdateRazorpaySubscriptionAsync(
         TenantSubscription tenantSubscription,
         SubscriptionPlan subscriptionPlan,
-        bool isRecurringPayment = false)
+        TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto)
     {
         // Initialize default failure response in case something goes wrong
         var serviceResponse = new ServiceResponse<SubscriptionResponseDto>()
@@ -1025,11 +1025,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         // Default billing cycle count set to 1 for one-time (non-recurring) payments
         int totalCount = 1;
 
-        // Flag to notify customer via Razorpay for subscription events
-        bool customerNotify = true;
-
         // If this is a recurring payment, calculate total billing cycles based on plan frequency
-        if (isRecurringPayment)
+        if (tenantSubscriptionPurchaseDto.IsRecurringPayment)
         {
             totalCount = subscriptionPlan.Frequency == SubscriptionFrequenciesEnum.Monthly ? 36 : 5;
             _logger.LogInformation("Recurring payment detected. Setting total billing cycles to {TotalCount} for plan frequency {Frequency}.",
@@ -1117,7 +1114,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     Quantity = 1,
                     CustomerId = tenant.RazorpayCustomerId,
                     TotalCount = totalCount,
-                    CustomerNotify = customerNotify
+                    CustomerNotify = tenantSubscriptionPurchaseDto.IsNotifyCustomer
                 };
 
                 // Call Razorpay API to create the subscription
@@ -1150,7 +1147,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     PlanId = subscriptionPlan.RazorpayPlanId,
                     Quantity = 1,
                     RemainingCount = totalCount,
-                    CustomerNotify = customerNotify
+                    CustomerNotify = tenantSubscriptionPurchaseDto.IsNotifyCustomer
                 };
 
                 // Call Razorpay API to update the subscription
