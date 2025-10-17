@@ -96,9 +96,7 @@ const AppHeader: React.FC = () => {
               <FlowComments className="mt-0 mlg:mt-4" />
             </div>
           )}
-          {!isAssist && import.meta.env.MODE !== "production" ? (
-            <PublishFlow />
-          ) : null}
+          <PublishFlow />
           {!isAssist && (
             <Tooltip content="More">
               <HeaderActionMenu />
