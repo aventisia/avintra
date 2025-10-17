@@ -28,9 +28,7 @@ export const MLModelBuilderLayout = () => {
           <Header
             extraContentRight={
               <>
-                {import.meta.env.MODE !== "production" && (
-                  <FlowParticipantsFacePile />
-                )}
+                <FlowParticipantsFacePile />
                 <AvailableCredits />
                 <HeaderMenuActions />
               </>

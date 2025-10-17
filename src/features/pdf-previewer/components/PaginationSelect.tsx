@@ -142,15 +142,13 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
             <ChevronsRightIcon className="h-5 w-5 stroke-[1.5]" />
           </Button>
         </div>
-        {import.meta.env.MODE !== "production" && (
-          <Button
-            variant={"ghost"}
-            className="text-primary"
-            onClick={() => setShowFileUploadDialog(true)}
-          >
-            Manage Files
-          </Button>
-        )}
+        <Button
+          variant={"ghost"}
+          className="text-primary"
+          onClick={() => setShowFileUploadDialog(true)}
+        >
+          Manage Files
+        </Button>
       </div>
 
       {/* Temporary fix to handle manage files */}
