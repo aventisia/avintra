@@ -42,6 +42,9 @@ public enum AppSecretTypesEnum
     /// Access Token used to authenticate with the One Drive API.
     /// </summary>
     [Description ("One Drive Credentials")]
-    OneDriveCredentialApi
+    OneDriveCredentialApi,
+
+    [Description("M65 Crdential")]
+    M365CredentialApi
 
 }
