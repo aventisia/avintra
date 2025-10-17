@@ -106,6 +106,7 @@ export const BillingForm = () => {
       </ScrollArea>
       <div className="flex w-full justify-between">
         <Button
+          type="button"
           variant={"outline"}
           onClick={() => {
             setStepNo(1);

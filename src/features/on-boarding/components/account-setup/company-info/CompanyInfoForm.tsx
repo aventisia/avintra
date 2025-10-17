@@ -88,6 +88,7 @@ export const CompanyInfoForm = () => {
       <div className="flex w-full justify-between">
         <Button
           variant={"outline"}
+          type="button"
           onClick={() => {
             setStepNo(1);
           }}
