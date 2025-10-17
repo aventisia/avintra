@@ -1,4 +1,3 @@
-import { BILLING_INFO_KEY } from "@/react-toolkit/constants";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +7,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { billingInfoSchema } from "../constants/billing-info-zod-schema";
 import { useChoosePlanStore } from "../stores/choose-plan-store";
+import { getParsedBillingFromStorage } from "../utils";
 
 export const useDefineBillingInfoForm = () => {
   const { userSession } = useUserSessionStore(
@@ -23,10 +23,7 @@ export const useDefineBillingInfoForm = () => {
   );
 
   // Try loading from localStorage
-  const storedBillingData =
-    typeof window !== "undefined"
-      ? localStorage.getItem(BILLING_INFO_KEY)
-      : null;
+  const storedBillingData = getParsedBillingFromStorage(userSession?.tenantId);
 
   const storedCountryData =
     typeof window !== "undefined" ? localStorage.getItem("country") : null;

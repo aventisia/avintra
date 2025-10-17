@@ -12,6 +12,7 @@ export const useInsertSubscriptionMutation = () => {
     mutationFn: purchasePlan,
     onSuccess: (res, variables) => {
       if (res.data.razorpayPaymentUrl) {
+        localStorage.clear();
         window.location.href = res.data.razorpayPaymentUrl;
       }
       if (variables.amount == 0) {
