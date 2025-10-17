@@ -34,7 +34,9 @@ interface PaymentInfoDto {
   lastModifiedOn: string;
 
   /** Razorpay payment URL for redirection */
-  razorpayPaymentUrl: string;
+  razorpayPaymentUrl?: string;
+
+  razorpaySubscriptionId?: string;
 }
 
 export { type PaymentInfoDto };
