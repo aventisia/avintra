@@ -1,7 +1,10 @@
-import { BILLING_INFO_KEY } from "@/react-toolkit/constants";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
+import { useShallow } from "zustand/react/shallow";
 
 import { SubscriptionPlanDTO } from "../dtos/subscription-plans-dto";
 import { useChoosePlanStore } from "../stores/choose-plan-store";
+import { getParsedBillingFromStorage } from "../utils";
 
 const DEFAULT_BILLING = {
   country: "",
@@ -19,7 +22,11 @@ export const useChargeSummary = (plan: SubscriptionPlanDTO | undefined) => {
     billingData: state.billingData,
   }));
 
-  const storedBillingData = getParsedBillingFromStorage();
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({ userSession: state.userSession })),
+  );
+
+  const storedBillingData = getParsedBillingFromStorage(userSession?.tenantId);
   const effectiveBilling = {
     ...DEFAULT_BILLING,
     ...storedBillingData,
@@ -41,16 +48,4 @@ export const useChargeSummary = (plan: SubscriptionPlanDTO | undefined) => {
     isTaxApplicable,
     effectiveBilling,
   };
-};
-
-const getParsedBillingFromStorage = () => {
-  if (typeof window === "undefined") return {};
-
-  try {
-    const raw = localStorage.getItem(BILLING_INFO_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch (error) {
-    console.warn("Invalid billing data in localStorage", error);
-    return {};
-  }
 };

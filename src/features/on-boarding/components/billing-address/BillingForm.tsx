@@ -1,5 +1,5 @@
 import { organizationNameProps } from "@/features/on-boarding/constants/company-form-field-props";
-import { BILLING_INFO_KEY } from "@/react-toolkit/constants";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { Form } from "@/react-toolkit/ui/form/Form";
 
 import { Button, SubmitButton } from "@aventisia/ui/buttons";
@@ -21,6 +21,10 @@ import {
 } from "../../constants/form-field-props";
 import { useDefineBillingInfoForm } from "../../hooks/useDefineBillingInfoForm";
 import { useChoosePlanStore } from "../../stores/choose-plan-store";
+import {
+  getParsedBillingFromStorage,
+  setBillingDataInStorage,
+} from "../../utils";
 
 /**
  * Component for the billing form.
@@ -38,17 +42,12 @@ export const BillingForm = () => {
     })),
   );
 
-  const onSubmit = (formData: z.infer<typeof billingInfoSchema>) => {
-    let existingData = {};
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({ userSession: state.userSession })),
+  );
 
-    try {
-      const storedData = localStorage.getItem(BILLING_INFO_KEY);
-      if (storedData) {
-        existingData = JSON.parse(storedData);
-      }
-    } catch (error) {
-      console.error("Error parsing BILLING_INFO_KEY from localStorage:", error);
-    }
+  const onSubmit = (formData: z.infer<typeof billingInfoSchema>) => {
+    const existingData = getParsedBillingFromStorage(userSession?.tenantId);
 
     // Merge old data ( country) with new
     const mergedData = {
@@ -57,7 +56,7 @@ export const BillingForm = () => {
     };
 
     // Save back to localStorage
-    localStorage.setItem(BILLING_INFO_KEY, JSON.stringify(mergedData));
+    setBillingDataInStorage(userSession?.tenantId, mergedData);
 
     setBillingData({
       ...formData,
@@ -106,6 +105,7 @@ export const BillingForm = () => {
       </ScrollArea>
       <div className="flex w-full justify-between">
         <Button
+          type="button"
           variant={"outline"}
           onClick={() => {
             setStepNo(1);

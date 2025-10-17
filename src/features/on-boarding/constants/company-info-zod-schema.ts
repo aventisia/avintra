@@ -47,10 +47,10 @@ export const DomainSchema = z
 export const companyInfoSchema = z.object({
   organizationName: z
     .string()
-    .min(1, { message: reqError("Organization name") })
-    .max(255, { message: maxLenError("Organization name", 255) }),
+    .min(1, { message: reqError("Organization Name") })
+    .max(255, { message: maxLenError("Organization Name", 255) }),
   domain: DomainSchema,
-  numberOfEmployees: z.string().min(1, reqError("Number of Employees")),
+  numberOfEmployees: z.string().min(1, reqError("Number of Employees Field")),
   country: z
     .string()
     .min(1, reqError("Country"))
