@@ -1,5 +1,10 @@
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { SESSION_EXPIRED_LS_KEY } from "@/react-toolkit/constants";
+import {
+  ADD_TENANT,
+  DEV_JWT_LS_KEY,
+  NO_ACTIVE_SUBSCRIPTION,
+  SESSION_EXPIRED_LS_KEY,
+} from "@/react-toolkit/constants";
 import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 
 import { useMutation } from "@tanstack/react-query";
@@ -26,13 +31,28 @@ export const useValidateUserSessionForLoginPage = () => {
       // Set authenticated user locally
       const userSessionStoreObj = setUserSessionLocally(httpResponse.data);
 
-      // TODO: Route as per user type (internal or external)
-      navigate(
-        "/redirect?msg=Loading...&url=" +
-          (userSessionStoreObj.isAE
-            ? import.meta.env.VITE_WORC_URL
-            : import.meta.env.VITE_WORC_URL),
-      );
+      // TODO: To be removed
+      if (import.meta.env.DEV) {
+        localStorage.setItem(DEV_JWT_LS_KEY, httpResponse.data.accessToken);
+      }
+
+      // Check if backend message indicates incomplete tenant setup
+      if (
+        httpResponse.message.includes(ADD_TENANT) ||
+        httpResponse.message.includes(NO_ACTIVE_SUBSCRIPTION)
+      ) {
+        window.location.href =
+          import.meta.env.VITE_ACCOUNTS_URL + "/onboarding";
+      } else {
+        //User already onboarded
+        // TODO: Route as per user type (internal or external)
+        navigate(
+          "/redirect?msg=Loading...&url=" +
+            (userSessionStoreObj.isAE
+              ? import.meta.env.VITE_WORC_URL
+              : import.meta.env.VITE_WORC_URL),
+        );
+      }
     },
     // onError is not required since axios instance handles 401 error and redirects to login page
   });
