@@ -47,7 +47,7 @@ const cityProps: InputFieldProps = {
 // Gst Number
 const gstNumberProps: InputFieldProps = {
   name: "gstNumber",
-  label: "Gst Number",
+  label: "GST Number",
   type: "text",
   isRequired: true,
 };

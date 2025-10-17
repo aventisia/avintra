@@ -21,12 +21,7 @@ export const billingInfoSchema = z
       .max(255, { message: maxLenError("Address Line 1", 255) }),
     addressLine2: z.string().optional(),
 
-    state: z
-      .string()
-      .regex(nameRegex, {
-        message: nameError("State"),
-      })
-      .optional(),
+    state: z.string().optional(),
 
     city: z
       .string()
@@ -56,8 +51,8 @@ export const billingInfoSchema = z
     // Conditional validation for gstNumber
     gstNumber: z
       .string()
-      .min(0, { message: reqError("GST Number") })
-      .max(15, { message: maxLenError("GST Number", 15) })
+      .min(15, { message: "GST Number must be 15 characters long" })
+      .max(15, { message: "GST Number must be 15 characters long" })
       .optional(), // Make it optional by default
   })
   .refine(
