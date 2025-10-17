@@ -1,4 +1,3 @@
-import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
 import {
   countryProps,
   industryProps,
@@ -11,6 +10,7 @@ import { companyInfoSchema } from "@/features/on-boarding/constants/company-info
 import { useDefineCompanyInfoForm } from "@/features/on-boarding/hooks/useDefineCompanyInfoForm";
 import { useUpdateTenantInfoMutation } from "@/features/on-boarding/hooks/useUpdateTenantInfoMutation";
 import { useCompanyInfoStore } from "@/features/on-boarding/stores/company-info-store";
+import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
 import { Form } from "@/react-toolkit/ui/form/Form";
 
 import { Button, SubmitButton } from "@aventisia/ui/buttons";
@@ -67,7 +67,7 @@ export const CompanyInfoForm = () => {
       className="space-y-4"
     >
       {/* Email */}
-      <InputField {...organizationNameProps} />
+      <InputField autoFocus {...organizationNameProps} />
 
       <InputField {...organizationDomainProps} />
 
