@@ -9,6 +9,8 @@ import {
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 
+import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "../constants";
+
 /**
  * Custom hook to validate user session and handle session refresh.
  * @returns An object containing the `isPending` state.
@@ -27,6 +29,15 @@ export const useValidateUserSession = () => {
     onSuccess: (httpResponse) => {
       // Return, If response is null
       if (!httpResponse) return;
+
+      // Check if backend message indicates incomplete tenant setup or subscription
+      if (
+        httpResponse.message.includes(ADD_TENANT) ||
+        httpResponse.message.includes(NO_ACTIVE_SUBSCRIPTION)
+      ) {
+        window.location.href =
+          import.meta.env.VITE_ACCOUNTS_URL + "/onboarding";
+      }
 
       // Set authenticated user locally and session obj in store
       setUserSession(setUserSessionLocally(httpResponse.data));
