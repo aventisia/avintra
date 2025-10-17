@@ -13,6 +13,20 @@ const TWO_FA_ENABLED = "TwoFA is enabled";
 const PWD_EXPIRED = "Your password has been expired";
 
 /**
+ * A constant string representing a message which user will receive from the backend when tenant setup is incomplete.
+ * This message is shown after user signup or account creation, until company (tenant) details are completed.
+ * Any change to the backend message should be reflected here.
+ */
+const ADD_TENANT = "Complete organization setup to continue.";
+
+/**
+ * A constant string representing a message which the user will receive from the backend when no active subscription (plan) is found.
+ * This is used to check if the tenant has a valid plan associated with the account.
+ * Any change to the backend message should be reflected here.
+ */
+const NO_ACTIVE_SUBSCRIPTION = "Tenant has no active subscription.";
+
+/**
  * A constant string representing an error message for invalid credentials.
  * Basis this message flag we don't route user to login page on 401 error
  * Any change to the backend error message should be reflected here.
@@ -64,6 +78,8 @@ export {
   USER_NAME_LS_KEY,
   REQUEST_TIMEOUT,
   COPYRIGHT_TEXT,
+  ADD_TENANT,
+  NO_ACTIVE_SUBSCRIPTION,
 };
 
 export const CrudActionTypeLong: {
