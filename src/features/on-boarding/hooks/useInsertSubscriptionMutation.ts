@@ -28,7 +28,7 @@ export const useInsertSubscriptionMutation = (isRazorpayReady: boolean) => {
           subscription_id: data.razorpaySubscriptionId, // Razorpay Subscription ID
           name: "Aventisia Technologies Pvt Ltd",
           description: "Subscription Payment",
-          image: "/brand_logo.svg",
+          image: "/brand_logo.jpg",
 
           handler: function () {
             // Payment Success
