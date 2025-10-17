@@ -8,7 +8,7 @@ import type {
   // RazorpaySuccessResponse,
 } from "../types/razorpay";
 
-export const useInsertSubscriptionMutation = () => {
+export const useInsertSubscriptionMutation = (isRazorpayReady: boolean) => {
   const navigate = useNavigate();
 
   const { mutate: insertSubscriptionMutation, isPending } = useMutation({
@@ -18,23 +18,24 @@ export const useInsertSubscriptionMutation = () => {
       const { data } = res;
 
       // Paid Plan with Razorpay Subscription
-      if (data.razorpaySubscriptionId && variables.amount > 0) {
+      if (
+        data.razorpaySubscriptionId &&
+        variables.amount > 0 &&
+        isRazorpayReady
+      ) {
         const options = {
           key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-          subscription_id: data.razorpaySubscriptionId, // ✅ Razorpay Subscription ID
-          name: "Aventisia Technology Private Limited",
+          subscription_id: data.razorpaySubscriptionId, // Razorpay Subscription ID
+          name: "Aventisia Technologies Pvt Ltd",
           description: "Subscription Payment",
-          image: "/logo.svg",
+          image: "/brand_logo.svg",
+
           handler: function () {
             // Payment Success
             localStorage.clear();
             navigate("/redirect?url=" + import.meta.env.VITE_WORC_URL);
           },
-          prefill: {
-            // email: data.customerEmail || "",
-            // contact: data.customerPhone || "",
-            // name:""
-          },
+
           theme: {
             color: "#0f172a", // optional theme color
           },
