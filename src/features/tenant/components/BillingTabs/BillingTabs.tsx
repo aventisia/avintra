@@ -33,7 +33,7 @@ const BillingTabs = () => {
             value="companyDetails"
             className="rounded-none data-[state=active]:border-b-black"
           >
-            Company Details
+            Billing Details
           </TabsTrigger>
           <TabsTrigger
             value="preferences"
