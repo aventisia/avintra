@@ -3,6 +3,7 @@ import { Button } from "@aventisia/ui/buttons";
 import { Form, InputField, SelectField, SwitchField } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
 import {
   organizationNameProps,
@@ -19,10 +20,17 @@ import {
 } from "@/features/tenant/constants/company-details-field-props";
 import { companyDetailsZodSchema } from "@/features/tenant/constants/company-details-zod-schema";
 import { useCompanyDetailsForm } from "@/features/tenant/hooks/useCompanyDetailsForm";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 const CompanyDetailsForm = () => {
   const { form, isSubmitting, isDirty, mutate, isPending } =
     useCompanyDetailsForm();
+
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({ userSession: state.userSession })),
+  );
+
+  const isIndividualUser = userSession?.tenantName == userSession?.email;
 
   function submitHandler(formData: z.infer<typeof companyDetailsZodSchema>) {
     mutate({
@@ -53,17 +61,17 @@ const CompanyDetailsForm = () => {
     >
       <ScrollArea className="h-[calc(100vh-16.5rem)]">
         <div className="space-y-4 p-6">
-          <InputField {...organizationNameProps} autoFocus disabled />
-          <InputField {...billingEmailProps} />
+          {!isIndividualUser && (
+            <InputField {...organizationNameProps} disabled />
+          )}{" "}
+          <InputField autoFocus {...billingEmailProps} />
           <InputField {...contactPersonProps} />
-
           <InputField {...addressLine1Props} />
           <InputField {...addressLine2Props} />
           <div className="grid grid-cols-2 items-center gap-4">
             <InputField {...cityProps} />
             <InputField {...postalCodeProps} />
           </div>
-
           <div className="grid grid-cols-2 items-center gap-4">
             <InputField {...stateProps} />
             <SelectField {...countryProps} />

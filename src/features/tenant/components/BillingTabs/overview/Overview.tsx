@@ -4,6 +4,7 @@ import { Button } from "@aventisia/ui/buttons";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { PlusIcon } from "lucide-react";
 
+import { currencySymbols } from "@/features/tenant/constants/currency-symbol-map";
 import { useFetchCurrentPlan } from "@/features/tenant/hooks/useFetchCurrentPlan";
 import { useCancelPlanDialogStore } from "@/features/tenant/store/overview/cancel-plan-dialog-store";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
@@ -41,7 +42,8 @@ const Overview = () => {
               </h1>
               <p className="text-sm text-muted-foreground">
                 <span className="text-xl font-semibold text-accent-foreground">
-                  ${data?.data.currentPlan.price}
+                  {currencySymbols[data?.data.currentPlan.currency || "USD"] +
+                    data?.data.currentPlan.price}
                 </span>{" "}
                 /Month
               </p>
@@ -102,7 +104,10 @@ const Overview = () => {
         </div>
 
         {/* Right hand side */}
-        <NextPaymentDetails nextPayment={data?.data.nextPayment} />
+        <NextPaymentDetails
+          nextPayment={data?.data.nextPayment}
+          currency={data?.data.currentPlan.currency}
+        />
       </div>
       <CancelPlanDialog />
       <UpgradePlanDialog />

@@ -2,15 +2,20 @@ import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { dateFormatter } from "@aventisia/ui/utils";
 
+import { currencySymbols } from "@/features/tenant/constants/currency-symbol-map";
 import { NextPaymentDto } from "@/features/tenant/dtos/current-plan-dto";
 
 import CalendarOutlineIcon from "../../../assets/calendar-outline-icon.svg";
 
 interface NextPaymentDetailsProps {
   nextPayment: NextPaymentDto | undefined;
+  currency?: string;
 }
 
-const NextPaymentDetails = ({ nextPayment }: NextPaymentDetailsProps) => {
+const NextPaymentDetails = ({
+  nextPayment,
+  currency = "USD",
+}: NextPaymentDetailsProps) => {
   return (
     <div className="flex flex-col rounded-lg border pb-6">
       <div className="p-4">
@@ -34,7 +39,10 @@ const NextPaymentDetails = ({ nextPayment }: NextPaymentDetailsProps) => {
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <p>Subscription Fee</p>
-              <p>${nextPayment?.subscriptionFee ?? 0}</p>
+              <p>
+                {currencySymbols[currency] +
+                  (nextPayment?.subscriptionFee ?? 0)}
+              </p>
             </div>
 
             <div className="flex items-center justify-between text-sm">

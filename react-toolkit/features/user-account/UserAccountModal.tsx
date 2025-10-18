@@ -96,8 +96,9 @@ const UserAccountModal = ({
           <span className="truncate whitespace-nowrap text-2xs font-normal lowercase">
             {userSession ? userSession?.email : "useremail@domain.com"}
           </span>
-          {userSession?.tenantName ===
-          DefaultTenantsEnum.IndividualUsers ? null : (
+          {userSession?.tenantName === userSession?.email ||
+          userSession?.tenantName ===
+            DefaultTenantsEnum.IndividualUsers ? null : (
             <span className="truncate whitespace-nowrap text-2xs font-medium">
               {userSession ? userSession?.tenantName : "Tenant Name"}
             </span>

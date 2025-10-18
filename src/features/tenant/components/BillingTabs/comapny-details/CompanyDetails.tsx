@@ -1,9 +1,11 @@
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { SquarePen } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 
 import { useFetchCompanyDetails } from "@/features/tenant/hooks/useFetchCompanyDetails";
 import { useCompanyDetailsDialogStore } from "@/features/tenant/store/company-details/company-details-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import TabLoader from "../TabLoader";
 
@@ -11,6 +13,12 @@ import CompanyDetailsDialog from "./company-details-dialog/CompanyDetailsDialog"
 
 const CompanyDetails = () => {
   const { setOpen } = useCompanyDetailsDialogStore();
+
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({ userSession: state.userSession })),
+  );
+
+  const isIndividualUser = userSession?.tenantName == userSession?.email;
 
   const { data, isLoading } = useFetchCompanyDetails();
 
@@ -33,11 +41,13 @@ const CompanyDetails = () => {
 
         <div className="space-y-4 p-4">
           <div className="space-y-2">
-            <p className="text-base font-medium">Company Details</p>
-            <div className="flex items-center gap-4 text-md">
-              <p className="basis-32 text-muted-foreground">Company Name</p>
-              <p>{data?.data.organizationName ?? "--"}</p>
-            </div>
+            {/* <p className="text-base font-medium">Company Details</p> */}
+            {isIndividualUser ? null : (
+              <div className="flex items-center gap-4 text-md">
+                <p className="basis-32 text-muted-foreground">Company Name</p>
+                <p>{data?.data.organizationName ?? "--"}</p>
+              </div>
+            )}
             <div className="flex items-center gap-4 text-md">
               <p className="basis-32 text-muted-foreground">Billing Email</p>
               <p>{data?.data.billingEmail ?? "--"} </p>
