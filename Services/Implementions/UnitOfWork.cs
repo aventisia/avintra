@@ -19,7 +19,8 @@ public class UnitOfWork : IUnitOfWork
     public IAccountRoleRepo AccountRoleRepo => new AccountRoleRepo(_accountsDbContext);
     public IPermissionRepo PermissionRepo => new PermissionRepo(_accountsDbContext);
     public IRolePermissionRepo RolePermissionRepo => new RolePermissionRepo(_accountsDbContext);
-    public IPaymentRepo PaymentRepo => new PaymentRepo(_accountsDbContext);
+    public IPaymentHistoryRepo PaymentHistoryRepo => new PaymentHistoryRepo(_accountsDbContext);
+    public IPaymentMethodRepo PaymentMethodRepo => new PaymentMethodRepo(_accountsDbContext);
     public IAuditLogRepo AuditLogRepo => new AuditLogRepo(_accountsDbContext);
     public IBillingDetailRepo BillingDetailRepo => new BillingDetailRepo(_accountsDbContext);
     public ISpaceRepo SpaceRepo => new SpaceRepo(_accountsDbContext);

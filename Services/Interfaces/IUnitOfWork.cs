@@ -24,7 +24,8 @@ public interface IUnitOfWork
 
     IAuditLogRepo AuditLogRepo { get; }
 
-    IPaymentRepo PaymentRepo { get; }
+    IPaymentHistoryRepo PaymentHistoryRepo { get; }
+    IPaymentMethodRepo PaymentMethodRepo { get; }
 
     IBillingDetailRepo BillingDetailRepo { get; }
 
