@@ -88,6 +88,11 @@ public class BillingDetail : BaseEntity
     public PaymentStatusTypesEnum PaymentStatus { get; set; }
 
     /// <summary>
+    /// Gets or sets the link to the generated invoice for this billing.
+    /// </summary>
+    public string? InvoiceLink { get; set; }
+
+    /// <summary>
     /// Gets or sets the unique identifier of the subscription associated with this billing.
     /// </summary>
     public Guid SubscriptionId { get; set; }

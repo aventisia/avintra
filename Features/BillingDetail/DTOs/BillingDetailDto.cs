@@ -68,6 +68,11 @@ public class BillingDetailDto
     public Guid SubscriptionId { get; set; }
 
     /// <summary>
+    /// Gets or sets the link to the generated invoice for this billing.
+    /// </summary>
+    public string? InvoiceLink { get; set; }
+
+    /// <summary>
     /// Gets or sets the ID of the assigned subscription plan.
     /// </summary>
     public string? PlanName { get; set; }
