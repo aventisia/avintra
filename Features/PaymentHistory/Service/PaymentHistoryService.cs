@@ -5,6 +5,7 @@ public class PaymentHistoryService : IPaymentHistoryService
     private readonly ILogger<PaymentHistoryService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly Guid _tenantId;
 
     public PaymentHistoryService(
         IHttpContextAccessor httpContextAccessor,
@@ -13,6 +14,7 @@ public class PaymentHistoryService : IPaymentHistoryService
     {
         // Retrieve current user ID from HTTP context claims or fallback
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -34,7 +36,10 @@ public class PaymentHistoryService : IPaymentHistoryService
         {
             // Fetch payment history entity by ID from repository
             var paymentHistoryEntity = await _unitOfWork.PaymentHistoryRepo
-                .GetByConditionAsync(w => w.Id == paymentHistoryId)
+                .GetByConditionAsync(w => 
+                    w.Id == paymentHistoryId && 
+                    w.TenantId == _tenantId
+                )
                 .FirstOrDefaultAsync();
 
             // Check if payment history exists
@@ -74,7 +79,9 @@ public class PaymentHistoryService : IPaymentHistoryService
         {
             // Fetch payment histories linked to the given invoice ID
             var paymentHistoryEntities = await _unitOfWork.PaymentHistoryRepo
-                .GetAllAsync()
+                .GetByConditionAsync(w =>
+                    w.TenantId == _tenantId
+                )
                 .ToListAsync();
 
             // Map entities to DTOs
@@ -160,7 +167,10 @@ public class PaymentHistoryService : IPaymentHistoryService
 
             // Fetch existing payment history entity from repository by ID
             var existingPaymentHistoryEntity = await _unitOfWork.PaymentHistoryRepo
-                .GetByConditionAsync(w => w.Id == paymentHistoryDto.Id)
+                .GetByConditionAsync(w =>
+                    w.Id == paymentHistoryDto.Id &&
+                    w.TenantId == _tenantId
+                )
                 .FirstOrDefaultAsync();
 
             // Check if entity exists
@@ -218,7 +228,10 @@ public class PaymentHistoryService : IPaymentHistoryService
         {
             // Retrieve payment history entity to delete
             var paymentHistoryEntity = await _unitOfWork.PaymentHistoryRepo
-                .GetByConditionAsync(w => w.Id == paymentHistoryId)
+                .GetByConditionAsync(w =>
+                    w.Id == paymentHistoryId &&
+                    w.TenantId == _tenantId
+                )
                 .FirstOrDefaultAsync();
 
             // Validate existence before deletion
@@ -278,7 +291,9 @@ public class PaymentHistoryService : IPaymentHistoryService
         {
             // Retrieve all payment histories matching the given IDs from repository
             var paymentHistoriesToDelete = await _unitOfWork.PaymentHistoryRepo
-                .GetByConditionAsync(w => paymentHistoryIds.Contains(w.Id))
+                .GetByConditionAsync(w => 
+                    paymentHistoryIds.Contains(w.Id) &&
+                    w.TenantId == _tenantId)
                 .ToListAsync();
 
             // Check if any payment histories were found to delete

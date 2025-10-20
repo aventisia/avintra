@@ -5,6 +5,7 @@ public class PaymentMethodService : IPaymentMethodService
     private readonly ILogger<PaymentMethodService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly Guid _tenantId;
 
     public PaymentMethodService(
         IHttpContextAccessor httpContextAccessor,
@@ -13,6 +14,7 @@ public class PaymentMethodService : IPaymentMethodService
     {
         // Retrieve current user ID from HTTP context claims or fallback
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -34,7 +36,10 @@ public class PaymentMethodService : IPaymentMethodService
 
             // Retrieve entity matching the given Id asynchronously
             var paymentMethodEntity = await _unitOfWork.PaymentMethodRepo
-                .GetByConditionAsync(w => w.Id == paymentMethodId)
+                .GetByConditionAsync(w =>
+                    w.Id == paymentMethodId &&
+                    w.TenantId == _tenantId
+                )
                 .FirstOrDefaultAsync();
 
             // Check if entity exists; if null, return failure response
@@ -76,7 +81,9 @@ public class PaymentMethodService : IPaymentMethodService
 
             // Fetch all payment method entities asynchronously as a list
             var paymentMethodEntities = await _unitOfWork.PaymentMethodRepo
-                .GetAllAsync()
+                .GetByConditionAsync(w =>
+                    w.TenantId == _tenantId
+                )
                 .ToListAsync();
 
             _logger.LogInformation("Fetched {Count} payment methods.", paymentMethodEntities.Count);
@@ -160,7 +167,10 @@ public class PaymentMethodService : IPaymentMethodService
 
             // Fetch existing entity by Id
             var existingPaymentMethodEntity = await _unitOfWork.PaymentMethodRepo
-                .GetByConditionAsync(w => w.Id == paymentMethodDto.Id)
+                .GetByConditionAsync(w =>
+                    w.Id == paymentMethodDto.Id &&
+                    w.TenantId == _tenantId
+                )
                 .FirstOrDefaultAsync();
 
             // If entity does not exist, return early with warning
@@ -219,7 +229,10 @@ public class PaymentMethodService : IPaymentMethodService
 
             // Attempt to find entity to delete by Id
             var paymentMethodEntity = await _unitOfWork.PaymentMethodRepo
-                .GetByConditionAsync(w => w.Id == paymentMethodId)
+                .GetByConditionAsync(w =>
+                    w.Id == paymentMethodId &&
+                    w.TenantId == _tenantId
+                )
                 .FirstOrDefaultAsync();
 
             // If not found, warn and return
@@ -279,7 +292,10 @@ public class PaymentMethodService : IPaymentMethodService
 
             // Fetch all entities with Ids in the provided list
             var paymentMethodsToDelete = await _unitOfWork.PaymentMethodRepo
-                .GetByConditionAsync(w => paymentMethodIds.Contains(w.Id))
+                .GetByConditionAsync(w =>
+                    paymentMethodIds.Contains(w.Id) &&
+                    w.TenantId == _tenantId
+                )
                 .ToListAsync();
 
             // Check if any were found

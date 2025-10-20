@@ -592,7 +592,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Fetch the latest billing details for the current tenant
             var billingDetail = await _unitOfWork.BillingDetailRepo
-                .GetAllAsync()
+                .GetByConditionAsync(w => w.TenantId == _tenantId)
                 .OrderByDescending(o => o.CreatedOn)
                 .FirstOrDefaultAsync();
 
@@ -973,7 +973,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Optionally, delete any associated billing details for the subscription
             var billingDetail = await _unitOfWork.BillingDetailRepo
-                .GetByConditionAsync(w => w.SubscriptionId == tenantSubscriptionId)
+                .GetByConditionAsync(w => w.SubscriptionId == tenantSubscriptionId && w.TenantId == _tenantId)
                 .SingleOrDefaultAsync();
 
             // If billing details exist, delete them

@@ -5,6 +5,7 @@ public class BillingDetailService : IBillingDetailService
     private readonly ILogger<BillingDetailService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly Guid _tenantId;
 
     public BillingDetailService(
         ILogger<BillingDetailService> logger,
@@ -13,6 +14,7 @@ public class BillingDetailService : IBillingDetailService
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -32,7 +34,7 @@ public class BillingDetailService : IBillingDetailService
         {
             //Try to get billing account details
             var BillingDetails = await _unitOfWork.BillingDetailRepo
-            .GetAllAsync()
+            .GetByConditionAsync(w => w.TenantId == _tenantId)
             .Include(i => i.TenantSubscription)
             .OrderByDescending(o => o.Id)
             .ToListAsync();
@@ -107,7 +109,10 @@ public class BillingDetailService : IBillingDetailService
         {
             // Validate billing account existence
             var BillingDetail = await _unitOfWork.BillingDetailRepo
-                .GetByConditionAsync(v => v.Id == BillingDetailDto.Id)
+                .GetByConditionAsync(w =>
+                    w.Id == BillingDetailDto.Id &&
+                    w.TenantId == _tenantId
+                )
                 .SingleOrDefaultAsync();
 
             // Billing account does not exist
@@ -162,7 +167,10 @@ public class BillingDetailService : IBillingDetailService
         {
             //Try to get billing account using identifier
             var BillingDetail = await _unitOfWork.BillingDetailRepo
-            .GetByConditionAsync(v => v.Id == id)
+            .GetByConditionAsync(w =>
+                w.Id == id &&
+                w.TenantId == _tenantId
+            )
             .SingleOrDefaultAsync();
 
             //Check if billing account not exists
