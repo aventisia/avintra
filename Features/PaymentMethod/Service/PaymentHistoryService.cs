@@ -116,10 +116,6 @@ public class PaymentMethodService : IPaymentMethodService
             // Map DTO to new PaymentMethod entity instance
             var newPaymentMethodEntity = paymentMethodDto.Adapt<PaymentMethod>();
 
-            // Set audit fields for creation and modification
-            newPaymentMethodEntity.CreatedByUserId = _userId;
-            newPaymentMethodEntity.LastModifiedByUserId = _userId;
-
             // Insert new entity into repository asynchronously
             await _unitOfWork.PaymentMethodRepo.InsertAsync(newPaymentMethodEntity);
 
@@ -179,9 +175,6 @@ public class PaymentMethodService : IPaymentMethodService
 
             // Map updated fields from DTO onto existing entity
             var updatedPaymentMethodEntity = paymentMethodDto.Adapt(existingPaymentMethodEntity);
-
-            // Update audit field for modification
-            updatedPaymentMethodEntity.LastModifiedByUserId = _userId;
 
             // Apply update to repository
             _unitOfWork.PaymentMethodRepo.Update(updatedPaymentMethodEntity);

@@ -51,34 +51,4 @@ public class PaymentMethodDto
     /// Gets or sets a value indicating whether the card is international.
     /// </summary>
     public bool CardInternational { get; set; }
-    
-    /// <summary>
-    /// Indicates whether the plan is disabled.
-    /// Nullable to support enabled, disabled, or undefined states.
-    /// </summary>
-    public bool? IsDisabled { get; set; }
-
-    /// <summary>
-    /// Username of the user who created the subscription plan.
-    /// Used for response purposes only.
-    /// </summary>
-    public string? CreatedBy { get; set; }
-
-    /// <summary>
-    /// Timestamp indicating when the plan was created.
-    /// Used for response purposes only.
-    /// </summary>
-    public DateTimeOffset? CreatedOn { get; set; }
-
-    /// <summary>
-    /// Username of the user who last modified the subscription plan.
-    /// Used for response purposes only.
-    /// </summary>
-    public string? LastModifiedBy { get; set; }
-
-    /// <summary>
-    /// Timestamp indicating when the plan was last modified.
-    /// Used for response purposes only.
-    /// </summary>
-    public DateTimeOffset? LastModifiedOn { get; set; }
 }

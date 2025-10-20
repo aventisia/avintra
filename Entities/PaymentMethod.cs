@@ -4,7 +4,7 @@ namespace AccountsAPIs.Entities;
 /// Represents the method used to complete a payment, including card, UPI, or digital wallet details.
 /// Supports multi-tenant architecture.
 /// </summary>
-public class PaymentMethod : IMustHaveTenant
+public class PaymentMethod
 {
     /// <summary>
     /// Gets or sets the primary key of the VerificationCode record.

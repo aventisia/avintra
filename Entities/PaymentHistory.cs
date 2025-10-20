@@ -5,7 +5,7 @@ namespace AccountsAPIs.Entities;
 /// customer contact information, and the associated payment method. 
 /// Supports multi-tenant architecture via a tenant identifier.
 /// </summary>
-public class PaymentHistory : BaseEntity, IMustHaveTenant
+public class PaymentHistory : BaseEntity
 {
     /// <summary>
     /// Gets or sets the tenant identifier used for multi-tenancy filtering.
