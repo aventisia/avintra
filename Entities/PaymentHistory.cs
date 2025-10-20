@@ -35,12 +35,12 @@ public class PaymentHistory : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the currency type in which the payment was made (e.g., INR, USD).
     /// </summary>
-    public CurrencyTypesEnum Currency { get; set; }
+    public CurrencyTypesEnum? Currency { get; set; }
 
     /// <summary>
     /// Gets or sets the current processing status of the payment (e.g., Captured, Failed).
     /// </summary>
-    public PaymentStatusEnum Status { get; set; }
+    public PaymentStatusTypesEnum? Status { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the payment was successfully captured.
@@ -75,7 +75,7 @@ public class PaymentHistory : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the foreign key referencing the associated payment method.
     /// </summary>
-    public Guid PaymentMethodId { get; set; }
+    public Guid? PaymentMethodId { get; set; }
 
     /// <summary>
     /// Navigation property for the payment method used in this transaction.
