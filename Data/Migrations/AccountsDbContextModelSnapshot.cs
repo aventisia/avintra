@@ -414,6 +414,9 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<string>("GstNumber")
                         .HasColumnType("text");
 
+                    b.Property<string>("InvoiceLink")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
@@ -629,74 +632,105 @@ namespace AccountsAPIs.Data.Migrations
                     b.ToTable("ObsoletePwds");
                 });
 
-            modelBuilder.Entity("AccountsAPIs.Entities.Payment", b =>
+            modelBuilder.Entity("AccountsAPIs.Entities.PaymentHistory", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("AmountPaid")
+                    b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
-                    b.Property<Guid>("BillingDetailId")
+                    b.Property<Guid?>("BillingDetailId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("GatewayName")
-                        .HasMaxLength(25)
-                        .HasColumnType("character varying(25)");
-
-                    b.Property<bool>("IsDisabled")
+                    b.Property<bool>("Captured")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid>("LastModifiedByUserId")
+                    b.Property<string>("Contact")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Currency")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Fee")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("InvoiceId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OrderId")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("PaymentMethodId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
+                    b.Property<string>("RazorpayPaymentId")
                         .HasColumnType("text");
 
-                    b.Property<string>("PaymentStatus")
-                        .IsRequired()
+                    b.Property<string>("Status")
                         .HasColumnType("text");
+
+                    b.Property<decimal>("Tax")
+                        .HasColumnType("numeric");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("TransactionId")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("UTRNumber")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BillingDetailId");
 
-                    b.HasIndex("CreatedByUserId");
+                    b.HasIndex("PaymentMethodId");
 
-                    b.HasIndex("LastModifiedByUserId");
+                    b.ToTable("PaymentHistories");
+                });
 
-                    b.ToTable("Payments");
+            modelBuilder.Entity("AccountsAPIs.Entities.PaymentMethod", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("CardInternational")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("CardIssuer")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CardLast4")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CardNetwork")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CardType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RazorpayMethodId")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Vpa")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Wallet")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentMethods");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.Permission", b =>
@@ -1607,31 +1641,19 @@ namespace AccountsAPIs.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AccountsAPIs.Entities.Payment", b =>
+            modelBuilder.Entity("AccountsAPIs.Entities.PaymentHistory", b =>
                 {
                     b.HasOne("AccountsAPIs.Entities.BillingDetail", "BillingDetail")
                         .WithMany()
-                        .HasForeignKey("BillingDetailId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BillingDetailId");
 
-                    b.HasOne("AccountsAPIs.Entities.AccountUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AccountsAPIs.Entities.AccountUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("AccountsAPIs.Entities.PaymentMethod", "PaymentMethod")
+                        .WithMany("PaymentHistories")
+                        .HasForeignKey("PaymentMethodId");
 
                     b.Navigation("BillingDetail");
 
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastModifiedByUser");
+                    b.Navigation("PaymentMethod");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.Permission", b =>
@@ -1891,6 +1913,11 @@ namespace AccountsAPIs.Data.Migrations
             modelBuilder.Entity("AccountsAPIs.Entities.AccountUser", b =>
                 {
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("AccountsAPIs.Entities.PaymentMethod", b =>
+                {
+                    b.Navigation("PaymentHistories");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.Permission", b =>
