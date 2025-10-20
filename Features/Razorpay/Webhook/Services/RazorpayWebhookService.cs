@@ -85,13 +85,13 @@ public class WebhookService : IWebhookService
             // ========================== Payment Events ==========================
 
             case "payment.authorized":
-                await ProcessPaymentHistoryAsync(json, PaymentStatusTypesEnum.Captured); break;
+                await ProcessPaymentHistoryAsync(json, PaymentStatusTypesEnum.Authorized); break;
 
             case "payment.failed":
                 await ProcessPaymentHistoryAsync(json, PaymentStatusTypesEnum.Failed); break;
 
             case "payment.captured":
-                await ProcessPaymentHistoryAsync(json, PaymentStatusTypesEnum.Authorized); break;
+                await ProcessPaymentHistoryAsync(json, PaymentStatusTypesEnum.Captured); break;
 
             // ========================== Order Events ==========================
 
@@ -630,9 +630,9 @@ public class WebhookService : IWebhookService
                 await _unitOfWork.PaymentMethodRepo.InsertAsync(paymentMethod);
 
                 // Save changes to the database
-                if (await _unitOfWork.SaveAsync())
+                if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("Payment method created for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
+                    _logger.LogError("Failed to save payment method for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
                 }
             }
 
@@ -643,12 +643,12 @@ public class WebhookService : IWebhookService
                 PaymentMethodId = paymentMethod != null ? paymentMethod.Id : null,
                 OrderId = paymentEntity?["order_id"]?.ToString(),
                 InvoiceId = paymentEntity?["invoice_id"]?.ToString(),
-                Amount = (paymentEntity?["amount"]?.Value<long>() ?? 0) / 100m,
-                Status = targetPaymentStatus,
                 Currency = (CurrencyTypesEnum)Enum.Parse(typeof(CurrencyTypesEnum), paymentEntity["currency"]?.ToString(), ignoreCase: true),
+                Status = targetPaymentStatus,
                 Captured = paymentEntity?["captured"]?.Value<bool>() ?? false,
-                Fee = (paymentEntity?["fee"]?.Value<long>() ?? 0) / 100m,
-                Tax = (paymentEntity?["tax"]?.Value<long>() ?? 0) / 100m,
+                Amount = (paymentEntity["amount"]?.Value<int>() ?? 0) / 100m,
+                Fee = (paymentEntity["fee"]?.Value<int?>() ?? 0) / 100m,
+                Tax = (paymentEntity["tax"]?.Value<int?>() ?? 0) / 100m,
                 Description = paymentEntity?["description"]?.ToString(),
                 Email = paymentEntity?["email"]?.ToString(),
                 Contact = paymentEntity?["contact"]?.ToString()
