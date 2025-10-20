@@ -29,6 +29,7 @@ public static class AppServicesExtension
         config.Apply(new AccountRoleMappingProfile());
         config.Apply(new PermissionMappingProfile());
         config.Apply(new PaymentHistoryMappingProfile());
+        config.Apply(new PaymentMethodMappingProfile());
         config.Apply(new BillingDetailMappingProfile());
         config.Apply(new RoleManagementMappingProfile());
         config.Apply(new TenantRoleManagementMappingProfile());
@@ -101,6 +102,7 @@ public static class AppServicesExtension
         services.AddScoped<IPermissionService, PermissionService>();
         services.AddScoped<IBillingDetailService, BillingDetailService>();
         services.AddScoped<IPaymentHistoryService, PaymentHistoryService>();
+        services.AddScoped<IPaymentMethodService, PaymentMethodService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<IRoleManagementService, RoleManagementService>();
         services.AddScoped<ITenantRoleManagementService, TenantRoleManagementService>();
