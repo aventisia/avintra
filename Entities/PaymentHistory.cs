@@ -5,8 +5,13 @@ namespace AccountsAPIs.Entities;
 /// customer contact information, and the associated payment method. 
 /// Supports multi-tenant architecture via a tenant identifier.
 /// </summary>
-public class PaymentHistory : BaseEntity
+public class PaymentHistory
 {
+    /// <summary>
+    /// Gets or sets the primary key of the payment history.
+    /// </summary>
+    [Key]
+    public Guid Id { get; set; }
     /// <summary>
     /// Gets or sets the tenant identifier used for multi-tenancy filtering.
     /// </summary>

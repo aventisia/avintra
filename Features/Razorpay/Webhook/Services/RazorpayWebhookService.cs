@@ -659,8 +659,6 @@ public class WebhookService : IWebhookService
             {
                 // Set tenant-specific fields
                 paymentHistoryRequest.TenantId = tenant.Id;
-                paymentHistoryRequest.CreatedByUserId = tenant.CreatedByUserId;
-                paymentHistoryRequest.LastModifiedByUserId = tenant.CreatedByUserId;
 
                 // Insert a new payment history record
                 await _unitOfWork.PaymentHistoryRepo.InsertAsync(paymentHistoryRequest);
@@ -676,17 +674,16 @@ public class WebhookService : IWebhookService
                 {
                     // Update existing record with new values
                     paymentHistoryRequest.Adapt(existingPaymentHistory);
-                    existingPaymentHistory.LastModifiedByUserId = tenant.CreatedByUserId;
 
                     // Update the existing payment history record
                     _unitOfWork.PaymentHistoryRepo.Update(existingPaymentHistory);
                 }
             }
 
-            // Save the final changes to the database
-            if (await _unitOfWork.SaveAsync())
+            // Save changes to the database
+            if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Payment history successfully updated/created for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
+                _logger.LogError("Failed to save payment history for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
             }
         }
         catch (Exception ex)

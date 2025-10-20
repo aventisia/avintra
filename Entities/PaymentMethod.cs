@@ -7,7 +7,7 @@ namespace AccountsAPIs.Entities;
 public class PaymentMethod
 {
     /// <summary>
-    /// Gets or sets the primary key of the VerificationCode record.
+    /// Gets or sets the primary key of the payment method.
     /// </summary>
     [Key]
     public Guid Id { get; set; }

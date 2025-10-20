@@ -119,10 +119,6 @@ public class PaymentHistoryService : IPaymentHistoryService
             // Map DTO to entity model
             var newPaymentHistoryEntity = paymentHistoryDto.Adapt<PaymentHistory>();
 
-            // Set audit info for creation and modification
-            newPaymentHistoryEntity.CreatedByUserId = _userId;
-            newPaymentHistoryEntity.LastModifiedByUserId = _userId;
-
             // Insert new payment history entity into repository
             await _unitOfWork.PaymentHistoryRepo.InsertAsync(newPaymentHistoryEntity);
 
@@ -183,9 +179,6 @@ public class PaymentHistoryService : IPaymentHistoryService
 
             // Map updated properties from DTO onto existing entity
             var updatedPaymentHistoryEntity = paymentHistoryDto.Adapt(existingPaymentHistoryEntity);
-
-            // Update audit info for modification
-            updatedPaymentHistoryEntity.LastModifiedByUserId = _userId;
 
             // Mark entity as updated in repository
             _unitOfWork.PaymentHistoryRepo.Update(updatedPaymentHistoryEntity);
