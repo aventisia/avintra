@@ -13,7 +13,6 @@ public partial class AccountsDbContext
     public DbSet<ContactUs> ContactUs { get; set; }
     public DbSet<Permission> Permissions { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set; }
-    public DbSet<Payment> Payments { get; set; }
     public DbSet<BillingDetail> BillingDetails { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
     public DbSet<Space> Spaces { get; set; }
@@ -24,4 +23,7 @@ public partial class AccountsDbContext
     public DbSet<TenantCredit> TenantCredits { get; set; }
     public DbSet<CreditPlan> CreditPlans { get; set; }
     public DbSet<CreditUsage> CreditUsages { get; set; }
+    public DbSet<PaymentHistory> PaymentHistories { get; set; }
+    public DbSet<PaymentMethod> PaymentMethods { get; set; }
+
 }

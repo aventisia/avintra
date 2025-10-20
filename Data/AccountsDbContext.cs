@@ -38,7 +38,6 @@ public partial class AccountsDbContext : IdentityDbContext<
 
         // Global TenantId filters
         builder.Entity<BillingDetail>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        builder.Entity<Payment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<AppIntegration>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         builder.Entity<CreditUsage>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
@@ -54,8 +53,11 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<Tenant>().Property(e => e.Country).HasConversion(new EnumToStringConverter<CountriesEnum>());
         builder.Entity<SessionLog>().Property(e => e.HowSessionEnded).HasConversion(new EnumToStringConverter<TerminateSessionReasonsEnum>());
         builder.Entity<VerificationCode>().Property(e => e.RequestType).HasConversion(new EnumToStringConverter<VerificationCodeRequestTypesEnum>());
-        builder.Entity<Payment>().Property(e => e.PaymentStatus).HasConversion(new EnumToStringConverter<PaymentStatusEnum>());
-        builder.Entity<Payment>().Property(e => e.PaymentMethod).HasConversion(new EnumToStringConverter<PaymentMethodEnum>());
+        builder.Entity<PaymentHistory>().Property(e => e.Status).HasConversion(new EnumToStringConverter<PaymentStatusTypesEnum>());
+        builder.Entity<PaymentHistory>().Property(e => e.Currency).HasConversion(new EnumToStringConverter<CurrencyTypesEnum>());
+        builder.Entity<PaymentMethod>().Property(e => e.CardType).HasConversion(new EnumToStringConverter<CardTypesEnum>());
+        builder.Entity<PaymentMethod>().Property(e => e.CardNetwork).HasConversion(new EnumToStringConverter<CardNetworkTypesEnum>());
+        builder.Entity<PaymentMethod>().Property(e => e.Type).HasConversion(new EnumToStringConverter<PaymentMethodTypesEnum>());
         builder.Entity<AccountUser>().Property(e => e.Gender).HasConversion(new EnumToStringConverter<GenderTypeEnum>());
         builder.Entity<RolePermission>().Property(e => e.Access).HasConversion(new EnumToStringConverter<PermissionAccessTypesEnum>());
         builder.Entity<CreditPlan>().Property(e => e.ServiceType).HasConversion(new EnumToStringConverter<CreditServiceTypesEnum>());
