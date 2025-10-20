@@ -84,14 +84,15 @@ public class WebhookService : IWebhookService
         {
             // ========================== Payment Events ==========================
 
-            // case "payment.authorized":
-            //     await HandlePaymentAuthorized(json); break;
+            case "payment.authorized":
+                await ProcessPaymentHistoryAsync(json, PaymentStatusTypesEnum.Captured); break;
 
-            // case "payment.failed":
-            //     await HandlePaymentFailed(json); break; 
+            case "payment.failed":
+                await ProcessPaymentHistoryAsync(json, PaymentStatusTypesEnum.Failed); break;
 
-            // case "payment.captured":
-            //     await HandlePaymentCaptured(json); break; 
+            case "payment.captured":
+                await ProcessPaymentHistoryAsync(json, PaymentStatusTypesEnum.Authorized); break;
+
             // ========================== Order Events ==========================
 
             // case "order.paid":
@@ -445,24 +446,25 @@ public class WebhookService : IWebhookService
                 return;
             }
 
-            var lastBillingDetail = await _unitOfWork.BillingDetailRepo
-                .GetByConditionAsync(w =>
-                    w.TenantId == tenantSubscription.TenantId &&
-                    w.SubscriptionId == tenantSubscription.Id &&
-                    w.CreatedOn >= tenantSubscription.NextBillingDate
-                )
-                .FirstOrDefaultAsync();
+            // Get all billing records for the tenant
+            var billingRecordsQuery = _unitOfWork.BillingDetailRepo
+                .GetByConditionAsync(w => w.TenantId == tenantSubscription.TenantId)
+                .OrderByDescending(o => o.CreatedOn);
 
+            // Get the most recent billing detail with valid contact and address
+            var lastBillingDetail = await billingRecordsQuery
+                .FirstOrDefaultAsync(w => w.ContactPerson != null && w.AddressLine1 != null);
+
+            // Extract Razorpay Payment ID from payment entity
             var razorpayPaymentId = paymentEntity["id"]?.ToString();
 
-            // Check if the Razorpay Payment ID already exists in the BillingDetail table
-            var existingBillingDetail = await _unitOfWork.BillingDetailRepo
-                .GetByConditionAsync(w =>
+            // Check if a billing record already exists for this Razorpay payment and subscription
+            var existingBillingDetail = await billingRecordsQuery
+                .FirstOrDefaultAsync(w =>
                     w.TenantId == tenantSubscription.TenantId &&
                     w.SubscriptionId == tenantSubscription.Id &&
-                    w.RazorpayPaymentId == razorpayPaymentId
-                )
-                .FirstOrDefaultAsync();
+                    (w.RazorpayPaymentId == razorpayPaymentId || w.RazorpayPaymentId == null)
+                );
 
             if (existingBillingDetail != null)
             {
@@ -565,6 +567,132 @@ public class WebhookService : IWebhookService
         {
             // Log any unexpected errors during the credit assignment
             _logger.LogError($"An error occurred while assigning credits to TenantId {tenantSubscription.TenantId} for SubscriptionId {tenantSubscription.Id}: {ex.Message}");
+        }
+    }
+
+    private async Task ProcessPaymentHistoryAsync(JObject webhookPayload, PaymentStatusTypesEnum targetPaymentStatus)
+    {
+        // Extract Razorpay Payment ID from the payload
+        var razorpayPaymentId = webhookPayload["payload"]?["payment"]?["entity"]?["id"]?.ToString();
+        if (string.IsNullOrEmpty(razorpayPaymentId))
+        {
+            _logger.LogWarning("Razorpay Payment ID is missing or invalid in the webhook payload.");
+            return;
+        }
+
+        try
+        {
+            // Extract payment details from the payload
+            var paymentEntity = webhookPayload["payload"]?["payment"]?["entity"];
+            var razorpayCustomerId = paymentEntity?["customer_id"]?.ToString();
+            var razorpayPaymentCardId = paymentEntity?["card_id"]?.ToString();
+
+            if (string.IsNullOrEmpty(razorpayCustomerId))
+            {
+                _logger.LogWarning("Missing or invalid Razorpay Customer ID in the payload.");
+                return;
+            }
+
+            // Fetch tenant based on Razorpay Customer ID
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(p => p.RazorpayCustomerId == razorpayCustomerId)
+                .FirstOrDefaultAsync();
+
+            if (tenant == null)
+            {
+                _logger.LogWarning("Tenant not found for Razorpay Customer ID: {RazorpayCustomerId}", razorpayCustomerId);
+                return;
+            }
+
+            // Retrieve payment method from the repository, or create a new one if not found
+            var paymentMethod = await _unitOfWork.PaymentMethodRepo
+                .GetByConditionAsync(w => w.RazorpayMethodId == razorpayPaymentCardId && w.TenantId == tenant.Id)
+                .FirstOrDefaultAsync();
+
+            if (paymentMethod == null)
+            {
+                var card = paymentEntity?["card"];
+                paymentMethod = new PaymentMethod
+                {
+                    TenantId = tenant.Id,
+                    RazorpayMethodId = card?["id"]?.ToString(),
+                    Type = (PaymentMethodTypesEnum)Enum.Parse(typeof(PaymentMethodTypesEnum), paymentEntity?["method"]?.ToString(), ignoreCase: true),
+                    Wallet = paymentEntity?["wallet"]?.ToString(),
+                    Vpa = paymentEntity?["vpa"]?.ToString(),
+                    CardLast4 = card?["last4"]?.ToString(),
+                    CardNetwork = (CardNetworkTypesEnum)Enum.Parse(typeof(CardNetworkTypesEnum), card?["network"]?.ToString(), ignoreCase: true),
+                    CardType = (CardTypesEnum)Enum.Parse(typeof(CardTypesEnum), card?["type"]?.ToString(), ignoreCase: true),
+                    CardIssuer = card?["issuer"]?.ToString(),
+                    CardInternational = card?["international"]?.Value<bool>() ?? false,
+                };
+
+                // Insert the new payment method into the repository
+                await _unitOfWork.PaymentMethodRepo.InsertAsync(paymentMethod);
+
+                // Save changes to the database
+                if (await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogInformation("Payment method created for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
+                }
+            }
+
+            // Prepare the PaymentHistory object
+            var paymentHistoryRequest = new PaymentHistory
+            {
+                RazorpayPaymentId = razorpayPaymentId,
+                PaymentMethodId = paymentMethod != null ? paymentMethod.Id : null,
+                OrderId = paymentEntity?["order_id"]?.ToString(),
+                InvoiceId = paymentEntity?["invoice_id"]?.ToString(),
+                Amount = (paymentEntity?["amount"]?.Value<long>() ?? 0) / 100m,
+                Status = targetPaymentStatus,
+                Currency = (CurrencyTypesEnum)Enum.Parse(typeof(CurrencyTypesEnum), paymentEntity["currency"]?.ToString(), ignoreCase: true),
+                Captured = paymentEntity?["captured"]?.Value<bool>() ?? false,
+                Fee = (paymentEntity?["fee"]?.Value<long>() ?? 0) / 100m,
+                Tax = (paymentEntity?["tax"]?.Value<long>() ?? 0) / 100m,
+                Description = paymentEntity?["description"]?.ToString(),
+                Email = paymentEntity?["email"]?.ToString(),
+                Contact = paymentEntity?["contact"]?.ToString()
+            };
+
+            // Handle the payment history based on status
+            if (targetPaymentStatus == PaymentStatusTypesEnum.Authorized || targetPaymentStatus == PaymentStatusTypesEnum.Failed)
+            {
+                // Set tenant-specific fields
+                paymentHistoryRequest.TenantId = tenant.Id;
+                paymentHistoryRequest.CreatedByUserId = tenant.CreatedByUserId;
+                paymentHistoryRequest.LastModifiedByUserId = tenant.CreatedByUserId;
+
+                // Insert a new payment history record
+                await _unitOfWork.PaymentHistoryRepo.InsertAsync(paymentHistoryRequest);
+            }
+            else
+            {
+                // Try to find an existing payment history record and update it
+                var existingPaymentHistory = await _unitOfWork.PaymentHistoryRepo
+                    .GetByConditionAsync(w => w.RazorpayPaymentId == razorpayPaymentId)
+                    .FirstOrDefaultAsync();
+
+                if (existingPaymentHistory != null)
+                {
+                    // Update existing record with new values
+                    paymentHistoryRequest.Adapt(existingPaymentHistory);
+                    existingPaymentHistory.LastModifiedByUserId = tenant.CreatedByUserId;
+
+                    // Update the existing payment history record
+                    _unitOfWork.PaymentHistoryRepo.Update(existingPaymentHistory);
+                }
+            }
+
+            // Save the final changes to the database
+            if (await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Payment history successfully updated/created for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log any exceptions that occur during the processing
+            _logger.LogError(ex, "Error processing payment history for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
         }
     }
 }
