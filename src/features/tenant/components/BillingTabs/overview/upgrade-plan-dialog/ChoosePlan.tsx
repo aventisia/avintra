@@ -10,7 +10,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useFetchCompanyDetails } from "@/features/tenant/hooks/useFetchCompanyDetails";
 import { useFetchSubscriptionPlans } from "@/features/tenant/hooks/useFetchSubscriptionPlans";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
-import { PlanType } from "@/features/tenant/types/plan-type";
+import { PlanFrequency } from "@/features/tenant/types/plan-type";
 
 import BillingDetails from "./BillingDetails";
 import ChargeSummary from "./ChargeSummary";
@@ -89,14 +89,14 @@ const ChoosePlan = () => {
                     <PlanItem
                       key={plan.id}
                       plan={plan}
-                      planType={selectedTab as PlanType}
+                      planFrequency={selectedTab as PlanFrequency}
                       selectedId={selectedPlan}
                     />
                   ))}
               </RadioGroup>
             </ScrollArea>
           </div>
-          {/* <TopUp planType={selectedTab as PlanType} /> */}
+          {/* <TopUp planFrequency={selectedTab as PlanFrequency} /> */}
         </div>
 
         {/* Right hand side */}
@@ -106,7 +106,7 @@ const ChoosePlan = () => {
           {selectedPlan || topUp.history || topUp.spaces || topUp.storage ? (
             <ChargeSummary
               plan={data?.data.find((val) => val.id == selectedPlan)}
-              planType={selectedTab as PlanType}
+              planFrequency={selectedTab as PlanFrequency}
             />
           ) : null}
         </div>

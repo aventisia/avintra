@@ -1,25 +1,25 @@
 import CustomRadioItem from "@/components/CustomRadioItem";
 import { SubscriptionPlanDTO } from "@/features/tenant/dtos/subscription-plans-dto";
-import { PlanType } from "@/features/tenant/types/plan-type";
+import { PlanFrequency } from "@/features/tenant/types/plan-type";
 
 import { PlanFeatures } from "./PlanFeatures";
 
 type Props = {
   plan: SubscriptionPlanDTO;
-  planType: PlanType;
+  planFrequency: PlanFrequency;
   selectedId: string;
   highlightSelected?: boolean;
 };
 
 export const PlanItem = ({
   plan,
-  planType,
+  planFrequency,
   selectedId,
   highlightSelected = true,
 }: Props) => {
   const isSelected = selectedId === plan.id;
   const timeUnit =
-    planType === "monthly" || plan.name == "Starter" ? "month" : "year";
+    planFrequency === "monthly" || plan.name == "Starter" ? "month" : "year";
 
   return (
     <CustomRadioItem
@@ -40,7 +40,7 @@ export const PlanItem = ({
           </div>
         </div>
 
-        {isSelected && <PlanFeatures plan={plan} planType={planType} />}
+        {isSelected && <PlanFeatures plan={plan} planFrequency={planFrequency} />}
       </div>
     </CustomRadioItem>
   );

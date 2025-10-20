@@ -1,11 +1,11 @@
 import { ADD_ON_PRICING } from "../constants/add-on-pricing";
 import { SubscriptionPlanDTO } from "../dtos/subscription-plans-dto";
 import { useUpgradePlanDialogStore } from "../store/overview/upgrade-plan-dialog.store";
-import { PlanType } from "../types/plan-type";
+import { PlanFrequency } from "../types/plan-type";
 
 export const useChargeSummary = (
   plan?: SubscriptionPlanDTO | undefined,
-  planType?: PlanType,
+  planFrequency?: PlanFrequency,
 ) => {
   const { billingCountry, topUp } = useUpgradePlanDialogStore((state) => ({
     billingCountry: state.billingCountry,
@@ -14,7 +14,7 @@ export const useChargeSummary = (
 
   const isTaxApplicable = billingCountry === "India";
 
-  // Calculate the base price depending on the planType (monthly or yearly)
+  // Calculate the base price depending on the planFrequency (monthly or yearly)
   const basePrice = plan?.price ?? 0;
 
   // Calculate the total top-up charges based on the frequency (monthly/yearly)
@@ -27,7 +27,7 @@ export const useChargeSummary = (
 
     // Adjust unit cost based on the selected frequency (monthly/yearly)
     const adjustedUnitCost =
-      planType === "monthly" ? config.unitCost.monthly : config.unitCost.yearly;
+      planFrequency === "monthly" ? config.unitCost.monthly : config.unitCost.yearly;
 
     return acc + value * adjustedUnitCost;
   }, 0);
@@ -50,7 +50,7 @@ export const useChargeSummary = (
     if (!config) return { type: key, quantity, total: 0 };
 
     const adjustedUnitCost =
-      planType === "monthly" ? config.unitCost.monthly : config.unitCost.yearly;
+      planFrequency === "monthly" ? config.unitCost.monthly : config.unitCost.yearly;
 
     return {
       type: config?.label || key,

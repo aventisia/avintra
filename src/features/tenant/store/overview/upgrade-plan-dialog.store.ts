@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { PlanFilter, PlanType } from "../../types/plan-type";
+import { PlanFilter, PlanFrequency } from "../../types/plan-type";
 
 interface TopUp {
   credits: number;
@@ -13,7 +13,7 @@ interface UpgradePlanState {
   isOpen: boolean;
   chosenPlan: PlanFilter | "Credits" | null;
   planId: string;
-  planType: PlanType;
+  planFrequency: PlanFrequency;
   billingCountry: string;
   topUp: TopUp;
 }
@@ -29,7 +29,7 @@ interface UpgradePlanDialogActions {
   setBillingCountry: (billingCountry: string) => void;
 
   /** Set the form data for creating an account */
-  setPlanType: (planType: PlanType) => void;
+  setPlanType: (planFrequency: PlanFrequency) => void;
 
   setTopUp: (topUp: Partial<TopUp>) => void; // allows updating one or more fields
 
@@ -43,7 +43,7 @@ export const useUpgradePlanDialogStore = create<
   chosenPlan: null,
   planId: "",
   billingCountry: "India",
-  planType: "monthly",
+  planFrequency: "monthly",
   topUp: {
     credits: 0,
     spaces: 0,
@@ -51,7 +51,7 @@ export const useUpgradePlanDialogStore = create<
     history: 0,
   },
 
-  setPlanType: (planType) => set({ planType }),
+  setPlanType: (planFrequency) => set({ planFrequency }),
   setBillingCountry: (billingCountry) => set({ billingCountry }),
   setPlanId: (planId) => set({ planId }),
   setOpen: (open) => set({ isOpen: open }),

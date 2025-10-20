@@ -4,17 +4,17 @@ import { Button } from "@aventisia/ui/buttons";
 import { SubscriptionPlanDTO } from "@/features/tenant/dtos/subscription-plans-dto";
 import { useChargeSummary } from "@/features/tenant/hooks/useChargeSummary";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
-import { PlanType } from "@/features/tenant/types/plan-type";
+import { PlanFrequency } from "@/features/tenant/types/plan-type";
 
 const ChargeSummary = ({
   plan,
-  planType,
+  planFrequency,
 }: {
   plan?: SubscriptionPlanDTO | undefined;
-  planType?: PlanType;
+  planFrequency?: PlanFrequency;
 }) => {
   const { basePrice, tax, total, isTaxApplicable, topUpBreakdown } =
-    useChargeSummary(plan, planType);
+    useChargeSummary(plan, planFrequency);
 
   const { chosenPlan } = useUpgradePlanDialogStore();
 
