@@ -466,6 +466,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     return serviceResponse;
                 }
 
+                tenantSubscription.IsRecurringPayment = tenantSubscriptionPurchaseDto.IsRecurringPayment;
                 tenantSubscription.LastModifiedByUserId = _userId;
                 tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
 
@@ -627,7 +628,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     AvailableCredits = availableCredits,
                     ExpiredOn = tenantSubscription.NextBillingDate,
                     IsActive = tenantSubscription?.NextBillingDate > DateTimeOffset.UtcNow.Date,
-                    // IsRecurringPayment = tenantSubscription.IsRecurringPayment,
+                    IsRecurringPayment = tenantSubscription.IsRecurringPayment,
                     Feature = new CurrentSubscriptionPlanDetailDto()
                     {
                         StorageLimitMB = currentPlan.StorageLimitMB,
@@ -807,6 +808,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 if (razorpaySubscriptionResult?.Data != null || razorpaySubscriptionResult.StatusCode == 200)
                 {
                     tenantSubscription.RazorpaySubscriptionId = razorpaySubscriptionResult.Data.Id;
+                    tenantSubscription.IsRecurringPayment = tenantSubscriptionPurchaseDto.IsRecurringPayment;
                     paymentUrl = razorpaySubscriptionResult.Data.ShortUrl;
                 }
                 else
@@ -830,6 +832,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
                     // Clear the Razorpay subscription ID after cancellation
                     tenantSubscription.RazorpaySubscriptionId = null;
+                    tenantSubscription.IsRecurringPayment = false;
                 }
                 else
                 {

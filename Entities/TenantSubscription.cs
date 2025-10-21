@@ -66,6 +66,11 @@ public class TenantSubscription : BaseEntity, IMustHaveTenant
     public DateTimeOffset? NextBillingDate { get; set; }
 
     /// <summary>
+    /// Gets or sets a flag indicating whether the subscription has recurring payments.
+    /// </summary>
+    public bool IsRecurringPayment { get; set; }
+
+    /// <summary>
     /// Gets or sets the ID of the subscription plan assigned to the tenant.
     /// </summary>
     public required Guid PlanId { get; set; }
