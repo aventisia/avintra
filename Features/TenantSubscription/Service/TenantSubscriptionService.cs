@@ -576,16 +576,12 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Log information about the process of fetching the current tenant's subscription plan
             _logger.LogInformation("Fetching current tenant subscription plan for tenant ID: {TenantId}", _tenantId);
 
-            // Determine if the current tenant is a non-default tenant
-            var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
-
             // Initialize an empty SubscriptionDashboardDto to store subscription data
             SubscriptionDashboardDto? subscriptionDashboardDto = new();
 
             // Fetch the current tenant's active subscription, considering user and tenant constraints
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
-                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
                     w.IsActive &&
                     w.TenantId == _tenantId
                 )
@@ -605,7 +601,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             double availableCredits = await _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
-                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
                     w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date &&
                     w.AvailableCredits > 0
                 )
@@ -628,8 +623,11 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     PlanName = currentPlan.Name,
                     Frequency = tenantSubscription.Frequency,
                     Price = currentPlan.Price,
-                    Currency = CurrencyTypesEnum.USD,
+                    Currency = billingDetail?.Currency ?? CurrencyTypesEnum.USD,
                     AvailableCredits = availableCredits,
+                    ExpiredOn = tenantSubscription.NextBillingDate,
+                    IsActive = tenantSubscription?.NextBillingDate > DateTimeOffset.UtcNow.Date,
+                    // IsRecurringPayment = tenantSubscription.IsRecurringPayment,
                     Feature = new CurrentSubscriptionPlanDetailDto()
                     {
                         StorageLimitMB = currentPlan.StorageLimitMB,

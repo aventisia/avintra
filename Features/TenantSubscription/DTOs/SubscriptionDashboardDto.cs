@@ -39,7 +39,22 @@ public class CurrentSubscriptionPlanDto
     /// <summary>
     /// Gets or sets the ISO currency code (e.g., "USD").
     /// </summary>
-    public CurrencyTypesEnum Currency { get; set; } = CurrencyTypesEnum.USD;
+    public CurrencyTypesEnum Currency { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the plan is currently active.
+    /// </summary>
+    public bool IsActive { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the plan has recurring payments.
+    /// </summary>
+    public bool IsRecurringPayment { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date when the plan expired. Null if the plan is ongoing.
+    /// </summary>
+    public DateTimeOffset? ExpiredOn { get; set; }
 
     /// <summary>
     /// Gets or sets the number of available credits.
