@@ -17,7 +17,7 @@ const ChargeSummary = ({
   const { basePrice, tax, total, isTaxApplicable, topUpBreakdown } =
     useChargeSummary(plan, planFrequency);
 
-  const { chosenPlan } = useUpgradePlanDialogStore();
+  const { chosenPlan, currency } = useUpgradePlanDialogStore();
 
   return (
     <div className="rounded-lg border">
@@ -26,7 +26,7 @@ const ChargeSummary = ({
         {plan && basePrice >= 0 ? (
           <SummaryRow
             label="Subscription Fee"
-            value={`${currencySymbols[plan.currency]}${basePrice.toFixed(2)}`}
+            value={`${currencySymbols[currency]}${basePrice.toFixed(2)}`}
           />
         ) : null}
 
@@ -38,7 +38,7 @@ const ChargeSummary = ({
               <SummaryRow
                 key={item.type}
                 label={`${item.type}`}
-                value={`${currencySymbols[plan?.currency || "USD"]}${item.total.toFixed(2)}`}
+                value={`${currencySymbols[currency || "USD"]}${item.total.toFixed(2)}`}
               />
             ),
         )}
@@ -46,7 +46,7 @@ const ChargeSummary = ({
         {isTaxApplicable && (
           <SummaryRow
             label="Tax"
-            value={`${currencySymbols[plan?.currency || "USD"]}${tax.toFixed(2)}`}
+            value={`${currencySymbols[currency || "USD"]}${tax.toFixed(2)}`}
           />
         )}
 
@@ -54,7 +54,7 @@ const ChargeSummary = ({
 
         <SummaryRow
           label="Amount Due"
-          value={`${currencySymbols[plan?.currency || "USD"]}${total.toFixed(2)}`}
+          value={`${currencySymbols[currency || "USD"]}${total.toFixed(2)}`}
           className="font-medium"
         />
 
