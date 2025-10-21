@@ -621,6 +621,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 // Populate the subscription plan details for the dashboard
                 subscriptionDashboardDto.CurrentPlan = new CurrentSubscriptionPlanDto()
                 {
+                    PlanId = currentPlan.Id,
                     PlanName = currentPlan.Name,
                     Frequency = tenantSubscription.Frequency,
                     Price = currentPlan.Price,

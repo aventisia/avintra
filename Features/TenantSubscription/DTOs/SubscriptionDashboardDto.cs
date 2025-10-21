@@ -22,6 +22,11 @@ public class SubscriptionDashboardDto
 public class CurrentSubscriptionPlanDto
 {
     /// <summary>
+    /// Gets or sets the id of the plan.
+    /// </summary>
+    public Guid PlanId { get; set; }
+
+    /// <summary>
     /// Gets or sets the public name of the plan (e.g., "Starter", "Pro").
     /// </summary>
     public string? PlanName { get; set; }
