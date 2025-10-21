@@ -401,28 +401,49 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Trim string properties in the DTO to eliminate any unnecessary whitespace
             tenantSubscriptionPurchaseDto = TrimDtoStringPropsUtil.TrimDtoStringProps(tenantSubscriptionPurchaseDto);
 
-            // If TenantId is not provided, set it to the default tenant ID
-            tenantSubscriptionPurchaseDto.TenantId = tenantSubscriptionPurchaseDto.TenantId == Guid.Empty ? _tenantId : tenantSubscriptionPurchaseDto.TenantId;
+            // Fetch existing tenant subscription (if any), including plan and creator information
+            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w =>
+                    w.IsActive == true &&
+                    w.TenantId == _tenantId
+                )
+                .Include(i => i.Plan)
+                .Include(i => i.CreatedByUser)
+                .SingleOrDefaultAsync();
 
-            // Map the DTO to the subscription entity
-            var tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
-            tenantSubscription.Frequency = tenantSubscriptionPurchaseDto.Frequency;
-            tenantSubscription.IsActive = true;
-            tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
-            tenantSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
-            tenantSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
-            tenantSubscription.MaxUsers = subscriptionPlan.MaxUsers;
-            tenantSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
-            tenantSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
+            if (tenantSubscription == null)
+            {
 
-            // Set audit fields for tracking user actions
-            tenantSubscription.CreatedByUserId = _userId;
-            tenantSubscription.LastModifiedByUserId = _userId;
+                // Map the DTO to the subscription entity
+                tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
+                tenantSubscription.Frequency = tenantSubscriptionPurchaseDto.Frequency;
+                tenantSubscription.Status = SubscriptionStatusTypesEnum.Initiated;
+                tenantSubscription.IsActive = false;
+                tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
+                tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
+                tenantSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
+                tenantSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
+                tenantSubscription.MaxUsers = subscriptionPlan.MaxUsers;
+                tenantSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
+                tenantSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
 
-            string? paymentUrl = null;
+                // Set audit fields for tracking user actions
+                tenantSubscription.CreatedByUserId = _userId;
+                tenantSubscription.LastModifiedByUserId = _userId;
+
+                // Insert the new subscription into the repository
+                await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
+
+                // Save changes to the database
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to persist new tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
+                    return serviceResponse;
+                }
+            }
 
             // Only create a Razorpay subscription if it doesn't already exist and the plan is not 'Starter'
-            if (string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId) &&
+            if (tenantSubscription.Status == SubscriptionStatusTypesEnum.Initiated &&
                 subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
                 // Attempt to create or update a Razorpay subscription
@@ -436,7 +457,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 if (razorpaySubscriptionResult?.Data != null || razorpaySubscriptionResult.StatusCode == 200)
                 {
                     tenantSubscription.RazorpaySubscriptionId = razorpaySubscriptionResult.Data.Id;
-                    paymentUrl = razorpaySubscriptionResult.Data.ShortUrl;
                 }
                 else
                 {
@@ -445,52 +465,28 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     serviceResponse.Message = razorpaySubscriptionResult.Message;
                     return serviceResponse;
                 }
+
+                tenantSubscription.LastModifiedByUserId = _userId;
+                tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
+
+                // Update the new subscription into the repository
+                _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
+
+                // Save changes to the database
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to persist new tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
+                    return serviceResponse;
+                }
             }
-
-            // Insert the new subscription into the repository
-            await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
-
-            // Save changes to the database
-            if (!await _unitOfWork.SaveAsync())
+            else
             {
-                _logger.LogError("Failed to persist new tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
+                serviceResponse.Message = $"Subscription is already in the {tenantSubscription.Status} state.";
                 return serviceResponse;
             }
 
             // If the subscription plan is not 'Starter', billing details are required
-            if (subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
-            {
-                // Map the subscription purchase DTO to a new BillingDetail entity
-                var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
-                billingDetail.SubscriptionId = tenantSubscription.Id;
-
-                // Fetch the current user's information based on their User ID
-                var currentUser = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.Id == _userId).FirstOrDefaultAsync();
-                if (currentUser != null)
-                {
-                    // Set the BillingEmail to the current user's username
-                    billingDetail.BillingEmail = currentUser?.UserName;
-
-                    // Set the ContactPerson to the full name (First and Last Name) of the current user
-                    billingDetail.ContactPerson = $"{currentUser?.FirstName} {currentUser.LastName}";
-                }
-
-                // Set audit fields
-                billingDetail.CreatedByUserId = _userId;
-                billingDetail.LastModifiedByUserId = _userId;
-
-                // Save billing detail to the database
-                await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
-
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Unable to persist billing details. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
-                    return serviceResponse;
-                }
-
-                _logger.LogInformation("Billing details successfully saved. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
-            }
-            else
+            if (subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter)
             {
                 // Create and assign initial credits for the tenant based on the subscription
                 var tenantCredit = new TenantCredit()
@@ -520,11 +516,36 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Log the successful creation of the tenant subscription
             _logger.LogInformation("Tenant subscription successfully created with ID: {TenantSubscriptionId}", tenantSubscription.Id);
 
+            // Map the subscription purchase DTO to a new BillingDetail entity
+            var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
+            billingDetail.SubscriptionId = tenantSubscription.Id;
+
+            // Fetch the current user's information based on their User ID
+            var currentUser = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.Id == _userId).FirstOrDefaultAsync();
+            if (currentUser != null)
+            {
+                // Set the BillingEmail to the current user's username
+                billingDetail.BillingEmail = currentUser?.UserName;
+
+                // Set the ContactPerson to the full name (First and Last Name) of the current user
+                billingDetail.ContactPerson = $"{currentUser?.FirstName} {currentUser.LastName}";
+            }
+
+            // Set audit fields
+            billingDetail.CreatedByUserId = _userId;
+            billingDetail.LastModifiedByUserId = _userId;
+
+            // Save billing detail to the database
+            await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Unable to persist billing details. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
+                return serviceResponse;
+            }
+
             // Map the tenant subscription entity to a DTO for response
             var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
-
-            // Attach the Razorpay payment URL to the DTO for client-side use
-            tenantSubscriptionDto.RazorpayPaymentUrl = paymentUrl;
 
             // Set the service response with the DTO and success metadata
             serviceResponse.Data = tenantSubscriptionDto;
@@ -759,7 +780,9 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
             tenantSubscription.PlanId = subscriptionPlan.Id;
             tenantSubscription.RazorpaySubscriptionId = razorpaSubscriptionId;
-            tenantSubscription.IsActive = true;
+            tenantSubscription.IsActive = false;
+            tenantSubscription.Status = SubscriptionStatusTypesEnum.Pending;
+            tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
             tenantSubscription.CreatedByUserId = _userId;
             tenantSubscription.LastModifiedByUserId = _userId;
             tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
