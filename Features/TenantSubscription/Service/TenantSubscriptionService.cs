@@ -413,7 +413,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             if (tenantSubscription == null)
             {
-
                 // Map the DTO to the subscription entity
                 tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
                 tenantSubscription.Frequency = tenantSubscriptionPurchaseDto.Frequency;
@@ -438,6 +437,28 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 if (!await _unitOfWork.SaveAsync())
                 {
                     _logger.LogError("Failed to persist new tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
+                    return serviceResponse;
+                }
+            }
+            else
+            {
+                // Existing subscription found, update the details
+                tenantSubscription.Status = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? SubscriptionStatusTypesEnum.Active : SubscriptionStatusTypesEnum.Initiated;
+                tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
+                tenantSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
+                tenantSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
+                tenantSubscription.MaxUsers = subscriptionPlan.MaxUsers;
+                tenantSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
+                tenantSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
+                tenantSubscription.LastModifiedByUserId = _userId;
+
+                // Update the subscription in the repository
+                _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
+
+                // Save changes to the database
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to persist tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
                     return serviceResponse;
                 }
             }
@@ -513,9 +534,36 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
                 _logger.LogInformation("Tenant credit successfully saved. TenantId: {TenantId}, TenantCreditId: {TenantCreditId}", _tenantId, tenantCredit.Id);
             }
+            else
+            {
+                // If the subscription plan is not 'Starter', check and update existing tenant credits
+                var tenantCredits = await _unitOfWork.TenantCreditRepo
+                    .GetByConditionAsync(w =>
+                        w.TenantId == _tenantId &&
+                        w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date
+                    )
+                    .ToListAsync();
+                if (tenantCredits.Any())
+                {
+                    foreach (var tenantCredit in tenantCredits)
+                    {
+                        tenantCredit.ExpiredOn = DateTimeOffset.UtcNow.AddDays(-1).Date;
+                        tenantCredit.LastModifiedByUserId = _userId;
+                        // Update the expired tenant credits in the repository
+                        _unitOfWork.TenantCreditRepo.Update(tenantCredit);
+                    }
+
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogError("Unable to update tenant credits expiration. TenantId: {TenantId}", _tenantId);
+                        return serviceResponse;
+                    }
+                }
+            }
 
             // Log the successful creation of the tenant subscription
             _logger.LogInformation("Tenant subscription successfully created with ID: {TenantSubscriptionId}", tenantSubscription.Id);
+
 
             // Map the subscription purchase DTO to a new BillingDetail entity
             var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
@@ -532,19 +580,40 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 billingDetail.ContactPerson = $"{currentUser?.FirstName} {currentUser.LastName}";
             }
 
-            // Set audit fields
-            billingDetail.CreatedByUserId = _userId;
-            billingDetail.LastModifiedByUserId = _userId;
+            // Check if billing details already exist for the tenant and subscription
+            var existingBillingDetail = await _unitOfWork.BillingDetailRepo
+                .GetByConditionAsync(w => w.TenantId == _tenantId && w.SubscriptionId == tenantSubscription.Id)
+                .FirstOrDefaultAsync();
 
-            // Save billing detail to the database
-            await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
+            if (existingBillingDetail != null)
+            {
+                // Update the existing billing details
+                existingBillingDetail.BillingEmail = billingDetail.BillingEmail ?? existingBillingDetail.BillingEmail;
+                existingBillingDetail.ContactPerson = billingDetail.ContactPerson ?? existingBillingDetail.ContactPerson;
+                existingBillingDetail.LastModifiedByUserId = _userId;
 
+                // Update the billing detail in the repository
+                _unitOfWork.BillingDetailRepo.Update(existingBillingDetail);
+                _logger.LogInformation("Billing details successfully updated for TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, existingBillingDetail.Id);
+            }
+            else
+            {
+                // Set audit fields for the new billing detail
+                billingDetail.CreatedByUserId = _userId;
+                billingDetail.LastModifiedByUserId = _userId;
+
+                // Insert the new billing detail into the repository
+                await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
+                _logger.LogInformation("Billing details successfully created for TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
+            }
+
+            // Save changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Unable to persist billing details. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
                 return serviceResponse;
             }
-
+            
             // Map the tenant subscription entity to a DTO for response
             var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
 
