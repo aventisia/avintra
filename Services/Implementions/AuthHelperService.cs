@@ -202,6 +202,8 @@ public class AuthHelperService : IAuthHelperService
             // Add session id
             claims.Add("sid", sessionId.ToString());
 
+            claims.Add("plan", currentPlan);
+
             // Add permission access
             claims["permissions"] = user.UserRoles
                     .SelectMany(u => u.Role.RolePermissions)
@@ -209,12 +211,6 @@ public class AuthHelperService : IAuthHelperService
                     .ToDictionary(
                         g => (int)Enum.Parse(typeof(PermissionTypesEnum), g.Key),
                         g => JsonSerializer.Serialize(g.Select(a => (int)a.Access).ToList()));
-        }
-
-        // If a tenant subscription is found, add the plan type to the claims.
-        if (currentPlan != null)
-        {
-            claims.Add("plan", currentPlan);
         }
 
         // SigningCredentials

@@ -317,9 +317,9 @@ public class MyAccountService(
 
             // Retrieve the tenant's subscription along with the associated plan details.
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(subscription => subscription.Id == user.Tenant.Id)
-                .Include(subscription => subscription.Plan)
-                .FirstOrDefaultAsync();
+                 .GetByConditionAsync(w => w.TenantId == user.TenantId && w.IsActive)
+                 .Include(i => i.Plan)
+                 .FirstOrDefaultAsync();
 
             // Extract the current plan type from the subscription, if available.
             string? currentPlan = tenantSubscription?.Plan?.Type.ToString();

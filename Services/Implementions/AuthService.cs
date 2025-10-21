@@ -230,8 +230,8 @@ public class AuthService : IAuthService
 
             // Retrieve the tenant's subscription along with the associated plan details.
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(subscription => subscription.Id == user.TenantId)
-                .Include(subscription => subscription.Plan)
+                .GetByConditionAsync(w => w.TenantId == user.TenantId && w.IsActive)
+                .Include(i => i.Plan)
                 .FirstOrDefaultAsync();
 
             // Extract the current plan type from the subscription, if available.
