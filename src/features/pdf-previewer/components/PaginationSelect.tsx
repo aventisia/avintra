@@ -95,13 +95,18 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
         confirmActionFn: () =>
           deleteVersionResourceMutate(selectedPdf.id || "", {
             onSuccess: () => {
-              // After deletion, refetch the list and select the first PDF if available
+              // After deletion, refetch the list and select the previous PDF if available
               refetch().then(() => {
                 if (pdfList.length > 1) {
+                  const currentIdx = pdfList.findIndex(
+                    (pdf) => pdf.id === selectedPdf.id,
+                  );
                   const newPdfList = pdfList.filter(
                     (pdf) => pdf.id !== selectedPdf.id,
                   );
-                  onPdfSelect(newPdfList[0]);
+                  // Show previous file if possible, otherwise fallback to first
+                  const prevIdx = Math.max(currentIdx - 1, 0);
+                  onPdfSelect(newPdfList[prevIdx]);
                 }
               });
             },
