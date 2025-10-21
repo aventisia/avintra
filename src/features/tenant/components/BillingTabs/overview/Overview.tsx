@@ -42,8 +42,7 @@ const Overview = () => {
               </h1>
               <p className="text-sm text-muted-foreground">
                 <span className="text-xl font-semibold text-accent-foreground">
-                  {currencySymbols[data?.data.currentPlan.currency || "USD"] +
-                    data?.data.currentPlan.price}
+                  {`${currencySymbols[data?.data.currentPlan.currency || "USD"] ? currencySymbols[data?.data.currentPlan.currency || "USD"] : "$"}${data?.data.currentPlan.price}`}
                 </span>{" "}
                 /Month
               </p>

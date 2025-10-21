@@ -39,7 +39,9 @@ export const PlanItem = ({
 
           <div className="flex items-baseline gap-1">
             <p className="text-base">
-              {currencySymbols[plan.currency] + planPrice}
+              {(currencySymbols[plan.currency]
+                ? currencySymbols[plan.currency]
+                : "$") + planPrice}
             </p>
             <span className="text-sm text-muted-foreground">/{timeUnit}</span>
           </div>

@@ -40,7 +40,7 @@ const NextPaymentDetails = ({
             <div className="flex items-center justify-between text-sm">
               <p>Subscription Fee</p>
               <p>
-                {currencySymbols[currency] +
+                {(currencySymbols[currency] ? currencySymbols[currency] : "$") +
                   (nextPayment?.subscriptionFee ?? 0)}
               </p>
             </div>
