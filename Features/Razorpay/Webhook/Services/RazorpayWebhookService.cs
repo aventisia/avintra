@@ -117,27 +117,27 @@ public class WebhookService : IWebhookService
             // ========================== Subscription Events ==========================
 
             case "subscription.authenticated":
-                await HandleSubscriptionAuthenticated(json);
+                await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Authenticated);
                 break;
 
             case "subscription.paused":
-                await HandleSubscriptionPaused(json);
+                await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Paused);
                 break;
 
             case "subscription.resumed":
-                await HandleSubscriptionResumed(json);
+                await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Paused);
                 break;
 
             case "subscription.activated":
-                await HandleSubscriptionActivated(json);
+                await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Active);
                 break;
 
             case "subscription.pending":
-                await HandleSubscriptionPending(json);
+                await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Pending);
                 break;
 
             case "subscription.halted":
-                await HandleSubscriptionHalted(json);
+                await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Halted);
                 break;
 
             case "subscription.charged":
@@ -145,15 +145,15 @@ public class WebhookService : IWebhookService
                 break;
 
             case "subscription.cancelled":
-                await HandleSubscriptionCancelled(json);
+                await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Cancelled);
                 break;
 
             case "subscription.completed":
-                await HandleSubscriptionCompleted(json);
+                await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Completed);
                 break;
 
             case "subscription.updated":
-                await HandleSubscriptionUpdated(json);
+                await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Authenticated);
                 break;
 
             // ========================== Dispute Events ==========================
@@ -239,15 +239,6 @@ public class WebhookService : IWebhookService
         }
     }
 
-    private async Task HandleSubscriptionUpdated(JObject json)
-    {
-        // Log the incoming request for subscription update event
-        _logger.LogInformation("Handling subscription update event.");
-
-        // Call the helper method to process the status update to 'Authenticated'
-        await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Authenticated);
-    }
-
     private async Task HandleSubscriptionCharged(JObject json)
     {
         // Log the incoming request for subscription charge event
@@ -263,87 +254,17 @@ public class WebhookService : IWebhookService
         await AssignCreditAsync(tenantSubscription);
     }
 
-    private async Task HandleSubscriptionCompleted(JObject json)
-    {
-        // Log the incoming request for subscription completed event
-        _logger.LogInformation("Handling subscription completed event.");
-
-        // Call the helper method to process the status update to 'Completed'
-        await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Completed);
-    }
-
-    private async Task HandleSubscriptionCancelled(JObject json)
-    {
-        // Log the incoming request for subscription cancellation event
-        _logger.LogInformation("Handling subscription cancellation event.");
-
-        // Call the helper method to process the status update to 'Cancelled'
-        await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Cancelled);
-    }
-
-    private async Task HandleSubscriptionHalted(JObject json)
-    {
-        // Log the incoming request for subscription halt event
-        _logger.LogInformation("Handling subscription halt event.");
-
-        // Call the helper method to process the status update to 'Halted'
-        await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Halted);
-    }
-
-    private async Task HandleSubscriptionPending(JObject json)
-    {
-        // Log the incoming request for subscription pending event
-        _logger.LogInformation("Handling subscription pending event.");
-
-        // Call the helper method to process the status update to 'Halted'
-        await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Pending);
-    }
-
-    private async Task HandleSubscriptionActivated(JObject json)
-    {
-        // Log the incoming request for subscription activated event
-        _logger.LogInformation("Handling subscription activated event.");
-
-        // Call the helper method to process the status update to 'Active'
-        await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Active);
-    }
-
-    private async Task HandleSubscriptionResumed(JObject json)
-    {
-        // Log the incoming request for subscription resumed event
-        _logger.LogInformation("Handling subscription resumed event.");
-
-        // Call the helper method to process the status update to 'Paused'
-        await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Paused);
-    }
-
-    private async Task HandleSubscriptionPaused(JObject json)
-    {
-        // Log the incoming request for subscription paused event
-        _logger.LogInformation("Handling subscription paused event.");
-
-        // Call the helper method to process the status update to 'Paused'
-        await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Paused);
-    }
-
-    private async Task HandleSubscriptionAuthenticated(JObject json)
-    {
-        // Log the incoming request for subscription authenticated event
-        _logger.LogInformation("Handling subscription authenticated event.");
-
-        // Call the helper method to process the status update to 'Authenticated'
-        await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Authenticated);
-    }
-
     private async Task<TenantSubscription?> ProcessSubscriptionStatusUpdate(JObject json, SubscriptionStatusTypesEnum targetStatus)
     {
         // Declare a variable to hold the tenant subscription object, initialized to null.
         // This will eventually hold the subscription data retrieved from the database or remain null if no matching subscription is found.
         TenantSubscription? tenantSubscription = null;
 
-        // Extract the Razorpay Subscription ID from the incoming JSON payload.
-        // This assumes the JSON structure contains the subscription ID under "payload" -> "subscription" -> "entity" -> "id".
-        var razorpaySubscriptionId = json["payload"]?["subscription"]?["entity"]?["id"]?.ToString();
+        // Extract the Razorpay subscription entity from the incoming JSON payload.
+        var razorpaySubscriptionEntity = json["payload"]?["subscription"]?["entity"];
+
+        // Extract the Razorpay Subscription ID directly from the "entity" object.
+        var razorpaySubscriptionId = razorpaySubscriptionEntity["id"]?.ToString();
 
         // Return early if the Razorpay Subscription ID is missing or invalid in the payload.
         if (string.IsNullOrEmpty(razorpaySubscriptionId))
@@ -374,18 +295,41 @@ public class WebhookService : IWebhookService
             }
 
             // Log the current status of the found subscription for debugging purposes.
-            // This helps to track if any changes are required.
             _logger.LogInformation("Found subscription with ID {RazorpaySubscriptionId}, Status: {CurrentStatus}", razorpaySubscriptionId, tenantSubscription.Status);
 
-            // If the subscription's current status matches the target status, no update is necessary.
-            if (tenantSubscription.Status == targetStatus)
+            switch (targetStatus)
             {
-                _logger.LogInformation("Subscription with ID {RazorpaySubscriptionId} is already in '{TargetStatus}' status. No action needed.", razorpaySubscriptionId, targetStatus);
-                return tenantSubscription;
-            }
+                case SubscriptionStatusTypesEnum.Active:
+                    // Extract 'current_start' from the Razorpay subscription entity and convert it to DateTimeOffset in UTC or return null.
+                    DateTimeOffset? subscriptionStartDate = razorpaySubscriptionEntity["current_start"] != null
+                        ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(razorpaySubscriptionEntity["current_start"])).ToUniversalTime()
+                        : (DateTimeOffset?)null;
 
-            // Update the subscription's status to the target status.
-            tenantSubscription.Status = targetStatus;
+                    // Extract 'current_end' from the Razorpay subscription entity and convert it to DateTimeOffset in UTC or return null.
+                    DateTimeOffset? subscriptionEndDate = razorpaySubscriptionEntity["current_end"] != null
+                        ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(razorpaySubscriptionEntity["current_end"])).ToUniversalTime()
+                        : (DateTimeOffset?)null;
+
+                    // Set calculatedNextBillingDate to subscriptionEndDate initially
+                    var calculatedNextBillingDate = subscriptionEndDate;
+
+                    // If 'current_end' (subscriptionEndDate) is null, calculate the next billing date based on the subscription frequency (Monthly or Yearly)
+                    if (calculatedNextBillingDate == null)
+                    {
+                        calculatedNextBillingDate = tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
+                            ? DateTimeOffset.UtcNow.AddMonths(1)
+                            : DateTimeOffset.UtcNow.AddYears(1);
+                    }
+
+                    tenantSubscription.NextBillingDate = calculatedNextBillingDate;
+                    break;
+
+                // You can add more cases here for other statuses if needed.
+                default:
+                    // For any other status, update the subscription's status to the target status.
+                    tenantSubscription.Status = targetStatus;
+                    break;
+            }
 
             // Log the action of updating the subscription status for tracking purposes.
             _logger.LogInformation("Updating subscription with ID {RazorpaySubscriptionId} to '{TargetStatus}' status.", razorpaySubscriptionId, targetStatus);
