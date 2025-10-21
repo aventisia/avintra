@@ -311,19 +311,15 @@ public class AuthService : IAuthService
             }
             else
             {
-                // Determine if the current user is part of the default tenant
-                var isNonDefaultTenant = _defaultTenantConfig.TenantId != user.TenantId;
-
                 // Query the current tenant's subscription, including related plan and creator details
                 var subscription = await _unitOfWork.TenantSubscriptionRepo
                     .GetByConditionAsync(w =>
-                        (isNonDefaultTenant || w.CreatedByUserId == user.Id) &&
                         w.TenantId == user.TenantId
                     )
                     .FirstOrDefaultAsync();
 
                 // Check if a valid subscription was found
-                if (subscription == null)
+                if (subscription == null || subscription.Status == SubscriptionStatusTypesEnum.Initiated)
                 {
                     _logger.LogWarning("No active subscription found for user {UserId} in tenant {TenantId}.", user.Id, user.TenantId);
                     serviceResponse.Message = "Tenant has no active subscription.";
