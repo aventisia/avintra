@@ -54,7 +54,10 @@ export const AppLayout = () => {
 
     // Set the sidebar menu sections
     setSidebarMenuSections(
-      getSidebarMenuBasedOnPersmissions(userSession?.userRoles || []),
+      getSidebarMenuBasedOnPersmissions(
+        userSession?.userRoles || [],
+        userSession?.planType,
+      ),
     );
   }, [userSession, isPending]);
 
