@@ -2,6 +2,7 @@ import { submitFiles } from "@/features/file-uploader-viewer/apis/file-upload-ap
 import FileUploader from "@/features/file-uploader-viewer/components/FileUploader";
 import { useFileStore } from "@/features/file-uploader-viewer/stores/file-uploader-store";
 import { useFetchUploadedFiles } from "@/features/multi-format-viewer/hooks/useFetchFiles";
+import { useFileListStore } from "@/features/multi-format-viewer/store/file-list-store";
 
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
@@ -47,6 +48,12 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
   selectedPdf,
   onPdfSelect,
 }) => {
+  const { setSelectedPdf } = useFileListStore(
+    useShallow((state) => ({
+      setSelectedPdf: state.setSelectedFile,
+    })),
+  );
+
   const currentIndex = pdfList.findIndex((pdf) => pdf.id === selectedPdf.id);
 
   const handleFirst = () => onPdfSelect(pdfList[0]);
@@ -95,8 +102,13 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
         confirmActionFn: () =>
           deleteVersionResourceMutate(selectedPdf.id || "", {
             onSuccess: () => {
-              // After deletion, refetch the list and select the previous PDF if available
-              refetch().then(() => {
+              refetch().then((fileList) => {
+                const list = fileList?.data?.data || [];
+                
+                if (list.length === 0) {
+                  setSelectedPdf(null);
+                }
+
                 if (pdfList.length > 1) {
                   const currentIdx = pdfList.findIndex(
                     (pdf) => pdf.id === selectedPdf.id,

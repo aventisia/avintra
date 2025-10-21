@@ -5,7 +5,7 @@ import { FileViewerDto } from "../dtos/file-list-dtos";
 export interface FileState {
   selectedFile: FileViewerDto | null;
   fileUrl: string | null;
-  setSelectedFile: (file: FileViewerDto) => void;
+  setSelectedFile: (file: FileViewerDto | null) => void;
   setFileUrl: (url: string | null) => void;
 }
 
