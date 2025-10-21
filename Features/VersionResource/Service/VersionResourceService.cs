@@ -209,7 +209,18 @@ public class VersionResourceService : IVersionResourceService
             // Extract file URL for later deletion
             var fileUrl = versionResource.Path;
 
-            // Delete the record from the database
+            // Delete record from ExtractedData entities associated with this version resource
+            var extractedDataRecords = await _unitOfWork.ExtractedDataRepo
+                .GetByConditionAsync(w => w.VersionResourceId == versionResourceId)
+                .ToListAsync();
+
+            if (extractedDataRecords.Any())
+            {
+                _unitOfWork.ExtractedDataRepo.Delete(extractedDataRecords);
+                _logger.LogInformation("Deleted {Count} associated ExtractedData records for version resource ID: {VersionResourceId}", extractedDataRecords.Count, versionResourceId);
+            }
+
+            // Delete the version resource record from the database
             _unitOfWork.VersionResourceRepo.Delete(versionResource);
 
             // Save the changes
