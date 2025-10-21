@@ -2,13 +2,6 @@ import { LoadingSpinner } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { RadioGroup } from "@aventisia/ui/radio-group";
 import { ScrollArea } from "@aventisia/ui/scroll";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@aventisia/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { ArrowLeft, Check } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -22,6 +15,7 @@ import { PlanFrequency } from "@/features/tenant/types/plan-type";
 import BillingDetails from "./BillingDetails";
 import ChargeSummary from "./ChargeSummary";
 import { PlanItem } from "./choose-plan/PlanItem";
+import CurrencySelect from "./CurrencySelect";
 // import TopUp from "./TopUp";
 
 const ChoosePlan = () => {
@@ -89,21 +83,7 @@ const ChoosePlan = () => {
           <h2 className="text-lg font-semibold">Choose Plan</h2>
         </div>
         <div className="flex items-center gap-2">
-          <Select
-            defaultValue="USD"
-            value={currency}
-            onValueChange={(value: string) => setCurrency(value)}
-          >
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="Select Currency" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="USD">USD ($)</SelectItem>
-              <SelectItem value="INR">INR (₹)</SelectItem>
-              <SelectItem value="EUR">EUR (€)</SelectItem>
-              <SelectItem value="GBP">GBP (£)</SelectItem>
-            </SelectContent>
-          </Select>
+          <CurrencySelect value={currency} onChange={setCurrency} />
           <Tabs value={selectedTab} onValueChange={setSelectedTab}>
             <TabsList className="rounded-full">
               <TabsTrigger value="monthly" className="rounded-full px-8">
