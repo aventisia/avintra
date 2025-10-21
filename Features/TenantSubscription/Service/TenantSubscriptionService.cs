@@ -418,7 +418,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
                 tenantSubscription.Frequency = tenantSubscriptionPurchaseDto.Frequency;
                 tenantSubscription.Status = SubscriptionStatusTypesEnum.Initiated;
-                tenantSubscription.IsActive = false;
+                tenantSubscription.IsActive = true;
                 tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
                 tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
                 tenantSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
@@ -780,7 +780,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
             tenantSubscription.PlanId = subscriptionPlan.Id;
             tenantSubscription.RazorpaySubscriptionId = razorpaSubscriptionId;
-            tenantSubscription.IsActive = false;
+            tenantSubscription.IsActive = true;
             tenantSubscription.Status = SubscriptionStatusTypesEnum.Pending;
             tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
             tenantSubscription.CreatedByUserId = _userId;
