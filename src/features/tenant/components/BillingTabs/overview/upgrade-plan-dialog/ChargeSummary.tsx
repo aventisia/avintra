@@ -1,6 +1,7 @@
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 
+import { currencySymbols } from "@/features/tenant/constants/currency-symbol-map";
 import { SubscriptionPlanDTO } from "@/features/tenant/dtos/subscription-plans-dto";
 import { useChargeSummary } from "@/features/tenant/hooks/useChargeSummary";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
@@ -25,7 +26,7 @@ const ChargeSummary = ({
         {plan && basePrice >= 0 ? (
           <SummaryRow
             label="Subscription Fee"
-            value={`$${basePrice.toFixed(2)}`}
+            value={`${currencySymbols[plan.currency]}${basePrice.toFixed(2)}`}
           />
         ) : null}
 
@@ -37,20 +38,23 @@ const ChargeSummary = ({
               <SummaryRow
                 key={item.type}
                 label={`${item.type}`}
-                value={`$${item.total.toFixed(2)}`}
+                value={`${currencySymbols[plan?.currency || "USD"]}${item.total.toFixed(2)}`}
               />
             ),
         )}
 
         {isTaxApplicable && (
-          <SummaryRow label="Tax" value={`$${tax.toFixed(2)}`} />
+          <SummaryRow
+            label="Tax"
+            value={`${currencySymbols[plan?.currency || "USD"]}${tax.toFixed(2)}`}
+          />
         )}
 
         <Separator />
 
         <SummaryRow
           label="Amount Due"
-          value={`$${total.toFixed(2)}`}
+          value={`${currencySymbols[plan?.currency || "USD"]}${total.toFixed(2)}`}
           className="font-medium"
         />
 

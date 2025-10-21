@@ -15,7 +15,8 @@ export const useChargeSummary = (
   const isTaxApplicable = billingCountry === "India";
 
   // Calculate the base price depending on the planFrequency (monthly or yearly)
-  const basePrice = plan?.price ?? 0;
+  const basePrice =
+    (planFrequency === "monthly" ? plan?.price : Number(plan?.price) * 12) ?? 0;
 
   // Calculate the total top-up charges based on the frequency (monthly/yearly)
   const topUpTotal = Object.entries(topUp).reduce((acc, [key, value]) => {
@@ -27,7 +28,9 @@ export const useChargeSummary = (
 
     // Adjust unit cost based on the selected frequency (monthly/yearly)
     const adjustedUnitCost =
-      planFrequency === "monthly" ? config.unitCost.monthly : config.unitCost.yearly;
+      planFrequency === "monthly"
+        ? config.unitCost.monthly
+        : config.unitCost.yearly;
 
     return acc + value * adjustedUnitCost;
   }, 0);
@@ -50,7 +53,9 @@ export const useChargeSummary = (
     if (!config) return { type: key, quantity, total: 0 };
 
     const adjustedUnitCost =
-      planFrequency === "monthly" ? config.unitCost.monthly : config.unitCost.yearly;
+      planFrequency === "monthly"
+        ? config.unitCost.monthly
+        : config.unitCost.yearly;
 
     return {
       type: config?.label || key,

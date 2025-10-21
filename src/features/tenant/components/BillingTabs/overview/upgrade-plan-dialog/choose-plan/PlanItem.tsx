@@ -1,4 +1,5 @@
 import CustomRadioItem from "@/components/CustomRadioItem";
+import { currencySymbols } from "@/features/tenant/constants/currency-symbol-map";
 import { SubscriptionPlanDTO } from "@/features/tenant/dtos/subscription-plans-dto";
 import { PlanFrequency } from "@/features/tenant/types/plan-type";
 
@@ -21,6 +22,8 @@ export const PlanItem = ({
   const timeUnit =
     planFrequency === "monthly" || plan.name == "Starter" ? "month" : "year";
 
+  const planPrice = planFrequency === "monthly" ? plan.price : plan.price * 12;
+
   return (
     <CustomRadioItem
       value={plan.id}
@@ -35,12 +38,16 @@ export const PlanItem = ({
           <h6 className="text-base font-medium">{plan.name}</h6>
 
           <div className="flex items-baseline gap-1">
-            <p className="text-base">${plan.price}</p>
+            <p className="text-base">
+              {currencySymbols[plan.currency] + planPrice}
+            </p>
             <span className="text-sm text-muted-foreground">/{timeUnit}</span>
           </div>
         </div>
 
-        {isSelected && <PlanFeatures plan={plan} planFrequency={planFrequency} />}
+        {isSelected && (
+          <PlanFeatures plan={plan} planFrequency={planFrequency} />
+        )}
       </div>
     </CustomRadioItem>
   );

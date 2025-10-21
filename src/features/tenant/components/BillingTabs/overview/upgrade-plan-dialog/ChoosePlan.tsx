@@ -2,9 +2,16 @@ import { LoadingSpinner } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { RadioGroup } from "@aventisia/ui/radio-group";
 import { ScrollArea } from "@aventisia/ui/scroll";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@aventisia/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { ArrowLeft, Check } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useFetchCompanyDetails } from "@/features/tenant/hooks/useFetchCompanyDetails";
@@ -18,18 +25,40 @@ import { PlanItem } from "./choose-plan/PlanItem";
 // import TopUp from "./TopUp";
 
 const ChoosePlan = () => {
-  const { topUp, clearTopUp, setChosenPlan } = useUpgradePlanDialogStore(
-    useShallow((state) => ({
-      setChosenPlan: state.setChosenPlan,
-      clearTopUp: state.clearTopUp,
-      topUp: state.topUp,
-    })),
-  );
+  const { topUp, clearTopUp, setChosenPlan, currency, setCurrency } =
+    useUpgradePlanDialogStore(
+      useShallow((state) => ({
+        setChosenPlan: state.setChosenPlan,
+        clearTopUp: state.clearTopUp,
+        topUp: state.topUp,
+        currency: state.currency,
+        setCurrency: state.setCurrency,
+      })),
+    );
 
   const [selectedTab, setSelectedTab] = useState("monthly");
   const [selectedPlan, setSelectedPlan] = useState("");
+  const [selectedPlanName, setSelectedPlanName] = useState("");
 
-  const { data, isLoading } = useFetchSubscriptionPlans("Pro");
+  const { data, isLoading } = useFetchSubscriptionPlans(
+    `?currency=${currency}&frequency=${selectedTab}`,
+  );
+
+  useEffect(() => {
+    if (data?.data) {
+      const name =
+        data.data.find((item) => item.id == selectedPlan)?.name || "";
+      setSelectedPlanName(name);
+    }
+  }, [data?.data, selectedPlan]);
+
+  useEffect(() => {
+    if (selectedPlanName && data?.data) {
+      const queryPlanId =
+        data.data.find((item) => item.name == selectedPlanName)?.id || "";
+      setSelectedPlan(queryPlanId);
+    }
+  }, [data?.data, selectedPlanName]);
 
   const { data: billingData, isLoading: isBillingDataLoading } =
     useFetchCompanyDetails();
@@ -59,17 +88,33 @@ const ChoosePlan = () => {
           </Button>
           <h2 className="text-lg font-semibold">Choose Plan</h2>
         </div>
-
-        <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-          <TabsList className="rounded-full">
-            <TabsTrigger value="monthly" className="rounded-full px-8">
-              Monthly
-            </TabsTrigger>
-            <TabsTrigger value="yearly" className="rounded-full px-8">
-              Yearly
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className="flex items-center gap-2">
+          <Select
+            defaultValue="USD"
+            value={currency}
+            onValueChange={(value: string) => setCurrency(value)}
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Select Currency" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="USD">USD ($)</SelectItem>
+              <SelectItem value="INR">INR (₹)</SelectItem>
+              <SelectItem value="EUR">EUR (€)</SelectItem>
+              <SelectItem value="GBP">GBP (£)</SelectItem>
+            </SelectContent>
+          </Select>
+          <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+            <TabsList className="rounded-full">
+              <TabsTrigger value="monthly" className="rounded-full px-8">
+                Monthly
+              </TabsTrigger>
+              <TabsTrigger value="yearly" className="rounded-full px-8">
+                Yearly
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
       </div>
 
       <div className="grid grid-cols-7 gap-4">

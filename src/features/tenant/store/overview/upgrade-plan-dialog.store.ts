@@ -14,6 +14,7 @@ interface UpgradePlanState {
   chosenPlan: PlanFilter | "Credits" | null;
   planId: string;
   planFrequency: PlanFrequency;
+  currency: string;
   billingCountry: string;
   topUp: TopUp;
 }
@@ -30,6 +31,9 @@ interface UpgradePlanDialogActions {
 
   /** Set the form data for creating an account */
   setPlanType: (planFrequency: PlanFrequency) => void;
+
+  /** Set the currency */
+  setCurrency: (currency: string) => void;
 
   setTopUp: (topUp: Partial<TopUp>) => void; // allows updating one or more fields
 
@@ -50,7 +54,9 @@ export const useUpgradePlanDialogStore = create<
     storage: 0,
     history: 0,
   },
+  currency: "USD",
 
+  setCurrency: (currency) => set({ currency }),
   setPlanType: (planFrequency) => set({ planFrequency }),
   setBillingCountry: (billingCountry) => set({ billingCountry }),
   setPlanId: (planId) => set({ planId }),
