@@ -369,7 +369,7 @@ public class MyAccountService(
                     .FirstOrDefaultAsync();
 
                 // Check if a valid subscription was found
-                if (subscription == null)
+                if (subscription == null || subscription.Status == SubscriptionStatusTypesEnum.Initiated)
                 {
                     _logger.LogWarning("No active subscription found for user {UserId} in tenant {TenantId}.", user.Id, user.TenantId);
                     serviceResponse.Message = "Tenant has no active subscription.";
