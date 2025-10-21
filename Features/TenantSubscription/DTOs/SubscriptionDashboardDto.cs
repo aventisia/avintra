@@ -52,6 +52,11 @@ public class CurrentSubscriptionPlanDto
     public bool IsRecurringPayment { get; set; }
 
     /// <summary>
+    /// Gets or sets the Razorpay subscription ID associated with this tenant's subscription.
+    /// </summary>
+    public string? RazorpaySubscriptionId { get; set; }
+
+    /// <summary>
     /// Gets or sets the date when the plan expired. Null if the plan is ongoing.
     /// </summary>
     public DateTimeOffset? ExpiredOn { get; set; }
