@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogDefaultHeader,
 } from "@aventisia/ui/dialog";
+import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import {
   Select,
@@ -19,17 +20,19 @@ import {
   SelectValue,
 } from "@aventisia/ui/select";
 import { toast } from "@aventisia/ui/sonner";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronsLeftIcon,
   ChevronsRightIcon,
+  Image,
 } from "lucide-react";
-import { Image } from "lucide-react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { FileViewerDto } from "../../multi-format-viewer/dtos/file-list-dtos";
+import { useDeleteVersionResource } from "../hooks/useDeleteVersionResource";
 import { useToggleFileUploadDialogStore } from "../stores/toggle-file-uploader-dialog-store";
 import pdfIcon from "/pdf-svgrepo-com.svg";
 
@@ -80,9 +83,54 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
     }
   };
 
+  // Get showAlert handler
+  const { showDefaultAlertDialog } = useShowAlertHandler();
+
+  const { mutate: deleteVersionResourceMutate, isPending } =
+    useDeleteVersionResource();
+
+  const deleteFileHandler = () => {
+    if (selectedPdf.id) {
+      showDefaultAlertDialog({
+        confirmActionFn: () =>
+          deleteVersionResourceMutate(selectedPdf.id || "", {
+            onSuccess: () => {
+              // After deletion, refetch the list and select the first PDF if available
+              refetch().then(() => {
+                if (pdfList.length > 1) {
+                  const newPdfList = pdfList.filter(
+                    (pdf) => pdf.id !== selectedPdf.id,
+                  );
+                  onPdfSelect(newPdfList[0]);
+                }
+              });
+            },
+          }),
+        alertType: "delete-record",
+        additionalText: "file",
+      });
+    } else {
+      toast.error("Selected file does not have a valid ID.");
+    }
+  };
+
   return (
     <>
       <div className="flex w-full rounded-b-lg border-t bg-white px-3 items-center py-2">
+        <Button
+          variant={"caution"}
+          size="sm"
+          className="group gap-1"
+          onClick={deleteFileHandler}
+          disabled={isPending}
+        >
+          {isPending ? (
+            <LoadingSpinner className="h-4 w-4" />
+          ) : (
+            <TrashIcon className="size-4 mb-[2px] text-destructive group-focus:text-white group-hover:text-white" />
+          )}
+          Delete
+        </Button>
         <div className="flex items-center justify-center gap-1.5 w-full">
           <Button
             variant="outline"
@@ -144,6 +192,7 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
         </div>
         <Button
           variant={"ghost"}
+          size="sm"
           className="text-primary"
           onClick={() => setShowFileUploadDialog(true)}
         >
