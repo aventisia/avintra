@@ -53,8 +53,8 @@ const CreditTopUp = () => {
                 <div>
                   <p>Credits</p>
                   <p className="text-sm text-muted-foreground">
-                    500 credits = {currencySymbols[currency]}
-                    {pricePer500Credits}
+                    {currencySymbols[currency]}
+                    {pricePer500Credits} = 500 credits
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
