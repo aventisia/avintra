@@ -13,7 +13,7 @@ import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgr
 import DeploymentOptions from "./DeploymentOptions";
 
 const UpgradePlanDialog = () => {
-  const { isOpen, chosenPlan, setOpen, setChosenPlan, clearTopUp } =
+  const { isOpen, chosenPlan, setOpen, resetToDefault } =
     useUpgradePlanDialogStore();
 
   return (
@@ -21,8 +21,10 @@ const UpgradePlanDialog = () => {
       open={isOpen}
       onOpenChange={(open: boolean) => {
         if (!open) {
-          setChosenPlan(null);
-          clearTopUp();
+          setTimeout(() => {
+            console.log("func");
+            resetToDefault();
+          }, 0);
         }
         setOpen(open);
       }}
@@ -35,12 +37,6 @@ const UpgradePlanDialog = () => {
             </h2>
             <DialogPrimitive.Close
               className={buttonVariants({ variant: "ghost", size: "icon8" })}
-              onClick={() => {
-                setTimeout(() => {
-                  setChosenPlan(null);
-                  clearTopUp();
-                }, 0);
-              }}
             >
               <X className="h-5 w-5 text-[--icon-color]" />
               <span className="sr-only">Upgrade</span>

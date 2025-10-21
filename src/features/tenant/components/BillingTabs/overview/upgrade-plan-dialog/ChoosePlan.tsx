@@ -4,32 +4,55 @@ import { RadioGroup } from "@aventisia/ui/radio-group";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { ArrowLeft, Check } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useFetchCompanyDetails } from "@/features/tenant/hooks/useFetchCompanyDetails";
 import { useFetchSubscriptionPlans } from "@/features/tenant/hooks/useFetchSubscriptionPlans";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
-import { PlanType } from "@/features/tenant/types/plan-type";
+import { PlanFrequency } from "@/features/tenant/types/plan-type";
 
 import BillingDetails from "./BillingDetails";
 import ChargeSummary from "./ChargeSummary";
 import { PlanItem } from "./choose-plan/PlanItem";
+import CurrencySelect from "./CurrencySelect";
 // import TopUp from "./TopUp";
 
 const ChoosePlan = () => {
-  const { topUp, clearTopUp, setChosenPlan } = useUpgradePlanDialogStore(
-    useShallow((state) => ({
-      setChosenPlan: state.setChosenPlan,
-      clearTopUp: state.clearTopUp,
-      topUp: state.topUp,
-    })),
-  );
+  const { topUp, clearTopUp, setChosenPlan, currency, setCurrency } =
+    useUpgradePlanDialogStore(
+      useShallow((state) => ({
+        setChosenPlan: state.setChosenPlan,
+        clearTopUp: state.clearTopUp,
+        topUp: state.topUp,
+        currency: state.currency,
+        setCurrency: state.setCurrency,
+      })),
+    );
 
   const [selectedTab, setSelectedTab] = useState("monthly");
   const [selectedPlan, setSelectedPlan] = useState("");
+  const [selectedPlanName, setSelectedPlanName] = useState("");
 
-  const { data, isLoading } = useFetchSubscriptionPlans("Pro");
+  const { data, isLoading } = useFetchSubscriptionPlans(
+    `?currency=${currency}&frequency=${selectedTab}`,
+  );
+
+  useEffect(() => {
+    if (data?.data) {
+      const name =
+        data.data.find((item) => item.id == selectedPlan)?.name || "";
+      setSelectedPlanName(name);
+    }
+  }, [data?.data, selectedPlan]);
+
+  useEffect(() => {
+    if (selectedPlanName && data?.data) {
+      const queryPlanId =
+        data.data.find((item) => item.name == selectedPlanName)?.id || "";
+      setSelectedPlan(queryPlanId);
+    }
+  }, [data?.data, selectedPlanName]);
 
   const { data: billingData, isLoading: isBillingDataLoading } =
     useFetchCompanyDetails();
@@ -59,17 +82,19 @@ const ChoosePlan = () => {
           </Button>
           <h2 className="text-lg font-semibold">Choose Plan</h2>
         </div>
-
-        <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-          <TabsList className="rounded-full">
-            <TabsTrigger value="monthly" className="rounded-full px-8">
-              Monthly
-            </TabsTrigger>
-            <TabsTrigger value="yearly" className="rounded-full px-8">
-              Yearly
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className="flex items-center gap-2">
+          <CurrencySelect value={currency} onChange={setCurrency} />
+          <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+            <TabsList className="rounded-full">
+              <TabsTrigger value="monthly" className="rounded-full px-8">
+                Monthly
+              </TabsTrigger>
+              <TabsTrigger value="yearly" className="rounded-full px-8">
+                Yearly
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
       </div>
 
       <div className="grid grid-cols-7 gap-4">
@@ -89,14 +114,14 @@ const ChoosePlan = () => {
                     <PlanItem
                       key={plan.id}
                       plan={plan}
-                      planType={selectedTab as PlanType}
+                      planFrequency={selectedTab as PlanFrequency}
                       selectedId={selectedPlan}
                     />
                   ))}
               </RadioGroup>
             </ScrollArea>
           </div>
-          {/* <TopUp planType={selectedTab as PlanType} /> */}
+          {/* <TopUp planFrequency={selectedTab as PlanFrequency} /> */}
         </div>
 
         {/* Right hand side */}
@@ -106,7 +131,7 @@ const ChoosePlan = () => {
           {selectedPlan || topUp.history || topUp.spaces || topUp.storage ? (
             <ChargeSummary
               plan={data?.data.find((val) => val.id == selectedPlan)}
-              planType={selectedTab as PlanType}
+              planFrequency={selectedTab as PlanFrequency}
             />
           ) : null}
         </div>

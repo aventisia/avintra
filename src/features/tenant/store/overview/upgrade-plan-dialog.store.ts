@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { PlanFilter, PlanType } from "../../types/plan-type";
+import { PlanFilter, PlanFrequency } from "../../types/plan-type";
 
 interface TopUp {
   credits: number;
@@ -13,7 +13,8 @@ interface UpgradePlanState {
   isOpen: boolean;
   chosenPlan: PlanFilter | "Credits" | null;
   planId: string;
-  planType: PlanType;
+  planFrequency: PlanFrequency;
+  currency: string;
   billingCountry: string;
   topUp: TopUp;
 }
@@ -29,11 +30,15 @@ interface UpgradePlanDialogActions {
   setBillingCountry: (billingCountry: string) => void;
 
   /** Set the form data for creating an account */
-  setPlanType: (planType: PlanType) => void;
+  setPlanType: (planFrequency: PlanFrequency) => void;
+
+  /** Set the currency */
+  setCurrency: (currency: string) => void;
 
   setTopUp: (topUp: Partial<TopUp>) => void; // allows updating one or more fields
 
   clearTopUp: () => void;
+  resetToDefault: () => void;
 }
 
 export const useUpgradePlanDialogStore = create<
@@ -43,15 +48,17 @@ export const useUpgradePlanDialogStore = create<
   chosenPlan: null,
   planId: "",
   billingCountry: "India",
-  planType: "monthly",
+  planFrequency: "monthly",
   topUp: {
     credits: 0,
     spaces: 0,
     storage: 0,
     history: 0,
   },
+  currency: "USD",
 
-  setPlanType: (planType) => set({ planType }),
+  setCurrency: (currency) => set({ currency }),
+  setPlanType: (planFrequency) => set({ planFrequency }),
   setBillingCountry: (billingCountry) => set({ billingCountry }),
   setPlanId: (planId) => set({ planId }),
   setOpen: (open) => set({ isOpen: open }),
@@ -66,6 +73,21 @@ export const useUpgradePlanDialogStore = create<
     })),
   clearTopUp: () =>
     set({
+      topUp: {
+        credits: 0,
+        spaces: 0,
+        storage: 0,
+        history: 0,
+      },
+    }),
+  resetToDefault: () =>
+    set({
+      isOpen: false,
+      chosenPlan: null,
+      planId: "",
+      billingCountry: "India",
+      planFrequency: "monthly",
+      currency: "USD",
       topUp: {
         credits: 0,
         spaces: 0,

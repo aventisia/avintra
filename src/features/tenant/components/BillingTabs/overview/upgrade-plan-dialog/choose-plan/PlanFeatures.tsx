@@ -1,22 +1,22 @@
 import { Separator } from "@aventisia/ui";
 
 import { SubscriptionPlanDTO } from "@/features/tenant/dtos/subscription-plans-dto";
-import { PlanType } from "@/features/tenant/types/plan-type";
+import { PlanFrequency } from "@/features/tenant/types/plan-type";
 import { getCreditsLabel } from "@/features/tenant/utils";
 
 import { FeatureList } from "./FeatureList";
 
 export const PlanFeatures = ({
   plan,
-  planType,
+  planFrequency,
 }: {
   plan: SubscriptionPlanDTO;
-  planType: PlanType;
+  planFrequency: PlanFrequency;
 }) => {
   const features = [
     getCreditsLabel(
       plan.maxCredits,
-      plan.name == "Starter" ? "monthly" : planType,
+      plan.name == "Starter" ? "monthly" : planFrequency,
     ),
     `${plan.maxPublishedItems <= 0 ? "Unlimited" : plan.maxPublishedItems} published agents or AI models`,
     `${plan.historyRetentionDays} days of insights & workflow history`,

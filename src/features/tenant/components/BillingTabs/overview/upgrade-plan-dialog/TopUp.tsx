@@ -3,9 +3,9 @@ import { useShallow } from "zustand/react/shallow";
 
 import { ADD_ON_PRICING } from "@/features/tenant/constants/add-on-pricing";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
-import { PlanType } from "@/features/tenant/types/plan-type";
+import { PlanFrequency } from "@/features/tenant/types/plan-type";
 
-const TopUp = ({ planType }: { planType: PlanType }) => {
+const TopUp = ({ planFrequency }: { planFrequency: PlanFrequency }) => {
   const { topUp, setTopUp } = useUpgradePlanDialogStore(
     useShallow((state) => ({
       topUp: state.topUp,
@@ -21,7 +21,7 @@ const TopUp = ({ planType }: { planType: PlanType }) => {
   // Adjust the cost based on the selected plan type (monthly/yearly)
   const adjustCostForFrequency = (
     unitCost: { monthly: number; yearly: number },
-    frequency: PlanType,
+    frequency: PlanFrequency,
   ): number => {
     return frequency === "monthly" ? unitCost.monthly : unitCost.yearly;
   };
@@ -33,10 +33,10 @@ const TopUp = ({ planType }: { planType: PlanType }) => {
         {Object.entries(ADD_ON_PRICING).map(
           ([key, { label, note, unitCost, step }]) => {
             // Adjust the unit cost based on the selected frequency
-            const adjustedUnitCost = adjustCostForFrequency(unitCost, planType);
+            const adjustedUnitCost = adjustCostForFrequency(unitCost, planFrequency);
 
             // Select the appropriate note based on the plan type
-            const adjustedNote = note[planType];
+            const adjustedNote = note[planFrequency];
 
             return (
               <div
