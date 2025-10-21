@@ -3,10 +3,10 @@ namespace AccountsAPIs.Enums;
 public enum SubscriptionStatusTypesEnum
 {
     /// <summary>
-    /// The subscription has been created but not yet authenticated or activated.
+    /// The subscription has been initiated but has not yet undergone authentication or activation.
     /// </summary>
-    [Description("Subscription has been created but not yet authenticated or activated.")]
-    Created,
+    [Description("Subscription initiated, awaiting authentication or activation.")]
+    Initiated,
 
     /// <summary>
     /// The subscription has been authenticated and is ready for use.
@@ -54,5 +54,12 @@ public enum SubscriptionStatusTypesEnum
     /// The subscription has expired, meaning it is no longer valid.
     /// </summary>
     [Description("Subscription has expired and is no longer valid.")]
-    Expired
+    Expired,
+
+    // NOTE: This status is currently unused and may be reserved for future use.
+    /// <summary>
+    /// The subscription has been created but has not yet been authenticated or activated.
+    /// </summary>
+    [Description("Subscription created, pending authentication or activation.")]
+    Created,
 }
