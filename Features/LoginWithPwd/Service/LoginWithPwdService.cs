@@ -79,6 +79,8 @@ public class LoginWithPwdService : ILoginWithPwdService
             // Get user again (Includes Tenant and Roles)
             user = await _unitOfWork.AccountUserRepo
                     .GetByConditionAsync(w => w.Id == user.Id)
+                    .AsSplitQuery()
+                    .Include(i => i.Tenant)
                     .Include(i => i.UserRoles)
                         .ThenInclude(i1 => i1.Role)
                             .ThenInclude(i2 => i2.RolePermissions)
@@ -240,12 +242,13 @@ public class LoginWithPwdService : ILoginWithPwdService
             // Get user (Includes Tenant and Roles)
             var user = await _unitOfWork.AccountUserRepo
                     .GetByConditionAsync(w => EF.Functions.ILike(checkVerificationCodeDto.Email, w.UserName))
+                    .AsSplitQuery()
+                    .Include(i => i.Tenant)
                     .Include(i => i.UserRoles)
                         .ThenInclude(i1 => i1.Role)
                             .ThenInclude(i2 => i2.RolePermissions)
                                 .ThenInclude(i3 => i3.Permission)
                     .AsNoTracking()
-                    .AsSplitQuery()
                     .SingleOrDefaultAsync();
 
             // User doesn't exist

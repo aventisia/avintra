@@ -108,12 +108,21 @@ public class VerificationCodeService : IVerificationCodeService
                         .AsNoTracking()
                         .SingleOrDefaultAsync();
 
+                // Retrieve the tenant's subscription along with the associated plan details.
+                var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                    .GetByConditionAsync(subscription => subscription.Id == user.Tenant.Id)
+                    .Include(subscription => subscription.Plan)
+                    .FirstOrDefaultAsync();
+
+                // Extract the current plan type from the subscription, if available.
+                string? currentPlan = tenantSubscription?.Plan?.Type.ToString();
+
                 // Get Jwt validity config
                 var jwtExpiresOn = DateTimeOffset.UtcNow.AddMinutes(
                     _jwtConfig.PwdResetJwtValidityInMinutes);
 
                 // Create Jwt string
-                var jwt = _authHelperService.CreateJwt(user, jwtExpiresOn, true);
+                var jwt = _authHelperService.CreateJwt(user, jwtExpiresOn, true, null, currentPlan);
 
                 // Append Jwt cookie and remove other (if any)
                 _authHelperService.SetCookie(CookieNamesEnum.AccessToken.ToString(), jwt, jwtExpiresOn);

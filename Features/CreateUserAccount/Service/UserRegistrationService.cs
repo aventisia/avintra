@@ -203,6 +203,8 @@ public class UserRegistrationService : IUserRegistrationService
             // Fetch the newly created user with their tenant details
             var newlyAddedUser = await _unitOfWork.AccountUserRepo
                 .GetByConditionAsync(w => EF.Functions.ILike(createAccountDto.Email, w.UserName))
+                .AsSplitQuery()
+                .Include(i => i.Tenant)
                 .Include(i => i.UserRoles)
                         .ThenInclude(i1 => i1.Role)
                             .ThenInclude(i2 => i2.RolePermissions)
@@ -298,6 +300,8 @@ public class UserRegistrationService : IUserRegistrationService
             // Retrieve the updated user with tenant details for the response
             var updatedUser = await _unitOfWork.AccountUserRepo
                 .GetByConditionAsync(w => w.Id == _userId)
+                .AsSplitQuery()
+                .Include(i => i.Tenant)
                 .Include(i => i.UserRoles)
                         .ThenInclude(i1 => i1.Role)
                             .ThenInclude(i2 => i2.RolePermissions)

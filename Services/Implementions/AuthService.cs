@@ -228,9 +228,18 @@ public class AuthService : IAuthService
             var refreshTokenExpiresOn = DateTimeOffset.UtcNow.AddDays(
                 _jwtConfig.RefreshTokenValidityInDays);
 
+            // Retrieve the tenant's subscription along with the associated plan details.
+            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(subscription => subscription.Id == user.TenantId)
+                .Include(subscription => subscription.Plan)
+                .FirstOrDefaultAsync();
+
+            // Extract the current plan type from the subscription, if available.
+            string? currentPlan = tenantSubscription?.Plan?.Type.ToString();
+
             // Create Jwt string
             var sessionId = Guid.NewGuid();
-            var jwt = _authHelperService.CreateJwt(user, jwtExpiresOn, false, sessionId);
+            var jwt = _authHelperService.CreateJwt(user, jwtExpiresOn, false, sessionId, currentPlan);
 
             // Create RefreshToken
             var refreshToken = _authHelperService.CreateRefreshToken();
@@ -305,7 +314,7 @@ public class AuthService : IAuthService
             };
 
             // Check if the user is associated with an organization (tenant)
-            if (user.Tenant.Type == TenantTypesEnum.Unspecified)
+            if (user.Tenant == null || user.Tenant.Type == TenantTypesEnum.Unspecified)
             {
                 serviceResponse.Message = "Complete organization setup to continue.";
             }

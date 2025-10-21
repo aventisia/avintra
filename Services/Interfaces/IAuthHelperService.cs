@@ -45,8 +45,9 @@ public interface IAuthHelperService
     /// <param name="jwtExpiresOn">The expiration date and time of the JWT.</param>
     /// <param name="isSingleUseJwt">A boolean value indicating whether the JWT is single-use or not. Default is false.</param>
     /// <param name="sessionId">The ID of the session. Default is null.</param>
+    /// <param name="currentPlan">The user's current subscription plan. Optional.</param>
     /// <returns>The created JWT as a string.</returns>
-    string CreateJwt(AccountUser user, DateTimeOffset jwtExpiresOn, bool isSingleUseJwt = false, Guid? sessionId = null);
+    string CreateJwt(AccountUser user, DateTimeOffset jwtExpiresOn, bool isSingleUseJwt = false, Guid? sessionId = null, string? currentPlan = null);
 
     /// <summary>
     /// Creates a random refresh token.

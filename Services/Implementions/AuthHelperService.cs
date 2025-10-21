@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace AccountsAPIs.Services;
 
 public class AuthHelperService : IAuthHelperService
@@ -180,7 +182,7 @@ public class AuthHelperService : IAuthHelperService
     }
 
     // Creates a JSON Web Token (JWT) for a user session or a single user.
-    public string CreateJwt(AccountUser user, DateTimeOffset jwtExpiresOn, bool isSingleUseJwt = false, Guid? sessionId = null)
+    public string CreateJwt(AccountUser user, DateTimeOffset jwtExpiresOn, bool isSingleUseJwt = false, Guid? sessionId = null, string? currentPlan = null)
     {
         // Base claims
         var claims = new Dictionary<string, object>
@@ -206,7 +208,13 @@ public class AuthHelperService : IAuthHelperService
                     .GroupBy(a => a.Permission.Name)
                     .ToDictionary(
                         g => (int)Enum.Parse(typeof(PermissionTypesEnum), g.Key),
-                        g => JsonSerializer.Serialize(g.Select(a => (int)a.Access).ToList())                    );
+                        g => JsonSerializer.Serialize(g.Select(a => (int)a.Access).ToList()));
+        }
+
+        // If a tenant subscription is found, add the plan type to the claims.
+        if (currentPlan != null)
+        {
+            claims.Add("plan", currentPlan);
         }
 
         // SigningCredentials
