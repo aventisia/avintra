@@ -4,12 +4,19 @@ import { useShallow } from "zustand/react/shallow";
 
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
+type PlanType = "Starter" | "Pro" | "Enterprise" | "Commercial";
+
 interface ProtectedRouteProps {
   persmissions: string[]; // Optional prop for permissions
+  planTypes?: PlanType[]; // Optional: Allowed plan types
   page: React.ReactNode; // Optional prop for children components
 }
 
-const ProtectedRoute = ({ persmissions, page }: ProtectedRouteProps) => {
+const ProtectedRoute = ({
+  persmissions,
+  planTypes,
+  page,
+}: ProtectedRouteProps) => {
   const location = useLocation();
 
   const { userSession } = useUserSessionStore(
@@ -24,13 +31,18 @@ const ProtectedRoute = ({ persmissions, page }: ProtectedRouteProps) => {
 
   // Get user roles from the session
   const userRoles = userSession?.userRoles ?? [];
+  const userPlanType = userSession?.planType as PlanType;
 
   // Check if the user has any of the required permissions
   const hasPermission = persmissions.some((permission) =>
     userRoles.includes(permission),
   );
 
-  if (!hasPermission) {
+  const isPlanAllowed =
+    !planTypes || // if no plan restrictions, allow by default
+    planTypes.includes(userPlanType);
+
+  if (!hasPermission || !isPlanAllowed) {
     return <Navigate to="/page-not-found" state={{ from: location }} replace />;
   }
 
