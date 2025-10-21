@@ -36,7 +36,7 @@ public class CurrentTenantService : ICurrentTenantService
         // TenantlessEndpoint request. User also must be Unknown
         if (tenantId.Equals("TenantlessEndpoint"))
         {
-            CurrentTenantId = Guid.NewGuid();
+            CurrentTenantId = Guid.Empty;
             return "pass";
         }
 
