@@ -38,6 +38,7 @@ interface UpgradePlanDialogActions {
   setTopUp: (topUp: Partial<TopUp>) => void; // allows updating one or more fields
 
   clearTopUp: () => void;
+  resetToDefault: () => void;
 }
 
 export const useUpgradePlanDialogStore = create<
@@ -72,6 +73,21 @@ export const useUpgradePlanDialogStore = create<
     })),
   clearTopUp: () =>
     set({
+      topUp: {
+        credits: 0,
+        spaces: 0,
+        storage: 0,
+        history: 0,
+      },
+    }),
+  resetToDefault: () =>
+    set({
+      isOpen: false,
+      chosenPlan: null,
+      planId: "",
+      billingCountry: "India",
+      planFrequency: "monthly",
+      currency: "USD",
       topUp: {
         credits: 0,
         spaces: 0,
