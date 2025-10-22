@@ -18,9 +18,9 @@ public class BillingAccountDetailsDto
     public DateTimeOffset? PaidOn { get; set; }
 
     /// <summary>
-    /// Gets or sets the payment status of the account billing.
+    /// Gets or sets the payment status for the billing. Possible values: Created, Authorized, Captured, Refunded, Failed.
     /// </summary>
-    public PaymentStatusEnum PaymentStatus { get; set; } = PaymentStatusEnum.Pending;
+    public PaymentStatusTypesEnum PaymentStatus { get; set; }
 
     /// <summary>
     /// Gets or sets the subscription frequency (e.g., monthly or yearly).
