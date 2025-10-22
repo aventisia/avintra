@@ -1,0 +1,32 @@
+namespace AccountsAPIs.DTOs;
+
+/// <summary>
+/// Represents the data required to process a top-up transaction.
+/// </summary>
+public class TopUpDto
+{
+    /// <summary>
+    /// Gets or sets the currency for the top-up (e.g., "USD", "INR").
+    /// </summary>
+    public required CurrencyTypesEnum Currency { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of credits to be added (e.g., 5000 credits).
+    /// </summary>
+    public required int Credits { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total amount of money for the top-up (e.g., 10.00).
+    /// </summary>
+    public decimal Amount { get; set; }
+
+    /// <summary>
+    /// Gets or sets a flag indicating whether tax (e.g., GST) should be applied to the top-up amount.
+    /// </summary>
+    public bool IncludeTax { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique Razorpay ID associated with the top-up transaction.
+    /// </summary>
+    public string? RazorpayId { get; set; }
+}
