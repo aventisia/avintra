@@ -36,7 +36,9 @@ public class BillingDetailService : IBillingDetailService
             var BillingDetails = await _unitOfWork.BillingDetailRepo
             .GetByConditionAsync(w => w.TenantId == _tenantId)
             .Include(i => i.TenantSubscription)
-            .OrderByDescending(o => o.Id)
+            .Include(i => i.CreatedByUser)
+            .Include(i => i.LastModifiedByUser)
+            .OrderByDescending(o => o.CreatedOn)
             .ToListAsync();
 
             // Task successful
