@@ -1,0 +1,18 @@
+meta {
+  name: Cancel subscription
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant-subscriptions/cancel-subscription
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "subscriptionId":"{{TENANT_SUBSCRIPTION_ID}}"
+  }
+  
+}
