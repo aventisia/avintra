@@ -675,7 +675,12 @@ public class WebhookService : IWebhookService
             // Extract payment details from the webhook payload
             var paymentEntity = webhookPayload["payload"]?["payment"]?["entity"];
 
-            int credit = int.Parse(webhookPayload["payload"]?["order"]?["entity"]?["receipt"].ToString());
+            var receipt = webhookPayload["payload"]?["order"]?["entity"]?["receipt"]?.ToString();
+
+            if (receipt == null || !int.TryParse(receipt, out var credit))
+            {
+                return;
+            }
 
             // If no Razorpay Customer ID, fetch the billing detail using Razorpay Order ID
             var razorpayOrderId = paymentEntity?["order_id"]?.ToString();
@@ -703,17 +708,13 @@ public class WebhookService : IWebhookService
                 _logger.LogError("Failed to update billing detail for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
             }
 
-            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(w => w.TenantId == billingDetail.TenantId && w.IsActive)
-                .FirstOrDefaultAsync();
-
             var tenantCredit = new TenantCredit()
             {
                 AvailableCredits = credit,
                 Type = CreditTypesEnum.TopUp,
                 CreditedOn = DateTimeOffset.UtcNow,
                 ExpiredOn = DateTimeOffset.UtcNow.AddYears(1).Date,
-                SubscriptionId = tenantSubscription.Id,
+                SubscriptionId = billingDetail.SubscriptionId,
                 TenantId = billingDetail.TenantId,
                 CreatedByUserId = billingDetail.CreatedByUserId,
                 LastModifiedByUserId = billingDetail.CreatedByUserId,
