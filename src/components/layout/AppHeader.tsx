@@ -79,9 +79,7 @@ const AppHeader: React.FC = () => {
           </div>
           {!isAssist && (
             <div className="mx-4 flex items-center gap-1 text-white">
-              {import.meta.env.MODE !== "production" && !isIndividualUser ? (
-                <FlowParticipantsFacePile />
-              ) : null}
+              {!isIndividualUser ? <FlowParticipantsFacePile /> : null}
 
               <ExecuteFlow />
 
@@ -90,9 +88,7 @@ const AppHeader: React.FC = () => {
                 <SettingsTrigger />
               ) : null}
 
-              {import.meta.env.MODE !== "production" ? (
-                <StudioPreferences className="mt-0 mlg:mt-4" />
-              ) : null}
+              <StudioPreferences className="mt-0 mlg:mt-4" />
               <FlowComments className="mt-0 mlg:mt-4" />
             </div>
           )}
