@@ -93,7 +93,9 @@ const CreditTopUp = () => {
         </div>
 
         {/* Right hand side */}
-        <div className="col-span-3 space-y-4">{<ChargeSummary />}</div>
+        <div className="col-span-3 space-y-4">
+          {<ChargeSummary billingData={billingData?.data} isTopUp />}
+        </div>
       </div>
     </div>
   );

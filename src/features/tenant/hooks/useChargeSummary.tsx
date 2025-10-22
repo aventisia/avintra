@@ -85,5 +85,6 @@ export const useChargeSummary = (
     total,
     isTaxApplicable,
     topUpBreakdown,
+    GST
   };
 };

@@ -1,23 +1,49 @@
-import { Separator } from "@aventisia/ui";
+import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 
 import { currencySymbols } from "@/features/tenant/constants/currency-symbol-map";
+import { CompanyDetailsDTO } from "@/features/tenant/dtos/company-details-dto";
 import { SubscriptionPlanDTO } from "@/features/tenant/dtos/subscription-plans-dto";
 import { useChargeSummary } from "@/features/tenant/hooks/useChargeSummary";
+import { useInsertSubscriptionMutation } from "@/features/tenant/hooks/useInsertSubscriptionMutation";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
 import { PlanFrequency } from "@/features/tenant/types/plan-type";
 
 const ChargeSummary = ({
   plan,
   planFrequency,
+  billingData,
+  isTopUp = false,
 }: {
   plan?: SubscriptionPlanDTO | undefined;
   planFrequency?: PlanFrequency;
+  billingData: CompanyDetailsDTO | undefined;
+  isTopUp?: boolean;
 }) => {
-  const { basePrice, tax, total, isTaxApplicable, topUpBreakdown } =
+  const { basePrice, tax, total, isTaxApplicable, topUpBreakdown, GST } =
     useChargeSummary(plan, planFrequency);
 
   const { chosenPlan, currency } = useUpgradePlanDialogStore();
+
+  const { isPending, insertSubscriptionMutation } =
+    useInsertSubscriptionMutation();
+
+  const handleSubscription = () => {
+    insertSubscriptionMutation({
+      planId: plan?.id || "",
+      amount: total,
+      taxRate: GST,
+      frequency: planFrequency || "monthly",
+      addressLine1: billingData?.addressLine1 || "",
+      addressLine2: billingData?.addressLine2 || "",
+      city: billingData?.city || "",
+      country: billingData?.country || "",
+      isWillingToFileGst: billingData?.isWillingToFileGst || false,
+      gstNumber: billingData?.gstNumber,
+      postalCode: billingData?.postalCode || "",
+      state: billingData?.state || "",
+    });
+  };
 
   return (
     <div className="rounded-lg border">
@@ -58,7 +84,24 @@ const ChargeSummary = ({
           className="font-medium"
         />
 
-        <Button className="!mt-5 w-full">Make Payment</Button>
+        {isTopUp ? (
+          <Button className="!mt-5 w-full">Make Payment</Button>
+        ) : (
+          <Button
+            disabled={isPending}
+            onClick={handleSubscription}
+            className="mt-5 w-full"
+          >
+            {isPending ? (
+              <>
+                <LoadingSpinner className="mr-2 h-4 w-4" />
+                Initiating Payment...
+              </>
+            ) : (
+              "Make Payment"
+            )}
+          </Button>
+        )}
       </div>
     </div>
   );
