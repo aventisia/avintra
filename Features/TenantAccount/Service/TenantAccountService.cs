@@ -115,7 +115,7 @@ public class TenantAccountService : ITenantAccountService
 
             // Fetch tenant entity from repository
             var tenant = await _unitOfWork.TenantRepo
-                .GetByConditionAsync(t => t.Id == _tenantId)
+                .GetByConditionAsync(w => w.Id == _tenantId)
                 .FirstOrDefaultAsync();
 
             // Null check: Tenant not found
@@ -128,87 +128,39 @@ public class TenantAccountService : ITenantAccountService
 
             _logger.LogInformation("Tenant found. Proceeding with update for TenantId: {TenantId}", _tenantId);
 
-            // TODO: Uncomment if updating tenant name is required
-            // Update tenant entity fields
-            // tenant.Name = organizationBillingDto.OrganizationName;
-            // tenant.LastModifiedByUserId = _userId;
-            // tenant.LastModifiedOn = DateTimeOffset.UtcNow;
-
-            // _unitOfWork.TenantRepo.Update(tenant);
-
-            // // Save updated tenant
-            // if (!await _unitOfWork.SaveAsync())
-            // {
-            //     _logger.LogWarning("Failed to save tenant updates for TenantId: {TenantId}", _tenantId);
-            //     return serviceResponse;
-            // }
-
-            // _logger.LogInformation("Tenant update saved successfully for TenantId: {TenantId}", _tenantId);
-
-            // Attempt to retrieve billing detail
-            var billingDetail = await _unitOfWork.BillingDetailRepo
-                .GetByConditionAsync(w => w.TenantId == _tenantId)
-                .OrderByDescending(o => o.CreatedOn)
+            // Fetch tenant subscription entity from repository
+            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w => w.Id == _tenantId && w.IsActive)
                 .FirstOrDefaultAsync();
 
-            if (billingDetail == null)
+            // Null check: Tenant subscription not found
+            if (tenantSubscription == null)
             {
-                // No billing detail exists - create a new one
-                _logger.LogInformation("No billing detail found. Creating new billing detail for TenantId: {TenantId}", _tenantId);
-
-                // Fetch the active tenant subscription from the repository based on TenantId
-                var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
-                    .GetByConditionAsync(w => w.TenantId == _tenantId && w.IsActive)
-                    .FirstOrDefaultAsync();
-
-                // Check if the tenant subscription is null (i.e., no active subscription found for the tenant)
-                if (tenantSubscription == null)
-                {
-                    // Log the warning that the tenant organization was not found
-                    serviceResponse.Message = "Tenant organization not found.";
-                    _logger.LogWarning("No active subscription found for TenantId: {TenantId}", _tenantId);
-                }
-
-                // Map the organization billing data to the BillingDetail object
-                billingDetail = organizationBillingDto.Adapt<BillingDetail>();
-
-                // Set necessary properties for the billing detail
-                billingDetail.TenantId = _tenantId;
-                billingDetail.SubscriptionId = tenantSubscription.Id;
-                billingDetail.CreatedByUserId = _userId;
-                billingDetail.LastModifiedByUserId = _userId;
-                billingDetail.CreatedOn = DateTimeOffset.UtcNow;
-                billingDetail.LastModifiedOn = DateTimeOffset.UtcNow;
-
-                await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
-
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogWarning("Failed to save new billing detail for TenantId: {TenantId}", _tenantId);
-                    return serviceResponse;
-                }
-
-                _logger.LogInformation("New billing detail saved successfully for TenantId: {TenantId}", _tenantId);
+                serviceResponse.Message = "Tenant subscription not found.";
+                _logger.LogWarning("No tenant subscription found for TenantId: {TenantId}", _tenantId);
+                return serviceResponse;
             }
-            else
+
+            // Map the organization billing data to the BillingDetail object
+            var billingDetail = organizationBillingDto.Adapt<BillingDetail>();
+
+            // Set necessary properties for the billing detail
+            billingDetail.TenantId = _tenantId;
+            billingDetail.SubscriptionId = tenantSubscription.Id;
+            billingDetail.CreatedByUserId = _userId;
+            billingDetail.LastModifiedByUserId = _userId;
+            billingDetail.CreatedOn = DateTimeOffset.UtcNow;
+            billingDetail.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
+
+            if (!await _unitOfWork.SaveAsync())
             {
-                // Billing detail exists - update it
-                _logger.LogInformation("Existing billing detail found. Updating for TenantId: {TenantId}", _tenantId);
-
-                organizationBillingDto.Adapt(billingDetail);
-                billingDetail.LastModifiedByUserId = _userId;
-                billingDetail.LastModifiedOn = DateTimeOffset.UtcNow;
-
-                _unitOfWork.BillingDetailRepo.Update(billingDetail);
-
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogWarning("Failed to save updated billing detail for TenantId: {TenantId}", _tenantId);
-                    return serviceResponse;
-                }
-
-                _logger.LogInformation("Billing detail updated successfully for TenantId: {TenantId}", _tenantId);
+                _logger.LogWarning("Failed to save new billing detail for TenantId: {TenantId}", _tenantId);
+                return serviceResponse;
             }
+
+            _logger.LogInformation("New billing detail saved successfully for TenantId: {TenantId}", _tenantId);
 
             // Map billing details and populate response DTO
             organizationBillingDto = billingDetail.Adapt<TenantOrganizationBillingDto>();
