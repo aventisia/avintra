@@ -1,10 +1,12 @@
 import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
+import { cn } from "@aventisia/ui/lib";
 import { Check } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 const ChoosePlanOptions = () => {
   const { setOpen, setChosenPlan } = useUpgradePlanDialogStore(
@@ -14,6 +16,13 @@ const ChoosePlanOptions = () => {
     })),
   );
 
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
+  const isStarterPlan = userSession?.planType == "Starter";
   // Get showAlert handler
   const { showCustomAlertDialog } = useShowAlertHandler();
 
@@ -23,7 +32,12 @@ const ChoosePlanOptions = () => {
 
       <div className="grid grid-cols-2 gap-4">
         {/* Enterprise Self hosted Plan */}
-        <div className="grid grid-rows-[auto_auto_1fr] space-y-4 rounded-lg border">
+        <div
+          className={cn(
+            "col-span-1 grid space-y-4 rounded-lg border",
+            !isStarterPlan && "col-span-2",
+          )}
+        >
           <div className="px-4 pt-4">
             <h3 className="font-semibold">
               Enterprise/Commercial - Self-Hosted
@@ -95,64 +109,68 @@ const ChoosePlanOptions = () => {
         </div>
 
         {/* Pro Plan */}
-        <div className="grid grid-rows-[auto_auto_1fr] space-y-4 rounded-lg border">
-          <div className="px-4 pt-4">
-            <h3 className="font-semibold">
-              Pro – Aventisia Multi-Tenant Cloud
-            </h3>
-          </div>
-          <Separator />
-          <div className="grid px-5 pb-4">
-            <ul className="space-y-3 text-md">
-              <li className="flex items-start gap-2">
-                <CheckMark />
-                <div>
-                  <span className="block font-semibold">
-                    Fully Managed by Aventisia
-                  </span>
-                  Skip the infrastructure hassle — we host, monitor, and manage
-                  everything for you.
-                </div>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckMark />
-                <div>
-                  <span className="block font-semibold">
-                    Secure Key Management
-                  </span>
-                  Use Aventisia’s multi-tenant key vault, or integrate your own
-                  for managing credentials securely.
-                </div>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckMark />
-                <div>
-                  <span className="block font-semibold">Use Built-In APIs</span>
-                  Access Worc’s powerful APIs for seamless integration with your
-                  applications and workflows.
-                </div>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckMark />
-                <div>
-                  <span className="block font-semibold">
-                    Integrated Environments
-                  </span>
-                  Dev, Staging, and Production environments come pre-configured
-                  for faster deployment and testing cycles.
-                </div>
-              </li>
-            </ul>
+        {isStarterPlan ? (
+          <div className="col-span-1 grid space-y-4 rounded-lg border">
+            <div className="px-4 pt-4">
+              <h3 className="font-semibold">
+                Pro – Aventisia Multi-Tenant Cloud
+              </h3>
+            </div>
+            <Separator />
+            <div className="grid px-5 pb-4">
+              <ul className="space-y-3 text-md">
+                <li className="flex items-start gap-2">
+                  <CheckMark />
+                  <div>
+                    <span className="block font-semibold">
+                      Fully Managed by Aventisia
+                    </span>
+                    Skip the infrastructure hassle — we host, monitor, and
+                    manage everything for you.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckMark />
+                  <div>
+                    <span className="block font-semibold">
+                      Secure Key Management
+                    </span>
+                    Use Aventisia’s multi-tenant key vault, or integrate your
+                    own for managing credentials securely.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckMark />
+                  <div>
+                    <span className="block font-semibold">
+                      Use Built-In APIs
+                    </span>
+                    Access Worc’s powerful APIs for seamless integration with
+                    your applications and workflows.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckMark />
+                  <div>
+                    <span className="block font-semibold">
+                      Integrated Environments
+                    </span>
+                    Dev, Staging, and Production environments come
+                    pre-configured for faster deployment and testing cycles.
+                  </div>
+                </li>
+              </ul>
 
-            <Button
-              className="w-full self-end text-md"
-              size={"lg"}
-              onClick={() => setChosenPlan("Pro")}
-            >
-              Choose Plan
-            </Button>
+              <Button
+                className="w-full self-end text-md"
+                size={"lg"}
+                onClick={() => setChosenPlan("Pro")}
+              >
+                Choose Plan
+              </Button>
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
     </div>
   );
