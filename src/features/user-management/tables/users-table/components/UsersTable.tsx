@@ -68,7 +68,7 @@ export const UsersTable = () => {
                   {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
                 />
                 <Separator orientation="vertical" className="mx-2 h-6" />
-                <DTCreateButton />
+                <DTCreateButton buttonText="Invite" />
               </div>
             </div>
 

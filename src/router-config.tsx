@@ -106,7 +106,11 @@ const routerConfig: RouteObject[] = [
       {
         path: "/users",
         element: (
-          <ProtectedRoute persmissions={["SA", "TA"]} page={<UsersPage />} />
+          <ProtectedRoute
+            planTypes={["Pro", "Commercial", "Enterprise"]}
+            persmissions={["SA", "TA"]}
+            page={<UsersPage />}
+          />
         ),
       },
       {

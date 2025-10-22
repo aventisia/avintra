@@ -5,6 +5,8 @@ interface IUserSessionStore {
   firstName: string;
   lastName: string;
   userInitials: string;
+  planType?: string;
+
   /** IsAventisiaEmployee */
   isAE: boolean;
   userRoles: string[];
@@ -33,6 +35,8 @@ interface IJwtPayload {
   uname: string;
   /** List of user roles */
   "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string[];
+
+  plan: string;
 }
 
 export { type IUserSessionStore, type IJwtPayload };

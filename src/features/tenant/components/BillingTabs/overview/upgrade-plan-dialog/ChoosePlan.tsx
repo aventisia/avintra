@@ -11,6 +11,7 @@ import { useFetchCompanyDetails } from "@/features/tenant/hooks/useFetchCompanyD
 import { useFetchSubscriptionPlans } from "@/features/tenant/hooks/useFetchSubscriptionPlans";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
 import { PlanFrequency } from "@/features/tenant/types/plan-type";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import BillingDetails from "./BillingDetails";
 import ChargeSummary from "./ChargeSummary";
@@ -30,12 +31,20 @@ const ChoosePlan = () => {
       })),
     );
 
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
+  const isStarterPlan = userSession?.planType == "Starter";
+
   const [selectedTab, setSelectedTab] = useState("monthly");
   const [selectedPlan, setSelectedPlan] = useState("");
   const [selectedPlanName, setSelectedPlanName] = useState("");
 
   const { data, isLoading } = useFetchSubscriptionPlans(
-    `?currency=${currency}&frequency=${selectedTab}`,
+    `?currency=${currency}&frequency=${selectedTab}&type=Pro`,
   );
 
   useEffect(() => {
@@ -110,6 +119,7 @@ const ChoosePlan = () => {
               >
                 {data?.data
                   ?.filter((plan) => plan.type != "Enterprise")
+                  ?.filter((plan) => isStarterPlan && plan.type != "Starter")
                   ?.map((plan) => (
                     <PlanItem
                       key={plan.id}

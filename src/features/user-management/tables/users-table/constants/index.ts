@@ -20,7 +20,7 @@ const SEARCH_COLUMN = "firstName";
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create User", description: "" };
+      return { heading: "Invite User", description: "" };
     case "read":
       return { heading: "User", description: "" };
     case "update":

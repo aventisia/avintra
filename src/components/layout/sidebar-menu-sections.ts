@@ -212,6 +212,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
 // TODO: This function filters the sidebar menu sections based on the user's roles for now.
 function getSidebarMenuBasedOnPersmissions(
   userRoles: string[],
+  planType?: string,
 ): SidebarMenuSectionType[] {
   return sidebarMenuSections
     .map((section) => {
@@ -222,7 +223,12 @@ function getSidebarMenuBasedOnPersmissions(
           item.permissions.some((role: string) => userRoles.includes(role)),
       );
 
-      const productionMenuItems = filteredMenuItems.filter(
+      //TODO: Must be handled through permissions later
+      const starterMenuItems = filteredMenuItems.filter(
+        (item) => !(item.name === "users" && planType === "Starter"),
+      );
+
+      const productionMenuItems = starterMenuItems.filter(
         (item) =>
           item.name !== "integrations" || import.meta.env.MODE !== "production",
       );
