@@ -62,7 +62,7 @@ const RedirectPage = ({ className }: RedirectPageProps) => {
         </a>
       </div>
       <div className="-mt-4 flex items-center gap-3 text-md">
-        <LoadingSpinner className="h-10 w-10" />
+        <LoadingSpinner className="h-10 w-10 text-primary" />
         {message}
       </div>
       <MinimalFooter />
