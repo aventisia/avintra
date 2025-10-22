@@ -6,6 +6,9 @@ public class BillingHistoryMappingProfile : IRegister
     {
         // Mapping of DTO to get list of versions to show on the UI.
         config.NewConfig<BillingHistory, BillingHistoryDto>()
+        .Map(dest => dest.Name, src => $"Invoice_{src.CreatedOn:dd/MM/yyyy}")
+        .Map(dest => dest.PaidOn, src => src.LastModifiedOn)
+        .Map(dest => dest.Amount, src => src.Amount)
         .Map(dest => dest.CreatedBy,
             src => src.CreatedByUser != null
             ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
@@ -17,13 +20,6 @@ public class BillingHistoryMappingProfile : IRegister
         .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null
             ? src.CreatedByUser.UserName
             : null);
-
-        config.NewConfig<BillingHistory, BillingHistoryDetailsDto>()
-                .Map(dest => dest.Name, src =>  $"Invoice_{src.CreatedOn:dd/MM/yyyy}")
-                .Map(dest => dest.PaidOn, src => src.LastModifiedOn)
-                .Map(dest => dest.Amount, src => src.Amount)
-                .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName : null)
-                .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null ? src.CreatedByUser.UserName : null);
 
         config.NewConfig<BillingHistoryDto, BillingHistory>()
             .Ignore(dest => dest.Id)

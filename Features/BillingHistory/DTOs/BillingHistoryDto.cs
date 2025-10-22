@@ -8,6 +8,21 @@ public class BillingHistoryDto
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of the billing history.
+    /// </summary>
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date the billing ammount was paid.
+    /// </summary>
+    public DateTimeOffset? PaidOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the payment status for the billing history. Possible values: Created, Authorized, Captured, Refunded, Failed.
+    /// </summary>
+    public PaymentStatusTypesEnum PaymentStatus { get; set; }
+    
+    /// <summary>
     /// Gets or sets the subscription frequency (e.g., monthly or yearly).
     /// </summary>
     public SubscriptionFrequenciesEnum Frequency { get; set; }
@@ -16,11 +31,6 @@ public class BillingHistoryDto
     /// Gets or sets the base subscription amount, excluding tax.
     /// </summary>
     public decimal Amount { get; set; }
-
-    /// <summary>
-    /// Gets or sets the tax rate as a percentage (e.g., 18 for 18%).
-    /// </summary>
-    public decimal TaxRate { get; set; } = 18;
 
     /// <summary>
     /// Gets or sets the link to the generated invoice for this billing.
