@@ -117,6 +117,7 @@ public static class AppServicesExtension
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IPlanService, PlanService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
+        services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IWebhookService, WebhookService>();
 
         // Common Services
