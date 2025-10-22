@@ -88,6 +88,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             { "mistral", "mistral:7b" },
             { "gemma", "gemma3:12b" },
             { "gpt-4o-mini", "gpt-4o-mini" },
+            { "gpt-4o", "gpt-4o" },
         };
 
         var startTime = DateTime.UtcNow;
@@ -140,7 +141,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                     // Set timeout to 3 minutes
                     client.Timeout = TimeSpan.FromMinutes(3);
 
-                    if (mappedModel == "gpt-4o-mini")
+                    if (mappedModel == "gpt-4o-mini" || mappedModel == "gpt-4o")
                     {
                         // Validate the API key
                         if (string.IsNullOrWhiteSpace(_openAIConfig.OpenAIApiKey))
