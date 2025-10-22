@@ -44,6 +44,11 @@ public class BillingAccountDetailsDto
     public string? PlanName { get; set; }
 
     /// <summary>
+    /// Gets or sets the link to the generated invoice for this billing.
+    /// </summary>
+    public string? InvoiceLink { get; set; }
+
+    /// <summary>
     /// Gets or sets a flag indicating whether the user account is disabled.
     /// </summary>
     public bool? IsDisabled { get; set; }
