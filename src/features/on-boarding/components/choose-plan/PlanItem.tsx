@@ -22,7 +22,7 @@ export const PlanItem = ({
   const timeUnit =
     planFrequency === "monthly" || plan.name == "Starter" ? "month" : "year";
 
-  const price = plan.price;
+  const planPrice = planFrequency === "monthly" ? plan.price : plan.price * 12;
 
   return (
     <CustomRadioItem
@@ -40,13 +40,15 @@ export const PlanItem = ({
           <div className="flex gap-1 items-baseline">
             <p className="text-base">
               {currencySymbols[plan.currency]}
-              {price}
+              {planPrice}
             </p>
             <span className="text-sm text-muted-foreground">/{timeUnit}</span>
           </div>
         </div>
 
-        {isSelected && <PlanFeatures plan={plan} planFrequency={planFrequency} />}
+        {isSelected && (
+          <PlanFeatures plan={plan} planFrequency={planFrequency} />
+        )}
       </div>
     </CustomRadioItem>
   );

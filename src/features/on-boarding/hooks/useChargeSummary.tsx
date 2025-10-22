@@ -4,6 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { SubscriptionPlanDTO } from "../dtos/subscription-plans-dto";
 import { useChoosePlanStore } from "../stores/choose-plan-store";
+import { PlanFrequency } from "../types/plan-type";
 import { getParsedBillingFromStorage } from "../utils";
 
 const DEFAULT_BILLING = {
@@ -17,7 +18,10 @@ const DEFAULT_BILLING = {
   gstNumber: "",
 };
 
-export const useChargeSummary = (plan: SubscriptionPlanDTO | undefined) => {
+export const useChargeSummary = (
+  plan: SubscriptionPlanDTO | undefined,
+  planFrequency: PlanFrequency,
+) => {
   const { billingData } = useChoosePlanStore((state) => ({
     billingData: state.billingData,
   }));
@@ -35,8 +39,11 @@ export const useChargeSummary = (plan: SubscriptionPlanDTO | undefined) => {
 
   const isTaxApplicable = effectiveBilling.country === "India";
 
-  const basePrice = plan?.price ?? 0;
-
+  const basePrice = plan?.price
+    ? planFrequency === "monthly"
+      ? plan?.price
+      : Number(plan?.price) * 12
+    : 0;
   const GST = 0.18;
   const tax = isTaxApplicable ? +(basePrice * GST).toFixed(2) : 0;
   const total = +(basePrice + tax).toFixed(2);
