@@ -42,6 +42,7 @@ public partial class AccountsDbContext : IdentityDbContext<
         if (CurrentTenantId != Guid.Empty)
         {
             builder.Entity<BillingDetail>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+            builder.Entity<BillingHistory>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             builder.Entity<TenantSubscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             builder.Entity<PaymentHistory>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             builder.Entity<PaymentMethod>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
