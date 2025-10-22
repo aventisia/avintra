@@ -501,12 +501,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     return serviceResponse;
                 }
             }
-            else
-            {
-                serviceResponse.Message = $"Subscription is already in the {tenantSubscription.Status} state.";
-                return serviceResponse;
-            }
-
+            
             // If the subscription plan is not 'Starter', billing details are required
             if (subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter)
             {
