@@ -152,7 +152,7 @@ export const HeaderActionMenu: React.FC = () => {
         />
 
         <DropdownMenuSeparator />
-        
+
         <SimpleDDMenuItem
           size="md"
           Icon={KeyboardIcon}
@@ -162,17 +162,16 @@ export const HeaderActionMenu: React.FC = () => {
           }}
         />
 
+        <SimpleDDMenuItem
+          size="md"
+          Icon={BookCopyIcon}
+          content="Save As Template"
+          onClick={() => setSATDialog(true)}
+        />
+
         {import.meta.env.MODE !== "production" ? (
           <>
             {/* <Save As Template /> */}
-            <SimpleDDMenuItem
-              size="md"
-              Icon={BookCopyIcon}
-              content="Save As Template"
-              onClick={() => setSATDialog(true)}
-            />
-
-            <DropdownMenuSeparator />
 
             <SimpleDDMenuItem
               size="md"
