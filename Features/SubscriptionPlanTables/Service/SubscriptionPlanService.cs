@@ -575,11 +575,19 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
         try
         {
-            // Define the default tax rate (1.18 means 18% tax is already included)
-            decimal defaultTax = 1.18m;
 
-            // Calculate the amount in cents (multiplied by 100) and apply the tax rate
-            int amount = (int)((subscriptionPlan.Price * defaultTax) * 100);
+            // Start with the base price of the subscription plan
+            decimal baseAmount = subscriptionPlan.Price;
+
+            // Check if tax needs to be included in the price calculation
+            if (subscriptionPlan.IncludeTax)
+            {
+                // Define the default tax rate (1.18 means 18% tax is already included)
+                decimal defaultTaxRate = 1.18m;
+
+                // Apply the tax rate to the base price and convert the amount to cents (multiplied by 100)
+                baseAmount = Math.Round(subscriptionPlan.Price * defaultTaxRate * 100);
+            }
 
             // Build the Razorpay plan request using details from the local subscription plan
             var razorpayPlanRequest = new PlanRequestDto
@@ -591,7 +599,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
                     Name = subscriptionPlan.Name,
                     Currency = subscriptionPlan.Currency.ToString().ToUpper(),
                     Description = string.Empty,
-                    Amount = amount
+                    Amount = (int)baseAmount
                 }
             };
 

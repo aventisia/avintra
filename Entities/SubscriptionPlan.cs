@@ -77,6 +77,11 @@ public class SubscriptionPlan : BaseEntity
     public bool IsDefault { get; set; } = false;
 
     /// <summary>
+    /// Gets or sets a value indicating whether tax needs to be included for this subscription plan.
+    /// </summary>
+    public bool IncludeTax { get; set; }
+
+    /// <summary>
     /// Gets or sets the Razorpay plan ID associated with this subscription plan.
     /// </summary>
     public string? RazorpayPlanId { get; set; }
