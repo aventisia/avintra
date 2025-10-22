@@ -2,7 +2,7 @@ namespace AccountsAPIs.Controllers;
 
 [Route("user")]
 [ApiController]
-[Authorize(Roles = "SA,TA,OM,TU")]
+[Authorize(Roles = "SA,TA")]
 public class AccountUsersTableController : BaseApiController
 {
     private readonly IAccountUsersTableService _accountUsersTableService;
