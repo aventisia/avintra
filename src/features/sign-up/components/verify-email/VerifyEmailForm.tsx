@@ -1,8 +1,6 @@
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { InputOtpField } from "@/react-toolkit/ui/form/fields/InputOtpField";
-
-import { toast } from "sonner";
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { Form, InputOtpField } from "@aventisia/ui/form";
+import { toast } from "@aventisia/ui/sonner";
 import * as z from "zod";
 
 import { verificationCodeProps } from "../../constants/form-field-props";

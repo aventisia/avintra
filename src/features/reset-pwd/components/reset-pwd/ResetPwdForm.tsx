@@ -1,9 +1,7 @@
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { FormLabel } from "@/react-toolkit/ui/form/FormLabel";
-import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
-import { FloatingLabelInputField } from "@/react-toolkit/ui/form/fields/FloatingLabelInputField";
-
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { FloatingLabelInputField, FormLabel } from "@aventisia/ui/form";
+import { CheckboxField } from "@aventisia/ui/form";
+import { Form } from "@aventisia/ui/form";
 import { z } from "zod";
 
 import {

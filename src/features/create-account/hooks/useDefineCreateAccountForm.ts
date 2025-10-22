@@ -1,6 +1,6 @@
 import { isEmailAvailable } from "@/react-toolkit/apis/accounts-auth-apis";
-import { useCheckAvailability } from "@/react-toolkit/hooks/useCheckAvailability";
 
+import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

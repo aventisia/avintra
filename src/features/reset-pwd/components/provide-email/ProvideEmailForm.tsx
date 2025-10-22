@@ -1,8 +1,8 @@
 import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
 
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { InputField } from "@aventisia/ui/form";
+import { Form } from "@aventisia/ui/form";
 import { z } from "zod";
 
 import { emailProps } from "../../constants/form-field-props";

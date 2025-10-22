@@ -11,9 +11,9 @@ import { useDefineCompanyInfoForm } from "@/features/on-boarding/hooks/useDefine
 import { useUpdateTenantInfoMutation } from "@/features/on-boarding/hooks/useUpdateTenantInfoMutation";
 import { useCompanyInfoStore } from "@/features/on-boarding/stores/company-info-store";
 import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
-import { Form } from "@/react-toolkit/ui/form/Form";
 
 import { Button, SubmitButton } from "@aventisia/ui/buttons";
+import { Form } from "@aventisia/ui/form";
 import { InputField, SelectField } from "@aventisia/ui/form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
@@ -95,7 +95,7 @@ export const CompanyInfoForm = () => {
         >
           Back
         </Button>
-        <SubmitButton isPending={isCreationPending} primaryText="Finish" />
+        <SubmitButton isPending={isCreationPending} primaryText="Continue" />
       </div>
     </Form>
   );

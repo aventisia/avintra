@@ -1,9 +1,9 @@
 import { ADD_TENANT, USER_NAME_LS_KEY } from "@/react-toolkit/constants";
 import { useCarryParams } from "@/react-toolkit/hooks/useForwardQueryParams";
 
+import { toast } from "@aventisia/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import { createAccount } from "../apis/create-account-apis";

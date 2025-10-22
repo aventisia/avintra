@@ -1,5 +1,4 @@
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { InputOtpFieldProps } from "@/react-toolkit/ui/form/fields/InputOtpField";
+import { InputFieldProps, InputOtpFieldProps } from "@aventisia/ui/form";
 
 const className = "h-11 text-md";
 

@@ -8,11 +8,11 @@ const ContentHeader = ({
   smallerHeading,
 }: ContentHeaderProps) => {
   return (
-    <div className="w-full flex flex-col gap-3 items-center">
-      <h2 className="text-center text-4xl font-medium text-foreground ">
+    <div className="w-full overflow-hidden">
+      <h2 className="flex items-center text-4xl font-medium text-foreground">
         {biggerHeading}
       </h2>
-      <p className="text-center text-md text-muted-foreground ">
+      <p className="mt-3 flex items-center text-md text-muted-foreground">
         {smallerHeading}
       </p>
     </div>

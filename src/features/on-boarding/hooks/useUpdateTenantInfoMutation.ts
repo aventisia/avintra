@@ -1,8 +1,8 @@
 import { DEV_JWT_LS_KEY } from "@/react-toolkit/constants";
 
-import { useMutation } from "@tanstack/react-query";
 // import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
+import { useMutation } from "@tanstack/react-query";
 
 import { updateTenantInfo } from "../constants/tenant-info-apis";
 

@@ -1,7 +1,7 @@
 import CustomRadioItem from "@/components/ui/CustomRadioItem";
-import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
 import { useUpdateTenantInfoMutation } from "@/features/on-boarding/hooks/useUpdateTenantInfoMutation";
 import { useCompanyInfoStore } from "@/features/on-boarding/stores/company-info-store";
+import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
 import { USER_NAME_LS_KEY } from "@/react-toolkit/constants";
 
 import { Button } from "@aventisia/ui/buttons";
@@ -9,6 +9,7 @@ import { RadioGroup } from "@aventisia/ui/radio-group";
 import { Building2, User } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
+import { ContentContainer } from "../ContentContainer";
 import { ContentHeader } from "../ContentHeader";
 
 export default function UserTypeSelection() {
@@ -54,14 +55,12 @@ export default function UserTypeSelection() {
   };
 
   return (
-    <div>
+    <ContentContainer className="fadeInRTL">
       {/* Header */}
-      <div className="text-center mb-8">
-        <ContentHeader
-          biggerHeading="Tell us about yourself"
-          smallerHeading="Choose the type of account that best fits you."
-        />
-      </div>
+      <ContentHeader
+        biggerHeading="Tell us about yourself"
+        smallerHeading="Choose the type of account that best fits you."
+      />
 
       {/* Radio Group */}
       <RadioGroup
@@ -84,7 +83,7 @@ export default function UserTypeSelection() {
             />
           </div>
           <div className="font-semibold text-md text-gray-900">Individual</div>
-          <span className=" text-muted-foreground">
+          <span className="font-normal leading-3.5 text-muted-foreground">
             For personal use or managing your own projects.
           </span>
         </CustomRadioItem>
@@ -106,7 +105,7 @@ export default function UserTypeSelection() {
           <div className="font-semibold text-md text-gray-900">
             Organization
           </div>
-          <span className="text-muted-foreground ">
+          <span className="font-normal leading-3.5 text-muted-foreground ">
             For companies, teams, or groups managing multiple users.
           </span>
         </CustomRadioItem>
@@ -120,6 +119,6 @@ export default function UserTypeSelection() {
       >
         Continue
       </Button>
-    </div>
+    </ContentContainer>
   );
 }

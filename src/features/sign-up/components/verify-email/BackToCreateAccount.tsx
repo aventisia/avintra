@@ -1,5 +1,4 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-
+import { Button } from "@aventisia/ui/buttons";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 
