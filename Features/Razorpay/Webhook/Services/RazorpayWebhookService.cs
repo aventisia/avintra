@@ -95,8 +95,9 @@ public class WebhookService : IWebhookService
 
             // ========================== Order Events ==========================
 
-            // case "order.paid":
-            //     await HandleOrderPaid(json); break;
+            case "order.paid":
+                await ProcessOrderPaidAsync(json); break;
+
             // case "order.notification.delivered":
             //     await HandleOrderNotificationDelivered(json); break;
 
@@ -526,31 +527,53 @@ public class WebhookService : IWebhookService
 
         try
         {
-            // Extract payment details from the payload
+            // Extract payment details from the webhook payload
             var paymentEntity = webhookPayload["payload"]?["payment"]?["entity"];
             var razorpayCustomerId = paymentEntity?["customer_id"]?.ToString();
             var razorpayPaymentCardId = paymentEntity?["card_id"]?.ToString();
 
+            Guid tenantId = Guid.Empty;
+
+            // Check if Razorpay Customer ID is provided in the payload
             if (string.IsNullOrEmpty(razorpayCustomerId))
             {
-                _logger.LogWarning("Missing or invalid Razorpay Customer ID in the payload.");
-                return;
+                // If no Razorpay Customer ID, fetch the billing detail using Razorpay Order ID
+                var razorpayOrderId = paymentEntity?["order_id"]?.ToString();
+
+                // Attempt to fetch the billing detail from the database based on the Razorpay Order ID
+                var billingDetail = await _unitOfWork.BillingDetailRepo
+                    .GetByConditionAsync(w => w.RazorpayOrderId == razorpayOrderId)
+                    .FirstOrDefaultAsync();
+
+                if (billingDetail == null)
+                {
+                    // Log a warning if the billing detail is missing or invalid
+                    _logger.LogWarning("Missing or invalid Razorpay Customer ID in the payload.");
+                    return;
+                }
+
+                // Extract Tenant ID from the billing detail if found
+                tenantId = billingDetail.TenantId;
             }
-
-            // Fetch tenant based on Razorpay Customer ID
-            var tenant = await _unitOfWork.TenantRepo
-                .GetByConditionAsync(p => p.RazorpayCustomerId == razorpayCustomerId)
-                .FirstOrDefaultAsync();
-
-            if (tenant == null)
+            else
             {
-                _logger.LogWarning("Tenant not found for Razorpay Customer ID: {RazorpayCustomerId}", razorpayCustomerId);
-                return;
+                // If Razorpay Customer ID is present, fetch tenant using Razorpay Customer ID
+                var tenant = await _unitOfWork.TenantRepo
+                    .GetByConditionAsync(p => p.RazorpayCustomerId == razorpayCustomerId)
+                    .FirstOrDefaultAsync();
+
+                if (tenant == null)
+                {
+                    // Log a warning if tenant associated with the Razorpay Customer ID is not found
+                    _logger.LogWarning("Tenant not found for Razorpay Customer ID: {RazorpayCustomerId}", razorpayCustomerId);
+                    return;
+                }
+                tenantId = tenant.Id;
             }
 
             // Retrieve payment method from the repository, or create a new one if not found
             var paymentMethod = await _unitOfWork.PaymentMethodRepo
-                .GetByConditionAsync(w => w.RazorpayMethodId == razorpayPaymentCardId && w.TenantId == tenant.Id)
+                .GetByConditionAsync(w => w.RazorpayMethodId == razorpayPaymentCardId && w.TenantId == tenantId)
                 .FirstOrDefaultAsync();
 
             if (paymentMethod == null)
@@ -558,7 +581,7 @@ public class WebhookService : IWebhookService
                 var card = paymentEntity?["card"];
                 paymentMethod = new PaymentMethod
                 {
-                    TenantId = tenant.Id,
+                    TenantId = tenantId,
                     RazorpayMethodId = card?["id"]?.ToString(),
                     Type = (PaymentMethodTypesEnum)Enum.Parse(typeof(PaymentMethodTypesEnum), paymentEntity?["method"]?.ToString(), ignoreCase: true),
                     Wallet = paymentEntity?["wallet"]?.ToString(),
@@ -602,7 +625,7 @@ public class WebhookService : IWebhookService
             if (targetPaymentStatus == PaymentStatusTypesEnum.Authorized || targetPaymentStatus == PaymentStatusTypesEnum.Failed)
             {
                 // Set tenant-specific fields
-                paymentHistoryRequest.TenantId = tenant.Id;
+                paymentHistoryRequest.TenantId = tenantId;
 
                 // Insert a new payment history record
                 await _unitOfWork.PaymentHistoryRepo.InsertAsync(paymentHistoryRequest);
@@ -628,6 +651,80 @@ public class WebhookService : IWebhookService
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Failed to save payment history for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log any exceptions that occur during the processing
+            _logger.LogError(ex, "Error processing payment history for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
+        }
+    }
+
+    private async Task ProcessOrderPaidAsync(JObject webhookPayload)
+    {
+        // Extract Razorpay Payment ID from the payload
+        var razorpayPaymentId = webhookPayload["payload"]?["payment"]?["entity"]?["id"]?.ToString();
+        if (string.IsNullOrEmpty(razorpayPaymentId))
+        {
+            _logger.LogWarning("Razorpay Payment ID is missing or invalid in the webhook payload.");
+            return;
+        }
+
+        try
+        {
+            // Extract payment details from the webhook payload
+            var paymentEntity = webhookPayload["payload"]?["payment"]?["entity"];
+
+            int credit = int.Parse(webhookPayload["payload"]?["order"]?["entity"]?["receipt"].ToString());
+
+            // If no Razorpay Customer ID, fetch the billing detail using Razorpay Order ID
+            var razorpayOrderId = paymentEntity?["order_id"]?.ToString();
+
+            // Attempt to fetch the billing detail from the database based on the Razorpay Order ID
+            var billingDetail = await _unitOfWork.BillingDetailRepo
+                .GetByConditionAsync(w => w.RazorpayOrderId == razorpayOrderId)
+                .FirstOrDefaultAsync();
+
+            if (billingDetail == null)
+            {
+                // Log a warning if the billing detail is missing or invalid
+                _logger.LogWarning("Missing or invalid Razorpay Customer ID in the payload.");
+                return;
+            }
+
+            billingDetail.PaymentStatus = (PaymentStatusTypesEnum)Enum.Parse(typeof(PaymentStatusTypesEnum), paymentEntity["status"]?.ToString(), ignoreCase: true);
+            billingDetail.RazorpayPaymentId = razorpayPaymentId;
+            billingDetail.LastModifiedByUserId = billingDetail.LastModifiedByUserId;
+
+            _unitOfWork.BillingDetailRepo.Update(billingDetail);
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to update billing detail for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
+            }
+
+            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w => w.TenantId == billingDetail.TenantId && w.IsActive)
+                .FirstOrDefaultAsync();
+
+            var tenantCredit = new TenantCredit()
+            {
+                AvailableCredits = credit,
+                Type = CreditTypesEnum.TopUp,
+                CreditedOn = DateTimeOffset.UtcNow,
+                ExpiredOn = DateTimeOffset.UtcNow.AddYears(1).Date,
+                SubscriptionId = tenantSubscription.Id,
+                TenantId = billingDetail.TenantId,
+                CreatedByUserId = billingDetail.CreatedByUserId,
+                LastModifiedByUserId = billingDetail.CreatedByUserId,
+            };
+
+            await _unitOfWork.TenantCreditRepo.InsertAsync(tenantCredit);
+
+            // Save changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save tenant credits for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
             }
         }
         catch (Exception ex)
