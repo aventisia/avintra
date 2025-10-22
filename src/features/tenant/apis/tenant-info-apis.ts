@@ -4,6 +4,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { CompanyDetailsDTO } from "../dtos/company-details-dto";
 import { CurrentPlanDto } from "../dtos/current-plan-dto";
+import { PaymentMethodDTO } from "../dtos/payment-methods-dto";
 import { TenantPreferencesDto } from "../dtos/tenant-prefrences-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant-account`;
@@ -35,10 +36,18 @@ const getTenantCurrentPlan = () =>
     >(`${import.meta.env.VITE_ACCOUNTS_API_URL}/tenant-subscriptions/current-plan`)
     .then((res) => res.data);
 
+const getPaymentMethods = () =>
+  axiosInstance
+    .get<
+      IHttpResponse<PaymentMethodDTO[]>
+    >(`${import.meta.env.VITE_ACCOUNTS_API_URL}/payment-methods/list`)
+    .then((res) => res.data);
+
 export {
   getTenantCurrentPlan,
   getCompanyDetails,
   getTenantPreferences,
   updateTenantPreferences,
   updateCompanyDetails,
+  getPaymentMethods,
 };
