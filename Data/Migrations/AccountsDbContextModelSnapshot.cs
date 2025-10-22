@@ -1015,6 +1015,9 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<int>("HistoryRetentionDays")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IncludeTax")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDefault")
                         .HasColumnType("boolean");
 
