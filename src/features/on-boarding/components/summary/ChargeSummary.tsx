@@ -1,6 +1,5 @@
 import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
-import { useEffect, useState } from "react";
 
 import { currencySymbols } from "../../constants/currency-symbol-map";
 import { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
@@ -15,45 +14,22 @@ const ChargeSummary = ({
   plan: SubscriptionPlanDTO | undefined;
   planFrequency: PlanFrequency;
 }) => {
-  const [isRazorpayReady, setIsRazorpayReady] = useState(false);
-
-  const { basePrice, tax, total, isTaxApplicable, effectiveBilling } =
-    useChargeSummary(plan);
+  const { basePrice, tax, total, isTaxApplicable, effectiveBilling, GST } =
+    useChargeSummary(plan, planFrequency);
 
   const { isPending, insertSubscriptionMutation } =
-    useInsertSubscriptionMutation(isRazorpayReady);
+    useInsertSubscriptionMutation();
 
   const handleSubscription = () => {
     insertSubscriptionMutation({
       planId: plan?.id || "",
       amount: total,
-      taxRate: tax,
+      taxRate: GST,
       frequency: planFrequency,
       ...effectiveBilling,
       isWillingToFileGst: !!effectiveBilling.isWillingToFileGst,
     });
   };
-
-  useEffect(() => {
-    //<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-    // Check if already loaded
-    if (
-      document.querySelector(
-        `script[src="https://checkout.razorpay.com/v1/checkout.js"]`,
-      )
-    ) {
-      setIsRazorpayReady(true);
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    script.onload = () => setIsRazorpayReady(true);
-    script.onerror = () => console.warn("Failed to load Razorpay script");
-    document.body.appendChild(script);
-  }, []);
 
   return (
     <div className="rounded-lg border p-4">

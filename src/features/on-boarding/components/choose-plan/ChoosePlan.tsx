@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@aventisia/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
@@ -25,22 +25,29 @@ export const ChoosePlan = () => {
   useDocumentTitle("Choose Plan");
 
   const [searchParams] = useSearchParams();
+  const [selectedPlanName, setSelectedPlanName] = useState("");
 
   const plan = searchParams.get("plan") || "";
   const paramCurrency = searchParams.get("currency") || "";
   const frequency = searchParams.get("frequency") || "";
 
-  const { planFrequency, currency, setCurrency, setPlanId, setPlanFrequency } =
-    useChoosePlanStore(
-      useShallow((state) => ({
-        planFrequency: state.planFrequency,
-        setPlanFrequency: state.setPlanFrequency,
-        planId: state.planId,
-        setPlanId: state.setPlanId,
-        currency: state.currency,
-        setCurrency: state.setCurrency,
-      })),
-    );
+  const {
+    planId,
+    planFrequency,
+    currency,
+    setCurrency,
+    setPlanId,
+    setPlanFrequency,
+  } = useChoosePlanStore(
+    useShallow((state) => ({
+      planFrequency: state.planFrequency,
+      setPlanFrequency: state.setPlanFrequency,
+      planId: state.planId,
+      setPlanId: state.setPlanId,
+      currency: state.currency,
+      setCurrency: state.setCurrency,
+    })),
+  );
 
   const { data, isLoading } = useFetchSubscriptionPlans(
     `?currency=${currency}&frequency=${planFrequency}`,
@@ -63,6 +70,21 @@ export const ChoosePlan = () => {
       setPlanId(queryPlanId);
     }
   }, [data?.data, plan, setPlanId]);
+
+  useEffect(() => {
+    if (data?.data) {
+      const name = data.data.find((item) => item.id == planId)?.name || "";
+      setSelectedPlanName(name);
+    }
+  }, [data?.data, planId]);
+
+  useEffect(() => {
+    if (selectedPlanName && data?.data) {
+      const queryPlanId =
+        data.data.find((item) => item.name == selectedPlanName)?.id || "";
+      setPlanId(queryPlanId);
+    }
+  }, [data?.data, selectedPlanName, setPlanId]);
 
   return (
     <ContentContainer className="fadeInRTL">

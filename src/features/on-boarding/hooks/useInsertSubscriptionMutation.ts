@@ -3,13 +3,12 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 import { purchasePlan } from "../apis/tenant-subscription-apis";
-import type {
-  RazorpayErrorResponse,
-  // RazorpaySuccessResponse,
-} from "../types/razorpay";
+import { useRazorpayPayment } from "./useRazorpayPayment";
 
-export const useInsertSubscriptionMutation = (isRazorpayReady: boolean) => {
+export const useInsertSubscriptionMutation = () => {
   const navigate = useNavigate();
+
+  const { isRazorpayReady, openRazorpayPayment } = useRazorpayPayment();
 
   const { mutate: insertSubscriptionMutation, isPending } = useMutation({
     mutationFn: purchasePlan,
@@ -23,34 +22,7 @@ export const useInsertSubscriptionMutation = (isRazorpayReady: boolean) => {
         variables.amount > 0 &&
         isRazorpayReady
       ) {
-        const options = {
-          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-          subscription_id: data.razorpaySubscriptionId, // Razorpay Subscription ID
-          name: "Aventisia Technologies Pvt Ltd",
-          description: "Subscription Payment",
-          image: "/logo_icon.jpg",
-
-          handler: function () {
-            // Payment Success
-            localStorage.clear();
-            navigate("/redirect?url=" + import.meta.env.VITE_WORC_URL);
-          },
-
-          theme: {
-            color: "#0f172a", // optional theme color
-          },
-        };
-
-        const razorpay = new window.Razorpay(options);
-        razorpay.open();
-
-        razorpay.on(
-          "payment.failed",
-          function (response: RazorpayErrorResponse) {
-            toast.error("Payment failed: " + response.error.description);
-          },
-        );
-
+        openRazorpayPayment(data.razorpaySubscriptionId);
         return;
       }
 
