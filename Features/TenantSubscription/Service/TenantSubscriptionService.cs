@@ -501,7 +501,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     return serviceResponse;
                 }
             }
-            
+
             // If the subscription plan is not 'Starter', billing details are required
             if (subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter)
             {
@@ -608,7 +608,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 _logger.LogError("Unable to persist billing details. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
                 return serviceResponse;
             }
-            
+
             // Map the tenant subscription entity to a DTO for response
             var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
 
@@ -988,7 +988,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
     }
 
     // Cancels the subscription plan for a tenant. If no active subscription exists, the cancellation is skipped.
-    public async Task<ServiceResponse<TenantSubscriptionDto>> CancelSubscriptionPlanAsync(Guid tenantSubscriptionId)
+    public async Task<ServiceResponse<TenantSubscriptionDto>> CancelSubscriptionAsync(SubscriptionUpdateRequestDto subscriptionUpdateRequestDto)
     {
         // Initialize the service response with a default failure message
         var serviceResponse = new ServiceResponse<TenantSubscriptionDto>
@@ -1000,17 +1000,17 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         try
         {
             // Log the start of the cancellation process for tracking purposes
-            _logger.LogInformation("Processing subscription cancellation for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, tenantSubscriptionId);
+            _logger.LogInformation("Processing subscription cancellation for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
 
             // Fetch the existing tenant subscription to be canceled
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(w => w.Id == tenantSubscriptionId && w.IsActive)
+                .GetByConditionAsync(w => w.Id == subscriptionUpdateRequestDto.SubscriptionId && w.IsActive)
                 .SingleOrDefaultAsync();
 
             // If no active subscription is found, return an appropriate message
             if (tenantSubscription == null)
             {
-                _logger.LogWarning("No active subscription found for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}.", _tenantId, tenantSubscriptionId);
+                _logger.LogWarning("No active subscription found for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}.", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
                 serviceResponse.Message = "No active subscription found to cancel.";
                 return serviceResponse;
             }
@@ -1033,6 +1033,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
                     // Clear the Razorpay subscription ID after cancellation
                     tenantSubscription.RazorpaySubscriptionId = null;
+                    tenantSubscription.IsRecurringPayment = false;
                     tenantSubscription.Status = SubscriptionStatusTypesEnum.Cancelled;
                 }
                 else
@@ -1052,32 +1053,12 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Save changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to deactivate tenant subscription. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, tenantSubscriptionId);
+                _logger.LogError("Failed to deactivate tenant subscription. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
                 return serviceResponse;
             }
 
             // Log success for deactivating the subscription
-            _logger.LogInformation("Tenant subscription deactivated. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, tenantSubscriptionId);
-
-            // Optionally, delete any associated billing details for the subscription
-            var billingDetail = await _unitOfWork.BillingDetailRepo
-                .GetByConditionAsync(w => w.SubscriptionId == tenantSubscriptionId && w.TenantId == _tenantId)
-                .SingleOrDefaultAsync();
-
-            // If billing details exist, delete them
-            if (billingDetail != null)
-            {
-                _unitOfWork.BillingDetailRepo.Delete(billingDetail);
-
-                // Save the deletion changes to the database
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Failed to delete billing details for TenantSubscriptionId: {TenantSubscriptionId}.", tenantSubscription.Id);
-                    return serviceResponse;
-                }
-
-                _logger.LogInformation("Billing details deleted for TenantSubscriptionId: {TenantSubscriptionId}.", tenantSubscription.Id);
-            }
+            _logger.LogInformation("Tenant subscription deactivated. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
 
             // Map the tenant subscription entity to a DTO for response (so client gets details of canceled subscription)
             var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
@@ -1090,7 +1071,93 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         catch (Exception ex)
         {
             // Log any unexpected exceptions that occur during the cancellation process
-            _logger.LogError(ex, "An error occurred while cancelling the subscription. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, tenantSubscriptionId);
+            _logger.LogError(ex, "An error occurred while cancelling the subscription. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
+        }
+
+        // Return the service response (either success or failure)
+        return serviceResponse;
+    }
+
+    // Cancels the recurring payment for a tenant, keeping the subscription active but stopping future payments.
+    public async Task<ServiceResponse<TenantSubscriptionDto>> CancelRecurringPaymentAsync(SubscriptionUpdateRequestDto subscriptionUpdateRequestDto)
+    {
+        // Initialize the service response with a default failure message
+        var serviceResponse = new ServiceResponse<TenantSubscriptionDto>
+        {
+            Data = null,
+            Message = "Failed to cancel recurring payment. Please try again later.",
+        };
+
+        try
+        {
+            // Log the start of the recurring payment cancellation process
+            _logger.LogInformation("Processing recurring payment cancellation for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
+
+            // Fetch the active tenant subscription
+            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w => w.Id == subscriptionUpdateRequestDto.SubscriptionId && w.IsActive)
+                .SingleOrDefaultAsync();
+
+            // If no active subscription is found, return an appropriate message
+            if (tenantSubscription == null)
+            {
+                _logger.LogWarning("No active subscription found for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}.", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
+                serviceResponse.Message = "No active subscription found to cancel recurring payment.";
+                return serviceResponse;
+            }
+
+            // Check if the recurring payment is associated with Razorpay or another payment system
+            if (!string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId))
+            {
+                // Call external service to cancel the Razorpay subscription for recurring payments
+                var cancelPaymentResult = await _subscriptionService.CancelSubscriptionAsync(tenantSubscription.RazorpaySubscriptionId, SubscriptionActionTimingEnum.CycleEnd);
+
+                // If the cancellation was successful in Razorpay
+                if (cancelPaymentResult.Data != null || cancelPaymentResult.StatusCode == 200)
+                {
+                    _logger.LogInformation("Successfully canceled recurring payment for Razorpay subscription associated with TenantSubscriptionId: {TenantSubscriptionId}",
+                        tenantSubscription.Id);
+
+                    // Set status to reflect cancellation of the recurring payment (but not the subscription itself)
+                    tenantSubscription.IsRecurringPayment = false;
+                }
+                else
+                {
+                    // Log failure if Razorpay cancellation did not succeed
+                    _logger.LogWarning("Failed to cancel recurring payment for Razorpay subscription associated with TenantSubscriptionId: {TenantSubscriptionId}. Reason: {Message}",
+                        tenantSubscription.Id, cancelPaymentResult?.Message ?? "Unknown error");
+
+                    // Set failure message for the response
+                    serviceResponse.Message = cancelPaymentResult.Message;
+                    return serviceResponse;
+                }
+            }
+
+            // Update the tenant subscription with the new status
+            _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
+
+            // Save changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to update tenant subscription after canceling recurring payment. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
+                return serviceResponse;
+            }
+
+            // Log success for canceling the recurring payment
+            _logger.LogInformation("Recurring payment canceled successfully for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
+
+            // Map the tenant subscription entity to a DTO for response (so client gets details of canceled payment)
+            var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
+
+            // Set the service response with the DTO and success metadata
+            serviceResponse.Data = tenantSubscriptionDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Recurring payment canceled successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log any unexpected exceptions that occur during the recurring payment cancellation process
+            _logger.LogError(ex, "An error occurred while canceling the recurring payment. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
         }
 
         // Return the service response (either success or failure)

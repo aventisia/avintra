@@ -75,10 +75,17 @@ public class TenantSubscriptionController : BaseApiController
         return ResultHelper(await _tenantSubscriptionService.UpgradeSubscriptionPlanAsync(tenantSubscriptionPurchaseDto));
     }
 
-    // Cancel a tenant's subscription plan using the provided subscription ID.
-    [HttpPut("cancel-plan/{tenantSubscriptionId}")]
-    public async Task<ActionResult<ServiceResponse<TenantSubscriptionDto>>> CancelSubscription(Guid tenantSubscriptionId)
+    // Cancels a tenant's subscription using the provided subscription details.
+    [HttpPut("cancel-subscription")]
+    public async Task<ActionResult<ServiceResponse<TenantSubscriptionDto>>> CancelSubscription(SubscriptionUpdateRequestDto subscriptionUpdateRequestDto)
     {
-        return ResultHelper(await _tenantSubscriptionService.CancelSubscriptionPlanAsync(tenantSubscriptionId));
+        return ResultHelper(await _tenantSubscriptionService.CancelSubscriptionAsync(subscriptionUpdateRequestDto));
+    }
+
+    // Cancels a tenant's recurring payment using the provided subscription details.
+    [HttpPut("cancel-recurring-payment")]
+    public async Task<ActionResult<ServiceResponse<TenantSubscriptionDto>>> CancelRecurringPayment(SubscriptionUpdateRequestDto subscriptionUpdateRequestDto)
+    {
+        return ResultHelper(await _tenantSubscriptionService.CancelRecurringPaymentAsync(subscriptionUpdateRequestDto));
     }
 }

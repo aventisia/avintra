@@ -79,9 +79,16 @@ public interface ITenantSubscriptionService
     Task<ServiceResponse<TenantSubscriptionDto>> UpgradeSubscriptionPlanAsync(TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto);
 
     /// <summary>
-    /// Cancels the tenant's subscription plan using the provided subscription ID.
+    /// Cancels the tenant's subscription using the provided subscription details.
     /// </summary>
-    /// <param name="tenantSubscriptionId">The ID of the tenant's subscription to be canceled.</param>
-    /// <returns>A task representing the asynchronous operation, containing the result of the cancellation request.</returns>
-    Task<ServiceResponse<TenantSubscriptionDto>> CancelSubscriptionPlanAsync(Guid tenantSubscriptionId);
+    /// <param name="subscriptionUpdateRequestDto">The subscription details, including the subscription ID, status, and other relevant information.</param>
+    /// <returns>A task representing the asynchronous operation, containing the result of the subscription cancellation.</returns>
+    Task<ServiceResponse<TenantSubscriptionDto>> CancelSubscriptionAsync(SubscriptionUpdateRequestDto subscriptionUpdateRequestDto);
+
+    /// <summary>
+    /// Cancels the tenant's recurring payment based on the provided subscription details.
+    /// </summary>
+    /// <param name="subscriptionUpdateRequestDto">The subscription details, including the subscription ID, status, and other relevant information.</param>
+    /// <returns>A task representing the asynchronous operation, containing the result of the recurring payment cancellation.</returns>
+    Task<ServiceResponse<TenantSubscriptionDto>> CancelRecurringPaymentAsync(SubscriptionUpdateRequestDto subscriptionUpdateRequestDto);
 }
