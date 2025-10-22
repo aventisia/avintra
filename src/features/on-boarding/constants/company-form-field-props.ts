@@ -30,11 +30,11 @@ const numberOfEmployeesProps: SelectFieldProps = {
   label: "Number of Employees",
   selectOptions: [
     { label: "1 to 100", value: "100" },
-    { label: "101 to 500", value: "500" },
-    { label: "501 to 1000", value: "1000" },
-    { label: "1001 to 5000", value: "5000" },
-    { label: "5001 to 10000", value: "10000" },
-    { label: "More than 10000", value: "10001" },
+    { label: "100 to 500", value: "500" },
+    { label: "500 to 1,000", value: "1000" },
+    { label: "1,000 to 5,000", value: "5000" },
+    { label: "5,000 to 10,000", value: "10000" },
+    { label: "10,000+", value: "10001" },
   ],
   isRequired: true,
 };

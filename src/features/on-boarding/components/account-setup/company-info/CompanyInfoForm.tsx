@@ -95,7 +95,7 @@ export const CompanyInfoForm = () => {
         >
           Back
         </Button>
-        <SubmitButton isPending={isCreationPending} primaryText="Finish" />
+        <SubmitButton isPending={isCreationPending} primaryText="Continue" />
       </div>
     </Form>
   );
