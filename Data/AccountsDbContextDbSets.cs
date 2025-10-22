@@ -14,6 +14,7 @@ public partial class AccountsDbContext
     public DbSet<Permission> Permissions { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set; }
     public DbSet<BillingDetail> BillingDetails { get; set; }
+    public DbSet<BillingHistory> BillingHistories { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
     public DbSet<Space> Spaces { get; set; }
     public DbSet<SpaceUser> SpaceUsers { get; set; }
