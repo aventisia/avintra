@@ -1,6 +1,6 @@
 import { SubmitButton } from "@aventisia/ui/buttons";
 import { Form, InputOtpField } from "@aventisia/ui/form";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 import * as z from "zod";
 
 import { verificationCodeProps } from "../../constants/form-field-props";

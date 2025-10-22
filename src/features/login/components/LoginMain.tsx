@@ -4,7 +4,6 @@ import { RightContainer } from "@/components/ui/RightContainer";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 
-import { toast } from "@aventisia/ui/sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import { useValidateUserSessionForLoginPage } from "../hooks/useValidateUserSessionForLoginPage";
@@ -24,8 +23,6 @@ export const LoginMain = () => {
 
   // Validate user session
   const { isPending } = useValidateUserSessionForLoginPage();
-
-  toast.success("Welcome to login page");
 
   // Return component
   return (

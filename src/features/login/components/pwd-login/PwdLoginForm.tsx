@@ -1,7 +1,7 @@
 import { SubmitButton } from "@aventisia/ui/buttons";
 import { InputField } from "@aventisia/ui/form";
 import { Form } from "@aventisia/ui/form";
-import { toast } from "sonner";
+import { toast } from "@aventisia/ui/sonner";
 import * as z from "zod";
 
 import { pwdProps } from "../../constants/form-field-props";

@@ -1,8 +1,8 @@
 import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 
+import { toast } from "@aventisia/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import { checkTwoFAVerificationCode } from "../apis/login-apis";
