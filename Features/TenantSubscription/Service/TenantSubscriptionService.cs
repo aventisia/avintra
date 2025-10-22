@@ -673,9 +673,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 .SumAsync(sm => sm.AvailableCredits);
 
             // Fetch the latest billing details for the current tenant
-            var billingDetail = await _unitOfWork.BillingDetailRepo
-                .GetByConditionAsync(w => w.TenantId == _tenantId)
-                .OrderByDescending(o => o.CreatedOn)
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(w => w.Id == _tenantId)
                 .FirstOrDefaultAsync();
 
             // Extract the current subscription plan for easier reference
@@ -690,7 +689,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     PlanName = currentPlan.Name,
                     Frequency = tenantSubscription.Frequency,
                     Price = currentPlan.Price,
-                    Currency = billingDetail?.Currency ?? CurrencyTypesEnum.USD,
+                    Currency = tenant?.Currency ?? CurrencyTypesEnum.USD,
                     AvailableCredits = availableCredits,
                     ExpiredOn = tenantSubscription.NextBillingDate,
                     IsActive = tenantSubscription?.NextBillingDate > DateTimeOffset.UtcNow.Date,

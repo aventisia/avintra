@@ -75,7 +75,6 @@ public class TenantAccountService : ITenantAccountService
                     State = string.Empty,
                     PostalCode = string.Empty,
                     Country = CountriesEnum.India,
-                    Currency = CurrencyTypesEnum.INR
                 };
             }
 
