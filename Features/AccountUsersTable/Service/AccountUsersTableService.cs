@@ -2,6 +2,7 @@ namespace AccountsAPIs.Services;
 
 public class AccountUsersTableService : IAccountUsersTableService
 {
+    private readonly IUnitOfWork _unitOfWork;
     private readonly UserManager<AccountUser> _userManager;
     private readonly RoleManager<AccountRole> _roleManager;
     private readonly ILogger<AccountUsersTableService> _logger;
@@ -10,6 +11,7 @@ public class AccountUsersTableService : IAccountUsersTableService
     private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly string _jwt;
     private readonly Guid _userId;
+    private readonly Guid _tenantId;
 
     public AccountUsersTableService(
         UserManager<AccountUser> userManager,
@@ -18,11 +20,13 @@ public class AccountUsersTableService : IAccountUsersTableService
         IAuthHelperService authHelperService,
         ICurrentTenantService currentTenantService,
         IUserManagementGuardService userManagementGuardService,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IUnitOfWork unitOfWork)
     {
         // Set _jwt, _userId and _userRoles
         _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
         _userManager = userManager;
         _roleManager = roleManager;
@@ -30,6 +34,7 @@ public class AccountUsersTableService : IAccountUsersTableService
         _authHelperService = authHelperService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
+        _unitOfWork = unitOfWork;
     }
 
     // Retrieves a list of account users.
@@ -86,6 +91,30 @@ public class AccountUsersTableService : IAccountUsersTableService
 
         try
         {
+            // Fetch the current active subscription for the tenant
+            var currentSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w => w.TenantId == _tenantId && w.IsActive)
+                .Include(w => w.Plan)
+                .FirstOrDefaultAsync();
+
+            // Log: Checking if subscription exists
+            _logger.LogInformation("Checking subscription for TenantId: {TenantId}", _tenantId);
+
+            if (currentSubscription == null)
+            {
+                _logger.LogWarning("No active subscription found for TenantId: {TenantId}", _tenantId);
+                serviceResponse.Message = "No active subscription found. Please subscribe to a plan to continue.";
+                return serviceResponse;
+            }
+
+            // Check if the subscription plan is 'Starter'
+            if (currentSubscription.Plan.Type == SubscriptionPlanTypeEnum.Starter)
+            {
+                _logger.LogWarning("Access denied for TenantId: {TenantId}. Plan type: Starter", _tenantId);
+                serviceResponse.Message = "Access denied: Your current plan (Starter) does not include this feature.";
+                return serviceResponse;
+            }
+
             // Convert roles FullName to Name (Frontend will return roles in "FullName" of IdentityRole. However userManger work with "Name" of IdentityRole
             var toBeAddedUserRoles = await TransformRoleFullNameToName(accountUsersTableDto.UserRoles);
 
@@ -518,7 +547,7 @@ public class AccountUsersTableService : IAccountUsersTableService
             // Update-Job failed
             if (!isUpdateSuccessful)
                 return serviceResponse;
-            
+
             // Task successful
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
