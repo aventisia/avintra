@@ -128,17 +128,12 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         name: "credits Usage",
         route: "/credits-usage",
       },
-      // Add Approvals only if not production
-      ...(import.meta.env.MODE !== "production"
-        ? [
-            {
-              permissions: ["SA", "TA"],
-              Icon: CheckCheckIcon,
-              name: "Approvals",
-              route: "/approvals",
-            },
-          ]
-        : []),
+      {
+        permissions: ["SA", "TA"],
+        Icon: CheckCheckIcon,
+        name: "Approvals",
+        route: "/approvals",
+      },
       {
         permissions: ["SA", "TA"],
         Icon: UsersIcon,
