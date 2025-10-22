@@ -248,6 +248,26 @@ public class UserRegistrationService : IUserRegistrationService
                 return serviceResponse;
             }
 
+            // Check if the tenant type is NOT 'Individual'
+            if (tenantOrganizationDto.Type != TenantTypesEnum.Individual)
+            {
+                _logger.LogInformation("Validating organization name for tenant type: {TenantType}", tenantOrganizationDto.Type);
+
+                // Retrieve any existing tenant with the same organization name (case-insensitive)
+                var existingTenant = await _unitOfWork.TenantRepo
+                    .GetByConditionAsync(w => w.Name.ToLower() == tenantOrganizationDto.OrganizationName.ToLower())
+                    .FirstOrDefaultAsync();
+
+                if (existingTenant != null)
+                {
+                    _logger.LogWarning("Organization name '{OrganizationName}' already exists for TenantId: {TenantId}",
+                        tenantOrganizationDto.OrganizationName, existingTenant.Id);
+
+                    serviceResponse.Message = $"Organization name '{tenantOrganizationDto.OrganizationName}' already exists.";
+                    return serviceResponse;
+                }
+            }
+
             // Define regex pattern to validate domain format (e.g., example.com, www.example.org)
             var domainPattern = @"^(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$";
 
