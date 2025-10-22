@@ -563,6 +563,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Map the subscription purchase DTO to a new BillingDetail entity
             var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
             billingDetail.SubscriptionId = tenantSubscription.Id;
+            billingDetail.TenantId = _tenantId;
 
             // Fetch the current user's information based on their User ID
             var currentUser = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.Id == _userId).FirstOrDefaultAsync();
@@ -952,6 +953,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Map the subscription purchase DTO to a new BillingDetail entity
             var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
             billingDetail.SubscriptionId = tenantSubscription.Id;
+            billingDetail.TenantId = _tenantId;
 
             // Set audit fields
             billingDetail.CreatedByUserId = _userId;
