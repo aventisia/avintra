@@ -23,6 +23,7 @@ public class UnitOfWork : IUnitOfWork
     public IPaymentMethodRepo PaymentMethodRepo => new PaymentMethodRepo(_accountsDbContext);
     public IAuditLogRepo AuditLogRepo => new AuditLogRepo(_accountsDbContext);
     public IBillingDetailRepo BillingDetailRepo => new BillingDetailRepo(_accountsDbContext);
+    public IBillingHistoryRepo BillingHistoryRepo => new BillingHistoryRepo(_accountsDbContext);
     public ISpaceRepo SpaceRepo => new SpaceRepo(_accountsDbContext);
     public ISpaceUserRepo SpaceUserRepo => new SpaceUserRepo(_accountsDbContext);
     public IAppIntegrationRepo AppIntegrationRepo => new AppIntegrationRepo(_accountsDbContext);
