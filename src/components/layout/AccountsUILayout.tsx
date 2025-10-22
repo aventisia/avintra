@@ -1,18 +1,17 @@
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
-import { useBaseLayoutStore } from "@aventisia/ui/stores";
 
+import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { Suspense, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 const AccountsUILayout = () => {
   // Get the state and actions from the base layout store
-  const { setViteEnvVars } =
-    useBaseLayoutStore(
-      useShallow((state) => ({
-        setViteEnvVars: state.setViteEnvVars,
-      })),
-    );
+  const { setViteEnvVars } = useBaseLayoutStore(
+    useShallow((state) => ({
+      setViteEnvVars: state.setViteEnvVars,
+    })),
+  );
 
   // Set environment variables only once
   useEffect(() => {
@@ -22,9 +21,9 @@ const AccountsUILayout = () => {
       APP_NAME: import.meta.env.VITE_APP_NAME,
       COMPANY_NAME: import.meta.env.VITE_COMPANY_NAME,
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-    
+
   return (
     <main className="flex h-screen justify-center">
       <div className="flex h-fit min-h-screen w-full space-x-2 overflow-auto">
@@ -37,4 +36,3 @@ const AccountsUILayout = () => {
 };
 
 export { AccountsUILayout };
-

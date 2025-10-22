@@ -1,6 +1,6 @@
-import { create } from "zustand";
-
 import { IUserSessionStore } from "@/react-toolkit/types/user-session-types";
+
+import { create } from "zustand";
 
 interface UserSessionStore {
   userSession: IUserSessionStore | null;

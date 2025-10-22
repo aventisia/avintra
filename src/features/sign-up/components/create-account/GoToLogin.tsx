@@ -1,7 +1,7 @@
 import { ContentFooter } from "@/components/ui/ContentFooter";
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 import { useNavigate } from "react-router-dom";
 
 export const GoToLogin = () => {

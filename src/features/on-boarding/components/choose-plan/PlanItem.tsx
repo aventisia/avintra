@@ -46,7 +46,9 @@ export const PlanItem = ({
           </div>
         </div>
 
-        {isSelected && <PlanFeatures plan={plan} planFrequency={planFrequency} />}
+        {isSelected && (
+          <PlanFeatures plan={plan} planFrequency={planFrequency} />
+        )}
       </div>
     </CustomRadioItem>
   );

@@ -4,9 +4,9 @@ import { PageContainer } from "@/components/ui/PageContainer";
 import { RightContainer } from "@/components/ui/RightContainer";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 import { useShallow } from "zustand/react/shallow";
 
 import { useChoosePlanStore } from "../stores/choose-plan-store";

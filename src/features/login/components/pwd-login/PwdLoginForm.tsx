@@ -1,7 +1,6 @@
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { InputField } from "@/react-toolkit/ui/form/fields/InputField";
-
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { InputField } from "@aventisia/ui/form";
+import { Form } from "@aventisia/ui/form";
 import { toast } from "sonner";
 import * as z from "zod";
 

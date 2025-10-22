@@ -5,14 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3001",
-    "pregit": "tsc -b && prettier --write .",
+    "pregit": "prettier --write . && eslint --fix . && tsc -b",
     "build": "tsc -b && vite build",
-    "format": "prettier --write .",
+    "format": "prettier --write . && eslint --fix .",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@aventisia/ui": "^0.0.34",
+    "@aventisia/ui": "^0.0.61",
     "@heroicons/react": "^2.1.5",
     "@hookform/resolvers": "^3.9.0",
     "@tanstack/react-query": "^5.51.1",

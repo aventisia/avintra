@@ -1,7 +1,7 @@
-import { AlertDialogWrapper } from "@/react-toolkit/ui/alert-dialog/AlertDialogWrapper";
-import { SonnerToaster } from "@/react-toolkit/ui/sonner/SonnerToaster";
-
-import { TooltipProvider } from "@radix-ui/react-tooltip";
+import { AlertDialogWrapper } from "@aventisia/ui/alert-dialog";
+import { SonnerToaster } from "@aventisia/ui/sonner";
+import "@aventisia/ui/styles/sonner.css";
+import { TooltipProvider } from "@aventisia/ui/tooltip";
 import React from "react";
 import ReactDOM from "react-dom/client";
 

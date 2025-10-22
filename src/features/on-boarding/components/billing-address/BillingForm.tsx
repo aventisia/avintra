@@ -1,8 +1,8 @@
 import { organizationNameProps } from "@/features/on-boarding/constants/company-form-field-props";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { Form } from "@/react-toolkit/ui/form/Form";
 
 import { Button, SubmitButton } from "@aventisia/ui/buttons";
+import { Form } from "@aventisia/ui/form";
 import { InputField, SelectField, SwitchField } from "@aventisia/ui/form";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { z } from "zod";

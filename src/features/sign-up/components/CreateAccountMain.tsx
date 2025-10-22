@@ -4,9 +4,9 @@ import { PageContainer } from "@/components/ui/PageContainer";
 import { RightContainer } from "@/components/ui/RightContainer";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
 
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCreateAccountStore } from "../stores/create-account-store";
@@ -20,7 +20,7 @@ export const CreateAccountMain = () => {
       stepNo: state.stepNo,
     })),
   );
-  
+
   // Return component
   return (
     <PageContainer>
@@ -40,7 +40,7 @@ export const CreateAccountMain = () => {
         </HeaderContainer>
 
         {/* Step 1 - Create account step */}
-        {stepNo === 1 && <CreateAccount /> }
+        {stepNo === 1 && <CreateAccount />}
 
         {/* Step 2 - Verify email address step */}
         {stepNo === 2 && <VerifyEmail />}

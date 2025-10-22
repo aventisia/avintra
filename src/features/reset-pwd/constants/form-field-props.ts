@@ -1,6 +1,8 @@
-import { FloatingLabelInputFieldProps } from "@/react-toolkit/ui/form/fields/FloatingLabelInputField";
-import { InputFieldProps } from "@/react-toolkit/ui/form/fields/InputField";
-import { InputOtpFieldProps } from "@/react-toolkit/ui/form/fields/InputOtpField";
+import {
+  FloatingLabelInputFieldProps,
+  InputFieldProps,
+  InputOtpFieldProps,
+} from "@aventisia/ui/form";
 
 const className = "h-11 text-md";
 const labelClassName = "text-md";

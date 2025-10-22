@@ -1,7 +1,8 @@
 import { HeaderContainer } from "@/components/layout/HeaderContainer";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
-import { cn } from "@/react-toolkit/lib/utils";
-import { buttonVariants } from "@/react-toolkit/ui/buttons/button-variants";
+
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 
 export const LoginHeader = () => {
   return (

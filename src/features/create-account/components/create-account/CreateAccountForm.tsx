@@ -1,9 +1,9 @@
 import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
-import { SubmitButton } from "@/react-toolkit/ui/buttons/SubmitButton";
-import { Form } from "@/react-toolkit/ui/form/Form";
-import { CheckboxField } from "@/react-toolkit/ui/form/fields/CheckboxField";
-import { FloatingLabelInputField } from "@/react-toolkit/ui/form/fields/FloatingLabelInputField";
 
+import { SubmitButton } from "@aventisia/ui/buttons";
+import { FloatingLabelInputField } from "@aventisia/ui/form";
+import { CheckboxField } from "@aventisia/ui/form";
+import { Form } from "@aventisia/ui/form";
 import * as z from "zod";
 
 import { createAccountZodSchema } from "../../constants/create-account-zod-schema";
@@ -75,7 +75,9 @@ export const CreateAccountForm = () => {
       {/* Email */}
       <FloatingLabelInputField
         {...emailProps}
-        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        onChangeCapture={(e: { currentTarget: { value: string } }) =>
+          handleInputChange(e.currentTarget.value)
+        }
         nonErrorMessage={availabilityMessage}
       />
 

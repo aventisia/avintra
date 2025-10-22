@@ -1,5 +1,4 @@
-import { Button } from "@/react-toolkit/ui/buttons/Button";
-
+import { Button } from "@aventisia/ui/buttons";
 import { ArrowLeft } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
