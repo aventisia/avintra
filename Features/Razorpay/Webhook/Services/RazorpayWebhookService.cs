@@ -106,8 +106,8 @@ public class WebhookService : IWebhookService
 
             // ========================== Invoice Events ==========================
 
-            // case "invoice.paid":
-            //     await HandleInvoicePaid(json); break;
+            case "invoice.paid":
+                await ProcessInvoicePaidAsync(json); break;
 
             // case "invoice.partially_paid":
             //     await HandleInvoicePartiallyPaid(json); break;
@@ -732,6 +732,120 @@ public class WebhookService : IWebhookService
         {
             // Log any exceptions that occur during the processing
             _logger.LogError(ex, "Error processing payment history for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
+        }
+    }
+
+    private async Task ProcessInvoicePaidAsync(JObject json)
+    {
+        // Extract the subscription ID from the webhook payload
+        var subscriptionId = json["payload"]?["invoice"]?["entity"]?["subscription_id"]?.ToString();
+        if (string.IsNullOrEmpty(subscriptionId))
+        {
+            _logger.LogWarning("Billing processing skipped: Subscription ID is missing from the webhook payload.");
+            return;
+        }
+
+        _logger.LogInformation("Processing billing details for Subscription ID: {SubscriptionId}", subscriptionId);
+
+        try
+        {
+            // Extract payment details from the webhook payload
+            var amountPaid = json["payload"]?["invoice"]?["entity"]?["amount"]?.ToObject<int?>();
+            var invoiceLink = json["payload"]?["invoice"]?["entity"]?["short_url"]?.ToObject<string?>();
+
+            // Retrieve the payment entity from the payload
+            var paymentEntity = json["payload"]?["payment"]?["entity"] as JObject;
+
+            // Retrieve the tenant subscription from the database
+            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                 .GetByConditionAsync(s => s.RazorpaySubscriptionId == subscriptionId && s.IsActive)
+                 .Include(i => i.Plan)
+                 .FirstOrDefaultAsync();
+
+            if (tenantSubscription == null)
+            {
+                _logger.LogWarning("Billing processing failed: Subscription with ID {SubscriptionId} not found in the system.", subscriptionId);
+                return;
+            }
+
+            // Retrieve the most recent billing record for the tenant with valid contact and address details
+            var billingRecordsQuery = _unitOfWork.BillingDetailRepo
+                .GetByConditionAsync(w => w.TenantId == tenantSubscription.TenantId)
+                .OrderByDescending(o => o.CreatedOn);
+
+            var lastBillingDetail = await billingRecordsQuery
+                .FirstOrDefaultAsync(w => w.ContactPerson != null && w.AddressLine1 != null);
+
+            // Extract Razorpay Payment ID from the payment entity
+            var razorpayPaymentId = paymentEntity["id"]?.ToString();
+
+            // Check if a billing record already exists for this Razorpay payment and subscription
+            var existingBillingDetail = await billingRecordsQuery
+                .FirstOrDefaultAsync(w =>
+                    w.TenantId == tenantSubscription.TenantId &&
+                    w.SubscriptionId == tenantSubscription.Id &&
+                    (w.RazorpayPaymentId == razorpayPaymentId || w.RazorpayPaymentId == null)
+                );
+
+            if (existingBillingDetail != null)
+            {
+                // Update the existing billing record if found
+                _logger.LogInformation("Updating existing billing record for Razorpay Payment ID {RazorpayPaymentId}", razorpayPaymentId);
+
+                existingBillingDetail.Amount = paymentEntity["amount"]?.ToObject<int?>() / 100 ?? 0;
+                existingBillingDetail.InvoiceLink = invoiceLink;
+                existingBillingDetail.RazorpayInvoiceId = paymentEntity["invoice_id"]?.ToObject<string?>() ?? string.Empty;
+                existingBillingDetail.RazorpayOrderId = paymentEntity["order_id"]?.ToObject<string?>() ?? string.Empty;
+                existingBillingDetail.PaymentStatus = (PaymentStatusTypesEnum)Enum.Parse(typeof(PaymentStatusTypesEnum), paymentEntity["status"]?.ToString(), ignoreCase: true);
+                existingBillingDetail.BillingEmail = paymentEntity["email"]?.ToObject<string?>() ?? string.Empty;
+                existingBillingDetail.ContactPerson = paymentEntity["contact"]?.ToObject<string?>() ?? string.Empty;
+                existingBillingDetail.LastModifiedByUserId = tenantSubscription.CreatedByUserId;
+
+                // Save the updated billing record
+                _unitOfWork.BillingDetailRepo.Update(existingBillingDetail);
+            }
+            else
+            {
+                // Create a new billing record if no existing record is found
+                _logger.LogInformation("Creating new billing record for Razorpay Payment ID {RazorpayPaymentId}", razorpayPaymentId);
+
+                var billingRecord = new BillingDetail
+                {
+                    SubscriptionId = tenantSubscription.Id,
+                    Amount = paymentEntity["amount"]?.ToObject<int?>() / 100 ?? 0,
+                    InvoiceLink = invoiceLink,
+                    RazorpayInvoiceId = paymentEntity["invoice_id"]?.ToObject<string?>() ?? string.Empty,
+                    RazorpayPaymentId = paymentEntity["id"]?.ToObject<string?>() ?? string.Empty,
+                    RazorpayOrderId = paymentEntity["order_id"]?.ToObject<string?>() ?? string.Empty,
+                    PaymentStatus = (PaymentStatusTypesEnum)Enum.Parse(typeof(PaymentStatusTypesEnum), paymentEntity["status"]?.ToString(), ignoreCase: true),
+                    Currency = (CurrencyTypesEnum)Enum.Parse(typeof(CurrencyTypesEnum), paymentEntity["currency"]?.ToString(), ignoreCase: true),
+                    BillingEmail = paymentEntity["email"]?.ToObject<string?>() ?? string.Empty,
+                    ContactPerson = paymentEntity["contact"]?.ToObject<string?>() ?? string.Empty,
+                    AddressLine1 = lastBillingDetail?.AddressLine1 ?? string.Empty,
+                    AddressLine2 = lastBillingDetail?.AddressLine2,
+                    City = lastBillingDetail?.City ?? string.Empty,
+                    State = lastBillingDetail?.State ?? string.Empty,
+                    Country = lastBillingDetail?.Country ?? CountriesEnum.India,
+                    PostalCode = lastBillingDetail?.PostalCode ?? string.Empty,
+                    CreatedByUserId = tenantSubscription.CreatedByUserId,
+                    LastModifiedByUserId = tenantSubscription.CreatedByUserId,
+                    TenantId = tenantSubscription.TenantId
+                };
+
+                // Save the new billing record to the database
+                await _unitOfWork.BillingDetailRepo.InsertAsync(billingRecord);
+            }
+
+            // Commit changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save billing record for Subscription ID {SubscriptionId}.", subscriptionId);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log any exceptions that occur during the process
+            _logger.LogError(ex, "An error occurred while processing billing details for Razorpay Subscription ID {SubscriptionId}", subscriptionId);
         }
     }
 }
