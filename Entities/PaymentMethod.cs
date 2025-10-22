@@ -18,6 +18,11 @@ public class PaymentMethod
     public Guid TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of the cardholder associated with the payment method.
+    /// </summary>
+    public string? Name { get; set; }
+
+    /// <summary>
     /// Gets or sets the Razorpay-assigned identifier for the saved or tokenized payment method.
     /// </summary>
     public string? RazorpayMethodId { get; set; }

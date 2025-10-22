@@ -13,6 +13,11 @@ public class PaymentMethodDto
     public string? RazorpayMethodId { get; set; }
 
     /// <summary>
+    /// The name of the cardholder associated with the payment method.
+    /// </summary>
+    public string? Name { get; set; }
+
+    /// <summary>
     /// Gets or sets the type of payment method (e.g., Card, UPI, Wallet).
     /// </summary>
     public PaymentMethodTypesEnum? Type { get; set; }

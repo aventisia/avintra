@@ -12,6 +12,7 @@ public class PaymentHistory
     /// </summary>
     [Key]
     public Guid Id { get; set; }
+
     /// <summary>
     /// Gets or sets the tenant identifier used for multi-tenancy filtering.
     /// </summary>
