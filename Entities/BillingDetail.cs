@@ -1,96 +1,64 @@
 namespace AccountsAPIs.Entities;
 
-public class BillingDetail : BaseEntity
+/// <summary>
+/// Represents the billing details associated with a tenant subscription, including contact information, billing address, and GST-related data.
+/// </summary>
+public class BillingDetail : BaseEntity, IMustHaveTenant
 {
     /// <summary>
-    /// Gets or sets the tenant record's primary key for global filter (multi tenancy architecture).
+    /// Gets or sets the unique identifier for the tenant, used for multi-tenancy filtering.
     /// </summary>
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the email address for billing communications with the tenant.
+    /// Gets or sets the email address for billing-related communications with the tenant.
     /// </summary>
     public string? BillingEmail { get; set; }
 
     /// <summary>
-    /// Gets or sets the contact person phone number for the tenant.
+    /// Gets or sets the contact phone number for the tenant's designated contact person.
     /// </summary>
     public string? ContactPerson { get; set; }
 
     /// <summary>
-    /// Gets or sets the first line of the billing address.
+    /// Gets or sets the first line of the tenant's billing address.
     /// </summary>
     public required string AddressLine1 { get; set; }
 
     /// <summary>
-    /// Gets or sets the second line of the billing address (optional).
+    /// Gets or sets the second line of the tenant's billing address (optional).
     /// </summary>
     public string? AddressLine2 { get; set; }
 
     /// <summary>
-    /// Gets or sets the city of the billing address.
+    /// Gets or sets the city in the tenant's billing address.
     /// </summary>
     public required string City { get; set; }
 
     /// <summary>
-    /// Gets or sets the postal code of the billing address.
+    /// Gets or sets the postal code in the tenant's billing address.
     /// </summary>
     public required string PostalCode { get; set; }
 
     /// <summary>
-    /// Gets or sets the state or province of the billing address.
+    /// Gets or sets the state or province in the tenant's billing address.
     /// </summary>
     public required string State { get; set; }
 
     /// <summary>
-    /// Gets or sets the country of the billing address.
+    /// Gets or sets the country in the tenant's billing address.
     /// </summary>
     public required CountriesEnum Country { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the tenant is willing to file GST.
+    /// Gets or sets a flag indicating whether the tenant is willing to file GST.
     /// </summary>
     public bool IsWillingToFileGst { get; set; }
 
     /// <summary>
-    /// Gets or sets the GST number, if applicable.
+    /// Gets or sets the tenant's GST number, if applicable.
     /// </summary>
     public string? GstNumber { get; set; }
-
-    /// <summary>
-    /// Gets or sets the currency for the billing transaction.
-    /// </summary>
-    public required CurrencyTypesEnum Currency { get; set; }
-
-    /// <summary>
-    /// Gets or sets the total billing amount, including applicable taxes.
-    /// </summary>
-    public decimal Amount { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Razorpay payment ID associated with the billing.
-    /// </summary>
-    public string? RazorpayPaymentId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Razorpay order ID associated with the billing.
-    /// </summary>
-    public string? RazorpayOrderId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Razorpay invoice ID associated with the billing.
-    /// </summary>
-    public string? RazorpayInvoiceId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the payment status for the billing. Possible values: Created, Authorized, Captured, Refunded, Failed.
-    /// </summary>
-    public PaymentStatusTypesEnum PaymentStatus { get; set; }
-
-    /// <summary>
-    /// Gets or sets the link to the generated invoice for this billing.
-    /// </summary>
-    public string? InvoiceLink { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier of the subscription associated with this billing.
@@ -98,7 +66,7 @@ public class BillingDetail : BaseEntity
     public Guid SubscriptionId { get; set; }
 
     /// <summary>
-    /// Gets or sets the navigation property to the tenant's subscription associated with this billing.
+    /// Gets or sets the navigation property for the tenant's subscription associated with this billing record.
     /// </summary>
     [ForeignKey("SubscriptionId")]
     public virtual TenantSubscription? TenantSubscription { get; set; }
