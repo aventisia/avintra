@@ -142,6 +142,7 @@ const ChoosePlan = () => {
             <ChargeSummary
               plan={data?.data.find((val) => val.id == selectedPlan)}
               planFrequency={selectedTab as PlanFrequency}
+              billingData={billingData?.data}
             />
           ) : null}
         </div>

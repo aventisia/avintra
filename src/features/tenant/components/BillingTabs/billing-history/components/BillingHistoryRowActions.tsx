@@ -1,4 +1,6 @@
-import { Button } from "@aventisia/ui/buttons";
+import { buttonVariants } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { Download } from "lucide-react";
 
 interface BillingRowActionsProps {
@@ -7,8 +9,15 @@ interface BillingRowActionsProps {
 
 export const BillingHistoryRowActions = ({ rowId }: BillingRowActionsProps) => {
   return (
-    <Button size={"xs"} variant={"ghost"} onClick={() => console.log(rowId)}>
-      <Download className="h-4 w-4" />
-    </Button>
+    <Tooltip content="Will be available soon">
+      {/* <Button size={"xs"} variant={"ghost"} onClick={() => console.log(rowId)}> */}
+      <div
+        className={cn(buttonVariants({ variant: "ghost", size: "xs" }))}
+        onClick={() => console.log(rowId)}
+      >
+        <Download className="h-4 w-4" />
+      </div>
+      {/* </Button> */}
+    </Tooltip>
   );
 };
