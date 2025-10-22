@@ -16,7 +16,6 @@ public class TopUpController : BaseApiController
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<TopUpDto>>> CreateTopUp(TopUpDto topUpDto)
     {
-        // Call the service to process the top-up and return the result
         return ResultHelper(await _topUpService.CreateTopUpAsync(topUpDto));
     }
 }

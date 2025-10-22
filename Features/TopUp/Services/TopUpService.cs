@@ -78,7 +78,8 @@ namespace AccountsAPIs.Services
                 var existingBilling = await _unitOfWork.BillingDetailRepo
                     .GetByConditionAsync(w =>
                         w.TenantId == _tenantId &&
-                        string.IsNullOrEmpty(w.AddressLine1)
+                        w.ContactPerson != null &&
+                        w.AddressLine1 != null
                     )
                     .OrderByDescending(o => o.CreatedOn)
                     .FirstOrDefaultAsync();
@@ -124,6 +125,7 @@ namespace AccountsAPIs.Services
 
                 // Set success message and response data if everything succeeds
                 serviceResponse.Data = topUpDto;
+                serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Top-up request successfully processed.";
                 _logger.LogInformation("Top-up request successfully processed. Razorpay Order ID: {RazorpayOrderId}, Amount: {Amount}",
                                        topUpDto.RazorpayId, topUpDto.Amount);
