@@ -76,44 +76,33 @@ namespace AccountsAPIs.Services
 
                 // Fetch the most recent billing details for the tenant
                 var existingBilling = await _unitOfWork.BillingDetailRepo
-                    .GetByConditionAsync(w =>
-                        w.TenantId == _tenantId &&
-                        w.ContactPerson != null &&
-                        w.AddressLine1 != null
-                    )
+                    .GetByConditionAsync(w => w.TenantId == _tenantId)
                     .OrderByDescending(o => o.CreatedOn)
                     .FirstOrDefaultAsync();
 
-                // Fetch the active subscription for the tenant
-                var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
-                    .GetByConditionAsync(w =>
-                        w.IsActive && w.TenantId == _tenantId
-                    )
-                    .FirstOrDefaultAsync();
+                // Check if existingBilling is null
+                if (existingBilling == null)
+                {
+                    _logger.LogError("No existing billing details found for tenant: {TenantId}", _tenantId);
+                    serviceResponse.Message = "No existing billing details found for the tenant.";
+                    return serviceResponse;
+                }
 
                 // Create a new billing detail record for the top-up transaction
-                var billingDetail = new BillingDetail()
+                var billingHistory = new BillingHistory()
                 {
                     TenantId = _tenantId,
-                    BillingEmail = existingBilling.BillingEmail,
-                    ContactPerson = existingBilling.ContactPerson,
-                    AddressLine1 = existingBilling.AddressLine1,
-                    AddressLine2 = existingBilling.AddressLine2,
-                    City = existingBilling.City,
-                    State = existingBilling.State,
-                    Country = existingBilling.Country,
-                    PostalCode = existingBilling.PostalCode,
+                    BillingDetailId = existingBilling.Id,
                     Currency = topUpDto.Currency,
                     Amount = topUpDto.Amount,
                     PaymentStatus = PaymentStatusTypesEnum.Created,
-                    SubscriptionId = tenantSubscription.Id,
                     RazorpayOrderId = orderResponse.Data.Id,
                     CreatedByUserId = _userId,
                     LastModifiedByUserId = _userId,
                 };
 
-                // Insert the billing detail into the database
-                await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
+                // Insert the billing history into the database
+                await _unitOfWork.BillingHistoryRepo.InsertAsync(billingHistory);
 
                 // Commit the transaction if insertion is successful
                 if (!await _unitOfWork.SaveAsync())
