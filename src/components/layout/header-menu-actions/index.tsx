@@ -3,7 +3,6 @@ import { useFlowExecutionLogStore } from "@/features/flow-execution-log/stores/f
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuSeparator,
   SimpleDDMenuItem,
 } from "@aventisia/ui/dropdown-menu";
 import { toast } from "@aventisia/ui/sonner";
@@ -142,7 +141,12 @@ export const HeaderActionMenu: React.FC = () => {
           }}
         />
 
-        <DropdownMenuSeparator />
+        <SimpleDDMenuItem
+          size="md"
+          Icon={BookCopyIcon}
+          content="Save As Template"
+          onClick={() => setSATDialog(true)}
+        />
 
         <SimpleDDMenuItem
           onClick={() => setExportDialog(true)}
@@ -150,8 +154,6 @@ export const HeaderActionMenu: React.FC = () => {
           Icon={ArrowLeftRightIcon}
           content="Add Input/Output"
         />
-
-        <DropdownMenuSeparator />
 
         <SimpleDDMenuItem
           size="md"
@@ -162,17 +164,8 @@ export const HeaderActionMenu: React.FC = () => {
           }}
         />
 
-        <SimpleDDMenuItem
-          size="md"
-          Icon={BookCopyIcon}
-          content="Save As Template"
-          onClick={() => setSATDialog(true)}
-        />
-
         {import.meta.env.MODE !== "production" ? (
           <>
-            {/* <Save As Template /> */}
-
             <SimpleDDMenuItem
               size="md"
               Icon={UploadIcon}
@@ -181,7 +174,6 @@ export const HeaderActionMenu: React.FC = () => {
                 exportFlowTrimmed();
               }}
             />
-            <DropdownMenuSeparator />
 
             <SimpleDDMenuItem size="md" Icon={LockOpenIcon} content="Lock" />
             <SimpleDDMenuItem size="md" Icon={DockIcon} content="Archive" />
