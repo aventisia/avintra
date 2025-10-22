@@ -54,5 +54,6 @@ export const useChargeSummary = (
     total,
     isTaxApplicable,
     effectiveBilling,
+    GST,
   };
 };
