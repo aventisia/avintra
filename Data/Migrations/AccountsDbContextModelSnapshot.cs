@@ -384,9 +384,6 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<string>("AddressLine2")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
-
                     b.Property<string>("BillingEmail")
                         .HasColumnType("text");
 
@@ -407,14 +404,7 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("GstNumber")
-                        .HasColumnType("text");
-
-                    b.Property<string>("InvoiceLink")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDisabled")
@@ -429,21 +419,8 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("PaymentStatus")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("PostalCode")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("RazorpayInvoiceId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("RazorpayOrderId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("RazorpayPaymentId")
                         .HasColumnType("text");
 
                     b.Property<string>("State")
@@ -471,6 +448,73 @@ namespace AccountsAPIs.Data.Migrations
                     b.HasIndex("SubscriptionId");
 
                     b.ToTable("BillingDetails");
+                });
+
+            modelBuilder.Entity("AccountsAPIs.Entities.BillingHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("BillingDetailId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("InvoiceLink")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RazorpayInvoiceId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RazorpayOrderId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RazorpayPaymentId")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BillingDetailId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.ToTable("BillingHistories");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.ContactUs", b =>
@@ -711,6 +755,9 @@ namespace AccountsAPIs.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("CardType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
                         .HasColumnType("text");
 
                     b.Property<string>("RazorpayMethodId")
@@ -1606,6 +1653,33 @@ namespace AccountsAPIs.Data.Migrations
                     b.Navigation("LastModifiedByUser");
 
                     b.Navigation("TenantSubscription");
+                });
+
+            modelBuilder.Entity("AccountsAPIs.Entities.BillingHistory", b =>
+                {
+                    b.HasOne("AccountsAPIs.Entities.BillingDetail", "BillingDetail")
+                        .WithMany()
+                        .HasForeignKey("BillingDetailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AccountsAPIs.Entities.AccountUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AccountsAPIs.Entities.AccountUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BillingDetail");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.CreditPlan", b =>
