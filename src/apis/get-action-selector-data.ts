@@ -23,14 +23,11 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
   const module = (await loader()) as { default: PrimaryCategoryType[] };
   let data = module.default;
 
-  if (import.meta.env.MODE !== "production") {
-    // Explicit import of dev data
-    const devModule = (await import(
-      "../features/action-selector/constants/_AIIntegrationsActionSelectorData.json"
-    )) as unknown as { default: PrimaryCategoryType[] };
-
-    data = [...data, ...devModule.default];
-  }
+  // Explicit import of dev data
+  const devModule = (await import(
+    "../features/action-selector/constants/_AIIntegrationsActionSelectorData.json"
+  )) as unknown as { default: PrimaryCategoryType[] };
+  data = [...data, ...devModule.default];
 
   return data;
 }

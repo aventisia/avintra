@@ -83,7 +83,7 @@ export const SaveAsTemplateForm = () => {
             title="Ensure all child Agents Blocks and AI Nodes are published and approved as templates."
             children={
               <>
-                <div className="mt-2  flex flex-wrap gap-3">
+                <div className="mt-2 flex flex-wrap gap-3">
                   {invalidNodes.map((item) => (
                     <p className="flex items-center gap-1">
                       <XCircleIcon className="h-3.5 w-3.5" />{" "}
@@ -110,9 +110,7 @@ export const SaveAsTemplateForm = () => {
           <InputField {...templateNameProps} />
 
           {/* Access level dropdown (hidden in production) */}
-          {import.meta.env.MODE !== "production" ? (
-            <SelectField {...accessLevelProps} />
-          ) : null}
+          <SelectField {...accessLevelProps} />
         </div>
 
         {/* Optional multi-select for choosing spaces */}
