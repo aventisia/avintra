@@ -806,16 +806,10 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Sanitize input data
             tenantSubscriptionPurchaseDto = TrimDtoStringPropsUtil.TrimDtoStringProps(tenantSubscriptionPurchaseDto);
 
-            // Ensure TenantId is set
-            tenantSubscriptionPurchaseDto.TenantId = tenantSubscriptionPurchaseDto.TenantId == Guid.Empty ? _tenantId : tenantSubscriptionPurchaseDto.TenantId;
-
-            var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
-
             // Fetch existing tenant subscription (if any), including plan and creator information
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
-                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
-                    w.IsActive == true &&
+                    w.IsActive &&
                     w.TenantId == _tenantId
                 )
                 .Include(i => i.Plan)
@@ -844,6 +838,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // No existing subscription — create new
             tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
             tenantSubscription.PlanId = subscriptionPlan.Id;
+            tenantSubscription.TenantId = _tenantId;
             tenantSubscription.RazorpaySubscriptionId = razorpaSubscriptionId;
             tenantSubscription.IsActive = true;
             tenantSubscription.Status = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? SubscriptionStatusTypesEnum.Active : SubscriptionStatusTypesEnum.Pending;
@@ -948,26 +943,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
                 _logger.LogInformation("Tenant credit successfully saved. TenantId: {TenantId}, TenantCreditId: {TenantCreditId}", _tenantId, tenantCredit.Id);
             }
-
-            // Map the subscription purchase DTO to a new BillingDetail entity
-            var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
-            billingDetail.SubscriptionId = tenantSubscription.Id;
-            billingDetail.TenantId = _tenantId;
-
-            // Set audit fields
-            billingDetail.CreatedByUserId = _userId;
-            billingDetail.LastModifiedByUserId = _userId;
-
-            // Save billing detail to the database
-            await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
-
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Unable to persist billing details. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
-                return serviceResponse;
-            }
-
-            _logger.LogInformation("Billing details successfully saved. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
 
             // Map the tenant subscription entity to a DTO for response
             var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
