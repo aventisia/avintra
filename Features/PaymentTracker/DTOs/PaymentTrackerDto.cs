@@ -1,7 +1,7 @@
 namespace AccountsAPIs.DTOs;
 
 /// <summary>
-/// Tracks the status and progress of a payment or subscription, providing details for customer support and reporting.
+/// Tracks the status and progress of a payment or subscription.
 /// </summary>
 public class PaymentTrackerDto
 {
@@ -11,14 +11,19 @@ public class PaymentTrackerDto
     public bool IsInitiated { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the payment has been successfully collected.
+    /// Gets or sets a value indicating whether the payment has been collected.
     /// </summary>
     public bool IsCollected { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the billing information has been created.
+    /// Gets or sets a value indicating whether billing information has been created.
     /// </summary>
     public bool IsBillingCreated { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the subscription has been updated.
+    /// </summary>
+    public bool IsSubscribed { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the customer's credit has been updated.
@@ -26,17 +31,17 @@ public class PaymentTrackerDto
     public bool IsCreditUpdated { get; set; }
 
     /// <summary>
-    /// Gets or sets the payment ID from Razorpay.
+    /// Gets or sets the Razorpay payment ID.
     /// </summary>
     public string? RazorpayPaymentId { get; set; }
 
     /// <summary>
-    /// Gets or sets the order ID from Razorpay.
+    /// Gets or sets the Razorpay order ID.
     /// </summary>
     public string? RazorpayOrderId { get; set; }
 
     /// <summary>
-    /// Gets or sets the subscription ID from Razorpay.
+    /// Gets or sets the Razorpay subscription ID.
     /// </summary>
     public string? RazorpaySubscriptionId { get; set; }
 

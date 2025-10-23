@@ -27,7 +27,7 @@ namespace AccountsAPIs.Services
             var serviceResponse = new ServiceResponse<PaymentTrackerDto>
             {
                 Data = new PaymentTrackerDto() { RazorpayPaymentId = paymentId },
-                Message = "Payment tracker retrieved successfully.",
+                Message = "Payment details retrieved successfully.",
                 StatusCode = 200
             };
 
@@ -63,14 +63,25 @@ namespace AccountsAPIs.Services
                 // Retrieve billing history for the specified payment ID and tenant ID
                 var billingHistory = await _unitOfWork.BillingHistoryRepo
                     .GetByConditionAsync(w => w.RazorpayPaymentId == paymentId && w.TenantId == _tenantId)
-                    .Include(i => i.BillingDetail)
                     .FirstOrDefaultAsync();
 
                 // If billing history exists, update the DTO
                 if (billingHistory != null)
                 {
-                    serviceResponse.Data.IsBillingCreated = true;
                     serviceResponse.Data.RazorpayOrderId = billingHistory.RazorpayOrderId;
+                    switch (billingHistory.PaymentStatus)
+                    {
+                        case PaymentStatusTypesEnum.Authorized:
+                        case PaymentStatusTypesEnum.Captured:
+                            serviceResponse.Data.IsBillingCreated = true;
+                            break;
+
+                        case PaymentStatusTypesEnum.Failed:
+                            serviceResponse.Data.Description = paymentHistory.Description;
+                            break;
+                        default:
+                            break;
+                    }
                 }
 
                 // Retrieve tenant subscription related to the payment
@@ -82,7 +93,25 @@ namespace AccountsAPIs.Services
                 if (tenantSubscription != null)
                 {
                     serviceResponse.Data.RazorpaySubscriptionId = tenantSubscription.RazorpaySubscriptionId;
+                    switch (tenantSubscription.Status)
+                    {
+                        case SubscriptionStatusTypesEnum.Authenticated:
+                        case SubscriptionStatusTypesEnum.Completed:
+                        case SubscriptionStatusTypesEnum.Active:
+                            serviceResponse.Data.IsSubscribed = true;
+                            break;
+
+                        case SubscriptionStatusTypesEnum.Cancelled:
+                        case SubscriptionStatusTypesEnum.Expired:
+                        case SubscriptionStatusTypesEnum.Paused:
+                            serviceResponse.Data.Description = paymentHistory.Description;
+                            break;
+                        default:
+                            break;
+                    }
                 }
+                else
+                    return serviceResponse;
 
                 // Retrieve tenant credit details based on the subscription
                 var tenantCredit = await _unitOfWork.TenantCreditRepo
@@ -94,11 +123,6 @@ namespace AccountsAPIs.Services
                 {
                     serviceResponse.Data.IsCreditUpdated = true;
                 }
-
-                // Set the final response data if everything is successful
-                serviceResponse.Data = serviceResponse.Data;
-                serviceResponse.Message = "Payment tracker details retrieved successfully.";
-                serviceResponse.StatusCode = 200;
             }
             catch (Exception ex)
             {
