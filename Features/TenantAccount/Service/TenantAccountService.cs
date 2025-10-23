@@ -130,7 +130,7 @@ public class TenantAccountService : ITenantAccountService
 
             // Fetch tenant subscription entity from repository
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(w => w.Id == _tenantId && w.IsActive)
+                .GetByConditionAsync(w => w.TenantId == _tenantId && w.IsActive)
                 .FirstOrDefaultAsync();
 
             // Null check: Tenant subscription not found
