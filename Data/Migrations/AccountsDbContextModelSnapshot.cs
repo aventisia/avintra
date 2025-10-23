@@ -685,9 +685,6 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
-                    b.Property<Guid?>("BillingDetailId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("Captured")
                         .HasColumnType("boolean");
 
@@ -728,8 +725,6 @@ namespace AccountsAPIs.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BillingDetailId");
 
                     b.HasIndex("PaymentMethodId");
 
@@ -1658,7 +1653,7 @@ namespace AccountsAPIs.Data.Migrations
             modelBuilder.Entity("AccountsAPIs.Entities.BillingHistory", b =>
                 {
                     b.HasOne("AccountsAPIs.Entities.BillingDetail", "BillingDetail")
-                        .WithMany()
+                        .WithMany("BillingHistories")
                         .HasForeignKey("BillingDetailId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1723,15 +1718,9 @@ namespace AccountsAPIs.Data.Migrations
 
             modelBuilder.Entity("AccountsAPIs.Entities.PaymentHistory", b =>
                 {
-                    b.HasOne("AccountsAPIs.Entities.BillingDetail", "BillingDetail")
-                        .WithMany()
-                        .HasForeignKey("BillingDetailId");
-
                     b.HasOne("AccountsAPIs.Entities.PaymentMethod", "PaymentMethod")
                         .WithMany("PaymentHistories")
                         .HasForeignKey("PaymentMethodId");
-
-                    b.Navigation("BillingDetail");
 
                     b.Navigation("PaymentMethod");
                 });
@@ -1993,6 +1982,11 @@ namespace AccountsAPIs.Data.Migrations
             modelBuilder.Entity("AccountsAPIs.Entities.AccountUser", b =>
                 {
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("AccountsAPIs.Entities.BillingDetail", b =>
+                {
+                    b.Navigation("BillingHistories");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.PaymentMethod", b =>
