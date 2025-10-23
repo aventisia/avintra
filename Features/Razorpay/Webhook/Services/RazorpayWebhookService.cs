@@ -626,10 +626,10 @@ public class WebhookService : IWebhookService
 
                 if (existingPaymentHistory != null)
                 {
-                    existingPaymentHistory.Id = existingPaymentHistory.Id;
+                    paymentHistoryRequest.Id = existingPaymentHistory.Id;
 
                     // Update the existing payment history record with the new data
-                    _unitOfWork.PaymentHistoryRepo.Update(existingPaymentHistory);
+                    _unitOfWork.PaymentHistoryRepo.Update(paymentHistoryRequest);
                 }
             }
 
