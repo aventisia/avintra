@@ -141,29 +141,65 @@ public class TenantAccountService : ITenantAccountService
                 return serviceResponse;
             }
 
-            // Map the organization billing data to the BillingDetail object
-            var billingDetail = organizationBillingDto.Adapt<BillingDetail>();
+            // Fetch existing billing details
+            var billingDetail1 = await _unitOfWork.BillingDetailRepo
+                .GetByConditionAsync(w => w.TenantId == _tenantId)
+                .Include(i => i.BillingHistories)
+                .OrderByDescending(o => o.CreatedOn)
+                .FirstOrDefaultAsync();
 
-            // Set necessary properties for the billing detail
-            billingDetail.TenantId = _tenantId;
-            billingDetail.SubscriptionId = tenantSubscription.Id;
-            billingDetail.CreatedByUserId = _userId;
-            billingDetail.LastModifiedByUserId = _userId;
-            billingDetail.CreatedOn = DateTimeOffset.UtcNow;
-            billingDetail.LastModifiedOn = DateTimeOffset.UtcNow;
-
-            await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
-
-            if (!await _unitOfWork.SaveAsync())
+            // Check if billing history exists or not
+            if (billingDetail1?.BillingHistories.Count == 0)
             {
-                _logger.LogWarning("Failed to save new billing detail for TenantId: {TenantId}", _tenantId);
-                return serviceResponse;
+                _logger.LogInformation("No billing history found. Updating existing billing detail.");
+
+                // Update existing Billing Detail
+                organizationBillingDto.Adapt(billingDetail1);
+
+                // Set necessary properties for the billing detail
+                billingDetail1.SubscriptionId = tenantSubscription.Id;
+                billingDetail1.LastModifiedByUserId = _userId;
+                billingDetail1.LastModifiedOn = DateTimeOffset.UtcNow;
+
+                // Update the billing detail
+                _unitOfWork.BillingDetailRepo.Update(billingDetail1);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogWarning("Failed to update billing detail for TenantId: {TenantId}", _tenantId);
+                    return serviceResponse;
+                }
+
+                _logger.LogInformation("Billing detail updated successfully for TenantId: {TenantId}", _tenantId);
+            }
+            else
+            {
+                _logger.LogInformation("Billing history found. Creating new billing detail.");
+
+                // Create a new Billing Detail
+                billingDetail1 = organizationBillingDto.Adapt<BillingDetail>();
+
+                // Set necessary properties for the billing detail
+                billingDetail1.TenantId = _tenantId;
+                billingDetail1.SubscriptionId = tenantSubscription.Id;
+                billingDetail1.CreatedByUserId = _userId;
+                billingDetail1.LastModifiedByUserId = _userId;
+
+                // Insert new billing detail
+                await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail1);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogWarning("Failed to save new billing detail for TenantId: {TenantId}", _tenantId);
+                    return serviceResponse;
+                }
+
+                _logger.LogInformation("New billing detail created successfully for TenantId: {TenantId}", _tenantId);
             }
 
-            _logger.LogInformation("New billing detail saved successfully for TenantId: {TenantId}", _tenantId);
-
-            // Map billing details and populate response DTO
-            organizationBillingDto = billingDetail.Adapt<TenantOrganizationBillingDto>();
+            // Map the updated or newly created billing details to the response DTO
+            var updatedBillingDetail = billingDetail1.Adapt<BillingDetail>();
+            organizationBillingDto = updatedBillingDetail.Adapt<TenantOrganizationBillingDto>();
             organizationBillingDto.OrganizationName = tenant.Name;
             organizationBillingDto.Id = tenant.Id;
 
