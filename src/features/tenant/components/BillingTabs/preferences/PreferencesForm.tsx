@@ -45,16 +45,20 @@ const PreferencesForm = () => {
       checkDirtyForm={false}
     >
       <SwitchField {...isTwoFAEnabledProps} />
-      <SwitchField {...isPwdEnabledProps} />
-      <SwitchField {...isSSOEnabledProps} />
+      <div className="hidden">
+        <SwitchField {...isPwdEnabledProps} />
+        <SwitchField {...isSSOEnabledProps} />
+      </div>
       <SwitchField {...isPwdNeverExpiresEnabledProps} />
-      {isPwdNeverExpiresEnabled && (
+      {!isPwdNeverExpiresEnabled && (
         <InputField {...daysBeforePwdExpiresProps} />
       )}
-      <SwitchField {...isIdleSessionTimeoutEnabledProps} />
-      {isIdleSessionTimeoutEnabled && (
-        <InputField {...idleSessionTimeoutMinutesProps} />
-      )}
+      <div className="hidden">
+        <SwitchField {...isIdleSessionTimeoutEnabledProps} />
+        {isIdleSessionTimeoutEnabled && (
+          <InputField {...idleSessionTimeoutMinutesProps} />
+        )}
+      </div>
       <div className="flex items-center justify-end">
         <Button type="submit" disabled={isSubmitting || !isDirty || isPending}>
           {isSubmitting || isPending ? (
