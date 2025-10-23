@@ -818,6 +818,15 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             if (tenantSubscription != null)
             {
+                // Early return if the plan IDs are identical
+                if (tenantSubscription.PlanId == tenantSubscriptionPurchaseDto.PlanId)
+                {
+                    serviceResponse.Data = tenantSubscription.Adapt<TenantSubscriptionDto>();
+                    serviceResponse.StatusCode = 200;
+                    serviceResponse.Message = "No changes required. The subscription plan is already up to date.";
+                    return serviceResponse;
+                }
+
                 // Existing subscription found — update plan
                 tenantSubscription.IsActive = false;
                 tenantSubscription.LastModifiedByUserId = _userId;
