@@ -570,7 +570,7 @@ public class WebhookService : IWebhookService
                 paymentMethod = new PaymentMethod
                 {
                     TenantId = tenantId,
-                    RazorpayMethodId = card?["id"]?.ToString(),
+                    RazorpayMethodId = razorpayPaymentCardId,
                     Type = (PaymentMethodTypesEnum)Enum.Parse(typeof(PaymentMethodTypesEnum), paymentEntity?["method"]?.ToString(), ignoreCase: true),
                     Wallet = paymentEntity?["wallet"]?.ToString(),
                     Vpa = paymentEntity?["vpa"]?.ToString(),
@@ -592,7 +592,7 @@ public class WebhookService : IWebhookService
                 }
             }
 
-            // Prepare the PaymentHistory object
+            // Create a new PaymentHistory object
             var paymentHistoryRequest = new PaymentHistory
             {
                 RazorpayPaymentId = razorpayPaymentId,
@@ -607,31 +607,28 @@ public class WebhookService : IWebhookService
                 Tax = (paymentEntity["tax"]?.Value<int?>() ?? 0) / 100m,
                 Description = paymentEntity?["description"]?.ToString(),
                 Email = paymentEntity?["email"]?.ToString(),
-                Contact = paymentEntity?["contact"]?.ToString()
+                Contact = paymentEntity?["contact"]?.ToString(),
+                TenantId = tenantId
             };
 
-            // Handle the payment history based on status
+            // Process the payment history based on its status
             if (targetPaymentStatus == PaymentStatusTypesEnum.Authorized || targetPaymentStatus == PaymentStatusTypesEnum.Failed)
             {
-                // Set tenant-specific fields
-                paymentHistoryRequest.TenantId = tenantId;
-
-                // Insert a new payment history record
+                // Add a new payment history record if the status is "Authorized" or "Failed"
                 await _unitOfWork.PaymentHistoryRepo.InsertAsync(paymentHistoryRequest);
             }
             else
             {
-                // Try to find an existing payment history record and update it
+                // Try to find an existing payment history record for the same RazorpayPaymentId
                 var existingPaymentHistory = await _unitOfWork.PaymentHistoryRepo
                     .GetByConditionAsync(w => w.RazorpayPaymentId == razorpayPaymentId)
                     .FirstOrDefaultAsync();
 
                 if (existingPaymentHistory != null)
                 {
-                    // Update existing record with new values
-                    paymentHistoryRequest.Adapt(existingPaymentHistory);
+                    existingPaymentHistory.Id = existingPaymentHistory.Id;
 
-                    // Update the existing payment history record
+                    // Update the existing payment history record with the new data
                     _unitOfWork.PaymentHistoryRepo.Update(existingPaymentHistory);
                 }
             }
