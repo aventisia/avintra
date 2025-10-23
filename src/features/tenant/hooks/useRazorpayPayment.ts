@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
+import { toast } from "@aventisia/ui/sonner";
 import {
   RazorpayErrorResponse,
   RazorpayOptions,
