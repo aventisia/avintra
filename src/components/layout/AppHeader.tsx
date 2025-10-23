@@ -6,10 +6,10 @@ import {
 } from "@aventisia/ui/layout";
 
 import { IS_TAURI } from "@/constants/constants";
+import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
 import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 
-import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
 import { AppLogo } from "./AppLogo";
 import TrustLocalhostSSLButton from "./TrustLocalhostSSLButton";
 

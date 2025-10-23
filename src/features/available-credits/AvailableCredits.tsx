@@ -15,9 +15,9 @@ const AvailableCredits = () => {
   const { data, isLoading } = useFetchAvailableCredits();
 
   return (
-    <Badge variant={"outline"} className="py-2 px-4 bg-[#322D74] border-none">
-      <p className="text-white flex items-center text-xs gap-1 font-semibold">
-        Credits <span className="opacity-60 font-normal">-</span>{" "}
+    <Badge variant={"outline"} className="border-none bg-[#322D74] px-4 py-2">
+      <p className="flex items-center gap-1 text-xs font-semibold text-white">
+        Credits <span className="font-normal opacity-60">-</span>{" "}
         {isLoading ? (
           <LoadingSpinner className="size-3 text-primary-300" />
         ) : (

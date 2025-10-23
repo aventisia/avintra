@@ -1,5 +1,5 @@
 // import { SubmitButton } from "@aventisia/ui/buttons";
-import { Form, InputField, } from "@aventisia/ui/form";
+import { Form, InputField } from "@aventisia/ui/form";
 import { useState } from "react";
 import type { z } from "zod";
 import { useShallow } from "zustand/react/shallow";

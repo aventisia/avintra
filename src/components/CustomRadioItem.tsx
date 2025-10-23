@@ -29,7 +29,7 @@ const CustomRadioItem = ({
         value={value}
         id={value}
         className={cn(
-          "absolute top-2 left-2  pointer-events-none",
+          "pointer-events-none absolute left-2 top-2",
           radioClassName,
           !showRadioCircle && "opacity-0",
         )}
@@ -37,11 +37,11 @@ const CustomRadioItem = ({
       <Label
         htmlFor={value}
         className={cn(
-          "p-6 border-2 rounded-lg  transition-all h-full w-full",
+          "h-full w-full rounded-lg border-2 p-6 transition-all",
           className,
           highlightSelected && "cursor-pointer",
           highlightSelected &&
-            (selected == value ? " border-primary" : "hover:border-gray-300"),
+            (selected == value ? "border-primary" : "hover:border-gray-300"),
         )}
       >
         {children}

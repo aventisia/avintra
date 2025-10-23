@@ -1,6 +1,7 @@
+import { IHttpResponse } from "@aventisia/ui/dtos";
+
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
-import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { AvailableCreditDto } from "./available-credits-dto";
 

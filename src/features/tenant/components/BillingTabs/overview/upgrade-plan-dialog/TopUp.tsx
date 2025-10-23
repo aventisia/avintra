@@ -33,7 +33,10 @@ const TopUp = ({ planFrequency }: { planFrequency: PlanFrequency }) => {
         {Object.entries(ADD_ON_PRICING).map(
           ([key, { label, note, unitCost, step }]) => {
             // Adjust the unit cost based on the selected frequency
-            const adjustedUnitCost = adjustCostForFrequency(unitCost, planFrequency);
+            const adjustedUnitCost = adjustCostForFrequency(
+              unitCost,
+              planFrequency,
+            );
 
             // Select the appropriate note based on the plan type
             const adjustedNote = note[planFrequency];

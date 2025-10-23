@@ -79,7 +79,7 @@ export const AccountDeactivation = () => {
             required={true}
           />
         </div>
-        <div className=" flex flex-col-reverse gap-3  pt-5 md:flex-row md:justify-end">
+        <div className="flex flex-col-reverse gap-3 pt-5 md:flex-row md:justify-end">
           <SubmitButton
             isPending={isLoading || isSubmitting}
             variant="destructive"
