@@ -34,26 +34,26 @@ namespace AccountsAPIs.Services
             try
             {
                 // Retrieve payment history for the specified payment ID and tenant ID
-                var paymentTracker = await _unitOfWork.PaymentHistoryRepo
+                var paymentHistory = await _unitOfWork.PaymentHistoryRepo
                     .GetByConditionAsync(w => w.RazorpayPaymentId == paymentId && w.TenantId == _tenantId)
                     .FirstOrDefaultAsync();
 
                 // If a payment tracker is found, update the DTO with its status
-                if (paymentTracker != null)
+                if (paymentHistory != null)
                 {
                     serviceResponse.Data.IsInitiated = true;
 
                     // Handle different payment statuses and update the DTO accordingly
-                    switch (paymentTracker.Status)
+                    switch (paymentHistory.Status)
                     {
                         case PaymentStatusTypesEnum.Authorized:
-                            serviceResponse.Data.IsInitiated = true; 
+                            serviceResponse.Data.IsInitiated = true;
                             break;
                         case PaymentStatusTypesEnum.Captured:
-                            serviceResponse.Data.IsCollected = true; 
+                            serviceResponse.Data.IsCollected = true;
                             break;
                         case PaymentStatusTypesEnum.Failed:
-                            serviceResponse.Data.Description = paymentTracker.Description;
+                            serviceResponse.Data.Description = paymentHistory.Description;
                             break;
                         default:
                             break;
@@ -63,6 +63,7 @@ namespace AccountsAPIs.Services
                 // Retrieve billing history for the specified payment ID and tenant ID
                 var billingHistory = await _unitOfWork.BillingHistoryRepo
                     .GetByConditionAsync(w => w.RazorpayPaymentId == paymentId && w.TenantId == _tenantId)
+                    .Include(i => i.BillingDetail)
                     .FirstOrDefaultAsync();
 
                 // If billing history exists, update the DTO
@@ -70,12 +71,11 @@ namespace AccountsAPIs.Services
                 {
                     serviceResponse.Data.IsBillingCreated = true;
                     serviceResponse.Data.RazorpayOrderId = billingHistory.RazorpayOrderId;
-
                 }
 
                 // Retrieve tenant subscription related to the payment
                 var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
-                    .GetByConditionAsync(w => w.RazorpaySubscriptionId == billingHistory.RazorpayPaymentId && w.TenantId == _tenantId)
+                    .GetByConditionAsync(w => w.TenantId == _tenantId && w.IsActive)
                     .FirstOrDefaultAsync();
 
                 // If tenant subscription exists, update the DTO
@@ -86,7 +86,7 @@ namespace AccountsAPIs.Services
 
                 // Retrieve tenant credit details based on the subscription
                 var tenantCredit = await _unitOfWork.TenantCreditRepo
-                    .GetByConditionAsync(w => w.SubscriptionId == tenantSubscription.Id && w.CreditedOn.Date <= DateTimeOffset.UtcNow.Date)
+                    .GetByConditionAsync(w => w.SubscriptionId == tenantSubscription.Id && w.CreditedOn.Date >= DateTimeOffset.UtcNow.Date)
                     .FirstOrDefaultAsync();
 
                 // If tenant credit is found, mark the credit as updated
