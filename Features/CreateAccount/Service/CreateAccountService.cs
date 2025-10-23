@@ -1,5 +1,6 @@
 namespace AccountsAPIs.Services;
 
+// TODO: Delete this feature + service since we have a new feature called CreateUserAccount
 public class CreateAccountService : ICreateAccountService
 {
     private readonly UserManager<AccountUser> _userManager;

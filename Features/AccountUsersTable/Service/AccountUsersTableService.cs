@@ -139,14 +139,6 @@ public class AccountUsersTableService : IAccountUsersTableService
                 return serviceResponse;
             }
 
-            // Check if user can have "AE" role
-            var canUserHaveAventisiaEmployeeRoleResult = CanUserHaveAventisiaEmployeeRole(accountUsersTableDto.Email, toBeAddedUserRoles);
-            if (canUserHaveAventisiaEmployeeRoleResult != null)
-            {
-                serviceResponse.Message = canUserHaveAventisiaEmployeeRoleResult;
-                return serviceResponse;
-            }
-
             // Trim dto' string props
             accountUsersTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(accountUsersTableDto);
 
@@ -264,14 +256,6 @@ public class AccountUsersTableService : IAccountUsersTableService
                 _logger.LogInformation($"User already exists");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A user with same Email already exists. Please enter a unique Email";
-                return serviceResponse;
-            }
-
-            // Check if user can have "AE" role
-            var canUserHaveAventisiaEmployeeRoleResult = CanUserHaveAventisiaEmployeeRole(accountUsersTableDto.Email, toBeAddedUserRoles);
-            if (canUserHaveAventisiaEmployeeRoleResult != null)
-            {
-                serviceResponse.Message = canUserHaveAventisiaEmployeeRoleResult;
                 return serviceResponse;
             }
 
@@ -586,7 +570,7 @@ public class AccountUsersTableService : IAccountUsersTableService
         }
     }
 
-    // HelperFn: Check if user can have "AE" role
+    // TODO: Keeping it only to see if we need it in future. HelperFn: Check if user can have "AE" role
     private string? CanUserHaveAventisiaEmployeeRole(string email, List<string> toBeAddedUserRoles)
     {
         // Check for mandatory "AE" role for "@aventisia.com" domain
