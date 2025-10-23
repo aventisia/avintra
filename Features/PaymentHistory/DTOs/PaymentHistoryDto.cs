@@ -71,9 +71,4 @@ public class PaymentHistoryDto
     /// Gets or sets the foreign key referencing the associated payment method.
     /// </summary>
     public Guid PaymentMethodId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the foreign key referencing the related subscription billing detail.
-    /// </summary>
-    public Guid? BillingDetailId { get; set; }
 }

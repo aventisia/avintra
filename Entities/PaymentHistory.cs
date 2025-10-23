@@ -88,15 +88,4 @@ public class PaymentHistory
     /// </summary>
     [ForeignKey("PaymentMethodId")]
     public virtual PaymentMethod? PaymentMethod { get; set; }
-
-    /// <summary>
-    /// Gets or sets the foreign key referencing the related subscription billing detail.
-    /// </summary>
-    public Guid? BillingDetailId { get; set; }
-
-    /// <summary>
-    /// Navigation property for the subscription billing detail associated with this payment.
-    /// </summary>
-    [ForeignKey("BillingDetailId")]
-    public virtual BillingDetail? BillingDetail { get; set; }
 }

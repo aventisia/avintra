@@ -70,4 +70,9 @@ public class BillingDetail : BaseEntity, IMustHaveTenant
     /// </summary>
     [ForeignKey("SubscriptionId")]
     public virtual TenantSubscription? TenantSubscription { get; set; }
+
+    /// <summary>
+    /// Gets or sets the collection of billing history associated with the billing detail.
+    /// </summary>
+    public virtual ICollection<BillingHistory>? BillingHistories { get; set; }
 }
