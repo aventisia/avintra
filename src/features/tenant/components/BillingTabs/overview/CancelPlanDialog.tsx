@@ -25,7 +25,7 @@ const CancelPlanDialog = () => {
     })),
   );
 
-  console.log("userSession", userSession);
+  const planType = userSession?.planType ?? "";
 
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
@@ -44,12 +44,12 @@ const CancelPlanDialog = () => {
 
         <div className="mx-5 mt-4 flex gap-3 rounded-lg bg-red-100 px-3 py-2 text-[0.85rem] text-red-800">
           <AlertTriangleIcon className="h-5 w-5 text-red-500" />
-          Important: This action will permanently delete your account
+          Warning: This action will permanently delete your account
         </div>
         <div className="mt-2 space-y-4 px-6 pb-4 pt-1.5 text-md">
           <h2 className="-mb-1 text-lg font-medium">
             You are about to cancel your{" "}
-            <span className="font-semibold">{userSession?.planType}</span> Plan
+            <span className="font-semibold">{planType}</span> Plan
           </h2>
           <div>
             <p className="mb-2">
@@ -57,12 +57,15 @@ const CancelPlanDialog = () => {
             </p>
             <ul className="list-disc pl-8">
               {/* Starter Plan: Points to note */}
-              {userSession?.planType === "Starter" && (
+              {planType === "Starter" && (
                 <>
                   <li>
-                    Cancelling your plan will permanently delete your entire
-                    account immediately. All Agents, AI Models, and associated
-                    data will be lost and cannot be recovered.
+                    Cancelling your plan will{" "}
+                    <span className="font-semibold">
+                      permanently delete your entire account immediately
+                    </span>
+                    . All Agents, AI Models, and associated data will be lost
+                    and cannot be recovered.
                   </li>
                   <li>
                     Please export any data you wish to keep before proceeding.
@@ -71,7 +74,7 @@ const CancelPlanDialog = () => {
               )}
 
               {/* Pro Plan: Points to note */}
-              {userSession?.planType === "Pro" && (
+              {planType === "Pro" && (
                 <>
                   <li>
                     Your plan will remain active until the end of your current
@@ -93,6 +96,12 @@ const CancelPlanDialog = () => {
               )}
 
               {/* Common point for all plans */}
+              <li>
+                <span className="font-semibold">
+                  Any unused top-up credits will also be forfeited
+                </span>
+                , even if their expiration date is in the future.
+              </li>
               <li>
                 This action{" "}
                 <span className="font-semibold">cannot be undone</span>.
@@ -120,7 +129,7 @@ const CancelPlanDialog = () => {
                 </Label>
               </div>
               {/* Starter Plan: Additional reason */}
-              {userSession?.planType === "Starter" && (
+              {planType === "Starter" && (
                 <div className="flex items-center gap-3">
                   <RadioGroupItem value="foundAlternativeSolution" id="r3" />
                   <Label htmlFor="r3" className="text-md font-normal">
@@ -129,7 +138,7 @@ const CancelPlanDialog = () => {
                 </div>
               )}
               {/* Pro Plan: Additional reason */}
-              {userSession?.planType === "Pro" && (
+              {planType === "Pro" && (
                 <div className="flex items-center gap-3">
                   <RadioGroupItem value="pricing" id="r3" />
                   <Label htmlFor="r3" className="text-md font-normal">

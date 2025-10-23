@@ -2,7 +2,6 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
-
 import { AvailableCreditDto } from "./available-credits-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_URL}/credit-usage`;
