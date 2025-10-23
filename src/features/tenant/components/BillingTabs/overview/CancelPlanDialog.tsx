@@ -10,16 +10,26 @@ import {
 } from "@aventisia/ui/dialog";
 import { Label } from "@aventisia/ui/label";
 import { RadioGroup, RadioGroupItem } from "@aventisia/ui/radio-group";
-import { X } from "lucide-react";
+import { AlertTriangleIcon, X } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 
 import { useCancelPlanDialogStore } from "@/features/tenant/store/overview/cancel-plan-dialog-store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 const CancelPlanDialog = () => {
   const { isOpen, setOpen } = useCancelPlanDialogStore();
 
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
+  console.log("userSession", userSession);
+
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
-      <DialogContent className="!max-w-[45rem] space-y-2 px-1">
+      <DialogContent className="!max-w-[45rem] px-1">
         <DialogHeader className="border-b px-6 py-4 pb-2">
           <DialogTitle className="justify-between">
             <h2 className="text-lg font-semibold">Cancel Plan</h2>
@@ -32,65 +42,112 @@ const CancelPlanDialog = () => {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 px-6 pb-4 pt-1.5 text-md">
-          <h2 className="text-lg font-semibold">
-            You're about to cancel your plan
+        <div className="mx-5 mt-4 flex gap-3 rounded-lg bg-red-100 px-3 py-2 text-[0.85rem] text-red-800">
+          <AlertTriangleIcon className="h-5 w-5 text-red-500" />
+          Important: This action will permanently delete your account
+        </div>
+        <div className="mt-2 space-y-4 px-6 pb-4 pt-1.5 text-md">
+          <h2 className="-mb-1 text-lg font-medium">
+            You are about to cancel your{" "}
+            <span className="font-semibold">{userSession?.planType}</span> Plan
           </h2>
           <div>
-            <p>Please note the following before proceeding:</p>
+            <p className="mb-2">
+              Before you continue, please note the following:
+            </p>
             <ul className="list-disc pl-8">
+              {/* Starter Plan: Points to note */}
+              {userSession?.planType === "Starter" && (
+                <>
+                  <li>
+                    Cancelling your plan will permanently delete your entire
+                    account immediately. All Agents, AI Models, and associated
+                    data will be lost and cannot be recovered.
+                  </li>
+                  <li>
+                    Please export any data you wish to keep before proceeding.
+                  </li>
+                </>
+              )}
+
+              {/* Pro Plan: Points to note */}
+              {userSession?.planType === "Pro" && (
+                <>
+                  <li>
+                    Your plan will remain active until the end of your current
+                    billing cycle.
+                  </li>
+                  <li>
+                    Once cancelled, your entire account - including all Agents,
+                    AI Models, and associated data - will be{" "}
+                    <span className="font-semibold">
+                      permanently deleted and cannot be recovered
+                    </span>
+                    .
+                  </li>
+                  <li>
+                    You can continue using all features and export your data
+                    until your plan expires
+                  </li>
+                </>
+              )}
+
+              {/* Common point for all plans */}
               <li>
-                Your membership will remain active until the end of your current
-                billing cycle.
-              </li>
-              <li>
-                Once cancelled, all published Agents and AI Models, along with
-                their associated data, will be permanently deleted.
-              </li>
-              <li>
-                You can continue to use all features and export your data until
-                your plan expires.
+                This action{" "}
+                <span className="font-semibold">cannot be undone</span>.
               </li>
             </ul>
           </div>
           <Separator />
 
           <div className="space-y-2">
-            <h3 className="text-base font-semibold">
-              Help us improve — why are you cancelling?
+            <h3 className="text-base font-medium">
+              Help us improve - why are you cancelling?
             </h3>
 
-            <RadioGroup className="space-y-1 pl-3">
+            <RadioGroup className="space-y-0.5 pl-3">
               <div className="flex items-center gap-3">
-                <RadioGroupItem value="satisfied" id="r1" />
-                <Label htmlFor="r1" className="text-md">
-                  I’m not satisfied with the product quality
+                <RadioGroupItem value="productQuality" id="r1" />
+                <Label htmlFor="r1" className="text-md font-normal">
+                  I am not satisfied with the product quality
                 </Label>
               </div>
               <div className="flex items-center gap-3">
-                <RadioGroupItem value="not-satisfied" id="r2" />
-                <Label htmlFor="r2" className="text-md">
-                  I’m not satisfied with the customer support/service
+                <RadioGroupItem value="customerSupport" id="r2" />
+                <Label htmlFor="r2" className="text-md font-normal">
+                  I am not satisfied with the customer support/service
                 </Label>
               </div>
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="pricing" id="r3" />
-                <Label htmlFor="r3" className="text-md">
-                  The pricing does not meet my expectations
-                </Label>
-              </div>
+              {/* Starter Plan: Additional reason */}
+              {userSession?.planType === "Starter" && (
+                <div className="flex items-center gap-3">
+                  <RadioGroupItem value="foundAlternativeSolution" id="r3" />
+                  <Label htmlFor="r3" className="text-md font-normal">
+                    I found an alternative solution
+                  </Label>
+                </div>
+              )}
+              {/* Pro Plan: Additional reason */}
+              {userSession?.planType === "Pro" && (
+                <div className="flex items-center gap-3">
+                  <RadioGroupItem value="pricing" id="r3" />
+                  <Label htmlFor="r3" className="text-md font-normal">
+                    The pricing does not meet my expectations
+                  </Label>
+                </div>
+              )}
               <div className="flex items-center gap-3">
                 <RadioGroupItem value="others" id="r4" />
-                <Label htmlFor="r4" className="text-md">
+                <Label htmlFor="r4" className="text-md font-normal">
                   Other (please share your feedback)
                 </Label>
               </div>
             </RadioGroup>
           </div>
         </div>
-
         <Separator />
-        <DialogFooter className="px-4 py-2 pb-4">
+        <DialogFooter className="px-6 py-4 pb-4">
           <Button variant={"outline"} onClick={() => setOpen(false)}>
             Don't Cancel
           </Button>
