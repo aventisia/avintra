@@ -1,6 +1,7 @@
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { IHttpResponse } from "@aventisia/ui/dtos";
+
 import { PublishModelDto } from "../dtos/publish-model-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/ai-project-version`;
@@ -8,8 +9,8 @@ const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/ai-project-
 /**
  * Publish an existing model.
  */
-export const publishModel = (postObj:PublishModelDto) => {
+export const publishModel = (postObj: PublishModelDto) => {
   return axiosInstance
-    .post<IHttpResponse<PublishModelDto>>(`${baseAPIURL}/publish`,postObj)
+    .post<IHttpResponse<PublishModelDto>>(`${baseAPIURL}/publish`, postObj)
     .then((res) => res.data);
 };

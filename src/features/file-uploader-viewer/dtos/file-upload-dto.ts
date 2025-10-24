@@ -28,7 +28,7 @@ export interface FileUploadDto {
 
   mlModelId?: string;
 
-  aiProjectVersionId:string;
+  aiProjectVersionId: string;
 }
 
 export interface DeleteFileResponseDto {

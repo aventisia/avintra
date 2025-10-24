@@ -42,14 +42,12 @@ const setupObjectSchema = z.object({
     .string()
     .min(1, { message: reqError("Exclusion/Boundaries") }),
   documents: z.array(documentInstructionSchema).nullable(),
-  contextMemoryTimeframe: z
-  .string()
-  .refine(
+  contextMemoryTimeframe: z.string().refine(
     (val) => {
       const num = Number(val);
       return !isNaN(num) && num >= 2 && num <= 50;
     },
-    { message: "Context Memory must be a number between 2 and 50" }
+    { message: "Context Memory must be a number between 2 and 50" },
   ),
   speechConfiguration: speechConfigSchema,
 });
