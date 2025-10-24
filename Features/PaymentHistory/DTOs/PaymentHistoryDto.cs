@@ -35,7 +35,7 @@ public class PaymentHistoryDto
     /// <summary>
     /// Gets or sets the current processing status of the payment (e.g., Captured, Failed).
     /// </summary>
-    public PaymentStatusEnum Status { get; set; }
+    public PaymentStatusTypesEnum Status { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the payment was successfully captured.
