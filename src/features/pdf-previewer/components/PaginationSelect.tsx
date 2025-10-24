@@ -27,7 +27,8 @@ import {
   ChevronRightIcon,
   ChevronsLeftIcon,
   ChevronsRightIcon,
-  Image,
+  FileTextIcon,
+  ImageIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -104,7 +105,7 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
             onSuccess: () => {
               refetch().then((fileList) => {
                 const list = fileList?.data?.data || [];
-                
+
                 if (list.length === 0) {
                   setSelectedPdf(null);
                 }
@@ -128,6 +129,24 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
       });
     } else {
       toast.error("Selected file does not have a valid ID.");
+    }
+  };
+
+  // Render file icon based on extension
+  const renderFileIcon = (extension: string) => {
+    switch (extension.toUpperCase()) {
+      case "PDF":
+        return <img src={pdfIcon} alt="pdf icon" className="h-4 w-4" />;
+      case "JPEG":
+      case "JPG":
+      case "PNG":
+      case "WEBP":
+      case "BMP":
+      case "TIF":
+      case "TIFF":
+        return <ImageIcon className="h-4 w-4 text-blue-400" />;
+      default:
+        return <FileTextIcon className="h-4 w-4 text-slate-400" />;
     }
   };
 
@@ -179,11 +198,7 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
               {pdfList.map((pdf) => (
                 <SelectItem key={pdf.id} value={pdf.id || ""}>
                   <div className="flex gap-2">
-                    {pdf.extension === "PDF" ? (
-                      <img src={pdfIcon} alt="pdf icon" className="h-4 w-4" />
-                    ) : (
-                      <Image className="h-4 w-4 text-info-foreground" />
-                    )}
+                    {renderFileIcon(pdf.extension || "")}
                     <p>{pdf.name}</p>
                   </div>
                 </SelectItem>
