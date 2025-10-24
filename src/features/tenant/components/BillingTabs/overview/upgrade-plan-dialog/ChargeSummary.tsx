@@ -5,6 +5,7 @@ import { currencySymbols } from "@/features/tenant/constants/currency-symbol-map
 import { CompanyDetailsDTO } from "@/features/tenant/dtos/company-details-dto";
 import { SubscriptionPlanDTO } from "@/features/tenant/dtos/subscription-plans-dto";
 import { useChargeSummary } from "@/features/tenant/hooks/useChargeSummary";
+import { useCreditTopUpMutation } from "@/features/tenant/hooks/useCreditTopUpMutation";
 import { useInsertSubscriptionMutation } from "@/features/tenant/hooks/useInsertSubscriptionMutation";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
 import { PlanFrequency } from "@/features/tenant/types/plan-type";
@@ -23,10 +24,13 @@ const ChargeSummary = ({
   const { basePrice, tax, total, isTaxApplicable, topUpBreakdown, GST } =
     useChargeSummary(plan, planFrequency);
 
-  const { chosenPlan, currency } = useUpgradePlanDialogStore();
+  const { chosenPlan, currency, topUp } = useUpgradePlanDialogStore();
 
-  const { isPending, insertSubscriptionMutation } =
+  const { isPending: isUpgradePending, insertSubscriptionMutation } =
     useInsertSubscriptionMutation();
+
+  const { isPending: isTopUpPending, insertCreditTopUpMutation } =
+    useCreditTopUpMutation();
 
   const handleSubscription = () => {
     insertSubscriptionMutation({
@@ -42,6 +46,15 @@ const ChargeSummary = ({
       gstNumber: billingData?.gstNumber,
       postalCode: billingData?.postalCode || "",
       state: billingData?.state || "",
+    });
+  };
+
+  const handleCreditTopUp = () => {
+    insertCreditTopUpMutation({
+      amount: total,
+      credits: topUp.credits,
+      currency,
+      includeTax: false,
     });
   };
 
@@ -85,14 +98,27 @@ const ChargeSummary = ({
         />
 
         {isTopUp ? (
-          <Button className="!mt-5 w-full">Make Payment</Button>
+          <Button
+            disabled={isTopUpPending || total == 0}
+            onClick={handleCreditTopUp}
+            className="mt-5 w-full"
+          >
+            {isTopUpPending ? (
+              <>
+                <LoadingSpinner className="mr-2 h-4 w-4" />
+                Initiating Payment...
+              </>
+            ) : (
+              "Make Payment"
+            )}
+          </Button>
         ) : (
           <Button
-            disabled={isPending}
+            disabled={isUpgradePending || total == 0}
             onClick={handleSubscription}
             className="mt-5 w-full"
           >
-            {isPending ? (
+            {isUpgradePending ? (
               <>
                 <LoadingSpinner className="mr-2 h-4 w-4" />
                 Initiating Payment...
