@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 
 import { RazorpayErrorResponse } from "../types/razorpay";
+import { toast } from "@aventisia/ui/sonner";
 
 export const useRazorpayPayment = () => {
   const [isRazorpayReady, setIsRazorpayReady] = useState(false);
