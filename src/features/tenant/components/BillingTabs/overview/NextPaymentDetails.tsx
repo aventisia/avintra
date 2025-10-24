@@ -27,7 +27,7 @@ const NextPaymentDetails = ({
         <div className="flex items-center gap-2 rounded-lg border p-2">
           <img src={CalendarOutlineIcon} alt="" />
           <div className="text-sm">
-            <p className="text-muted-foreground">Due Date</p>
+            <p className="text-muted-foreground">Due/Renewal Date</p>
             <p className="font-medium">
               {dateFormatter(nextPayment?.dueDate || new Date())}
             </p>
@@ -47,14 +47,20 @@ const NextPaymentDetails = ({
 
             <div className="flex items-center justify-between text-sm">
               <p>Tax</p>
-              <p>${nextPayment?.tax ?? 0}</p>
+              <p>
+                {currencySymbols[currency] ? currencySymbols[currency] : "$"}
+                {nextPayment?.tax ?? 0}
+              </p>
             </div>
 
             <Separator />
 
             <div className="flex items-center justify-between text-sm">
               <p>Total Amount</p>
-              <p>${nextPayment?.totalAmount ?? 0}</p>
+              <p>
+                {currencySymbols[currency] ? currencySymbols[currency] : "$"}
+                {nextPayment?.totalAmount ?? 0}
+              </p>
             </div>
           </div>
         </div>
@@ -64,6 +70,7 @@ const NextPaymentDetails = ({
         <Button
           className="mt-auto w-full border-primary text-primary"
           variant={"outline"}
+          disabled={nextPayment?.totalAmount == 0}
         >
           Make Payment
         </Button>
