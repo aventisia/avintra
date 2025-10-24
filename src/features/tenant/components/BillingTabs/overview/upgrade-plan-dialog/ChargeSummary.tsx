@@ -99,7 +99,7 @@ const ChargeSummary = ({
 
         {isTopUp ? (
           <Button
-            disabled={isTopUpPending}
+            disabled={isTopUpPending || total == 0}
             onClick={handleCreditTopUp}
             className="mt-5 w-full"
           >
@@ -114,7 +114,7 @@ const ChargeSummary = ({
           </Button>
         ) : (
           <Button
-            disabled={isUpgradePending}
+            disabled={isUpgradePending || total == 0}
             onClick={handleSubscription}
             className="mt-5 w-full"
           >
