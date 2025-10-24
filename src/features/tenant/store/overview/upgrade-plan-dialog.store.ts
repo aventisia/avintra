@@ -13,6 +13,7 @@ interface UpgradePlanState {
   isOpen: boolean;
   chosenPlan: PlanFilter | "Credits" | null;
   planId: string;
+  paymentId: string;
   planFrequency: PlanFrequency;
   currency: string;
   billingCountry: string;
@@ -25,6 +26,9 @@ interface UpgradePlanDialogActions {
 
   /** Set the form data for creating an account */
   setPlanId: (planId: string) => void;
+
+  /** Set the form data for creating an account */
+  setPaymentId: (paymentId: string) => void;
 
   /** Set the form data for creating an account */
   setBillingCountry: (billingCountry: string) => void;
@@ -47,6 +51,7 @@ export const useUpgradePlanDialogStore = create<
   isOpen: false,
   chosenPlan: null,
   planId: "",
+  paymentId: localStorage.getItem("payment_id") || "",
   billingCountry: "India",
   planFrequency: "monthly",
   topUp: {
@@ -61,6 +66,7 @@ export const useUpgradePlanDialogStore = create<
   setPlanType: (planFrequency) => set({ planFrequency }),
   setBillingCountry: (billingCountry) => set({ billingCountry }),
   setPlanId: (planId) => set({ planId }),
+  setPaymentId: (paymentId) => set({ paymentId }),
   setOpen: (open) => set({ isOpen: open }),
   setChosenPlan: (plan) => set({ chosenPlan: plan }),
 
