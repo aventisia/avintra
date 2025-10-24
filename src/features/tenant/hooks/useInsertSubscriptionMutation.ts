@@ -1,5 +1,5 @@
 import { toast } from "@aventisia/ui/sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
 
 import { upgradePlan } from "../apis/tenant-subscription-apis";
@@ -8,8 +8,6 @@ import { useUpgradePlanDialogStore } from "../store/overview/upgrade-plan-dialog
 import { useRazorpayPayment } from "./useRazorpayPayment";
 
 export const useInsertSubscriptionMutation = () => {
-  const queryClient = useQueryClient();
-
   const { isRazorpayReady, openRazorpayPayment } = useRazorpayPayment();
 
   const { setOpen } = useUpgradePlanDialogStore(
@@ -22,10 +20,6 @@ export const useInsertSubscriptionMutation = () => {
   // Success handler function
   const handlePaymentSuccess = () => {
     toast.success("Plan Upgraded Successfully");
-    //Invalidate current plan (Overview)
-    queryClient.invalidateQueries({
-      queryKey: ["CURRENT_PLAN"],
-    });
   };
 
   // Failure handler function
