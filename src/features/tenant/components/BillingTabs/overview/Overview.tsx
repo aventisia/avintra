@@ -2,12 +2,15 @@ import { Separator } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
 import { Tooltip } from "@aventisia/ui/tooltip";
-import { PlusIcon } from "lucide-react";
+import { InfoIcon, PlusIcon } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 
 import { currencySymbols } from "@/features/tenant/constants/currency-symbol-map";
 import { useFetchCurrentPlan } from "@/features/tenant/hooks/useFetchCurrentPlan";
+import { useFetchPaymentStatus } from "@/features/tenant/hooks/useFetchPaymentStatus";
 import { useCancelPlanDialogStore } from "@/features/tenant/store/overview/cancel-plan-dialog-store";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import TabLoader from "../TabLoader";
 
@@ -20,8 +23,23 @@ import UsageDetails from "./UsageDetails";
 const Overview = () => {
   const { setOpen } = useCancelPlanDialogStore();
 
-  const { setOpen: setUpgradePlanDialogOpen, setChosenPlan } =
-    useUpgradePlanDialogStore();
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+
+  const isStarterPlan = userSession?.planType == "Starter";
+
+  const {
+    setOpen: setUpgradePlanDialogOpen,
+    setChosenPlan,
+    paymentId,
+  } = useUpgradePlanDialogStore();
+
+  const { paymentCompleted } = useFetchPaymentStatus(paymentId);
+
+  const isPaymentProcessing = paymentId !== "" && !paymentCompleted;
 
   const { data, isLoading } = useFetchCurrentPlan();
 
@@ -31,14 +49,22 @@ const Overview = () => {
     <>
       <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
         <div className="space-y-4 rounded-lg border p-6 shadow-sm">
+          {isPaymentProcessing ? (
+            <div className="flex items-center gap-3 rounded-lg bg-orange-100 px-3 py-2 text-[0.85rem] text-orange-700">
+              <InfoIcon className="h-4 w-4 text-orange-400" />
+              Payment is being processed. Your account will be updated shortly.
+            </div>
+          ) : null}
           {/* Header */}
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <h1 className="text-xl font-bold">
                 {data?.data.currentPlan.planName}{" "}
-                <span className="rounded-md bg-muted px-2 py-2 text-2xs font-medium capitalize text-muted-foreground">
-                  Billed {data?.data.currentPlan.frequency}
-                </span>
+                {!isStarterPlan && (
+                  <span className="rounded-md bg-muted px-2 py-2 text-2xs font-medium capitalize text-muted-foreground">
+                    Billed {data?.data.currentPlan.frequency}
+                  </span>
+                )}
               </h1>
               <p className="text-sm text-muted-foreground">
                 <span className="text-xl font-semibold text-accent-foreground">
@@ -65,20 +91,25 @@ const Overview = () => {
                   </span>
                 </p>
               </Badge>
-              <Tooltip content="Add credits">
-                <Button
-                  onClick={() => {
-                    setUpgradePlanDialogOpen(true);
-                    setChosenPlan("Credits");
-                  }}
-                  disabled={data?.data.currentPlan.planName == "Starter"}
-                  variant={"default"}
-                  size={"icon6"}
-                  className="rounded-full border-2"
-                >
-                  <PlusIcon className="h-5 w-5 font-normal" />
-                </Button>
-              </Tooltip>
+              {!isStarterPlan && (
+                <Tooltip content="Add credits">
+                  <Button
+                    onClick={() => {
+                      setUpgradePlanDialogOpen(true);
+                      setChosenPlan("Credits");
+                    }}
+                    disabled={
+                      data?.data.currentPlan.planName == "Starter" ||
+                      isPaymentProcessing
+                    }
+                    variant={"default"}
+                    size={"icon6"}
+                    className="rounded-full border-2"
+                  >
+                    <PlusIcon className="h-5 w-5 font-normal" />
+                  </Button>
+                </Tooltip>
+              )}
             </div>
           </div>
 
@@ -96,7 +127,10 @@ const Overview = () => {
             <Button variant={"outline"} onClick={() => setOpen(true)}>
               Cancel Plan
             </Button>
-            <Button onClick={() => setUpgradePlanDialogOpen(true)}>
+            <Button
+              disabled={isPaymentProcessing}
+              onClick={() => setUpgradePlanDialogOpen(true)}
+            >
               Upgrade
             </Button>
           </div>
