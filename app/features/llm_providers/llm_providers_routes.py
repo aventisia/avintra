@@ -9,7 +9,7 @@ router = APIRouter()
 
 # Generate LLM response (streaming or non-streaming)
 @router.post('/llm/generate')
-async def generate_llm_response(request: LLMRequest):
+async def generate_llm_response_route(request: LLMRequest):
     llm_provider = get_llm_provider(request.provider)
     if request.stream:
         job_id, event_stream = await start_llm_streaming_job(llm_provider, request)
@@ -21,11 +21,11 @@ async def generate_llm_response(request: LLMRequest):
     
 # Cancel a running llm job
 @router.post('/llm/cancel/{job_id}')
-async def cancel_llm_job(job_id: str):
+async def cancel_llm_job_route(job_id: str):
     success = cancel_llm_job(job_id)
     return {"job_id": job_id, "status": "cancelled" if success else "not_found"}
 
 # Get all active llm jobs
 @router.get('/llm/active-jobs')
-async def list_active_jobs():
+async def list_active_jobs_route():
     return {"active_jobs": get_active_llm_jobs()}
