@@ -689,10 +689,10 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     PlanName = currentPlan.Name,
                     Frequency = tenantSubscription.Frequency,
                     Price = currentPlan.Price,
-                    Currency = tenant?.Currency ?? CurrencyTypesEnum.USD,
+                    Currency = currentPlan.Currency,
                     AvailableCredits = availableCredits,
                     ExpiredOn = tenantSubscription.NextBillingDate,
-                    IsActive = tenantSubscription?.NextBillingDate > DateTimeOffset.UtcNow.Date,
+                    IsActive = tenantSubscription.NextBillingDate > DateTimeOffset.UtcNow.Date,
                     IsRecurringPayment = tenantSubscription.IsRecurringPayment,
                     RazorpaySubscriptionId = tenantSubscription?.RazorpaySubscriptionId,
                     Feature = new CurrentSubscriptionPlanDetailDto()
