@@ -1,6 +1,8 @@
 import { toast } from "@aventisia/ui/sonner";
 import { useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
+import { useUpgradePlanDialogStore } from "../store/overview/upgrade-plan-dialog.store";
 import {
   RazorpayErrorResponse,
   RazorpayOptions,
@@ -10,6 +12,10 @@ import {
 export const useRazorpayPayment = () => {
   // State to track if Razorpay script has finished loading
   const [isRazorpayReady, setIsRazorpayReady] = useState(false);
+
+  const { setPaymentId } = useUpgradePlanDialogStore(
+    useShallow((state) => ({ setPaymentId: state.setPaymentId })),
+  );
 
   // Load Razorpay checkout script dynamically
   useEffect(() => {
@@ -61,6 +67,9 @@ export const useRazorpayPayment = () => {
       description: "Subscription Payment", // Description of the payment
       image: "/logo_icon.jpg", // Image/logo to show in payment window
       handler: function (response: RazorpaySuccessResponse) {
+        setPaymentId(response.razorpay_payment_id);
+        localStorage.setItem("payment_id", response.razorpay_payment_id);
+
         // Custom success handler
         if (onSuccess) {
           onSuccess(response); // Trigger custom success callback
