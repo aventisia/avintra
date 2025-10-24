@@ -41,7 +41,9 @@ const NextPaymentDetails = ({
               <p>Subscription Fee</p>
               <p>
                 {(currencySymbols[currency] ? currencySymbols[currency] : "$") +
-                  (nextPayment?.subscriptionFee ?? 0)}
+                  (nextPayment?.subscriptionFee.toLocaleString("en-US", {
+                    maximumFractionDigits: 2,
+                  }) ?? 0)}
               </p>
             </div>
 
@@ -49,7 +51,9 @@ const NextPaymentDetails = ({
               <p>Tax</p>
               <p>
                 {currencySymbols[currency] ? currencySymbols[currency] : "$"}
-                {nextPayment?.tax ?? 0}
+                {nextPayment?.tax.toLocaleString("en-US", {
+                  maximumFractionDigits: 2,
+                }) ?? 0}
               </p>
             </div>
 
@@ -59,7 +63,9 @@ const NextPaymentDetails = ({
               <p>Total Amount</p>
               <p>
                 {currencySymbols[currency] ? currencySymbols[currency] : "$"}
-                {nextPayment?.totalAmount ?? 0}
+                {nextPayment?.totalAmount.toLocaleString("en-US", {
+                  maximumFractionDigits: 2,
+                }) ?? 0}
               </p>
             </div>
           </div>
