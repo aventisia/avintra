@@ -107,7 +107,6 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
             onClick={() => groupNodes()}
           />
         )}
-        <ContextMenuSeparator className="h-[0.5px]" />
         {/* Organize items. Apply auto layout */}
         <SimpleCMItem
           size="sm"
@@ -115,30 +114,24 @@ export const ReactFlowContextMenu = ({ children }: React.PropsWithChildren) => {
           Icon={Library}
           onClick={() => autoLayout()}
         />
-        <ContextMenuSeparator className="h-[0.5px]" />
-        {import.meta.env.MODE !== "production" ? (
+        {isDisabled ? (
           <>
-            {" "}
-            {isDisabled ? (
-              <>
-                <SimpleCMItem
-                  size="sm"
-                  content="Enable"
-                  Icon={CircleCheckIcon}
-                  onClick={() => disableNode(false)}
-                />
-              </>
-            ) : (
-              <SimpleCMItem
-                size="sm"
-                content="Disable"
-                Icon={BanIcon}
-                onClick={() => disableNode(true)}
-              />
-            )}
-            <ContextMenuSeparator className="h-[0.5px]" />
+            <SimpleCMItem
+              size="sm"
+              content="Enable"
+              Icon={CircleCheckIcon}
+              onClick={() => disableNode(false)}
+            />
           </>
-        ) : null}{" "}
+        ) : (
+          <SimpleCMItem
+            size="sm"
+            content="Disable"
+            Icon={BanIcon}
+            onClick={() => disableNode(true)}
+          />
+        )}
+        <ContextMenuSeparator className="h-[0.5px]" />
         {/* Delete selected items */}
         <DeleteCMItem
           size="sm"
