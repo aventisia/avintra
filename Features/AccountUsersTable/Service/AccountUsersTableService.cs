@@ -259,9 +259,6 @@ public class AccountUsersTableService : IAccountUsersTableService
                 return serviceResponse;
             }
 
-            // Get old roles of user  (required to compare with new roles to see if AE role has been removed or not)
-            var userOldRoles = user.UserRoles.Select(s => s.Role.Name).ToList();
-
             // Trim dto' string props
             accountUsersTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(accountUsersTableDto);
 
@@ -304,16 +301,6 @@ public class AccountUsersTableService : IAccountUsersTableService
 
                 // Failed to update user in other databases
                 if (!updateUserInOtherDbsResult) return serviceResponse;
-            }
-
-            // Delete user from InternalDb if user had AE role and now it is removed
-            if (user.IsCreatedInOtherDbs && userOldRoles.Contains("AE") && !toBeAddedUserRoles.Contains("AE"))
-            {
-                // Try to delete user from InternalDb
-                var deleteUserInInternalDbResult = await _authHelperService.DeleteUserInInternalDbAsync(user.Id, _jwt);
-
-                // Failed to delete user from InternalDb
-                if (!deleteUserInInternalDbResult) return serviceResponse;
             }
 
             // Task successful
@@ -379,7 +366,7 @@ public class AccountUsersTableService : IAccountUsersTableService
             }
 
             // Try to delete user in other databases
-            var deleteUserInOtherDbsResult = await _authHelperService.DeleteUserInOtherDbsAsync(id, _jwt, userRoleNames.Contains("AE"));
+            var deleteUserInOtherDbsResult = await _authHelperService.DeleteUserInOtherDbsAsync(id, _jwt);
 
             // Failed to delete user in other databases
             if (!deleteUserInOtherDbsResult) return serviceResponse;

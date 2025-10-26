@@ -39,7 +39,7 @@ public interface IAccountUsersTableService
     /// Retrieves the account roles basis current user top role. <br/>
     /// </summary>
     /// <remarks>
-    /// Note: GLBA, TLBA, TU, AE, IU will have no access to user management on gloabl or tenant level
+    /// Note: OM, TU will have no access to user management on gloabl or tenant level
     /// </remarks>
     /// <returns>A task that represents the asynchronous operation. The task result contains the service response with a collection of select option DTOs.</returns>
     Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetAccountRolesAsync();
