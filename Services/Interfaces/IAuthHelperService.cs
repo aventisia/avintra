@@ -78,7 +78,7 @@ public interface IAuthHelperService
     /// <param name="jwt">The JSON Web Token.</param>
     /// <param name="isAE">A flag indicating whether the user is an AE (Aventisia Employee).</param>
     /// <returns>A task representing the asynchronous operation. The task result is a boolean indicating whether the operation was successful.</returns>
-    Task<bool> CreateOrUpdateUserInOtherDbsAsync(AccountUser accountUser, CrudTypesEnum crudType, string jwt, bool isAE = false);
+    Task<bool> CreateOrUpdateUserInOtherDbsAsync(AccountUser accountUser, CrudTypesEnum crudType, string jwt);
 
     /// <summary>
     /// Deletes a user from other databases asynchronously.

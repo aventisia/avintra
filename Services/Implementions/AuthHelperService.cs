@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace AccountsAPIs.Services;
 
 public class AuthHelperService : IAuthHelperService
@@ -283,7 +281,7 @@ public class AuthHelperService : IAuthHelperService
     }
 
     // Creates or updates a user in other databases asynchronously.
-    public async Task<bool> CreateOrUpdateUserInOtherDbsAsync(AccountUser accountUser, CrudTypesEnum crudType, string jwt, bool isAE = false)
+    public async Task<bool> CreateOrUpdateUserInOtherDbsAsync(AccountUser accountUser, CrudTypesEnum crudType, string jwt)
     {
         // Create AppUser dto object to post or put
         var user = new AppUserBaseDto()
@@ -316,24 +314,7 @@ public class AuthHelperService : IAuthHelperService
             return false;
         }
 
-        // TODO: Till the time IntneralAPIs project is not ready, return true
         return true;
-
-        // // Return if user is not AE
-        // if (!isAE) return true;
-
-        // // Create or Update user in InternalDb database
-        // response = await RequestExternalAPIUtil.RequestExternalAPI(crudType, _externalAPIsConfig.InternalUser, jwt, user);
-
-        // // Failed to Create or Update user in Internal database
-        // if (!response.IsSuccessStatusCode)
-        // {
-        //     _logger.LogInformation($"Failed to {crudType} user in Internal database for {user.UserName}");
-        //     return false;
-        // }
-
-        // // Task completed successfully
-        // return true;
     }
 
     // Deletes a user from other databases asynchronously.

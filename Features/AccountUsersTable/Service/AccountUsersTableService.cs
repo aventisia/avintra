@@ -157,7 +157,7 @@ public class AccountUsersTableService : IAccountUsersTableService
             newUser.IsEditable = true; // DO NOT CHANGE THIS
 
             // Try to add user in other databases
-            var createUserInOtherDbsResult = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(newUser, CrudTypesEnum.Create, _jwt, toBeAddedUserRoles.Contains("AE"));
+            var createUserInOtherDbsResult = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(newUser, CrudTypesEnum.Create, _jwt);
 
             // Failed to add user in other databases
             if (!createUserInOtherDbsResult) return serviceResponse;
@@ -300,7 +300,7 @@ public class AccountUsersTableService : IAccountUsersTableService
             if (user.IsCreatedInOtherDbs)
             {
                 // Try to update user in other databases
-                var updateUserInOtherDbsResult = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Update, _jwt, toBeAddedUserRoles.Contains("AE"));
+                var updateUserInOtherDbsResult = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Update, _jwt);
 
                 // Failed to update user in other databases
                 if (!updateUserInOtherDbsResult) return serviceResponse;
