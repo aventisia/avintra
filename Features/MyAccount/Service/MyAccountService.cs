@@ -594,7 +594,7 @@ public class MyAccountService(
             }
 
             //Update user in other databases
-            var response = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Update, _jwt, false);
+            var response = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Update, _jwt);
 
             if (!response)
             {
@@ -645,10 +645,10 @@ public class MyAccountService(
             }
 
             //Check if user is an Aventisia employee
-            var IsAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
+            var isAE = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(user.Email) == "aventisia.com";
 
             //if user is an Aventisia employee
-            if (IsAE)
+            if (isAE)
             {
                 _logger.LogInformation("Failed to update email for Aventesia employee");
                 serviceResponse.Message = "Unable to update email for Aventesia employee";
@@ -976,7 +976,7 @@ public class MyAccountService(
             }
 
             // Try to delete user in other databases
-            var deleteUserInOtherDbsResult = await _authHelperService.DeleteUserInOtherDbsAsync(user.Id, _jwt, false);
+            var deleteUserInOtherDbsResult = await _authHelperService.DeleteUserInOtherDbsAsync(user.Id, _jwt);
             if (!deleteUserInOtherDbsResult)
             {
                 _logger.LogInformation("Failed to delete user in other databases");

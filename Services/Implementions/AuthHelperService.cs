@@ -318,7 +318,7 @@ public class AuthHelperService : IAuthHelperService
     }
 
     // Deletes a user from other databases asynchronously.
-    public async Task<bool> DeleteUserInOtherDbsAsync(Guid userId, string jwt, bool isAE = false)
+    public async Task<bool> DeleteUserInOtherDbsAsync(Guid userId, string jwt)
     {
         // Delete user in WorkspaceDb database
         HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Delete, $"{_externalAPIsConfig.WorkspaceUser}/{userId}", jwt);
@@ -338,30 +338,6 @@ public class AuthHelperService : IAuthHelperService
             return false;
         }
 
-        // TODO: Till the time IntneralAPIs project is not ready, return true
-        return true;
-
-        // // Return if user is not AE
-        // if (!isAE) return true;
-
-        // // Delete user in InternalDb database
-        // return await DeleteUserInInternalDbAsync(userId, jwt);
-    }
-
-    // Delete a user in InternalDb
-    public async Task<bool> DeleteUserInInternalDbAsync(Guid userId, string jwt)
-    {
-        // Delete user in InternalDb database
-        HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Delete, $"{_externalAPIsConfig.InternalUser}/{userId}", jwt);
-
-        // Failed to Delete user in Internal database
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogInformation($"Failed to delete user in Internal database for user Id: {userId}");
-            return false;
-        }
-
-        // Task completed successfully
         return true;
     }
 }

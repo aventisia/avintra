@@ -76,7 +76,6 @@ public interface IAuthHelperService
     /// <param name="accountUser">The account user object.</param>
     /// <param name="crudType">The CRUD operation type.</param>
     /// <param name="jwt">The JSON Web Token.</param>
-    /// <param name="isAE">A flag indicating whether the user is an AE (Aventisia Employee).</param>
     /// <returns>A task representing the asynchronous operation. The task result is a boolean indicating whether the operation was successful.</returns>
     Task<bool> CreateOrUpdateUserInOtherDbsAsync(AccountUser accountUser, CrudTypesEnum crudType, string jwt);
 
@@ -85,15 +84,6 @@ public interface IAuthHelperService
     /// </summary>
     /// <param name="userId">The ID of the user to delete.</param>
     /// <param name="jwt">The JSON Web Token for authentication.</param>
-    /// <param name="isAE">Flag indicating whether the user is an AE (Aventisia Employee).</param>
     /// <returns>A task representing the asynchronous operation. The task result is a boolean indicating whether the user was successfully deleted.</returns>
-    Task<bool> DeleteUserInOtherDbsAsync(Guid userId, string jwt, bool isAE = false);
-
-    /// <summary>
-    /// Deletes a user from InternalDb database asynchronously.
-    /// </summary>
-    /// <param name="userId">The ID of the user to delete.</param>
-    /// <param name="jwt">The JSON Web Token for authentication.</param>
-    /// <returns>A task representing the asynchronous operation. The task result is a boolean indicating whether the user was successfully deleted.</returns>
-    Task<bool> DeleteUserInInternalDbAsync(Guid userId, string jwt);
+    Task<bool> DeleteUserInOtherDbsAsync(Guid userId, string jwt);
 }
