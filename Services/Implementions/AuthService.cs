@@ -273,7 +273,7 @@ public class AuthService : IAuthService
                     var userRoles = await _userManager.GetRolesAsync(user);
 
                     // Try to add user in other databases
-                    var createUserInOtherDbsResult = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Create, jwt, userRoles.Contains("AE"));
+                    var createUserInOtherDbsResult = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Create, jwt);
 
                     // // Failed to add user in other databases
                     if (!createUserInOtherDbsResult) return serviceResponse;
