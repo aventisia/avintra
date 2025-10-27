@@ -297,7 +297,7 @@ public class WebhookService : IWebhookService
                 .FirstOrDefaultAsync();
 
             // If no active subscription is found, log a warning and deactivate it.
-            if (currentTenantSubscription == null)
+            if (currentTenantSubscription != null)
             {
                 _logger.LogWarning("No active subscription found for Razorpay Subscription ID: {RazorpaySubscriptionId}.", razorpaySubscriptionId);
 
@@ -362,6 +362,7 @@ public class WebhookService : IWebhookService
 
             // Update subscription details including the next billing date and status.
             tenantSubscription.NextBillingDate = nextBillingDate;
+            tenantSubscription.IsActive = true;
             tenantSubscription.Status = SubscriptionStatusTypesEnum.Active;
             tenantSubscription.LastModifiedByUserId = tenant.LastModifiedByUserId;
 
@@ -486,7 +487,7 @@ public class WebhookService : IWebhookService
             {
                 // Retrieve the corresponding subscription
                 tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
-                    .GetByConditionAsync(s => s.RazorpaySubscriptionId == subscriptionId && s.IsActive)
+                    .GetByConditionAsync(w => w.TenantId == tenantSubscription.TenantId && w.RazorpaySubscriptionId == subscriptionId)
                     .Include(i => i.Plan)
                     .FirstOrDefaultAsync();
             }
@@ -770,7 +771,6 @@ public class WebhookService : IWebhookService
             // Extract payment details from the webhook payload
             var paymentEntity = webhookPayload["payload"]?["payment"]?["entity"];
 
-
             // If no Razorpay Customer ID, fetch the billing detail using Razorpay Order ID
             var razorpayOrderId = paymentEntity?["order_id"]?.ToString();
 
@@ -852,7 +852,7 @@ public class WebhookService : IWebhookService
 
             // Retrieve the tenant subscription from the database
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
-                 .GetByConditionAsync(s => s.RazorpaySubscriptionId == subscriptionId && s.IsActive)
+                 .GetByConditionAsync(w => w.RazorpaySubscriptionId == subscriptionId)
                  .Include(i => i.Plan)
                  .FirstOrDefaultAsync();
 
