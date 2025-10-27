@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { clearNodeExecutionLog, CURRENT_VERSION_ID_KEY } from "..";
 import useWebSocket from "../hooks/useWebSocket";
+import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
 
 const ExecuteFlow = ({
   isAssist = false,
@@ -44,8 +45,18 @@ const ExecuteFlow = ({
   // Connect to websocket server and get sendCommand function
   const { sendCommand } = useWebSocket();
 
+  const minCredits = 10;
+
   // Start execution
   const startExecution = async () => {
+    const creditsData = await getAvailableCredits();
+
+    if (creditsData?.data && creditsData.data.availableCredits < minCredits) {
+      // Show toast notification for insufficient credits
+      toast.error("Insufficient credits. Please top up to continue.");
+      return;
+    }
+
     // Set the execution state to launching executor
     setExecutionState("launching-executor");
 
