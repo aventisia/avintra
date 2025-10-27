@@ -693,9 +693,18 @@ public class VersionResourceService : IVersionResourceService
                 {
                     // Pass the file full path to llmpipeline api for conversion
                     convertedFileDetail = await ConvertFileToPDF(fileUrl);
+
+                    // Update uploadedFile details based on conversion result
+                    if (convertedFileDetail != null)
+                    {
+                        uploadedFile.Path = convertedFileDetail.Path;
+                        uploadedFile.Extension = Path.GetExtension(convertedFileDetail.Name).TrimStart('.').ToUpper();
+                        uploadedFile.Size = convertedFileDetail.Size;
+                    }
                 }
 
-                uploadedFiles.Add(convertedFileDetail != null ? convertedFileDetail : uploadedFile);
+                // Add the uploaded file details to the result list
+                uploadedFiles.Add(uploadedFile);
 
                 _logger.LogInformation("File uploaded successfully: {FileName}, Path: {FilePath}.", fileName, filePath);
             }
