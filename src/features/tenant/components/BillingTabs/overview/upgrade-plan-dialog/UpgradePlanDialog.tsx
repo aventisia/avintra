@@ -22,7 +22,6 @@ const UpgradePlanDialog = () => {
       onOpenChange={(open: boolean) => {
         if (!open) {
           setTimeout(() => {
-            console.log("func");
             resetToDefault();
           }, 0);
         }

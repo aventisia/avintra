@@ -10,9 +10,9 @@ import { useRazorpayPayment } from "./useRazorpayPayment";
 export const useInsertSubscriptionMutation = () => {
   const { isRazorpayReady, openRazorpayPayment } = useRazorpayPayment();
 
-  const { setOpen } = useUpgradePlanDialogStore(
+  const { setOpen, resetToDefault } = useUpgradePlanDialogStore(
     useShallow((state) => ({
-      setChosenPlan: state.setChosenPlan,
+      resetToDefault: state.resetToDefault,
       setOpen: state.setOpen,
     })),
   );
@@ -39,6 +39,7 @@ export const useInsertSubscriptionMutation = () => {
         variables.amount > 0 &&
         isRazorpayReady
       ) {
+        resetToDefault();
         setOpen(false);
         openRazorpayPayment({
           subscriptionId: data.razorpaySubscriptionId,
