@@ -2,7 +2,7 @@ import { Input, LoadingSpinner } from "@aventisia/ui";
 import { useShallow } from "zustand/react/shallow";
 
 import { currencyToPricePer500Credits } from "@/features/tenant/constants/credit-price-map";
-import { currencySymbols } from "@/features/tenant/constants/currency-symbol-map";
+import { formatCurrency } from "@/features/tenant/constants/currency-symbol-map";
 import { useFetchCompanyDetails } from "@/features/tenant/hooks/useFetchCompanyDetails";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
 
@@ -71,8 +71,8 @@ const CreditTopUp = () => {
                 <div>
                   <p>Credits</p>
                   <p className="text-sm text-muted-foreground">
-                    {currencySymbols[currency]}
-                    {pricePer500Credits} = 500 credits
+                    {formatCurrency(pricePer500Credits ?? 0, currency)} = 500
+                    credits
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -88,13 +88,10 @@ const CreditTopUp = () => {
                     onBlur={handleBlur}
                   />
                   <Input
-                    value={
-                      currencySymbols[currency] +
-                      (
-                        ((topUp.credits || 0) / 500) *
-                        pricePer500Credits
-                      ).toFixed(2)
-                    }
+                    value={formatCurrency(
+                      ((topUp.credits || 0) / 500) * pricePer500Credits,
+                      currency,
+                    )}
                     disabled
                     className="w-32"
                   />

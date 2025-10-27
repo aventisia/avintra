@@ -5,7 +5,7 @@ import { Tooltip } from "@aventisia/ui/tooltip";
 import { InfoIcon, PlusIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
-import { currencySymbols } from "@/features/tenant/constants/currency-symbol-map";
+import { formatCurrency } from "@/features/tenant/constants/currency-symbol-map";
 import { useFetchCurrentPlan } from "@/features/tenant/hooks/useFetchCurrentPlan";
 import { useCancelPlanDialogStore } from "@/features/tenant/store/overview/cancel-plan-dialog-store";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
@@ -65,12 +65,10 @@ const Overview = () => {
               </h1>
               <p className="text-sm text-muted-foreground">
                 <span className="text-xl font-semibold text-accent-foreground">
-                  {`${currencySymbols[data?.data.currentPlan.currency || "USD"] ? currencySymbols[data?.data.currentPlan.currency || "USD"] : "$"}${data?.data.currentPlan.price.toLocaleString(
-                    "en-US",
-                    {
-                      maximumFractionDigits: 2,
-                    },
-                  )}`}
+                  {formatCurrency(
+                    data?.data.currentPlan.price ?? 0,
+                    data?.data?.currentPlan?.currency ?? "USD",
+                  )}
                 </span>{" "}
                 /Month
               </p>
