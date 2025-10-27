@@ -1,7 +1,7 @@
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
@@ -55,6 +55,24 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
       );
     },
   },
+  {
+    accessorKey: "type",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("type")}
+      />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="w-auto font-medium">
+          {row.getValue("type") || "N/A"}
+        </div>
+      );
+    },
+  },
+
   // Paid on
   {
     accessorKey: "paidOn",
@@ -69,7 +87,7 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
       const paidOnValue = row.getValue("paidOn") as Date;
       return (
         <div className="w-auto font-medium">
-          {paidOnValue ? dateFormatter(paidOnValue) : "N/A"}
+          {paidOnValue ? format(paidOnValue, "dd MMM yyyy, hh:mm a") : "N/A"}
         </div>
       );
     },
@@ -105,7 +123,7 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
     cell: ({ row }) => {
       return (
         <div className="w-24 rounded-md px-2 py-1 text-center font-medium">
-          {row.getValue("paymentStatus") || "N/A"}
+          {getPaymentStatusLabel(row.getValue("paymentStatus"))}
         </div>
       );
     },
@@ -122,3 +140,16 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
     ),
   },
 ];
+
+// Map razorpay status  to user-friendly labels
+export const getPaymentStatusLabel = (status: string): string => {
+  const statusMap: Record<string, string> = {
+    Created: "Pending",
+    Authorized: "Pending",
+    Captured: "Success",
+    Refunded: "Refunded",
+    Failed: "Failed",
+  };
+
+  return statusMap[status] || "Unknown"; // Fallback label if status is not recognized
+};

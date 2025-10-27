@@ -29,22 +29,26 @@ const PaymentMethods = () => {
 
         <div className="grid grid-cols-2 gap-4 p-4">
           {data?.data && data?.data?.length > 0 ? (
-            data?.data.map((value: PaymentMethodDTO) => (
-              //TODO: Update Icon and name
-              <div className="col-span-1 flex items-center justify-between rounded-lg border px-4 py-4">
-                <div className="flex items-center gap-4">
-                  {/* <img src={VisaIcon} alt="" /> */}
-                  <div>
-                    {/* Currently showing card name */}
-                    <p className="text-md font-medium">{value.cardType}</p>
-                    <p className="flex items-center text-sm text-muted-foreground">
-                      Ending {value.cardLast4} <DotSeparator /> Expires
-                      12/2026{" "}
-                    </p>
+            data?.data
+              .filter((v) => v?.type == "Card")
+              .map((value: PaymentMethodDTO) => (
+                //TODO: Update Icon and name
+                <div className="col-span-1 flex items-center justify-between rounded-lg border px-4 py-4">
+                  <div className="flex items-center gap-4">
+                    {/* <img src={VisaIcon} alt="" /> */}
+                    <div>
+                      {/* Currently showing card name */}
+                      <p className="text-md font-medium">
+                        {value.cardType + " " + value.type}
+                      </p>
+                      <p className="flex items-center text-sm text-muted-foreground">
+                        Ending {value.cardLast4} <DotSeparator /> Expires
+                        12/2026{" "}
+                      </p>
+                    </div>
                   </div>
-                </div>
 
-                {/* <div className="flex items-center gap-2">
+                  {/* <div className="flex items-center gap-2">
               <p className="mr-2 rounded-sm bg-black px-2.5 text-sm font-medium text-white">
                 Primary
               </p>
@@ -55,8 +59,8 @@ const PaymentMethods = () => {
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div> */}
-              </div>
-            ))
+                </div>
+              ))
           ) : (
             <div className="col-span-2 text-center text-sm">No results.</div>
           )}

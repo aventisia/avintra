@@ -60,17 +60,23 @@ export const companyDetailsZodSchema = z
 
     // Conditional validation for gstNumber
     gstNumber: z
-      .string()
-      .min(0, { message: reqError("GST Number") })
-      .max(15, { message: maxLenError("GST Number", 15) })
-      .optional(), // Make it optional by default
+      .union([
+        z.literal(""),
+        z
+          .string()
+          .min(15, { message: "GST Number must be 15 characters long" })
+          .max(15, { message: "GST Number must be 15 characters long" }),
+      ])
+      .optional(),
   })
-  .refine(
-    (data) =>
-      !data.isWillingToFileGst ||
-      (data.gstNumber !== undefined && data.gstNumber !== ""),
-    {
-      message: "GST Number is required",
-      path: ["gstNumber"],
-    },
-  );
+  .superRefine((data, ctx) => {
+    if (data.isWillingToFileGst) {
+      if (!data.gstNumber || data.gstNumber.trim() === "") {
+        ctx.addIssue({
+          path: ["gstNumber"],
+          message: "GST Number is required",
+          code: z.ZodIssueCode.custom,
+        });
+      }
+    }
+  });

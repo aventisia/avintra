@@ -10,9 +10,9 @@ import { useRazorpayPayment } from "./useRazorpayPayment";
 export const useCreditTopUpMutation = () => {
   const { isRazorpayReady, openRazorpayPayment } = useRazorpayPayment();
 
-  const { setOpen } = useUpgradePlanDialogStore(
+  const { setOpen, resetToDefault } = useUpgradePlanDialogStore(
     useShallow((state) => ({
-      setChosenPlan: state.setChosenPlan,
+      resetToDefault: state.resetToDefault,
       setOpen: state.setOpen,
     })),
   );
@@ -33,6 +33,7 @@ export const useCreditTopUpMutation = () => {
 
       // Paid Plan with Razorpay Subscription
       if (data?.razorpayId && variables.amount > 0 && isRazorpayReady) {
+        resetToDefault();
         setOpen(false);
         openRazorpayPayment({
           orderId: data.razorpayId,

@@ -1,5 +1,5 @@
 import CustomRadioItem from "@/components/CustomRadioItem";
-import { currencySymbols } from "@/features/tenant/constants/currency-symbol-map";
+import { formatCurrency } from "@/features/tenant/constants/currency-symbol-map";
 import { SubscriptionPlanDTO } from "@/features/tenant/dtos/subscription-plans-dto";
 import { PlanFrequency } from "@/features/tenant/types/plan-type";
 
@@ -39,9 +39,7 @@ export const PlanItem = ({
 
           <div className="flex items-baseline gap-1">
             <p className="text-base">
-              {(currencySymbols[plan.currency]
-                ? currencySymbols[plan.currency]
-                : "$") + planPrice}
+              {formatCurrency(planPrice ?? 0, plan.currency)}
             </p>
             <span className="text-sm text-muted-foreground">/{timeUnit}</span>
           </div>

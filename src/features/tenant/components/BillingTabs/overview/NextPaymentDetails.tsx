@@ -2,7 +2,7 @@ import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { dateFormatter } from "@aventisia/ui/utils";
 
-import { currencySymbols } from "@/features/tenant/constants/currency-symbol-map";
+import { formatCurrency } from "@/features/tenant/constants/currency-symbol-map";
 import { NextPaymentDto } from "@/features/tenant/dtos/current-plan-dto";
 
 import CalendarOutlineIcon from "../../../assets/calendar-outline-icon.svg";
@@ -40,33 +40,20 @@ const NextPaymentDetails = ({
             <div className="flex items-center justify-between text-sm">
               <p>Subscription Fee</p>
               <p>
-                {(currencySymbols[currency] ? currencySymbols[currency] : "$") +
-                  (nextPayment?.subscriptionFee.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  }) ?? 0)}
+                {formatCurrency(nextPayment?.subscriptionFee ?? 0, currency)}
               </p>
             </div>
 
             <div className="flex items-center justify-between text-sm">
               <p>Tax</p>
-              <p>
-                {currencySymbols[currency] ? currencySymbols[currency] : "$"}
-                {nextPayment?.tax.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                }) ?? 0}
-              </p>
+              <p>{formatCurrency(nextPayment?.tax ?? 0, currency)}</p>
             </div>
 
             <Separator />
 
             <div className="flex items-center justify-between text-sm">
               <p>Total Amount</p>
-              <p>
-                {currencySymbols[currency] ? currencySymbols[currency] : "$"}
-                {nextPayment?.totalAmount.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                }) ?? 0}
-              </p>
+              <p>{formatCurrency(nextPayment?.totalAmount ?? 0, currency)}</p>
             </div>
           </div>
         </div>

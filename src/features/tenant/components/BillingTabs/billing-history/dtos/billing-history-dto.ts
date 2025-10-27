@@ -4,4 +4,5 @@ export interface BillingHistoryDTO {
   paidOn: string;
   amount: string;
   paymentStatus: string;
+  type: string;
 }
