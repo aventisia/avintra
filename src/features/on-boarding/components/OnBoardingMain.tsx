@@ -2,13 +2,18 @@ import { AccountSetupMain } from "@/features/on-boarding/components/account-setu
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 
+import { useFetchPaymentStatus } from "../hooks/useFetchPaymentStatus";
 import { ChoosePlanMain } from "./ChoosePlanMain";
+import { PaymentProcessingLoader } from "./choose-plan/PaymentProcessingLoader";
 
 export const OnBoardingMain = () => {
   // Validate user session
   const { isPending, onBoardingStep } = useValidateUserSession();
+  const { paymentCompleted, paymentId } = useFetchPaymentStatus();
 
   if (isPending) return <RedirectPage className="h-auto p-3" />;
+
+  if (paymentId && !paymentCompleted) return <PaymentProcessingLoader />;
 
   switch (onBoardingStep) {
     case "account-setup":
