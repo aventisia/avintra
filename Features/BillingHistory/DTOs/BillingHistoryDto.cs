@@ -21,7 +21,7 @@ public class BillingHistoryDto
     /// Gets or sets the payment status for the billing history. Possible values: Created, Authorized, Captured, Refunded, Failed.
     /// </summary>
     public PaymentStatusTypesEnum PaymentStatus { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the subscription frequency (e.g., monthly or yearly).
     /// </summary>
@@ -36,6 +36,11 @@ public class BillingHistoryDto
     /// Gets or sets the link to the generated invoice for this billing.
     /// </summary>
     public string? InvoiceLink { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of credit allocated to the tenant (e.g., Subscription, Top-up, Addon).
+    /// </summary>
+    public CreditTypesEnum? Type { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the user account is disabled.
