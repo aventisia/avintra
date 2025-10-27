@@ -68,7 +68,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
     }
 
     // Extracts structured data from a document by retrieving its text and passing it to an LLM for processing.
-    public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature, UsageSourceTypesEnum refType, Guid refId, string refName, object? ollamaOutputFormatSchema = null)
+    public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature, UsageSourceTypesEnum refType, Guid refId, string refName, object? ollamaOutputFormatSchema = null, bool isJsonOutput = true)
     {
         var serviceResponse = new ServiceResponse<string>()
         {
@@ -164,6 +164,9 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                         }
 
                         // Prepare the message list: system prompt (optional) + user input
+                        prompt = isJsonOutput ?
+                            prompt + " Please provide the response in JSON format only." + System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema) :
+                            prompt;
                         var messageList = new List<Dictionary<string, string>>()
                         {
                             // The system prompt could be included if needed, for example:
@@ -173,7 +176,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                             new Dictionary<string, string>
                             {
                                 { "role", "user" },
-                                { "content", prompt + " Please provide the response in JSON format only. " + System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema)}
+                                { "content", prompt}
                             }
                         };
 

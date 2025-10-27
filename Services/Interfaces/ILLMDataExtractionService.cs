@@ -4,7 +4,7 @@ namespace AspNetToolkit.Services;
 /// Service for extracting text and data from documents using a language model (LLM).
 /// </summary>
 public interface ILLMDataExtractionService
-{   
+{
     /// <summary>
     /// Determines whether the user has sufficient credits to perform the requested operation.
     /// </summary>
@@ -21,7 +21,7 @@ public interface ILLMDataExtractionService
     /// <param name="llmModel">The LLM model to use.</param>
     /// <param name="modelTemperature">Controls how focused or creative the response is (0–1).</param>
     /// <returns>The LLM’s response as text.</returns>
-    Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature, UsageSourceTypesEnum refType, Guid refId, string refName, object? ollamaOutputFormatSchema = null);
+    Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature, UsageSourceTypesEnum refType, Guid refId, string refName, object? ollamaOutputFormatSchema = null, bool isJsonOutput = true);
 
     /// <summary>
     /// Extracts plain text from a file at the given URL.
