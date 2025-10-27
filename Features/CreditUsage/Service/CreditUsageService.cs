@@ -637,15 +637,10 @@ public class CreditUsageService : ICreditUsageService
             // Log the start of the credit retrieval process
             _logger.LogInformation("Starting credit retrieval for user: {UserId}", _userId);
 
-            var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
-
             // Fetch available tenant credits for the current user
             var availableCreditsQuery = _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
-                    w.TenantId == _tenantId &&
-                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
-                    w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date &&
-                    w.AvailableCredits > 0
+                    w.TenantId == _tenantId
                 );
 
             // Aggregate available credit data into the DTO
@@ -684,15 +679,10 @@ public class CreditUsageService : ICreditUsageService
             // Log the start of the summary retrieval process
             _logger.LogInformation("Starting credit summary retrieval for user: {UserId}", _userId);
 
-            var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
-
             // Fetch available tenant credits for the current user
             var availableCreditsQuery = _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
-                    w.TenantId == _tenantId &&
-                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
-                    w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date &&
-                     w.AvailableCredits > 0
+                    w.TenantId == _tenantId
                 );
 
             // Construct the credit summary DTO with monthly breakdown
