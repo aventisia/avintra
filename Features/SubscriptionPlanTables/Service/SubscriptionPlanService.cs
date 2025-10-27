@@ -6,6 +6,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
     private readonly IPlanService _planService;
     private readonly ILogger<SubscriptionPlanService> _logger;
     private readonly Guid _userId;
+    private readonly Guid _tenantId;
 
     public SubscriptionPlanService(IUnitOfWork unitOfWork, ILogger<SubscriptionPlanService> logger, IHttpContextAccessor httpContextAccessor, IPlanService planService)
     {
@@ -15,6 +16,10 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
         // Extract user ID from the JWT token in the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        // Extract tenant ID from JWT token claims
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
+
     }
 
     // Retrieves all subscription plans from the database including the creator user.
@@ -29,9 +34,14 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
         try
         {
+            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
+
             // Start building the database query; nothing is executed yet.
             IQueryable<SubscriptionPlan> query = _unitOfWork.SubscriptionPlanRepo
-                .GetByConditionAsync(w => w.Status == PlanStatusTypesEnum.Current)
+                .GetByConditionAsync(w =>
+                    w.Status == PlanStatusTypesEnum.Current &&
+                    w.IncludeTax == (tenant.Country == CountriesEnum.India)
+                )
                 .Include(plan => plan.CreatedByUser);
 
             // Check if a filter for subscription plan type (Pro or Starter) was provided.
