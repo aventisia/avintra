@@ -40,6 +40,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             IQueryable<SubscriptionPlan> query = _unitOfWork.SubscriptionPlanRepo
                 .GetByConditionAsync(w =>
                     w.Status == PlanStatusTypesEnum.Current &&
+                    w.Type != SubscriptionPlanTypeEnum.Starter &&
                     w.IncludeTax == (tenant.Country == CountriesEnum.India)
                 )
                 .Include(plan => plan.CreatedByUser);
