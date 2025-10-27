@@ -74,7 +74,7 @@ public class TenantSubscriptionPurchaseDto
     /// <summary>
     /// Gets or sets a value indicating whether the subscription has recurring payments enabled.
     /// </summary>
-    public bool IsRecurringPayment { get; set; }
+    public bool IsRecurringPayment { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether the tenant wants to notify the customer.
