@@ -943,18 +943,54 @@ public class WebhookService : IWebhookService
             )
             .ToListAsync();
 
-        // If no negative credits are found, return maxCredits
+        // If no negative credits are found (i.e., availableCredits is empty or contains no negative balances), return the maxCredits value
         if (!availableCredits.Any())
         {
             _logger.LogInformation("No negative credits found for TenantId: {TenantId}.", tenantId);
             return maxCredits;
         }
 
-        // Calculate the total negative credit balance (we negate the sum to handle negative values correctly)
+        // Calculate the total of all available credits. 
+        // Since we need to handle negative values correctly, we negate the sum (in case of negative credits).
         double totalNegativeCredits = availableCredits.Sum(a => a.AvailableCredits);
 
-        // Ensure the totalCredits never goes below 0
+        // If no negative credits are found (i.e., availableCredits is empty or contains no negative balances), return the maxCredits value
+        if (!availableCredits.Any())
+        {
+            // Log the case where no negative credits were found for the specified TenantId.
+            _logger.LogInformation("No negative credits found for TenantId: {TenantId}. Returning maxCredits.", tenantId);
+            return maxCredits;
+        }
+
+        // Calculate the total of all available credits. Since we need to handle negative values correctly, we negate the sum (in case of negative credits).
         ulong totalCredits = (ulong)(maxCredits + totalNegativeCredits);
+
+        // Log the total negative credits calculated (or the sum of available credits)
+        _logger.LogInformation("Total negative credits for TenantId {TenantId}: {TotalNegativeCredits}.", tenantId, totalNegativeCredits);
+
+        // If there are available credits (even though we already checked earlier for emptiness), 
+        // set each credit's AvailableCredits to zero. This could indicate the credits have been "settled" or processed.
+        if (availableCredits.Any())
+        {
+            _logger.LogInformation("Resetting AvailableCredits for TenantId: {TenantId}.", tenantId);
+
+            // Reset the AvailableCredits to zero for all available credits.
+            availableCredits.ForEach(f =>
+            {
+                f.AvailableCredits = 0;
+            });
+
+            _logger.LogInformation("AvailableCredits have been reset to zero for all records for TenantId: {TenantId}.", tenantId);
+
+            // Update the tenant credit information in the database repository.
+            _unitOfWork.TenantCreditRepo.Update(availableCredits);
+
+            // Log the outcome of the save operation.
+            if (await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save updated credit information for TenantId: {TenantId}.", tenantId);
+            }
+        }
         return totalCredits;
     }
 }
