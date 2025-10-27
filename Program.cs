@@ -19,6 +19,8 @@ if (!builder.Environment.IsEnvironment("Localhost"))
     var DB_HOST = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_HOST"), message: "DB_HOST cannot be null");
     var DB_CREDENTIALS = Guard.Against.Null(Environment.GetEnvironmentVariable("DB_CREDENTIALS"), message: "DB_CREDENTIALS cannot be null");
     var JWT_SECRET_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"), message: "JWT_SECRET_KEY cannot be null");
+    var SMTP_API_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("SMTP_API_KEY"), message: "SMTP_API_KEY cannot be null");
+    var OPENAI_API_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("OPENAI_API_KEY"), message: "OPENAI_API_KEY cannot be null");
     var AES_ENCRYPTION_KEY = Guard.Against.Null(Environment.GetEnvironmentVariable("AES_ENCRYPTION_KEY"), message: "AES_ENCRYPTION_KEY cannot be null");
     var AES_INITIALIZATION_VECTOR = Guard.Against.Null(Environment.GetEnvironmentVariable("AES_INITIALIZATION_VECTOR"), message: "AES_INITIALIZATION_VECTOR cannot be null");
 
@@ -30,6 +32,8 @@ if (!builder.Environment.IsEnvironment("Localhost"))
         { "ConnectionStringConfig:TenantDb:Credentials", DB_CREDENTIALS },
         { "ConnectionStringConfig:TenantDb:Host", DB_HOST },
         { "JwtConfig:SecretKey", JWT_SECRET_KEY },
+        { "SmtpConfig:ApiKey", SMTP_API_KEY },
+        { "OpenAIConfig:OpenAIApiKey", OPENAI_API_KEY },
         { "AesEncryptionConfig:AES_ENCRYPTION_KEY", AES_ENCRYPTION_KEY },
         { "AesEncryptionConfig:AES_INITIALIZATION_VECTOR", AES_INITIALIZATION_VECTOR }
     }).Build();
