@@ -5,4 +5,5 @@ export const columnVisibilityState = {
   paidOn: true,
   amount: true,
   paymentStatus: true,
+  type: true,
 };
