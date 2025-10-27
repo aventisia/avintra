@@ -142,7 +142,17 @@ public class WebhookService : IWebhookService
                 break;
 
             case "subscription.charged":
-                await HandleSubscriptionCharged(json);
+                // Log the event of receiving a subscription charge webhook
+                _logger.LogInformation("Processing subscription charge event.");
+
+                // Invoke the method to handle the subscription status update to 'Active'
+                TenantSubscription? tenantSubscription = await HandleActivateSubscriptionStatus(json);
+
+                // Handle and save billing-related information from the webhook
+                await ProcessBillingDetail(json, tenantSubscription);
+
+                // Allocate credits based on the subscription details
+                await AssignCreditAsync(tenantSubscription);
                 break;
 
             case "subscription.cancelled":
@@ -240,19 +250,139 @@ public class WebhookService : IWebhookService
         }
     }
 
-    private async Task HandleSubscriptionCharged(JObject json)
+    // Method to handle the activation of a subscription based on the webhook data.
+    private async Task<TenantSubscription?> HandleActivateSubscriptionStatus(JObject json)
     {
-        // Log the incoming request for subscription charge event
-        _logger.LogInformation("Handling subscription charge event.");
+        // Initialize the tenant subscription variable, which will hold the subscription data.
+        TenantSubscription? tenantSubscription = null;
 
-        // Call the helper method to process the status update to 'Active'
-        TenantSubscription? tenantSubscription = await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Active);
+        // Extract the Razorpay subscription entity from the incoming JSON payload.
+        var razorpaySubscriptionEntity = json["payload"]?["subscription"]?["entity"];
 
-        // Process and persist billing-related details from the webhook
-        await ProcessBillingDetail(json, tenantSubscription);
+        // Extract Razorpay Subscription ID and Customer ID from the entity.
+        var razorpaySubscriptionId = razorpaySubscriptionEntity?["id"]?.ToString();
+        var razorpayCustomerId = razorpaySubscriptionEntity?["customer_id"]?.ToString();
 
-        // Assign credits based on subscription details
-        await AssignCreditAsync(tenantSubscription);
+        // If Razorpay Subscription ID is missing or invalid, log a warning and return early.
+        if (string.IsNullOrEmpty(razorpaySubscriptionId))
+        {
+            _logger.LogWarning("The Razorpay Subscription ID is missing or invalid in the payload.");
+            return null;
+        }
+
+        // Log the extracted Razorpay Subscription ID for tracking purposes.
+        _logger.LogInformation("Extracted Razorpay Subscription ID: {RazorpaySubscriptionId}", razorpaySubscriptionId);
+
+        try
+        {
+            // Fetch the tenant associated with the Razorpay Customer ID.
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(t => t.RazorpayCustomerId == razorpayCustomerId)
+                .FirstOrDefaultAsync();
+
+            // If no tenant is found, log a warning and return.
+            if (tenant == null)
+            {
+                _logger.LogWarning("No tenant found for Razorpay Customer ID: {RazorpayCustomerId}.", razorpayCustomerId);
+                return null;
+            }
+
+            // Log tenant information to verify we have found the correct tenant.
+            _logger.LogInformation("Found tenant with Razorpay Customer ID: {RazorpayCustomerId}", razorpayCustomerId);
+
+            // Retrieve the current active subscription for the tenant.
+            var currentTenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(s => s.TenantId == tenant.Id && s.IsActive)
+                .Include(i => i.Plan)
+                .FirstOrDefaultAsync();
+
+            // If no active subscription is found, log a warning and deactivate it.
+            if (currentTenantSubscription == null)
+            {
+                _logger.LogWarning("No active subscription found for Razorpay Subscription ID: {RazorpaySubscriptionId}.", razorpaySubscriptionId);
+
+                // Mark subscription as inactive (deactivation step).
+                currentTenantSubscription.IsActive = false;
+                currentTenantSubscription.LastModifiedByUserId = tenant.LastModifiedByUserId;
+
+                // Update the subscription status to inactive in the repository.
+                _unitOfWork.TenantSubscriptionRepo.Update(currentTenantSubscription);
+                _logger.LogInformation("Deactivated subscription with Razorpay Subscription ID: {RazorpaySubscriptionId}.", razorpaySubscriptionId);
+
+                // Handle credits for the Starter plan if applicable.
+                if (currentTenantSubscription.Plan.Type == SubscriptionPlanTypeEnum.Starter)
+                {
+                    var tenantCredit = await _unitOfWork.TenantCreditRepo
+                        .GetByConditionAsync(c => c.TenantId == tenant.Id && c.SubscriptionId == currentTenantSubscription.Id)
+                        .FirstOrDefaultAsync();
+
+                    // If credits exist, reset them to 0.
+                    if (tenantCredit != null)
+                    {
+                        tenantCredit.AvailableCredits = 0;
+                        tenantCredit.LastModifiedByUserId = tenant.LastModifiedByUserId;
+                        _unitOfWork.TenantCreditRepo.Update(tenantCredit);
+                        _logger.LogInformation("Reset credits for Tenant ID: {TenantId}, Subscription ID: {SubscriptionId}.", tenant.Id, currentTenantSubscription.Id);
+                    }
+                }
+            }
+
+            // Retrieve the subscription corresponding to the Razorpay Subscription ID.
+            tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(s => s.TenantId == tenant.Id && s.RazorpaySubscriptionId == razorpaySubscriptionId)
+                .Include(i => i.Plan)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            // If no matching subscription is found, log a warning and return null.
+            if (tenantSubscription == null)
+            {
+                _logger.LogWarning("No matching active subscription found for Razorpay Subscription ID: {RazorpaySubscriptionId}.", razorpaySubscriptionId);
+                return null;
+            }
+
+            // Log the current status of the subscription for debugging purposes.
+            _logger.LogInformation("Found subscription with Razorpay Subscription ID: {RazorpaySubscriptionId}, Current Status: {CurrentStatus}", razorpaySubscriptionId, tenantSubscription.Status);
+
+            // Extract subscription start and end dates from the Razorpay subscription entity.
+            DateTimeOffset? subscriptionStartDate = razorpaySubscriptionEntity["current_start"] != null
+                ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(razorpaySubscriptionEntity["current_start"])).ToUniversalTime()
+                : (DateTimeOffset?)null;
+
+            DateTimeOffset? subscriptionEndDate = razorpaySubscriptionEntity["current_end"] != null
+                ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(razorpaySubscriptionEntity["current_end"])).ToUniversalTime()
+                : (DateTimeOffset?)null;
+
+            _logger.LogInformation("Subscription Start Date: {StartDate}, End Date: {EndDate}", subscriptionStartDate, subscriptionEndDate);
+
+            // Calculate the next billing date based on the subscription's end date, or default to the frequency (monthly or yearly).
+            var nextBillingDate = subscriptionEndDate ?? (tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
+                ? DateTimeOffset.UtcNow.AddMonths(1)
+                : DateTimeOffset.UtcNow.AddYears(1));
+
+            // Update subscription details including the next billing date and status.
+            tenantSubscription.NextBillingDate = nextBillingDate;
+            tenantSubscription.Status = SubscriptionStatusTypesEnum.Active;
+            tenantSubscription.LastModifiedByUserId = tenant.LastModifiedByUserId;
+
+            _logger.LogInformation("Updated Subscription with Razorpay Subscription ID: {RazorpaySubscriptionId} to Active status. Next Billing Date: {NextBillingDate}", razorpaySubscriptionId, nextBillingDate);
+
+            // Update the subscription entity in the repository.
+            _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
+
+            // Attempt to save changes to the database, and log an error if it fails.
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save the subscription status update for Razorpay Subscription ID: {RazorpaySubscriptionId}.", razorpaySubscriptionId);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"An error occurred while processing the subscription activation for Razorpay Subscription ID: {razorpaySubscriptionId}. Error: {ex.Message}");
+        }
+
+        // Return the updated tenant subscription, or null if no update was made.
+        return tenantSubscription;
     }
 
     private async Task<TenantSubscription?> ProcessSubscriptionStatusUpdate(JObject json, SubscriptionStatusTypesEnum targetStatus)
@@ -266,6 +396,7 @@ public class WebhookService : IWebhookService
 
         // Extract the Razorpay Subscription ID directly from the "entity" object.
         var razorpaySubscriptionId = razorpaySubscriptionEntity["id"]?.ToString();
+        var razorpayCustomerId = razorpaySubscriptionEntity?["customer_id"]?.ToString();
 
         // Return early if the Razorpay Subscription ID is missing or invalid in the payload.
         if (string.IsNullOrEmpty(razorpaySubscriptionId))
@@ -280,10 +411,21 @@ public class WebhookService : IWebhookService
 
         try
         {
+            // Fetch the tenant associated with the Razorpay Customer ID.
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(t => t.RazorpayCustomerId == razorpayCustomerId)
+                .FirstOrDefaultAsync();
+
+            // If no tenant is found, log a warning and return.
+            if (tenant == null)
+            {
+                _logger.LogWarning("No tenant found for Razorpay Customer ID: {RazorpayCustomerId}.", razorpayCustomerId);
+                return null;
+            }
             // Retrieve the active subscription from the database using the Razorpay Subscription ID.
             // The query filters for subscriptions that match the Razorpay ID and are marked as active.
             tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(w => w.RazorpaySubscriptionId == razorpaySubscriptionId && w.IsActive)
+                .GetByConditionAsync(w => w.TenantId == tenant.Id && w.RazorpaySubscriptionId == razorpaySubscriptionId)
                 .Include(i => i.Plan)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
@@ -295,42 +437,7 @@ public class WebhookService : IWebhookService
                 return tenantSubscription;
             }
 
-            // Log the current status of the found subscription for debugging purposes.
-            _logger.LogInformation("Found subscription with ID {RazorpaySubscriptionId}, Status: {CurrentStatus}", razorpaySubscriptionId, tenantSubscription.Status);
-
-            switch (targetStatus)
-            {
-                case SubscriptionStatusTypesEnum.Active:
-                    // Extract 'current_start' from the Razorpay subscription entity and convert it to DateTimeOffset in UTC or return null.
-                    DateTimeOffset? subscriptionStartDate = razorpaySubscriptionEntity["current_start"] != null
-                        ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(razorpaySubscriptionEntity["current_start"])).ToUniversalTime()
-                        : (DateTimeOffset?)null;
-
-                    // Extract 'current_end' from the Razorpay subscription entity and convert it to DateTimeOffset in UTC or return null.
-                    DateTimeOffset? subscriptionEndDate = razorpaySubscriptionEntity["current_end"] != null
-                        ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(razorpaySubscriptionEntity["current_end"])).ToUniversalTime()
-                        : (DateTimeOffset?)null;
-
-                    // Set calculatedNextBillingDate to subscriptionEndDate initially
-                    var calculatedNextBillingDate = subscriptionEndDate;
-
-                    // If 'current_end' (subscriptionEndDate) is null, calculate the next billing date based on the subscription frequency (Monthly or Yearly)
-                    if (calculatedNextBillingDate == null)
-                    {
-                        calculatedNextBillingDate = tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
-                            ? DateTimeOffset.UtcNow.AddMonths(1)
-                            : DateTimeOffset.UtcNow.AddYears(1);
-                    }
-
-                    tenantSubscription.NextBillingDate = calculatedNextBillingDate;
-                    break;
-
-                // You can add more cases here for other statuses if needed.
-                default:
-                    // For any other status, update the subscription's status to the target status.
-                    tenantSubscription.Status = targetStatus;
-                    break;
-            }
+            tenantSubscription.Status = targetStatus;
 
             // Log the action of updating the subscription status for tracking purposes.
             _logger.LogInformation("Updating subscription with ID {RazorpaySubscriptionId} to '{TargetStatus}' status.", razorpaySubscriptionId, targetStatus);
@@ -339,7 +446,6 @@ public class WebhookService : IWebhookService
             _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
 
             // Attempt to persist the changes to the database.
-            // Log an error if saving the changes fails.
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Failed to save the subscription status update for Subscription ID {RazorpaySubscriptionId}.", razorpaySubscriptionId);
