@@ -7,12 +7,14 @@ public class VersionResourceService : IVersionResourceService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly FileUploadConfig _fileUploadConfig;
+    private readonly ExtractViaLLMConfig _extractViaLLMConfig;
     private readonly IWebHostEnvironment _webHostEnvironment;
 
     #endregion
     public VersionResourceService(
         ILogger<VersionResourceService> logger,
         FileUploadConfig fileUploadConfig,
+        ExtractViaLLMConfig extractViaLLMConfig,
         IWebHostEnvironment webHostEnvironment,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor)
@@ -22,6 +24,7 @@ public class VersionResourceService : IVersionResourceService
 
         _logger = logger;
         _fileUploadConfig = fileUploadConfig;
+        _extractViaLLMConfig = extractViaLLMConfig;
         _webHostEnvironment = webHostEnvironment;
         _unitOfWork = unitOfWork;
 
@@ -95,6 +98,25 @@ public class VersionResourceService : IVersionResourceService
             {
                 // Upload the current file and get the result
                 var uploadResult = await UploadFilesAsync(new List<IFormFile> { formFile }, uploadVersionResourceDto.Purpose);
+
+                // Task: Convert .docx, .rtf, .odt, .tif, .tiff file formats ---> pdf
+                if (uploadResult.Data != null && uploadResult.Data.Any())
+                {
+                    var uploadedFile = uploadResult.Data.First();
+                    var extension = Path.GetExtension(uploadedFile.Name).ToLower();
+
+                    if (extension == ".docx" || extension == ".rtf" || extension == ".odt" || extension == ".tif" || extension == ".tiff")
+                    {
+                        // Step 1: Pass the file full path to llmpipeline api for conversion
+                        var convertedFileDetail = await ConvertFileToPDF(uploadedFile.Path);
+
+                        // Step 2: If conversion is successful, get the new file path and update the uploadResult accordingly
+                        if (convertedFileDetail != null)
+                        {
+                            uploadResult.Data = new List<FileDetailDto> { convertedFileDetail };
+                        }
+                    }
+                }
 
                 // Validate upload result
                 if (uploadResult.Data == null || !uploadResult.Data.Any())
@@ -856,6 +878,52 @@ public class VersionResourceService : IVersionResourceService
             // Log the exception with context
             _logger.LogError(ex, "DeleteFileByURL: An unexpected error occurred while attempting to delete the file. URL: {Url}", url);
             return false;
+        }
+    }
+
+    // Helper: Convert file to pdf using llmpipeline api
+    public async Task<FileDetailDto?> ConvertFileToPDF(string filePath)
+    {
+        try
+        {
+            // Remove leading "/files" if present. TODO: This /files/ seems unnecessary in the local file path when we upload a file. need to check and change the logic
+            if (filePath.StartsWith("/files/"))
+                filePath = filePath.Substring("/files/".Length);
+
+            // Combine with local storage path
+            filePath = Path.Combine(_fileUploadConfig.UploadDirectory, filePath.TrimStart('/'));
+            
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("API_KEY", _extractViaLLMConfig.LLMPipelineAPIKey);
+
+                var requestDto = new
+                {
+                    file_path = filePath
+                };
+
+                var jsonRequest = System.Text.Json.JsonSerializer.Serialize(requestDto);
+                var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                _logger.LogInformation("Requesting file conversion to PDF for file path: {filePath}", filePath);
+                HttpResponseMessage response = await client.PostAsync($"{_extractViaLLMConfig.LLMPipelineAPI}/convert-to-pdf", content);
+
+                // If the response is unsuccessful, log the error and return null
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogError("Failed to convert file to PDF. StatusCode: {statusCode}, FilePath: {filePath}", response.StatusCode, filePath);
+                    return null;
+                }
+
+                var fileDetailDto = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation("Successfully converted file to PDF for file path: {filePath}", filePath);
+                return System.Text.Json.JsonSerializer.Deserialize<FileDetailDto>(fileDetailDto);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("An error occurred while converting file to PDF: {error}", ex.Message);
+            return null;
         }
     }
 }
