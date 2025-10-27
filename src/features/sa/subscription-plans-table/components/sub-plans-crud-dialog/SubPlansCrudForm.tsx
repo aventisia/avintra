@@ -1,9 +1,7 @@
 import { SubmitButton } from "@aventisia/ui/buttons";
 import {
   AutherCard,
-  CheckboxField,
   Form,
-  FormLabel,
   InputField,
   SelectField,
   SwitchField,
@@ -112,13 +110,13 @@ export const SubPlansCrudForm = () => {
       {/* Users */}
       <InputField {...maxUsersProps} />
 
-      <CheckboxField
+      <SwitchField
         name="isRazorpay"
-        className="mt-1"
-        label={
-          <FormLabel className="mt-0.5 text-sm">Create Razorpay Plan</FormLabel>
-        }
+        description=""
+        label="Create Razorpay Plan"
       />
+
+      <SwitchField name="isRazorpay" description="" label="Include Tax" />
 
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}

@@ -33,6 +33,8 @@ export interface SubPlansTableDto {
   status: PlanStatusEnum;
 
   isRazorpay?: boolean;
+
+  includeTax?: boolean;
   /**
    * Gets or sets the currency in which the plan is priced.
    */
