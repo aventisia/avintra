@@ -12,6 +12,7 @@ import {
   useCheckForUpdate,
   useRedirectOnRelaunch,
 } from "@/features/tauri-updater";
+import { useFetchPaymentStatus } from "@/features/tenant/hooks/useFetchPaymentStatus";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 
 import AppBanner from "./AppBanner";
@@ -36,6 +37,8 @@ export const AppLayout = () => {
 
   // Check for new version updates if app is inside the Tauri
   useCheckForUpdate();
+
+  useFetchPaymentStatus();
 
   // Validate user session
   const { isPending, userSession } = useValidateUserSession();

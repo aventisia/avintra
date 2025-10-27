@@ -7,7 +7,6 @@ import { useShallow } from "zustand/react/shallow";
 
 import { currencySymbols } from "@/features/tenant/constants/currency-symbol-map";
 import { useFetchCurrentPlan } from "@/features/tenant/hooks/useFetchCurrentPlan";
-import { useFetchPaymentStatus } from "@/features/tenant/hooks/useFetchPaymentStatus";
 import { useCancelPlanDialogStore } from "@/features/tenant/store/overview/cancel-plan-dialog-store";
 import { useUpgradePlanDialogStore } from "@/features/tenant/store/overview/upgrade-plan-dialog.store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
@@ -37,9 +36,7 @@ const Overview = () => {
     paymentId,
   } = useUpgradePlanDialogStore();
 
-  const { paymentCompleted } = useFetchPaymentStatus(paymentId);
-
-  const isPaymentProcessing = paymentId !== "" && !paymentCompleted;
+  const isPaymentProcessing = paymentId !== "";
 
   const { data, isLoading } = useFetchCurrentPlan();
 

@@ -1,8 +1,10 @@
 import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { getPaymentStatus } from "../apis/payment-status-apis";
+import { useUpgradePlanDialogStore } from "../store/overview/upgrade-plan-dialog.store";
 
 /**
  * Custom React hook to track and fetch Razorpay payment status using React Query.
@@ -17,7 +19,7 @@ import { getPaymentStatus } from "../apis/payment-status-apis";
  * - Stops checking once all statuses are completed.
  * - Displays a toast notification on any error during fetching.
  *
- * @param paymentId - The unique Razorpay payment ID to track.
+ * - The unique Razorpay payment ID to track.
  *
  * @returns An object containing:
  * - `data`: The latest {@link PaymentStatusDto} object with current payment status.
@@ -25,7 +27,11 @@ import { getPaymentStatus } from "../apis/payment-status-apis";
  * - `isLoading`: Whether the initial load is still in progress.
  * - `refetch`: Function to manually trigger a re-check.
  */
-export const useFetchPaymentStatus = (paymentId: string) => {
+export const useFetchPaymentStatus = () => {
+  const { paymentId } = useUpgradePlanDialogStore(
+    useShallow((state) => ({ paymentId: state.paymentId })),
+  );
+
   // State to manage whether checking should continue
   const [shouldCheck, setShouldCheck] = useState(true);
 
