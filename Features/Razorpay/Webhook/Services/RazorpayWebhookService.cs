@@ -572,15 +572,18 @@ public class WebhookService : IWebhookService
             return;
         }
 
-        // Create the TenantCredit object with relevant details
+        // Get the total credits available for the tenant
+        ulong totalCredits = await GetCalculateTotalCreditsForTenantAsync(tenantSubscription.TenantId, tenantSubscription.MaxCredits);
+
+        // Create a new TenantCredit entry for the tenant
         var tenantCredit = new TenantCredit()
         {
             SubscriptionId = tenantSubscription.Id,
             CreditedOn = DateTimeOffset.UtcNow,
             ExpiredOn = tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
-                ? DateTimeOffset.UtcNow.AddMonths(1).Date
-                : DateTimeOffset.UtcNow.AddYears(1).Date,
-            AvailableCredits = tenantSubscription.MaxCredits,
+                        ? DateTimeOffset.UtcNow.AddMonths(1).Date
+                        : DateTimeOffset.UtcNow.AddYears(1).Date,
+            AvailableCredits = totalCredits,
             Type = CreditTypesEnum.Subscription,
             TenantId = tenantSubscription.TenantId,
             CreatedByUserId = tenantSubscription.CreatedByUserId,
@@ -795,9 +798,13 @@ public class WebhookService : IWebhookService
                 _logger.LogError("Failed to update billing detail for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
             }
 
+            // Get the total credits available for the tenant
+            ulong totalCredits = await GetCalculateTotalCreditsForTenantAsync(billingHistory.TenantId, (ulong)billingHistory.Quantity);
+
+            // Create a new TenantCredit entry for the tenant
             var tenantCredit = new TenantCredit()
             {
-                AvailableCredits = billingHistory.Quantity,
+                AvailableCredits = totalCredits,
                 Type = CreditTypesEnum.TopUp,
                 CreditedOn = DateTimeOffset.UtcNow,
                 ExpiredOn = DateTimeOffset.UtcNow.AddYears(1).Date,
@@ -924,5 +931,30 @@ public class WebhookService : IWebhookService
             // Log any exceptions that occur during the process
             _logger.LogError(ex, "An error occurred while processing billing details for Razorpay Subscription ID {SubscriptionId}", subscriptionId);
         }
+    }
+
+    public async Task<ulong> GetCalculateTotalCreditsForTenantAsync(Guid tenantId, ulong maxCredits)
+    {
+        // Query available credits for the tenant with negative available credits
+        var availableCredits = await _unitOfWork.TenantCreditRepo
+            .GetByConditionAsync(w =>
+                w.TenantId == tenantId &&
+                w.AvailableCredits < 0
+            )
+            .ToListAsync();
+
+        // If no negative credits are found, return maxCredits
+        if (!availableCredits.Any())
+        {
+            _logger.LogInformation("No negative credits found for TenantId: {TenantId}.", tenantId);
+            return maxCredits;
+        }
+
+        // Calculate the total negative credit balance (we negate the sum to handle negative values correctly)
+        double totalNegativeCredits = availableCredits.Sum(a => a.AvailableCredits);
+
+        // Ensure the totalCredits never goes below 0
+        ulong totalCredits = (ulong)(maxCredits + totalNegativeCredits);
+        return totalCredits;
     }
 }
