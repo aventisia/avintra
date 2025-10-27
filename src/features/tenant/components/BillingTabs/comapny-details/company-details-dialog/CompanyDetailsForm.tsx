@@ -74,7 +74,7 @@ const CompanyDetailsForm = () => {
           </div>
           <div className="grid grid-cols-2 items-center gap-4">
             <InputField {...stateProps} />
-            <SelectField {...countryProps} />
+            <SelectField {...countryProps} disabled />
           </div>
           {applyGST && <SwitchField {...isWillingToFileGstProps} />}
           {/* Additional validation field */}
