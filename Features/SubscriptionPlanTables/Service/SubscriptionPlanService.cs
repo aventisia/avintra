@@ -219,7 +219,8 @@ public class SubscriptionPlanService : ISubscriptionPlanService
                     w.Status == PlanStatusTypesEnum.Current &&
                     w.Type == subscriptionPlanDto.Type &&
                     w.Frequency == subscriptionPlanDto.Frequency &&
-                    w.Currency == subscriptionPlanDto.Currency
+                    w.Currency == subscriptionPlanDto.Currency &&
+                    w.IncludeTax == subscriptionPlanDto.IncludeTax
                 )
                 .SingleOrDefaultAsync();
 
@@ -373,12 +374,13 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             // Check for duplicate name (excluding itself)
             var duplicatePlan = await _unitOfWork.SubscriptionPlanRepo
                 .GetByConditionAsync(w =>
+                    w.Id != subscriptionPlanDto.Id &&
                     w.Name.ToLower() == subscriptionPlanDto.Name.ToLower() &&
                     w.Currency == subscriptionPlanDto.Currency &&
                     w.Frequency == subscriptionPlanDto.Frequency &&
                     w.Type == subscriptionPlanDto.Type &&
                     w.Status == subscriptionPlanDto.Status &&
-                    w.Id != subscriptionPlanDto.Id
+                    w.IncludeTax == subscriptionPlanDto.IncludeTax
                 )
                 .SingleOrDefaultAsync();
 
