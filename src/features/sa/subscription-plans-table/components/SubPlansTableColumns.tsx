@@ -91,6 +91,21 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
     ),
   },
   {
+    accessorKey: "includeTax",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title="Tax Included"
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("includeTax") ? "Yes" : "No"}
+      </div>
+    ),
+  },
+  {
     accessorKey: "maxCredits",
     header: ({ column }) => (
       <DTColumnHeader
