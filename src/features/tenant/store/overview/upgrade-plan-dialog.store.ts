@@ -24,17 +24,17 @@ interface UpgradePlanDialogActions {
   setOpen: (open: boolean) => void;
   setChosenPlan: (plan: PlanFilter | "Credits" | null) => void;
 
-  /** Set the form data for creating an account */
+  /** Set the selected plan id form choose plan */
   setPlanId: (planId: string) => void;
 
-  /** Set the form data for creating an account */
+  /** Set the payment id received on Success of razorpay payment */
   setPaymentId: (paymentId: string) => void;
 
-  /** Set the form data for creating an account */
+  /** Set the billing country */
   setBillingCountry: (billingCountry: string) => void;
 
   /** Set the form data for creating an account */
-  setPlanType: (planFrequency: PlanFrequency) => void;
+  setPlanFrequency: (planFrequency: PlanFrequency) => void;
 
   /** Set the currency */
   setCurrency: (currency: string) => void;
@@ -63,7 +63,7 @@ export const useUpgradePlanDialogStore = create<
   currency: "USD",
 
   setCurrency: (currency) => set({ currency }),
-  setPlanType: (planFrequency) => set({ planFrequency }),
+  setPlanFrequency: (planFrequency) => set({ planFrequency }),
   setBillingCountry: (billingCountry) => set({ billingCountry }),
   setPlanId: (planId) => set({ planId }),
   setPaymentId: (paymentId) => set({ paymentId }),

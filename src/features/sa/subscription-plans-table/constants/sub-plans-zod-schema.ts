@@ -31,6 +31,7 @@ export const subPlansZodSchema = z.object({
   type: z.string(),
   status: z.string(),
   isRazorpay: z.boolean().optional(),
+  includeTax: z.boolean().optional(),
   price: numberTextFieldSchema.refine((num) => num >= 0, {
     message: "Value must be greater than or equal to 0",
   }),
