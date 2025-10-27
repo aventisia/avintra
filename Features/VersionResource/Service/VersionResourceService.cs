@@ -908,8 +908,8 @@ public class VersionResourceService : IVersionResourceService
                 }
 
                 var fileDetailDto = await response.Content.ReadAsStringAsync();
-                _logger.LogInformation("Successfully converted file to PDF for file path: {filePath}", filePath);
-                return System.Text.Json.JsonSerializer.Deserialize<FileDetailDto>(fileDetailDto);
+                _logger.LogInformation("Successfully converted file to PDF for file: {fileDetailDto}", fileDetailDto);
+                return JsonSerializer.Deserialize<FileDetailDto>(fileDetailDto, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
         }
         catch (Exception ex)
