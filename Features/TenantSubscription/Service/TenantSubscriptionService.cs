@@ -1263,12 +1263,14 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             {
                 _logger.LogInformation("Successfully created Razorpay subscription with ID: {SubscriptionId} for TenantId: {TenantId}",
                     createResponse.Data.Id, tenant.Id);
+                serviceResponse.Data = createResponse.Data;
             }
             else
             {
                 _logger.LogError("Failed to create Razorpay subscription for TenantId: {TenantId}. Message: {Message}",
                     tenant.Id, createResponse.Message);
             }
+
         }
         catch (Exception ex)
         {
