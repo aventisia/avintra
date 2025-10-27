@@ -41,7 +41,6 @@ public class SubscriptionService : ISubscriptionService
                 { "plan_id", subscriptionRequestDto.PlanId },
                 { "total_count", subscriptionRequestDto.TotalCount },
                 { "customer_notify", subscriptionRequestDto.CustomerNotify },
-                { "start_at", DateTimeOffset.UtcNow.AddMinutes(30).ToUnixTimeSeconds() }
             };
 
             // Check if the quantity is greater than 1 before adding to the subscription request.
