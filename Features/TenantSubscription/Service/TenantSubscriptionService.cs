@@ -417,7 +417,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
                 tenantSubscription.Frequency = tenantSubscriptionPurchaseDto.Frequency;
                 tenantSubscription.Status = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? SubscriptionStatusTypesEnum.Active : SubscriptionStatusTypesEnum.Initiated;
-                tenantSubscription.IsActive = true;
+                tenantSubscription.IsActive = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? true : false;
                 tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
                 tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
                 tenantSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
@@ -807,7 +807,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             tenantSubscriptionPurchaseDto = TrimDtoStringPropsUtil.TrimDtoStringProps(tenantSubscriptionPurchaseDto);
 
             // Fetch existing tenant subscription (if any), including plan and creator information
-            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+            var exitingtSubscription = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
                     w.IsActive &&
                     w.TenantId == _tenantId
@@ -816,42 +816,27 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 .Include(i => i.CreatedByUser)
                 .SingleOrDefaultAsync();
 
-            if (tenantSubscription != null)
+            if (exitingtSubscription != null)
             {
                 // Early return if the plan IDs are identical
-                if (tenantSubscription.PlanId == tenantSubscriptionPurchaseDto.PlanId)
+                if (exitingtSubscription.PlanId == tenantSubscriptionPurchaseDto.PlanId)
                 {
-                    serviceResponse.Data = tenantSubscription.Adapt<TenantSubscriptionDto>();
+                    serviceResponse.Data = exitingtSubscription.Adapt<TenantSubscriptionDto>();
                     serviceResponse.StatusCode = 200;
                     serviceResponse.Message = "No changes required. The subscription plan is already up to date.";
                     return serviceResponse;
                 }
-
-                // Existing subscription found — update plan
-                tenantSubscription.IsActive = false;
-                tenantSubscription.LastModifiedByUserId = _userId;
-
-                _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
-
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Failed to update tenant subscription. TenantId: {TenantId}, PlanId: {PlanId}", _tenantId, tenantSubscriptionPurchaseDto.PlanId);
-                    return serviceResponse;
-                }
-
-                _logger.LogInformation("Tenant subscription updated. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, tenantSubscription.Id);
             }
 
-            var razorpaSubscriptionId = tenantSubscription.RazorpaySubscriptionId;
-
             // No existing subscription — create new
-            tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
+            var tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
             tenantSubscription.PlanId = subscriptionPlan.Id;
             tenantSubscription.TenantId = _tenantId;
-            tenantSubscription.RazorpaySubscriptionId = razorpaSubscriptionId;
-            tenantSubscription.IsActive = true;
+            tenantSubscription.RazorpaySubscriptionId = exitingtSubscription?.RazorpaySubscriptionId;
+            tenantSubscription.IsActive = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? true : false;
             tenantSubscription.Status = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? SubscriptionStatusTypesEnum.Active : SubscriptionStatusTypesEnum.Pending;
             tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
+            tenantSubscription.IsRecurringPayment = tenantSubscriptionPurchaseDto.IsRecurringPayment;
             tenantSubscription.CreatedByUserId = _userId;
             tenantSubscription.LastModifiedByUserId = _userId;
             tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
@@ -860,8 +845,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             tenantSubscription.MaxUsers = subscriptionPlan.MaxUsers;
             tenantSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
             tenantSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
-
-            string? paymentUrl = null;
 
             // Only create a Razorpay subscription if it doesn't already exist and the plan is not 'Starter'
             if (!string.IsNullOrEmpty(subscriptionPlan.RazorpayPlanId) &&
@@ -878,8 +861,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 if (razorpaySubscriptionResult?.Data != null || razorpaySubscriptionResult.StatusCode == 200)
                 {
                     tenantSubscription.RazorpaySubscriptionId = razorpaySubscriptionResult.Data.Id;
-                    tenantSubscription.IsRecurringPayment = tenantSubscriptionPurchaseDto.IsRecurringPayment;
-                    paymentUrl = razorpaySubscriptionResult.Data.ShortUrl;
                 }
                 else
                 {
@@ -955,10 +936,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Map the tenant subscription entity to a DTO for response
             var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
-
-            // Attach the Razorpay payment URL to the DTO for client-side use
-            tenantSubscriptionDto.RazorpayPaymentUrl = paymentUrl;
-
             // Set the service response with the DTO and success metadata
             serviceResponse.Data = tenantSubscriptionDto;
             serviceResponse.StatusCode = 200;
@@ -1246,34 +1223,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     _logger.LogInformation("Assigned RazorpayCustomerId '{CustomerId}' to TenantId: {TenantId}",
                         tenant.RazorpayCustomerId, tenant.Id);
                 }
-
-                // Prepare the subscription creation request with appropriate details
-                var createRequest = new SubscriptionRequestDto
-                {
-                    PlanId = subscriptionPlan.RazorpayPlanId,
-                    Quantity = 1,
-                    CustomerId = tenant.RazorpayCustomerId,
-                    TotalCount = totalCount,
-                    CustomerNotify = tenantSubscriptionPurchaseDto.IsNotifyCustomer
-                };
-
-                // Call Razorpay API to create the subscription
-                var createResponse = await _subscriptionService.CreateSubscriptionAsync(createRequest);
-
-                // Log success or failure of subscription creation attempt
-                if (createResponse.Data != null && createResponse.StatusCode == 200)
-                {
-                    _logger.LogInformation("Successfully created Razorpay subscription with ID: {SubscriptionId} for TenantId: {TenantId}",
-                        createResponse.Data.Id, tenant.Id);
-                }
-                else
-                {
-                    _logger.LogError("Failed to create Razorpay subscription for TenantId: {TenantId}. Message: {Message}",
-                        tenant.Id, createResponse.Message);
-                }
-
-                // Return the subscription creation response to caller
-                return createResponse;
             }
             else
             {
@@ -1281,17 +1230,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 _logger.LogInformation("Existing Razorpay subscription found (ID: {SubscriptionId}) for TenantId: {TenantId}. Updating subscription.",
                     tenantSubscription.RazorpaySubscriptionId, tenant.Id);
 
-                // Prepare the subscription update request with new details
-                var updateRequest = new UpdateSubscriptionRequestDto
-                {
-                    PlanId = subscriptionPlan.RazorpayPlanId,
-                    Quantity = 1,
-                    RemainingCount = totalCount,
-                    CustomerNotify = tenantSubscriptionPurchaseDto.IsNotifyCustomer
-                };
-
                 // Call Razorpay API to update the subscription
-                var updateResponse = await _subscriptionService.UpdateSubscriptionAsync(tenantSubscription.RazorpaySubscriptionId, updateRequest);
+                var updateResponse = await _subscriptionService.CancelSubscriptionAsync(tenantSubscription.RazorpaySubscriptionId, SubscriptionActionTimingEnum.Now);
 
                 // Log success or failure of subscription update attempt
                 if (updateResponse.Data != null && updateResponse.StatusCode == 200)
@@ -1304,9 +1244,30 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     _logger.LogError("Failed to update Razorpay subscription with ID: {SubscriptionId}. Message: {Message}",
                         tenantSubscription.RazorpaySubscriptionId, updateResponse.Message);
                 }
+            }
+            // Prepare the subscription creation request with appropriate details
+            var createRequest = new SubscriptionRequestDto
+            {
+                PlanId = subscriptionPlan.RazorpayPlanId,
+                Quantity = 1,
+                CustomerId = tenant.RazorpayCustomerId,
+                TotalCount = totalCount,
+                CustomerNotify = tenantSubscriptionPurchaseDto.IsNotifyCustomer
+            };
 
-                // Return the subscription update response to caller
-                return updateResponse;
+            // Call Razorpay API to create the subscription
+            var createResponse = await _subscriptionService.CreateSubscriptionAsync(createRequest);
+
+            // Log success or failure of subscription creation attempt
+            if (createResponse.Data != null && createResponse.StatusCode == 200)
+            {
+                _logger.LogInformation("Successfully created Razorpay subscription with ID: {SubscriptionId} for TenantId: {TenantId}",
+                    createResponse.Data.Id, tenant.Id);
+            }
+            else
+            {
+                _logger.LogError("Failed to create Razorpay subscription for TenantId: {TenantId}. Message: {Message}",
+                    tenant.Id, createResponse.Message);
             }
         }
         catch (Exception ex)
