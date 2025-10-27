@@ -62,7 +62,7 @@ export interface PaymentMethodDTO {
  */
 export enum PaymentMethodTypesEnum {
   Card = "Card",
-  UPI = "UPI",
+  Upi = "Upi",
   Wallet = "Wallet",
 }
 
