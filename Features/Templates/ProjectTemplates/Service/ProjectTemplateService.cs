@@ -1119,8 +1119,8 @@ namespace WorkspaceAPIs.Services
             }
 
             var prompt = promptTemplate.Replace("{{TEMPLATE_NODES}}", genereateProjectInstructionRequestDto.Payload);
-            var model = "gemma";
-            var temperature = 0.3;
+            var model = "gpt-4o-mini";
+            var temperature = 1;
 
             try
             {
