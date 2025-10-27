@@ -40,7 +40,8 @@ public class SubscriptionService : ISubscriptionService
             {
                 { "plan_id", subscriptionRequestDto.PlanId },
                 { "total_count", subscriptionRequestDto.TotalCount },
-                { "customer_notify", subscriptionRequestDto.CustomerNotify }
+                { "customer_notify", subscriptionRequestDto.CustomerNotify },
+                { "start_at", DateTimeOffset.UtcNow.AddMinutes(30).ToUnixTimeSeconds() }
             };
 
             // Check if the quantity is greater than 1 before adding to the subscription request.
@@ -180,7 +181,7 @@ public class SubscriptionService : ISubscriptionService
             // Log the incoming update request
             _logger.LogInformation("Updating subscription with ID: {SubscriptionId}, New PlanId: {PlanId}, Quantity: {Quantity}",
                 subscriptionId, request.PlanId, request.Quantity);
-            
+
             // Prepare the update request dictionary
             var updateRequest = new Dictionary<string, object>();
 
