@@ -19,6 +19,7 @@ public class TenantAccountMappingProfile : IRegister
         // Used when updating billing details (e.g., name).
         config.NewConfig<TenantOrganizationBillingDto, BillingDetail>()
             .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.Country)
             .IgnoreNullValues(true);
     }
 }
