@@ -36,7 +36,7 @@ import { useShallow } from "zustand/react/shallow";
 import { FileViewerDto } from "../../multi-format-viewer/dtos/file-list-dtos";
 import { useDeleteVersionResource } from "../hooks/useDeleteVersionResource";
 import { useToggleFileUploadDialogStore } from "../stores/toggle-file-uploader-dialog-store";
-import pdfIcon from "/pdf-svgrepo-com.svg";
+//import pdfIcon from "/pdf-svgrepo-com.svg";
 
 interface PdfPaginatedSelectProps {
   pdfList: FileViewerDto[];
@@ -135,8 +135,8 @@ const PaginatedSelect: React.FC<PdfPaginatedSelectProps> = ({
   // Render file icon based on extension
   const renderFileIcon = (extension: string) => {
     switch (extension.toUpperCase()) {
-      case "PDF":
-        return <img src={pdfIcon} alt="pdf icon" className="h-4 w-4" />;
+      // case "PDF":
+      //   return <img src={pdfIcon} alt="pdf icon" className="h-4 w-4" />;
       case "JPEG":
       case "JPG":
       case "PNG":
