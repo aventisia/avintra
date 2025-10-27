@@ -5,7 +5,7 @@ from .kokoro_tts_service import synthesize, metadata
 
 router = APIRouter()
 
-@router.post("/kokoro-tts/synthesize", status_code=200)
+@router.post("/kokoro-tts/synthesize")
 async def synthesize_route(request: KokoroTTSRequest):
 	return await synthesize(request)
 

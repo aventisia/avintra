@@ -5,7 +5,7 @@ from app.core.logger import logger
 
 router = APIRouter()
 
-@router.post("/extract-file-text")
+@router.post("/extract-file-text", response_model=str)
 async def extract_text_from_file_route(payload: ExtractFileTextRequest):
     try:
         extracted_text = extract_text_from_file(payload.file_url)
