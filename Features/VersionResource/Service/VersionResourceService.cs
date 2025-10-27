@@ -99,25 +99,6 @@ public class VersionResourceService : IVersionResourceService
                 // Upload the current file and get the result
                 var uploadResult = await UploadFilesAsync(new List<IFormFile> { formFile }, uploadVersionResourceDto.Purpose);
 
-                // Task: Convert .docx, .rtf, .odt, .tif, .tiff file formats ---> pdf
-                if (uploadResult.Data != null && uploadResult.Data.Any())
-                {
-                    var uploadedFile = uploadResult.Data.First();
-                    var extension = Path.GetExtension(uploadedFile.Name).ToLower();
-
-                    if (extension == ".docx" || extension == ".rtf" || extension == ".odt" || extension == ".tif" || extension == ".tiff")
-                    {
-                        // Step 1: Pass the file full path to llmpipeline api for conversion
-                        var convertedFileDetail = await ConvertFileToPDF(uploadedFile.Path);
-
-                        // Step 2: If conversion is successful, get the new file path and update the uploadResult accordingly
-                        if (convertedFileDetail != null)
-                        {
-                            uploadResult.Data = new List<FileDetailDto> { convertedFileDetail };
-                        }
-                    }
-                }
-
                 // Validate upload result
                 if (uploadResult.Data == null || !uploadResult.Data.Any())
                 {
@@ -696,16 +677,27 @@ public class VersionResourceService : IVersionResourceService
                 // Construct the file URL for referencing later
                 var fileUrl = $"/files/{subDirectory.ToLower()}/{uniqueFileName}".Replace("\\", "/");
 
-                uploadedFiles.Add(new FileDetailDto
+                // Create a FileDetailDto to represent the uploaded file
+                var uploadedFile = new FileDetailDto
                 {
                     Path = fileUrl,
                     Extension = Path.GetExtension(fileName).TrimStart('.').ToUpper(),
                     Name = fileName,
                     Size = stream.Length,
-                });
+                };
+
+                // Task: Convert .docx, .rtf, .odt, .tif, .tiff file formats ---> pdf
+                var fileExtension = Path.GetExtension(fileName).ToLower();
+                FileDetailDto? convertedFileDetail = null;
+                if (fileExtension == ".docx" || fileExtension == ".rtf" || fileExtension == ".odt" || fileExtension == ".tif" || fileExtension == ".tiff")
+                {
+                    // Pass the file full path to llmpipeline api for conversion
+                    convertedFileDetail = await ConvertFileToPDF(fileUrl);
+                }
+
+                uploadedFiles.Add(convertedFileDetail != null ? convertedFileDetail : uploadedFile);
 
                 _logger.LogInformation("File uploaded successfully: {FileName}, Path: {FilePath}.", fileName, filePath);
-
             }
             catch (Exception ex)
             {
@@ -892,7 +884,7 @@ public class VersionResourceService : IVersionResourceService
 
             // Combine with local storage path
             filePath = Path.Combine(_fileUploadConfig.UploadDirectory, filePath.TrimStart('/'));
-            
+
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("API_KEY", _extractViaLLMConfig.LLMPipelineAPIKey);
