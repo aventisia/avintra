@@ -1,13 +1,21 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-import { RazorpayErrorResponse } from "../types/razorpay";
 import { toast } from "@aventisia/ui/sonner";
+import { useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
+
+import { useChoosePlanStore } from "../stores/choose-plan-store";
+import {
+  RazorpayErrorResponse,
+  RazorpaySuccessResponse,
+} from "../types/razorpay";
 
 export const useRazorpayPayment = () => {
   const [isRazorpayReady, setIsRazorpayReady] = useState(false);
-  const navigate = useNavigate();
 
+  const { setPaymentId } = useChoosePlanStore(
+    useShallow((state) => ({
+      setPaymentId: state.setPaymentId,
+    })),
+  );
   // Load Razorpay script and check readiness
   useEffect(() => {
     // Check if Razorpay script is already loaded
@@ -39,10 +47,9 @@ export const useRazorpayPayment = () => {
       description: "Subscription Payment",
       image: "/logo_icon.jpg",
 
-      handler: function () {
-        // Payment Success
-        localStorage.clear();
-        navigate("/redirect?url=" + import.meta.env.VITE_WORC_URL);
+      handler: function (response: RazorpaySuccessResponse) {
+        setPaymentId(response.razorpay_payment_id);
+        localStorage.setItem("payment_id", response.razorpay_payment_id);
       },
 
       theme: {
