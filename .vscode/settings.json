@@ -16,7 +16,7 @@
     },
     "local": {
       "host": "http://localhost:4003/api",
-      "testFilesPath": "../assets/test-files"
+      "testFilesPath": "../assets"
     },
     "dev": {
       "host": "https://dev-llmpipeline.aventisia.com/api",
