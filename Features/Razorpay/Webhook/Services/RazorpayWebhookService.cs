@@ -767,12 +767,6 @@ public class WebhookService : IWebhookService
             // Extract payment details from the webhook payload
             var paymentEntity = webhookPayload["payload"]?["payment"]?["entity"];
 
-            var receipt = webhookPayload["payload"]?["order"]?["entity"]?["receipt"]?.ToString();
-
-            if (receipt == null || !int.TryParse(receipt, out var credit))
-            {
-                return;
-            }
 
             // If no Razorpay Customer ID, fetch the billing detail using Razorpay Order ID
             var razorpayOrderId = paymentEntity?["order_id"]?.ToString();
@@ -803,7 +797,7 @@ public class WebhookService : IWebhookService
 
             var tenantCredit = new TenantCredit()
             {
-                AvailableCredits = credit,
+                AvailableCredits = billingHistory.Quantity,
                 Type = CreditTypesEnum.TopUp,
                 CreditedOn = DateTimeOffset.UtcNow,
                 ExpiredOn = DateTimeOffset.UtcNow.AddYears(1).Date,
@@ -904,6 +898,7 @@ public class WebhookService : IWebhookService
                     BillingDetailId = lastBillingDetail.Id,
                     Amount = paymentEntity["amount"]?.ToObject<int?>() / 100 ?? 0,
                     InvoiceLink = invoiceLink,
+                    Type = CreditTypesEnum.Subscription,
                     RazorpayInvoiceId = paymentEntity["invoice_id"]?.ToObject<string?>() ?? string.Empty,
                     RazorpayPaymentId = paymentEntity["id"]?.ToObject<string?>() ?? string.Empty,
                     RazorpayOrderId = paymentEntity["order_id"]?.ToObject<string?>() ?? string.Empty,
