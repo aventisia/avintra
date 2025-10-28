@@ -663,12 +663,15 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 return serviceResponse;
             }
 
-            // Fetch the available tenant credits for the current user, considering expiry and availability constraints
+            // Query to get all negative and positive credits, including expired negative credits
             double availableCredits = await _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
-                    w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date &&
-                    w.AvailableCredits > 0
+                    (
+                        (w.AvailableCredits > 0) ||
+                        (w.AvailableCredits < 0 && w.ExpiredOn.Date < DateTimeOffset.UtcNow.Date) ||
+                        (w.AvailableCredits < 0 && w.ExpiredOn >= DateTimeOffset.UtcNow.Date)
+                    )
                 )
                 .SumAsync(sm => sm.AvailableCredits);
 
