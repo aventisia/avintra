@@ -935,62 +935,48 @@ public class WebhookService : IWebhookService
 
     public async Task<ulong> GetCalculateTotalCreditsForTenantAsync(Guid tenantId, ulong maxCredits)
     {
-        // Query available credits for the tenant with negative available credits
+        // Set totalCredits initially to the maxCredits value provided
+        ulong totalCredits = maxCredits;
+
+        // Fetch all credits with negative balance for the tenant
         var availableCredits = await _unitOfWork.TenantCreditRepo
-            .GetByConditionAsync(w =>
-                w.TenantId == tenantId &&
-                w.AvailableCredits < 0
-            )
+            .GetByConditionAsync(w => w.TenantId == tenantId && w.AvailableCredits < 0)
             .ToListAsync();
 
-        // If no negative credits are found (i.e., availableCredits is empty or contains no negative balances), return the maxCredits value
+        // If no negative credits are found, return maxCredits
         if (!availableCredits.Any())
         {
-            _logger.LogInformation("No negative credits found for TenantId: {TenantId}.", tenantId);
-            return maxCredits;
-        }
-
-        // Calculate the total of all available credits. 
-        // Since we need to handle negative values correctly, we negate the sum (in case of negative credits).
-        double totalNegativeCredits = availableCredits.Sum(a => a.AvailableCredits);
-
-        // If no negative credits are found (i.e., availableCredits is empty or contains no negative balances), return the maxCredits value
-        if (!availableCredits.Any())
-        {
-            // Log the case where no negative credits were found for the specified TenantId.
             _logger.LogInformation("No negative credits found for TenantId: {TenantId}. Returning maxCredits.", tenantId);
-            return maxCredits;
+            return totalCredits;
         }
 
-        // Calculate the total of all available credits. Since we need to handle negative values correctly, we negate the sum (in case of negative credits).
-        ulong totalCredits = (ulong)(maxCredits + totalNegativeCredits);
+        // Sum up all negative available credits
+        var totalNegativeCredits = availableCredits.Sum(a => a.AvailableCredits);
 
-        // Log the total negative credits calculated (or the sum of available credits)
+        // Add the negative credits to the maxCredits to get the final total
+        totalCredits = (ulong)(maxCredits + totalNegativeCredits);
+
+        // Log the reset of available credits for the tenant
+        _logger.LogInformation("Resetting AvailableCredits for TenantId: {TenantId}.", tenantId);
+
+        // Set all available credits to zero
+        availableCredits.ForEach(f => f.AvailableCredits = 0);
+
+        // Log reset action completion
+        _logger.LogInformation("AvailableCredits reset to zero for TenantId: {TenantId}.", tenantId);
+
+        // Save the changes to the database
+        _unitOfWork.TenantCreditRepo.Update(availableCredits);
+
+        // Log any issues saving the updated data
+        if (!await _unitOfWork.SaveAsync())
+        {
+            _logger.LogError("Failed to save updated credit data for TenantId: {TenantId}.", tenantId);
+        }
+
+        // Log the total of negative credits
         _logger.LogInformation("Total negative credits for TenantId {TenantId}: {TotalNegativeCredits}.", tenantId, totalNegativeCredits);
 
-        // If there are available credits (even though we already checked earlier for emptiness), 
-        // set each credit's AvailableCredits to zero. This could indicate the credits have been "settled" or processed.
-        if (availableCredits.Any())
-        {
-            _logger.LogInformation("Resetting AvailableCredits for TenantId: {TenantId}.", tenantId);
-
-            // Reset the AvailableCredits to zero for all available credits.
-            availableCredits.ForEach(f =>
-            {
-                f.AvailableCredits = 0;
-            });
-
-            _logger.LogInformation("AvailableCredits have been reset to zero for all records for TenantId: {TenantId}.", tenantId);
-
-            // Update the tenant credit information in the database repository.
-            _unitOfWork.TenantCreditRepo.Update(availableCredits);
-
-            // Log the outcome of the save operation.
-            if (await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Failed to save updated credit information for TenantId: {TenantId}.", tenantId);
-            }
-        }
         return totalCredits;
     }
 }
