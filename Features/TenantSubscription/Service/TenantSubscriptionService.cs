@@ -404,12 +404,15 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Fetch existing tenant subscription (if any), including plan and creator information
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
-                    w.IsActive == true &&
-                    w.TenantId == _tenantId
+                    w.TenantId == _tenantId &&
+                    w.PlanId == tenantSubscriptionPurchaseDto.PlanId &&
+                    !w.IsActive &&
+                    w.Status == SubscriptionStatusTypesEnum.Initiated &&
+                    w.CreatedOn.Date == DateTimeOffset.UtcNow.Date
                 )
                 .Include(i => i.Plan)
                 .Include(i => i.CreatedByUser)
-                .SingleOrDefaultAsync();
+                .FirstOrDefaultAsync();
 
             if (tenantSubscription == null)
             {
@@ -444,6 +447,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             {
                 // Existing subscription found, update the details
                 tenantSubscription.Status = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? SubscriptionStatusTypesEnum.Active : SubscriptionStatusTypesEnum.Initiated;
+                tenantSubscription.PlanId = tenantSubscriptionPurchaseDto.PlanId;
                 tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
                 tenantSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
                 tenantSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
@@ -467,24 +471,27 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             if (tenantSubscription.Status == SubscriptionStatusTypesEnum.Initiated &&
                 subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                // Attempt to create or update a Razorpay subscription
-                var razorpaySubscriptionResult = await CreateOrUpdateRazorpaySubscriptionAsync(
-                    tenantSubscription,
-                    subscriptionPlan,
-                    tenantSubscriptionPurchaseDto
-                );
+                if (!string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId))
+                {
+                    // Attempt to create or update a Razorpay subscription
+                    var razorpaySubscriptionResult = await CreateOrUpdateRazorpaySubscriptionAsync(
+                        tenantSubscription,
+                        subscriptionPlan,
+                        tenantSubscriptionPurchaseDto
+                    );
 
-                // Assign the newly generated subscription ID and payment URL if the creation succeeded
-                if (razorpaySubscriptionResult?.Data != null || razorpaySubscriptionResult.StatusCode == 200)
-                {
-                    tenantSubscription.RazorpaySubscriptionId = razorpaySubscriptionResult.Data.Id;
-                }
-                else
-                {
-                    _logger.LogWarning("Failed to create Razorpay subscription for tenant {TenantId}. Reason: {Message}",
-                        tenantSubscription.TenantId, razorpaySubscriptionResult?.Message ?? "Unknown error");
-                    serviceResponse.Message = razorpaySubscriptionResult.Message;
-                    return serviceResponse;
+                    // Assign the newly generated subscription ID and payment URL if the creation succeeded
+                    if (razorpaySubscriptionResult?.Data != null || razorpaySubscriptionResult.StatusCode == 200)
+                    {
+                        tenantSubscription.RazorpaySubscriptionId = razorpaySubscriptionResult.Data.Id;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Failed to create Razorpay subscription for tenant {TenantId}. Reason: {Message}",
+                            tenantSubscription.TenantId, razorpaySubscriptionResult?.Message ?? "Unknown error");
+                        serviceResponse.Message = razorpaySubscriptionResult.Message;
+                        return serviceResponse;
+                    }
                 }
 
                 tenantSubscription.IsRecurringPayment = tenantSubscriptionPurchaseDto.IsRecurringPayment;
