@@ -24,6 +24,14 @@ public class AIProjecMappingProfile : IRegister
             src => src.Versions != null && src.Versions.Any()
                 ? src.Versions.OrderByDescending(v => v.CreatedOn).First().Id
                 : Guid.Empty)
+        .Map(dest => dest.IsPublished,
+            src => src.Versions != null && src.Versions.Any()
+                ? src.Versions.OrderByDescending(v => v.CreatedOn).First().IsPublished
+                : false)
+        .Map(dest => dest.PublishedOn,
+            src => src.Versions != null && src.Versions.Any()
+                ? src.Versions.OrderByDescending(v => v.CreatedOn).First().PublishedOn
+                : null)
         .Map(dest => dest.CreatedBy,
             src => src.CreatedByUser != null
             ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
