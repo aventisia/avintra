@@ -950,11 +950,14 @@ public class WebhookService : IWebhookService
             return totalCredits;
         }
 
-        // Sum up all negative available credits
-        var totalNegativeCredits = availableCredits.Sum(a => a.AvailableCredits);
+        // Sum up all negative available credits (using long to avoid overflow in summing)
+        long totalNegativeCredits = availableCredits.Sum(a => (long)a.AvailableCredits);
 
-        // Add the negative credits to the maxCredits to get the final total
-        totalCredits = (ulong)(maxCredits + totalNegativeCredits);
+        // Calculate total credits (long type for safety)
+        long credits = (long)maxCredits + totalNegativeCredits;
+
+        // Ensure the total doesn't exceed the maximum value for ulong and is non-negative
+        totalCredits = (ulong)Math.Min((decimal)Math.Max((decimal)credits, 0), (decimal)ulong.MaxValue);
 
         // Log the reset of available credits for the tenant
         _logger.LogInformation("Resetting AvailableCredits for TenantId: {TenantId}.", tenantId);
