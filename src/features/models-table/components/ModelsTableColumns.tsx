@@ -200,12 +200,13 @@ export const modelsTableColumns: ColumnDef<ModelsTableDto>[] = [
       />
     ),
     cell: ({ row }) => {
+      const llmName = row.getValue("llMs") as string[];
       return (
         <Badge
           variant={"outline"}
           className={`w-auto truncate px-2.5 py-1.5 font-medium capitalize`}
         >
-          {row.getValue("setupStatus")}
+          {llmName && llmName.length > 0 ? "Completed" : "Pending"}
         </Badge>
       );
     },
