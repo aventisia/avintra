@@ -471,7 +471,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             if (tenantSubscription.Status == SubscriptionStatusTypesEnum.Initiated &&
                 subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                if (!string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId))
+                if (string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId))
                 {
                     // Attempt to create or update a Razorpay subscription
                     var razorpaySubscriptionResult = await CreateOrUpdateRazorpaySubscriptionAsync(
