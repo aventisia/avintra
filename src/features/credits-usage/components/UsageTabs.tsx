@@ -34,7 +34,7 @@ const UsageTabs = () => {
             Credits
           </TabsTrigger>
           <TabsTrigger value="totalTransactions" className="w-full">
-            Transactions
+            Executions
           </TabsTrigger>
         </TabsList>
       </Tabs>

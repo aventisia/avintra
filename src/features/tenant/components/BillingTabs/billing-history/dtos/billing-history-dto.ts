@@ -5,4 +5,5 @@ export interface BillingHistoryDTO {
   amount: string;
   paymentStatus: string;
   type: string;
+  currency: string;
 }
