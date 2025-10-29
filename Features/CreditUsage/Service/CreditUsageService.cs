@@ -86,11 +86,11 @@ public class CreditUsageService : ICreditUsageService
                 {
                     TotalCredits = creditUsages.Sum(c => c.CreditsUsed),
                     TotalAgentTransactions = creditUsages
-                            .Where(w => w.TriggeredByAgent != null)
+                            .Where(w => !string.IsNullOrEmpty(w.TriggeredByAgent))
                             .GroupBy(g => g.TriggeredByAgent)
                             .Count(),
                     TotalAgentCredits = creditUsages
-                            .Where(w => w.TriggeredByAgent != null)
+                            .Where(w => !string.IsNullOrEmpty(w.TriggeredByAgent))
                             .GroupBy(g => g.TriggeredByAgent)
                             .Sum(sm => sm.Sum(sum => sum.CreditsUsed)),
                 },
@@ -111,7 +111,7 @@ public class CreditUsageService : ICreditUsageService
                     {
                         Date = s,
                         TotalCount = creditUsages
-                            .Where(w => w.UsedAt.Date == s && w.TriggeredByAgent != null)
+                            .Where(w => w.UsedAt.Date == s && !string.IsNullOrEmpty(w.TriggeredByAgent))
                             .GroupBy(g => g.TriggeredByAgent)
                             .Count()
                     })
@@ -123,7 +123,7 @@ public class CreditUsageService : ICreditUsageService
                     {
                         Date = s,
                         TotalCount = creditUsages
-                            .Where(w => w.UsedAt.Date == s && w.TriggeredByAgent != null)
+                            .Where(w => w.UsedAt.Date == s && !string.IsNullOrEmpty(w.TriggeredByAgent))
                             .GroupBy(g => g.TriggeredByAgent)
                             .Sum(sm => sm.Sum(sum => sum.CreditsUsed)),
                     })
@@ -146,7 +146,6 @@ public class CreditUsageService : ICreditUsageService
                             Credits = matchingPlan.Credits,
                             TotalCredits = s.Sum(sm => sm.CreditsUsed),
                             TotalTransactions = s.Count(),
-                            // Usage over time for that resource
                             UsageTimeline = s
                                 .GroupBy(g1 => g1.UsedAt.Date)
                                 .Select(s1 => new DataUsageDataPointDto
@@ -159,32 +158,40 @@ public class CreditUsageService : ICreditUsageService
                         };
                     })
                     .ToList(),
-                Users = creditUsages.Where(w => w.UsedByUser != null)
-                .GroupBy(g => g.UsedByUserId).Select(s =>
-                {
-                    var user = s.First().UsedByUser;
-                    return new UserUsageDto
+                Users = creditUsages
+                    .Where(w =>
+                        w.UsedByUser != null &&
+                        (
+                            w.ServiceType == CreditServiceTypesEnum.AIModelExecutionTime ||
+                            w.ServiceType == CreditServiceTypesEnum.AgentExecutionTime
+                        )
+                    )
+                    .GroupBy(g => g.UsedByUserId).Select(s =>
                     {
-                        Username = user.UserName,
-                        FirstName = user.FirstName,
-                        LastName = user.LastName,
-                        TotalTransactions = s.Count(),
-                        TotalCredits = s.Sum(sm => sm.CreditsUsed)
-                    };
-                })
-                .ToList(),
-                AiModels = creditUsages.Where(w => w.RefType.HasValue && w.RefType == UsageSourceTypesEnum.AIModel)
-                .GroupBy(g => g.RefId).Select(s =>
-                {
-                    return new AiModelUsageDto
-                    {
-                        ModelName = s.First().RefName,
-                        TotalTransactions = s.Count(),
-                        TotalCredits = s.Sum(sm => sm.CreditsUsed)
-                    };
-                })
+                        var user = s.First().UsedByUser;
+                        return new UserUsageDto
+                        {
+                            Username = user.UserName,
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            TotalTransactions = s.Count(),
+                            TotalCredits = s.Sum(sm => sm.CreditsUsed)
+                        };
+                    })
                     .ToList(),
-                Agents = creditUsages.Where(w => w.RefType.HasValue && w.RefType == UsageSourceTypesEnum.Agent)
+                AiModels = creditUsages
+                    .Where(w => w.ServiceType == CreditServiceTypesEnum.AIModelExecutionTime)
+                    .GroupBy(g => g.RefId).Select(s =>
+                    {
+                        return new AiModelUsageDto
+                        {
+                            ModelName = s.First().RefName,
+                            TotalTransactions = s.Count(),
+                            TotalCredits = s.Sum(sm => sm.CreditsUsed)
+                        };
+                    })
+                    .ToList(),
+                Agents = creditUsages.Where(w => w.ServiceType == CreditServiceTypesEnum.AgentExecutionTime && !string.IsNullOrEmpty(w.TriggeredByAgent))
                 .GroupBy(g => g.RefId).Select(s =>
                 {
                     return new AgentUsageDto
