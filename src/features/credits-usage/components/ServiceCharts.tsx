@@ -35,8 +35,13 @@ const ServiceCharts = () => {
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
   const currentItems = useMemo(() => {
+    // Sort items by totalCredits in descending order
+    const sortedItems = [...items].sort(
+      (a, b) => b.totalCredits - a.totalCredits,
+    );
+
     const start = (currentPage - 1) * itemsPerPage;
-    return items.slice(start, start + itemsPerPage);
+    return sortedItems.slice(start, start + itemsPerPage);
   }, [currentPage, items, itemsPerPage]);
 
   function formatUnit(unit: string) {
@@ -55,10 +60,16 @@ const ServiceCharts = () => {
                   item.serviceType as keyof typeof ServiceTypeEnum
                 ]
               }
-              label={`${item.credits} ${item.credits > 1 ? "Credits" : "Credit"} per ${item.oneUnit > 1 ? item.oneUnit : ""} ${formatUnit(item.unitType)}`}
+              label={`Total credits: ${item.totalCredits.toLocaleString(
+                "en-US",
+                {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                },
+              )} (${item.credits} ${item.credits > 1 ? "Credits" : "Credit"} per ${item.oneUnit > 1 ? item.oneUnit : ""} ${formatUnit(item.unitType)})`}
               data={item.usageTimeline}
               chartConfig={totalCreditsChartConfig}
-              valueKey="totalCredits"
+              valueKey="totalCount"
             />
           );
         })}
