@@ -10,7 +10,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get All Excel Worksheets")]
-    [Description("Retrieves all worksheet names from the active Excel workbook.")]
+    [Description("Retrieves all worksheet names from the provided Excel workbook instance, optionally filtered by a specific worksheet instance.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class GetAllExcelWorksheetsActivity : BaseCodeActivity
     {
@@ -19,17 +19,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target workbook.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Workbook Instance")]
+        [Description("The Excel Workbook object containing the worksheets to retrieve.")]
+        public InArgument<Excel.Workbook> WorkbookInstance { get; set; }
 
         // ----------------------
         // Output Arguments
         // ----------------------
 
-
         [DisplayName("Worksheet Names")]
-        [Description("Returns a list of all worksheet names in the active Excel workbook.")]
+        [Description("Returns a list of all worksheet names in the provided Excel workbook.")]
         public OutArgument<IEnumerable<string>> WorksheetNames { get; set; }
 
         // ----------------------
@@ -40,21 +39,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             var result = new List<string>();
             string status = "Success";
 
-            Excel.Application excelApp = null;
             Excel.Workbook workbook = null;
-
+        
             try
             {
-                excelApp = ExcelApplication.Get(context);
-
-                if (excelApp == null)
-                    throw new InvalidOperationException("Excel application is not available.");
-
-                workbook = excelApp.ActiveWorkbook;
+                workbook = WorkbookInstance.Get(context);
+               
                 if (workbook == null)
-                    throw new InvalidOperationException("No active workbook found.");
-
-                // Safely loop through worksheets
+                    throw new InvalidOperationException("Workbook instance is not provided or is invalid.");
+               
+                   // Safely loop through worksheets
                 foreach (Excel.Worksheet sheet in workbook.Worksheets)
                 {
                     if (sheet != null)
@@ -66,7 +60,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                 WorksheetNames.Set(context, result);
                 IsSuccess.Set(context, true);
-                status = $"Successfully retrieved {result.Count} worksheet(s).";
+                status = $"Successfully retrieved {result.Count} worksheet(s) from workbook '{workbook.Name}'.";
             }
             catch (Exception ex)
             {
@@ -78,8 +72,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             finally
             {
                 // Release COM objects
-                if (workbook != null) Marshal.ReleaseComObject(workbook);
-                if (excelApp != null) Marshal.ReleaseComObject(excelApp);
+                if (workbook != null)
+                    Marshal.ReleaseComObject(workbook);
+
                 StatusMessage.Set(context, status);
             }
         }

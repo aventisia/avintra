@@ -7,21 +7,23 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-    [DisplayName("Write to Excel Worksheet")]
-    [Description("Writes a value or array of values to a row in an Excel worksheet.")]
+    [DisplayName("Write Array Values to Excel Worksheet")]
+    [Description("Writes a value or array of values to a row or range in an Excel worksheet.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class WriteToExcelArrayValuesActivity : BaseCodeActivity
     {
+        // -----------------------
+        // Input Arguments
+        // -----------------------
+
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The target Excel Worksheet object where data will be written.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Value(s) To Write")]
@@ -60,21 +62,29 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("If true, populates the entire named range with the same value.")]
         public InArgument<bool> PopulateEntireRange { get; set; }
 
+        // -----------------------
+        // Execution Logic
+        // -----------------------
         protected override void Execute(CodeActivityContext context)
         {
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var worksheet = WorksheetInstance.Get(context);
                 var rawValue = ValueToWrite.Get(context);
                 var writeMode = WriteMode.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+                if (worksheet == null)
+                {
+                    var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                    worksheet = excelApp?.ActiveSheet as Excel.Worksheet;
+                }
 
-                Excel.Worksheet ws = excelApp.ActiveSheet;
+                if (worksheet == null)
+                    throw new InvalidOperationException("Worksheet instance is null or not provided.");
 
                 switch (writeMode)
                 {
+                    // ------------------- SPECIFIED CELL -------------------
                     case ExcelCellWriteModeEnum.OnSpecifiedCell:
                         {
                             int rowNumber = Row.Get(context);
@@ -94,41 +104,53 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             // Handle single value or array/list
                             var valuesToWrite = ExtractValuesAsArray(rawValue);
 
-                            // Write each value to adjacent columns
+                             // Write each value to adjacent columns
                             for (int i = 0; i < valuesToWrite.Length; i++)
                             {
-                                Excel.Range cell = ws.Cells[rowNumber, startColIndex + i];
+                                Excel.Range cell = worksheet.Cells[rowNumber, startColIndex + i];
                                 WriteSingleValueToCell(cell, valuesToWrite[i]);
                             }
                             break;
                         }
 
+                    // ------------------- ACTIVE CELL -------------------
                     case ExcelCellWriteModeEnum.OnCurrentlyActiveCell:
                         {
-                            var activeCell = ws.Application.Selection as Excel.Range;
+                            var activeCell = worksheet.Application.Selection as Excel.Range;
                             if (activeCell == null)
                                 throw new InvalidOperationException("No active cell found.");
 
                             var valuesToWrite = ExtractValuesAsArray(rawValue);
                             for (int i = 0; i < valuesToWrite.Length; i++)
                             {
-                                Excel.Range cell = activeCell.Offset[0, i]; // Move right
+                                Excel.Range cell = activeCell.Offset[0, i];
                                 WriteSingleValueToCell(cell, valuesToWrite[i]);
                             }
                             break;
                         }
 
+                    // ------------------- NAMED RANGE -------------------
                     case ExcelCellWriteModeEnum.OnNamedCells:
                         {
                             var name = Name.Get(context);
                             var populateEntireRange = PopulateEntireRange.Get(context);
 
                             if (string.IsNullOrWhiteSpace(name))
-                                throw new ArgumentException("Name cannot be empty.");
+                                throw new ArgumentException("Named range name cannot be empty.");
 
-                            var namedRange = ws.Names.Item(name)?.RefersToRange;
+                            Excel.Range namedRange = null;
+                            try
+                            {
+                                // Access named range from the worksheet itself
+                                namedRange = worksheet.Range[name];
+                            }
+                            catch
+                            {
+                                throw new ArgumentException($"Named range '{name}' not found in worksheet '{worksheet.Name}'.");
+                            }
+
                             if (namedRange == null)
-                                throw new ArgumentException($"Named range '{name}' not found.");
+                                throw new ArgumentException($"Named range '{name}' not found in worksheet '{worksheet.Name}'.");
 
                             if (rawValue is DataTable dataTable)
                             {
@@ -139,12 +161,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             else
                             {
                                 var valuesToWrite = ExtractValuesAsArray(rawValue);
-                                if (populateEntireRange && namedRange.Rows.Count >= valuesToWrite.Length)
+                                if (populateEntireRange)
                                 {
-                                    // Write across first row of named range
-                                    for (int i = 0; i < valuesToWrite.Length && i < namedRange.Columns.Count; i++)
+                                    int totalCells = namedRange.Cells.Count;
+                                    int valueCount = valuesToWrite.Length;
+                                    for (int i = 1; i <= totalCells; i++)
                                     {
-                                        namedRange.Cells[1, i + 1].Value = FormatValue(valuesToWrite[i]);
+                                        Excel.Range cell = namedRange.Cells[i];
+                                        var value = valuesToWrite[(i - 1) % valueCount];
+                                        WriteSingleValueToCell(cell, value);
                                     }
                                 }
                                 else
@@ -161,16 +186,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 }
 
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Successfully wrote to Excel.");
+                StatusMessage.Set(context, "Successfully wrote values to Excel worksheet.");
             }
             catch (Exception ex)
             {
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error writing to Excel: {ex.Message}");
+                StatusMessage.Set(context, $"Error writing to Excel worksheet: {ex.Message}");
             }
         }
 
-        private object[] ExtractValuesAsArray(object value)
+ private object[] ExtractValuesAsArray(object value)
         {
             if (value == null) return new object[] { null };
 

@@ -8,9 +8,8 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
-    [DisplayName("Paste range cells to Excel Worksheet")]
-    [Description(
-        "Pastes a range of cells from a source Excel instance/workbook to a specific range in a target Excel worksheet.")]
+    [DisplayName("Paste Range Cells to Excel Worksheet")]
+    [Description("Pastes a range of cells from a source worksheet to a specified range or named area in a target worksheet.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class PasteCellsToExcelWorksheetActivity : BaseCodeActivity
     {
@@ -19,19 +18,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Target Excel Application")]
-        [Description("The Excel Application object where the data will be pasted.")]
-        public InArgument<Excel.Application> TargetExcelApplication { get; set; }
+        [DisplayName("Source Worksheet Instance")]
+        [Description("The source Excel worksheet containing the range to copy.")]
+        public InArgument<Excel.Worksheet> SourceWorksheet { get; set; }
 
         [RequiredArgument]
-        [DisplayName("Source Excel Application")]
-        [Description("The Excel Application object where the data is coming from.")]
-        public InArgument<Excel.Application> SourceExcelApplication { get; set; }
-
-        [RequiredArgument]
-        [DisplayName("Source Worksheet Name")]
-        [Description("Name of the worksheet in the source Excel instance containing the data to copy.")]
-        public InArgument<string> SourceWorksheetName { get; set; }
+        [DisplayName("Target Worksheet Instance")]
+        [Description("The target Excel worksheet where the data will be pasted.")]
+        public InArgument<Excel.Worksheet> TargetWorksheet { get; set; }
 
         [RequiredArgument]
         [DisplayName("Source Range Address")]
@@ -44,19 +38,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DefaultValue(CellPasteModeEnum.OnSpecifiedCell)]
         public InArgument<CellPasteModeEnum> PasteMode { get; set; }
 
-
         [DisplayName("Name")]
         [Description("The name of the named range to paste into (required if 'Paste Mode' is 'On Named Cells').")]
         [RenderIfCondition(nameof(PasteMode), CellPasteModeEnum.OnNamedCells)]
         public InArgument<string> Name { get; set; }
 
-
         [DisplayName("Column")]
-        [Description(
-            "The column letter (e.g., 'A', 'B') where the paste should begin (required if 'Paste Mode' is 'On Specified Cell').")]
+        [Description("The column letter (e.g., 'A', 'B') where the paste should begin (required if 'Paste Mode' is 'On Specified Cell').")]
         [RenderIfCondition(nameof(PasteMode), CellPasteModeEnum.OnSpecifiedCell)]
         public InArgument<string> Column { get; set; }
-
 
         [DisplayName("Row")]
         [Description("The row number where the paste should begin (required if 'Paste Mode' is 'On Specified Cell').")]
@@ -64,42 +54,33 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<int> Row { get; set; }
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-        // ----------------------
         // Execution Logic
         // ----------------------
-
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
+            string status;
 
             try
             {
-                var sourceApp = SourceExcelApplication.Get(context);
-                var targetApp = TargetExcelApplication.Get(context);
-                var sourceWorksheetName = SourceWorksheetName.Get(context);
+                var sourceWs = SourceWorksheet.Get(context);
+                var targetWs = TargetWorksheet.Get(context);
                 var sourceRangeAddress = SourceRangeAddress.Get(context);
                 var pasteMode = PasteMode.Get(context);
 
-                if (sourceApp == null || targetApp == null)
-                    throw new InvalidOperationException("Both source and target Excel applications must be provided.");
+                if (sourceWs == null)
+                    throw new ArgumentNullException(nameof(SourceWorksheet), "Source worksheet cannot be null.");
 
-                if (sourceApp.ActiveWorkbook == null || targetApp.ActiveWorkbook == null)
-                    throw new InvalidOperationException("Both Excel instances must have an active workbook.");
+                if (targetWs == null)
+                    throw new ArgumentNullException(nameof(TargetWorksheet), "Target worksheet cannot be null.");
 
-                var sourceWorkbook = sourceApp.ActiveWorkbook;
-                if (!(sourceWorkbook.Worksheets[sourceWorksheetName] is Excel.Worksheet sourceWs))
-                    throw new InvalidOperationException($"Source worksheet '{sourceWorksheetName}' not found.");
+                if (string.IsNullOrWhiteSpace(sourceRangeAddress))
+                    throw new ArgumentException("Source range address cannot be empty.");
 
-                var sourceRange = sourceWs.Range[sourceRangeAddress];
+                Excel.Range sourceRange = sourceWs.Range[sourceRangeAddress];
                 if (sourceRange == null || IsRangeEmpty(sourceRange))
                     throw new InvalidOperationException($"Source range '{sourceRangeAddress}' not found or empty.");
 
-                var targetWorkbook = targetApp.ActiveWorkbook;
-                if (!(targetWorkbook.ActiveSheet is Excel.Worksheet targetWs))
-                    throw new InvalidOperationException("Target worksheet could not be retrieved.");
+                Excel.Range targetRange;
 
                 switch (pasteMode)
                 {
@@ -109,23 +90,33 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             if (string.IsNullOrWhiteSpace(name))
                                 throw new ArgumentException("Name cannot be empty when using 'On Named Cells' mode.");
 
-                            var namedRange = targetWs.Names.Item(name)?.RefersToRange;
-                            if (namedRange == null)
-                                throw new InvalidOperationException($"Named range '{name}' not found.");
+                            Excel.Range namedRange = null;
 
-                            sourceRange.Copy();
-                            namedRange.Select();
+                            // Try to find named range at workbook level first
+                            var wb = targetWs.Parent as Excel.Workbook;
+                            foreach (Excel.Name n in wb.Names)
+                            {
+                                if (n.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    namedRange = n.RefersToRange;
+                                    break;
+                                }
+                            }
+
+                            if (namedRange == null)
+                                throw new InvalidOperationException($"Named range '{name}' not found in the workbook.");
+
+                            targetRange = namedRange;
                             break;
                         }
 
                     case CellPasteModeEnum.OnCurrentlyActiveCell:
                         {
-                            var activeCell = targetApp.ActiveCell;
+                            var app = targetWs.Application;
+                            var activeCell = app?.ActiveCell as Excel.Range;
                             if (activeCell == null)
-                                throw new InvalidOperationException("No active cell found in target Excel application.");
-
-                            sourceRange.Copy();
-                            ((Excel.Range)activeCell).Select(); // Focus on the active cell
+                                throw new InvalidOperationException("No active cell found in target worksheet.");
+                            targetRange = activeCell;
                             break;
                         }
 
@@ -133,11 +124,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         {
                             var colLetter = Column.Get(context);
                             var rowIndex = Row.Get(context);
-                            int colIndex = GetColumnIndex(colLetter);
-                            var targetCell = (Excel.Range)targetWs.Cells[rowIndex, colIndex];
+                            if (string.IsNullOrWhiteSpace(colLetter) || rowIndex <= 0)
+                                throw new ArgumentException("Both Column and Row must be specified when PasteMode is 'On Specified Cell'.");
 
-                            sourceRange.Copy();
-                            targetCell.Select(); // Ensure target cell is selected
+                            int colIndex = GetColumnIndex(colLetter);
+                            targetRange = targetWs.Cells[rowIndex, colIndex];
                             break;
                         }
 
@@ -145,12 +136,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         throw new ArgumentOutOfRangeException(nameof(pasteMode));
                 }
 
-                // Important: Give Excel time to process the copy operation
-                System.Threading.Thread.Sleep(500); // Small delay for COM interop
-                targetApp.ActiveWindow.Activate(); // Make sure the target window is active
-                targetApp.ActiveSheet.Paste(); // Use simpler Paste()
+                // Copy and paste values + formatting
+                sourceRange.Copy();
+                targetRange.PasteSpecial(Excel.XlPasteType.xlPasteAll);
 
-                status = $"Successfully pasted range '{sourceRangeAddress}' from '{sourceWorksheetName}'.";
+                status = $"Successfully pasted range '{sourceRangeAddress}' into worksheet '{targetWs.Name}'.";
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }
@@ -160,8 +150,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, status);
             }
-
-            StatusMessage.Set(context, status);
         }
 
         // Helper method to convert column letter to index
@@ -171,7 +159,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 throw new ArgumentException("Column name cannot be empty.", nameof(columnName));
 
             columnName = columnName.ToUpperInvariant();
-
+            
             return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
         }
 

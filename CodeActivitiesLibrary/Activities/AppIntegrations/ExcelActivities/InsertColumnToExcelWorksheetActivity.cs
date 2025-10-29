@@ -8,7 +8,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Insert Column to Excel Worksheet")]
-    [Description("Inserts a new column to the left of the specified column in the active Excel worksheet.")]
+    [Description("Inserts a new column to the left of the specified column in the provided Excel worksheet.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class InsertColumnToExcelWorksheetActivity : BaseCodeActivity
     {
@@ -17,51 +17,45 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The Excel Worksheet object where the new column will be inserted.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Column Reference")]
-        [Description(
-            "The 1-based index or letter (e.g., 'A', 'B') of the column where the new column should be inserted.")]
+        [Description("The 1-based index or letter (e.g., 'A', 'B') of the column where the new column should be inserted.")]
         public InArgument<string> ColumnReference { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
 
         // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var worksheet = WorksheetInstance.Get(context);
                 var colRef = ColumnReference.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+                if (worksheet == null)
+                    throw new InvalidOperationException("Worksheet instance is required but was not provided.");
 
-                if (!(excelApp.ActiveSheet is Excel.Worksheet ws))
-                    throw new InvalidOperationException("Active sheet is not a valid Excel worksheet.");
+                if (string.IsNullOrWhiteSpace(colRef))
+                    throw new ArgumentException("Column reference cannot be empty.", nameof(ColumnReference));
 
                 int columnIndex;
 
                 // Convert column reference to index
                 if (!int.TryParse(colRef, out columnIndex))
+                {
                     // Convert column letter to index (e.g., "A" → 1, "B" → 2)
                     columnIndex = GetColumnIndex(colRef);
+                }
 
-                if (columnIndex < 1 || columnIndex > ws.Columns.Count)
-                    throw new ArgumentOutOfRangeException(nameof(ColumnReference),
-                        $"Invalid column reference: {colRef}");
+                if (columnIndex < 1 || columnIndex > worksheet.Columns.Count)
+                    throw new ArgumentOutOfRangeException(nameof(ColumnReference), $"Invalid column reference: {colRef}");
 
-                // Insert new column at specified index
-                (ws.Columns[columnIndex] as Excel.Range)?.Insert();
+                // Insert new column at the specified position
+                (worksheet.Columns[columnIndex] as Excel.Range)?.Insert();
 
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, $"Successfully inserted new column to the left of column {colRef}.");
@@ -70,7 +64,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             {
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error inserting column: {ex.Message}");
-
             }
         }
 

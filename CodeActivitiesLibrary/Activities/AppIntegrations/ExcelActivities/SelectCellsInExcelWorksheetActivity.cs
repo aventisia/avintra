@@ -9,7 +9,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Select Cells in Excel Worksheet")]
-    [Description("Selects a specific range of cells in the active Excel worksheet.")]
+    [Description("Selects a specific range of cells in the given Excel worksheet or workbook.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class SelectCellsInExcelWorksheetActivity : BaseCodeActivity
     {
@@ -18,9 +18,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The Excel Worksheet object where the cell selection will be performed.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Selection Mode")]
@@ -28,70 +28,52 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DefaultValue(ExcelCellSelectionModeEnum.NamedCells)]
         public InArgument<ExcelCellSelectionModeEnum> SelectionMode { get; set; }
 
-
         [DisplayName("Name")]
         [Description("The name of the named range to select (required if 'Selection Mode' is 'Named Cells').")]
         [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.NamedCells)]
         public InArgument<string> Name { get; set; }
-
 
         [DisplayName("Start Column")]
         [Description("The starting column of the range to select (required if 'Selection Mode' is 'Range of Cells').")]
         [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RangeOfCells)]
         public InArgument<string> StartColumn { get; set; }
 
-
         [DisplayName("End Column")]
         [Description("The ending column of the range to select (required if 'Selection Mode' is 'Range of Cells').")]
         [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RangeOfCells)]
         public InArgument<string> EndColumn { get; set; }
-
 
         [DisplayName("Start Row")]
         [Description("The starting row of the range to select (required if 'Selection Mode' is 'Range of Cells').")]
         [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RangeOfCells)]
         public InArgument<int> StartRow { get; set; }
 
-
         [DisplayName("End Row")]
         [Description("The ending row of the range to select (required if 'Selection Mode' is 'Range of Cells').")]
         [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RangeOfCells)]
         public InArgument<int> EndRow { get; set; }
 
-
         [DisplayName("X-Axis Direction")]
-        [Description(
-            "Specifies the direction along the X-axis for relative selection (required if 'Selection Mode' is 'Relative to Active Cell').")]
+        [Description("Specifies the direction along the X-axis for relative selection (required if 'Selection Mode' is 'Relative to Active Cell').")]
         [DefaultValue(ExcelXAxisDirectionEnum.Right)]
         [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RelativeToActiveCell)]
         public InArgument<ExcelXAxisDirectionEnum> XAxisDirection { get; set; }
 
-
         [DisplayName("Y-Axis Direction")]
-        [Description(
-            "Specifies the direction along the Y-axis for relative selection (required if 'Selection Mode' is 'Relative to Active Cell').")]
+        [Description("Specifies the direction along the Y-axis for relative selection (required if 'Selection Mode' is 'Relative to Active Cell').")]
         [DefaultValue(ExcelYAxisDirectionEnum.Above)]
         [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RelativeToActiveCell)]
         public InArgument<ExcelYAxisDirectionEnum> YAxisDirection { get; set; }
 
-
         [DisplayName("X Offset")]
-        [Description(
-            "The number of columns to offset from the active cell (required if 'Selection Mode' is 'Relative to Active Cell').")]
+        [Description("The number of columns to offset from the active cell (required if 'Selection Mode' is 'Relative to Active Cell').")]
         [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RelativeToActiveCell)]
         public InArgument<int> XOffset { get; set; }
 
-
         [DisplayName("Y Offset")]
-        [Description(
-            "The number of rows to offset from the active cell (required if 'Selection Mode' is 'Relative to Active Cell').")]
+        [Description("The number of rows to offset from the active cell (required if 'Selection Mode' is 'Relative to Active Cell').")]
         [RenderIfCondition(nameof(SelectionMode), ExcelCellSelectionModeEnum.RelativeToActiveCell)]
         public InArgument<int> YOffset { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
 
         // ----------------------
         // Execution Logic
@@ -102,13 +84,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var worksheet = WorksheetInstance.Get(context);
                 var selectionMode = SelectionMode.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
-
-                Excel.Worksheet ws = excelApp.ActiveSheet;
+                // Ensure we have a valid worksheet (can derive from workbook if only one sheet)
+                if (worksheet == null)
+                {
+                    if (worksheet == null)
+                    {
+                        var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                        worksheet = excelApp?.ActiveSheet as Excel.Worksheet;
+                    }
+                    if (worksheet == null)
+                        throw new InvalidOperationException("Unable to access worksheet from workbook.");
+                }
 
                 switch (selectionMode)
                 {
@@ -119,7 +108,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             if (string.IsNullOrWhiteSpace(name))
                                 throw new ArgumentException("Name cannot be empty when using 'Named Cells' mode.");
 
-                            var namedRange = ws.Names.Item(name)?.RefersToRange;
+                            var namedRange = worksheet.Names.Cast<Excel.Name>()
+                                .FirstOrDefault(n => n.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                                ?.RefersToRange;
+
                             if (namedRange == null)
                                 throw new ArgumentException($"Named range '{name}' not found.");
 
@@ -135,13 +127,12 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             var endRow = EndRow.Get(context);
 
                             if (string.IsNullOrWhiteSpace(startCol) || string.IsNullOrWhiteSpace(endCol))
-                                throw new ArgumentException(
-                                    "Start column and end column cannot be empty when using 'Range of Cells' mode.");
+                                throw new ArgumentException("Start and end columns are required for 'Range of Cells' mode.");
 
-                            var range = ws.Range[ws.Cells[startRow, GetColumnIndex(startCol)],
-                                ws.Cells[endRow, GetColumnIndex(endCol)]];
-                            if (range == null)
-                                throw new ArgumentException($"Invalid range specified: {startCol}:{endCol}");
+                            var range = worksheet.Range[
+                                worksheet.Cells[startRow, GetColumnIndex(startCol)],
+                                worksheet.Cells[endRow, GetColumnIndex(endCol)]
+                            ];
 
                             range.Select();
                             break;
@@ -154,43 +145,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             var xOffset = XOffset.Get(context);
                             var yOffset = YOffset.Get(context);
 
-                            if (!(ws.Application.Selection is Excel.Range activeCell))
+                            if (!(worksheet.Application.Selection is Excel.Range activeCell))
                                 throw new InvalidOperationException("No active cell found.");
 
                             var activeRow = activeCell.Row;
                             var activeCol = activeCell.Column;
 
-                            var newRow = activeRow;
-                            var newCol = activeCol;
+                            var newRow = activeRow + (yDir == ExcelYAxisDirectionEnum.Above ? -yOffset : yOffset);
+                            var newCol = activeCol + (xDir == ExcelXAxisDirectionEnum.Left ? -xOffset : xOffset);
 
-                            switch (yDir)
-                            {
-                                case ExcelYAxisDirectionEnum.Above:
-                                    newRow -= yOffset;
-                                    break;
-                                case ExcelYAxisDirectionEnum.Below:
-                                    newRow += yOffset;
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException(nameof(yDir));
-                            }
-
-                            switch (xDir)
-                            {
-                                case ExcelXAxisDirectionEnum.Left:
-                                    newCol -= xOffset;
-                                    break;
-                                case ExcelXAxisDirectionEnum.Right:
-                                    newCol += xOffset;
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException(nameof(xDir));
-                            }
-
-                            Excel.Range newRange = ws.Cells[newRow, newCol];
-                            if (newRange == null)
-                                throw new ArgumentException($"Invalid relative position calculated.");
-
+                            Excel.Range newRange = worksheet.Cells[newRow, newCol];
                             newRange.Select();
                             break;
                         }

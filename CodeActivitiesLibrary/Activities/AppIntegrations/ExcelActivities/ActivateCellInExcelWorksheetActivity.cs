@@ -3,25 +3,19 @@ using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.ComponentModel;
-using System.Linq;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Activate Cell in Excel Worksheet")]
-    [Description(
-        "Activates a specific cell in the active worksheet of an Excel instance based on absolute position, relative offset, or named range.")]
+    [Description("Activates a specific cell in the given worksheet based on absolute position, relative offset, or named range.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class ActivateCellInExcelWorksheetActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The specific worksheet where the cell should be activated. If not provided, the active worksheet will be used.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Activation Mode")]
@@ -29,24 +23,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DefaultValue(ActivationModeEnum.Absolute)]
         public InArgument<ActivationModeEnum> ActivationMode { get; set; }
 
-
         [DisplayName("Column")]
         [Description("The column letter (e.g., 'A', 'B') or number (e.g., 1, 2) of the target cell.")]
         [RenderIfCondition(nameof(ActivationMode), ActivationModeEnum.Absolute)]
         public InArgument<string> Column { get; set; }
-
 
         [DisplayName("Row")]
         [Description("The row number of the target cell.")]
         [RenderIfCondition(nameof(ActivationMode), ActivationModeEnum.Absolute)]
         public InArgument<int> Row { get; set; }
 
-
         [DisplayName("Name")]
         [Description("The name of the named range or cell to activate.")]
         [RenderIfCondition(nameof(ActivationMode), ActivationModeEnum.NamedRange)]
         public InArgument<string> Name { get; set; }
-
 
         [DisplayName("Direction")]
         [Description("The direction to move from the currently active cell when activating relatively.")]
@@ -54,35 +44,37 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [RenderIfCondition(nameof(ActivationMode), ActivationModeEnum.Relative)]
         public InArgument<CellMoveDirectionEnum> Direction { get; set; }
 
-
         [DisplayName("Offset From Active Cell")]
         [Description("Number of cells to move from the current active cell when activating relatively.")]
         [RenderIfCondition(nameof(ActivationMode), ActivationModeEnum.Relative)]
         public InArgument<int> OffsetFromActiveCell { get; set; }
 
-        // ----------------------
-        // Execution Logic
-        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Success";
 
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var worksheet = WorksheetInstance.Get(context);
                 var activationMode = ActivationMode.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+                if (worksheet == null)
+                {
+                    var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                    worksheet = excelApp?.ActiveSheet as Excel.Worksheet;
+                }
 
-                if (!(excelApp.ActiveSheet is Excel.Worksheet worksheet))
-                    throw new InvalidOperationException("Worksheet is not available.");
+                if (worksheet == null)
+                    throw new InvalidOperationException("No active worksheet found to perform cell activation.");
 
                 switch (activationMode)
                 {
                     case ActivationModeEnum.Absolute:
                         var row = Row.Get(context);
                         var colStr = Column.Get(context);
+
+                        if (string.IsNullOrWhiteSpace(colStr))
+                            throw new ArgumentException("Column must be provided for absolute activation.");
 
                         if (!int.TryParse(colStr, out var colNum))
                             // Convert column letter (like "A", "B") to number
@@ -96,65 +88,46 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         var direction = Direction.Get(context);
                         var offset = OffsetFromActiveCell.Get(context);
 
-                        if (excelApp.ActiveCell is Excel.Range activeCell)
+                        if (!(worksheet.Application.ActiveCell is Excel.Range activeCell))
+                            throw new InvalidOperationException("No active cell found to move relative from.");
+
+                        Excel.Range targetCell = null;
+
+                        switch (direction)
                         {
-                            Excel.Range targetCell = null;
-
-                            switch (direction)
-                            {
-                                case CellMoveDirectionEnum.Up:
-                                    targetCell = activeCell.Offset[-offset, 0];
-                                    break;
-                                case CellMoveDirectionEnum.Down:
-                                    targetCell = activeCell.Offset[offset, 0];
-                                    break;
-                                case CellMoveDirectionEnum.Left:
-                                    targetCell = activeCell.Offset[0, -offset];
-                                    break;
-                                case CellMoveDirectionEnum.Right:
-                                    targetCell = activeCell.Offset[0, offset];
-                                    break;
-                            }
-
-                            if (targetCell != null)
-                            {
-                                targetCell.Select();
-                                status = $"Activated cell {offset} cells {direction} from active cell.";
-                            }
-                            else
-                            {
-                                status = "Failed to calculate relative cell.";
-                            }
-
-                            // Optional: release COM objects
-                            GC.KeepAlive(targetCell);
-                            GC.KeepAlive(activeCell);
-                        }
-                        else
-                        {
-                            status = "No active cell found.";
+                            case CellMoveDirectionEnum.Up:
+                                targetCell = activeCell.Offset[-offset, 0];
+                                break;
+                            case CellMoveDirectionEnum.Down:
+                                targetCell = activeCell.Offset[offset, 0];
+                                break;
+                            case CellMoveDirectionEnum.Left:
+                                targetCell = activeCell.Offset[0, -offset];
+                                break;
+                            case CellMoveDirectionEnum.Right:
+                                targetCell = activeCell.Offset[0, offset];
+                                break;
                         }
 
+                        targetCell?.Select();
+                        status = $"Activated cell {offset} cells {direction} from active cell.";
                         break;
 
                     case ActivationModeEnum.NamedRange:
                         var name = Name.Get(context);
+                        if (string.IsNullOrWhiteSpace(name))
+                            throw new ArgumentException("Named range name cannot be empty.");
+
                         var range = worksheet.Range[name];
+                        if (range == null)
+                            throw new ArgumentException($"Named range '{name}' not found.");
 
-                        if (range != null)
-                        {
-                            range.Select();
-                            status = $"Activated named range '{name}'.";
-                        }
-                        else
-                        {
-                            status = $"Named range '{name}' not found.";
-                        }
-
+                        range.Select();
+                        status = $"Activated named range '{name}'.";
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(activationMode), "Invalid activation mode.");
                 }
 
                 IsSuccess.Set(context, true);
@@ -174,16 +147,19 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             }
         }
 
-        // Helper method to convert column letters to numbers
+        // Helper method to convert column letters (A, B, C, ...) to numeric index
         private static int GetColumnIndex(string columnName)
         {
-            if (string.IsNullOrEmpty(columnName)) return -1;
+            if (string.IsNullOrEmpty(columnName))
+                throw new ArgumentException("Column name cannot be null or empty.");
 
             columnName = columnName.ToUpperInvariant();
-
             int columnIndex = 0;
+
             foreach (char c in columnName)
             {
+                if (c < 'A' || c > 'Z')
+                    throw new ArgumentException($"Invalid column letter '{c}' in '{columnName}'.");
                 columnIndex = columnIndex * 26 + (c - 'A' + 1);
             }
 

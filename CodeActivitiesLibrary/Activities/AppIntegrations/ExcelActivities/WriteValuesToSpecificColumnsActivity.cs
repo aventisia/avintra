@@ -14,10 +14,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class WriteValuesToSpecificColumnsActivity : BaseCodeActivity
     {
+       
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The Excel Worksheet instance where values will be written.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Values to Write")]
@@ -38,13 +39,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         {
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+               
+                var worksheet = WorksheetInstance.Get(context);
                 var rawValues = ValuesToWrite.Get(context);
                 var rawColumns = TargetColumns.Get(context);
                 var rowNumber = Row.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or active worksheet is not available.");
+                 if (worksheet == null)
+                 {
+                      var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                       worksheet = excelApp?.ActiveSheet as Excel.Worksheet;
+                 }
+
+                 if (worksheet == null)
+                   throw new InvalidOperationException("No valid worksheet is available in the provided workbook.");
 
                 if (rowNumber <= 0)
                     throw new ArgumentException("Row number must be greater than zero.");
@@ -66,8 +74,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                     throw new ArgumentException(
                         $"Number of values ({valuesList.Count}) must match number of columns ({columnsList.Count}).");
 
-                Excel.Worksheet ws = excelApp.ActiveSheet;
-
+                // Write each value to its specified column in the same row
                 for (int i = 0; i < valuesList.Count; i++)
                 {
                     string colLetter = columnsList[i]?.Trim();
@@ -75,7 +82,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         throw new ArgumentException($"Column letter at position {i + 1} is null or empty.");
 
                     int colIndex = ConvertColumnLetterToIndex(colLetter);
-                    Excel.Range cell = ws.Cells[rowNumber, colIndex];
+                    Excel.Range cell = worksheet.Cells[rowNumber, colIndex];
                     cell.Value = FormatCellValue(valuesList[i]);
 
                     if (valuesList[i] is string str && str.Contains("\n"))
@@ -83,7 +90,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 }
 
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $"Successfully wrote {valuesList.Count} values to row {rowNumber} in Excel.");
+                StatusMessage.Set(context, $"Successfully wrote {valuesList.Count} values to row {rowNumber}.");
             }
             catch (Exception ex)
             {

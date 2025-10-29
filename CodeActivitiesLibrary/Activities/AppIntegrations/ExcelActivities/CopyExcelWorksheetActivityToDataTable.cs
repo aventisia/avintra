@@ -9,7 +9,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Copy Range from Excel Worksheet to DataTable")]
-    [Description("Copies a specified range of cells from the active worksheet of an Excel instance into a DataTable.")]
+    [Description("Copies a specified range of cells from the provided Excel worksheet into a DataTable.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class CopyExcelWorksheetActivityToDataTable : BaseCodeActivity
     {
@@ -18,9 +18,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the source worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The Excel Worksheet object from which the data will be copied.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Range to Copy")]
@@ -35,7 +35,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-
         [DisplayName("Copied Data")]
         [Description("Returns the copied data as a DataTable for further processing.")]
         public OutArgument<DataTable> CopiedData { get; set; }
@@ -45,27 +44,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
             DataTable dataTable = new DataTable();
-
-            Excel.Application excelApp = null;
             Excel.Worksheet worksheet = null;
             Excel.Range xlRange = null;
+            string status = string.Empty;
 
             try
             {
                 // Get input arguments
-                excelApp = ExcelApplication.Get(context);
+                worksheet = WorksheetInstance.Get(context);
                 string rangeAddress = RangeToCopy.Get(context);
                 bool hasHeaders = HasHeaders.Get(context);
 
-                // Validate application and workbook
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or workbook is not available.");
-
-                worksheet = excelApp.ActiveSheet as Excel.Worksheet;
                 if (worksheet == null)
-                    throw new InvalidOperationException("Failed to retrieve active worksheet.");
+                    throw new InvalidOperationException("Worksheet instance is required and cannot be null.");
 
                 // Get the target range
                 xlRange = worksheet.Range[rangeAddress];
@@ -107,16 +99,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                     dataTable.Rows.Add(row);
                 }
 
-                status = $"Successfully copied range '{rangeAddress}' into DataTable.";
                 CopiedData.Set(context, dataTable);
                 IsSuccess.Set(context, true);
+                status = $"Successfully copied range '{rangeAddress}' into DataTable.";
                 StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
-                status = $"Error copying Excel range to DataTable: {ex.Message}";
                 CopiedData.Set(context, null);
                 IsSuccess.Set(context, false);
+                status = $"Error copying Excel range to DataTable: {ex.Message}";
                 StatusMessage.Set(context, status);
             }
             finally
@@ -124,7 +116,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 // Clean up COM objects
                 ReleaseObject(xlRange);
                 ReleaseObject(worksheet);
-                StatusMessage.Set(context, status);
             }
         }
 

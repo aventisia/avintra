@@ -10,8 +10,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Copy Cells from Excel Worksheet")]
-    [Description(
-        "Copies a specified range of cells from an Excel worksheet for later use or pasting into another worksheet.")]
+    [Description("Copies a specified range of cells from an Excel worksheet for later use or pasting into another worksheet.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class CopyCellsFromExcelWorksheetActivity : BaseCodeActivity
     {
@@ -20,9 +19,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the source worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The Excel Worksheet object from which to copy data.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Copy Mode")]
@@ -30,41 +29,30 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DefaultValue(CellCopyModeEnum.SingleCell)]
         public InArgument<CellCopyModeEnum> CopyMode { get; set; }
 
-
-        [DisplayName("Source Worksheet Name")]
-        [Description("Name of the worksheet in the source Excel application.")]
-        public InArgument<string> SourceWorksheetName { get; set; }
-
-
         [DisplayName("Source Range Address")]
         [Description("The range address (e.g., 'A1:B10') in the source worksheet to copy.")]
         [RenderIfCondition(nameof(CopyMode), CellCopyModeEnum.RangeOfCells)]
         public InArgument<string> SourceRangeAddress { get; set; }
-
 
         [DisplayName("Start Column")]
         [Description("The starting column of the range to copy.")]
         [RenderIfCondition(nameof(CopyMode), CellCopyModeEnum.RangeOfCells)]
         public InArgument<string> StartColumn { get; set; }
 
-
         [DisplayName("Start Row")]
         [Description("The starting row of the range to copy.")]
         [RenderIfCondition(nameof(CopyMode), CellCopyModeEnum.RangeOfCells)]
         public InArgument<int> StartRow { get; set; }
-
 
         [DisplayName("End Column")]
         [Description("The ending column of the range to copy.")]
         [RenderIfCondition(nameof(CopyMode), CellCopyModeEnum.RangeOfCells)]
         public InArgument<string> EndColumn { get; set; }
 
-
         [DisplayName("End Row")]
         [Description("The ending row of the range to copy.")]
         [RenderIfCondition(nameof(CopyMode), CellCopyModeEnum.RangeOfCells)]
         public InArgument<int> EndRow { get; set; }
-
 
         [DisplayName("Name")]
         [Description("The name of the named range to copy.")]
@@ -72,36 +60,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<string> Name { get; set; }
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
-        // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Success";
-            Excel.Application excelApp = null;
             Excel.Worksheet worksheet = null;
 
             try
             {
-                excelApp = ExcelApplication.Get(context);
-                var copyMode = CopyMode.Get(context);
-
-                if (excelApp?.ActiveWorkbook == null)
-                    throw new InvalidOperationException("Excel application or workbook is not available.");
-
-                string worksheetName = SourceWorksheetName.Get(context);
-                var workbook = excelApp.ActiveWorkbook;
-
-                worksheet = string.IsNullOrEmpty(worksheetName)
-                    ? (Excel.Worksheet)workbook.ActiveSheet
-                    : (Excel.Worksheet)workbook.Worksheets[worksheetName];
-
+                worksheet = WorksheetInstance.Get(context);
                 if (worksheet == null)
-                    throw new InvalidOperationException($"Worksheet '{worksheetName}' not found.");
+                    throw new InvalidOperationException("Worksheet instance is null or invalid.");
+
+                var copyMode = CopyMode.Get(context);
 
                 switch (copyMode)
                 {
@@ -124,7 +96,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                     case CellCopyModeEnum.NamedCells:
                         {
                             var name = Name.Get(context);
-                            var namedItem = worksheet.Names.Item(name);
+                            var namedItem = worksheet.Names.Cast<Excel.Name>().FirstOrDefault(n => n.Name == name);
                             if (namedItem == null)
                                 throw new InvalidOperationException($"Named range '{name}' not found.");
 
@@ -146,7 +118,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                     case CellCopyModeEnum.Selection:
                         {
-                            var selection = excelApp.Selection as Excel.Range;
+                            var selection = worksheet.Application.Selection as Excel.Range;
                             if (selection != null)
                             {
                                 selection.Copy();
@@ -157,7 +129,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             {
                                 status = "No range is currently selected.";
                             }
-
+                            
                             break;
                         }
 
@@ -198,12 +170,12 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             }
             finally
             {
-                if (worksheet != null) Marshal.ReleaseComObject(worksheet);
-                // Don't release excelApp unless you're sure it was created by this activity
+                if (worksheet != null)
+                    Marshal.ReleaseComObject(worksheet);
             }
         }
 
-        // Helper method to convert column letters to numbers
+         // Helper method to convert column letters to numbers
         private static int GetColumnIndex(string columnName)
         {
             if (string.IsNullOrEmpty(columnName)) return -1;

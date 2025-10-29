@@ -7,7 +7,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get First Free Row on Column from Excel Worksheet")]
-    [Description("Retrieves the first free row number for a specific column from the active worksheet.")]
+    [Description("Retrieves the first free row number for a specific column from the given worksheet.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class GetFirstFreeRowOnColumnFromExcelWorksheetActivity : BaseCodeActivity
     {
@@ -16,9 +16,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Workbook Instance")]
+        [Description("The Excel Workbook instance containing the target worksheet.")]
+        public InArgument<Excel.Workbook> WorkbookInstance { get; set; }
+
+        [RequiredArgument]
+        [DisplayName("Worksheet Instance")]
+        [Description("The target Excel worksheet instance to analyze.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Column Index")]
@@ -29,7 +34,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-
         [DisplayName("First Free Row")]
         [Description("Returns the first free row number in the specified column.")]
         public OutArgument<int> FirstFreeRow { get; set; }
@@ -39,45 +43,54 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
-            var result = 0;
-
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var workbook = WorkbookInstance.Get(context);
+                var worksheet = WorksheetInstance.Get(context);
                 var colIndex = ColumnIndex.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+                if (workbook == null)
+                    throw new InvalidOperationException("Workbook instance is required but was not provided.");
 
-                if (!(excelApp.ActiveSheet is Excel.Worksheet ws))
-                    throw new InvalidOperationException("Active sheet is not available or not a valid worksheet.");
+                if (worksheet == null)
+                    worksheet = workbook.ActiveSheet as Excel.Worksheet;
 
-                // Validate column index
-                if (colIndex < 1 || colIndex > ws.Columns.Count)
-                    throw new ArgumentException(
-                        $"Invalid column index: {colIndex}. Must be between 1 and {ws.Columns.Count}.");
+                if (worksheet == null)
+                    throw new InvalidOperationException("Worksheet instance is not available or invalid.");
 
-                // Find the last used cell in the specified column
+                if (colIndex < 1 || colIndex > worksheet.Columns.Count)
+                    throw new ArgumentOutOfRangeException(nameof(colIndex),
+                        $"Invalid column index {colIndex}. Must be between 1 and {worksheet.Columns.Count}.");
 
-                if (!(ws.Cells[ws.Rows.Count, colIndex] is Excel.Range lastCell))
-                    throw new InvalidOperationException($"Column {colIndex} does not exist in the active worksheet.");
+                // Get the column range
+                Excel.Range columnRange = worksheet.Columns[colIndex];
+                if (columnRange == null)
+                    throw new InvalidOperationException($"Column {colIndex} could not be accessed in the worksheet.");
 
-                // Find the first empty cell below the last used cell
-                var nextEmptyCell = (Excel.Range)lastCell.End[Excel.XlDirection.xlUp].Offset[1, 0];
+                // Find the last used cell in that column
+                Excel.Range lastUsedCell = worksheet.Cells[worksheet.Rows.Count, colIndex].End[Excel.XlDirection.xlUp];
 
-                result = nextEmptyCell.Row;
-                FirstFreeRow.Set(context, result);
+                int firstFreeRow;
+                // Handle case where column is completely empty
+                if (lastUsedCell.Row == 1 && string.IsNullOrEmpty(Convert.ToString(lastUsedCell.Value2)))
+                {
+                    firstFreeRow = 1;
+                }
+                else
+                {
+                    firstFreeRow = lastUsedCell.Row + 1;
+                }
+
+                // Set outputs
+                FirstFreeRow.Set(context, firstFreeRow);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"First free row in column {colIndex}: {firstFreeRow}");
             }
             catch (Exception ex)
             {
-                status = $"Error retrieving first free row: {ex.Message}";
-                result = 0;
-                FirstFreeRow.Set(context, result);
+                FirstFreeRow.Set(context, 0);
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error retrieving first free row: {ex.Message}");
             }
         }
     }

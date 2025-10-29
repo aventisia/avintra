@@ -3,6 +3,8 @@ using Microsoft.Office.Interop.Excel;
 using System;
 using System.Activities;
 using System.ComponentModel;
+using System.IO;
+using System.Reflection;
 
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
@@ -19,58 +21,80 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [RequiredArgument]
         [DisplayName("Visible")]
         [Description("Set to true if you want the Excel application to be visible during automation.")]
-        public InArgument<bool> Visible { get; set; }
+        public InArgument<bool> Visible { get; set; } = new InArgument<bool>(false);
 
-        [DisplayName("Workbook")]
+        [DisplayName("Open as ReadOnly")]
+        [Description("If true, opens the workbook in read-only mode.")]
+        public InArgument<bool> OpenAsReadOnly { get; set; } = new InArgument<bool>(false);
+
+        [DisplayName("Read Protection Password")]
+        [Description("Password to open the workbook if it is protected.")]
+        public InArgument<string> ReadProtectionPassword { get; set; }
+
+        [DisplayName("Workbook Instance")]
         [Description("The opened Excel Workbook object.")]
-        public OutArgument<Workbook> Workbook { get; set; }
+        public OutArgument<Workbook> WorkbookInstance { get; set; }
 
         [DisplayName("Excel Application")]
-        [Description("The Excel Application instance (used for later close).")]
+        [Description("The Excel Application instance (used for later operations or close).")]
         public OutArgument<Application> ExcelApp { get; set; }
 
         protected override void Execute(CodeActivityContext context)
         {
             string filePath = FilePath.Get(context);
             bool visible = Visible.Get(context);
-            bool isSuccess;
-            string statusMessage;
-            Workbook workbook = null;
-            Application excelApp = null;
+            bool readOnly = OpenAsReadOnly.Get(context);
+            string password = ReadProtectionPassword.Get(context);
 
-            if (string.IsNullOrWhiteSpace(filePath))
+            bool isSuccess = false;
+            string statusMessage;
+            Application excelApp = null;
+            Workbook workbook = null;
+
+            try
             {
-                isSuccess = false;
-                statusMessage = "File path is not provided.";
+                // Validate file path
+                if (string.IsNullOrWhiteSpace(filePath))
+                    throw new ArgumentException("File path is not provided.");
+
+                if (!File.Exists(filePath))
+                    throw new FileNotFoundException($"Excel file not found at: {filePath}");
+
+                // Create Excel application
+                excelApp = new Application
+                {
+                    Visible = visible,
+                    DisplayAlerts = false
+                };
+
+                // Open workbook
+                workbook = excelApp.Workbooks.Open(
+                    Filename: filePath,
+                    ReadOnly: readOnly,
+                    Password: password
+                );
+
+                isSuccess = true;
+                statusMessage = $"Workbook '{Path.GetFileName(filePath)}' opened successfully.";
             }
-            else if (!System.IO.File.Exists(filePath))
+            catch (Exception ex)
             {
-                isSuccess = false;
-                statusMessage = $"The specified Excel file was not found: {filePath}";
-            }
-            else
-            {
+                statusMessage = $"Error opening workbook: {ex.Message}";
+
+                // Clean up if Excel failed
                 try
                 {
-                    excelApp = new Application
-                    {
-                        Visible = visible,
-                        DisplayAlerts = false
-                    };
+                    workbook?.Close(false);
+                    excelApp?.Quit();
+                }
+                catch { /* Ignore cleanup errors */ }
 
-                    workbook = excelApp.Workbooks.Open(filePath);
-                    isSuccess = true;
-                    statusMessage = $"Workbook '{filePath}' opened successfully.";
-                }
-                catch (Exception ex)
-                {
-                    isSuccess = false;
-                    statusMessage = $"Error opening workbook: {ex.Message}";
-                }
+                workbook = null;
+                excelApp = null;
             }
 
             // Set output arguments
-            Workbook.Set(context, workbook);
+            WorkbookInstance.Set(context, workbook);
             ExcelApp.Set(context, excelApp);
             IsSuccess.Set(context, isSuccess);
             StatusMessage.Set(context, statusMessage);

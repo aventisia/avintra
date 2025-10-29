@@ -9,7 +9,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Delete Range from Excel Worksheet")]
-    [Description("Deletes a range of cells from the active worksheet of an Excel instance.")]
+    [Description("Deletes a range of cells or a single cell from the specified Excel worksheet.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class DeleteFromExcelWorksheetActivity : BaseCodeActivity
     {
@@ -18,9 +18,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The Excel Worksheet object to delete cells from.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Deletion Mode")]
@@ -28,40 +28,30 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DefaultValue(CellDeletionModeEnum.RangeOfCells)]
         public InArgument<CellDeletionModeEnum> DeletionMode { get; set; }
 
-
         [DisplayName("Start Column")]
-        [Description("The starting column of the range to delete.")]
+        [Description("The starting column of the range to delete (letter or number).")]
         [RenderIfCondition(nameof(DeletionMode), CellDeletionModeEnum.RangeOfCells)]
         public InArgument<string> StartColumn { get; set; }
 
-
         [DisplayName("End Column")]
-        [Description("The ending column of the range to delete.")]
+        [Description("The ending column of the range to delete (letter or number).")]
         [RenderIfCondition(nameof(DeletionMode), CellDeletionModeEnum.RangeOfCells)]
         public InArgument<string> EndColumn { get; set; }
-
 
         [DisplayName("Start Row")]
         [Description("The starting row of the range to delete.")]
         [RenderIfCondition(nameof(DeletionMode), CellDeletionModeEnum.RangeOfCells)]
         public InArgument<int> StartRow { get; set; }
 
-
         [DisplayName("End Row")]
         [Description("The ending row of the range to delete.")]
         [RenderIfCondition(nameof(DeletionMode), CellDeletionModeEnum.RangeOfCells)]
         public InArgument<int> EndRow { get; set; }
 
-
         [DisplayName("Shift Direction")]
         [Description("Specifies how to shift remaining cells after deletion.")]
         [DefaultValue(CellShiftDirectionEnum.Up)]
         public InArgument<CellShiftDirectionEnum> ShiftDirection { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
 
         // ----------------------
         // Execution Logic
@@ -71,15 +61,12 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             var status = "Success";
 
             try
-            {
-                var excelApp = ExcelApplication.Get(context);
+            {           
+                var worksheet = WorksheetInstance.Get(context);
                 var deletionMode = DeletionMode.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
-
-                if (!(excelApp.ActiveSheet is Excel.Worksheet ws))
-                    throw new InvalidOperationException("Active sheet is not a valid Excel worksheet.");
+                if (worksheet == null)
+                    throw new InvalidOperationException("Worksheet instance cannot be null.");
 
                 switch (deletionMode)
                 {
@@ -88,11 +75,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             var colStr = StartColumn.Get(context);
                             var row = StartRow.Get(context);
 
-                            if (!int.TryParse(colStr, out var colNum))
-                                // Convert column letter (like "A", "B") to number
+                            if (row <= 0)
+                                throw new ArgumentOutOfRangeException(nameof(StartRow), "Row index must be greater than 0.");
+
+                            int colNum;
+                            if (!int.TryParse(colStr, out colNum))
                                 colNum = GetColumnIndex(colStr);
 
-                            if (!(ws.Cells[row, colNum] is Excel.Range targetCell))
+                            var targetCell = worksheet.Cells[row, colNum] as Excel.Range;
+                            if (targetCell == null)
                                 throw new InvalidOperationException($"Cell at Row {row}, Column {colStr} does not exist.");
 
                             targetCell.Delete();
@@ -107,13 +98,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             var startRow = StartRow.Get(context);
                             var endRow = EndRow.Get(context);
 
-                            int startColNum, endColNum;
+                            if (startRow <= 0 || endRow <= 0)
+                                throw new ArgumentOutOfRangeException(nameof(StartRow), "Row indexes must be greater than 0.");
 
-                            if (!int.TryParse(startColStr, out startColNum)) startColNum = GetColumnIndex(startColStr);
+                            int startColNum = int.TryParse(startColStr, out var tmpStart) ? tmpStart : GetColumnIndex(startColStr);
+                            int endColNum = int.TryParse(endColStr, out var tmpEnd) ? tmpEnd : GetColumnIndex(endColStr);
 
-                            if (!int.TryParse(endColStr, out endColNum)) endColNum = GetColumnIndex(endColStr);
-
-                            var range = ws.Range[ws.Cells[startRow, startColNum], ws.Cells[endRow, endColNum]];
+                            var range = worksheet.Range[worksheet.Cells[startRow, startColNum], worksheet.Cells[endRow, endColNum]];
                             var shiftDirection = ShiftDirection.Get(context);
 
                             switch (shiftDirection)
@@ -130,8 +121,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                                     throw new ArgumentOutOfRangeException(nameof(shiftDirection));
                             }
 
-                            status =
-                                $"Deleted range from Row {startRow}, Column {startColStr} to Row {endRow}, Column {endColStr}.";
+                            status = $"Deleted range from Row {startRow}, Column {startColStr} to Row {endRow}, Column {endColStr}.";
                             break;
                         }
 
@@ -149,7 +139,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             }
         }
 
-        // Helper method to convert column letters to numbers
+       // Helper method to convert column letters to numbers
         private int GetColumnIndex(string columnName)
         {
             if (string.IsNullOrEmpty(columnName)) return -1;

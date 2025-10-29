@@ -7,7 +7,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Active Excel Worksheet")]
-    [Description("Retrieves the name and index of the currently active worksheet in an Excel instance.")]
+    [Description("Retrieves the name and index of the currently active worksheet in a given Excel workbook.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class GetActiveExcelWorksheetActivity : BaseCodeActivity
     {
@@ -16,59 +16,60 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target workbook.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Workbook Instance")]
+        [Description("The Excel Workbook object from which to retrieve the active worksheet.")]
+        public InArgument<Excel.Workbook> WorkbookInstance { get; set; }
 
         // ----------------------
         // Output Arguments
         // ----------------------
 
-
         [DisplayName("Sheet Name")]
         [Description("Returns the name of the currently active worksheet.")]
         public OutArgument<string> SheetName { get; set; }
 
-
         [DisplayName("Sheet Index")]
         [Description("Returns the index of the currently active worksheet.")]
         public OutArgument<int> SheetIndex { get; set; }
+
+        [DisplayName("Active Worksheet Instance")]
+        [Description("Returns the active worksheet instance.")]
+        public OutArgument<Excel.Worksheet> ActiveWorksheet { get; set; }
 
         // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var sheetName = "";
-            var sheetIndex = 0;
+            string sheetName = "";
+            int sheetIndex = 0;
 
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var workbook = WorkbookInstance.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null)
-                    throw new InvalidOperationException("Excel application or workbook is not available.");
+                if (workbook == null)
+                    throw new InvalidOperationException("Workbook instance cannot be null.");
 
-                var wb = excelApp.ActiveWorkbook;
-
-                if (!(wb.ActiveSheet is Excel.Worksheet ws))
-                    throw new InvalidOperationException("No active worksheet found.");
+                if (!(workbook.ActiveSheet is Excel.Worksheet ws))
+                    throw new InvalidOperationException("No active worksheet found in the workbook.");
 
                 sheetName = ws.Name;
                 sheetIndex = ws.Index;
 
-
+                // Set outputs
                 SheetName.Set(context, sheetName);
                 SheetIndex.Set(context, sheetIndex);
+                ActiveWorksheet.Set(context, ws);
+
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Retrieved active excel sheet successfully");
+                StatusMessage.Set(context, $"Active worksheet retrieved successfully: {sheetName}");
             }
             catch (Exception ex)
             {
-                sheetName = "";
-                sheetIndex = 0;
-                SheetName.Set(context, sheetName);
-                SheetIndex.Set(context, sheetIndex);
+                SheetName.Set(context, "");
+                SheetIndex.Set(context, 0);
+                ActiveWorksheet.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error retrieving active worksheet: {ex.Message}");
             }

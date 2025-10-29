@@ -7,7 +7,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Table Range from Excel Worksheet")]
-    [Description("Retrieves the range address (e.g., 'A1:B10') of a specified table in the active Excel worksheet.")]
+    [Description("Retrieves the range address (e.g., 'A1:B10') of a specified table or pivot table in the provided Excel worksheet.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class GetTableRangeFromExcelWorksheetActivity : BaseCodeActivity
     {
@@ -16,15 +16,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The Excel Worksheet object containing the target table or pivot table.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Table Name")]
         [Description("The name of the table (ListObject) or pivot table to retrieve the range for.")]
         public InArgument<string> TableName { get; set; }
-
 
         [DisplayName("Is Pivot Table")]
         [Description("If true, retrieves the range of a pivot table instead of a regular table.")]
@@ -34,21 +33,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Output Arguments
         // ----------------------
 
-
         [DisplayName("First Column Index")]
         [Description("Returns the column index of the first cell in the table range.")]
         public OutArgument<int> FirstColumnIndex { get; set; }
-
 
         [DisplayName("First Row Index")]
         [Description("Returns the row index of the first cell in the table range.")]
         public OutArgument<int> FirstRowIndex { get; set; }
 
-
         [DisplayName("Last Column Index")]
         [Description("Returns the column index of the last cell in the table range.")]
         public OutArgument<int> LastColumnIndex { get; set; }
-
 
         [DisplayName("Last Row Index")]
         [Description("Returns the row index of the last cell in the table range.")]
@@ -59,68 +54,80 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var worksheet = WorksheetInstance.Get(context);
                 var tableName = TableName.Get(context);
                 var isPivotTable = IsPivotTable.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+                if (worksheet == null)
+                    throw new InvalidOperationException("Worksheet instance is required but was not provided.");
 
-                if (!(excelApp.ActiveSheet is Excel.Worksheet ws))
-                    throw new InvalidOperationException("Active sheet is not a valid Excel worksheet.");
+                if (string.IsNullOrWhiteSpace(tableName))
+                    throw new ArgumentException("Table name must be provided.");
 
                 Excel.Range tableRange = null;
 
                 if (isPivotTable)
-                    // Find pivot table by name
-                    foreach (var pt in ws.PivotTables())
+                {
+                    // --- Retrieve Pivot Table ---
+                    foreach (Excel.PivotTable pt in worksheet.PivotTables())
                     {
-                        if (!(pt.Name ?? "").Equals(tableName, StringComparison.OrdinalIgnoreCase)) continue;
-                        tableRange = pt.TableRange1;
-                        break;
+                        if ((pt.Name ?? "").Equals(tableName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            tableRange = pt.TableRange1;
+                            break;
+                        }
                     }
+                }
                 else
-                    // Find regular table (ListObject) by name
-                    try
+                {
+                    // --- Retrieve Regular Excel Table (ListObject) ---
+                    Excel.ListObject table = null;
+                    foreach (Excel.ListObject lo in worksheet.ListObjects)
                     {
-                        var table = ws.ListObjects[tableName];
-                        tableRange = table.Range;
+                        if ((lo.Name ?? "").Equals(tableName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            table = lo;
+                            break;
+                        }
                     }
-                    catch
-                    {
-                        throw new ArgumentException($"Table '{tableName}' not found.");
-                    }
+
+                    if (table == null)
+                        throw new ArgumentException($"Table '{tableName}' not found in worksheet '{worksheet.Name}'.");
+
+                    tableRange = table.Range;
+                }
 
                 if (tableRange == null)
-                    throw new InvalidOperationException("Table range could not be retrieved.");
+                    throw new InvalidOperationException($"Table or PivotTable '{tableName}' not found or range could not be retrieved.");
 
-                // Extract range bounds
-                var firstCol = tableRange.Column;
-                var firstRow = tableRange.Row;
-                var lastCol = tableRange.Columns.Count + firstCol - 1;
-                var lastRow = tableRange.Rows.Count + firstRow - 1;
+                // --- Extract Range Boundaries ---
+                int firstCol = tableRange.Column;
+                int firstRow = tableRange.Row;
+                int lastCol = firstCol + tableRange.Columns.Count - 1;
+                int lastRow = firstRow + tableRange.Rows.Count - 1;
 
+                // --- Set Output Arguments ---
                 FirstColumnIndex.Set(context, firstCol);
                 FirstRowIndex.Set(context, firstRow);
                 LastColumnIndex.Set(context, lastCol);
                 LastRowIndex.Set(context, lastRow);
 
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Retrieving table range successfully");
+                StatusMessage.Set(context, $"Successfully retrieved range for '{tableName}' (R{firstRow}C{firstCol} to R{lastRow}C{lastCol}).");
             }
             catch (Exception ex)
             {
-                IsSuccess.Set(context, true);
-                StatusMessage.Set(context, $"Error retrieving table range: {ex.Message}");
-                FirstColumnIndex.Set(context, null);
-                FirstRowIndex.Set(context, null);
-                LastColumnIndex.Set(context, null);
-                LastRowIndex.Set(context, null);
-            }
+                // --- Reset Outputs on Error ---
+                FirstColumnIndex.Set(context, 0);
+                FirstRowIndex.Set(context, 0);
+                LastColumnIndex.Set(context, 0);
+                LastRowIndex.Set(context, 0);
 
+                IsSuccess.Set(context, false);
+                StatusMessage.Set(context, $"Error retrieving table range: {ex.Message}");
+            }
         }
     }
 }

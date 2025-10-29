@@ -9,7 +9,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Filter Cells in Excel Worksheet")]
-    [Description("Filters cells in the active Excel worksheet based on criteria applied to a specific column.")]
+    [Description("Filters cells in the specified Excel worksheet based on criteria applied to a specific column.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class FilterCellsInExcelWorksheetActivity : BaseCodeActivity
     {
@@ -18,9 +18,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The Excel Worksheet object to apply the filter on.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Filter Mode")]
@@ -28,36 +28,30 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DefaultValue(ExcellFilterModeEnum.ActiveSheet)]
         public InArgument<ExcellFilterModeEnum> FilterMode { get; set; }
 
-
         [DisplayName("Start Column")]
         [Description("The starting column of the range to filter (required if 'Filter Mode' is 'Specific Range').")]
         [RenderIfCondition(nameof(FilterMode), ExcellFilterModeEnum.SpecificRange)]
         public InArgument<string> StartColumn { get; set; }
-
 
         [DisplayName("End Column")]
         [Description("The ending column of the range to filter (required if 'Filter Mode' is 'Specific Range').")]
         [RenderIfCondition(nameof(FilterMode), ExcellFilterModeEnum.SpecificRange)]
         public InArgument<string> EndColumn { get; set; }
 
-
         [DisplayName("Start Row")]
         [Description("The starting row of the range to filter (required if 'Filter Mode' is 'Specific Range').")]
         [RenderIfCondition(nameof(FilterMode), ExcellFilterModeEnum.SpecificRange)]
         public InArgument<int> StartRow { get; set; }
-
 
         [DisplayName("End Row")]
         [Description("The ending row of the range to filter (required if 'Filter Mode' is 'Specific Range').")]
         [RenderIfCondition(nameof(FilterMode), ExcellFilterModeEnum.SpecificRange)]
         public InArgument<int> EndRow { get; set; }
 
-
         [DisplayName("Named Cells")]
         [Description("The name of the named range to filter (required if 'Filter Mode' is 'NamedCells').")]
         [RenderIfCondition(nameof(FilterMode), ExcellFilterModeEnum.NamedCells)]
         public InArgument<string> NamedCells { get; set; }
-
 
         [DisplayName("Table Name")]
         [Description("The name of the table to filter (required if 'Filter Mode' is 'Table').")]
@@ -75,11 +69,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<string> FilterCriteria { get; set; }
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
-        // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
@@ -88,23 +77,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var worksheet = WorksheetInstance.Get(context);
                 var filterMode = FilterMode.Get(context);
                 var columnToFilter = ColumnToFilter.Get(context);
                 var filterCriteria = FilterCriteria.Get(context);
 
-                if (!(excelApp?.ActiveWorkbook?.ActiveSheet is Excel.Worksheet worksheet))
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
-
-                if (!(excelApp.ActiveSheet is Excel.Worksheet ws))
-                    throw new InvalidOperationException("Active sheet is not a valid Excel worksheet.");
+                if (worksheet == null)
+                    throw new InvalidOperationException("Worksheet instance is null.");
 
                 switch (filterMode)
                 {
                     case ExcellFilterModeEnum.ActiveSheet:
                         {
-                            var usedRange = ws.UsedRange;
-                            ApplyFilter(ws, usedRange, columnToFilter, filterCriteria);
+                            var usedRange = worksheet.UsedRange;
+                            ApplyFilter(worksheet, usedRange, columnToFilter, filterCriteria);
                             break;
                         }
 
@@ -115,39 +101,35 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             var startRow = StartRow.Get(context);
                             var endRow = EndRow.Get(context);
 
-                            int startColNum, endColNum;
+                            int startColNum = GetColumnIndex(worksheet, startColStr);
+                            int endColNum = GetColumnIndex(worksheet, endColStr);
 
-                            if (!int.TryParse(startColStr, out startColNum))
-                                startColNum = GetColumnIndex(ws, columnToFilter);
-
-                            if (!int.TryParse(endColStr, out endColNum)) endColNum = GetColumnIndex(ws, columnToFilter);
-
-                            var range = ws.Range[ws.Cells[startRow, startColNum], ws.Cells[endRow, endColNum]];
-                            ApplyFilter(ws, range, columnToFilter, filterCriteria);
+                            var range = worksheet.Range[worksheet.Cells[startRow, startColNum], worksheet.Cells[endRow, endColNum]];
+                            ApplyFilter(worksheet, range, columnToFilter, filterCriteria);
                             break;
                         }
 
                     case ExcellFilterModeEnum.NamedCells:
                         {
                             var namedRangeName = NamedCells.Get(context);
-                            var namedRange = ws.Names.Item(namedRangeName)?.RefersToRange;
+                            var namedRange = worksheet.Names.Item(namedRangeName)?.RefersToRange;
 
                             if (namedRange == null)
                                 throw new ArgumentException($"Named range '{namedRangeName}' not found.");
 
-                            ApplyFilter(ws, namedRange, columnToFilter, filterCriteria);
+                            ApplyFilter(worksheet, namedRange, columnToFilter, filterCriteria);
                             break;
                         }
 
                     case ExcellFilterModeEnum.Table:
                         {
                             var tableName = TableName.Get(context);
-                            var table = ws.ListObjects[tableName];
+                            var table = worksheet.ListObjects[tableName];
 
                             if (table == null)
                                 throw new ArgumentException($"Table '{tableName}' not found.");
 
-                            ApplyFilter(ws, table.Range, columnToFilter, filterCriteria);
+                            ApplyFilter(worksheet, table.Range, columnToFilter, filterCriteria);
                             break;
                         }
 
@@ -180,9 +162,12 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             range.AutoFilter(fieldIndex, filterCriteria);
         }
 
-        // Helper method to convert column letter (e.g., A, B) to index
+        // Helper: Convert column letter (A, B, etc.) to index
         private static int GetColumnIndex(Excel.Worksheet worksheet, string columnRef)
         {
+            if (string.IsNullOrWhiteSpace(columnRef))
+                throw new ArgumentException("Column reference cannot be null or empty.");
+
             if (int.TryParse(columnRef, out var index))
                 return index;
 

@@ -1,4 +1,6 @@
-﻿using CodeActivitiesLibrary.AppIntegrations.ExcelActivities.Enums;
+﻿
+
+using CodeActivitiesLibrary.AppIntegrations.ExcelActivities.Enums;
 using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
@@ -8,8 +10,8 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Set Active Excel Worksheet")]
-    [Description("Activates a specific worksheet in the active Excel workbook by name or index.")]
-    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
+    [Description("Activates a specific worksheet in the provided Excel workbook by name or index and outputs the active worksheet instance.")]
+
     public class SetActiveExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
@@ -17,94 +19,85 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target workbook.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Workbook Instance")]
+        [Description("The Excel Workbook object containing the target worksheets.")]
+        public InArgument<Excel.Workbook> WorkbookInstance { get; set; }
 
-        [RequiredArgument]
         [DisplayName("Selection Type")]
         [Description("Choose whether to select the worksheet by Name or Index.")]
         [DefaultValue(WorksheetSelectionTypeEnum.Name)]
         public InArgument<WorksheetSelectionTypeEnum> SelectionType { get; set; }
 
-        [RequiredArgument]
         [DisplayName("Search Value")]
-        [Description("The worksheet name (if selection type is 'Name') or index (if selection type is 'Index'). Can be string or integer depending on mode.")]
+        [Description("The worksheet name (if selection type is 'Name') or index (if selection type is 'Index').")]
         public InArgument<object> SearchValue { get; set; }
 
         // ----------------------
         // Output Arguments
         // ----------------------
 
+        [DisplayName("Worksheet Instance")]
+        [Description("Returns the activated Excel Worksheet instance.")]
+        public OutArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
+            string status = "Success";
 
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var workbook = WorkbookInstance.Get(context);
                 var selectionType = SelectionType.Get(context);
                 var searchValue = SearchValue.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null)
-                    throw new InvalidOperationException("Excel application or workbook is not available.");
+                if (workbook == null)
+                    throw new InvalidOperationException("Workbook instance is not provided or is invalid.");
 
-                var wb = excelApp.ActiveWorkbook;
+                Excel.Worksheet targetWorksheet = null;
 
+                // Determine worksheet by selection type
                 switch (selectionType)
                 {
                     case WorksheetSelectionTypeEnum.Name:
-                        {
-                            if (searchValue == null || !(searchValue is string sheetName) || string.IsNullOrWhiteSpace(sheetName))
-                                throw new ArgumentException("A valid worksheet name must be provided when using 'Name' mode.");
+                        if (searchValue == null || string.IsNullOrWhiteSpace(searchValue.ToString()))
+                            throw new ArgumentException("A valid worksheet name must be provided when using 'Name' mode.");
 
-                            if (!(wb.Worksheets[sheetName] is Excel.Worksheet ws))
-                                throw new ArgumentException($"Worksheet '{sheetName}' not found.");
-
-                            ws.Select();
-                            break;
-                        }
+                        targetWorksheet = workbook.Worksheets[searchValue.ToString()] as Excel.Worksheet;
+                        if (targetWorksheet == null)
+                            throw new ArgumentException($"Worksheet with name '{searchValue}' not found.");
+                        break;
 
                     case WorksheetSelectionTypeEnum.Index:
-                        {
-                            if (searchValue == null)
-                                throw new ArgumentException("Search value cannot be null in 'Index' mode.");
+                        if (searchValue == null)
+                            throw new ArgumentException("Worksheet index cannot be null in 'Index' mode'.");
 
-                            if (!(searchValue is int sheetIndex))
-                            {
-                                if (searchValue is string indexStr && int.TryParse(indexStr, out sheetIndex))
-                                {
-                                    // Try parsing from string if needed
-                                }
-                                else
-                                {
-                                    throw new ArgumentException("Invalid worksheet index provided. Must be an integer or string representation of an integer.");
-                                }
-                            }
+                        if (!int.TryParse(searchValue.ToString(), out int sheetIndex))
+                            throw new ArgumentException("Invalid worksheet index. Must be a valid integer.");
 
-                            if (!(wb.Worksheets[sheetIndex] is Excel.Worksheet ws))
-                                throw new ArgumentException($"Worksheet at index '{sheetIndex}' not found.");
-
-                            ws.Select();
-                            break;
-                        }
+                        targetWorksheet = workbook.Worksheets[sheetIndex] as Excel.Worksheet;
+                        if (targetWorksheet == null)
+                            throw new ArgumentException($"Worksheet at index '{sheetIndex}' not found.");
+                        break;
 
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(selectionType));
+                        throw new ArgumentOutOfRangeException(nameof(selectionType), "Invalid worksheet selection type.");
                 }
+
+                // Activate and output the worksheet
+                targetWorksheet?.Activate();
+                WorksheetInstance.Set(context, targetWorksheet);
 
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }
             catch (Exception ex)
             {
-                status = $"Error setting active worksheet: {ex.Message}";
+                WorksheetInstance.Set(context, null);
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error setting active worksheet: {ex.Message}");
             }
         }
     }

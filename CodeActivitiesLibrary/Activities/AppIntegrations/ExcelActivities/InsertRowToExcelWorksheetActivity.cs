@@ -7,7 +7,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Insert Row to Excel Worksheet")]
-    [Description("Inserts a new row above the selected row in the active Excel worksheet.")]
+    [Description("Inserts a new row above the specified row in the provided Excel worksheet.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class InsertRowToExcelWorksheetActivity : BaseCodeActivity
     {
@@ -16,9 +16,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The Excel Worksheet object where the new row will be inserted.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Row Index")]
@@ -26,34 +26,25 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<int> RowIndex { get; set; }
 
         // ----------------------
-        // Output Arguments
-        // ----------------------
-
-
-        // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var worksheet = WorksheetInstance.Get(context);
                 var rowIndex = RowIndex.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
-
-                if (!(excelApp.ActiveSheet is Excel.Worksheet ws))
-                    throw new InvalidOperationException("Active sheet is not a valid Excel worksheet.");
+                if (worksheet == null)
+                    throw new InvalidOperationException("Worksheet instance is required but was not provided.");
 
                 // Validate row index
-                if (rowIndex < 1 || rowIndex > ws.Rows.Count)
+                if (rowIndex < 1 || rowIndex > worksheet.Rows.Count)
                     throw new ArgumentOutOfRangeException(nameof(RowIndex),
-                        $"Row index must be between 1 and {ws.Rows.Count}.");
+                        $"Row index must be between 1 and {worksheet.Rows.Count}.");
 
-                // Insert new row at specified index (inserts above the given row)
-                (ws.Rows[rowIndex] as Excel.Range)?.Insert();
+                // Insert new row above the specified index
+                (worksheet.Rows[rowIndex] as Excel.Range)?.Insert();
 
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, $"Successfully inserted new row above row {rowIndex}.");
@@ -63,7 +54,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"Error inserting row: {ex.Message}");
             }
-
+            
         }
     }
 }

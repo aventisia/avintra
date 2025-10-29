@@ -10,21 +10,20 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Read from Excel Worksheet")]
-    [Description("Reads values from a specified cell range in the active Excel worksheet.")]
+    [Description("Reads values from a specified cell range in the given Excel worksheet.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class ReadFromExcelWorksheetActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The Excel Worksheet object from which to read data. If not provided, the active worksheet from the workbook will be used.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Retrieve Mode")]
         [Description("Specifies how to retrieve data from the worksheet.")]
         [DefaultValue(ExcelRetrieveModeEnum.SingleCell)]
         public InArgument<ExcelRetrieveModeEnum> RetrieveMode { get; set; }
-
 
         [DisplayName("Start Column")]
         [Description("The starting column letter (e.g., 'A').")]
@@ -41,7 +40,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
         public InArgument<int> StartRow { get; set; }
 
-
         [DisplayName("End Column")]
         [Description("The ending column of the range to read (required if 'Retrieve Mode' is 'Range of Cells').")]
         [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
@@ -57,22 +55,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
         public InArgument<int> EndRow { get; set; }
 
-
         [DisplayName("Name")]
         [Description("The name of the named range to read.")]
         [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.ValuesOfNamedCells)]
         public InArgument<string> Name { get; set; }
 
-
         [DisplayName("Get Cell Contents as Text")]
         [Description("If true, retrieves cell contents as text; otherwise, retrieves raw values.")]
         public InArgument<bool> GetContentsAsText { get; set; }
 
-
         [DisplayName("First Line of Range Contains Column Names")]
         [Description("If true, treats the first row as column names.")]
         public InArgument<bool> FirstLineContainsColumnNames { get; set; }
-
 
         [DisplayName("Omit Empty Columns and Rows")]
         [Description("If true, omits empty columns to the right and empty rows at the bottom.")]
@@ -92,9 +86,19 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             DataTable dataTable = null;
 
             try
-            {
-                var excelApp = ExcelApplication.Get(context);
+            {             
+                var worksheet = WorksheetInstance.Get(context);
                 var retrieveMode = RetrieveMode.Get(context);
+
+                if (worksheet == null)
+                {
+                    var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                    worksheet = excelApp?.ActiveSheet as Excel.Worksheet;
+                }
+
+                if (worksheet == null)
+                    throw new InvalidOperationException("No valid worksheet found to read from.");
+
                 var startCol = StartColumn.Get(context);
                 var startColIndex = StartColumnIndex.Get(context);
                 var startRow = StartRow.Get(context);
@@ -106,83 +110,42 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 var firstLineContainsColumnNames = FirstLineContainsColumnNames.Get(context);
                 var omitEmptyColumnsAndRows = OmitEmptyColumnsAndRows.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
-
-                if (!(excelApp.ActiveSheet is Excel.Worksheet ws))
-                    throw new InvalidOperationException("Active sheet is not a valid Excel worksheet.");
-
                 Log(context, "Excel worksheet detected. Starting read operation...");
 
                 switch (retrieveMode)
                 {
                     case ExcelRetrieveModeEnum.SingleCell:
-                        {
-                            int colIndex = startColIndex > 0 ? startColIndex : GetColumnIndex(startCol);
-                            var cell = ws.Cells[startRow, colIndex] as Excel.Range;
-                            dataTable = new DataTable();
-                            dataTable.Columns.Add("Value");
-                            dataTable.Rows.Add(getContentsAsText ? cell.Text : cell.Value2);
-                            break;
-                        }
+                        int colIndex = startColIndex > 0 ? startColIndex : GetColumnIndex(startCol);
+                        var cell = worksheet.Cells[startRow, colIndex] as Excel.Range;
+                        dataTable = new DataTable();
+                        dataTable.Columns.Add("Value");
+                        dataTable.Rows.Add(getContentsAsText ? cell.Text : cell.Value2);
+                        break;
 
                     case ExcelRetrieveModeEnum.RangeOfCells:
-                        {
-                            int startIndex = startColIndex > 0 ? startColIndex : GetColumnIndex(startCol);
-                            int endIndex = endColIndex > 0 ? endColIndex : GetColumnIndex(endCol);
-
-                            var range = ws.Range[ws.Cells[startRow, startIndex], ws.Cells[endRow, endIndex]];
-                            dataTable = ReadRange(range, getContentsAsText, firstLineContainsColumnNames, omitEmptyColumnsAndRows);
-                            break;
-                        }
-
-                    case ExcelRetrieveModeEnum.Selection:
-                        {
-                            if (!(excelApp.Selection is Excel.Range selection))
-                                throw new InvalidOperationException("No range is selected.");
-
-                            dataTable = ReadRange(selection, getContentsAsText, firstLineContainsColumnNames, omitEmptyColumnsAndRows);
-                            break;
-                        }
+                        int startIndex = startColIndex > 0 ? startColIndex : GetColumnIndex(startCol);
+                        int endIndex = endColIndex > 0 ? endColIndex : GetColumnIndex(endCol);
+                        var range = worksheet.Range[worksheet.Cells[startRow, startIndex], worksheet.Cells[endRow, endIndex]];
+                        dataTable = ReadRange(range, getContentsAsText, firstLineContainsColumnNames, omitEmptyColumnsAndRows);
+                        break;
 
                     case ExcelRetrieveModeEnum.AllAvailableValues:
-                        {
-                            var usedRange = ws.UsedRange;
-                            dataTable = ReadRange(usedRange, getContentsAsText, firstLineContainsColumnNames, omitEmptyColumnsAndRows);
-                            break;
-                        }
+                        var usedRange = worksheet.UsedRange;
+                        dataTable = ReadRange(usedRange, getContentsAsText, firstLineContainsColumnNames, omitEmptyColumnsAndRows);
+                        break;
 
                     case ExcelRetrieveModeEnum.ValuesOfNamedCells:
-                        {
-                            var namedRange = ws.Names.Item(name)?.RefersToRange;
-                            if (namedRange == null)
-                                throw new ArgumentException($"Named range '{name}' not found.");
-
-                            dataTable = ReadRange(namedRange, getContentsAsText, firstLineContainsColumnNames, omitEmptyColumnsAndRows);
-                            break;
-                        }
+                        var namedRange = worksheet.Names.Item(name)?.RefersToRange;
+                        if (namedRange == null)
+                            throw new ArgumentException($"Named range '{name}' not found.");
+                        dataTable = ReadRange(namedRange, getContentsAsText, firstLineContainsColumnNames, omitEmptyColumnsAndRows);
+                        break;
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(retrieveMode));
                 }
 
                 ExcelData.Set(context, dataTable);
-
-                if (dataTable != null)
-                {
-                    int rowCount = dataTable.Rows.Count;
-                    int colCount = dataTable.Columns.Count;
-
-                    Log(context, $"Excel read complete. Rows={rowCount}, Cols={colCount}");
-
-                    // Optional: preview first few rows for log visibility
-                    int preview = Math.Min(5, rowCount);
-                    for (int i = 0; i < preview; i++)
-                    {
-                        var rowValues = string.Join(", ", dataTable.Rows[i].ItemArray.Select(x => x?.ToString()));
-                        Log(context, $"Row {i + 1}: {rowValues}");
-                    }
-                }
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Excel data read successfully.");
             }

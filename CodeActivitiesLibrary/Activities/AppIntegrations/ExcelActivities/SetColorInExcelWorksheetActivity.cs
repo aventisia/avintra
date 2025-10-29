@@ -17,9 +17,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // Input Arguments
         // ----------------------
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance (Optional)")]
+        [Description("The Excel Worksheet object where the color will be applied. If not provided, the active worksheet of the workbook is used.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Selection Mode")]
@@ -28,12 +28,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<ExcelSelectionModeForColorEnum> SelectionMode { get; set; }
 
         // Single Cell Fields
-
         [DisplayName("Start Column")]
         [Description("The starting column of the cell to color (e.g., 'A').")]
         [RenderIfCondition(nameof(SelectionMode), ExcelSelectionModeForColorEnum.SingleCell)]
         public InArgument<string> StartColumn { get; set; }
-
 
         [DisplayName("Start Row")]
         [Description("The starting row of the cell to color (e.g., '1').")]
@@ -41,32 +39,27 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         public InArgument<int> StartRow { get; set; }
 
         // Range of Cells Fields
-
-        [DisplayName("Start Column")]
+        [DisplayName("Start Column (Range)")]
         [Description("The starting column of the range to color (e.g., 'A').")]
         [RenderIfCondition(nameof(SelectionMode), ExcelSelectionModeForColorEnum.RangeOfCells)]
         public InArgument<string> StartColumnRange { get; set; }
 
-
-        [DisplayName("Start Row")]
+        [DisplayName("Start Row (Range)")]
         [Description("The starting row of the range to color (e.g., '1').")]
         [RenderIfCondition(nameof(SelectionMode), ExcelSelectionModeForColorEnum.RangeOfCells)]
         public InArgument<int> StartRowRange { get; set; }
-
 
         [DisplayName("End Column")]
         [Description("The ending column of the range to color (e.g., 'B').")]
         [RenderIfCondition(nameof(SelectionMode), ExcelSelectionModeForColorEnum.RangeOfCells)]
         public InArgument<string> EndColumnRange { get; set; }
 
-
         [DisplayName("End Row")]
         [Description("The ending row of the range to color (e.g., '5').")]
         [RenderIfCondition(nameof(SelectionMode), ExcelSelectionModeForColorEnum.RangeOfCells)]
         public InArgument<int> EndRowRange { get; set; }
 
-        // Named Cells Fields
-
+        // Named Range
         [DisplayName("Named Range")]
         [Description("The name of the named range to color.")]
         [RenderIfCondition(nameof(SelectionMode), ExcelSelectionModeForColorEnum.NamedCells)]
@@ -78,23 +71,17 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DefaultValue(ExcelColorFormatEnum.Name)]
         public InArgument<ExcelColorFormatEnum> ColorFormat { get; set; }
 
-        // Color Name Field
-
+        // Color Name
         [DisplayName("Color Name")]
         [Description("The name of the color to apply (e.g., 'Red', 'Green').")]
         [RenderIfCondition(nameof(ColorFormat), ExcelColorFormatEnum.Name)]
         public InArgument<ExcelColorEnum> ColorName { get; set; }
 
-        // Hexadecimal Value Field
-
+        // Hexadecimal Value
         [DisplayName("Color Hexadecimal Value")]
-        [Description("The hexadecimal value of the color to apply (e.g., '#FF0000' for Red).")]
+        [Description("The hexadecimal value of the color to apply (e.g., '#FF0000').")]
         [RenderIfCondition(nameof(ColorFormat), ExcelColorFormatEnum.HexadecimalValue)]
         public InArgument<string> ColorHexValue { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
 
         // ----------------------
         // Execution Logic
@@ -105,14 +92,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var worksheet = WorksheetInstance.Get(context);
                 var selectionMode = SelectionMode.Get(context);
                 var colorFormat = ColorFormat.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+                if (worksheet == null)
+                {
+                    var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                    worksheet = excelApp?.ActiveSheet as Excel.Worksheet;
+                }
 
-                Excel.Worksheet ws = excelApp.ActiveSheet;
+                if (worksheet == null)
+                    throw new InvalidOperationException("No valid worksheet found in the provided workbook.");
 
                 Excel.Range range = null;
 
@@ -139,7 +130,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         var namedRange = NamedRange.Get(context);
                         if (string.IsNullOrWhiteSpace(namedRange))
                             throw new ArgumentException("Named range cannot be empty when using 'Named Cells' mode.");
-                        range = ws.Names.Item(namedRange)?.RefersToRange;
+                        range = worksheet.Range[namedRange];
                         if (range == null)
                             throw new ArgumentException($"Named range '{namedRange}' not found.");
                         break;
@@ -148,7 +139,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         throw new ArgumentOutOfRangeException(nameof(selectionMode));
                 }
 
-                // Construct range only after extracting values
                 if (selectionMode == ExcelSelectionModeForColorEnum.SingleCell ||
                     selectionMode == ExcelSelectionModeForColorEnum.RangeOfCells)
                 {
@@ -159,15 +149,12 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         (string.IsNullOrWhiteSpace(endCol) || endRow <= 0))
                         throw new ArgumentException("All fields for Range of Cells must be specified and valid.");
 
-                    if (selectionMode == ExcelSelectionModeForColorEnum.SingleCell)
-                    {
-                        range = ws.Cells[startRow, GetColumnIndex(startCol)];
-                    }
-                    else if (selectionMode == ExcelSelectionModeForColorEnum.RangeOfCells)
-                    {
-                        range = ws.Range[ws.Cells[startRow, GetColumnIndex(startCol)],
-                                         ws.Cells[endRow, GetColumnIndex(endCol)]];
-                    }
+                    range = selectionMode == ExcelSelectionModeForColorEnum.SingleCell
+                        ? worksheet.Cells[startRow, GetColumnIndex(startCol)]
+                        : worksheet.Range[
+                            worksheet.Cells[startRow, GetColumnIndex(startCol)],
+                            worksheet.Cells[endRow, GetColumnIndex(endCol)]
+                          ];
                 }
 
                 if (range == null)
@@ -193,7 +180,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                         throw new ArgumentOutOfRangeException(nameof(colorFormat));
                 }
 
-                // Apply the color to the selected range
                 range.Interior.Color = colorValue;
 
                 IsSuccess.Set(context, true);
@@ -201,11 +187,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
             }
             catch (Exception ex)
             {
-                status = $"Error setting cell color: {ex.Message}";
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error setting cell color: {ex.Message}");
             }
-
         }
 
         private static int GetColorValueFromEnum(ExcelColorEnum color)

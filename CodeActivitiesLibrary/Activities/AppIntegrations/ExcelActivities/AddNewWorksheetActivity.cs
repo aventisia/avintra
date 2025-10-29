@@ -8,22 +8,17 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Add New Worksheet")]
-    [Description("Adds a new worksheet to the document of an Excel instance.")]
+    [Description("Adds a new worksheet to the specified Excel workbook.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class AddNewWorksheetActivity : BaseCodeActivity
     {
-        // ----------------------
-        // Input Arguments
-        // ----------------------
-
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the workbook.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
-
+        [DisplayName("Workbook Instance")]
+        [Description("The Excel Workbook object where the new worksheet will be added.")]
+        public InArgument<Excel.Workbook> WorkbookInstance { get; set; }
 
         [DisplayName("New Worksheet Name")]
-        [Description("The name of the new worksheet.")]
+        [Description("The name of the new worksheet to be created.")]
         public InArgument<string> NewWorksheetName { get; set; }
 
         [RequiredArgument]
@@ -32,23 +27,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DefaultValue(ExcelWorksheetPositionEnum.First)]
         public InArgument<ExcelWorksheetPositionEnum> AddWorksheetAs { get; set; }
 
-        // ----------------------
-        // Execution Logic
-        // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Success";
 
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var workbook = WorkbookInstance.Get(context);
                 var newWorksheetName = NewWorksheetName.Get(context);
                 var addWorksheetAs = AddWorksheetAs.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null)
-                    throw new InvalidOperationException("Excel application or workbook is not available.");
-
-                var workbook = excelApp.ActiveWorkbook;
+                if (workbook == null)
+                    throw new InvalidOperationException("Workbook instance is not available.");
 
                 // Create a new worksheet
                 Excel.Worksheet newSheet = workbook.Sheets.Add();
@@ -90,10 +80,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     // Enum for specifying the position of the new worksheet
     public enum ExcelWorksheetPositionEnum
     {
-        [Display(Name = "First worksheet", Description = "First worksheet")]
-        First,
+       [Display(Name = "First worksheet", Description = "First worksheet")]
+       First,
 
-        [Display(Name = "Last worksheet", Description = "Last worksheet")]
-        Last
+       [Display(Name = "Last worksheet", Description = "Last worksheet")]
+       Last
     }
 }

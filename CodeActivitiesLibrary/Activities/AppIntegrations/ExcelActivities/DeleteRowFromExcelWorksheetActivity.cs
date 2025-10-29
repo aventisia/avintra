@@ -7,14 +7,14 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Delete Row from Excel Worksheet")]
-    [Description("Deletes a specific row from the active worksheet of an Excel instance.")]
+    [Description("Deletes a specific row from the specified worksheet of an Excel workbook.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class DeleteRowFromExcelWorksheetActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The Excel Worksheet object where the row will be deleted.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Row Index")]
@@ -23,25 +23,29 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
+            string status;
 
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var worksheet = WorksheetInstance.Get(context);
                 var rowIndex = RowIndex.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+                if (worksheet == null)
+                    throw new InvalidOperationException("Worksheet instance cannot be null.");
 
-                if (!(excelApp.ActiveSheet is Excel.Worksheet worksheet))
-                    throw new InvalidOperationException("Active sheet is not a valid Excel worksheet.");
+                if (rowIndex < 1)
+                    throw new ArgumentOutOfRangeException(nameof(RowIndex), "Row index must be greater than or equal to 1.");
 
-                if (rowIndex < 1 || rowIndex > worksheet.Rows.Count)
-                    throw new ArgumentOutOfRangeException(nameof(RowIndex),
-                        $"Row index must be between 1 and {worksheet.Rows.Count}.");
+                // Get the parent workbook safely
+                var workbook = worksheet.Parent as Excel.Workbook;
 
+                // Disable alerts to prevent confirmation popups (if applicable)
+                if (workbook?.Application != null)
+                    workbook.Application.DisplayAlerts = false;
 
-                ((Excel.Range)worksheet.Rows[rowIndex]).Delete();
+                // Delete the specified row
+                Excel.Range row = worksheet.Rows[rowIndex] as Excel.Range;
+                row.Delete();
 
                 status = $"Successfully deleted row at index {rowIndex}.";
                 IsSuccess.Set(context, true);

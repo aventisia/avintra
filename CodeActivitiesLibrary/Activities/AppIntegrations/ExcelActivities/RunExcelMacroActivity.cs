@@ -7,7 +7,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Run Excel Macro")]
-    [Description("Runs a specified VBA macro in the active Excel workbook.")]
+    [Description("Runs a specified VBA macro in the provided Excel workbook.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class RunExcelMacroActivity : BaseCodeActivity
     {
@@ -16,19 +16,18 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target workbook.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Workbook Instance")]
+        [Description("The Excel Workbook object containing the target macro.")]
+        public InArgument<Excel.Workbook> WorkbookInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Macro Name")]
-        [Description("The name of the VBA macro to execute.")]
+        [Description("The name of the VBA macro to execute. For example: 'Module1.MyMacro'")]
         public InArgument<string> MacroName { get; set; }
 
         // ----------------------
         // Output Arguments
         // ----------------------
-
 
         [DisplayName("Macro Return Value")]
         [Description("Returns the value returned by the macro, if any.")]
@@ -39,19 +38,23 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var returnValue = "";
-            var status = "Success";
+            string returnValue = string.Empty;
 
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var workbook = WorkbookInstance.Get(context);
                 var macroName = MacroName.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null)
-                    throw new InvalidOperationException("Excel application or workbook is not available.");
+                if (workbook == null)
+                    throw new InvalidOperationException("Workbook instance cannot be null.");
 
-                if (!(excelApp.ActiveSheet is Excel.Worksheet ws))
-                    throw new InvalidOperationException("Active sheet is not a valid Excel worksheet.");
+                if (string.IsNullOrWhiteSpace(macroName))
+                    throw new ArgumentException("Macro name cannot be empty.");
+
+                var excelApp = workbook.Application;
+
+                if (excelApp == null)
+                    throw new InvalidOperationException("Unable to retrieve the Excel Application instance.");
 
                 // Call the macro
                 var result = excelApp.Run(macroName);
@@ -60,15 +63,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 returnValue = result?.ToString() ?? "None";
                 MacroReturnValue.Set(context, returnValue);
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Successfully executed macro '{macroName}'.");
             }
             catch (Exception ex)
             {
-                status = $"Error running macro: {ex.Message}";
-                returnValue = "None";
                 MacroReturnValue.Set(context, null);
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, status);
+                StatusMessage.Set(context, $"Error running macro: {ex.Message}");
             }
         }
     }

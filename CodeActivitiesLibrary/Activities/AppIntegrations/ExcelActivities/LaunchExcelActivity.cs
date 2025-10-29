@@ -62,10 +62,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [Description("Returns the launched Excel Application object.")]
         public OutArgument<Excel.Application> ExcelInstance { get; set; }
 
+        [DisplayName("Workbook Instance")]
+        [Description("Returns the active or newly created Workbook object.")]
+        public OutArgument<Excel.Workbook> WorkbookInstance { get; set; }
+
         protected override void Execute(CodeActivityContext context)
         {
             var status = "Success";
             Excel.Application excelApp = null;
+            Excel.Workbook workbook = null;
 
             try
             {
@@ -106,10 +111,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             bool workbookAlreadyOpen = false;
                             foreach (Excel.Workbook wb in excelApp.Workbooks)
                             {
-                                if (string.Equals(wb.FullName, documentPath, StringComparison.OrdinalIgnoreCase))
+                                var openWorkbookName = System.IO.Path.GetFileName(wb.FullName);
+                                var targetWorkbookName = System.IO.Path.GetFileName(documentPath);
+
+                                if (string.Equals(openWorkbookName, targetWorkbookName, StringComparison.OrdinalIgnoreCase))
                                 {
                                     // Activate existing workbook
                                     wb.Activate();
+                                    workbook = wb;
                                     workbookAlreadyOpen = true;
                                     break;
                                 }
@@ -117,30 +126,28 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                             if (!workbookAlreadyOpen)
                             {
-                                excelApp.Workbooks.Open(
+                                workbook = excelApp.Workbooks.Open(
                                     Filename: documentPath,
                                     ReadOnly: readOnly,
                                     Password: readPassword,
                                     WriteResPassword: writePassword
-                                // Other parameters can be omitted if using named args
                                 );
                             }
                             break;
                         }
 
                     case ExcelLaunchModeEnum.NewWorkbook:
-                        // Only add a new workbook if none exists (optional logic)
-                        if (excelApp.Workbooks.Count == 0)
-                        {
-                            excelApp.Workbooks.Add();
-                        }
+                        workbook = excelApp.Workbooks.Add();
                         break;
 
                     default:
                         throw new InvalidOperationException("Invalid launch mode selected.");
                 }
 
+                // Set outputs
                 ExcelInstance.Set(context, excelApp);
+                WorkbookInstance.Set(context, workbook);
+
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, "Launched excel successfully");
             }
@@ -150,6 +157,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                 excelApp?.Quit();
                 IsSuccess.Set(context, false);
                 ExcelInstance.Set(context, null);
+                WorkbookInstance.Set(context, null);
             }
             finally
             {

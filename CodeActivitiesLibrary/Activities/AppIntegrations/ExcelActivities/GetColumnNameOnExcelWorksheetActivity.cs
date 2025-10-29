@@ -7,7 +7,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Get Column Name on Excel Worksheet")]
-    [Description("Gets the name of a column by reading the first non-empty cell in the specified column.")]
+    [Description("Gets the name of a column by reading the first non-empty cell in the specified column of an Excel worksheet.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class GetColumnNameOnExcelWorksheetActivity : BaseCodeActivity
     {
@@ -16,9 +16,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The Excel Worksheet object from which to retrieve the column name.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Column Index")]
@@ -40,23 +40,21 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         {
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var worksheet = WorksheetInstance.Get(context);
                 var columnIndex = ColumnIndex.Get(context);
-
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+          
+                if (worksheet == null)
+                    throw new InvalidOperationException("Worksheet instance is not available.");
 
                 if (columnIndex < 1)
                     throw new ArgumentException("Column index must be a positive value.", nameof(ColumnIndex));
-
-                Excel.Worksheet activeSheet = excelApp.ActiveSheet;
 
                 string columnName = null;
                 int maxRowsToCheck = 100; // You can adjust this limit if needed
 
                 for (int row = 1; row <= maxRowsToCheck; row++)
                 {
-                    Excel.Range cell = activeSheet.Cells[row, columnIndex] as Excel.Range;
+                    Excel.Range cell = worksheet.Cells[row, columnIndex] as Excel.Range;
                     var value = cell?.Value2?.ToString().Trim();
 
                     if (!string.IsNullOrEmpty(value))

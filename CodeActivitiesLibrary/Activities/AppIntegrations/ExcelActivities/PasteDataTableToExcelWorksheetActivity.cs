@@ -8,7 +8,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Paste DataTable to Excel Worksheet")]
-    [Description("Pastes a DataTable of data to the active Excel worksheet starting at the specified range.")]
+    [Description("Pastes a DataTable of data to the specified Excel worksheet starting at the given row and column.")]
     [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class PasteDataTableToExcelWorksheetActivity : BaseCodeActivity
     {
@@ -17,9 +17,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         // ----------------------
 
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The Excel Worksheet object where the data will be pasted.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Data Table")]
@@ -28,58 +28,51 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
         [RequiredArgument]
         [DefaultValue(1)]
-
         [DisplayName("Start Row")]
         [Description("The row number where pasting should start.")]
         public InArgument<long> StartRow { get; set; }
 
         [RequiredArgument]
         [DefaultValue(1)]
-
         [DisplayName("Start Column")]
         [Description("The column number where pasting should start.")]
         public InArgument<long> StartColumn { get; set; }
-
-        // ----------------------
-        // Output Arguments
-        // ----------------------
-
 
         // ----------------------
         // Execution Logic
         // ----------------------
         protected override void Execute(CodeActivityContext context)
         {
-            var status = "Success";
+            string status = "Success";
 
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var worksheet = WorksheetInstance.Get(context);
                 var dataTable = DataTable.Get(context);
                 var startRow = StartRow.Get(context);
                 var startCol = StartColumn.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+                if (worksheet == null)
+                    throw new InvalidOperationException("Worksheet instance is required but was not provided.");
 
-                if (!(excelApp.ActiveSheet is Excel.Worksheet ws))
-                    throw new InvalidOperationException("Active worksheet is not available.");
+                if (dataTable == null)
+                    throw new InvalidOperationException("DataTable is required but was not provided.");
 
                 // Paste column headers (first row)
                 for (var j = 0; j < dataTable.Columns.Count; j++)
-                    ws.Cells[startRow, startCol + j] = dataTable.Columns[j].ColumnName;
+                    worksheet.Cells[startRow, startCol + j] = dataTable.Columns[j].ColumnName;
 
                 // Paste data rows
                 long rowNo = 0;
                 foreach (DataRow row in dataTable.Rows)
                 {
                     for (var j = 0; j < dataTable.Columns.Count; j++)
-                        ws.Cells[startRow + rowNo + 1, startCol + j] = row[j]?.ToString();
+                        worksheet.Cells[startRow + rowNo + 1, startCol + j] = row[j]?.ToString();
 
-                    rowNo += 1;
+                    rowNo++;
                 }
 
-                status = $"Successfully pasted data starting at Row {startRow}, Column {startCol}.";
+                status = $"Successfully pasted {dataTable.Rows.Count} rows starting at Row {startRow}, Column {startCol}.";
                 IsSuccess.Set(context, true);
                 StatusMessage.Set(context, status);
             }

@@ -17,9 +17,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
     public class WriteToExcelWorksheetActivity : BaseCodeActivity
     {
         [RequiredArgument]
-        [DisplayName("Excel Application")]
-        [Description("The Excel Application object containing the target worksheet.")]
-        public InArgument<Excel.Application> ExcelApplication { get; set; }
+        [DisplayName("Worksheet Instance")]
+        [Description("The Excel Worksheet object where the value will be written.")]
+        public InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
 
         [RequiredArgument]
         [DisplayName("Value To Write")]
@@ -32,30 +32,25 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         [DefaultValue(ExcelCellWriteModeEnum.OnSpecifiedCell)]
         public InArgument<ExcelCellWriteModeEnum> WriteMode { get; set; }
 
-
         [DisplayName("Column")]
-        [Description(
-        "The column letter (e.g., 'A', 'B') where the data should be written (used if ColumnIndex is not provided).")]
+        [Description("The column letter (e.g., 'A', 'B') where the data should be written.")]
         [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnSpecifiedCell)]
         public InArgument<string> Column { get; set; }
 
         [DisplayName("Column Index")]
-        [Description("The index of the column (e.g., 1 for 'A'). Takes precedence if greater than 0.")]
+        [Description("The index of the column (1 for 'A'). Takes precedence if greater than 0.")]
         [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnSpecifiedCell)]
         public InArgument<int> ColumnIndex { get; set; }
 
         [DisplayName("Row")]
-        [Description(
-        "The row number where the data should be written (required if 'Write Mode' is 'On Specified Cell').")]
+        [Description("The row number where the data should be written.")]
         [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnSpecifiedCell)]
         public InArgument<int> Row { get; set; }
 
-
         [DisplayName("Name")]
-        [Description("The name of the named range to write to (required if 'Write Mode' is 'On Named Cells').")]
+        [Description("The name of the named range to write to.")]
         [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnNamedCells)]
         public InArgument<string> Name { get; set; }
-
 
         [DisplayName("Populate Entire Range")]
         [Description("If true, populates the entire named range with the same value.")]
@@ -65,14 +60,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
         {
             try
             {
-                var excelApp = ExcelApplication.Get(context);
+                var worksheet = WorksheetInstance.Get(context);
                 var rawValue = ValueToWrite.Get(context);
                 var writeMode = WriteMode.Get(context);
 
-                if (excelApp?.ActiveWorkbook == null || excelApp.ActiveSheet == null)
-                    throw new InvalidOperationException("Excel application or worksheet is not available.");
+                if (worksheet == null)
+                {
+                    var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                    worksheet = excelApp?.ActiveSheet as Excel.Worksheet;
+                }
 
-                Excel.Worksheet ws = excelApp.ActiveSheet;
+                if (worksheet == null)
+                    throw new InvalidOperationException("Worksheet instance is not provided or active sheet not found.");
+
+                var workbook = worksheet.Parent as Excel.Workbook;
 
                 switch (writeMode)
                 {
@@ -86,14 +87,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             {
                                 if (string.IsNullOrWhiteSpace(colLetter))
                                     throw new ArgumentException("Either 'Column Index' or 'Column' must be provided.");
-
                                 colIndex = GetColumnIndex(colLetter);
                             }
 
                             if (rowNumber <= 0)
                                 throw new ArgumentException("Row number must be greater than zero.");
 
-                            Excel.Range targetCell = ws.Cells[rowNumber, colIndex];
+                            Excel.Range targetCell = worksheet.Cells[rowNumber, colIndex];
                             if (targetCell == null)
                                 throw new ArgumentException($"Invalid cell reference at row {rowNumber} and column index {colIndex}.");
 
@@ -103,10 +103,9 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                     case ExcelCellWriteModeEnum.OnCurrentlyActiveCell:
                         {
-                            var activeCell = ws.Application.Selection as Excel.Range;
+                            var activeCell = worksheet.Application.Selection as Excel.Range;
                             if (activeCell == null)
-                                throw new InvalidOperationException("No active cell found.");
-
+                                throw new InvalidOperationException("No active cell found in worksheet.");
                             WriteValueToRange(activeCell, rawValue);
                             break;
                         }
@@ -119,7 +118,25 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                             if (string.IsNullOrWhiteSpace(name))
                                 throw new ArgumentException("Name cannot be empty when using 'On Named Cells' mode.");
 
-                            var namedRange = ws.Names.Item(name)?.RefersToRange;
+                            Excel.Range namedRange = null;
+
+                            // Try resolving the named range at workbook level, fallback to worksheet
+                            try
+                            {
+                                namedRange = workbook?.Names?.Item(name)?.RefersToRange;
+                            }
+                            catch
+                            {
+                                try
+                                {
+                                    namedRange = worksheet?.Names?.Item(name)?.RefersToRange;
+                                }
+                                catch
+                                {
+                                    throw new ArgumentException($"Named range '{name}' not found in workbook or worksheet.");
+                                }
+                            }
+
                             if (namedRange == null)
                                 throw new ArgumentException($"Named range '{name}' not found.");
 
@@ -141,7 +158,6 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
                                 else
                                     namedRange.Cells[1, 1].Value = value;
                             }
-
                             break;
                         }
 
@@ -151,16 +167,16 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 
                 // Set outputs on success
                 IsSuccess.Set(context, true);
-                StatusMessage.Set(context, "Successfully wrote to Excel.");
+                StatusMessage.Set(context, "Successfully wrote to Excel worksheet.");
             }
             catch (Exception ex)
             {
                 IsSuccess.Set(context, false);
-                StatusMessage.Set(context, $"Error writing to Excel: {ex.Message}");
+                StatusMessage.Set(context, $"Error writing to Excel worksheet: {ex.Message}");
             }
         }
 
-        private void WriteValueToRange(Excel.Range range, object value)
+         private void WriteValueToRange(Excel.Range range, object value)
         {
             if (value is DataTable dataTable)
             {
