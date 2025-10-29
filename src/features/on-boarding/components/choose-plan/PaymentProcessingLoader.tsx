@@ -45,7 +45,7 @@ const PaymentProcessingLoader = ({
       </div>
       <div className="-mt-7 flex flex-col items-center space-y-4">
         {/* Loading Spinner or Success Icon */}
-        {showPaymentMessage ? (
+        {!showPaymentMessage ? (
           <div className="flex flex-col items-center gap-5">
             <LoadingSpinner className="h-12 w-12 text-primary " />
             <p className="text-lg ">Payment is being processed</p>
