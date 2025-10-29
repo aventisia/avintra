@@ -49,7 +49,7 @@ const Overview = () => {
           {isPaymentProcessing ? (
             <div className="flex items-center gap-3 rounded-lg bg-orange-100 px-3 py-2 text-[0.85rem] text-orange-700">
               <InfoIcon className="h-4 w-4 text-orange-400" />
-              Payment is being processed. Your account will be updated shortly.
+              Your account will be updated shortly.
             </div>
           ) : null}
           {/* Header */}
