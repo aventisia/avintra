@@ -1,8 +1,5 @@
 import CustomRadioItem from "@/components/ui/CustomRadioItem";
-import { useUpdateTenantInfoMutation } from "@/features/on-boarding/hooks/useUpdateTenantInfoMutation";
 import { useCompanyInfoStore } from "@/features/on-boarding/stores/company-info-store";
-import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
-import { USER_NAME_LS_KEY } from "@/react-toolkit/constants";
 
 import { Button } from "@aventisia/ui/buttons";
 import { RadioGroup } from "@aventisia/ui/radio-group";
@@ -13,13 +10,6 @@ import { ContentContainer } from "../ContentContainer";
 import { ContentHeader } from "../ContentHeader";
 
 export default function UserTypeSelection() {
-  const { setOnBoardingStep } = useOnboardingStore(
-    useShallow((state) => ({
-      onBoardingStep: state.onBoardingStep,
-      setOnBoardingStep: state.setOnBoardingStep,
-    })),
-  );
-
   const { setStepNo, userType, setUserType } = useCompanyInfoStore(
     useShallow((state) => ({
       setStepNo: state.setStepNo,
@@ -28,29 +18,10 @@ export default function UserTypeSelection() {
     })),
   );
 
-  const { isCreationPending, updateTenantInfoMutation } =
-    useUpdateTenantInfoMutation();
-
-  const onSubmit = async () => {
-    try {
-      await updateTenantInfoMutation({
-        domain: localStorage.getItem(USER_NAME_LS_KEY)?.split("@")[1] ?? "",
-        organizationName: "Individual Users",
-        type: "Individual",
-      });
-
-      setTimeout(() => {
-        setOnBoardingStep("choose-plan");
-      }, 300);
-    } catch (error) {
-      console.error(error instanceof Error ? error.message : String(error));
-    }
-  };
-
   const handleProceed = () => {
     if (userType) {
       if (userType == "organization") setStepNo(2);
-      else onSubmit();
+      else setStepNo(3);
     }
   };
 
@@ -115,7 +86,7 @@ export default function UserTypeSelection() {
       <Button
         className="w-full mt-5"
         onClick={handleProceed}
-        disabled={!userType || isCreationPending}
+        disabled={!userType}
       >
         Continue
       </Button>
