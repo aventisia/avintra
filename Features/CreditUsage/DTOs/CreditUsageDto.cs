@@ -34,6 +34,16 @@ public class CreditsUsageDto
     /// Gets or sets the unique identifier of the user who consumed the credits.
     /// </summary>
     public Guid? UsedByUserId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of the entity or operation the credits were used for (e.g., AgentExecution, AIModelExecution).
+    /// </summary>
+    public ActionTypesEnum? Action { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name or identifier of the agent that triggered the consumption of credits. 
+    /// </summary>
+    public string? TriggeredByAgent { get; set; }
 }
 
 
