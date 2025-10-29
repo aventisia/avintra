@@ -619,6 +619,9 @@ namespace AccountsAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Action")
+                        .HasColumnType("text");
+
                     b.Property<double>("CreditsUsed")
                         .HasColumnType("double precision");
 
@@ -637,6 +640,9 @@ namespace AccountsAPIs.Data.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("TriggeredByAgent")
+                        .HasColumnType("text");
 
                     b.Property<double>("UnitUsed")
                         .HasColumnType("double precision");
