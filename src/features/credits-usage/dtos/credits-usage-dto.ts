@@ -1,12 +1,12 @@
 interface IUsageSummary {
   totalCredits: number;
-  totalTransactions: number;
+  totalAgentTransactions: number;
+  totalAgentCredits: number;
 }
 
 interface IGraphData {
   date: string;
-  totalCredits: number;
-  totalTransactions: number;
+  totalCount: number;
 }
 
 interface IResourceUsages {
@@ -14,6 +14,8 @@ interface IResourceUsages {
   unitType: string;
   oneUnit: number;
   credits: number;
+  totalTransactions: number;
+  totalCredits: number;
   usageTimeline: IGraphData[];
 }
 
@@ -40,7 +42,8 @@ interface IAgents {
 export interface CreditUsageDTO {
   usageSummary: IUsageSummary;
   creditUsages: IGraphData[];
-  transactionUsages: IGraphData[];
+  agentCreditUsages: IGraphData[];
+  agentTransactionUsages: IGraphData[];
   resourceUsages: IResourceUsages[];
   users: IUsers[];
   aiModels: IAiModels[];
