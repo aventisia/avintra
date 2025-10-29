@@ -38,14 +38,14 @@ public enum CreditServiceTypesEnum
     /// <summary>
     /// Service for executing autonomous agent workflows.
     /// </summary>
-    [Description("Agent Executions")]
-    AgentExecution,
+    [Description("Agent Execution Time")]
+    AgentExecutionTime,
 
     /// <summary>
     /// Service for executing AI model inference tasks.
     /// </summary>
-    [Description("AI Model Executions")]
-    AiModelExecution,
+    [Description("AI Model Execution Time")]
+    AIModelExecutionTime,
 
     /// <summary>
     /// Email communication service using SendGrid.
