@@ -9,11 +9,18 @@ import { PaymentProcessingLoader } from "./choose-plan/PaymentProcessingLoader";
 export const OnBoardingMain = () => {
   // Validate user session
   const { isPending, onBoardingStep } = useValidateUserSession();
-  const { paymentCompleted, paymentId } = useFetchPaymentStatus();
+  const {  paymentId, countdown, showRedirectMessage } =
+    useFetchPaymentStatus();
 
   if (isPending) return <RedirectPage className="h-auto p-3" />;
 
-  if (paymentId && !paymentCompleted) return <PaymentProcessingLoader />;
+  if (paymentId )
+    return (
+      <PaymentProcessingLoader
+        countdown={countdown}
+        showRedirectMessage={showRedirectMessage}
+      />
+    );
 
   switch (onBoardingStep) {
     case "account-setup":
