@@ -141,13 +141,14 @@ namespace NodeExecutor.Services
                         }
                         else
                         {
-                            var valueConst = Expression.Constant(convertedValue, genericType);
+                            var ctxParam = Expression.Parameter(typeof(ActivityContext), "ctx");
+                            var valueObjConst = Expression.Constant(convertedValue, typeof(object));
+                            var castExpr = Expression.Convert(valueObjConst, genericType);
                             var lambdaExpr = Expression.Lambda(
                                 typeof(Func<,>).MakeGenericType(typeof(ActivityContext), genericType),
-                                valueConst,
-                                Expression.Parameter(typeof(ActivityContext), "ctx")
+                                castExpr,
+                                ctxParam
                             );
-
                             inArgument = Activator.CreateInstance(inArgGenericType, lambdaExpr);
                         }
 
