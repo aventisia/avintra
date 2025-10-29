@@ -34,6 +34,8 @@ export const useFetchPaymentStatus = () => {
 
   // State to manage whether checking should continue
   const [shouldCheck, setShouldCheck] = useState(true);
+  const [countdown, setCountdown] = useState(0);
+  const [showRedirectMessage, setShowRedirectMessage] = useState(false);
 
   const { data, isFetching, isLoading, refetch, isError, error } = useQuery({
     queryKey: ["PAYMENT_STATUS", paymentId],
@@ -54,19 +56,29 @@ export const useFetchPaymentStatus = () => {
         data.data.isSubscribed &&
         data.data.isCreditUpdated;
 
-      // If all statuses are completed, stop checking
+      // Stop checking if all statuses are completed
       setShouldCheck(!allStatusesCompleted);
 
       if (allStatusesCompleted) {
-        // Remove the payment_id from localStorage
-        localStorage.clear();
-        // Set a timeout to reload the page after a small delay, ensuring the removal happens first
-        setTimeout(() => {
-          window.location.reload();
-        }, 50); // The 50ms delay ensures it's almost immediate but after the current execution context
+        setShowRedirectMessage(true);
+
+        let countdownValue = 3;
+        const countdownInterval = setInterval(() => {
+          setCountdown(countdownValue);
+          countdownValue -= 1;
+
+          if (countdownValue < 0) {
+            clearInterval(countdownInterval);
+            localStorage.clear(); // Clear payment info from LS
+
+            setTimeout(() => {
+              window.location.assign(import.meta.env.VITE_WORC_URL + "/tenant");
+            }, 500); // Delay for a smooth transition
+          }
+        }, 1000); // Update every second
       }
     }
-  }, [data]); // Re-run whenever `data` changes
+  }, [data]);
 
   // Show toast on fetch error
   useEffect(() => {
@@ -80,5 +92,7 @@ export const useFetchPaymentStatus = () => {
     refetch,
     paymentCompleted: !shouldCheck,
     paymentId,
+    showRedirectMessage,
+    countdown,
   };
 };
