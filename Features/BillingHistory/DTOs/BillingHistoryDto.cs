@@ -28,6 +28,11 @@ public class BillingHistoryDto
     public SubscriptionFrequenciesEnum Frequency { get; set; }
 
     /// <summary>
+    /// Gets or sets the currency used for the billing transaction.
+    /// </summary>
+    public CurrencyTypesEnum Currency { get; set; }
+
+    /// <summary>
     /// Gets or sets the base subscription amount, excluding tax.
     /// </summary>
     public decimal Amount { get; set; }
