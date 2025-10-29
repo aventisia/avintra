@@ -4540,7 +4540,7 @@
             "type": "activityNode",
             "name": "ActivateCellInExcelWorksheetActivity",
             "label": "Activate Cell in Excel Worksheet",
-            "description": "Activates a specific cell in the active worksheet of an Excel instance based on absolute position, relative offset, or named range.",
+            "description": "Activates a specific cell in the given worksheet based on absolute position, relative offset, or named range.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4549,7 +4549,7 @@
             "type": "activityNode",
             "name": "AddNewWorksheetActivity",
             "label": "Add New Worksheet",
-            "description": "Adds a new worksheet to the document of an Excel instance.",
+            "description": "Adds a new worksheet to the specified Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4558,7 +4558,7 @@
             "type": "activityNode",
             "name": "AppendCellsInExcelWorksheetActivity",
             "label": "Append Range to Excel Worksheet",
-            "description": "Appends a range of data (e.g., from a DataTable) to the active worksheet of an Excel instance.",
+            "description": "Appends a range of data (e.g., from a DataTable) to the active worksheet of an Excel.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4576,7 +4576,7 @@
             "type": "activityNode",
             "name": "AutoFillCellsInExcelWorksheetActivity",
             "label": "Auto Fill Range in Excel Worksheet",
-            "description": "Copies data from a source range to a target range in the active worksheet of an Excel instance.",
+            "description": "Copies data from a source range to a target range in the specified or active worksheet of an Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4585,7 +4585,7 @@
             "type": "activityNode",
             "name": "ClearCellsInExcelWorksheetActivity",
             "label": "Clear Cells in Excel Worksheet",
-            "description": "Clears a specified range or named cell in the active worksheet of an Excel instance.",
+            "description": "Clears a specified range or named cell in the provided worksheet or workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4621,7 +4621,7 @@
             "type": "activityNode",
             "name": "CopyExcelWorksheetActivity",
             "label": "Copy Excel Worksheet",
-            "description": "Copies a worksheet from one Excel instance to another by duplicating its content.",
+            "description": "Copies a worksheet to another workbook or within the same workbook, preserving data, formatting, and structure.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4630,7 +4630,7 @@
             "type": "activityNode",
             "name": "CopyExcelWorksheetActivityToDataTable",
             "label": "Copy Range from Excel Worksheet to DataTable",
-            "description": "Copies a specified range of cells from the active worksheet of an Excel instance into a DataTable.",
+            "description": "Copies a specified range of cells from the provided Excel worksheet into a DataTable.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4639,7 +4639,7 @@
             "type": "activityNode",
             "name": "DeleteColumnFromExcelWorksheetActivity",
             "label": "Delete Column from Excel Worksheet",
-            "description": "Deletes a specific column from the active worksheet of an Excel instance.",
+            "description": "Deletes a specific column from the specified Excel worksheet instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4648,7 +4648,7 @@
             "type": "activityNode",
             "name": "DeleteExcelWorksheetActivity",
             "label": "Delete Excel Worksheet",
-            "description": "Deletes a specific worksheet from the active Excel workbook.",
+            "description": "Deletes a specific worksheet from its parent Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4657,7 +4657,7 @@
             "type": "activityNode",
             "name": "DeleteFromExcelWorksheetActivity",
             "label": "Delete Range from Excel Worksheet",
-            "description": "Deletes a range of cells from the active worksheet of an Excel instance.",
+            "description": "Deletes a range of cells or a single cell from the specified Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4666,7 +4666,7 @@
             "type": "activityNode",
             "name": "DeleteRowFromExcelWorksheetActivity",
             "label": "Delete Row from Excel Worksheet",
-            "description": "Deletes a specific row from the active worksheet of an Excel instance.",
+            "description": "Deletes a specific row from the specified worksheet of an Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4675,7 +4675,7 @@
             "type": "activityNode",
             "name": "FilterCellsInExcelWorksheetActivity",
             "label": "Filter Cells in Excel Worksheet",
-            "description": "Filters cells in the active Excel worksheet based on criteria applied to a specific column.",
+            "description": "Filters cells in the specified Excel worksheet based on criteria applied to a specific column.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4684,7 +4684,7 @@
             "type": "activityNode",
             "name": "FindAndReplaceCellsInExcelWorksheetActivity",
             "label": "Find and Replace in Excel Worksheet",
-            "description": "Finds text and replaces it with another in the active worksheet of an Excel instance.",
+            "description": "Finds text and replaces it with another in the specified Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4693,7 +4693,7 @@
             "type": "activityNode",
             "name": "GetActiveCellOnExcelWorksheetActivity",
             "label": "Get Active Cell on Excel Worksheet",
-            "description": "Gets the address of the currently active cell in the active worksheet of an Excel instance.",
+            "description": "Gets the address of the currently active cell in the specified Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4702,7 +4702,7 @@
             "type": "activityNode",
             "name": "GetActiveExcelWorksheetActivity",
             "label": "Get Active Excel Worksheet",
-            "description": "Retrieves the name and index of the currently active worksheet in an Excel instance.",
+            "description": "Retrieves the name and index of the currently active worksheet in a given Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4711,7 +4711,7 @@
             "type": "activityNode",
             "name": "GetAllExcelWorksheetsActivity",
             "label": "Get All Excel Worksheets",
-            "description": "Retrieves all worksheet names from the active Excel workbook.",
+            "description": "Retrieves all worksheet names from the provided Excel workbook instance, optionally filtered by a specific worksheet instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4720,7 +4720,7 @@
             "type": "activityNode",
             "name": "GetColumnNameOnExcelWorksheetActivity",
             "label": "Get Column Name on Excel Worksheet",
-            "description": "Gets the name of a column by reading the first non-empty cell in the specified column.",
+            "description": "Gets the name of a column by reading the first non-empty cell in the specified column of an Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4729,7 +4729,7 @@
             "type": "activityNode",
             "name": "GetFirstFreeColumnRowFromExcelWorksheetActivity",
             "label": "Get First Free Column or Row from Excel Worksheet",
-            "description": "Retrieves the first free column and/or row of the active worksheet. This is useful for adding new data into a worksheet that already has data in it.",
+            "description": "Retrieves the first free column and/or row from the specified worksheet. Useful for appending new data.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4738,7 +4738,7 @@
             "type": "activityNode",
             "name": "GetFirstFreeRowOnColumnFromExcelWorksheetActivity",
             "label": "Get First Free Row on Column from Excel Worksheet",
-            "description": "Retrieves the first free row number for a specific column from the active worksheet.",
+            "description": "Retrieves the first free row number for a specific column from the given worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4747,7 +4747,7 @@
             "type": "activityNode",
             "name": "GetSelectedCellRangeFromExcelWorksheetActivity",
             "label": "Get Selected Cell Range from Excel Worksheet",
-            "description": "Retrieves the currently selected cell range in the active Excel worksheet as first column, first row, last column, and last row indices.",
+            "description": "Retrieves the currently selected cell range in the provided Excel worksheet as first column, first row, last column, and last row indices.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4756,7 +4756,7 @@
             "type": "activityNode",
             "name": "GetTableRangeFromExcelWorksheetActivity",
             "label": "Get Table Range from Excel Worksheet",
-            "description": "Retrieves the range address (e.g., 'A1:B10') of a specified table in the active Excel worksheet.",
+            "description": "Retrieves the range address (e.g., 'A1:B10') of a specified table or pivot table in the provided Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4765,7 +4765,7 @@
             "type": "activityNode",
             "name": "InsertColumnToExcelWorksheetActivity",
             "label": "Insert Column to Excel Worksheet",
-            "description": "Inserts a new column to the left of the specified column in the active Excel worksheet.",
+            "description": "Inserts a new column to the left of the specified column in the provided Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4774,7 +4774,7 @@
             "type": "activityNode",
             "name": "InsertRowToExcelWorksheetActivity",
             "label": "Insert Row to Excel Worksheet",
-            "description": "Inserts a new row above the selected row in the active Excel worksheet.",
+            "description": "Inserts a new row above the specified row in the provided Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4809,8 +4809,8 @@
           {
             "type": "activityNode",
             "name": "PasteCellsToExcelWorksheetActivity",
-            "label": "Paste range cells to Excel Worksheet",
-            "description": "Pastes a range of cells from a source Excel instance/workbook to a specific range in a target Excel worksheet.",
+            "label": "Paste Range Cells to Excel Worksheet",
+            "description": "Pastes a range of cells from a source worksheet to a specified range or named area in a target worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4819,7 +4819,7 @@
             "type": "activityNode",
             "name": "PasteDataTableToExcelWorksheetActivity",
             "label": "Paste DataTable to Excel Worksheet",
-            "description": "Pastes a DataTable of data to the active Excel worksheet starting at the specified range.",
+            "description": "Pastes a DataTable of data to the specified Excel worksheet starting at the given row and column.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4837,7 +4837,7 @@
             "type": "activityNode",
             "name": "ReadFromExcelWorksheetActivity",
             "label": "Read from Excel Worksheet",
-            "description": "Reads values from a specified cell range in the active Excel worksheet.",
+            "description": "Reads values from a specified cell range in the given Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4846,7 +4846,7 @@
             "type": "activityNode",
             "name": "RenameExcelWorksheetActivity",
             "label": "Rename Excel Worksheet",
-            "description": "Renames a specific worksheet in the active Excel workbook.",
+            "description": "Renames a specific worksheet in the given Excel instance based on name or index.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4855,7 +4855,7 @@
             "type": "activityNode",
             "name": "ResizeColumnsRowsInExcelWorksheetActivity",
             "label": "Resize Columns or Rows in Excel Worksheet",
-            "description": "Resizes the width of columns or the height of rows in the active Excel worksheet.",
+            "description": "Resizes the width of columns or the height of rows in the provided Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4864,7 +4864,7 @@
             "type": "activityNode",
             "name": "RunExcelMacroActivity",
             "label": "Run Excel Macro",
-            "description": "Runs a specified VBA macro in the active Excel workbook.",
+            "description": "Runs a specified VBA macro in the provided Excel workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4882,7 +4882,7 @@
             "type": "activityNode",
             "name": "SelectCellsInExcelWorksheetActivity",
             "label": "Select Cells in Excel Worksheet",
-            "description": "Selects a specific range of cells in the active Excel worksheet.",
+            "description": "Selects a specific range of cells in the given Excel worksheet or workbook.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"
@@ -4891,10 +4891,10 @@
             "type": "activityNode",
             "name": "SetActiveExcelWorksheetActivity",
             "label": "Set Active Excel Worksheet",
-            "description": "Activates a specific worksheet in the active Excel workbook by name or index.",
+            "description": "Activates a specific worksheet in the provided Excel workbook by name or index and outputs the active worksheet instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/assets/Excel.svg"
+            "img": "/function.png"
           },
           {
             "type": "activityNode",
@@ -4908,8 +4908,8 @@
           {
             "type": "activityNode",
             "name": "WriteToExcelArrayValuesActivity",
-            "label": "Write to Excel Worksheet",
-            "description": "Writes a value or array of values to a row in an Excel worksheet.",
+            "label": "Write Array Values to Excel Worksheet",
+            "description": "Writes a value or array of values to a row or range in an Excel worksheet.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Excel.svg"

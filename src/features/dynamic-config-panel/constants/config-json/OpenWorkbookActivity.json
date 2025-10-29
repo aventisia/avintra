@@ -14,17 +14,35 @@
     "name": "Visible",
     "label": "Visible",
     "description": "Set to true if you want the Excel application to be visible during automation.",
-    "defaultValue": "",
+    "defaultValue": false,
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "switch",
+    "name": "OpenAsReadOnly",
+    "label": "Open as ReadOnly",
+    "description": "If true, opens the workbook in read-only mode.",
+    "defaultValue": false,
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ReadProtectionPassword",
+    "label": "Read Protection Password",
+    "description": "Password to open the workbook if it is protected.",
+    "defaultValue": "",
+    "required": false
   },
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Workbook",
-    "label": "Workbook",
+    "name": "WorkbookInstance",
+    "label": "Workbook Instance",
     "description": "The opened Excel Workbook object.",
     "defaultValue": {
-      "value": "Workbook",
+      "value": "WorkbookInstance",
       "enabled": true
     },
     "required": false
@@ -34,7 +52,7 @@
     "type": "config-panel-output",
     "name": "ExcelApp",
     "label": "Excel Application",
-    "description": "The Excel Application instance (used for later close).",
+    "description": "The Excel Application instance (used for later operations or close).",
     "defaultValue": {
       "value": "ExcelApp",
       "enabled": true

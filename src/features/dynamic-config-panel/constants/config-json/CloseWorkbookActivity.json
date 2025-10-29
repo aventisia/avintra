@@ -2,11 +2,28 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "Workbook",
-    "label": "Workbook Object",
-    "description": "The Excel Workbook object to be closed.",
+    "name": "WorkbookInstance",
+    "label": "Workbook Instance",
+    "description": "The Excel Workbook instance to be closed.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ExcelApp",
+    "label": "Excel Application Instance",
+    "description": "The Excel Application instance to optionally quit after closing the workbook.",
+    "defaultValue": "",
+    "required": false,
+    "renderIf": {
+      "conditions": [
+        {
+          "field": "QuitExcelApp",
+          "equals": true
+        }
+      ]
+    }
   },
   {
     "direction": "Input",
@@ -25,22 +42,5 @@
     "description": "Whether to quit the Excel Application after closing the workbook.",
     "defaultValue": true,
     "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "ExcelApp",
-    "label": "Excel Application Object",
-    "description": "The Excel Application instance to optionally quit.",
-    "defaultValue": "",
-    "required": false,
-    "renderIf": {
-      "conditions": [
-        {
-          "field": "QuitExcelApp",
-          "equals": true
-        }
-      ]
-    }
   }
 ]

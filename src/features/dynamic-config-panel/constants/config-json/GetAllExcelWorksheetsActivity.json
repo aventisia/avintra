@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelApplication",
-    "label": "Excel Application",
-    "description": "The Excel Application object containing the target workbook.",
+    "name": "WorkbookInstance",
+    "label": "Workbook Instance",
+    "description": "The Excel Workbook object containing the worksheets to retrieve.",
     "defaultValue": "",
     "required": true
   },
@@ -13,7 +13,7 @@
     "type": "config-panel-output",
     "name": "WorksheetNames",
     "label": "Worksheet Names",
-    "description": "Returns a list of all worksheet names in the active Excel workbook.",
+    "description": "Returns a list of all worksheet names in the provided Excel workbook.",
     "defaultValue": {
       "value": "WorksheetNames",
       "enabled": true

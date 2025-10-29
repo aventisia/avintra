@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelApplication",
-    "label": "Excel Application",
-    "description": "The Excel Application object containing the target workbook.",
+    "name": "WorkbookInstance",
+    "label": "Workbook Instance",
+    "description": "The Excel Workbook object from which to retrieve the active worksheet.",
     "defaultValue": "",
     "required": true
   },
@@ -28,6 +28,18 @@
     "description": "Returns the index of the currently active worksheet.",
     "defaultValue": {
       "value": "SheetIndex",
+      "enabled": true
+    },
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "ActiveWorksheet",
+    "label": "Active Worksheet Instance",
+    "description": "Returns the active worksheet instance.",
+    "defaultValue": {
+      "value": "ActiveWorksheet",
       "enabled": true
     },
     "required": false

@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelApplication",
-    "label": "Excel Application",
-    "description": "The Excel Application object containing the target worksheet.",
+    "name": "WorksheetInstance",
+    "label": "Worksheet Instance",
+    "description": "The Excel Worksheet object to delete cells from.",
     "defaultValue": "",
     "required": true
   },
@@ -34,7 +34,7 @@
     "type": "text",
     "name": "StartColumn",
     "label": "Start Column",
-    "description": "The starting column of the range to delete.",
+    "description": "The starting column of the range to delete (letter or number).",
     "defaultValue": "",
     "required": false,
     "renderIf": {
@@ -51,7 +51,7 @@
     "type": "text",
     "name": "EndColumn",
     "label": "End Column",
-    "description": "The ending column of the range to delete.",
+    "description": "The ending column of the range to delete (letter or number).",
     "defaultValue": "",
     "required": false,
     "renderIf": {

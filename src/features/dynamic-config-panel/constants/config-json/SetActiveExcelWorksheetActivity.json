@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelApplication",
-    "label": "Excel Application",
-    "description": "The Excel Application object containing the target workbook.",
+    "name": "WorkbookInstance",
+    "label": "Workbook Instance",
+    "description": "The Excel Workbook object containing the target worksheets.",
     "defaultValue": "",
     "required": true
   },
@@ -15,7 +15,7 @@
     "label": "Selection Type",
     "description": "Choose whether to select the worksheet by Name or Index.",
     "defaultValue": "Name",
-    "required": true,
+    "required": false,
     "selectOptions": [
       {
         "label": "Name",
@@ -34,8 +34,20 @@
     "type": "text",
     "name": "SearchValue",
     "label": "Search Value",
-    "description": "The worksheet name (if selection type is \u0027Name\u0027) or index (if selection type is \u0027Index\u0027). Can be string or integer depending on mode.",
+    "description": "The worksheet name (if selection type is \u0027Name\u0027) or index (if selection type is \u0027Index\u0027).",
     "defaultValue": "",
-    "required": true
+    "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "WorksheetInstance",
+    "label": "Worksheet Instance",
+    "description": "Returns the activated Excel Worksheet instance.",
+    "defaultValue": {
+      "value": "WorksheetInstance",
+      "enabled": true
+    },
+    "required": false
   }
 ]

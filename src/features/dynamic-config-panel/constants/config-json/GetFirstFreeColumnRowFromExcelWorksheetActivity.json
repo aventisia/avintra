@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelApplication",
-    "label": "Excel Application",
-    "description": "The Excel Application object containing the target worksheet.",
+    "name": "WorksheetInstance",
+    "label": "Worksheet Instance",
+    "description": "The target Excel worksheet instance to analyze.",
     "defaultValue": "",
     "required": true
   },
@@ -13,7 +13,7 @@
     "type": "config-panel-output",
     "name": "FirstFreeColumn",
     "label": "First Free Column",
-    "description": "Returns the first free column as a letter (e.g., \u0027A\u0027, \u0027B\u0027).",
+    "description": "Returns the first free column as a letter (e.g., \u0027A\u0027, \u0027B\u0027, \u0027C\u0027).",
     "defaultValue": {
       "value": "FirstFreeColumn",
       "enabled": true

@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelApplication",
-    "label": "Excel Application",
-    "description": "The Excel Application object containing the workbook.",
+    "name": "WorkbookInstance",
+    "label": "Workbook Instance",
+    "description": "The Excel Workbook object where the new worksheet will be added.",
     "defaultValue": "",
     "required": true
   },
@@ -13,7 +13,7 @@
     "type": "text",
     "name": "NewWorksheetName",
     "label": "New Worksheet Name",
-    "description": "The name of the new worksheet.",
+    "description": "The name of the new worksheet to be created.",
     "defaultValue": "",
     "required": false
   },

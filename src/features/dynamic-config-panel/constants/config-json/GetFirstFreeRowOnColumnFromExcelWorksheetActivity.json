@@ -2,9 +2,18 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelApplication",
-    "label": "Excel Application",
-    "description": "The Excel Application object containing the target worksheet.",
+    "name": "WorkbookInstance",
+    "label": "Workbook Instance",
+    "description": "The Excel Workbook instance containing the target worksheet.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "WorksheetInstance",
+    "label": "Worksheet Instance",
+    "description": "The target Excel worksheet instance to analyze.",
     "defaultValue": "",
     "required": true
   },

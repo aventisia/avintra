@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelApplication",
-    "label": "Excel Application",
-    "description": "The Excel Application object containing the target worksheet.",
+    "name": "WorksheetInstance",
+    "label": "Worksheet Instance",
+    "description": "The Excel Worksheet where data will be appended. If not provided, the active worksheet will be used.",
     "defaultValue": "",
     "required": true
   },

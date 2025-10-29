@@ -16,5 +16,17 @@
     "description": "The full path of the Excel file to open or attach to in the running Excel instance.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "WorkbookInstance",
+    "label": "Workbook Instance",
+    "description": "Returns the attached or opened workbook.",
+    "defaultValue": {
+      "value": "WorkbookInstance",
+      "enabled": true
+    },
+    "required": false
   }
 ]

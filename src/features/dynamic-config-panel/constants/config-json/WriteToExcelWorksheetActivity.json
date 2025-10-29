@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelApplication",
-    "label": "Excel Application",
-    "description": "The Excel Application object containing the target worksheet.",
+    "name": "WorksheetInstance",
+    "label": "Worksheet Instance",
+    "description": "The Excel Worksheet object where the value will be written.",
     "defaultValue": "",
     "required": true
   },
@@ -48,7 +48,7 @@
     "type": "text",
     "name": "Column",
     "label": "Column",
-    "description": "The column letter (e.g., \u0027A\u0027, \u0027B\u0027) where the data should be written (used if ColumnIndex is not provided).",
+    "description": "The column letter (e.g., \u0027A\u0027, \u0027B\u0027) where the data should be written.",
     "defaultValue": "",
     "required": false,
     "renderIf": {
@@ -65,7 +65,7 @@
     "type": "text",
     "name": "ColumnIndex",
     "label": "Column Index",
-    "description": "The index of the column (e.g., 1 for \u0027A\u0027). Takes precedence if greater than 0.",
+    "description": "The index of the column (1 for \u0027A\u0027). Takes precedence if greater than 0.",
     "defaultValue": "",
     "required": false,
     "renderIf": {
@@ -82,7 +82,7 @@
     "type": "text",
     "name": "Row",
     "label": "Row",
-    "description": "The row number where the data should be written (required if \u0027Write Mode\u0027 is \u0027On Specified Cell\u0027).",
+    "description": "The row number where the data should be written.",
     "defaultValue": "",
     "required": false,
     "renderIf": {
@@ -99,7 +99,7 @@
     "type": "text",
     "name": "Name",
     "label": "Name",
-    "description": "The name of the named range to write to (required if \u0027Write Mode\u0027 is \u0027On Named Cells\u0027).",
+    "description": "The name of the named range to write to.",
     "defaultValue": "",
     "required": false,
     "renderIf": {

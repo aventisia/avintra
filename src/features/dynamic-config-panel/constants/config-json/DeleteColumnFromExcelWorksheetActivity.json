@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelApplication",
-    "label": "Excel Application",
-    "description": "The Excel Application object containing the target worksheet.",
+    "name": "WorksheetInstance",
+    "label": "Worksheet Instance",
+    "description": "The Excel Worksheet object from which the column will be deleted.",
     "defaultValue": "",
     "required": true
   },

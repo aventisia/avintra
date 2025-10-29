@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "SourceExcelApplication",
-    "label": "Source Excel Application",
-    "description": "The Excel Application object containing the source worksheet.",
+    "name": "SourceWorkbook",
+    "label": "Source Workbook",
+    "description": "The Excel Workbook object containing the worksheet to copy.",
     "defaultValue": "",
     "required": true
   },
@@ -13,7 +13,7 @@
     "type": "select",
     "name": "CopyMode",
     "label": "Copy Mode",
-    "description": "Specifies how to identify the source worksheet: by Name or Index.",
+    "description": "Specifies how to identify the worksheet to copy (by Name or by Index).",
     "defaultValue": "Name",
     "required": true,
     "selectOptions": [
@@ -66,11 +66,11 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "TargetExcelApplication",
-    "label": "Target Excel Application",
-    "description": "The Excel Application object where the worksheet will be copied.",
+    "name": "TargetWorkbook",
+    "label": "Target Workbook",
+    "description": "The Excel Workbook where the worksheet will be copied. If not provided, the copy will be made within the same workbook.",
     "defaultValue": "",
-    "required": true
+    "required": false
   },
   {
     "direction": "Input",
@@ -78,7 +78,7 @@
     "name": "PastePosition",
     "label": "Paste Position",
     "description": "Specifies where to paste the copied worksheet in the target workbook.",
-    "defaultValue": "FirstWorksheet",
+    "defaultValue": "LastWorksheet",
     "required": false,
     "selectOptions": [
       {
@@ -92,5 +92,17 @@
         "description": "Pastes the worksheet as the last sheet in the target workbook."
       }
     ]
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "CopiedWorksheet",
+    "label": "Copied Worksheet",
+    "description": "The new worksheet created as a result of the copy operation.",
+    "defaultValue": {
+      "value": "CopiedWorksheet",
+      "enabled": true
+    },
+    "required": false
   }
 ]

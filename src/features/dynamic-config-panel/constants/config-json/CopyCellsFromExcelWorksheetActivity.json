@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelApplication",
-    "label": "Excel Application",
-    "description": "The Excel Application object containing the source worksheet.",
+    "name": "WorksheetInstance",
+    "label": "Worksheet Instance",
+    "description": "The Excel Worksheet object from which to copy data.",
     "defaultValue": "",
     "required": true
   },
@@ -38,15 +38,6 @@
         "description": "Copies a specified range (e.g., A1:B10)."
       }
     ]
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "SourceWorksheetName",
-    "label": "Source Worksheet Name",
-    "description": "Name of the worksheet in the source Excel application.",
-    "defaultValue": "",
-    "required": false
   },
   {
     "direction": "Input",

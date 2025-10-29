@@ -126,5 +126,17 @@
       "enabled": true
     },
     "required": false
+  },
+  {
+    "direction": "Output",
+    "type": "config-panel-output",
+    "name": "WorkbookInstance",
+    "label": "Workbook Instance",
+    "description": "Returns the active or newly created Workbook object.",
+    "defaultValue": {
+      "value": "WorkbookInstance",
+      "enabled": true
+    },
+    "required": false
   }
 ]

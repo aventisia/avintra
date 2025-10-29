@@ -2,27 +2,18 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "TargetExcelApplication",
-    "label": "Target Excel Application",
-    "description": "The Excel Application object where the data will be pasted.",
+    "name": "SourceWorksheet",
+    "label": "Source Worksheet Instance",
+    "description": "The source Excel worksheet containing the range to copy.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
     "type": "text",
-    "name": "SourceExcelApplication",
-    "label": "Source Excel Application",
-    "description": "The Excel Application object where the data is coming from.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "SourceWorksheetName",
-    "label": "Source Worksheet Name",
-    "description": "Name of the worksheet in the source Excel instance containing the data to copy.",
+    "name": "TargetWorksheet",
+    "label": "Target Worksheet Instance",
+    "description": "The target Excel worksheet where the data will be pasted.",
     "defaultValue": "",
     "required": true
   },

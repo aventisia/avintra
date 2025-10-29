@@ -2,11 +2,11 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "ExcelApplication",
-    "label": "Excel Application",
-    "description": "The Excel Application object containing the target worksheet.",
+    "name": "WorksheetInstance",
+    "label": "Worksheet Instance",
+    "description": "The Excel Worksheet object where the lookup will be performed. If not provided, the active sheet of the workbook will be used.",
     "defaultValue": "",
-    "required": true
+    "required": false
   },
   {
     "direction": "Input",
