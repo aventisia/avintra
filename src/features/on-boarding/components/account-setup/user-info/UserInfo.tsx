@@ -12,8 +12,8 @@ export const UserInfo = () => {
   return (
     <ContentContainer className="fadeInRTL">
       <ContentHeader
-        biggerHeading="Tell us about yourself"
-        smallerHeading="Please enter the details"
+        biggerHeading="Select Your Country or Region"
+        smallerHeading="We'll show plans and pricing available in your area"
       />
 
       {/* User Info Form */}
