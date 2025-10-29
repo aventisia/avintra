@@ -11,6 +11,7 @@ import { cn } from "@aventisia/ui/lib";
 import { useShallow } from "zustand/react/shallow";
 
 import { CompanyInfo } from "./company-info/CompanyInfo";
+import { UserInfo } from "./user-info/UserInfo";
 import { UserType } from "./user-type/UserType";
 
 export const AccountSetupMain = () => {
@@ -40,12 +41,14 @@ export const AccountSetupMain = () => {
             </a>
           </HeaderContainer>
 
-          {/* Step 3 - Verify email address step */}
+          {/* Step 1 - Select user type */}
           {stepNo === 1 && <UserType />}
 
-          {/* Step 4 - Verify email address step */}
+          {/* Step 2 - If Organization selected */}
           {stepNo === 2 && <CompanyInfo />}
 
+          {/* Step 3 - If Individual selected */}
+          {stepNo === 3 && <UserInfo />}
           {/* App footer */}
           <MinimalFooter />
         </LeftContainer>
