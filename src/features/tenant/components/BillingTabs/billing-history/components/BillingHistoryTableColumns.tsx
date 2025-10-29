@@ -3,6 +3,8 @@ import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
+import { formatCurrency } from "@/features/tenant/constants/currency-symbol-map";
+
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { BillingHistoryDTO } from "../dtos/billing-history-dto";
@@ -103,9 +105,11 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
       />
     ),
     cell: ({ row }) => {
+      const amount = (row.getValue("amount") || 0) as number;
+      const currency = row.original?.currency || "USD";
       return (
         <div className="w-auto font-medium">
-          {row.getValue("amount") || "N/A"}
+          {formatCurrency(amount, currency) || "N/A"}
         </div>
       );
     },
