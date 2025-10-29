@@ -85,7 +85,14 @@ public class CreditUsageService : ICreditUsageService
                 UsageSummary = new UsageSummaryDto
                 {
                     TotalCredits = creditUsages.Sum(c => c.CreditsUsed),
-                    TotalTransactions = creditUsages.Count()
+                    TotalAgentTransactions = creditUsages
+                            .Where(w => w.TriggeredByAgent != null)
+                            .GroupBy(g => g.TriggeredByAgent)
+                            .Count(),
+                    TotalAgentCredits = creditUsages
+                            .Where(w => w.TriggeredByAgent != null)
+                            .GroupBy(g => g.TriggeredByAgent)
+                            .Sum(sm => sm.Sum(sum => sum.CreditsUsed)),
                 },
 
                 // Grouped credits usage per day (for usage trends)
@@ -93,19 +100,32 @@ public class CreditUsageService : ICreditUsageService
                     .Select(s => new DataUsageDataPointDto
                     {
                         Date = s,
-                        TotalCredits = creditUsages.Where(w => w.UsedAt.Date == s).Sum(sm => sm.CreditsUsed),
-                        TotalTransactions = creditUsages.Where(w => w.UsedAt.Date == s).Count(),
+                        TotalCount = creditUsages.Where(w => w.UsedAt.Date == s).Sum(sm => sm.CreditsUsed),
                     })
                     .OrderBy(o => o.Date)
                     .ToList(),
 
                 // Grouped transaction counts per day
-                TransactionUsages = allDatesInRange
+                AgentTransactionUsages = allDatesInRange
                     .Select(s => new DataUsageDataPointDto
                     {
                         Date = s,
-                        TotalCredits = creditUsages.Where(w => w.UsedAt.Date == s).Sum(sm => sm.CreditsUsed),
-                        TotalTransactions = creditUsages.Where(w => w.UsedAt.Date == s).Count(),
+                        TotalCount = creditUsages
+                            .Where(w => w.UsedAt.Date == s && w.TriggeredByAgent != null)
+                            .GroupBy(g => g.TriggeredByAgent)
+                            .Count()
+                    })
+                    .OrderBy(o => o.Date)
+                    .ToList(),
+
+                AgentCreditUsages = allDatesInRange
+                    .Select(s => new DataUsageDataPointDto
+                    {
+                        Date = s,
+                        TotalCount = creditUsages
+                            .Where(w => w.UsedAt.Date == s && w.TriggeredByAgent != null)
+                            .GroupBy(g => g.TriggeredByAgent)
+                            .Sum(sm => sm.Sum(sum => sum.CreditsUsed)),
                     })
                     .OrderBy(o => o.Date)
                     .ToList(),
@@ -132,8 +152,7 @@ public class CreditUsageService : ICreditUsageService
                                 .Select(s1 => new DataUsageDataPointDto
                                 {
                                     Date = s1.Key,
-                                    TotalCredits = s1.Sum(x => x.CreditsUsed),
-                                    TotalTransactions = s1.Count()
+                                    TotalCount = s1.Sum(x => x.CreditsUsed),
                                 })
                                 .OrderBy(o => o.Date)
                                 .ToList()
@@ -600,6 +619,8 @@ public class CreditUsageService : ICreditUsageService
                 "Type",
                 "Agent/AI Model",
                 "User",
+                "Action",
+                "Triggered By"
             });
             var stream = new MemoryStream(csvBytes);
 
@@ -692,7 +713,7 @@ public class CreditUsageService : ICreditUsageService
                         (w.AvailableCredits > 0) ||
                         (w.AvailableCredits < 0 && w.ExpiredOn.Date < DateTimeOffset.UtcNow.Date) ||
                         (w.AvailableCredits < 0 && w.ExpiredOn >= DateTimeOffset.UtcNow.Date)
-                    )                );
+                    ));
 
             // Construct the credit summary DTO with monthly breakdown
             var availableCreditDto = new AvailableCreditSummaryDto
