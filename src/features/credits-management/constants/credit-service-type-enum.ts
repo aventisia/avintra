@@ -30,12 +30,12 @@ export enum CreditServiceTypesEnum {
   /**
    * Service for executing autonomous agent workflows.
    */
-  AgentExecution = "AgentExecution",
+  AgentExecutionTime = "AgentExecutionTime",
 
   /**
    * Service for executing AI model inference tasks.
    */
-  AiModelExecution = "AiModelExecution",
+  AIModelExecutionTime = "AIModelExecutionTime",
 
   /**
    * Email communication service using SendGrid.

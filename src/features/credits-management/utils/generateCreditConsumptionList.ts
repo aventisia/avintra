@@ -67,7 +67,7 @@ export function generateCreditConsumptionList(
   // Add base agent execution consumption if flow completed
   if (postCommand === "complete") {
     consumptionList.push({
-      serviceType: CreditServiceTypesEnum.AgentExecution,
+      serviceType: CreditServiceTypesEnum.AgentExecutionTime,
       consumedUnit: getAgentExecutionDuration(nodes, [
         "InvokeInferenceModelWebServiceActivity",
       ]),
