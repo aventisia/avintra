@@ -407,7 +407,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             {
                 creditsUsageList.Add(new
                 {
-                    serviceType = "AiModelExecution",
+                    serviceType = "AIModelExecutionTime",
                     consumedUnit = totalExecutionTime,
                     refType = refType.ToString(),
                     refId = refId.ToString(),
