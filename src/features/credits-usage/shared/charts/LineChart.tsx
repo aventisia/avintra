@@ -5,7 +5,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@aventisia/ui/cards";
-import * as React from "react";
+import { cn } from "@aventisia/ui/lib";
+import { useState } from "react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
 import {
@@ -55,38 +56,41 @@ export const description = "An interactive line chart";
 
 interface IData {
   date: string;
-  totalTransactions: number;
-  totalCredits: number;
+  totalCount: number;
 }
 interface ChartLineInteractiveProps {
   title: string;
+  total: number;
   data: IData[];
   chartConfig?: ChartConfig;
   valueKey: string;
+  className?: string;
 }
 
 export function ChartLineInteractive({
   title,
+  total,
   data,
   chartConfig = {},
   valueKey,
+  className,
 }: ChartLineInteractiveProps) {
-  const [activeChart] = React.useState<keyof typeof chartConfig>(valueKey);
-  const total = React.useMemo(
-    () =>
-      data?.reduce(
-        (acc, curr) =>
-          acc +
-          (valueKey == "totalCredits"
-            ? curr.totalCredits
-            : curr.totalTransactions),
-        0,
-      ),
-    [data, valueKey],
-  );
+  const [activeChart] = useState<keyof typeof chartConfig>(valueKey);
+  // const total = React.useMemo(
+  //   () =>
+  //     data?.reduce(
+  //       (acc, curr) =>
+  //         acc +
+  //         (valueKey == "totalCredits"
+  //           ? curr.totalCredits
+  //           : curr.totalTransactions),
+  //       0,
+  //     ),
+  //   [data, valueKey],
+  // );
 
   return (
-    <Card className="py-4 sm:py-0">
+    <Card className={cn("py-4 sm:py-0", className)}>
       <CardHeader className="!px-8 !pb-0 !pt-4">
         <CardDescription>{title}</CardDescription>
         <CardTitle>
@@ -99,7 +103,7 @@ export function ChartLineInteractive({
       <CardContent className="px-2 sm:p-6">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
+          className="aspect-auto h-52 w-full"
         >
           <LineChart
             accessibilityLayer

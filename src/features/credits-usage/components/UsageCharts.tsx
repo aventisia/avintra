@@ -10,28 +10,41 @@ const totalCreditsChartConfig = {
 
 const totalTransactionsChartConfig = {
   views: {
-    label: "Transactions",
+    label: "Executions",
   },
 } satisfies ChartConfig;
 
 const UsageCharts = () => {
   const { data } = useFetchCreditUsageSummary();
-  const totalCreditChartData = data?.data.creditUsages || [];
-  const totalTransactionsChartData = data?.data.transactionUsages || [];
+  const creditChartData = data?.data.creditUsages || [];
+  const agentCreditChartData = data?.data.agentCreditUsages || [];
+  const agentTransactionChartData = data?.data.agentTransactionUsages || [];
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <ChartLineInteractive
         title="Total Credits Used"
-        data={totalCreditChartData}
+        total={data?.data.usageSummary.totalCredits || 0}
+        data={creditChartData}
         chartConfig={totalCreditsChartConfig}
-        valueKey="totalCredits"
+        valueKey="totalCount"
+        className="col-span-2"
       />
       <ChartLineInteractive
-        title="Total Transactions"
-        data={totalTransactionsChartData}
+        title="Total Agent Credits"
+        total={data?.data.usageSummary.totalAgentCredits || 0}
+        data={agentCreditChartData}
+        chartConfig={totalCreditsChartConfig}
+        valueKey="totalCount"
+        className="col-span-1"
+      />
+      <ChartLineInteractive
+        title="Total Agent Executions"
+        total={data?.data.usageSummary.totalAgentTransactions || 0}
+        data={agentTransactionChartData}
         chartConfig={totalTransactionsChartConfig}
-        valueKey="totalTransactions"
+        valueKey="totalCount"
+        className="col-span-1"
       />
     </div>
   );
