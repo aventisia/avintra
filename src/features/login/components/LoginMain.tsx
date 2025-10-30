@@ -28,7 +28,7 @@ export const LoginMain = () => {
   return (
     <>
       {isPending ? (
-        <RedirectPage className="h-auto p-3" />
+        <RedirectPage />
       ) : (
         <PageContainer>
           <LeftContainer>
