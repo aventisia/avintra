@@ -885,23 +885,45 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 }
             }
 
-            // No existing subscription — create new
-            var tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
-            tenantSubscription.PlanId = subscriptionPlan.Id;
-            tenantSubscription.TenantId = _tenantId;
-            tenantSubscription.RazorpaySubscriptionId = exitingtSubscription?.RazorpaySubscriptionId;
-            tenantSubscription.IsActive = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? true : false;
-            tenantSubscription.Status = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? SubscriptionStatusTypesEnum.Active : SubscriptionStatusTypesEnum.Pending;
-            tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
-            tenantSubscription.IsRecurringPayment = tenantSubscriptionPurchaseDto.IsRecurringPayment;
-            tenantSubscription.CreatedByUserId = _userId;
-            tenantSubscription.LastModifiedByUserId = _userId;
-            tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
-            tenantSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
-            tenantSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
-            tenantSubscription.MaxUsers = subscriptionPlan.MaxUsers;
-            tenantSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
-            tenantSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
+            // Fetch existing tenant subscription (if any), including plan and creator information
+            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w =>
+                    w.TenantId == _tenantId &&
+                    w.PlanId == tenantSubscriptionPurchaseDto.PlanId &&
+                    w.Status == SubscriptionStatusTypesEnum.Initiated
+                )
+                .Include(i => i.Plan)
+                .Include(i => i.CreatedByUser)
+                .SingleOrDefaultAsync();
+
+            if (tenantSubscription == null || tenantSubscription.CreatedOn.Date != DateTimeOffset.UtcNow.Date)
+            {
+                // No existing subscription — create new
+                tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
+                tenantSubscription.Id = Guid.NewGuid();
+                tenantSubscription.PlanId = subscriptionPlan.Id;
+                tenantSubscription.TenantId = _tenantId;
+                tenantSubscription.RazorpaySubscriptionId = exitingtSubscription?.RazorpaySubscriptionId;
+                tenantSubscription.IsActive = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? true : false;
+                tenantSubscription.Status = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? SubscriptionStatusTypesEnum.Active : SubscriptionStatusTypesEnum.Pending;
+                tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
+                tenantSubscription.IsRecurringPayment = tenantSubscriptionPurchaseDto.IsRecurringPayment;
+                tenantSubscription.CreatedByUserId = _userId;
+                tenantSubscription.LastModifiedByUserId = _userId;
+                tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
+                tenantSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
+                tenantSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
+                tenantSubscription.MaxUsers = subscriptionPlan.MaxUsers;
+                tenantSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
+                tenantSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
+
+                await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to create tenant subscription. TenantId: {TenantId}, PlanId: {PlanId}", _tenantId, tenantSubscriptionPurchaseDto.PlanId);
+                    return serviceResponse;
+                }
+            }
 
             string? razorpayOrderId = null;
 
@@ -1004,11 +1026,11 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 }
             }
 
-            await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
+            _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
 
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to create tenant subscription. TenantId: {TenantId}, PlanId: {PlanId}", _tenantId, tenantSubscriptionPurchaseDto.PlanId);
+                _logger.LogError("Failed to update tenant subscription. TenantId: {TenantId}, PlanId: {PlanId}", _tenantId, tenantSubscriptionPurchaseDto.PlanId);
                 return serviceResponse;
             }
 
