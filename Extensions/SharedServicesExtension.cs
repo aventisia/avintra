@@ -122,7 +122,7 @@ public static class SharedServicesExtension
     // Extension method to register the LLM data extraction service
     public static void AddLLMExtractionService(this IServiceCollection services)
     {
-        // Registers LLMDataExtractionService as a singleton implementation of ILLMDataExtractionService
-        services.AddSingleton<ILLMDataExtractionService, LLMDataExtractionService>();
+        // Registers LLMDataExtractionService as a scoped implementation of ILLMDataExtractionService
+        services.AddScoped<ILLMDataExtractionService, LLMDataExtractionService>();
     }
 }

@@ -16,5 +16,11 @@ public enum UsageSourceTypesEnum
     /// Indicates that the credits were used by or for an AI Model.
     /// </summary>
     [Description("AI Model")]
-    AIModel
+    AIModel,
+
+    /// <summary>
+    /// Indicates that the credits were consumed by the platform itself.
+    /// </summary>
+    [Description("Platform")]
+    Platform
 }

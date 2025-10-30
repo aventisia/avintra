@@ -5,16 +5,70 @@ public class LLMDataExtractionService : ILLMDataExtractionService
     private readonly ILogger<LLMDataExtractionService> _logger;
     private readonly ExtractViaLLMConfig _extractViaLLMConfig;
     private readonly OpenAIConfig _openAIConfig;
+    private readonly string _jwt;
 
-    public LLMDataExtractionService(ILogger<LLMDataExtractionService> logger, ExtractViaLLMConfig extractViaLLMConfig, OpenAIConfig openAIConfig)
+    public LLMDataExtractionService(
+        ILogger<LLMDataExtractionService> logger,
+        ExtractViaLLMConfig extractViaLLMConfig,
+        OpenAIConfig openAIConfig,
+        IHttpContextAccessor httpContextAccessor)
     {
+        _jwt = httpContextAccessor.HttpContext?.Request.Cookies["AccessToken"] ?? httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Replace("Bearer ", "") ?? "";
+
         _logger = logger;
         _extractViaLLMConfig = extractViaLLMConfig;
         _openAIConfig = openAIConfig;
     }
 
+    // To check if credits are available to continue.
+    public async Task<ServiceResponse<bool>> HasSufficientCreditsAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Insufficient credits to continue. Please top up your credits.",
+            StatusCode = 400
+        };
+
+        try
+        {
+            // Create credits usage in AccountsDb database
+            var response = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Read, "http://localhost:4000/api/credit-usage/available-credits", _jwt);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            // Failed to add credit usage
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError($"Failed to retrieve available credits. Response: {response.StatusCode} - {responseContent}");
+                return serviceResponse;
+            }
+
+            serviceResponse.StatusCode = 200;
+            dynamic availableCredits = JsonConvert.DeserializeObject<dynamic>(responseContent) ?? new { data = new { AvailableCredits = 0 } };
+            _logger.LogInformation($"Successfully retrieved available credits: {availableCredits.data.availableCredits}");
+
+            if (availableCredits.data.availableCredits <= 10)
+            {
+                serviceResponse.Message = "Insufficient credits to continue. Please top up your credits.";
+                _logger.LogWarning($"Insufficient credits available: {availableCredits.data.availableCredits}");
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = true;
+            serviceResponse.Message = "Credits are available to continue.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Extracts structured data from a document by retrieving its text and passing it to an LLM for processing.
-    public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature, object? ollamaOutputFormatSchema = null)
+    public async Task<ServiceResponse<string>> ExtractDataAsync(string prompt, string llmModel, double modelTemperature, UsageSourceTypesEnum refType, Guid refId, string refName, object? ollamaOutputFormatSchema = null, bool isJsonOutput = true)
     {
         var serviceResponse = new ServiceResponse<string>()
         {
@@ -34,7 +88,17 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             { "mistral", "mistral:7b" },
             { "gemma", "gemma3:12b" },
             { "gpt-4o-mini", "gpt-4o-mini" },
+            { "gpt-4o", "gpt-4o" },
         };
+
+        var startTime = DateTime.UtcNow;
+        double totalExecutionTime = 0;
+        var inputTokens = 0;
+        var inputCachedTokens = 0;
+        var outputTokens = 0;
+        var outputReasoningTokens = 0;
+
+        List<object> creditsUsageList = new List<object>();
 
         try
         {
@@ -77,7 +141,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                     // Set timeout to 3 minutes
                     client.Timeout = TimeSpan.FromMinutes(3);
 
-                    if (mappedModel == "gpt-4o-mini")
+                    if (mappedModel == "gpt-4o-mini" || mappedModel == "gpt-4o")
                     {
                         // Validate the API key
                         if (string.IsNullOrWhiteSpace(_openAIConfig.OpenAIApiKey))
@@ -100,6 +164,9 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                         }
 
                         // Prepare the message list: system prompt (optional) + user input
+                        prompt = isJsonOutput ?
+                            prompt + " Please provide the response in JSON format only." + System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema) :
+                            prompt;
                         var messageList = new List<Dictionary<string, string>>()
                         {
                             // The system prompt could be included if needed, for example:
@@ -109,23 +176,67 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                             new Dictionary<string, string>
                             {
                                 { "role", "user" },
-                                { "content", prompt + " Please provide the response in JSON format only. " + System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema)}
+                                { "content", prompt}
                             }
                         };
 
                         _logger.LogInformation("Prepared openai or gemini OutputFormatSchema: {ollamaOutputFormatSchema}", System.Text.Json.JsonSerializer.Serialize(ollamaOutputFormatSchema));
 
                         // Proceed to fetch chat completion from the OpenAI API
-                        llmResponse = await GetChatCompletionAsync(messageList, mappedModel, client, modelTemperature, ollamaOutputFormatSchema);
+                        var openaiRawResponse = await GetChatCompletionAsync(messageList, mappedModel, client, modelTemperature, ollamaOutputFormatSchema);
 
-                        // Process or log the response as needed
-                        if (string.IsNullOrEmpty(llmResponse))
+                        // Parse the response string into a JsonDocument for easier manipulation of JSON data.
+                        using var jsonDoc = JsonDocument.Parse(openaiRawResponse);
+
+                        // Extract the assistant's reply text from the parsed JSON
+                        llmResponse = jsonDoc.RootElement
+                            .GetProperty("choices")[0]
+                            .GetProperty("message")
+                            .GetProperty("content")
+                            .GetString() ?? "";
+
+                        // Log the successful completion of the request
+                        _logger.LogInformation("Successfully received response from OpenAI.{llmResponse}", llmResponse);
+
+                        // Get token usage details if available
+                        if (jsonDoc.RootElement.TryGetProperty("usage", out JsonElement usageElement))
                         {
-                            serviceResponse.Message = "No response or error from OpenAI.";
-                            _logger.LogWarning("Received empty response from OpenAI.");
-
-                            return serviceResponse;
+                            inputTokens = usageElement.GetProperty("prompt_tokens").GetInt32();
+                            outputTokens = usageElement.GetProperty("completion_tokens").GetInt32();
+                            inputCachedTokens = usageElement.GetProperty("prompt_tokens_details").GetProperty("cached_tokens").GetInt32();
+                            outputReasoningTokens = usageElement.GetProperty("completion_tokens_details").GetProperty("reasoning_tokens").GetInt32();
                         }
+
+                        // Get total execution time
+                        totalExecutionTime = (DateTime.UtcNow - startTime).TotalSeconds;
+
+                        // Add input tokens usage to the credits usage list
+                        if (inputTokens > 0)
+                        {
+                            creditsUsageList.Add(new
+                            {
+                                serviceType = "Gpt4oMiniInput",
+                                consumedUnit = inputTokens,
+                                refType = refType.ToString(),
+                                refId = refId.ToString(),
+                                refName = refName
+                            });
+                        }
+
+                        // Add output tokens usage to the credits usage list
+                        if (outputTokens > 0)
+                        {
+                            creditsUsageList.Add(new
+                            {
+                                serviceType = "Gpt4oMiniOutput",
+                                consumedUnit = outputTokens,
+                                refType = refType.ToString(),
+                                refId = refId.ToString(),
+                                refName = refName
+                            });
+                        }
+
+                        break; // Exit retry loop if the extraction was successful
                     }
                     else
                     {
@@ -254,39 +365,75 @@ public class LLMDataExtractionService : ILLMDataExtractionService
 
                     _logger.LogInformation("Raw LLM response received: {llmResponse}", llmResponse);
 
-                    // Clean up known debug or formatting tags from the response
-                    if (llmResponse.Contains("</think>"))
-                    {
-                        // Remove <think> tags and content between them
-                        llmResponse = llmResponse.Remove(llmResponse.IndexOf("<think>"), llmResponse.IndexOf("</think>") - llmResponse.IndexOf("<think>") + 8);
-                        _logger.LogInformation("Removed <think> tag content from response.");
-                    }
-
-                    if (llmResponse.Contains("```json"))
-                    {
-                        // Remove the "```json" code block tag
-                        llmResponse = llmResponse.Remove(llmResponse.IndexOf("```json"), 7);
-                        _logger.LogInformation("Removed ```json tag from response.");
-                    }
-
-                    if (llmResponse.Contains("```"))
-                    {
-                        // Remove any remaining "```" code block tag
-                        llmResponse = llmResponse.Remove(llmResponse.IndexOf("```"), 3);
-                        _logger.LogInformation("Removed ``` tag from response.");
-                    }
-
-                    llmResponse = llmResponse.Trim(); // Clean up any excess whitespace
-                    _logger.LogInformation("Final cleaned LLM response: {llmResponse}", llmResponse);
-
                     break; // Exit retry loop if the extraction was successful
                 }
             }
 
-            // Step 10: Return a successful response with the extracted data
+            // Clean up known debug or formatting tags from the response
+            if (llmResponse.Contains("</think>"))
+            {
+                // Remove <think> tags and content between them
+                llmResponse = llmResponse.Remove(llmResponse.IndexOf("<think>"), llmResponse.IndexOf("</think>") - llmResponse.IndexOf("<think>") + 8);
+                _logger.LogInformation("Removed <think> tag content from response.");
+            }
+
+            if (llmResponse.Contains("```json"))
+            {
+                // Remove the "```json" code block tag
+                llmResponse = llmResponse.Remove(llmResponse.IndexOf("```json"), 7);
+                _logger.LogInformation("Removed ```json tag from response.");
+            }
+
+            if (llmResponse.Contains("```"))
+            {
+                // Remove any remaining "```" code block tag
+                llmResponse = llmResponse.Remove(llmResponse.IndexOf("```"), 3);
+                _logger.LogInformation("Removed ``` tag from response.");
+            }
+
+            llmResponse = llmResponse.Trim(); // Clean up any excess whitespace
+            serviceResponse.Data = llmResponse;
+            serviceResponse.StatusCode = 200;
             serviceResponse.Data = llmResponse;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Data successfully extracted.";
+            _logger.LogInformation("Final cleaned LLM response: {llmResponse}", llmResponse);
+
+            // Get total execution time
+            totalExecutionTime = (DateTime.UtcNow - startTime).TotalSeconds;
+
+            // Add total execution time usage to the credits usage list
+            if (totalExecutionTime > 0)
+            {
+                creditsUsageList.Add(new
+                {
+                    serviceType = "AIModelExecutionTime",
+                    consumedUnit = totalExecutionTime,
+                    refType = refType.ToString(),
+                    refId = refId.ToString(),
+                    refName = refName
+                });
+            }
+
+            // Log token usage details
+            _logger.LogInformation("Token usage - Input Tokens: {inputTokens}, Input Cached Tokens: {inputCachedTokens}, Output Tokens: {outputTokens}, Output Reasoning Tokens: {outputReasoningTokens}, Total Execution Time (s): {totalExecutionTime}",
+                inputTokens, inputCachedTokens, outputTokens, outputReasoningTokens, totalExecutionTime);
+
+            // Create credits usage in AccountsDb database
+            HttpResponseMessage creditUsagesResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Create, "http://localhost:4000/api/credit-usage/bulk", _jwt, creditsUsageList);
+
+            // Failed to add credit usage
+            if (!creditUsagesResponse.IsSuccessStatusCode)
+            {
+                string errorContent = await creditUsagesResponse.Content.ReadAsStringAsync();
+                _logger.LogError($"Failed to create credit usage records. Response: {creditUsagesResponse.StatusCode} - {errorContent}");
+            }
+            else
+            {
+                _logger.LogInformation("Successfully created credit usage records.");
+            }
+
+            // Step 10: Return a successful response with the extracted data
             _logger.LogInformation("Data extraction completed successfully.");
         }
         catch (Exception ex)
@@ -391,32 +538,9 @@ public class LLMDataExtractionService : ILLMDataExtractionService
 
             // Read and process the response content from the OpenAI API
             var responseString = await apiResponse.Content.ReadAsStringAsync();
-            // The response from the OpenAI API is usually in JSON format, so we first read it as a string.
-
-            using var jsonDoc = JsonDocument.Parse(responseString);
-            // Parse the response string into a JsonDocument for easier manipulation of JSON data.
-
-
-            // Extract the assistant's reply text from the parsed JSON
-            _logger.LogInformation($"Parsing response from OpenAI API. {jsonDoc.RootElement}");
-            var completionText = jsonDoc.RootElement
-                .GetProperty("choices")[0]
-                .GetProperty("message")
-                .GetProperty("content")
-                .GetString();
-
-            // If the content is empty or null, log and return an appropriate message
-            if (string.IsNullOrEmpty(completionText))
-            {
-                _logger.LogWarning("No valid response content received from OpenAI.");
-                return string.Empty;
-            }
-
-            // Log the successful completion of the request
-            _logger.LogInformation("Successfully received response from OpenAI.");
 
             // Return the chat completion text
-            return completionText;
+            return responseString;
         }
         catch (Exception ex)
         {
