@@ -95,7 +95,7 @@ namespace AccountsAPIs.Services
                     BillingDetailId = existingBilling.Id,
                     Currency = razorpayOrderRequestDto.Currency,
                     Amount = razorpayOrderRequestDto.Amount,
-                    Type = CreditTypesEnum.TopUp,
+                    Type = razorpayOrderRequestDto.Type,
                     Quantity = razorpayOrderRequestDto.Credits,
                     PaymentStatus = PaymentStatusTypesEnum.Created,
                     RazorpayOrderId = razorpayOrderRequestDto.RazorpayId,

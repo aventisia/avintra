@@ -498,6 +498,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                         Currency = subscriptionPlan.Currency,
                         Credits = 0,
                         IncludeTax = includeTax,
+                        Type = CreditTypesEnum.Subscription,
                         SubscriptionId = tenantSubscription.Id
                     });
 
@@ -929,6 +930,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                         Currency = subscriptionPlan.Currency,
                         Credits = 0,
                         IncludeTax = includeTax,
+                        Type = CreditTypesEnum.Subscription,
                         SubscriptionId = tenantSubscription.Id
                     });
 

@@ -26,6 +26,11 @@ public class RazorpayOrderRequestDto
     public bool IncludeTax { get; set; }
 
     /// <summary>
+    /// Gets or sets the type of credit allocated to the tenant (e.g., Subscription, Top-up, Addon).
+    /// </summary>
+    public CreditTypesEnum Type { get; set; } = CreditTypesEnum.TopUp;
+
+    /// <summary>
     /// Gets or sets the unique Razorpay ID associated with the top-up transaction.
     /// </summary>
     public string? RazorpayId { get; set; }
