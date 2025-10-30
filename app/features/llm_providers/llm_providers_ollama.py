@@ -129,15 +129,21 @@ class OllamaProvider(BaseLLMProvider):
             
     # Helper: Create request payload and headers
     def create_request_payload_and_headers(self, request: LLMRequest) -> tuple:
-        
+
         # Convert LLMMessage objects to dicts if input is a list
-        if isinstance(request.input, str):
+        if request.files and len(request.files) > 0 and isinstance(request.input, str):
+            # IMPORTANT Note: If files are present, they will be included in the messages only if the input is a string.
+            # Basically we are assuming a single request to do OCR or image captioning.
+            # In case of request.input is a list of messages, assuming user has already included images array in the messages.
+            # TODO: Testing is pending for files + messages both being sent together.
+            messages = [{"role": "user", "content": request.input}, {"role": "user", "images": request.files}]
+        elif isinstance(request.input, str):
             messages = [{"role": "user", "content": request.input}]
         elif isinstance(request.input, list):
             messages = [msg.model_dump() if hasattr(msg, 'model_dump') else msg for msg in request.input]
         else:
             raise ValueError("Invalid input format. Must be string or list of messages.")
-        
+
         # Build request payload and headers
         request_payload = {
             "model": request.model,
