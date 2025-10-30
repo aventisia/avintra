@@ -1043,6 +1043,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Map the tenant subscription entity to a DTO for response
             var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
+            tenantSubscriptionDto.RazorpayOrderId = razorpayOrderId;
+
             // Set the service response with the DTO and success metadata
             serviceResponse.Data = tenantSubscriptionDto;
             serviceResponse.StatusCode = 200;
