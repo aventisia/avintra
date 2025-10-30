@@ -46,6 +46,16 @@ public class BillingHistory : BaseEntity
     public string? InvoiceLink { get; set; }
 
     /// <summary>
+    /// Gets or sets the type of credit allocated to the tenant (e.g., Subscription, Top-up, Addon).
+    /// </summary>
+    public CreditTypesEnum Type { get; set; }
+
+    /// <summary>
+    /// Gets or sets the quantity (number of credits) allocated in this billing transaction.
+    /// </summary>
+    public int Quantity { get; set; }
+
+    /// <summary>
     /// Gets or sets the unique identifier of the subscription associated with this billing history.
     /// </summary>
     public Guid BillingDetailId { get; set; }

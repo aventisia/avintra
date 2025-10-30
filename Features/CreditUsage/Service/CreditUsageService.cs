@@ -85,7 +85,14 @@ public class CreditUsageService : ICreditUsageService
                 UsageSummary = new UsageSummaryDto
                 {
                     TotalCredits = creditUsages.Sum(c => c.CreditsUsed),
-                    TotalTransactions = creditUsages.Count()
+                    TotalAgentTransactions = creditUsages
+                            .Where(w => !string.IsNullOrEmpty(w.TriggeredByAgent))
+                            .GroupBy(g => g.TriggeredByAgent)
+                            .Count(),
+                    TotalAgentCredits = creditUsages
+                            .Where(w => !string.IsNullOrEmpty(w.TriggeredByAgent))
+                            .GroupBy(g => g.TriggeredByAgent)
+                            .Sum(sm => sm.Sum(sum => sum.CreditsUsed)),
                 },
 
                 // Grouped credits usage per day (for usage trends)
@@ -93,19 +100,32 @@ public class CreditUsageService : ICreditUsageService
                     .Select(s => new DataUsageDataPointDto
                     {
                         Date = s,
-                        TotalCredits = creditUsages.Where(w => w.UsedAt.Date == s).Sum(sm => sm.CreditsUsed),
-                        TotalTransactions = creditUsages.Where(w => w.UsedAt.Date == s).Count(),
+                        TotalCount = creditUsages.Where(w => w.UsedAt.Date == s).Sum(sm => sm.CreditsUsed),
                     })
                     .OrderBy(o => o.Date)
                     .ToList(),
 
                 // Grouped transaction counts per day
-                TransactionUsages = allDatesInRange
+                AgentTransactionUsages = allDatesInRange
                     .Select(s => new DataUsageDataPointDto
                     {
                         Date = s,
-                        TotalCredits = creditUsages.Where(w => w.UsedAt.Date == s).Sum(sm => sm.CreditsUsed),
-                        TotalTransactions = creditUsages.Where(w => w.UsedAt.Date == s).Count(),
+                        TotalCount = creditUsages
+                            .Where(w => w.UsedAt.Date == s && !string.IsNullOrEmpty(w.TriggeredByAgent))
+                            .GroupBy(g => g.TriggeredByAgent)
+                            .Count()
+                    })
+                    .OrderBy(o => o.Date)
+                    .ToList(),
+
+                AgentCreditUsages = allDatesInRange
+                    .Select(s => new DataUsageDataPointDto
+                    {
+                        Date = s,
+                        TotalCount = creditUsages
+                            .Where(w => w.UsedAt.Date == s && !string.IsNullOrEmpty(w.TriggeredByAgent))
+                            .GroupBy(g => g.TriggeredByAgent)
+                            .Sum(sm => sm.Sum(sum => sum.CreditsUsed)),
                     })
                     .OrderBy(o => o.Date)
                     .ToList(),
@@ -126,46 +146,52 @@ public class CreditUsageService : ICreditUsageService
                             Credits = matchingPlan.Credits,
                             TotalCredits = s.Sum(sm => sm.CreditsUsed),
                             TotalTransactions = s.Count(),
-                            // Usage over time for that resource
                             UsageTimeline = s
                                 .GroupBy(g1 => g1.UsedAt.Date)
                                 .Select(s1 => new DataUsageDataPointDto
                                 {
                                     Date = s1.Key,
-                                    TotalCredits = s1.Sum(x => x.CreditsUsed),
-                                    TotalTransactions = s1.Count()
+                                    TotalCount = s1.Sum(x => x.CreditsUsed),
                                 })
                                 .OrderBy(o => o.Date)
                                 .ToList()
                         };
                     })
                     .ToList(),
-                Users = creditUsages.Where(w => w.UsedByUser != null)
-                .GroupBy(g => g.UsedByUserId).Select(s =>
-                {
-                    var user = s.First().UsedByUser;
-                    return new UserUsageDto
+                Users = creditUsages
+                    .Where(w =>
+                        w.UsedByUser != null &&
+                        (
+                            w.ServiceType == CreditServiceTypesEnum.AIModelExecutionTime ||
+                            w.ServiceType == CreditServiceTypesEnum.AgentExecutionTime
+                        )
+                    )
+                    .GroupBy(g => g.UsedByUserId).Select(s =>
                     {
-                        Username = user.UserName,
-                        FirstName = user.FirstName,
-                        LastName = user.LastName,
-                        TotalTransactions = s.Count(),
-                        TotalCredits = s.Sum(sm => sm.CreditsUsed)
-                    };
-                })
-                .ToList(),
-                AiModels = creditUsages.Where(w => w.RefType.HasValue && w.RefType == UsageSourceTypesEnum.AIModel)
-                .GroupBy(g => g.RefId).Select(s =>
-                {
-                    return new AiModelUsageDto
-                    {
-                        ModelName = s.First().RefName,
-                        TotalTransactions = s.Count(),
-                        TotalCredits = s.Sum(sm => sm.CreditsUsed)
-                    };
-                })
+                        var user = s.First().UsedByUser;
+                        return new UserUsageDto
+                        {
+                            Username = user.UserName,
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            TotalTransactions = s.Count(),
+                            TotalCredits = s.Sum(sm => sm.CreditsUsed)
+                        };
+                    })
                     .ToList(),
-                Agents = creditUsages.Where(w => w.RefType.HasValue && w.RefType == UsageSourceTypesEnum.Agent)
+                AiModels = creditUsages
+                    .Where(w => w.ServiceType == CreditServiceTypesEnum.AIModelExecutionTime)
+                    .GroupBy(g => g.RefId).Select(s =>
+                    {
+                        return new AiModelUsageDto
+                        {
+                            ModelName = s.First().RefName,
+                            TotalTransactions = s.Count(),
+                            TotalCredits = s.Sum(sm => sm.CreditsUsed)
+                        };
+                    })
+                    .ToList(),
+                Agents = creditUsages.Where(w => w.ServiceType == CreditServiceTypesEnum.AgentExecutionTime && !string.IsNullOrEmpty(w.TriggeredByAgent))
                 .GroupBy(g => g.RefId).Select(s =>
                 {
                     return new AgentUsageDto
@@ -210,13 +236,9 @@ public class CreditUsageService : ICreditUsageService
             _logger.LogInformation("Initiating credit usage insertion for User ID: {UserId}, Service Type: {ServiceType}",
                 creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
 
-            // Variable to track if there are available credits
-            bool hasAvailableCredits = true;
-
-            // Check if the tenant is non-default
-            var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
-
-            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(w => w.Id == _tenantId)
+                .FirstOrDefaultAsync();
 
             // If no tenant is found, log a warning and return failure message
             if (tenant == null)
@@ -229,7 +251,6 @@ public class CreditUsageService : ICreditUsageService
             // Query the current tenant's subscription, including related plan and creator details
             var subscriptionPlan = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
-                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
                     w.IsActive &&
                     w.TenantId == _tenantId
                 )
@@ -249,9 +270,7 @@ public class CreditUsageService : ICreditUsageService
             var availableCredits = _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
-                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
-                    w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date &&
-                    w.AvailableCredits > 0
+                    w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date
                 ).OrderByDescending(o => o.ExpiredOn);
 
             // If no available credits are found, log a warning and return failure message
@@ -284,17 +303,13 @@ public class CreditUsageService : ICreditUsageService
             creditUsed = tenant.Discount.HasValue ? creditUsed * tenant.Discount.Value : creditUsed;
 
             // Attempt to find the first available credit that has enough available credits to cover the usage
-            tenantAvailableCredit = await availableCredits.FirstOrDefaultAsync(w => w.AvailableCredits >= creditUsed);
+            tenantAvailableCredit = await availableCredits
+                .FirstOrDefaultAsync(w => w.AvailableCredits > 0 && w.AvailableCredits >= creditUsed);
 
             // If no sufficient credits are found, get the highest available credit and log a warning
             if (tenantAvailableCredit == null)
             {
                 tenantAvailableCredit = await availableCredits.OrderByDescending(o => o.AvailableCredits).FirstAsync();
-                _logger.LogWarning("No available credits found for TenantId: {TenantId}, UserId: {UserId}.", _tenantId, _userId);
-
-                // Update the service response to reflect that credits are not available
-                serviceResponse.Message = "No available credits found for the specified tenant and user.";
-                hasAvailableCredits = false;
             }
 
             // Reduce the available credits by the amount used
@@ -325,12 +340,6 @@ public class CreditUsageService : ICreditUsageService
             {
                 _logger.LogError("Database save failed during credit usage insertion for User ID: {UserId}, Service Type: {ServiceType}.",
                     creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
-                return serviceResponse;
-            }
-
-            // If no available credits were found earlier, return the failure service response
-            if (!hasAvailableCredits)
-            {
                 return serviceResponse;
             }
 
@@ -367,10 +376,9 @@ public class CreditUsageService : ICreditUsageService
         {
             _logger.LogInformation("Initiating multiple credit usage insertions for {Count} records.", creditUsageDtos.Count());
 
-            // Variable to track if there are available credits
-            bool hasAvailableCredits = true;
-
-            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(w => w.Id == _tenantId)
+                .FirstOrDefaultAsync();
 
             // If no tenant is found, log a warning and return failure message
             if (tenant == null)
@@ -399,14 +407,13 @@ public class CreditUsageService : ICreditUsageService
             }
 
             // Query the tenant credits that are available and belong to the current user
-            var availableCreditsQuery = _unitOfWork.TenantCreditRepo
+            var availableCredits = await _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
                     w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date &&
                     w.AvailableCredits > 0
-                ).OrderByDescending(o => o.ExpiredOn);
-
-            var availableCredits = await availableCreditsQuery.ToListAsync();
+                ).OrderByDescending(o => o.ExpiredOn)
+                .ToListAsync();
 
             // If no available credits are found, log a warning and return failure message
             if (!availableCredits.Any())
@@ -449,9 +456,6 @@ public class CreditUsageService : ICreditUsageService
                 if (tenantAvailableCredit == null)
                 {
                     tenantAvailableCredit = availableCredits.OrderByDescending(o => o.AvailableCredits).FirstOrDefault();
-                    _logger.LogWarning("No available credits found for TenantId: {TenantId}, UserId: {UserId}.", _tenantId, _userId);
-                    hasAvailableCredits = false;
-                    break;  // Stop processing further if we don't have enough credits
                 }
 
                 // Reduce the available credits by the amount used
@@ -468,13 +472,6 @@ public class CreditUsageService : ICreditUsageService
 
                 // Add the credit usage to the list for batch insertion
                 creditUsages.Add(creditUsage);
-            }
-
-            // If no sufficient credits were found, return failure
-            if (!hasAvailableCredits)
-            {
-                serviceResponse.Message = "Insufficient credits for one or more records.";
-                return serviceResponse;
             }
 
             // Insert the new credit usage records into the database
@@ -629,6 +626,8 @@ public class CreditUsageService : ICreditUsageService
                 "Type",
                 "Agent/AI Model",
                 "User",
+                "Action",
+                "Triggered By"
             });
             var stream = new MemoryStream(csvBytes);
 
@@ -666,15 +665,15 @@ public class CreditUsageService : ICreditUsageService
             // Log the start of the credit retrieval process
             _logger.LogInformation("Starting credit retrieval for user: {UserId}", _userId);
 
-            var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
-
             // Fetch available tenant credits for the current user
             var availableCreditsQuery = _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
-                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
-                    w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date &&
-                    w.AvailableCredits > 0
+                    (
+                        (w.AvailableCredits > 0) ||
+                        (w.AvailableCredits < 0 && w.ExpiredOn.Date < DateTimeOffset.UtcNow.Date) ||
+                        (w.AvailableCredits < 0 && w.ExpiredOn >= DateTimeOffset.UtcNow.Date)
+                    )
                 );
 
             // Aggregate available credit data into the DTO
@@ -713,16 +712,15 @@ public class CreditUsageService : ICreditUsageService
             // Log the start of the summary retrieval process
             _logger.LogInformation("Starting credit summary retrieval for user: {UserId}", _userId);
 
-            var isNonDefaultTenant = _defaultTenantConfig.TenantId != _tenantId;
-
             // Fetch available tenant credits for the current user
             var availableCreditsQuery = _unitOfWork.TenantCreditRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
-                    (isNonDefaultTenant || w.CreatedByUserId == _userId) &&
-                    w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date &&
-                     w.AvailableCredits > 0
-                );
+                    (
+                        (w.AvailableCredits > 0) ||
+                        (w.AvailableCredits < 0 && w.ExpiredOn.Date < DateTimeOffset.UtcNow.Date) ||
+                        (w.AvailableCredits < 0 && w.ExpiredOn >= DateTimeOffset.UtcNow.Date)
+                    ));
 
             // Construct the credit summary DTO with monthly breakdown
             var availableCreditDto = new AvailableCreditSummaryDto

@@ -43,6 +43,11 @@ public class CreditUsage : IMustHaveTenant
     public UsageSourceTypesEnum? RefType { get; set; }
 
     /// <summary>
+    /// Gets or sets the type of the entity or operation the credits were used for (e.g., AgentExecution, AIModelExecution).
+    /// </summary>
+    public ActionTypesEnum? Action { get; set; }
+
+    /// <summary>
     /// Gets or sets the identifier of the specific reference associated with the usage context (e.g., AgentId, ModelId).
     /// </summary>
     public Guid? RefId { get; set; }
@@ -57,6 +62,11 @@ public class CreditUsage : IMustHaveTenant
     /// </summary>
     public Guid? UsedByUserId { get; set; }
 
+    /// <summary>
+    /// Gets or sets the name or identifier of the agent that triggered the consumption of credits. 
+    /// </summary>
+    public string? TriggeredByAgent { get; set; }
+    
     /// <summary>
     /// Gets or sets the user who consumed the credits.
     /// </summary>

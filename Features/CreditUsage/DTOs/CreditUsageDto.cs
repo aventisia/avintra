@@ -34,6 +34,16 @@ public class CreditsUsageDto
     /// Gets or sets the unique identifier of the user who consumed the credits.
     /// </summary>
     public Guid? UsedByUserId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of the entity or operation the credits were used for (e.g., AgentExecution, AIModelExecution).
+    /// </summary>
+    public ActionTypesEnum? Action { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name or identifier of the agent that triggered the consumption of credits. 
+    /// </summary>
+    public string? TriggeredByAgent { get; set; }
 }
 
 
@@ -48,14 +58,20 @@ public class CreditsUsageSummaryDto
     public UsageSummaryDto UsageSummary { get; set; } = new UsageSummaryDto();
 
     /// <summary>
-    /// Gets or sets the list of credit usage records over time.
+    /// Gets or sets the time-series data for credit usage, used for charting credit trends.
     /// </summary>
     public List<DataUsageDataPointDto>? CreditUsages { get; set; }
 
     /// <summary>
-    /// Gets or sets the list of transaction records over time.
+    /// Gets or sets the time-series data for agent transaction usage, used for charting transaction trends.
     /// </summary>
-    public List<DataUsageDataPointDto>? TransactionUsages { get; set; }
+    public List<DataUsageDataPointDto>? AgentCreditUsages { get; set; }
+
+    /// <summary>
+    /// Gets or sets the time-series data for agent evaluations, used for charting evaluation trends.
+    /// </summary>
+    public List<DataUsageDataPointDto>? AgentTransactionUsages { get; set; }
+
 
     /// <summary>
     /// Gets or sets the resource-wise usage breakdown, including cost and consumption history.
@@ -89,30 +105,31 @@ public class UsageSummaryDto
     public double TotalCredits { get; set; }
 
     /// <summary>
-    /// Gets or sets the total number of transactions consumed in the selected period.
+    /// Gets or sets the total count of transactions processed within the selected period.
     /// </summary>
-    public int TotalTransactions { get; set; }
+    public int TotalAgentTransactions { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of credits consumed by the agent within the selected period.
+    /// </summary>
+    public double TotalAgentCredits { get; set; }
 }
 
 /// <summary>
-/// Represents a record of total credit usage for a specific date.
+/// Represents a record of credit or transaction usage for a specific date, detailing the total amount consumed on that date.
 /// </summary>
 public class DataUsageDataPointDto
 {
     /// <summary>
-    /// Gets or sets the date for which the credit usage is recorded.
+    /// Gets or sets the date for which the usage data is recorded.
     /// </summary>
     public DateTimeOffset Date { get; set; }
 
     /// <summary>
-    /// Gets or sets the total number of credits used on the specified date.
+    /// Gets or sets the total count of credits or transactions consumed on the specified date. 
+    /// This can represent either credits or transactions depending on context.
     /// </summary>
-    public double TotalCredits { get; set; }
-
-    /// <summary>
-    /// Gets or sets the total number of transactions used on the specified date.
-    /// </summary>
-    public int TotalTransactions { get; set; }
+    public double TotalCount { get; set; }
 }
 
 /// <summary>

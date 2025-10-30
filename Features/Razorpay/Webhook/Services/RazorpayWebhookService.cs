@@ -142,7 +142,17 @@ public class WebhookService : IWebhookService
                 break;
 
             case "subscription.charged":
-                await HandleSubscriptionCharged(json);
+                // Log the event of receiving a subscription charge webhook
+                _logger.LogInformation("Processing subscription charge event.");
+
+                // Invoke the method to handle the subscription status update to 'Active'
+                TenantSubscription? tenantSubscription = await HandleActivateSubscriptionStatus(json);
+
+                // Handle and save billing-related information from the webhook
+                await ProcessBillingDetail(json, tenantSubscription);
+
+                // Allocate credits based on the subscription details
+                await AssignCreditAsync(tenantSubscription);
                 break;
 
             case "subscription.cancelled":
@@ -240,19 +250,140 @@ public class WebhookService : IWebhookService
         }
     }
 
-    private async Task HandleSubscriptionCharged(JObject json)
+    // Method to handle the activation of a subscription based on the webhook data.
+    private async Task<TenantSubscription?> HandleActivateSubscriptionStatus(JObject json)
     {
-        // Log the incoming request for subscription charge event
-        _logger.LogInformation("Handling subscription charge event.");
+        // Initialize the tenant subscription variable, which will hold the subscription data.
+        TenantSubscription? tenantSubscription = null;
 
-        // Call the helper method to process the status update to 'Active'
-        TenantSubscription? tenantSubscription = await ProcessSubscriptionStatusUpdate(json, SubscriptionStatusTypesEnum.Active);
+        // Extract the Razorpay subscription entity from the incoming JSON payload.
+        var razorpaySubscriptionEntity = json["payload"]?["subscription"]?["entity"];
 
-        // Process and persist billing-related details from the webhook
-        await ProcessBillingDetail(json, tenantSubscription);
+        // Extract Razorpay Subscription ID and Customer ID from the entity.
+        var razorpaySubscriptionId = razorpaySubscriptionEntity?["id"]?.ToString();
+        var razorpayCustomerId = razorpaySubscriptionEntity?["customer_id"]?.ToString();
 
-        // Assign credits based on subscription details
-        await AssignCreditAsync(tenantSubscription);
+        // If Razorpay Subscription ID is missing or invalid, log a warning and return early.
+        if (string.IsNullOrEmpty(razorpaySubscriptionId))
+        {
+            _logger.LogWarning("The Razorpay Subscription ID is missing or invalid in the payload.");
+            return null;
+        }
+
+        // Log the extracted Razorpay Subscription ID for tracking purposes.
+        _logger.LogInformation("Extracted Razorpay Subscription ID: {RazorpaySubscriptionId}", razorpaySubscriptionId);
+
+        try
+        {
+            // Fetch the tenant associated with the Razorpay Customer ID.
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(t => t.RazorpayCustomerId == razorpayCustomerId)
+                .FirstOrDefaultAsync();
+
+            // If no tenant is found, log a warning and return.
+            if (tenant == null)
+            {
+                _logger.LogWarning("No tenant found for Razorpay Customer ID: {RazorpayCustomerId}.", razorpayCustomerId);
+                return null;
+            }
+
+            // Log tenant information to verify we have found the correct tenant.
+            _logger.LogInformation("Found tenant with Razorpay Customer ID: {RazorpayCustomerId}", razorpayCustomerId);
+
+            // Retrieve the current active subscription for the tenant.
+            var currentTenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(s => s.TenantId == tenant.Id && s.IsActive)
+                .Include(i => i.Plan)
+                .FirstOrDefaultAsync();
+
+            // If no active subscription is found, log a warning and deactivate it.
+            if (currentTenantSubscription != null)
+            {
+                _logger.LogWarning("No active subscription found for Razorpay Subscription ID: {RazorpaySubscriptionId}.", razorpaySubscriptionId);
+
+                // Mark subscription as inactive (deactivation step).
+                currentTenantSubscription.IsActive = false;
+                currentTenantSubscription.LastModifiedByUserId = tenant.LastModifiedByUserId;
+
+                // Update the subscription status to inactive in the repository.
+                _unitOfWork.TenantSubscriptionRepo.Update(currentTenantSubscription);
+                _logger.LogInformation("Deactivated subscription with Razorpay Subscription ID: {RazorpaySubscriptionId}.", razorpaySubscriptionId);
+
+                // Handle credits for the Starter plan if applicable.
+                if (currentTenantSubscription.Plan.Type == SubscriptionPlanTypeEnum.Starter)
+                {
+                    var tenantCredit = await _unitOfWork.TenantCreditRepo
+                        .GetByConditionAsync(c => c.TenantId == tenant.Id && c.SubscriptionId == currentTenantSubscription.Id)
+                        .FirstOrDefaultAsync();
+
+                    // If credits exist, reset them to 0.
+                    if (tenantCredit != null)
+                    {
+                        tenantCredit.AvailableCredits = 0;
+                        tenantCredit.LastModifiedByUserId = tenant.LastModifiedByUserId;
+                        _unitOfWork.TenantCreditRepo.Update(tenantCredit);
+                        _logger.LogInformation("Reset credits for Tenant ID: {TenantId}, Subscription ID: {SubscriptionId}.", tenant.Id, currentTenantSubscription.Id);
+                    }
+                }
+            }
+
+            // Retrieve the subscription corresponding to the Razorpay Subscription ID.
+            tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(s => s.TenantId == tenant.Id && s.RazorpaySubscriptionId == razorpaySubscriptionId)
+                .Include(i => i.Plan)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            // If no matching subscription is found, log a warning and return null.
+            if (tenantSubscription == null)
+            {
+                _logger.LogWarning("No matching active subscription found for Razorpay Subscription ID: {RazorpaySubscriptionId}.", razorpaySubscriptionId);
+                return null;
+            }
+
+            // Log the current status of the subscription for debugging purposes.
+            _logger.LogInformation("Found subscription with Razorpay Subscription ID: {RazorpaySubscriptionId}, Current Status: {CurrentStatus}", razorpaySubscriptionId, tenantSubscription.Status);
+
+            // Extract subscription start and end dates from the Razorpay subscription entity.
+            DateTimeOffset? subscriptionStartDate = razorpaySubscriptionEntity["current_start"] != null
+                ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(razorpaySubscriptionEntity["current_start"])).ToUniversalTime()
+                : (DateTimeOffset?)null;
+
+            DateTimeOffset? subscriptionEndDate = razorpaySubscriptionEntity["current_end"] != null
+                ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(razorpaySubscriptionEntity["current_end"])).ToUniversalTime()
+                : (DateTimeOffset?)null;
+
+            _logger.LogInformation("Subscription Start Date: {StartDate}, End Date: {EndDate}", subscriptionStartDate, subscriptionEndDate);
+
+            // Calculate the next billing date based on the subscription's end date, or default to the frequency (monthly or yearly).
+            var nextBillingDate = subscriptionEndDate ?? (tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
+                ? DateTimeOffset.UtcNow.AddMonths(1)
+                : DateTimeOffset.UtcNow.AddYears(1));
+
+            // Update subscription details including the next billing date and status.
+            tenantSubscription.NextBillingDate = nextBillingDate;
+            tenantSubscription.IsActive = true;
+            tenantSubscription.Status = SubscriptionStatusTypesEnum.Active;
+            tenantSubscription.LastModifiedByUserId = tenant.LastModifiedByUserId;
+
+            _logger.LogInformation("Updated Subscription with Razorpay Subscription ID: {RazorpaySubscriptionId} to Active status. Next Billing Date: {NextBillingDate}", razorpaySubscriptionId, nextBillingDate);
+
+            // Update the subscription entity in the repository.
+            _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
+
+            // Attempt to save changes to the database, and log an error if it fails.
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save the subscription status update for Razorpay Subscription ID: {RazorpaySubscriptionId}.", razorpaySubscriptionId);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"An error occurred while processing the subscription activation for Razorpay Subscription ID: {razorpaySubscriptionId}. Error: {ex.Message}");
+        }
+
+        // Return the updated tenant subscription, or null if no update was made.
+        return tenantSubscription;
     }
 
     private async Task<TenantSubscription?> ProcessSubscriptionStatusUpdate(JObject json, SubscriptionStatusTypesEnum targetStatus)
@@ -266,6 +397,7 @@ public class WebhookService : IWebhookService
 
         // Extract the Razorpay Subscription ID directly from the "entity" object.
         var razorpaySubscriptionId = razorpaySubscriptionEntity["id"]?.ToString();
+        var razorpayCustomerId = razorpaySubscriptionEntity?["customer_id"]?.ToString();
 
         // Return early if the Razorpay Subscription ID is missing or invalid in the payload.
         if (string.IsNullOrEmpty(razorpaySubscriptionId))
@@ -280,10 +412,21 @@ public class WebhookService : IWebhookService
 
         try
         {
+            // Fetch the tenant associated with the Razorpay Customer ID.
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(t => t.RazorpayCustomerId == razorpayCustomerId)
+                .FirstOrDefaultAsync();
+
+            // If no tenant is found, log a warning and return.
+            if (tenant == null)
+            {
+                _logger.LogWarning("No tenant found for Razorpay Customer ID: {RazorpayCustomerId}.", razorpayCustomerId);
+                return null;
+            }
             // Retrieve the active subscription from the database using the Razorpay Subscription ID.
             // The query filters for subscriptions that match the Razorpay ID and are marked as active.
             tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(w => w.RazorpaySubscriptionId == razorpaySubscriptionId && w.IsActive)
+                .GetByConditionAsync(w => w.TenantId == tenant.Id && w.RazorpaySubscriptionId == razorpaySubscriptionId)
                 .Include(i => i.Plan)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
@@ -295,42 +438,7 @@ public class WebhookService : IWebhookService
                 return tenantSubscription;
             }
 
-            // Log the current status of the found subscription for debugging purposes.
-            _logger.LogInformation("Found subscription with ID {RazorpaySubscriptionId}, Status: {CurrentStatus}", razorpaySubscriptionId, tenantSubscription.Status);
-
-            switch (targetStatus)
-            {
-                case SubscriptionStatusTypesEnum.Active:
-                    // Extract 'current_start' from the Razorpay subscription entity and convert it to DateTimeOffset in UTC or return null.
-                    DateTimeOffset? subscriptionStartDate = razorpaySubscriptionEntity["current_start"] != null
-                        ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(razorpaySubscriptionEntity["current_start"])).ToUniversalTime()
-                        : (DateTimeOffset?)null;
-
-                    // Extract 'current_end' from the Razorpay subscription entity and convert it to DateTimeOffset in UTC or return null.
-                    DateTimeOffset? subscriptionEndDate = razorpaySubscriptionEntity["current_end"] != null
-                        ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(razorpaySubscriptionEntity["current_end"])).ToUniversalTime()
-                        : (DateTimeOffset?)null;
-
-                    // Set calculatedNextBillingDate to subscriptionEndDate initially
-                    var calculatedNextBillingDate = subscriptionEndDate;
-
-                    // If 'current_end' (subscriptionEndDate) is null, calculate the next billing date based on the subscription frequency (Monthly or Yearly)
-                    if (calculatedNextBillingDate == null)
-                    {
-                        calculatedNextBillingDate = tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
-                            ? DateTimeOffset.UtcNow.AddMonths(1)
-                            : DateTimeOffset.UtcNow.AddYears(1);
-                    }
-
-                    tenantSubscription.NextBillingDate = calculatedNextBillingDate;
-                    break;
-
-                // You can add more cases here for other statuses if needed.
-                default:
-                    // For any other status, update the subscription's status to the target status.
-                    tenantSubscription.Status = targetStatus;
-                    break;
-            }
+            tenantSubscription.Status = targetStatus;
 
             // Log the action of updating the subscription status for tracking purposes.
             _logger.LogInformation("Updating subscription with ID {RazorpaySubscriptionId} to '{TargetStatus}' status.", razorpaySubscriptionId, targetStatus);
@@ -339,7 +447,6 @@ public class WebhookService : IWebhookService
             _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
 
             // Attempt to persist the changes to the database.
-            // Log an error if saving the changes fails.
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Failed to save the subscription status update for Subscription ID {RazorpaySubscriptionId}.", razorpaySubscriptionId);
@@ -380,7 +487,7 @@ public class WebhookService : IWebhookService
             {
                 // Retrieve the corresponding subscription
                 tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
-                    .GetByConditionAsync(s => s.RazorpaySubscriptionId == subscriptionId && s.IsActive)
+                    .GetByConditionAsync(w => w.TenantId == tenantSubscription.TenantId && w.RazorpaySubscriptionId == subscriptionId)
                     .Include(i => i.Plan)
                     .FirstOrDefaultAsync();
             }
@@ -466,15 +573,18 @@ public class WebhookService : IWebhookService
             return;
         }
 
-        // Create the TenantCredit object with relevant details
+        // Get the total credits available for the tenant
+        ulong totalCredits = await GetCalculateTotalCreditsForTenantAsync(tenantSubscription.TenantId, tenantSubscription.MaxCredits);
+
+        // Create a new TenantCredit entry for the tenant
         var tenantCredit = new TenantCredit()
         {
             SubscriptionId = tenantSubscription.Id,
             CreditedOn = DateTimeOffset.UtcNow,
             ExpiredOn = tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
-                ? DateTimeOffset.UtcNow.AddMonths(1).Date
-                : DateTimeOffset.UtcNow.AddYears(1).Date,
-            AvailableCredits = tenantSubscription.MaxCredits,
+                        ? DateTimeOffset.UtcNow.AddMonths(1).Date
+                        : DateTimeOffset.UtcNow.AddYears(1).Date,
+            AvailableCredits = totalCredits,
             Type = CreditTypesEnum.Subscription,
             TenantId = tenantSubscription.TenantId,
             CreatedByUserId = tenantSubscription.CreatedByUserId,
@@ -575,8 +685,8 @@ public class WebhookService : IWebhookService
                     Wallet = paymentEntity?["wallet"]?.ToString(),
                     Vpa = paymentEntity?["vpa"]?.ToString(),
                     CardLast4 = card?["last4"]?.ToString(),
-                    CardNetwork = (CardNetworkTypesEnum)Enum.Parse(typeof(CardNetworkTypesEnum), card?["network"]?.ToString(), ignoreCase: true),
-                    CardType = (CardTypesEnum)Enum.Parse(typeof(CardTypesEnum), card?["type"]?.ToString(), ignoreCase: true),
+                    CardNetwork = card != null ? (CardNetworkTypesEnum?)Enum.Parse(typeof(CardNetworkTypesEnum), card["network"]?.ToString(), ignoreCase: true) : null,
+                    CardType = card != null ? (CardTypesEnum?)Enum.Parse(typeof(CardTypesEnum), card["type"]?.ToString(), ignoreCase: true) : null,
                     CardIssuer = card?["issuer"]?.ToString(),
                     Name = card?["name"]?.ToString(),
                     CardInternational = card?["international"]?.Value<bool>() ?? false,
@@ -661,13 +771,6 @@ public class WebhookService : IWebhookService
             // Extract payment details from the webhook payload
             var paymentEntity = webhookPayload["payload"]?["payment"]?["entity"];
 
-            var receipt = webhookPayload["payload"]?["order"]?["entity"]?["receipt"]?.ToString();
-
-            if (receipt == null || !int.TryParse(receipt, out var credit))
-            {
-                return;
-            }
-
             // If no Razorpay Customer ID, fetch the billing detail using Razorpay Order ID
             var razorpayOrderId = paymentEntity?["order_id"]?.ToString();
 
@@ -695,9 +798,13 @@ public class WebhookService : IWebhookService
                 _logger.LogError("Failed to update billing detail for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
             }
 
+            // Get the total credits available for the tenant
+            ulong totalCredits = await GetCalculateTotalCreditsForTenantAsync(billingHistory.TenantId, (ulong)billingHistory.Quantity);
+
+            // Create a new TenantCredit entry for the tenant
             var tenantCredit = new TenantCredit()
             {
-                AvailableCredits = credit,
+                AvailableCredits = totalCredits,
                 Type = CreditTypesEnum.TopUp,
                 CreditedOn = DateTimeOffset.UtcNow,
                 ExpiredOn = DateTimeOffset.UtcNow.AddYears(1).Date,
@@ -745,7 +852,7 @@ public class WebhookService : IWebhookService
 
             // Retrieve the tenant subscription from the database
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
-                 .GetByConditionAsync(s => s.RazorpaySubscriptionId == subscriptionId && s.IsActive)
+                 .GetByConditionAsync(w => w.RazorpaySubscriptionId == subscriptionId)
                  .Include(i => i.Plan)
                  .FirstOrDefaultAsync();
 
@@ -798,6 +905,7 @@ public class WebhookService : IWebhookService
                     BillingDetailId = lastBillingDetail.Id,
                     Amount = paymentEntity["amount"]?.ToObject<int?>() / 100 ?? 0,
                     InvoiceLink = invoiceLink,
+                    Type = CreditTypesEnum.Subscription,
                     RazorpayInvoiceId = paymentEntity["invoice_id"]?.ToObject<string?>() ?? string.Empty,
                     RazorpayPaymentId = paymentEntity["id"]?.ToObject<string?>() ?? string.Empty,
                     RazorpayOrderId = paymentEntity["order_id"]?.ToObject<string?>() ?? string.Empty,
@@ -823,5 +931,55 @@ public class WebhookService : IWebhookService
             // Log any exceptions that occur during the process
             _logger.LogError(ex, "An error occurred while processing billing details for Razorpay Subscription ID {SubscriptionId}", subscriptionId);
         }
+    }
+
+    public async Task<ulong> GetCalculateTotalCreditsForTenantAsync(Guid tenantId, ulong maxCredits)
+    {
+        // Set totalCredits initially to the maxCredits value provided
+        ulong totalCredits = maxCredits;
+
+        // Fetch all credits with negative balance for the tenant
+        var availableCredits = await _unitOfWork.TenantCreditRepo
+            .GetByConditionAsync(w => w.TenantId == tenantId && w.AvailableCredits < 0)
+            .ToListAsync();
+
+        // If no negative credits are found, return maxCredits
+        if (!availableCredits.Any())
+        {
+            _logger.LogInformation("No negative credits found for TenantId: {TenantId}. Returning maxCredits.", tenantId);
+            return totalCredits;
+        }
+
+        // Sum up all negative available credits (using long to avoid overflow in summing)
+        long totalNegativeCredits = availableCredits.Sum(a => (long)a.AvailableCredits);
+
+        // Calculate total credits (long type for safety)
+        long credits = (long)maxCredits + totalNegativeCredits;
+
+        // Ensure the total doesn't exceed the maximum value for ulong and is non-negative
+        totalCredits = (ulong)Math.Min((decimal)Math.Max((decimal)credits, 0), (decimal)ulong.MaxValue);
+
+        // Log the reset of available credits for the tenant
+        _logger.LogInformation("Resetting AvailableCredits for TenantId: {TenantId}.", tenantId);
+
+        // Set all available credits to zero
+        availableCredits.ForEach(f => f.AvailableCredits = 0);
+
+        // Log reset action completion
+        _logger.LogInformation("AvailableCredits reset to zero for TenantId: {TenantId}.", tenantId);
+
+        // Save the changes to the database
+        _unitOfWork.TenantCreditRepo.Update(availableCredits);
+
+        // Log any issues saving the updated data
+        if (!await _unitOfWork.SaveAsync())
+        {
+            _logger.LogError("Failed to save updated credit data for TenantId: {TenantId}.", tenantId);
+        }
+
+        // Log the total of negative credits
+        _logger.LogInformation("Total negative credits for TenantId {TenantId}: {TotalNegativeCredits}.", tenantId, totalNegativeCredits);
+
+        return totalCredits;
     }
 }
