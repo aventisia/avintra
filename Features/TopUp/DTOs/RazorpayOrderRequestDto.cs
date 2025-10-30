@@ -1,12 +1,12 @@
 namespace AccountsAPIs.DTOs;
 
 /// <summary>
-/// Represents the data required to process a top-up transaction.
+/// Represents the data required to process a order transaction.
 /// </summary>
-public class TopUpDto
+public class RazorpayOrderRequestDto
 {
     /// <summary>
-    /// Gets or sets the currency for the top-up (e.g., "USD", "INR").
+    /// Gets or sets the currency for the order (e.g., "USD", "INR").
     /// </summary>
     public required CurrencyTypesEnum Currency { get; set; }
 
@@ -16,7 +16,7 @@ public class TopUpDto
     public required int Credits { get; set; }
 
     /// <summary>
-    /// Gets or sets the total amount of money for the top-up (e.g., 10.00).
+    /// Gets or sets the total amount of money for the order (e.g., 10.00).
     /// </summary>
     public decimal Amount { get; set; }
 
@@ -29,4 +29,9 @@ public class TopUpDto
     /// Gets or sets the unique Razorpay ID associated with the top-up transaction.
     /// </summary>
     public string? RazorpayId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique identifier of the subscription associated with this billing.
+    /// </summary>
+    public Guid? SubscriptionId { get; set; }
 }
