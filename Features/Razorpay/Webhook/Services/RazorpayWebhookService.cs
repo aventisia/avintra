@@ -802,15 +802,33 @@ public class WebhookService : IWebhookService
             if (billingHistory.SubscriptionId != null)
             {
                 // Find the current active subscription for the tenant
-                var currentActiveSubscription = await _unitOfWork.TenantSubscriptionRepo
+                var currentTenantSubscription = await _unitOfWork.TenantSubscriptionRepo
                     .GetByConditionAsync(w => w.TenantId == billingHistory.TenantId && w.IsActive)
+                    .Include(i => i.Plan)
                     .FirstOrDefaultAsync();
 
                 // If a different active subscription exists, deactivate it
-                if (currentActiveSubscription != null && currentActiveSubscription.Id != billingHistory.SubscriptionId)
+                if (currentTenantSubscription != null && currentTenantSubscription.Id != billingHistory.SubscriptionId)
                 {
-                    currentActiveSubscription.IsActive = false;
-                    _unitOfWork.TenantSubscriptionRepo.Update(currentActiveSubscription);
+                    currentTenantSubscription.IsActive = false;
+                    _unitOfWork.TenantSubscriptionRepo.Update(currentTenantSubscription);
+
+                    // Handle credits for the Starter plan if applicable.
+                    if (currentTenantSubscription.Plan.Type == SubscriptionPlanTypeEnum.Starter)
+                    {
+                        var tenantCredit = await _unitOfWork.TenantCreditRepo
+                            .GetByConditionAsync(c => c.TenantId == currentTenantSubscription.TenantId && c.SubscriptionId == currentTenantSubscription.Id)
+                            .FirstOrDefaultAsync();
+
+                        // If credits exist, reset them to 0.
+                        if (tenantCredit != null)
+                        {
+                            tenantCredit.AvailableCredits = 0;
+                            tenantCredit.LastModifiedByUserId = currentTenantSubscription.LastModifiedByUserId;
+                            _unitOfWork.TenantCreditRepo.Update(tenantCredit);
+                            _logger.LogInformation("Reset credits for Tenant ID: {TenantId}, Subscription ID: {SubscriptionId}.", currentTenantSubscription.TenantId, currentTenantSubscription.Id);
+                        }
+                    }
                 }
 
                 // Fetch the tenant subscription to update it
