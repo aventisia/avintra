@@ -85,4 +85,9 @@ public class TenantSubscriptionDto
     /// Gets or sets the Razorpay subscription ID associated with this tenant's subscription.
     /// </summary>
     public string? RazorpaySubscriptionId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique Razorpay Order ID associated with the subscription transaction.
+    /// </summary>
+    public string? RazorpayOrderId { get; set; }
 }
