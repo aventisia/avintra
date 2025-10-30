@@ -894,7 +894,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 )
                 .Include(i => i.Plan)
                 .Include(i => i.CreatedByUser)
-                .SingleOrDefaultAsync();
+                .FirstOrDefaultAsync();
 
             if (tenantSubscription == null || tenantSubscription.CreatedOn.Date != DateTimeOffset.UtcNow.Date)
             {
@@ -905,7 +905,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 tenantSubscription.TenantId = _tenantId;
                 tenantSubscription.RazorpaySubscriptionId = exitingtSubscription?.RazorpaySubscriptionId;
                 tenantSubscription.IsActive = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? true : false;
-                tenantSubscription.Status = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? SubscriptionStatusTypesEnum.Active : SubscriptionStatusTypesEnum.Pending;
+                tenantSubscription.Status = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? SubscriptionStatusTypesEnum.Active : SubscriptionStatusTypesEnum.Initiated;
                 tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
                 tenantSubscription.IsRecurringPayment = tenantSubscriptionPurchaseDto.IsRecurringPayment;
                 tenantSubscription.CreatedByUserId = _userId;
