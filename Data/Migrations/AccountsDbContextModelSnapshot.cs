@@ -500,6 +500,9 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<string>("RazorpayPaymentId")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("SubscriptionId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -1373,7 +1376,7 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<int>("MaxUsers")
                         .HasColumnType("integer");
 
-                    b.Property<DateTimeOffset?>("NextBillingDate")
+                    b.Property<DateTimeOffset>("NextBillingDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("PlanId")
