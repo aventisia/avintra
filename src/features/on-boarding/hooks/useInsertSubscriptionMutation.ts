@@ -17,12 +17,10 @@ export const useInsertSubscriptionMutation = () => {
       const { data } = res;
 
       // Paid Plan with Razorpay Subscription
-      if (
-        data.razorpaySubscriptionId &&
-        variables.amount > 0 &&
-        isRazorpayReady
-      ) {
-        openRazorpayPayment(data.razorpaySubscriptionId);
+      if (data.razorpayOrderId && variables.amount > 0 && isRazorpayReady) {
+        openRazorpayPayment({
+          subscriptionId: data.razorpayOrderId,
+        });
         return;
       }
 

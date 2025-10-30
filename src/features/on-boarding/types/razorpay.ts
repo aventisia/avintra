@@ -1,7 +1,8 @@
 // Response from the success handler
 export interface RazorpaySuccessResponse {
   razorpay_payment_id: string;
-  razorpay_subscription_id: string;
+  razorpay_order_id?: string;
+  razorpay_subscription_id?: string;
   razorpay_signature: string;
 }
 
@@ -24,7 +25,8 @@ export interface RazorpayErrorResponse {
 export interface RazorpayOptions {
   // API Key ID generated from the Dashboard.
   key: string;
-  subscription_id: string;
+  subscription_id?: string;
+  order_id?: string;
   name: string;
   description: string;
   image?: string;

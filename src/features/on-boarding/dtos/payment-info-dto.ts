@@ -37,6 +37,8 @@ interface PaymentInfoDto {
   razorpayPaymentUrl?: string;
 
   razorpaySubscriptionId?: string;
+
+  razorpayOrderId?: string;
 }
 
 export { type PaymentInfoDto };
