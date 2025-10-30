@@ -56,6 +56,11 @@ public class BillingHistory : BaseEntity
     public int Quantity { get; set; }
 
     /// <summary>
+    /// Gets or sets the unique identifier of the subscription associated with this billing.
+    /// </summary>
+    public Guid? SubscriptionId { get; set; }
+
+    /// <summary>
     /// Gets or sets the unique identifier of the subscription associated with this billing history.
     /// </summary>
     public Guid BillingDetailId { get; set; }
