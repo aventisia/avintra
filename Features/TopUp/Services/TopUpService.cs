@@ -30,10 +30,10 @@ namespace AccountsAPIs.Services
         }
 
         // Initiates a new top-up transaction based on the provided top-up details.
-        public async Task<ServiceResponse<TopUpDto>> CreateTopUpAsync(TopUpDto topUpDto)
+        public async Task<ServiceResponse<RazorpayOrderRequestDto>> CreateTopUpAsync(RazorpayOrderRequestDto razorpayOrderRequestDto)
         {
             // Initialize service response with default failure message
-            var serviceResponse = new ServiceResponse<TopUpDto>
+            var serviceResponse = new ServiceResponse<RazorpayOrderRequestDto>
             {
                 Data = null,
                 Message = "Failed to create the top-up request. Please try again."
@@ -43,17 +43,17 @@ namespace AccountsAPIs.Services
             {
                 // Log the details of the incoming top-up request for traceability
                 _logger.LogInformation("Received top-up request. Amount: {Amount}, Currency: {Currency}, Credits: {Credits}, Include Tax: {IncludeTax}",
-                                        topUpDto.Amount, topUpDto.Currency, topUpDto.Credits, topUpDto.IncludeTax);
+                                        razorpayOrderRequestDto.Amount, razorpayOrderRequestDto.Currency, razorpayOrderRequestDto.Credits, razorpayOrderRequestDto.IncludeTax);
 
                 // Clean up string properties to remove unwanted leading/trailing spaces
-                topUpDto = TrimDtoStringPropsUtil.TrimDtoStringProps(topUpDto);
+                razorpayOrderRequestDto = TrimDtoStringPropsUtil.TrimDtoStringProps(razorpayOrderRequestDto);
 
                 // Prepare the order request using the provided top-up details
                 var orderRequest = new OrderRequestDto
                 {
-                    Amount = topUpDto.Amount,
-                    Currency = topUpDto.Currency,
-                    Receipt = $"{topUpDto.Credits}"
+                    Amount = razorpayOrderRequestDto.Amount,
+                    Currency = razorpayOrderRequestDto.Currency,
+                    Receipt = $"{razorpayOrderRequestDto.Credits}"
                 };
 
                 // Call the OrderService to create an order on Razorpay
@@ -64,7 +64,7 @@ namespace AccountsAPIs.Services
                 {
                     // Log the failure details including status code and error message
                     _logger.LogError("Order creation failed. Amount: {Amount}, Currency: {Currency}, Credits: {Credits}, StatusCode: {StatusCode}, Message: {Message}",
-                                     topUpDto.Amount, topUpDto.Currency, topUpDto.Credits, orderResponse.StatusCode, orderResponse.Message);
+                                     razorpayOrderRequestDto.Amount, razorpayOrderRequestDto.Currency, razorpayOrderRequestDto.Credits, orderResponse.StatusCode, orderResponse.Message);
 
                     // Set error message in the response
                     serviceResponse.Message = $"Order creation failed: {orderResponse.Message ?? "Please try again."}";
@@ -72,7 +72,7 @@ namespace AccountsAPIs.Services
                 }
 
                 // Update the top-up DTO with the Razorpay Order ID
-                topUpDto.RazorpayId = orderResponse.Data.Id;
+                razorpayOrderRequestDto.RazorpayId = orderResponse.Data.Id;
 
                 // Fetch the most recent billing details for the tenant
                 var existingBilling = await _unitOfWork.BillingDetailRepo
@@ -93,12 +93,13 @@ namespace AccountsAPIs.Services
                 {
                     TenantId = _tenantId,
                     BillingDetailId = existingBilling.Id,
-                    Currency = topUpDto.Currency,
-                    Amount = topUpDto.Amount,
-                    Type = CreditTypesEnum.TopUp,
-                    Quantity = topUpDto.Credits,
+                    Currency = razorpayOrderRequestDto.Currency,
+                    Amount = razorpayOrderRequestDto.Amount,
+                    Type = razorpayOrderRequestDto.Type,
+                    Quantity = razorpayOrderRequestDto.Credits,
                     PaymentStatus = PaymentStatusTypesEnum.Created,
-                    RazorpayOrderId = orderResponse.Data.Id,
+                    RazorpayOrderId = razorpayOrderRequestDto.RazorpayId,
+                    SubscriptionId = razorpayOrderRequestDto.SubscriptionId,
                     CreatedByUserId = _userId,
                     LastModifiedByUserId = _userId,
                 };
@@ -110,22 +111,22 @@ namespace AccountsAPIs.Services
                 if (!await _unitOfWork.SaveAsync())
                 {
                     // Log failure in saving the transaction and return a response
-                    _logger.LogError("Failed to save the top-up transaction for Amount: {Amount}, Currency: {Currency}", topUpDto.Amount, topUpDto.Currency);
+                    _logger.LogError("Failed to save the top-up transaction for Amount: {Amount}, Currency: {Currency}", razorpayOrderRequestDto.Amount, razorpayOrderRequestDto.Currency);
                     return serviceResponse;
                 }
 
                 // Set success message and response data if everything succeeds
-                serviceResponse.Data = topUpDto;
+                serviceResponse.Data = razorpayOrderRequestDto;
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Top-up request successfully processed.";
                 _logger.LogInformation("Top-up request successfully processed. Razorpay Order ID: {RazorpayOrderId}, Amount: {Amount}",
-                                       topUpDto.RazorpayId, topUpDto.Amount);
+                                       razorpayOrderRequestDto.RazorpayId, razorpayOrderRequestDto.Amount);
             }
             catch (Exception ex)
             {
                 // Log any exception that occurred during processing
                 _logger.LogError(ex, "An error occurred while processing top-up transaction. Amount: {Amount}, Currency: {Currency}",
-                                 topUpDto.Amount, topUpDto.Currency);
+                                 razorpayOrderRequestDto.Amount, razorpayOrderRequestDto.Currency);
             }
 
             // Return the service response (success or failure)

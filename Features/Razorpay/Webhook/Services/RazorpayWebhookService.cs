@@ -798,28 +798,123 @@ public class WebhookService : IWebhookService
                 _logger.LogError("Failed to update billing detail for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
             }
 
-            // Get the total credits available for the tenant
-            ulong totalCredits = await GetCalculateTotalCreditsForTenantAsync(billingHistory.TenantId, (ulong)billingHistory.Quantity);
-
-            // Create a new TenantCredit entry for the tenant
-            var tenantCredit = new TenantCredit()
+            // If the billing history has an associated subscription, handle subscription renewal
+            if (billingHistory.SubscriptionId != null)
             {
-                AvailableCredits = totalCredits,
-                Type = CreditTypesEnum.TopUp,
-                CreditedOn = DateTimeOffset.UtcNow,
-                ExpiredOn = DateTimeOffset.UtcNow.AddYears(1).Date,
-                SubscriptionId = billingHistory.BillingDetail.SubscriptionId,
-                TenantId = billingHistory.TenantId,
-                CreatedByUserId = billingHistory.CreatedByUserId,
-                LastModifiedByUserId = billingHistory.CreatedByUserId,
-            };
+                // Find the current active subscription for the tenant
+                var currentTenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                    .GetByConditionAsync(w => w.TenantId == billingHistory.TenantId && w.IsActive)
+                    .Include(i => i.Plan)
+                    .FirstOrDefaultAsync();
 
-            await _unitOfWork.TenantCreditRepo.InsertAsync(tenantCredit);
+                // If a different active subscription exists, deactivate it
+                if (currentTenantSubscription != null && currentTenantSubscription.Id != billingHistory.SubscriptionId)
+                {
+                    currentTenantSubscription.IsActive = false;
+                    _unitOfWork.TenantSubscriptionRepo.Update(currentTenantSubscription);
 
-            // Save changes to the database
-            if (!await _unitOfWork.SaveAsync())
+                    // Handle credits for the Starter plan if applicable.
+                    if (currentTenantSubscription.Plan.Type == SubscriptionPlanTypeEnum.Starter)
+                    {
+                        var tenantCredit = await _unitOfWork.TenantCreditRepo
+                            .GetByConditionAsync(c => c.TenantId == currentTenantSubscription.TenantId && c.SubscriptionId == currentTenantSubscription.Id)
+                            .FirstOrDefaultAsync();
+
+                        // If credits exist, reset them to 0.
+                        if (tenantCredit != null)
+                        {
+                            tenantCredit.AvailableCredits = 0;
+                            tenantCredit.LastModifiedByUserId = currentTenantSubscription.LastModifiedByUserId;
+                            _unitOfWork.TenantCreditRepo.Update(tenantCredit);
+                            _logger.LogInformation("Reset credits for Tenant ID: {TenantId}, Subscription ID: {SubscriptionId}.", currentTenantSubscription.TenantId, currentTenantSubscription.Id);
+                        }
+                    }
+                }
+
+                // Fetch the tenant subscription to update it
+                var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                    .GetByConditionAsync(w => w.Id == billingHistory.SubscriptionId)
+                    .FirstOrDefaultAsync();
+
+                if (tenantSubscription != null)
+                {
+                    // Activate the tenant subscription and calculate the next billing date
+                    tenantSubscription.Status = SubscriptionStatusTypesEnum.Active;
+                    tenantSubscription.IsActive = true;
+
+                    // Determine the base date (either now or the existing NextBillingDate)
+                    DateTimeOffset baseDate = tenantSubscription.NextBillingDate <= DateTimeOffset.UtcNow.Date
+                        ? DateTimeOffset.UtcNow.Date
+                        : tenantSubscription.NextBillingDate;
+
+                    // Adjust the NextBillingDate based on the frequency (monthly or yearly)
+                    tenantSubscription.NextBillingDate = tenantSubscription.Frequency switch
+                    {
+                        SubscriptionFrequenciesEnum.Monthly => baseDate.AddMonths(1),
+                        SubscriptionFrequenciesEnum.Yearly => baseDate.AddYears(1),
+                        _ => tenantSubscription.NextBillingDate // Retain the original date if frequency is not monthly/yearly
+                    };
+
+                    // Update the tenant subscription in the database
+                    _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
+
+                    // Save changes and log an error if the update fails
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogError("Failed to update subscription for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
+                    }
+
+                    // Calculate total credits available for the tenant
+                    ulong totalCredits = await GetCalculateTotalCreditsForTenantAsync(tenantSubscription.TenantId, (ulong)tenantSubscription.MaxCredits);
+
+                    // Create a new TenantCredit entry based on subscription
+                    var tenantCredit = new TenantCredit()
+                    {
+                        AvailableCredits = totalCredits,
+                        Type = CreditTypesEnum.Subscription,
+                        CreditedOn = DateTimeOffset.UtcNow,
+                        ExpiredOn = tenantSubscription.NextBillingDate.Date,
+                        SubscriptionId = tenantSubscription.Id,
+                        TenantId = billingHistory.TenantId,
+                        CreatedByUserId = tenantSubscription.CreatedByUserId,
+                        LastModifiedByUserId = tenantSubscription.CreatedByUserId,
+                    };
+
+                    // Insert new TenantCredit record into the database
+                    await _unitOfWork.TenantCreditRepo.InsertAsync(tenantCredit);
+
+                    // Save changes and log an error if saving fails
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogError("Failed to save tenant credits for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
+                    }
+                }
+            }
+            else
             {
-                _logger.LogError("Failed to save tenant credits for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
+                // Get the total credits available for the tenant
+                ulong totalCredits = await GetCalculateTotalCreditsForTenantAsync(billingHistory.TenantId, (ulong)billingHistory.Quantity);
+
+                // Create a new TenantCredit entry for the tenant
+                var tenantCredit = new TenantCredit()
+                {
+                    AvailableCredits = totalCredits,
+                    Type = CreditTypesEnum.TopUp,
+                    CreditedOn = DateTimeOffset.UtcNow,
+                    ExpiredOn = DateTimeOffset.UtcNow.AddYears(1).Date,
+                    SubscriptionId = billingHistory.BillingDetail.SubscriptionId,
+                    TenantId = billingHistory.TenantId,
+                    CreatedByUserId = billingHistory.CreatedByUserId,
+                    LastModifiedByUserId = billingHistory.CreatedByUserId,
+                };
+
+                await _unitOfWork.TenantCreditRepo.InsertAsync(tenantCredit);
+
+                // Save changes to the database
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save tenant credits for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
+                }
             }
         }
         catch (Exception ex)

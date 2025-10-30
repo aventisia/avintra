@@ -14,8 +14,8 @@ public class TopUpController : BaseApiController
 
     // Initiates a new top-up transaction for a tenant.
     [HttpPost]
-    public async Task<ActionResult<ServiceResponse<TopUpDto>>> CreateTopUp(TopUpDto topUpDto)
+    public async Task<ActionResult<ServiceResponse<RazorpayOrderRequestDto>>> CreateTopUp(RazorpayOrderRequestDto razorpayOrderRequestDto)
     {
-        return ResultHelper(await _topUpService.CreateTopUpAsync(topUpDto));
+        return ResultHelper(await _topUpService.CreateTopUpAsync(razorpayOrderRequestDto));
     }
 }

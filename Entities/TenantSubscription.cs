@@ -63,7 +63,7 @@ public class TenantSubscription : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the next billing date for the tenant's subscription.
     /// </summary>
-    public DateTimeOffset? NextBillingDate { get; set; }
+    public DateTimeOffset NextBillingDate { get; set; } = DateTimeOffset.UtcNow;
 
     /// <summary>
     /// Gets or sets a flag indicating whether the subscription has recurring payments.
