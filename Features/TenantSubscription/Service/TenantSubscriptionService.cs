@@ -470,6 +470,58 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 }
             }
 
+
+
+            // Map the subscription purchase DTO to a new BillingDetail entity
+            var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
+            billingDetail.SubscriptionId = tenantSubscription.Id;
+            billingDetail.TenantId = _tenantId;
+
+            // Fetch the current user's information based on their User ID
+            var currentUser = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.Id == _userId).FirstOrDefaultAsync();
+            if (currentUser != null)
+            {
+                // Set the BillingEmail to the current user's username
+                billingDetail.BillingEmail = currentUser?.UserName;
+
+                // Set the ContactPerson to the full name (First and Last Name) of the current user
+                billingDetail.ContactPerson = $"{currentUser?.FirstName} {currentUser.LastName}";
+            }
+
+            // Check if billing details already exist for the tenant and subscription
+            var existingBillingDetail = await _unitOfWork.BillingDetailRepo
+                .GetByConditionAsync(w => w.TenantId == _tenantId && w.SubscriptionId == tenantSubscription.Id)
+                .FirstOrDefaultAsync();
+
+            if (existingBillingDetail != null)
+            {
+                // Update the existing billing details
+                existingBillingDetail.BillingEmail = billingDetail.BillingEmail ?? existingBillingDetail.BillingEmail;
+                existingBillingDetail.ContactPerson = billingDetail.ContactPerson ?? existingBillingDetail.ContactPerson;
+                existingBillingDetail.LastModifiedByUserId = _userId;
+
+                // Update the billing detail in the repository
+                _unitOfWork.BillingDetailRepo.Update(existingBillingDetail);
+                _logger.LogInformation("Billing details successfully updated for TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, existingBillingDetail.Id);
+            }
+            else
+            {
+                // Set audit fields for the new billing detail
+                billingDetail.CreatedByUserId = _userId;
+                billingDetail.LastModifiedByUserId = _userId;
+
+                // Insert the new billing detail into the repository
+                await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
+                _logger.LogInformation("Billing details successfully created for TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
+            }
+
+            // Save changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Unable to persist billing details. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
+                return serviceResponse;
+            }
+
             string? razorpayOrderId = null;
 
             // Only create a Razorpay subscription if it doesn't already exist and the plan is not 'Starter'
@@ -612,57 +664,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Log the successful creation of the tenant subscription
             _logger.LogInformation("Tenant subscription successfully created with ID: {TenantSubscriptionId}", tenantSubscription.Id);
-
-
-            // Map the subscription purchase DTO to a new BillingDetail entity
-            var billingDetail = tenantSubscriptionPurchaseDto.Adapt<BillingDetail>();
-            billingDetail.SubscriptionId = tenantSubscription.Id;
-            billingDetail.TenantId = _tenantId;
-
-            // Fetch the current user's information based on their User ID
-            var currentUser = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.Id == _userId).FirstOrDefaultAsync();
-            if (currentUser != null)
-            {
-                // Set the BillingEmail to the current user's username
-                billingDetail.BillingEmail = currentUser?.UserName;
-
-                // Set the ContactPerson to the full name (First and Last Name) of the current user
-                billingDetail.ContactPerson = $"{currentUser?.FirstName} {currentUser.LastName}";
-            }
-
-            // Check if billing details already exist for the tenant and subscription
-            var existingBillingDetail = await _unitOfWork.BillingDetailRepo
-                .GetByConditionAsync(w => w.TenantId == _tenantId && w.SubscriptionId == tenantSubscription.Id)
-                .FirstOrDefaultAsync();
-
-            if (existingBillingDetail != null)
-            {
-                // Update the existing billing details
-                existingBillingDetail.BillingEmail = billingDetail.BillingEmail ?? existingBillingDetail.BillingEmail;
-                existingBillingDetail.ContactPerson = billingDetail.ContactPerson ?? existingBillingDetail.ContactPerson;
-                existingBillingDetail.LastModifiedByUserId = _userId;
-
-                // Update the billing detail in the repository
-                _unitOfWork.BillingDetailRepo.Update(existingBillingDetail);
-                _logger.LogInformation("Billing details successfully updated for TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, existingBillingDetail.Id);
-            }
-            else
-            {
-                // Set audit fields for the new billing detail
-                billingDetail.CreatedByUserId = _userId;
-                billingDetail.LastModifiedByUserId = _userId;
-
-                // Insert the new billing detail into the repository
-                await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
-                _logger.LogInformation("Billing details successfully created for TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
-            }
-
-            // Save changes to the database
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Unable to persist billing details. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
-                return serviceResponse;
-            }
 
             // Map the tenant subscription entity to a DTO for response
             var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
