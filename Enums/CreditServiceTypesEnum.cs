@@ -87,5 +87,29 @@ public enum CreditServiceTypesEnum
     /// Text-to-speech service provided by ElevenLabs.
     /// </summary>
     [Description("ElevenLabs TTS")]
-    ElevenLabsTTS
+    ElevenLabsTTS,
+
+    /// <summary>
+    /// Input token processing for the GPT-4o model.
+    /// </summary>
+    [Description("GPT 4o-input")]
+    Gpt4oInput,
+
+    /// <summary>
+    /// Output token generation for the GPT-4o model.
+    /// </summary>
+    [Description("GPT 4o-output")]
+    Gpt4oOutput,
+
+    /// <summary>
+    /// Input OCR processing for the olmOCR model.
+    /// </summary>
+    [Description("olmOCR-input")]
+    OlmOcrInput,
+
+    /// <summary>
+    /// Output OCR generation for the olmOCR model.
+    /// </summary>
+    [Description("olmOCR-output")]
+    OlmOcrOutput
 }
