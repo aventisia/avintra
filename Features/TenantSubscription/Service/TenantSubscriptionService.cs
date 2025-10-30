@@ -5,6 +5,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ISubscriptionService _subscriptionService;
     private readonly ICustomerService _customerService;
+    private readonly ITopUpService _topUpService;
     private readonly ILogger<TenantSubscriptionService> _logger;
     private readonly DefaultTenantConfig _defaultTenantConfig;
     private readonly Guid _userId;
@@ -15,7 +16,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
     IHttpContextAccessor httpContextAccessor,
     DefaultTenantConfig defaultTenantConfig,
     ISubscriptionService subscriptionService,
-    ICustomerService customerService)
+    ICustomerService customerService,
+    ITopUpService topUpService)
     {
         _unitOfWork = unitOfWork;
         _subscriptionService = subscriptionService;
@@ -28,6 +30,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         // Extract tenant ID from JWT token claims
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
         _customerService = customerService;
+        _topUpService = topUpService;
     }
 
     // Retrieves all tenant subscriptions from the database including the creator user.
@@ -467,11 +470,54 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 }
             }
 
+            string? razorpayOrderId = null;
+
             // Only create a Razorpay subscription if it doesn't already exist and the plan is not 'Starter'
             if (tenantSubscription.Status == SubscriptionStatusTypesEnum.Initiated &&
                 subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
             {
-                if (string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId))
+                if (!tenantSubscriptionPurchaseDto.IsRecurringPayment)
+                {
+                    // Fetch the tenant details from the database using the Tenant ID
+                    var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstAsync();
+
+                    // Determine if tax should be included based on the tenant's country (India gets tax included)
+                    bool includeTax = tenant.Country == CountriesEnum.India;
+
+                    // Calculate the amount for the subscription, including tax if applicable
+                    var amount = includeTax ? subscriptionPlan.Price * 1.18m : subscriptionPlan.Price;
+
+                    // Log the calculated amount for reference
+                    _logger.LogInformation("Calculated subscription amount for Tenant {TenantId}: {Amount} (IncludeTax: {IncludeTax})",
+                                           tenant.Id, amount, includeTax);
+
+                    // Create a new Top-up order (non-recurring payment) using the top-up service
+                    var subscriptionOrder = await _topUpService.CreateTopUpAsync(new RazorpayOrderRequestDto()
+                    {
+                        Amount = amount,
+                        Currency = subscriptionPlan.Currency,
+                        Credits = 0,
+                        IncludeTax = includeTax,
+                        SubscriptionId = tenantSubscription.Id
+                    });
+
+                    // Check if the subscription order creation was successful
+                    if (subscriptionOrder?.Data != null || subscriptionOrder.StatusCode == 200)
+                    {
+                        razorpayOrderId = subscriptionOrder.Data.RazorpayId;
+                        _logger.LogInformation("Razorpay subscription created successfully for Tenant {TenantId}. Razorpay Order ID: {RazorpayOrderId}",
+                                               tenant.Id, razorpayOrderId);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Failed to update Razorpay subscription for Tenant {TenantId}. Reason: {Message}",
+                                           tenantSubscription.TenantId, subscriptionOrder?.Message ?? "Unknown error");
+                        serviceResponse.Message = subscriptionOrder.Message;
+                        return serviceResponse;
+                    }
+                }
+
+                if (string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId) && tenantSubscriptionPurchaseDto.IsRecurringPayment)
                 {
                     // Attempt to create or update a Razorpay subscription
                     var razorpaySubscriptionResult = await CreateOrUpdateRazorpaySubscriptionAsync(
@@ -619,7 +665,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Map the tenant subscription entity to a DTO for response
             var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
-
+            tenantSubscriptionDto.RazorpayOrderId = razorpayOrderId;
             // Set the service response with the DTO and success metadata
             serviceResponse.Data = tenantSubscriptionDto;
             serviceResponse.StatusCode = 200;
@@ -752,7 +798,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Calculate the total amount (subscription fee + tax)
             var totalAmount = subscriptionFee + tax;
             // Check if the NextBillingDate is not set (i.e., it's null)
-            if (tenantSubscription.NextBillingDate == null)
+            if (tenantSubscription?.NextBillingDate == null)
             {
                 // If the subscription frequency is Monthly, set the NextBillingDate to 1 month after the CreatedOn date
                 // Otherwise, if it's Annual, set the NextBillingDate to 1 year after the CreatedOn date
@@ -856,54 +902,103 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             tenantSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
             tenantSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
 
-            // Only create a Razorpay subscription if it doesn't already exist and the plan is not 'Starter'
-            if (!string.IsNullOrEmpty(subscriptionPlan.RazorpayPlanId) &&
-                subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
-            {
-                // Attempt to create or update a Razorpay subscription
-                var razorpaySubscriptionResult = await CreateOrUpdateRazorpaySubscriptionAsync(
-                    tenantSubscription,
-                    subscriptionPlan,
-                    tenantSubscriptionPurchaseDto
-                );
+            string? razorpayOrderId = null;
 
-                // Assign the newly generated subscription ID and payment URL if the creation succeeded
-                if (razorpaySubscriptionResult?.Data != null || razorpaySubscriptionResult.StatusCode == 200)
+            // Only create a Razorpay subscription if it doesn't already exist and the plan is not 'Starter'
+            if (subscriptionPlan.Type != SubscriptionPlanTypeEnum.Starter)
+            {
+                if (!tenantSubscriptionPurchaseDto.IsRecurringPayment)
                 {
-                    tenantSubscription.RazorpaySubscriptionId = razorpaySubscriptionResult.Data.Id;
+                    // Fetch the tenant details from the database using the Tenant ID
+                    var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstAsync();
+
+                    // Determine if tax should be included based on the tenant's country (India gets tax included)
+                    bool includeTax = tenant.Country == CountriesEnum.India;
+
+                    // Calculate the amount for the subscription, including tax if applicable
+                    var amount = includeTax ? subscriptionPlan.Price * 1.18m : subscriptionPlan.Price;
+
+                    // Log the calculated amount for reference
+                    _logger.LogInformation("Calculated subscription amount for Tenant {TenantId}: {Amount} (IncludeTax: {IncludeTax})",
+                                           tenant.Id, amount, includeTax);
+
+                    // Create a new Top-up order (non-recurring payment) using the top-up service
+                    var subscriptionOrder = await _topUpService.CreateTopUpAsync(new RazorpayOrderRequestDto()
+                    {
+                        Amount = amount,
+                        Currency = subscriptionPlan.Currency,
+                        Credits = 0,
+                        IncludeTax = includeTax,
+                        SubscriptionId = tenantSubscription.Id
+                    });
+
+                    // Check if the subscription order creation was successful
+                    if (subscriptionOrder?.Data != null || subscriptionOrder.StatusCode == 200)
+                    {
+                        razorpayOrderId = subscriptionOrder.Data.RazorpayId;
+                        _logger.LogInformation("Razorpay subscription created successfully for Tenant {TenantId}. Razorpay Order ID: {RazorpayOrderId}",
+                                               tenant.Id, razorpayOrderId);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Failed to update Razorpay subscription for Tenant {TenantId}. Reason: {Message}",
+                                           tenantSubscription.TenantId, subscriptionOrder?.Message ?? "Unknown error");
+                        serviceResponse.Message = subscriptionOrder.Message;
+                        return serviceResponse;
+                    }
                 }
-                else
+
+                if (!string.IsNullOrEmpty(subscriptionPlan.RazorpayPlanId) && tenantSubscriptionPurchaseDto.IsRecurringPayment)
                 {
-                    _logger.LogWarning("Failed to update Razorpay subscription for tenant {TenantId}. Reason: {Message}",
-                        tenantSubscription.TenantId, razorpaySubscriptionResult?.Message ?? "Unknown error");
-                    serviceResponse.Message = razorpaySubscriptionResult.Message;
-                    return serviceResponse;
+                    // Attempt to create or update a Razorpay subscription
+                    var razorpaySubscriptionResult = await CreateOrUpdateRazorpaySubscriptionAsync(
+                        tenantSubscription,
+                        subscriptionPlan,
+                        tenantSubscriptionPurchaseDto
+                    );
+
+                    // Assign the newly generated subscription ID and payment URL if the creation succeeded
+                    if (razorpaySubscriptionResult?.Data != null || razorpaySubscriptionResult.StatusCode == 200)
+                    {
+                        tenantSubscription.RazorpaySubscriptionId = razorpaySubscriptionResult.Data.Id;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Failed to update Razorpay subscription for tenant {TenantId}. Reason: {Message}",
+                            tenantSubscription.TenantId, razorpaySubscriptionResult?.Message ?? "Unknown error");
+                        serviceResponse.Message = razorpaySubscriptionResult.Message;
+                        return serviceResponse;
+                    }
                 }
             }
             else
             {
-                // Attempt to cancel the existing Razorpay subscription if it exists
-                var cancelSubscriptionResult = await CancelExistingPlanAsync(tenantSubscription);
-
-                // Check if the cancellation was successful
-                if (cancelSubscriptionResult.Data != null || cancelSubscriptionResult.StatusCode == 200)
+                if (!string.IsNullOrEmpty(tenantSubscription.RazorpaySubscriptionId))
                 {
-                    _logger.LogInformation("Successfully cancelled the Razorpay subscription for TenantSubscriptionId: {TenantSubscriptionId}",
-                        tenantSubscription.Id);
 
-                    // Clear the Razorpay subscription ID after cancellation
-                    tenantSubscription.RazorpaySubscriptionId = null;
-                    tenantSubscription.IsRecurringPayment = false;
-                }
-                else
-                {
-                    // Log failure if cancellation did not succeed
-                    _logger.LogWarning("Failed to cancel Razorpay subscription for TenantSubscriptionId: {TenantSubscriptionId}. Reason: {Message}",
-                        tenantSubscription.Id, cancelSubscriptionResult?.Message ?? "Unknown error");
+                    // Attempt to cancel the existing Razorpay subscription if it exists
+                    var cancelSubscriptionResult = await CancelExistingPlanAsync(tenantSubscription);
 
-                    // Set failure message for the response
-                    serviceResponse.Message = cancelSubscriptionResult.Message;
-                    return serviceResponse;
+                    // Check if the cancellation was successful
+                    if (cancelSubscriptionResult.Data != null || cancelSubscriptionResult.StatusCode == 200)
+                    {
+                        _logger.LogInformation("Successfully cancelled the Razorpay subscription for TenantSubscriptionId: {TenantSubscriptionId}",
+                            tenantSubscription.Id);
+
+                        // Clear the Razorpay subscription ID after cancellation
+                        tenantSubscription.RazorpaySubscriptionId = null;
+                        tenantSubscription.IsRecurringPayment = false;
+                    }
+                    else
+                    {
+                        // Log failure if cancellation did not succeed
+                        _logger.LogWarning("Failed to cancel Razorpay subscription for TenantSubscriptionId: {TenantSubscriptionId}. Reason: {Message}",
+                            tenantSubscription.Id, cancelSubscriptionResult?.Message ?? "Unknown error");
+
+                        // Set failure message for the response
+                        serviceResponse.Message = cancelSubscriptionResult.Message;
+                        return serviceResponse;
+                    }
                 }
             }
 
