@@ -242,3 +242,90 @@ public class OneDriveCredentialsDto
 }
 
 
+/// <summary>
+/// Represents the credentials required to authenticate requests to the Anthropic API.
+/// </summary>
+public class AnthropicCredentialsDto
+{
+    /// <summary>
+    /// Gets or sets the API key used for authenticating requests to the Anthropic API.
+    /// </summary>
+    public string ApiKey { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Represents the credentials and configuration required to authenticate requests 
+/// to the Google Gemini API.
+/// </summary>
+public class GoogleGeminiCredentialsDto
+{
+    /// <summary>
+    /// Gets or sets the base URL or host address for the Google Gemini API.
+    /// </summary>
+    public string Host { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the API key used for authenticating requests to the Google Gemini API.
+    /// </summary>
+    public string ApiKey { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// This DTO is used to store the necessary configuration values such as the OAuth redirect URL, 
+/// client ID, and client secret, which are required for authenticating and authorizing access 
+/// to Google services like Google Calendar, Google Docs, and other Workspace APIs.
+/// </summary>
+public class GoogleWorkspaceCredentialsDto
+{
+    /// <summary>
+    /// The redirect URI configured in the Google Cloud Console for your OAuth 2.0 client.
+    /// </summary>
+    public string OAuthRedirectURL { get; set; } = string.Empty;
+
+    /// <summary>
+    ///  /// The client ID assigned to your application by the OAuth provider oogle Cloud .
+    /// This uniquely identifies your application during the authentication process.
+    /// </summary>
+    public string ClientID { get; set; } = string.Empty;
+
+    /// <summary>
+    /// This secret is used together with the Client ID to securely authenticate your 
+    /// application when obtaining access tokens for Google Workspace APIs.
+    /// </summary>
+    public string ClientSecret { get; set; } = string.Empty;
+}
+
+// <summary>
+/// Represents the credentials required to authenticate requests to the Azure Open AI.
+/// </summary>
+public class AzureOpenAiCredentialsDto
+{
+    /// <summary>
+    /// Gets or sets the API key used for authenticating requests to the Azure OpenAI service.
+    /// This key is required for authentication when making requests to the service.
+    /// </summary>
+    public string ApiKey { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the resource name that identifies the Azure OpenAI resource.
+    /// This value is typically found in the Azure portal and helps to associate the request with a specific resource.
+    /// </summary>
+    public string ResourceName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the API version to be used in the requests.
+    /// The version specifies which version of the API to use and is required for compatibility.
+    /// </summary>
+    public string APIVersion { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the endpoint URL for the Azure OpenAI service.
+    /// This is the base URL for making requests to the service and typically includes the region information.
+    /// </summary>
+    public string Endpoint { get; set; } = string.Empty;
+}
+
+
+
+
+
