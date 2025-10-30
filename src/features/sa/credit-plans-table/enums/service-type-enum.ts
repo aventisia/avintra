@@ -13,4 +13,8 @@ export enum ServiceTypeEnum {
   "OnPremTTS" = "On-prem TTS",
   "ElevenLabsSTT" = "ElevenLabs STT",
   "ElevenLabsTTS" = "ElevenLabs TTS",
+  "Gpt4oInput" = "GPT 4o Input",
+  "Gpt4oOutput" = "GPT 4o Output",
+  "OlmOcrInput" = "Olm OCR Input",
+  "OlmOcrOutput" = "Olm OCR Output",
 }
