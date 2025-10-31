@@ -45,6 +45,12 @@ public enum AppSecretTypesEnum
     OneDriveCredentialApi,
 
     /// <summary>
+    /// Represents the credentials or configuration necessary to integrate with Microsoft 365 (M365) services.
+    /// </summary>
+    [Description("M365 Credentials")]
+    M365CredentialApi,
+
+    /// <summary>
     /// Represents the API key used to authenticate with Anthropic's AI models.
     /// </summary>
     [Description("Anthropic API Key")]
