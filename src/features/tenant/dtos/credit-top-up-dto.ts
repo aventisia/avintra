@@ -14,6 +14,11 @@ interface CreditTopUpDto {
 
   /** OrderId received in response */
   razorpayId?: string;
+
+  type?: "Subscription" | "TopUp" | "Addon";
+
+  /** SubscriptionId received in response */
+  subscriptionId?: string;
 }
 
 export { type CreditTopUpDto };

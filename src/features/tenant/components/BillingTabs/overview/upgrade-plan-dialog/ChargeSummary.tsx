@@ -55,6 +55,7 @@ const ChargeSummary = ({
       credits: topUp.credits,
       currency,
       includeTax: false,
+      type: "TopUp",
     });
   };
 
