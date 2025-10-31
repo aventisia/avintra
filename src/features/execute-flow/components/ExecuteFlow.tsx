@@ -92,6 +92,7 @@ const ExecuteFlow = ({
       // Call the Tauri command to launch the desktop executor
       const res = await invoke("launch_desktop_executor", {
         wsPort,
+        agentId: currentFlow.versionId,
         agentName: currentFlow.name,
         accessToken,
       });
