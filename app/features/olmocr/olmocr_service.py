@@ -101,22 +101,19 @@ def run_olmocr_pipeline(olmocr_req: OlmocrRequest, request: Request) -> str:
             logger.error(f"No markdown text found in results jsonl for {olmocr_req.file_name}")
             raise HTTPException(status_code=500, detail=f"Not able to OCR the file.{olmocr_req.file_name}")
         
-        # Track token usage
-        logger.info(f"olmOCR Token Usage for {olmocr_req.file_name} - Input Tokens: {total_input_tokens}, Output Tokens: {total_output_tokens}")   
-
         # Post token usage to external API using CreditManagerService
         credit_manager.post_credit_usage(
             task="olmocr", 
             request=[
                 {
-                    "serviceType": "AIModelExecutionTime",
+                    "serviceType": "OlmOcrInput",
                     "consumedUnit": total_input_tokens or 0,
                     "refType": olmocr_req.ref_type,
                     "refId": olmocr_req.ref_id,
                     "refName": olmocr_req.ref_name
                 },
                 {
-                    "serviceType": "AIModelExecutionTime",
+                    "serviceType": "OlmOcrOutput",
                     "consumedUnit": total_output_tokens or 0,
                     "refType": olmocr_req.ref_type,
                     "refId": olmocr_req.ref_id,
