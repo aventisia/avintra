@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="Activities\AiIntegrations\AiStudioActivities\InvokeInfrencingModelWebServiceActivity.cs" />
     <Compile Include="Activities\AiIntegrations\AiStudioActivities\OllamaConnectorActivity.cs" />
+    <Compile Include="Activities\AiIntegrations\AiStudioActivities\OlmOCRActivity.cs" />
     <Compile Include="Activities\AiIntegrations\AiStudioActivities\UploadFileToAIModelActivity.cs" />
     <Compile Include="Activities\AiIntegrations\AiStudioActivities\_AiStudioCategoryMetaData.cs" />
     <Compile Include="Activities\AppIntegrations\AwsActivities\AwsCertificateManagerActivities\DeleteCertificateActivity.cs" />
