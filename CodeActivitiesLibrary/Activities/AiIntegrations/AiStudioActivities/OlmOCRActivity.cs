@@ -81,7 +81,7 @@ namespace CodeActivitiesLibrary.AIIntegrations.AIStudioActivities
 
                         // Expecting: { "markdown": "..." }
                         dynamic respObj = JsonConvert.DeserializeObject<dynamic>(respContent) ?? new { markdown = "No markdown returned." };
-                        tcs.SetResult(respObj?.markdown ?? "No markdown returned.");
+                        tcs.SetResult(respObj != null && respObj.markdown != null ? (string)respObj.markdown : "No markdown returned.");
                     }
                 }
                 catch (Exception ex)
