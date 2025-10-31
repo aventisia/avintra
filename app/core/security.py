@@ -96,3 +96,35 @@ def get_jwt_from_header(request: Request) -> str:
 
     logger.info("✅ JWT token extracted from Authorization header.")
     return token
+
+def get_jwt(request: Request) -> str:
+    """
+    Tries to extract JWT token from cookie named 'AccessToken'.
+    If not found, tries from Authorization header.
+    """
+    
+    # Try to get JWT from cookies
+    access_token = request.cookies.get("AccessToken")
+    if access_token:
+        logger.info("JWT token extracted from 'AccessToken' cookie.")
+        return access_token
+    
+    # Get authorization header 
+    authorization_header: str = request.headers.get("Authorization")
+
+    if not authorization_header:
+        logger.warning("Authorization header missing.")
+        raise Exception("Authorization header missing")
+
+    if not authorization_header.startswith("Bearer "):
+        logger.warning("Invalid Authorization header format.")
+        raise Exception("Invalid Authorization header format")
+
+    access_token = authorization_header.split(" ")[1].strip()
+
+    if not access_token:
+        logger.error("No JWT found in Authorization header.")
+        raise Exception("No JWT found in Authorization header.")
+
+    logger.info("JWT token extracted from Authorization header.")
+    return access_token
