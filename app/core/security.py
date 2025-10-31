@@ -114,17 +114,17 @@ def get_jwt(request: Request) -> str:
 
     if not authorization_header:
         logger.warning("Authorization header missing.")
-        raise Exception("Authorization header missing")
+        raise "Error: Authorization header missing"
 
     if not authorization_header.startswith("Bearer "):
         logger.warning("Invalid Authorization header format.")
-        raise Exception("Invalid Authorization header format")
+        raise "Error: Invalid Authorization header format"
 
     access_token = authorization_header.split(" ")[1].strip()
 
     if not access_token:
         logger.error("No JWT found in Authorization header.")
-        raise Exception("No JWT found in Authorization header.")
+        raise "Error: No JWT found in Authorization header."
 
     logger.info("JWT token extracted from Authorization header.")
     return access_token

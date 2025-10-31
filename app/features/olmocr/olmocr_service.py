@@ -18,6 +18,9 @@ MAX_FILE_SIZE_MB = 20
 def run_olmocr_pipeline(olmocr_req: OlmocrRequest, request: Request) -> str:
     # Get user JWT
     jwt = get_jwt(request)
+    if not jwt or jwt.strip() == "" or jwt.startswith("Error:"):
+        logger.error("JWT token is missing, invalid, or error returned.")
+        raise HTTPException(status_code=401, detail="Unauthorized: JWT token is missing, invalid, or error returned.")
     
     # Check if user has sufficient credits
     credit_manager = CreditManagerService()
