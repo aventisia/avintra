@@ -137,10 +137,7 @@ const Overview = () => {
         </div>
 
         {/* Right hand side */}
-        <NextPaymentDetails
-          nextPayment={data?.data.nextPayment}
-          currency={data?.data.currentPlan.currency}
-        />
+        <NextPaymentDetails plan={data?.data} />
       </div>
       <CancelPlanDialog />
       <UpgradePlanDialog />
