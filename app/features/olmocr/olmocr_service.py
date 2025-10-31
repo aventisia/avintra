@@ -4,7 +4,7 @@ import tempfile
 import subprocess
 import json
 import uuid
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 from app.core.security import get_jwt
 from .olmocr_schemas import OlmocrRequest, OlmocrResponse
 from app.core.config import settings
@@ -15,7 +15,7 @@ MODEL_NAME = "allenai/olmOCR-2-7B-1025"
 ALLOWED_FILE_TYPES = [".pdf"]
 MAX_FILE_SIZE_MB = 20
 
-def run_olmocr_pipeline(request: OlmocrRequest) -> str:
+def run_olmocr_pipeline(olmocr_req: OlmocrRequest, request: Request) -> str:
     # Get user JWT
     jwt = get_jwt(request)
     
@@ -28,23 +28,23 @@ def run_olmocr_pipeline(request: OlmocrRequest) -> str:
     # Run olmocr pipeline with temporary file
     with tempfile.TemporaryDirectory() as tmpdir:
         # Save the uploaded file to a temporary location with a unique suffix
-        name, ext = os.path.splitext(request.file_name)
+        name, ext = os.path.splitext(olmocr_req.file_name)
         unique_suffix = uuid.uuid4().hex[:8]
         unique_file_name = f"{name}_{unique_suffix}{ext}"
         temp_file_path = os.path.join(tmpdir, unique_file_name)
         with open(temp_file_path, "wb") as f:
-            f.write(base64.b64decode(request.file_data))
+            f.write(base64.b64decode(olmocr_req.file_data))
             
         logger.info(f"Saved temporary file at: {temp_file_path}")
         
         # Check for allowed file types
-        if not any(request.file_name.lower().endswith(ext) for ext in ALLOWED_FILE_TYPES):
-            logger.warning(f"Unsupported file type: {request.file_name}")
+        if not any(olmocr_req.file_name.lower().endswith(ext) for ext in ALLOWED_FILE_TYPES):
+            logger.warning(f"Unsupported file type: {olmocr_req.file_name}")
             raise HTTPException(status_code=400, detail="Unsupported file type.")
         
         # Max file size check (e.g., 20MB)
         if os.path.getsize(temp_file_path) > MAX_FILE_SIZE_MB * 1024 * 1024:
-            logger.warning(f"File size exceeds limit: {request.file_name}")
+            logger.warning(f"File size exceeds limit: {olmocr_req.file_name}")
             raise HTTPException(status_code=400, detail="File size exceeds the maximum limit of 20MB.")
         
         # Use DeepInfra config from settings
@@ -70,7 +70,7 @@ def run_olmocr_pipeline(request: OlmocrRequest) -> str:
         jsonl_files = [f for f in os.listdir(results_dir) if f.endswith(".jsonl")]
         if not jsonl_files:
             logger.error("No results jsonl output found.")
-            raise HTTPException(status_code=500, detail=f"Not able to OCR the file.{request.file_name}")
+            raise HTTPException(status_code=500, detail=f"Not able to OCR the file.{olmocr_req.file_name}")
         
         # Read markdown text and token counts from results .jsonl file
         jsonl_path = os.path.join(results_dir, jsonl_files[0])
@@ -95,11 +95,11 @@ def run_olmocr_pipeline(request: OlmocrRequest) -> str:
 
         # Check if markdown was found
         if markdown is None:
-            logger.error(f"No markdown text found in results jsonl for {request.file_name}")
-            raise HTTPException(status_code=500, detail=f"Not able to OCR the file.{request.file_name}")
+            logger.error(f"No markdown text found in results jsonl for {olmocr_req.file_name}")
+            raise HTTPException(status_code=500, detail=f"Not able to OCR the file.{olmocr_req.file_name}")
         
         # Track token usage
-        logger.info(f"olmOCR Token Usage for {request.file_name} - Input Tokens: {total_input_tokens}, Output Tokens: {total_output_tokens}")   
+        logger.info(f"olmOCR Token Usage for {olmocr_req.file_name} - Input Tokens: {total_input_tokens}, Output Tokens: {total_output_tokens}")   
 
         # Post token usage to external API using CreditManagerService
         credit_manager.post_credit_usage(
@@ -108,16 +108,16 @@ def run_olmocr_pipeline(request: OlmocrRequest) -> str:
                 {
                     "serviceType": "AIModelExecutionTime",
                     "consumedUnit": total_input_tokens or 0,
-                    "refType": request.ref_type,
-                    "refId": request.ref_id,
-                    "refName": request.ref_name
+                    "refType": olmocr_req.ref_type,
+                    "refId": olmocr_req.ref_id,
+                    "refName": olmocr_req.ref_name
                 },
                 {
                     "serviceType": "AIModelExecutionTime",
                     "consumedUnit": total_output_tokens or 0,
-                    "refType": request.ref_type,
-                    "refId": request.ref_id,
-                    "refName": request.ref_name
+                    "refType": olmocr_req.ref_type,
+                    "refId": olmocr_req.ref_id,
+                    "refName": olmocr_req.ref_name
                 }
             ],
             jwt=jwt
