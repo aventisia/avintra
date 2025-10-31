@@ -106,18 +106,18 @@ def run_olmocr_pipeline(olmocr_req: OlmocrRequest, request: Request) -> str:
             task="olmocr", 
             request=[
                 {
-                    "serviceType": "OlmOcrInput",
-                    "consumedUnit": total_input_tokens or 0,
-                    "refType": olmocr_req.ref_type,
-                    "refId": olmocr_req.ref_id,
-                    "refName": olmocr_req.ref_name
+                    "ServiceType": "OlmOcrInput",
+                    "ConsumedUnit": total_input_tokens or 0,
+                    "RefType": olmocr_req.ref_type,
+                    "RefId": olmocr_req.ref_id,
+                    "RefName": olmocr_req.ref_name
                 },
                 {
-                    "serviceType": "OlmOcrOutput",
-                    "consumedUnit": total_output_tokens or 0,
-                    "refType": olmocr_req.ref_type,
-                    "refId": olmocr_req.ref_id,
-                    "refName": olmocr_req.ref_name
+                    "ServiceType": "OlmOcrOutput",
+                    "ConsumedUnit": total_output_tokens or 0,
+                    "RefType": olmocr_req.ref_type,
+                    "RefId": olmocr_req.ref_id,
+                    "RefName": olmocr_req.ref_name
                 }
             ],
             jwt=jwt
