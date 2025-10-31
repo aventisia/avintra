@@ -51,6 +51,16 @@ export interface PlanDto {
    * Gets or sets the usage details for the subscription plan.
    */
   usage: PlanUsageDto[];
+
+  expiredOn?: Date | string;
+
+  isActive?: boolean;
+
+  isRecurringPayment?: boolean;
+
+  planId?: string;
+
+  subscriptionId?: string;
 }
 
 /**

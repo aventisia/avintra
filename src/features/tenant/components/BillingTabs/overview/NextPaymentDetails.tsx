@@ -1,21 +1,33 @@
-import { Separator } from "@aventisia/ui";
+import { LoadingSpinner, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { dateFormatter } from "@aventisia/ui/utils";
 
 import { formatCurrency } from "@/features/tenant/constants/currency-symbol-map";
-import { NextPaymentDto } from "@/features/tenant/dtos/current-plan-dto";
+import { CurrentPlanDto } from "@/features/tenant/dtos/current-plan-dto";
+import { useCreditTopUpMutation } from "@/features/tenant/hooks/useCreditTopUpMutation";
 
 import CalendarOutlineIcon from "../../../assets/calendar-outline-icon.svg";
 
 interface NextPaymentDetailsProps {
-  nextPayment: NextPaymentDto | undefined;
-  currency?: string;
+  plan: CurrentPlanDto | undefined;
 }
 
-const NextPaymentDetails = ({
-  nextPayment,
-  currency = "USD",
-}: NextPaymentDetailsProps) => {
+const NextPaymentDetails = ({ plan }: NextPaymentDetailsProps) => {
+  const { isPending: isTopUpPending, insertCreditTopUpMutation } =
+    useCreditTopUpMutation();
+
+  const handleCreditTopUp = () => {
+    if (plan?.nextPayment?.subscriptionFee)
+      insertCreditTopUpMutation({
+        amount: plan?.nextPayment?.subscriptionFee,
+        credits: plan?.currentPlan.feature.maxCredits,
+        currency: plan?.currentPlan.currency,
+        includeTax: false,
+        type: "Subscription",
+        subscriptionId: plan?.currentPlan.subscriptionId,
+      });
+  };
+
   return (
     <div className="flex flex-col rounded-lg border pb-6">
       <div className="p-4">
@@ -29,7 +41,7 @@ const NextPaymentDetails = ({
           <div className="text-sm">
             <p className="text-muted-foreground">Due/Renewal Date</p>
             <p className="font-medium">
-              {dateFormatter(nextPayment?.dueDate || new Date())}
+              {dateFormatter(plan?.nextPayment?.dueDate || new Date())}
             </p>
           </div>
         </div>
@@ -40,20 +52,33 @@ const NextPaymentDetails = ({
             <div className="flex items-center justify-between text-sm">
               <p>Subscription Fee</p>
               <p>
-                {formatCurrency(nextPayment?.subscriptionFee ?? 0, currency)}
+                {formatCurrency(
+                  plan?.nextPayment?.subscriptionFee ?? 0,
+                  plan?.currentPlan.currency || "USD",
+                )}
               </p>
             </div>
 
             <div className="flex items-center justify-between text-sm">
               <p>Tax</p>
-              <p>{formatCurrency(nextPayment?.tax ?? 0, currency)}</p>
+              <p>
+                {formatCurrency(
+                  plan?.nextPayment?.tax ?? 0,
+                  plan?.currentPlan.currency || "USD",
+                )}
+              </p>
             </div>
 
             <Separator />
 
             <div className="flex items-center justify-between text-sm">
               <p>Total Amount</p>
-              <p>{formatCurrency(nextPayment?.totalAmount ?? 0, currency)}</p>
+              <p>
+                {formatCurrency(
+                  plan?.nextPayment?.totalAmount ?? 0,
+                  plan?.currentPlan.currency || "USD",
+                )}
+              </p>
             </div>
           </div>
         </div>
@@ -63,9 +88,17 @@ const NextPaymentDetails = ({
         <Button
           className="mt-auto w-full border-primary text-primary"
           variant={"outline"}
-          disabled={nextPayment?.totalAmount == 0}
+          disabled={isTopUpPending || plan?.nextPayment?.totalAmount == 0}
+          onClick={handleCreditTopUp}
         >
-          Make Payment
+          {isTopUpPending ? (
+            <>
+              <LoadingSpinner className="mr-2 h-4 w-4" />
+              Initiating Payment...
+            </>
+          ) : (
+            "Make Payment"
+          )}{" "}
         </Button>
       </div>
     </div>
