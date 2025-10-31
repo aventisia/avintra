@@ -29,7 +29,12 @@ namespace CodeActivityToJSON.Utils
                 // Get label. If display name is not set, then don't add the argument to json
                 var displayName = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? prop.Name; // TODO: we need to add meaningfull display names
                 var propNameLower = prop.Name.ToLower();
-                if (displayName == null || propNameLower == "statusmessage" || propNameLower == "issuccess" || propNameLower == "accesstoken") continue;
+                if (displayName == null || 
+                    propNameLower == "statusmessage" || 
+                    propNameLower == "issuccess" || 
+                    propNameLower == "accesstoken" || 
+                    propNameLower == "agentid" || 
+                    propNameLower == "agentname") continue;
 
                 // Get description
                 var description = prop.GetCustomAttribute<DescriptionAttribute>()?.Description ?? "";
