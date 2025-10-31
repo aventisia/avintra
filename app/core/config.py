@@ -40,6 +40,9 @@ class Settings(BaseSettings):
     ANTHROPIC_API_URL: str
     ANTHROPIC_API_KEY: str
     
+    DEEPINFRA_API_URL: str
+    DEEPINFRA_API_KEY: str
+    
     # TTS and STT
     ELEVENLABS_API_KEY: str
     DEEPGRAM_API_KEY: str

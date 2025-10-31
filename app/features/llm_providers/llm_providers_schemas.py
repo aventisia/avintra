@@ -1,8 +1,11 @@
 # Schemas for LLM Providers feature
 from pydantic import BaseModel
-from typing import Optional, Literal
+from typing import Optional, Literal, TypeAlias
 from datetime import datetime, timezone
 from typing import Union, List
+
+# Centralized provider literal for all schemas
+ProviderLiteral: TypeAlias = Literal['openai','ollama','deepinfra']
 
 # LLM message structure for chat-based models
 class LLMMessage(BaseModel):
@@ -11,7 +14,7 @@ class LLMMessage(BaseModel):
 
 # Request schema to generate LLM response
 class LLMRequest(BaseModel):
-    provider: Literal['openai','ollama']
+    provider: ProviderLiteral
     model: str
     input: Union[str, List[LLMMessage]]  # Accepts string or list of messages
     files: Optional[List[str]] = None  # List of base64-encoded files for OCR/text extraction
@@ -26,13 +29,13 @@ class LLMRequest(BaseModel):
     
 # Chunk response schema for streaming LLM response
 class LLMChunkResponse(BaseModel):
-    provider: Literal['openai','ollama']
+    provider: ProviderLiteral
     model: str
     output: str
     
 # Response schema for LLM full response or last chunk in streaming
 class LLMResponse(BaseModel):
-    provider: Literal['openai','ollama']
+    provider: ProviderLiteral
     model: str
     output: str
     status: Optional[Literal['completed', 'failed', 'in_progress', 'cancelled', 'queued', 'incomplete']] = None

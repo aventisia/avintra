@@ -1,11 +1,12 @@
 # Provider factory to select correct provider
-
 from .llm_providers_openai import OpenAIProvider
 from .llm_providers_ollama import OllamaProvider
+from .llm_providers_deepinfra import DeepInfraProvider
 
 LLM_PROVIDER_MAP = {
     'openai': OpenAIProvider,
     'ollama': OllamaProvider,
+    'deepinfra': DeepInfraProvider,
 }
 
 def get_llm_provider(provider_name: str):
