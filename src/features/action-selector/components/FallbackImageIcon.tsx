@@ -18,7 +18,7 @@ export const FallbackImageIcon = ({
         decoding="async"
         src={src}
         className={cn(
-          "aspect-square h-5 object-cover opacity-70 transition-all",
+          "aspect-square h-5 object-cover opacity-80 rounded-[3px] transition-all",
           className,
         )}
         {...props}

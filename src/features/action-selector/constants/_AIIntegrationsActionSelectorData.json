@@ -22,6 +22,15 @@
             "img": "/assets/InferencingModel.svg"
           },
           {
+            "type": "activityNode",
+            "name": "OlmOCRActivity",
+            "label": "Olm OCR",
+            "description": "Perform OCR on a PDF document using AI",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/olmocr.png"
+          },
+          {
             "type": "aiNode",
             "name": "AIModel",
             "label": "Conversation Model",
