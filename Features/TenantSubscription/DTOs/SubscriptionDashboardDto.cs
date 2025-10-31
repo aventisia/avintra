@@ -22,6 +22,11 @@ public class SubscriptionDashboardDto
 public class CurrentSubscriptionPlanDto
 {
     /// <summary>
+    /// Gets or sets the unique identifier of the subscription associated with this billing.
+    /// </summary>
+    public Guid SubscriptionId { get; set; }
+
+    /// <summary>
     /// Gets or sets the id of the plan.
     /// </summary>
     public Guid PlanId { get; set; }
