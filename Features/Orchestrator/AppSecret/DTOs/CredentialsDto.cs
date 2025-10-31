@@ -241,6 +241,31 @@ public class OneDriveCredentialsDto
     public string ClientSecret { get; set; } = string.Empty;
 }
 
+    /// <summary>
+    /// Data Transfer Object (DTO) that contains credentials required 
+    /// for authenticating and connecting to Microsoft 365 (M365) services 
+    /// such as Microsoft Graph API or Exchange Online.
+    /// </summary>
+    public class M365CredentialsDto
+    {
+        /// <summary>
+        /// The Azure Active Directory (AAD) tenant ID associated with the Microsoft 365 organization.
+        /// This uniquely identifies your tenant within Azure AD.
+        /// </summary>
+        public string AzureTenantId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The client (application) ID registered in Azure Active Directory.
+        /// This is used to identify your application during the OAuth2 authentication process.
+        /// </summary>
+        public string ClientId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The client secret (application password) generated in Azure AD for the registered app.
+        /// This value is used along with the Client ID to securely authenticate your application.
+        /// </summary>
+        public string ClientSecret { get; set; } = string.Empty;
+    }
 
 /// <summary>
 /// Represents the credentials required to authenticate requests to the Anthropic API.
