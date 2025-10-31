@@ -3,18 +3,29 @@ import base64
 import tempfile
 import subprocess
 import json
+import uuid
 from fastapi import HTTPException
+from app.core.security import get_jwt
 from .olmocr_schemas import OlmocrRequest, OlmocrResponse
 from app.core.config import settings
 from app.core.logger import logger
+from app.core.credit_manager import CreditManagerService
 
 MODEL_NAME = "allenai/olmOCR-2-7B-1025"
-ALLOWED_FILE_TYPES = [".pdf", ".png", ".jpg", ".jpeg"]
+ALLOWED_FILE_TYPES = [".pdf"]
 MAX_FILE_SIZE_MB = 20
 
 def run_olmocr_pipeline(request: OlmocrRequest) -> str:
+    # Get user JWT
+    jwt = get_jwt(request)
+    
+    # Check if user has sufficient credits
+    credit_manager = CreditManagerService()
+    if not credit_manager.has_sufficient_credits(task="olmocr", jwt=jwt):
+        logger.warning("Insufficient credits to continue for olmocr task.")
+        raise HTTPException(status_code=400, detail="Insufficient credits to continue. Please top up your credits.")
+    
     # Run olmocr pipeline with temporary file
-    import uuid
     with tempfile.TemporaryDirectory() as tmpdir:
         # Save the uploaded file to a temporary location with a unique suffix
         name, ext = os.path.splitext(request.file_name)
@@ -89,6 +100,28 @@ def run_olmocr_pipeline(request: OlmocrRequest) -> str:
         
         # Track token usage
         logger.info(f"olmOCR Token Usage for {request.file_name} - Input Tokens: {total_input_tokens}, Output Tokens: {total_output_tokens}")   
+
+        # Post token usage to external API using CreditManagerService
+        credit_manager.post_credit_usage(
+            task="olmocr", 
+            request=[
+                {
+                    "serviceType": "AIModelExecutionTime",
+                    "consumedUnit": total_input_tokens or 0,
+                    "refType": request.ref_type,
+                    "refId": request.ref_id,
+                    "refName": request.ref_name
+                },
+                {
+                    "serviceType": "AIModelExecutionTime",
+                    "consumedUnit": total_output_tokens or 0,
+                    "refType": request.ref_type,
+                    "refId": request.ref_id,
+                    "refName": request.ref_name
+                }
+            ],
+            jwt=jwt
+        )
         
         # Finally, return the response
         return OlmocrResponse(markdown=markdown)
