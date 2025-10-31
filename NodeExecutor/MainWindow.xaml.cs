@@ -193,7 +193,7 @@ namespace NodeExecutor
                 : "Node name not found";
 
             var result =
-                ActivityExecutorService.ExecuteCondition(_agentId,_accessToken, conditionalBrnachNodeData.Conditions, _executionContext, _interpreter);
+                ActivityExecutorService.ExecuteCondition(_agentId, _agentName, _accessToken, conditionalBrnachNodeData.Conditions, _executionContext, _interpreter);
 
             await _webSocket.SendCommandAsync("next-node",
                 result.Item1
@@ -218,12 +218,13 @@ namespace NodeExecutor
             (bool success, string result) result = (false, string.Empty);
             if (loopNodeData.LoopType == "ConditionalLoop")
             {
-                result = ActivityExecutorService.ExecuteCondition(_agentId, _accessToken, loopNodeData.Conditions, _executionContext, _interpreter);
+                result = ActivityExecutorService.ExecuteCondition(_agentId, _agentName, _accessToken, loopNodeData.Conditions, _executionContext, _interpreter);
             }
             else if (loopNodeData.LoopType == "ForEachLoop")
             {
                 result = ActivityExecutorService.MoveNextListItem(
                     _agentId,
+                    _agentName,
                     _accessToken,
                     loopNodeData.ListVariableName,
                     loopNodeData.ItemVariableName,
@@ -263,7 +264,7 @@ namespace NodeExecutor
             await Task.Run(async () =>
             {
                 // Execute single node
-                var (isSuccess, nodeExecutionLog) = ActivityExecutorService.ExecuteNode(_agentId,_accessToken, nodeData, _executionContext, _interpreter, startTime);
+                var (isSuccess, nodeExecutionLog) = ActivityExecutorService.ExecuteNode(_agentId, _agentName, _accessToken, nodeData, _executionContext, _interpreter, startTime);
 
                 // Send the execution log back to the server (must be awaited on UI thread)
                 await Dispatcher.InvokeAsync(async () =>
