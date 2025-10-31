@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
 namespace NodeExecutor
 {
@@ -12,11 +13,12 @@ namespace NodeExecutor
             base.OnStartup(e);
 
             string wsPort = e.Args.Length > 0 ? e.Args[0] : "9001";
-            string agentName = e.Args.Length > 1 ? e.Args[1] : "Agent Name";
-            string accessToken = e.Args.Length > 2 ? e.Args[2] : "";
+            string agentId = e.Args.Length > 1 ? e.Args[1] : Guid.Empty.ToString();
+            string agentName = e.Args.Length > 1 ? e.Args[2] : "Agent Name";
+            string accessToken = e.Args.Length > 2 ? e.Args[3] : "";
 
             // You can now pass these to your main window or use as needed
-            var mainWindow = new MainWindow(wsPort, agentName, accessToken);
+            var mainWindow = new MainWindow(wsPort, agentId, agentName, accessToken);
             mainWindow.Show();
         }
     }
