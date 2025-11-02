@@ -59,6 +59,7 @@ namespace CodeActivitiesLibrary.AIIntegrations.AIStudioActivities
                         ref_type = "Agent",
                         ref_id = agentId,
                         ref_name = agentName,
+                        action = "AgentExecution",
                         agent_name = agentName
                     };
 
