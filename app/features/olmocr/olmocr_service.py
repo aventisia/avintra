@@ -228,14 +228,18 @@ async def run_olmocr_pipeline(olmocr_req: OlmocrRequest, request: Request) -> st
                     "ConsumedUnit": total_input_tokens or 0,
                     "RefType": olmocr_req.ref_type,
                     "RefId": olmocr_req.ref_id,
-                    "RefName": olmocr_req.ref_name
+                    "RefName": olmocr_req.ref_name,
+                    "Action": olmocr_req.action,
+                    "TriggeredByAgent": olmocr_req.agent_name
                 },
                 {
                     "ServiceType": "OlmOcrOutput",
                     "ConsumedUnit": total_output_tokens or 0,
                     "RefType": olmocr_req.ref_type,
                     "RefId": olmocr_req.ref_id,
-                    "RefName": olmocr_req.ref_name
+                    "RefName": olmocr_req.ref_name,
+                    "Action": olmocr_req.action,
+                    "TriggeredByAgent": olmocr_req.agent_name
                 }
             ],
             jwt=jwt
