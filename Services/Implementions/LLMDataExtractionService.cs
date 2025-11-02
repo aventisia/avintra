@@ -418,6 +418,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             // Log token usage details
             _logger.LogInformation("Token usage - Input Tokens: {inputTokens}, Input Cached Tokens: {inputCachedTokens}, Output Tokens: {outputTokens}, Output Reasoning Tokens: {outputReasoningTokens}, Total Execution Time (s): {totalExecutionTime}",
                 inputTokens, inputCachedTokens, outputTokens, outputReasoningTokens, totalExecutionTime);
+            _logger.LogInformation("Credits usage details prepared: {creditsUsageList}", JsonConvert.SerializeObject(creditsUsageList));
 
             // Create credits usage in AccountsDb database
             HttpResponseMessage creditUsagesResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Create, "http://localhost:4000/api/credit-usage/bulk", _jwt, creditsUsageList);
