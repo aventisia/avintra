@@ -433,12 +433,22 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             // Fetch plan to ensure it exists
             var plan = await _unitOfWork.SubscriptionPlanRepo
                 .GetByConditionAsync(w => w.Id == subscriptionPlanId)
+                .Include(w => w.TenantSubscriptions)
                 .SingleOrDefaultAsync();
 
+            // Check if the plan does not exist
             if (plan == null)
             {
                 _logger.LogWarning("No subscription plan found with ID: {SubscriptionPlanId}", subscriptionPlanId);
                 serviceResponse.Message = "Subscription plan not found.";
+                return serviceResponse;
+            }
+
+            // Check if the plan has any active tenant subscriptions
+            if (plan.TenantSubscriptions.Count != 0)
+            {
+                _logger.LogWarning("Subscription plan with ID: {SubscriptionPlanId} cannot be deleted because it has active tenant subscriptions.", subscriptionPlanId);
+                serviceResponse.Message = "Cannot delete subscription plan because it has active tenant subscriptions.";
                 return serviceResponse;
             }
 
@@ -482,6 +492,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             // Fetch all matching plans
             var plans = await _unitOfWork.SubscriptionPlanRepo
                 .GetByConditionAsync(w => subscriptionPlanIds.Contains(w.Id))
+                .Include(i => i.TenantSubscriptions)
                 .ToListAsync();
 
             if (plans == null || plans.Count == 0)
@@ -489,6 +500,17 @@ public class SubscriptionPlanService : ISubscriptionPlanService
                 _logger.LogWarning("No matching subscription plans found to delete.");
                 serviceResponse.Message = "No matching subscription plans found.";
                 return serviceResponse;
+            }
+
+            foreach (var plan in plans)
+            {
+                // Check if the plan has any active tenant subscriptions
+                if (plan.TenantSubscriptions.Count != 0)
+                {
+                    _logger.LogWarning("Subscription plan with ID: {SubscriptionPlanId} cannot be deleted because it has active tenant subscriptions.", plan.Id);
+                    serviceResponse.Message = "Cannot delete subscription plan because it has active tenant subscriptions.";
+                    return serviceResponse;
+                }
             }
 
             // Perform bulk delete and save
