@@ -1135,8 +1135,10 @@ namespace WorkspaceAPIs.Services
                     genereateProjectInstructionRequestDto.RefType,
                     genereateProjectInstructionRequestDto.RefId,
                     genereateProjectInstructionRequestDto.RefName,
-                    null,
-                    false
+                    ActionTypesEnum.TemplateDescriptionGeneration,
+                    null, // This will never be triggered by an agent
+                    null, // No ollama output schema needed
+                    false // No json output required
                 );
 
                 // Handle null or empty response
