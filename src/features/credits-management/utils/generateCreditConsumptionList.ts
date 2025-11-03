@@ -7,6 +7,8 @@ import {
   nodeToServiceTypeMap,
   serviceTypeToUnitMap,
 } from "../constants/service-type-node-map";
+import { UsageSourceTypesEnum } from "../constants/usage-source-types-enum";
+import { ActionTypesEnum } from "../constants/action-types-enum";
 
 /**
  * Generates a list of credit consumption
@@ -58,9 +60,11 @@ export function generateCreditConsumptionList(
     consumptionList.push({
       serviceType,
       consumedUnit,
-      refType: "Agent",
+      refType: UsageSourceTypesEnum.Agent,
       refId: agentId,
       refName: agentName,
+      action: ActionTypesEnum.AgentExecution,
+      triggeredByAgent: agentName,
     });
   }
 
@@ -71,9 +75,11 @@ export function generateCreditConsumptionList(
       consumedUnit: getAgentExecutionDuration(nodes, [
         "InvokeInferenceModelWebServiceActivity",
       ]),
-      refType: "Agent",
+      refType: UsageSourceTypesEnum.Agent,
       refId: agentId,
       refName: agentName,
+      action: ActionTypesEnum.AgentExecution,
+      triggeredByAgent: agentName,
     });
   }
 
