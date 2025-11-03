@@ -48,6 +48,28 @@ namespace AccountsAPIs.Services
                 // Clean up string properties to remove unwanted leading/trailing spaces
                 razorpayOrderRequestDto = TrimDtoStringPropsUtil.TrimDtoStringProps(razorpayOrderRequestDto);
 
+
+                // Fetch tenant information based on tenant ID
+                var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
+
+                // Check if the tenant was found
+                if (tenant == null)
+                {
+                    // Return an error message if the tenant is not found
+                    serviceResponse.Message = "Tenant not found";
+                    return serviceResponse;
+                }
+
+                // Check if the tenant is from India and if the credit type is 'Subscription'
+                if (tenant.Country == CountriesEnum.India && razorpayOrderRequestDto.Type == CreditTypesEnum.Subscription)
+                {
+                    // Apply a default tax rate of 18% (represented as 1.18) for subscriptions in India
+                    decimal defaultTaxRate = 1.18m;
+
+                    // Adjust the amount by multiplying it by the tax rate and converting it to the smallest currency unit (e.g., cents/paise)
+                    razorpayOrderRequestDto.Amount = Math.Round(razorpayOrderRequestDto.Amount * defaultTaxRate * 100);
+                }
+                
                 // Prepare the order request using the provided top-up details
                 var orderRequest = new OrderRequestDto
                 {
