@@ -34,14 +34,21 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
         try
         {
+            // Retrieve tenant details based on tenant ID
             var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
+
+            // Check if the tenant's country is India and set the currency accordingly
+            if (tenant.Country == CountriesEnum.India)
+            {
+                // Set currency to INR for tenants in India
+                currency = CurrencyTypesEnum.INR;
+            }
 
             // Start building the database query; nothing is executed yet.
             IQueryable<SubscriptionPlan> query = _unitOfWork.SubscriptionPlanRepo
                 .GetByConditionAsync(w =>
                     (
-                        w.Status == PlanStatusTypesEnum.Current &&
-                        w.IncludeTax == (tenant.Country == CountriesEnum.India)
+                        w.Status == PlanStatusTypesEnum.Current
                     ) ||
                     w.Type == SubscriptionPlanTypeEnum.Starter
                 )
