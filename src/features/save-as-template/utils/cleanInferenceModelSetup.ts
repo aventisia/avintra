@@ -38,7 +38,7 @@ export function cleanInferenceModelSetup(data: InferenceModelSetupDTO): string {
 
   // Start cleaning from the top level of the data
   const cleanedData = cleanData(data);
-  console.log(cleanedData);
+
   // Convert the cleaned data to a JSON string
   return JSON.stringify(cleanedData, null, 2); // Pretty print for readability
 }
