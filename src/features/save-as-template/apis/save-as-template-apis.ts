@@ -2,28 +2,84 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { IHttpResponse } from "@aventisia/ui/dtos";
 
-import { SaveAsTemplateDTO } from "../dtos/save-as-template-dto";
-import { TemplateListDTO } from "../dtos/template-list-dto";
-import { UseTemplateDTO } from "../dtos/use-template-dto";
+import { GenerateInstructionRequestDto } from "../dtos/genereate-instruction-request-dto";
+import { SaveAsTemplateDto } from "../dtos/save-as-template-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/ai-model-template`;
+// Base API URL for all project-template related endpoints
+const baseAPIURL = `${import.meta.env.VITE_WORC_API_URL}/project-template`;
 
-const getTemplateList = () => {
+/**
+ * Save and publish a new template.
+ *
+ * @param templateData - The template data to be saved.
+ * @returns Response containing saved template data.
+ */
+const postSaveAsTemplate = (templateData: SaveAsTemplateDto) => {
   return axiosInstance
-    .get<IHttpResponse<TemplateListDTO[]>>(`${baseAPIURL}/trending`)
+    .post<
+      IHttpResponse<SaveAsTemplateDto>
+    >(`${baseAPIURL}/publish`, templateData)
     .then((res) => res.data);
 };
 
-const publishTemplate = (data: SaveAsTemplateDTO) => {
+/**
+ * Generate a template instruction based on prompt data.
+ *
+ * @param payload - Serialized prompt data (usually from nodes).
+ * @returns Generated instruction as a string.
+ */
+const generateTemplateInstruction = (
+  postObj: GenerateInstructionRequestDto,
+) => {
   return axiosInstance
-    .post<IHttpResponse<SaveAsTemplateDTO>>(`${baseAPIURL}/publish`, data)
+    .post<IHttpResponse<string>>(
+      `${baseAPIURL}/generate`,
+      postObj,
+      { timeout: 5 * 60000 }, // Allow long-running generation (up to 5min)
+    )
     .then((res) => res.data);
 };
 
-const applyTemplate = (data: UseTemplateDTO) => {
+/**
+ * Update an existing template.
+ *
+ * @param templateData - Updated template data.
+ * @returns Response containing updated template data.
+ */
+const updateTemplate = (templateData: SaveAsTemplateDto) => {
   return axiosInstance
-    .post<IHttpResponse<UseTemplateDTO>>(`${baseAPIURL}/use`, data)
+    .put<IHttpResponse<SaveAsTemplateDto>>(`${baseAPIURL}`, templateData)
     .then((res) => res.data);
 };
 
-export { publishTemplate, getTemplateList, applyTemplate };
+/**
+ * Fetch a template by its reference ID.
+ *
+ * @param id - Reference ID of the template.
+ * @returns Template data from the backend.
+ */
+const getTemplateByRefId = (id: string) => {
+  return axiosInstance
+    .get<IHttpResponse<SaveAsTemplateDto>>(`${baseAPIURL}/reference/${id}`)
+    .then((res) => res.data);
+};
+
+/**
+ * Delete a template by its ID.
+ *
+ * @param id - ID of the template to delete.
+ * @returns Boolean indicating success of the deletion.
+ */
+const deleteTemplate = (id: string) => {
+  return axiosInstance
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .then((res) => res.data);
+};
+
+export {
+  getTemplateByRefId,
+  postSaveAsTemplate,
+  updateTemplate,
+  deleteTemplate,
+  generateTemplateInstruction,
+};

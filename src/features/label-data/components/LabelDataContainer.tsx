@@ -9,7 +9,7 @@ import InitializeApp from "@/features/initialize-app/components";
 import ModelLibraryDialog from "@/features/initialize-app/components/model-library/model-library-dialog/ModelLibraryDialog";
 import { useLabelDataQueryKey } from "@/features/label-data/hooks/useLabelDataQueryKey";
 import PublishModel from "@/features/publish-model/components/PublishModel";
-import SaveAsTemplateDialog from "@/features/save-as-template/components/SaveAsTemplateDialog";
+import { SaveAsTemplateDialog } from "@/features/save-as-template/components/SaveAsTemplateDialog";
 import ShareAccessDialog from "@/features/share-access/components";
 import { useFetchProjectMetaData } from "@/hooks/useFetchProjectMetaData";
 import {

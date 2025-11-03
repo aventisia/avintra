@@ -1,10 +1,20 @@
-import { SelectFieldProps } from "@/shared/select-field/SelectField";
-
 import {
   AutosizeTextareaFieldProps,
   InputFieldProps,
   MultiSelectFieldProps,
 } from "@aventisia/ui/form";
+import { SelectFieldProps } from "@aventisia/ui/form";
+import { enumToArray } from "@aventisia/ui/utils";
+
+import { AccessTypeEnum } from "./access-type-enums ";
+
+// Access Level
+const accessLevelProps: SelectFieldProps = {
+  name: "accessType",
+  label: "Access Level",
+  isRequired: true,
+  selectOptions: enumToArray(AccessTypeEnum),
+};
 
 const templateNameProps: InputFieldProps = {
   name: "name",
@@ -20,47 +30,15 @@ const descriptionProps: AutosizeTextareaFieldProps = {
   className: "text-sm",
 };
 
-const accessLevelFieldProps: SelectFieldProps = {
-  name: "accessType",
-  label: "Access Level",
-  className: "text-sm",
-  selectOptions: [
-    {
-      label: "Space",
-      value: "Space",
-      description: "Shared within your current Worc Space team.",
-    },
-    {
-      label: "Tenant",
-      value: "TenantLevel",
-      description: "Available to all users under your organization’s tenant.",
-    },
-    {
-      label: "Public",
-      value: "Public",
-      description: "Anyone using the platform can view and use this template.",
-    },
-  ],
-  isRequired: true,
-  placeholder: "Select",
-};
-
-const worcspacesFieldProps: MultiSelectFieldProps = {
-  name: "spaceIds",
+// Access Type
+const spacesProps: MultiSelectFieldProps = {
+  name: "spaces",
   label: "Spaces",
-  className: "text-sm",
   isRequired: true,
-  placeholder: "Select",
   selectOptions: [
-    { label: "Worc-space 1", value: "worcspace-1" },
-    { label: "Worc-space 2", value: "worcspace-2" },
-    { label: "Worc-space 3", value: "worcspace-3" },
+    { label: "Space 1", value: "space1" },
+    { label: "Space 2", value: "space2" },
   ],
 };
 
-export {
-  accessLevelFieldProps,
-  worcspacesFieldProps,
-  templateNameProps,
-  descriptionProps,
-};
+export { accessLevelProps, spacesProps, templateNameProps, descriptionProps };

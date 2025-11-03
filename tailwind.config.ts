@@ -1,3 +1,4 @@
+import tailwindcssTypography from "@tailwindcss/typography";
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
@@ -90,6 +91,7 @@ const config = {
           700: "hsl(238, 38%, 31%)",
           800: "hsl(240, 40%, 27%)",
           900: "hsl(244, 47%, 20%)", // Secondary color
+          light: "var(--secondary-light)",
         },
         destructive: {
           DEFAULT: "var(--destructive)",
@@ -150,7 +152,7 @@ const config = {
       },
     },
   },
-  plugins: [tailwindcssAnimate],
+  plugins: [tailwindcssAnimate, tailwindcssTypography],
 } satisfies Config;
 
 export default config;

@@ -1,7 +1,7 @@
 import { useApiKeyDialogStore } from "@/features/api-keys/store/api-key-dialog-store";
 import { usePublishModelMutation } from "@/features/publish-model/hooks/usePublishModel";
 import { usePublishDialogStore } from "@/features/publish-model/stores/usePublishDialogStore";
-import { useSaveAsTemplateDialogStore } from "@/features/save-as-template/store/useSaveAsTemplateDialog";
+import { useSaveAsTemplateStore } from "@/features/save-as-template/stores/save-as-template-store";
 import { useFetchProjectVersionData } from "@/hooks/useFetchProjectVersionData";
 
 import {
@@ -15,8 +15,8 @@ import { HeaderActionMenuTrigger } from "./HeaderActionMenuTrigger";
 
 const HeaderMenuActions = () => {
   const { setOpen } = usePublishDialogStore();
-  const { setOpen: setOpenSaveAsTemplateDialog } =
-    useSaveAsTemplateDialogStore();
+  const { setShowDialog: setOpenSaveAsTemplateDialog } =
+    useSaveAsTemplateStore();
   const { setOpen: setApiKeyDialogStore } = useApiKeyDialogStore();
   const { data: modelData, isLoading } = useFetchProjectVersionData();
   const { isPending } = usePublishModelMutation();
