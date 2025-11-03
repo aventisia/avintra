@@ -95,7 +95,7 @@ const isDisabledProps: SwitchFieldProps = {
 // Price
 const priceProps: InputFieldProps = {
   name: "price",
-  label: "Price",
+  label: "Price (per month)",
   isRequired: true,
 };
 
