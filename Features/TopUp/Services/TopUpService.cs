@@ -66,8 +66,8 @@ namespace AccountsAPIs.Services
                     // Apply a default tax rate of 18% (represented as 1.18) for subscriptions in India
                     decimal defaultTaxRate = 1.18m;
 
-                    // Adjust the amount by multiplying it by the tax rate and converting it to the smallest currency unit (e.g., cents/paise)
-                    razorpayOrderRequestDto.Amount = Math.Round(razorpayOrderRequestDto.Amount * defaultTaxRate * 100);
+                    // Adjust the amount by multiplying it by the tax rate
+                    razorpayOrderRequestDto.Amount = Math.Round(razorpayOrderRequestDto.Amount * defaultTaxRate);
                 }
                 
                 // Prepare the order request using the provided top-up details
