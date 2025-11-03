@@ -60,4 +60,15 @@ public class ModelContentProcessingRequestDto
     /// Gets or sets the content to be processed by the model. This is an alternative to providing file IDs.
     /// </summary>
     public string? Content { get; set; }
+
+    /// <summary>
+    /// Gets or sets the action type for the model execution.
+    /// </summary>
+    public ActionTypesEnum ActionType { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the agent that triggered the model execution, if applicable.
+    /// TODO: We can make this mandatory in future and make this dto dedicated to agent executions only.
+    /// </summary>
+    public string? TriggeredByAgent { get; set; }
 }

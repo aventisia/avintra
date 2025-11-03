@@ -619,7 +619,12 @@ public class InferencingModelService : IInferencingModelService
             foreach (var versionTask in versionTasks)
             {
                 // Call LLM and process response for each task
-                documentExtractionData = await CallLLMAndProcessResponseAsync(versionTask, modelExecutionRequestDto.Content, documentExtractionData);
+                documentExtractionData = await CallLLMAndProcessResponseAsync(
+                    versionTask,
+                    modelExecutionRequestDto.Content,
+                    documentExtractionData,
+                    modelExecutionRequestDto.ActionType,
+                    modelExecutionRequestDto.TriggeredByAgent);
 
                 // Log task-specific details
                 if (documentExtractionData.Remarks.Contains("Failed"))
@@ -1242,7 +1247,12 @@ public class InferencingModelService : IInferencingModelService
         }
 
         // Call the LLM service to process the extracted text and update the documentExtractionData
-        documentExtractionData = await CallLLMAndProcessResponseAsync(versionTask, documentText, documentExtractionData);
+        documentExtractionData = await CallLLMAndProcessResponseAsync(
+            versionTask,
+            documentText,
+            documentExtractionData,
+            ActionTypesEnum.AIModelExecution,
+            null);
 
         string? dataObject = GetSerializedDataObjectBasedOnTaskName(versionTask.Name, documentExtractionData);
 
@@ -1367,7 +1377,12 @@ public class InferencingModelService : IInferencingModelService
     }
 
     // Calls the LLM with a prompt, processes the response, and populates extraction metadata.
-    private async Task<InferencingModelTaskResponseDto> CallLLMAndProcessResponseAsync(VersionTask versionTask, string fileContent, InferencingModelTaskResponseDto documentExtractionData)
+    private async Task<InferencingModelTaskResponseDto> CallLLMAndProcessResponseAsync(
+        VersionTask versionTask,
+        string fileContent,
+        InferencingModelTaskResponseDto documentExtractionData,
+        ActionTypesEnum actionType,
+        string? triggeredByAgent = null)
     {
         // Generate the prompt by replacing placeholders with actual content
         var outputFormatJson = GetOutputFormatJson(versionTask);
@@ -1393,7 +1408,11 @@ public class InferencingModelService : IInferencingModelService
             UsageSourceTypesEnum.AIModel,
             versionTask.AIProjectVersionId,
             aIProjectVersion.AIProject.Name,
-            ollamaOutputFormatSchema);
+            actionType, // this will be AgentExecution or AIModelExecution
+            triggeredByAgent, // triggered by an agent
+            ollamaOutputFormatSchema, // ollama output schema needed
+            false // No json output required
+            );
 
         var endTime = DateTime.UtcNow;
         var executionSeconds = (int)Math.Ceiling((endTime - startTime).TotalSeconds);

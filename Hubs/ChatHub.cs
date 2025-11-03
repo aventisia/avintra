@@ -90,7 +90,11 @@ public class ChatHub : Hub
                                     UsageSourceTypesEnum.AIModel,
                                     Guid.Empty,
                                     "ChatBot",
-                                    null);
+                                    ActionTypesEnum.AIModelExecution,
+                                    null, // Not triggered by an agent
+                                    null, // No specific ollama output schema
+                                    false // No JSON output required
+                                    );
 
             // Return the response to the client
             await Clients.Client(receiverConnection.Key)

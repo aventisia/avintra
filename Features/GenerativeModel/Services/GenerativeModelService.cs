@@ -351,7 +351,10 @@ public class GenerativeModelService : IGenerativeModelService
                 UsageSourceTypesEnum.AIModel,
                 generativeModelDto.AIProjectVersionId,
                 generativeModelDto.Name,
-                null
+                ActionTypesEnum.AIModelExecution,
+                null, // This will never be triggered by an agent
+                null, // No ollama output schema needed
+                false // No json output required
             );
 
             // Create conversation history from LLM output
