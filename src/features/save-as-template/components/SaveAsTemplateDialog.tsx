@@ -1,59 +1,53 @@
-// import { Separator } from "@aventisia/ui";
 import {
+  Dialog,
   DialogContent,
   DialogDefaultHeader,
-  // DialogHeader,
-  // DialogTitle,
-  DialogWrapper,
 } from "@aventisia/ui/dialog";
-import { useShowAlertHandler } from "@aventisia/ui/hooks";
-import { useAlertDialogStore } from "@aventisia/ui/stores";
+import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { useSaveAsTemplateDialogStore } from "../store/useSaveAsTemplateDialog";
-import SaveAsTemplateForm from "./SaveAsTemplateForm";
+import { useFileStore } from "../stores/file-uploader-store";
+import { useSaveAsTemplateStore } from "../stores/save-as-template-store";
+import { SaveAsTemplateForm } from "./SaveAsTemplateForm";
 
-const SaveAsTemplateDialog = ({ children }: React.PropsWithChildren) => {
-  const { isOpen, setOpen, isFormDirty } = useSaveAsTemplateDialogStore();
-  const { isAlertDialogOpen } = useAlertDialogStore(
+/**
+ * SaveAsTemplateDialog component
+ *
+ * A modal dialog that allows users to save the current configuration as a template.
+ * Uses Zustand for local state management.
+ */
+export const SaveAsTemplateDialog = () => {
+  // Select dialog visibility state and setter function from the store
+  const { showDialog, setShowDialog } = useSaveAsTemplateStore(
     useShallow((state) => ({
-      isAlertDialogOpen: state.isAlertDialogOpen,
+      showDialog: state.showDialog,
+      setShowDialog: state.setShowDialog,
     })),
   );
-  const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { clearAll } = useFileStore(
+    useShallow((state) => ({
+      clearAll: state.clearAll,
+    })),
+  );
+
+  useEffect(() => {
+    if (!showDialog) clearAll(); // Dialog is being closed
+  }, [clearAll, showDialog]);
 
   return (
-    <>
-      <DialogWrapper
-        open={isOpen}
-        onOpenChangeFn={() => {
-          // Return if alert dialog is open
-          if (isAlertDialogOpen) return;
+    <Dialog
+      open={showDialog}
+      onOpenChange={() => {
+        setShowDialog(!showDialog);
+      }}
+    >
+      <DialogContent className="!max-w-[60vw]" side="right">
+        {/* Header with static title */}
+        <DialogDefaultHeader heading="Save As Template" />
 
-          // If form is dirty, show alert dialog
-          if (isFormDirty) {
-            showDefaultAlertDialog({
-              confirmActionFn: () => setOpen(!isOpen),
-              alertType: "unsaved",
-            });
-          }
-          // Toggle dialog open state
-          else {
-            setOpen(!isOpen);
-          }
-        }}
-      >
-        {children}
-        <DialogContent className="max-w-2xl w-full">
-          <DialogDefaultHeader
-            className="px-3.5 py-3 text-lg tracking-wide"
-            heading="Save as Template"
-          />
-          <SaveAsTemplateForm />
-        </DialogContent>
-      </DialogWrapper>
-    </>
+        {/* Main form to save current config as a template */}
+        <SaveAsTemplateForm />
+      </DialogContent>
+    </Dialog>
   );
 };
-
-export default SaveAsTemplateDialog;

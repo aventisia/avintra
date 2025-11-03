@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getTemplateList } from "../apis/save-as-template-apis";
+import { getTemplateList } from "../apis/use-template-apis";
 
 /**
  * Custom hook to fetch templates using react query.

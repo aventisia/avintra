@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { applyTemplate } from "../apis/save-as-template-apis";
+import { applyTemplate } from "../apis/use-template-apis";
 import { UseTemplateDTO } from "../dtos/use-template-dto";
 
 export const useUseTemplateMutation = () => {
