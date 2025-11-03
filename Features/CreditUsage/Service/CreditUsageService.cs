@@ -273,7 +273,7 @@ public class CreditUsageService : ICreditUsageService
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
                     w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date
-                ).OrderByDescending(o => o.ExpiredOn);
+                ).OrderBy(o => o.ExpiredOn);
 
             // If no available credits are found, log a warning and return failure message
             if (!availableCredits.Any())
@@ -414,7 +414,7 @@ public class CreditUsageService : ICreditUsageService
                     w.TenantId == _tenantId &&
                     w.ExpiredOn.Date >= DateTimeOffset.UtcNow.Date &&
                     w.AvailableCredits > 0
-                ).OrderByDescending(o => o.ExpiredOn)
+                ).OrderBy(o => o.ExpiredOn)
                 .ToListAsync();
 
             // If no available credits are found, log a warning and return failure message
