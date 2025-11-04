@@ -23,7 +23,7 @@ export const ActionToSelect = ({ data }: ActionToSelectProps) => {
           <h2 className="flex items-center text-xs font-medium text-foreground">
             {data.label}{" "}
             {data.disabled && (
-              <Badge className="ml-1 text-3xs">Coming soon</Badge>
+              <Badge className="ml-1 text-3xs" variant={"outline"}>Coming soon</Badge>
             )}
           </h2>
         </div>
