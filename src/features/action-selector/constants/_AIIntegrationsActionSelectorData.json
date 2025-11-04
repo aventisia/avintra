@@ -37,7 +37,8 @@
             "description": "Enable natural, AI-powered conversational experiences",
             "docsLink": null,
             "icon": "",
-            "img": "/assets/ConversationModel.svg"
+            "img": "/assets/ConversationModel.svg",
+            "disabled":true
           },
           {
             "type": "aiNode",
@@ -46,7 +47,8 @@
             "description": "Generate content such as text, images, or code using AI",
             "docsLink": null,
             "icon": "",
-            "img": "/assets/GenerativeModel.svg"
+            "img": "/assets/GenerativeModel.svg",
+            "disabled":true
           },
           {
             "type": "aiNode",
