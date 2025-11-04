@@ -4894,7 +4894,7 @@
             "description": "Activates a specific worksheet in the provided Excel workbook by name or index and outputs the active worksheet instance.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": "/function.png"
+            "img": "/assets/Excel.svg"
           },
           {
             "type": "activityNode",
