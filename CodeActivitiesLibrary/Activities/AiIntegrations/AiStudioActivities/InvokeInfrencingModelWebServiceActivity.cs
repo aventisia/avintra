@@ -84,6 +84,7 @@ namespace CodeActivitiesLibrary.AIIntegrations.AIStudioActivities
             var acceptType = AcceptHeader.Get(context) ?? "application/json";
             var headers = Headers.Get(context);
             var jwt = AccessToken.Get(context);
+            var agentName = AgentName.Get(context);
 
             // Build the request body as an object, not a string
             inputText = inputText?.ToString()?.Trim() ?? "";
@@ -92,6 +93,8 @@ namespace CodeActivitiesLibrary.AIIntegrations.AIStudioActivities
                 modelId = selectModel,
                 aiProjectVersionId = selectModel,
                 content = inputText,
+                actionType = "AgentExecution",
+                triggeredByAgent = agentName
             };
 
             var body = System.Text.Json.JsonSerializer.Serialize(requestBodyObj);
