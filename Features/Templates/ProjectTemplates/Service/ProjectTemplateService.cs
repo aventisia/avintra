@@ -755,7 +755,7 @@ namespace WorkspaceAPIs.Services
                     var projectTemplateIcons = publishProjectTemplateDto?.Icons?.Distinct().ToList() ?? new List<string>();
 
                     // Initialize tags list with the DTO's type, then append any additional tags
-                    var projectTemplateTags = new List<string>() { nameof(publishProjectTemplateDto.Type) };
+                    var projectTemplateTags = new List<string>() { publishProjectTemplateDto.Type.ToString() };
                     projectTemplateTags.AddRange(publishProjectTemplateDto.Tags);
 
                     // Map the DTO to the ProjectTemplate entity and set properties from the flow version
@@ -1135,8 +1135,10 @@ namespace WorkspaceAPIs.Services
                     genereateProjectInstructionRequestDto.RefType,
                     genereateProjectInstructionRequestDto.RefId,
                     genereateProjectInstructionRequestDto.RefName,
-                    null,
-                    false
+                    ActionTypesEnum.TemplateDescriptionGeneration,
+                    null, // This will never be triggered by an agent
+                    null, // No ollama output schema needed
+                    false // No json output required
                 );
 
                 // Handle null or empty response
