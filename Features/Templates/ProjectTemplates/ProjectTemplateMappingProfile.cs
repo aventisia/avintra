@@ -30,6 +30,7 @@ public class ProjectTemplateMappingProfile : IRegister
         // Request mapping for getting  trending flow template record
         config.NewConfig<ProjectTemplate, TrendingTemplateDto>()
             .Map(dest => dest.RefId, src => src.RefId)
+            .Map(dest => dest.UsagesCount, src => src.UsageCount)
             .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName : null)
             .Map(dest => dest.CreatedByUsername, src => src.CreatedByUser != null ? src.CreatedByUser.UserName : null);
     }
