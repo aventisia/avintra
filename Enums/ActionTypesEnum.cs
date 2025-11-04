@@ -15,5 +15,11 @@ public enum ActionTypesEnum
     /// Indicates an action where an AI model is triggered to execute.
     /// </summary>
     [Description("AI Model Execution")]
-    AIModelExecution
+    AIModelExecution,
+
+    /// <summary>
+    /// Indicates an action where template description generation is performed.
+    /// </summary>
+    [Description("Template Description Generation")]
+    TemplateDescriptionGeneration
 }
