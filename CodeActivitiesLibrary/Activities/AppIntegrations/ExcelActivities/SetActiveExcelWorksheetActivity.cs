@@ -11,7 +11,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.ExcelActivities
 {
     [DisplayName("Set Active Excel Worksheet")]
     [Description("Activates a specific worksheet in the provided Excel workbook by name or index and outputs the active worksheet instance.")]
-
+    [ActivityMetaData(nodeImg: "/assets/Excel.svg")]
     public class SetActiveExcelWorksheetActivity : BaseCodeActivity
     {
         // ----------------------
