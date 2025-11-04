@@ -5,11 +5,15 @@ import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
+import { useDebounce } from "@/react-toolkit/hooks/useDebounce";
+
 import { TemplateDetail } from "./template-details/TemplateDetails";
 import WorcLibraryTemplates from "./WorcLibraryTemplates";
 
 const WorcLibrary = () => {
   const [searchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery);
 
   const templateID = searchParams.get("t") || "";
 
@@ -53,8 +57,8 @@ const WorcLibrary = () => {
                 placeholder="Search..."
                 type="text"
                 // Uncomment and implement search functionality as needed
-                // value={searchQuery}
-                // onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
               <Button
                 variant="ghost"
@@ -89,7 +93,10 @@ const WorcLibrary = () => {
         </div>
 
         {/* Displays templates filtered by the selected category */}
-        <WorcLibraryTemplates selectedCategory={selectedCategory} />
+        <WorcLibraryTemplates
+          selectedCategory={selectedCategory}
+          searchQuery={debouncedSearch}
+        />
       </div>
     );
 };

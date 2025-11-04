@@ -10,8 +10,10 @@ import { TemplatePagination } from "./TemplatePagination";
 
 const WorcLibraryTemplates = ({
   selectedCategory,
+  searchQuery,
 }: {
   selectedCategory: string;
+  searchQuery: string;
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
@@ -26,16 +28,24 @@ const WorcLibraryTemplates = ({
     const agentTemplates = agentData?.data ?? [];
     const modelTemplates = modelData?.data ?? [];
 
-    return [...agentTemplates, ...modelTemplates].filter((template) =>
-      selectedCategory === "All templates"
-        ? true
-        : selectedCategory === "AI Model"
-          ? ["Inferencing", "Conversation", "Generative"].includes(
-              template.type,
-            )
-          : template.type.includes(selectedCategory),
-    );
-  }, [agentData?.data, modelData?.data, selectedCategory]);
+    return [...agentTemplates, ...modelTemplates]
+      .filter((template) =>
+        selectedCategory === "All templates"
+          ? true
+          : selectedCategory === "AI Model"
+            ? ["Inferencing", "Conversation", "Generative"].includes(
+                template.type,
+              )
+            : template.type.includes(selectedCategory),
+      )
+      ?.filter((template) => {
+        const searchText = template.name + template?.tags.toString();
+
+        return searchQuery?.trim()
+          ? searchText?.toLowerCase().includes(searchQuery.toLowerCase().trim())
+          : true;
+      });
+  }, [agentData?.data, modelData?.data, searchQuery, selectedCategory]);
 
   // Calculate total pages for pagination
   const totalPages = Math.ceil(items.length / itemsPerPage);
@@ -65,7 +75,7 @@ const WorcLibraryTemplates = ({
   return (
     <div className="mt-2 pb-4">
       {/* Template Cards Grid */}
-      <div className="mt-2 grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+      <div className="mt-2 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4 lg:gap-6">
         {currentItems.length > 0 ? (
           currentItems.map((item) => (
             <TemplateCard key={item.id} template={item} />
