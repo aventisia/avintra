@@ -121,7 +121,7 @@ public class MLModelTemplateService : IMLModelTemplateService
             var mlModel = await _unitOfWork.AIProjectRepo
                 .GetByConditionAsync(w => w.Id == publishMLModelTemplateDto.RefId)
                 .Include(i => i.Versions!)
-                .   ThenInclude(i2 => i2.Tasks!)
+                .ThenInclude(i2 => i2.Tasks!)
                 .SingleOrDefaultAsync();
 
             // Check if the ML model exists
@@ -222,6 +222,252 @@ public class MLModelTemplateService : IMLModelTemplateService
             _logger.LogError(ex, "Error publishing ML model template for user {UserId}.", _userId);
         }
 
+        return serviceResponse;
+    }
+
+    // Retrieves the AI model template schema for a given project version.
+    public async Task<ServiceResponse<AIModelTemplateSchemaDto>> GetAIModelTemplateSchemaAsync(Guid projectVersionId)
+    {
+        // Initialize the service response with a default failure message
+        var serviceResponse = new ServiceResponse<AIModelTemplateSchemaDto>
+        {
+            Data = null,
+            Message = "Unable to retrieve the AI model template schema. Please try again later."
+        };
+
+        try
+        {
+            // Attempt to fetch the AI project version using the provided version ID
+            var aiProjectVersion = await _unitOfWork.AIProjectVersionRepo
+                .GetByConditionAsync(w => w.Id == projectVersionId)
+                .Include(i => i.AIProject)
+                .Include(i => i.Tasks!)
+                .SingleOrDefaultAsync();
+
+            // If the project version is not found, log the error and return an appropriate message
+            if (aiProjectVersion == null)
+            {
+                _logger.LogError("AI project version with ID {ProjectVersionId} not found.", projectVersionId);
+                serviceResponse.Message = "The specified AI project version could not be found.";
+                return serviceResponse;
+            }
+
+            // If no tasks are found for an inferencing model, log an error and return a failure message
+            if (!aiProjectVersion.Tasks.Any() && aiProjectVersion.AIProject.Type == AIProjectTypeEnum.Inferencing)
+            {
+                _logger.LogError("No tasks found for inferencing model with ID {ProjectVersionId}.", projectVersionId);
+                serviceResponse.Message = "No tasks are associated with this inferencing model.";
+                return serviceResponse;
+            }
+
+            // Set up JSON deserialization options for case-insensitive property matching
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            // Placeholder for serialized setup data (JSON format)
+            string setupData = "";
+
+            // List to store unique LLM names from the project version's tasks
+            var llmNames = new List<string>();
+
+            // Only proceed if the AI project version is of type 'Inferencing'
+            if (aiProjectVersion.AIProject.Type == AIProjectTypeEnum.Inferencing)
+            {
+                // Retrieve specific tasks related to various inferencing model types
+                var summarizationTask = aiProjectVersion.Tasks.FirstOrDefault(w => w.Name == InferencingModelTypesEnum.Summarization.ToString());
+                var extractionTask = aiProjectVersion.Tasks.FirstOrDefault(w => w.Name == InferencingModelTypesEnum.Extraction.ToString());
+                var classificationTask = aiProjectVersion.Tasks.FirstOrDefault(w => w.Name == InferencingModelTypesEnum.Classification.ToString());
+                var questionAnswerTask = aiProjectVersion.Tasks.FirstOrDefault(w => w.Name == InferencingModelTypesEnum.QuestionAnswer.ToString());
+                var sentimentAnalyticsTask = aiProjectVersion.Tasks.FirstOrDefault(w => w.Name == InferencingModelTypesEnum.SentimentAnalytics.ToString());
+
+                // Construct the template configuration data based on the available tasks
+                var templateData = new AIModelTemplateConfigDto()
+                {
+                    Name = aiProjectVersion.AIProject.Name,
+                    Description = aiProjectVersion.AIProject.Description,
+                    BusinessContext = aiProjectVersion.BusinessContext,
+
+                    // Summarization task configuration
+                    Summarization = summarizationTask != null ? new SummarizationTemplateConfigDto()
+                    {
+                        Name = summarizationTask.Name,
+                        NodePrompt = summarizationTask.SystemPrompt,
+                        LLM = summarizationTask.LLM,
+                        Temperature = summarizationTask.Temperature,
+                        ConfigurationType = summarizationTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        SetupObject = JsonSerializer.Deserialize<SummarizationTemplateConfigDetailsDto>(summarizationTask.SetupObject, options),
+                        SecretKey = null,
+                    } : null,
+
+                    // Data extraction task configuration
+                    Extraction = extractionTask != null ? new DataExtractionTemplateConfigDto()
+                    {
+                        Name = extractionTask.Name,
+                        NodePrompt = extractionTask.SystemPrompt,
+                        LLM = extractionTask.LLM,
+                        Temperature = extractionTask.Temperature,
+                        ConfigurationType = extractionTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        SetupObject = JsonSerializer.Deserialize<DataExtractionTemplateConfigDetailsDto>(extractionTask.SetupObject, options),
+                        SecretKey = null,
+                    } : null,
+
+                    // Classification task configuration
+                    Classification = classificationTask != null ? new ClassificationTemplateConfigDto()
+                    {
+                        Name = classificationTask.Name,
+                        NodePrompt = classificationTask.SystemPrompt,
+                        LLM = classificationTask.LLM,
+                        Temperature = classificationTask.Temperature,
+                        ConfigurationType = classificationTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        SetupObject = JsonSerializer.Deserialize<ClassificationTemplateConfigDetailsDto>(classificationTask.SetupObject, options),
+                        SecretKey = null,
+                    } : null,
+
+                    // Sentiment analytics task configuration
+                    SentimentAnalytics = sentimentAnalyticsTask != null ? new SentimentAnalysisTemplateConfigDto()
+                    {
+                        Name = sentimentAnalyticsTask.Name,
+                        NodePrompt = sentimentAnalyticsTask.SystemPrompt,
+                        LLM = sentimentAnalyticsTask.LLM,
+                        Temperature = sentimentAnalyticsTask.Temperature,
+                        ConfigurationType = sentimentAnalyticsTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        SetupObject = JsonSerializer.Deserialize<SentimentAnalysisTemplateConfigDetailsDto>(sentimentAnalyticsTask.SetupObject, options),
+                        SecretKey = null,
+                    } : null,
+
+                    // Question answering task configuration
+                    QuestionAnswer = questionAnswerTask != null ? new QuestionAnsweringTemplateConfigDto()
+                    {
+                        Name = questionAnswerTask.Name,
+                        NodePrompt = questionAnswerTask.SystemPrompt,
+                        LLM = questionAnswerTask.LLM,
+                        Temperature = questionAnswerTask.Temperature,
+                        ConfigurationType = questionAnswerTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        SetupObject = JsonSerializer.Deserialize<QuestionAnsweringTemplateConfigDetailsDto>(questionAnswerTask.SetupObject, options),
+                        SecretKey = null,
+                    } : null,
+                };
+
+                // Gather unique LLM names across all tasks, ensuring no duplicates
+                llmNames = new List<string>
+                {
+                    templateData?.Extraction?.LLM,
+                    templateData?.Classification?.LLM,
+                    templateData?.Summarization?.LLM,
+                    templateData?.SentimentAnalytics?.LLM,
+                    templateData?.QuestionAnswer?.LLM
+                }
+                .Where(w => !string.IsNullOrEmpty(w))
+                .Distinct()
+                .ToList();
+
+                // Serialize the template configuration into JSON for storage
+                setupData = JsonSerializer.Serialize(templateData, options);
+            }
+            // // If the model type is 'Conversational', retrieve and serialize its setup configuration
+            // else if (aiProjectVersion.AIProject.Type == AIProjectTypeEnum.Conversational)
+            // {
+            //     // Fetch the task related to the Conversational model type, specifically "AIPersona"
+            //     var conversationalTask = aiProjectVersion.Tasks.FirstOrDefault(w => w.Name == "AIPersona");
+
+            //     // Create the template configuration for the Conversational model
+            //     var templateData = new AIModelTemplateConfigDto()
+            //     {
+            //         Name = aiProjectVersion.AIProject.Name,
+            //         Description = aiProjectVersion.AIProject.Description,
+            //         BusinessContext = aiProjectVersion.BusinessContext,
+
+            //         // If the 'AIPersona' task exists, map its configuration to the Conversational setup
+            //         AIPersona = conversationalTask != null ? new SummarizationTemplateConfigDto()
+            //         {
+            //             Name = conversationalTask.Name,
+            //             NodePrompt = conversationalTask.SystemPrompt,
+            //             LLM = conversationalTask.LLM,
+            //             Temperature = conversationalTask.Temperature,
+            //             ConfigurationType = conversationalTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+            //             SetupObject = JsonSerializer.Deserialize<SummarizationTemplateConfigDetailsDto>(conversationalTask.SetupObject, options),
+            //             SecretKey = null,
+            //         } : null,
+            //     };
+
+            //     // Collect the unique LLM (Language Learning Model) names from the task and remove duplicates
+            //     llmNames = new List<string>
+            //     {
+            //         conversationalTask?.LLM,
+            //     }
+            //     .Where(w => !string.IsNullOrEmpty(w))
+            //     .Distinct()
+            //     .ToList();
+
+            //     // Serialize the template data to a JSON string, using case-insensitive property matching
+            //     setupData = JsonSerializer.Serialize(templateData, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            // }
+
+            // // If the model type is 'Generative', retrieve and serialize its setup configuration
+            // else if (aiProjectVersion.AIProject.Type == AIProjectTypeEnum.Generative)
+            // {
+            //     // Fetch the task related to the Generative model type, specifically "GenerativeModel"
+            //     var generativeTask = aiProjectVersion.Tasks.FirstOrDefault(w => w.Name == "GenerativeModel");
+
+            //     // Create the template configuration for the Generative model
+            //     var templateData = new AIModelTemplateConfigDto()
+            //     {
+            //         Name = aiProjectVersion.AIProject.Name,
+            //         Description = aiProjectVersion.AIProject.Description,
+            //         BusinessContext = aiProjectVersion.BusinessContext,
+
+            //         // If the 'GenerativeModel' task exists, map its configuration to the Generative setup
+            //         GenerativeModel = generativeTask != null ? new SummarizationTemplateConfigDto()
+            //         {
+            //             Name = generativeTask.Name,
+            //             NodePrompt = generativeTask.SystemPrompt,
+            //             LLM = generativeTask.LLM,
+            //             Temperature = generativeTask.Temperature,
+            //             ConfigurationType = generativeTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+            //             SetupObject = JsonSerializer.Deserialize<SummarizationTemplateConfigDetailsDto>(generativeTask.SetupObject, options),
+            //             SecretKey = null,
+            //         } : null,
+            //     };
+
+            //     // Collect the unique LLM (Language Learning Model) names from the task and remove duplicates
+            //     llmNames = new List<string>
+            //     {
+            //         generativeTask?.LLM,
+            //     }
+            //     .Where(w => !string.IsNullOrEmpty(w))
+            //     .Distinct()
+            //     .ToList();
+
+            //     // Serialize the template data to a JSON string, using case-insensitive property matching
+            //     setupData = JsonSerializer.Serialize(templateData, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            // }
+
+            // Prepare the final schema response with version details, configuration data, and associated LLM names
+            var aiModelTemplateConfigDto = new AIModelTemplateSchemaDto()
+            {
+                VersionId = aiProjectVersion.Id,
+                DataObject = setupData,
+                VersionNumber = aiProjectVersion.VersionNumber,
+                LLMNames = llmNames
+            };
+
+            // Set the successful response data, status, and message
+            serviceResponse.Data = aiModelTemplateConfigDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Successfully retrieved the AI model template schema.";
+
+            // Log the successful retrieval of the template schema
+            _logger.LogInformation("Successfully retrieved the AI model template schema for project version ID {ProjectVersionId} by user {UserId}.", aiProjectVersion.Id, _userId);
+        }
+        catch (Exception ex)
+        {
+            // Log any exception that occurs, providing detailed error information for debugging
+            _logger.LogError(ex, "Error occurred while retrieving AI model template schema for user {UserId} and project version ID {ProjectVersionId}.", _userId, projectVersionId);
+        }
+
+        // Return the service response, indicating success or failure
         return serviceResponse;
     }
 
@@ -489,7 +735,7 @@ public class MLModelTemplateService : IMLModelTemplateService
                 _logger.LogInformation("Updating Inferencing setup for ML model ID: {ModelId}.", mlModelEntity.Id);
                 await _inferencingModelService.UpdateSetupAsync(inferencingData);
             }
-            else if (templateEntity.Type ==  AIProjectTypeEnum.Conversational)
+            else if (templateEntity.Type == AIProjectTypeEnum.Conversational)
             {
                 // Deserialize and update the Conversation model configuration.
                 var conversationData = JsonSerializer.Deserialize<ConversationModelDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });

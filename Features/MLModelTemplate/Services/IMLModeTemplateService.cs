@@ -23,6 +23,13 @@ public interface IMLModelTemplateService
     Task<ServiceResponse<MLModelTemplateDto>> PublishMLModelTemplateAsync(PublishMLModelTemplateDto publishMLModelTemplateDto);
 
     /// <summary>
+    /// Retrieves the template schema for a specific AI model version.
+    /// </summary>
+    /// <param name="projectVersionId">The unique identifier of the project version for which the template schema is being requested.</param>
+    /// <returns>A service response containing the AI model template schema, including version information, serialized setup data, and associated LLM names.</returns>
+    Task<ServiceResponse<AIModelTemplateSchemaDto>> GetAIModelTemplateSchemaAsync(Guid projectVersionId);
+
+    /// <summary>
     /// Updates an existing ML model template.
     /// </summary>
     /// <param name="mlModelTemplateDto">The data transfer object with updated template details.</param>

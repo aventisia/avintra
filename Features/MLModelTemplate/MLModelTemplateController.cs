@@ -36,6 +36,13 @@ public class MLModelTemplateController : BaseApiController
         return ResultHelper(await _mlModelTemplateService.PublishMLModelTemplateAsync(publishMLModelTemplateDto));
     }
 
+    // Retrieve the template schema of a specific ML model version
+    [HttpGet("schema/{projectVersionId}")]
+    public async Task<ActionResult<ServiceResponse<MLModelTemplateDto>>> GetAIModelTemplateSchema(Guid projectVersionId)
+    {
+        return ResultHelper(await _mlModelTemplateService.GetAIModelTemplateSchemaAsync(projectVersionId));
+    }
+
     // Update an existing ML model template
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<MLModelTemplateDto>>> UpdateMLModelTemplate([FromBody] MLModelTemplateDto mlModelTemplateDto)
