@@ -1,4 +1,5 @@
 import { Input, LoadingSpinner } from "@aventisia/ui";
+import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { currencyToPricePer500Credits } from "@/features/tenant/constants/credit-price-map";
@@ -27,6 +28,16 @@ const CreditTopUp = () => {
 
   const { data: billingData, isLoading: isBillingDataLoading } =
     useFetchCompanyDetails();
+
+  useEffect(() => {
+    if (
+      billingData?.data &&
+      billingData.data.country == "India" &&
+      currency !== "INR"
+    ) {
+      setCurrency("INR");
+    }
+  }, [billingData?.data]);
 
   if (isBillingDataLoading) {
     return (
@@ -64,7 +75,9 @@ const CreditTopUp = () => {
           <div className="rounded-lg border">
             <div className="flex items-center justify-between border-b p-3">
               <div className="text-base font-medium">Top-up</div>
-              <CurrencySelect value={currency} onChange={setCurrency} />
+              {billingData?.data.country !== "India" && (
+                <CurrencySelect value={currency} onChange={setCurrency} />
+              )}
             </div>
             <div className="space-y-3 p-3 text-sm">
               <div className="flex items-center justify-between rounded-lg border p-3">
