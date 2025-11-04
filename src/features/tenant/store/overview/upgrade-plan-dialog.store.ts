@@ -11,7 +11,7 @@ interface TopUp {
 
 interface UpgradePlanState {
   isOpen: boolean;
-  chosenPlan: PlanFilter | "Credits" | null;
+  chosenPlan: PlanFilter | "Credits" | "FrequencyChange" | null;
   planId: string;
   paymentId: string;
   planFrequency: PlanFrequency;
@@ -19,10 +19,11 @@ interface UpgradePlanState {
   billingCountry: string;
   topUp: TopUp;
 }
-
 interface UpgradePlanDialogActions {
   setOpen: (open: boolean) => void;
-  setChosenPlan: (plan: PlanFilter | "Credits" | null) => void;
+  setChosenPlan: (
+    plan: PlanFilter | "Credits" | "FrequencyChange" | null,
+  ) => void;
 
   /** Set the selected plan id form choose plan */
   setPlanId: (planId: string) => void;
