@@ -82,7 +82,7 @@ const WorcLibraryTemplates = ({
           ))
         ) : (
           // Empty state when no templates found
-          <div className="col-span-3 py-6 text-center">
+          <div className="col-span-2 py-6 text-center md:col-span-3 lg:col-span-4">
             <div className="mb-4 text-gray-400">
               <Search className="mx-auto h-12 w-12" />
             </div>
