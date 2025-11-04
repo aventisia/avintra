@@ -13,6 +13,7 @@ import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import TabLoader from "../TabLoader";
 
+import BillingFrequency from "./BillingFrequency";
 import CancelPlanDialog from "./CancelPlanDialog";
 import NextPaymentDetails from "./NextPaymentDetails";
 import PlanFeatures from "./PlanFeatures";
@@ -55,14 +56,15 @@ const Overview = () => {
           {/* Header */}
           <div className="flex items-start justify-between">
             <div className="space-y-1">
-              <h1 className="text-xl font-bold">
-                {data?.data.currentPlan.planName}{" "}
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold">
+                  {data?.data.currentPlan.planName}{" "}
+                </h1>
                 {!isStarterPlan && (
-                  <span className="rounded-md bg-muted px-2 py-2 text-2xs font-medium capitalize text-muted-foreground">
-                    Billed {data?.data.currentPlan.frequency}
-                  </span>
+                  <BillingFrequency currentPlan={data?.data.currentPlan} />
                 )}
-              </h1>
+              </div>
+
               <p className="text-sm text-muted-foreground">
                 <span className="text-xl font-semibold text-accent-foreground">
                   {formatCurrency(
@@ -95,8 +97,8 @@ const Overview = () => {
                 <Tooltip content="Add credits">
                   <Button
                     onClick={() => {
-                      setUpgradePlanDialogOpen(true);
                       setChosenPlan("Credits");
+                      setUpgradePlanDialogOpen(true);
                     }}
                     disabled={
                       data?.data.currentPlan.planName == "Starter" ||
