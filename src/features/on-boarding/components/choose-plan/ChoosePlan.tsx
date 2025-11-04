@@ -48,6 +48,8 @@ export const ChoosePlan = () => {
       setCurrency: state.setCurrency,
     })),
   );
+  const storedCountryData =
+    typeof window !== "undefined" ? localStorage.getItem("country") : null;
 
   const { data, isLoading } = useFetchSubscriptionPlans(
     `?currency=${currency}&frequency=${planFrequency}`,
@@ -60,7 +62,17 @@ export const ChoosePlan = () => {
     if (paramCurrency) {
       setCurrency(paramCurrency.toUpperCase());
     }
-  }, [paramCurrency, frequency]);
+
+    if (storedCountryData) {
+      setCurrency(storedCountryData == "India" ? "INR" : "USD");
+    }
+  }, [
+    paramCurrency,
+    frequency,
+    setPlanFrequency,
+    setCurrency,
+    storedCountryData,
+  ]);
 
   useEffect(() => {
     if (plan && data?.data) {
@@ -98,21 +110,23 @@ export const ChoosePlan = () => {
         <div className="flex items-center justify-between w-full">
           <h2 className="text-2xl font-medium text-foreground">Choose Plan</h2>
           <div className="flex gap-2 items-center">
-            <Select
-              defaultValue="USD"
-              value={currency}
-              onValueChange={(value: string) => setCurrency(value)}
-            >
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder="Select Currency" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="USD">USD ($)</SelectItem>
-                <SelectItem value="INR">INR (₹)</SelectItem>
-                <SelectItem value="EUR">EUR (€)</SelectItem>
-                <SelectItem value="GBP">GBP (£)</SelectItem>
-              </SelectContent>
-            </Select>
+            {storedCountryData !== "India" && (
+              <Select
+                defaultValue="USD"
+                value={currency}
+                onValueChange={(value: string) => setCurrency(value)}
+              >
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Select Currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="USD">USD ($)</SelectItem>
+                  <SelectItem value="INR">INR (₹)</SelectItem>
+                  <SelectItem value="EUR">EUR (€)</SelectItem>
+                  <SelectItem value="GBP">GBP (£)</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
             <TabsList>
               {PLAN_INTERVALS.map((interval) => (
                 <TabsTrigger key={interval} value={interval}>
