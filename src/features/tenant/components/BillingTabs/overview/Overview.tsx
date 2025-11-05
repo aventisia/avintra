@@ -119,8 +119,9 @@ const Overview = () => {
 
           <Separator />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="flex gap-4">
             <PlanFeatures
+              className="flex-1"
               frequency={currentPlan.frequency}
               credits={currentPlan.feature.maxCredits}
               publishedItems={currentPlan.feature.maxPublishedItems}
@@ -129,8 +130,11 @@ const Overview = () => {
               storageLimitMB={currentPlan.feature.storageLimitMB}
               users={currentPlan.feature.maxUsers}
             />
-
-            <UsageDetails planUsage={currentPlan.usage} />
+            <Separator
+              orientation="vertical"
+              className="mx-4 h-[1] w-[1px] bg-border"
+            />
+            <UsageDetails className="flex-1" planUsage={currentPlan.usage} />
           </div>
 
           <Separator />

@@ -1,3 +1,4 @@
+import { cn } from "@aventisia/ui/lib";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 /**
@@ -57,6 +58,7 @@ interface PlanFeaturesProps {
   spaces: number;
   storageLimitMB: number;
   users: number;
+  className?: string;
 }
 
 /**
@@ -69,6 +71,7 @@ interface PlanFeaturesProps {
  * @param spaces - The number of spaces included in the plan.
  * @param storageLimitMB - The storage limit in megabytes.
  * @param users - The number of users allowed (use 0 for unlimited).
+ * @param className - Optional additional CSS classes for styling.
  *
  * @returns A React component rendering the plan's feature list.
  */
@@ -80,11 +83,12 @@ export const PlanFeatures = ({
   spaces,
   storageLimitMB,
   users,
+  className,
 }: PlanFeaturesProps) => {
   // Generate features list
   const featuresList = [
     `${getCreditsLabel(credits, frequency === "Monthly")}`,
-    `${getFeatureLabel(publishedItems, " published Agent or AI Model", "published Agents or AI Models", "Unlimited published Agents or AI Models")}`,
+    `${getFeatureLabel(publishedItems, " published Agent or AI Model", " published Agents or AI Models", "Unlimited published Agents or AI Models")}`,
     `${getFeatureLabel(historyRetentionDays, " day", " days", "Unlimited days")} of insights & workflow history`,
     `${getFeatureLabel(spaces, " space", " spaces", "Unlimited spaces")}`,
     `${getFeatureLabel(storageLimitMB, "mb storage", "mb storage", "Unlimited storage")}`,
@@ -92,7 +96,7 @@ export const PlanFeatures = ({
   ];
 
   return (
-    <div className="border-r">
+    <div className={cn(className)}>
       <h3 className="font-medium">Plan Includes:</h3>
       <ul className="mt-2 space-y-2 text-sm">
         {featuresList.map((feature, index) => (

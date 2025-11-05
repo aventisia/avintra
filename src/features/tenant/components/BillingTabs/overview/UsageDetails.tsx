@@ -2,9 +2,11 @@ import { Badge } from "@aventisia/ui/badge";
 
 import { PlanUsageDto } from "@/features/tenant/dtos/current-plan-dto";
 import { Progress } from "@/features/tenant/shared/Progress";
+import { cn } from "@aventisia/ui/lib";
 
 interface UsageDetailsProps {
   planUsage: PlanUsageDto[] | undefined;
+  className?: string;
 }
 
 interface UsageItemProps {
@@ -40,7 +42,7 @@ const UsageItem = ({ name, used, limit, unit }: UsageItemProps) => (
   </div>
 );
 
-const UsageDetails = ({ planUsage }: UsageDetailsProps) => {
+const UsageDetails = ({ planUsage, className }: UsageDetailsProps) => {
   // Default values in case `planUsage` is undefined or empty
   const defaultUsage = [
     { resourceName: "PublishedItems", used: 0, limit: 1, unit: "" },
@@ -52,7 +54,7 @@ const UsageDetails = ({ planUsage }: UsageDetailsProps) => {
   const usageData = planUsage ?? defaultUsage;
 
   return (
-    <div>
+    <div className={cn(className)}>
       <h3 className="font-medium">Usage:</h3>
       <div className="mt-2 space-y-4">
         {/* Dynamically render usage items */}
