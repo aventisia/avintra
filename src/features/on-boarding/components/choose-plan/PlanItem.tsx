@@ -46,7 +46,15 @@ export const PlanItem = ({
         </div>
 
         {isSelected && (
-          <PlanFeatures plan={plan} planFrequency={planFrequency} />
+          <PlanFeatures
+            frequency={plan.frequency}
+            credits={plan.maxCredits}
+            publishedItems={plan.maxPublishedItems}
+            historyRetentionDays={plan.historyRetentionDays}
+            spaces={plan.maxSpaces}
+            storageLimitMB={plan.storageLimitMB}
+            users={plan.maxUsers}
+          />
         )}
       </div>
     </CustomRadioItem>
