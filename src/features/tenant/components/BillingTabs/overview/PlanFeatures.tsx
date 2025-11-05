@@ -1,58 +1,73 @@
-import { Check } from "lucide-react";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
-import { PlanFeatureDto } from "@/features/tenant/dtos/current-plan-dto";
-
-interface PlanFeatureProps {
-  label: string;
-  value: string | number | undefined;
+/**
+ * Formats a number as a string with commas in US format and upto two decimal places.
+ * @param number The number to format.
+ * @returns The formatted number string.
+ */
+function formatNumber(number: number): string {
+  return number.toLocaleString("en-US", {
+    maximumFractionDigits: 2,
+  });
 }
-
-const PlanFeature = ({ label, value }: PlanFeatureProps) => (
-  <li className="flex items-center gap-2">
-    <CheckMark /> {`${value ?? "--"} ${label}`}
-  </li>
-);
 
 interface PlanFeaturesProps {
-  features: PlanFeatureDto | undefined;
+  frequency: string;
+  credits: number;
+  publishedItems: number;
+  historyRetentionDays: number;
+  spaces: number;
+  storageLimitMB: number;
+  users: number;
 }
 
-const PlanFeatures = ({ features }: PlanFeaturesProps) => {
+
+/**
+ * Displays a list of features included in a subscription plan.
+ *
+ * @param frequency - The billing frequency of the plan ("Monthly" or "Yearly").
+ * @param credits - The number of credits included per billing period.
+ * @param publishedItems - The number of published agents or AI models allowed (use 0 for unlimited).
+ * @param historyRetentionDays - The number of days insights and workflow history are retained.
+ * @param spaces - The number of spaces included in the plan.
+ * @param storageLimitMB - The storage limit in megabytes.
+ * @param users - The number of users allowed (use 0 for unlimited).
+ *
+ * @returns A React component rendering the plan's feature list.
+ */
+export const PlanFeatures = ({
+  frequency,
+  credits,
+  publishedItems,
+  historyRetentionDays,
+  spaces,
+  storageLimitMB,
+  users,
+}: PlanFeaturesProps) => {
+  // Generate features list
+  const featuresList = [
+    `${formatNumber(credits)} credits/${frequency === "Monthly" ? "month" : "year"}`,
+    `${publishedItems <= 0 ? "Unlimited" : formatNumber(publishedItems)} published ${
+      publishedItems === 1
+        ? "Agent or AI Model"
+        : "Agents or AI Models"
+    }`,
+    `${formatNumber(historyRetentionDays)} ${historyRetentionDays === 1 ? "day" : "days"} of insights & workflow history`,
+    `${formatNumber(spaces)} ${spaces === 1 ? "space" : "spaces"}`,
+    `${formatNumber(storageLimitMB)}mb storage`,
+    `${users <= 0 ? "Unlimited" : formatNumber(users)} ${users === 1 ? "user" : "users"}`,
+  ];
+
   return (
     <div className="border-r">
       <h3 className="font-medium">Plan Includes:</h3>
       <ul className="mt-2 space-y-2 text-sm">
-        <PlanFeature
-          label="credits/month"
-          value={`${features?.maxCredits?.toLocaleString("en-US", {
-            maximumFractionDigits: 2,
-          })}`}
-        />
-        <PlanFeature
-          label="published agents or AI models"
-          value={`${Number(features?.maxPublishedItems) <= 0 ? "Unlimited" : features?.maxPublishedItems}`}
-        />
-        <PlanFeature
-          label="history retention"
-          value={`${features?.historyRetentionDays} days`}
-        />
-        <PlanFeature label="spaces" value={`${features?.maxSpaces}`} />
-        <PlanFeature label="storage" value={`${features?.storageLimitMB} MB`} />
-        <PlanFeature
-          label="Users"
-          value={`${Number(features?.maxUsers) <= 0 ? "Unlimited" : features?.maxUsers}`}
-        />
+        {featuresList.map((feature, index) => (
+          <li key={index} className="flex items-center gap-2">
+            <CheckCircleIcon className="h-4 w-4 text-green-500" /> {feature}
+          </li>
+        ))}
       </ul>
-    </div>
-  );
-};
-
-export default PlanFeatures;
-
-export const CheckMark = () => {
-  return (
-    <div className="rounded-full bg-green-500 p-[2px]">
-      <Check className="h-3 w-3 text-white" />
     </div>
   );
 };

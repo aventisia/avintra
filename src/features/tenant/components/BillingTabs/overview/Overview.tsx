@@ -16,7 +16,7 @@ import TabLoader from "../TabLoader";
 import BillingFrequency from "./BillingFrequency";
 import CancelPlanDialog from "./CancelPlanDialog";
 import NextPaymentDetails from "./NextPaymentDetails";
-import PlanFeatures from "./PlanFeatures";
+import { PlanFeatures } from "./PlanFeatures";
 import UpgradePlanDialog from "./upgrade-plan-dialog/UpgradePlanDialog";
 import UsageDetails from "./UsageDetails";
 
@@ -41,7 +41,13 @@ const Overview = () => {
 
   const { data, isLoading } = useFetchCurrentPlan();
 
+  const currentPlan = data?.data?.currentPlan;
+
   if (isLoading) return <TabLoader />;
+
+  if (!currentPlan) {
+    throw new Error("Current plan data is unavailable");
+  }
 
   return (
     <>
@@ -68,8 +74,8 @@ const Overview = () => {
               <p className="text-sm text-muted-foreground">
                 <span className="text-xl font-semibold text-accent-foreground">
                   {formatCurrency(
-                    data?.data.currentPlan.price ?? 0,
-                    data?.data?.currentPlan?.currency ?? "USD",
+                    currentPlan.price ?? 0,
+                    currentPlan?.currency ?? "USD",
                   )}
                 </span>{" "}
                 /Month
@@ -84,12 +90,9 @@ const Overview = () => {
                 <p>
                   Available Credits:
                   <span className="ml-1 font-semibold">
-                    {data?.data.currentPlan.availableCredits.toLocaleString(
-                      "en-US",
-                      {
-                        maximumFractionDigits: 2,
-                      },
-                    )}
+                    {currentPlan.availableCredits.toLocaleString("en-US", {
+                      maximumFractionDigits: 2,
+                    })}
                   </span>
                 </p>
               </Badge>
@@ -101,8 +104,7 @@ const Overview = () => {
                       setUpgradePlanDialogOpen(true);
                     }}
                     disabled={
-                      data?.data.currentPlan.planName == "Starter" ||
-                      isPaymentProcessing
+                      currentPlan.planName == "Starter" || isPaymentProcessing
                     }
                     variant={"default"}
                     size={"icon6"}
@@ -118,9 +120,17 @@ const Overview = () => {
           <Separator />
 
           <div className="grid grid-cols-2 gap-4">
-            <PlanFeatures features={data?.data.currentPlan.feature} />
+            <PlanFeatures
+              frequency={currentPlan.frequency}
+              credits={currentPlan.feature.maxCredits}
+              publishedItems={currentPlan.feature.maxPublishedItems}
+              historyRetentionDays={currentPlan.feature.historyRetentionDays}
+              spaces={currentPlan.feature.maxSpaces}
+              storageLimitMB={currentPlan.feature.storageLimitMB}
+              users={currentPlan.feature.maxUsers}
+            />
 
-            <UsageDetails planUsage={data?.data.currentPlan.usage} />
+            <UsageDetails planUsage={currentPlan.usage} />
           </div>
 
           <Separator />

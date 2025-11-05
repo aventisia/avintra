@@ -3,7 +3,7 @@ import { formatCurrency } from "@/features/tenant/constants/currency-symbol-map"
 import { SubscriptionPlanDTO } from "@/features/tenant/dtos/subscription-plans-dto";
 import { PlanFrequency } from "@/features/tenant/types/plan-type";
 
-import { PlanFeatures } from "./PlanFeatures";
+import { PlanFeatures } from "../../PlanFeatures";
 
 type Props = {
   plan: SubscriptionPlanDTO;
@@ -46,7 +46,15 @@ export const PlanItem = ({
         </div>
 
         {isSelected && (
-          <PlanFeatures plan={plan} planFrequency={planFrequency} />
+          <PlanFeatures
+            frequency={plan.frequency}
+            credits={plan.maxCredits}
+            publishedItems={plan.maxPublishedItems}
+            historyRetentionDays={plan.historyRetentionDays}
+            spaces={plan.maxSpaces}
+            storageLimitMB={plan.storageLimitMB}
+            users={plan.maxUsers}
+          />
         )}
       </div>
     </CustomRadioItem>
