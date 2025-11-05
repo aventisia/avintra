@@ -15,11 +15,13 @@ const ChargeSummary = ({
   planFrequency,
   billingData,
   isTopUp = false,
+  isFrequencyChange = false,
 }: {
   plan?: SubscriptionPlanDTO | undefined;
   planFrequency?: PlanFrequency;
   billingData: CompanyDetailsDTO | undefined;
   isTopUp?: boolean;
+  isFrequencyChange?: boolean;
 }) => {
   const { basePrice, tax, total, isTaxApplicable, topUpBreakdown, GST } =
     useChargeSummary(plan, planFrequency);
@@ -61,7 +63,10 @@ const ChargeSummary = ({
 
   return (
     <div className="rounded-lg border">
-      <div className="border-b p-4 text-base font-medium">Charge Summary</div>
+      <div className="border-b p-4 text-base font-medium">
+        {isFrequencyChange && planFrequency == "monthly" && "Next"} Charge
+        Summary
+      </div>
       <div className="space-y-3 p-4 text-sm">
         {plan && basePrice >= 0 ? (
           <SummaryRow
@@ -106,6 +111,19 @@ const ChargeSummary = ({
                 <LoadingSpinner className="mr-2 h-4 w-4" />
                 Initiating Payment...
               </>
+            ) : (
+              "Make Payment"
+            )}
+          </Button>
+        ) : isFrequencyChange ? (
+          <Button className="mt-5 w-full">
+            {isTopUpPending ? (
+              <>
+                <LoadingSpinner className="mr-2 h-4 w-4" />
+                Initiating Payment...
+              </>
+            ) : planFrequency == "monthly" ? (
+              "Continue"
             ) : (
               "Make Payment"
             )}

@@ -3,7 +3,7 @@ import { Button } from "@aventisia/ui/buttons";
 import { RadioGroup } from "@aventisia/ui/radio-group";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, InfoIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -115,20 +115,30 @@ const ChoosePlan = ({
     <div className="space-y-4 p-4 pt-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {!isFrequencyChange && (
-            <Button
-              onClick={() => {
-                setChosenPlan(null);
-                clearTopUp();
-              }}
-              variant={"ghost"}
-              className="p-1.5"
-              size={"icon9"}
-            >
-              <ArrowLeft className="mt-[2px] h-5 w-5" />
-            </Button>
+          {isFrequencyChange ? (
+            planFrequency == "monthly" && (
+              <div className="flex items-center gap-3 rounded-lg bg-orange-100 px-3 py-2 text-[0.85rem] text-orange-600">
+                <InfoIcon className="h-4 w-4 text-orange-400" />
+                The change to monthly billing will take effect after your
+                current billing cycle ends
+              </div>
+            )
+          ) : (
+            <>
+              <Button
+                onClick={() => {
+                  setChosenPlan(null);
+                  clearTopUp();
+                }}
+                variant={"ghost"}
+                className="p-1.5"
+                size={"icon9"}
+              >
+                <ArrowLeft className="mt-[2px] h-5 w-5" />
+              </Button>
+              <h2 className="text-lg font-semibold">Choose Plan</h2>
+            </>
           )}
-          <h2 className="text-lg font-semibold">Choose Plan</h2>
         </div>
         <div className="flex items-center gap-2">
           {!(isFrequencyChange || billingData?.data.country === "India") && (
@@ -196,6 +206,7 @@ const ChoosePlan = ({
               plan={data?.data.find((val) => val.id == selectedPlan)}
               planFrequency={planFrequency as PlanFrequency}
               billingData={billingData?.data}
+              isFrequencyChange={isFrequencyChange}
             />
           ) : null}
         </div>
