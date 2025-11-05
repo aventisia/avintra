@@ -752,8 +752,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 };
             }
 
-            // Calculate the subscription fee based on the plan's frequency
-            var subscriptionFee = currentPlan.Price;
+            // Calculate the subscription fee based on the plan's frequency. Price in SubscriptionPlan entity is Price per month.
+            var subscriptionFee = currentPlan.Frequency == SubscriptionFrequenciesEnum.Yearly ? currentPlan.Price * 12 : currentPlan.Price;
 
             // Calculate the tax (18% of the subscription fee)
             var tax = subscriptionFee * 0.18m;  // 'm' denotes decimal literal
