@@ -13,7 +13,6 @@ interface FlowRowActionsProps {
 }
 
 export const FlowRowActions = ({ rowId, accessType }: FlowRowActionsProps) => {
-  console.log(accessType, rowId);
   return (
     // Dropdown menu for flow table row action */}
     <DataTableRowActions>

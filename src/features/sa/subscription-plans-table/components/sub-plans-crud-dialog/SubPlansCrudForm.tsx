@@ -110,14 +110,6 @@ export const SubPlansCrudForm = () => {
       {/* Users */}
       <InputField {...maxUsersProps} />
 
-      <SwitchField
-        name="isRazorpay"
-        description=""
-        label="Create Razorpay Plan"
-      />
-
-      <SwitchField name="includeTax" description="" label="Include Tax" />
-
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
 
