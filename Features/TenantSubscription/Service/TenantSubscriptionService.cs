@@ -705,6 +705,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 {
                     PlanId = currentPlan.Id,
                     PlanName = currentPlan.Name,
+                    PlanType = currentPlan.Type,
                     SubscriptionId = tenantSubscription.Id,
                     Frequency = tenantSubscription.Frequency,
                     Price = currentPlan.Price,

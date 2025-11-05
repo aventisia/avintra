@@ -37,6 +37,11 @@ public class CurrentSubscriptionPlanDto
     public string? PlanName { get; set; }
 
     /// <summary>
+    /// Gets or sets the type of the subscription plan (e.g., Starter, Pro, Enterprise, Commercial).
+    /// </summary>
+    public required SubscriptionPlanTypeEnum PlanType { get; set; }
+
+    /// <summary>
     /// Gets or sets the billing frequency (e.g., "Billed Monthly").
     /// </summary>
     public SubscriptionFrequenciesEnum Frequency { get; set; }
