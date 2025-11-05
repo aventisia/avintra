@@ -14,32 +14,37 @@ const PlanFeature = ({ label, value }: PlanFeatureProps) => (
 );
 
 interface PlanFeaturesProps {
+  planType: string | undefined;
+  frequency: string | undefined;
   features: PlanFeatureDto | undefined;
 }
 
-const PlanFeatures = ({ features }: PlanFeaturesProps) => {
+const PlanFeatures = ({ planType, frequency, features }: PlanFeaturesProps) => {
   return (
     <div className="border-r">
       <h3 className="font-medium">Plan Includes:</h3>
       <ul className="mt-2 space-y-2 text-sm">
         <PlanFeature
-          label="credits/month"
+          label={`credits/${frequency === "Monthly" ? "month" : "year"}`}
           value={`${features?.maxCredits?.toLocaleString("en-US", {
             maximumFractionDigits: 2,
           })}`}
         />
         <PlanFeature
-          label="published agents or AI models"
+          label="published Agents or AI Models"
           value={`${Number(features?.maxPublishedItems) <= 0 ? "Unlimited" : features?.maxPublishedItems}`}
         />
         <PlanFeature
-          label="history retention"
+          label="of insights & history"
           value={`${features?.historyRetentionDays} days`}
         />
-        <PlanFeature label="spaces" value={`${features?.maxSpaces}`} />
+        <PlanFeature
+          label={planType === "Starter" ? "space" : "spaces"}
+          value={`${features?.maxSpaces}`}
+        />
         <PlanFeature label="storage" value={`${features?.storageLimitMB} MB`} />
         <PlanFeature
-          label="Users"
+          label={planType === "Starter" ? "user" : "users"}
           value={`${Number(features?.maxUsers) <= 0 ? "Unlimited" : features?.maxUsers}`}
         />
       </ul>

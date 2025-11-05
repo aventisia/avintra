@@ -23,6 +23,11 @@ export interface PlanDto {
   planName: string;
 
   /**
+   * Gets or sets the type of the subscription plan (e.g., Starter, Pro, Enterprise, Commercial).
+   */
+  planType: string;
+
+  /**
    * Gets or sets the frequency of the subscription plan (e.g., Monthly, Yearly).
    */
   frequency: string;

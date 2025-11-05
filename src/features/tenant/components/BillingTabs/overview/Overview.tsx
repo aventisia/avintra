@@ -116,7 +116,11 @@ const Overview = () => {
           <Separator />
 
           <div className="grid grid-cols-2 gap-4">
-            <PlanFeatures features={data?.data.currentPlan.feature} />
+            <PlanFeatures
+              planType={data?.data.currentPlan.planType}
+              frequency={data?.data.currentPlan.frequency}
+              features={data?.data.currentPlan.feature}
+            />
 
             <UsageDetails planUsage={data?.data.currentPlan.usage} />
           </div>
