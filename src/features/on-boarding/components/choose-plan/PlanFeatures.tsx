@@ -11,6 +11,44 @@ function formatNumber(number: number): string {
   });
 }
 
+/**
+ * Returns a label for a feature based on its value.
+ * @param value The feature value.
+ * @param singular Singular label.
+ * @param plural Plural label.
+ * @param unlimitedLabel Label for unlimited.
+ */
+function getFeatureLabel(
+  value: number,
+  singular: string,
+  plural: string,
+  unlimitedLabel: string,
+): string {
+  if (value <= 0) return unlimitedLabel;
+  if (value === 1) return `1${singular}`;
+  return `${formatNumber(value)}${plural}`;
+}
+
+/**
+ * Returns a formatted label describing the number of credits, including whether the credits are per month or per year.
+ *
+ * - If `value` is less than or equal to 0, returns "Unlimited credits".
+ * - If `value` is 1, returns "1 credit/month" or "1 credit/year" based on `isPerMonth`.
+ * - Otherwise, returns "{value} credits/month" or "{value} credits/year" based on `isPerMonth`.
+ *
+ * @param value - The number of credits.
+ * @param isPerMonth - If true, the label will use "month"; otherwise, it will use "year".
+ * @returns The formatted credits label.
+ */
+function getCreditsLabel(value: number, isPerMonth: boolean): string {
+  if (value <= 0) return `Unlimited credits`;
+  if (value === 1) return `1 credit/${isPerMonth ? "month" : "year"}`;
+  return `${formatNumber(value)} credits/${isPerMonth ? "month" : "year"}`;
+}
+
+/**
+ * Props for the PlanFeatures component, describing the details of a subscription plan.
+ */
 interface PlanFeaturesProps {
   frequency: string;
   credits: number;
@@ -20,7 +58,6 @@ interface PlanFeaturesProps {
   storageLimitMB: number;
   users: number;
 }
-
 
 /**
  * Displays a list of features included in a subscription plan.
@@ -46,16 +83,12 @@ export const PlanFeatures = ({
 }: PlanFeaturesProps) => {
   // Generate features list
   const featuresList = [
-    `${formatNumber(credits)} credits/${frequency === "Monthly" ? "month" : "year"}`,
-    `${publishedItems <= 0 ? "Unlimited" : formatNumber(publishedItems)} published ${
-      publishedItems === 1
-        ? "Agent or AI Model"
-        : "Agents or AI Models"
-    }`,
-    `${formatNumber(historyRetentionDays)} ${historyRetentionDays === 1 ? "day" : "days"} of insights & workflow history`,
-    `${formatNumber(spaces)} ${spaces === 1 ? "space" : "spaces"}`,
-    `${formatNumber(storageLimitMB)}mb storage`,
-    `${users <= 0 ? "Unlimited" : formatNumber(users)} ${users === 1 ? "user" : "users"}`,
+    `${getCreditsLabel(credits, frequency === "Monthly")}`,
+    `${getFeatureLabel(publishedItems, " published Agent or AI Model", "published Agents or AI Models", "Unlimited published Agents or AI Models")}`,
+    `${getFeatureLabel(historyRetentionDays, " day", " days", "Unlimited days")} of insights & workflow history`,
+    `${getFeatureLabel(spaces, " space", " spaces", "Unlimited spaces")}`,
+    `${getFeatureLabel(storageLimitMB, "mb storage", "mb storage", "Unlimited storage")}`,
+    `${getFeatureLabel(users, " user", " users", "Unlimited users")}`,
   ];
 
   return (
