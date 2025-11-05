@@ -64,7 +64,11 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   {
     accessorKey: "price",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Price (per month)" />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title="Price (per month)"
+      />
     ),
     cell: ({ row }) => {
       const price = row.getValue<number>("price");
@@ -87,21 +91,6 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("frequency")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "includeTax",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title="Tax Included"
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("includeTax") ? "Yes" : "No"}
       </div>
     ),
   },

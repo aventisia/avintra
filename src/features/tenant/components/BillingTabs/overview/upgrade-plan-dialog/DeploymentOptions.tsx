@@ -10,6 +10,8 @@ const DeploymentOptions = () => {
   switch (chosenPlan) {
     case "Pro":
       return <ChoosePlan />;
+    case "FrequencyChange":
+      return <ChoosePlan isFrequencyChange />;
     case "Credits":
       return <CreditTopUp />;
     default:
