@@ -88,8 +88,6 @@ export const useDefineSubPlansForm = () => {
       currency: subPlanData?.currency ?? "USD",
       frequency: subPlanData?.frequency ?? "Monthly",
       status: subPlanData?.status ?? "Current",
-      isRazorpay: subPlanData?.isRazorpay,
-      includeTax: subPlanData?.includeTax,
       isDisabled: subPlanData?.isDisabled ?? false,
       // Read (view) only fields
       createdBy:
