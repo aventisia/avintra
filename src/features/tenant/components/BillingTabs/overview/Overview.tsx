@@ -15,7 +15,7 @@ import TabLoader from "../TabLoader";
 
 import CancelPlanDialog from "./CancelPlanDialog";
 import NextPaymentDetails from "./NextPaymentDetails";
-import PlanFeatures from "./PlanFeatures";
+import { PlanFeatures } from "./PlanFeatures";
 import UpgradePlanDialog from "./upgrade-plan-dialog/UpgradePlanDialog";
 import UsageDetails from "./UsageDetails";
 
@@ -40,7 +40,13 @@ const Overview = () => {
 
   const { data, isLoading } = useFetchCurrentPlan();
 
+  const currentPlan = data?.data?.currentPlan;
+
   if (isLoading) return <TabLoader />;
+
+  if (!currentPlan) {
+    throw new Error("Current plan data is unavailable");
+  }
 
   return (
     <>
@@ -56,18 +62,18 @@ const Overview = () => {
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <h1 className="text-xl font-bold">
-                {data?.data.currentPlan.planName}{" "}
+                {currentPlan.planName}{" "}
                 {!isStarterPlan && (
                   <span className="rounded-md bg-muted px-2 py-2 text-2xs font-medium capitalize text-muted-foreground">
-                    Billed {data?.data.currentPlan.frequency}
+                    Billed {currentPlan.frequency}
                   </span>
                 )}
               </h1>
               <p className="text-sm text-muted-foreground">
                 <span className="text-xl font-semibold text-accent-foreground">
                   {formatCurrency(
-                    data?.data.currentPlan.price ?? 0,
-                    data?.data?.currentPlan?.currency ?? "USD",
+                    currentPlan.price ?? 0,
+                    currentPlan?.currency ?? "USD",
                   )}
                 </span>{" "}
                 /Month
@@ -82,12 +88,9 @@ const Overview = () => {
                 <p>
                   Available Credits:
                   <span className="ml-1 font-semibold">
-                    {data?.data.currentPlan.availableCredits.toLocaleString(
-                      "en-US",
-                      {
-                        maximumFractionDigits: 2,
-                      },
-                    )}
+                    {currentPlan.availableCredits.toLocaleString("en-US", {
+                      maximumFractionDigits: 2,
+                    })}
                   </span>
                 </p>
               </Badge>
@@ -99,8 +102,7 @@ const Overview = () => {
                       setChosenPlan("Credits");
                     }}
                     disabled={
-                      data?.data.currentPlan.planName == "Starter" ||
-                      isPaymentProcessing
+                      currentPlan.planName == "Starter" || isPaymentProcessing
                     }
                     variant={"default"}
                     size={"icon6"}
@@ -117,12 +119,16 @@ const Overview = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <PlanFeatures
-              planType={data?.data.currentPlan.planType}
-              frequency={data?.data.currentPlan.frequency}
-              features={data?.data.currentPlan.feature}
+              frequency={currentPlan.frequency}
+              credits={currentPlan.feature.maxCredits}
+              publishedItems={currentPlan.feature.maxPublishedItems}
+              historyRetentionDays={currentPlan.feature.historyRetentionDays}
+              spaces={currentPlan.feature.maxSpaces}
+              storageLimitMB={currentPlan.feature.storageLimitMB}
+              users={currentPlan.feature.maxUsers}
             />
 
-            <UsageDetails planUsage={data?.data.currentPlan.usage} />
+            <UsageDetails planUsage={currentPlan.usage} />
           </div>
 
           <Separator />
