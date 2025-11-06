@@ -10,6 +10,7 @@ namespace WorkspaceAPIs.Services
         private readonly Guid _userId;
         private readonly Guid _tenantId;
         private readonly Guid _spaceId;
+        private readonly string _jwt;
 
         public ProjectTemplateService(
             ILogger<ProjectTemplateService> logger,
@@ -24,6 +25,7 @@ namespace WorkspaceAPIs.Services
             _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
             _spaceId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("spid") ?? Guid.Empty.ToString());
 
+            _jwt = httpContextAccessor.HttpContext?.Request.Cookies["AccessToken"] ?? httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Replace("Bearer ", "") ?? "";
             _logger = logger;
             _unitOfWork = unitOfWork;
             _autoNotificationService = autoNotificationService;
@@ -735,6 +737,23 @@ namespace WorkspaceAPIs.Services
 
                 List<ProjectTemplate>? projectTemplates = new List<ProjectTemplate>();
 
+
+                // Extract distinct icons from the DTO, or initialize an empty list if none are provided
+                var projectTemplateIcons = publishProjectTemplateDto?.Icons?.Distinct().ToList() ?? new List<string>();
+
+                // Initialize tags list with the DTO's type, then append any additional tags
+                var projectTemplateTags = new List<string>() { publishProjectTemplateDto.Type.ToString() };
+                projectTemplateTags.AddRange(publishProjectTemplateDto.Tags);
+
+                // Map the DTO to the ProjectTemplate entity and set properties from the flow version
+                var newProjectTemplate = publishProjectTemplateDto.Adapt<ProjectTemplate>();
+                newProjectTemplate.TenantId = publishProjectTemplateDto.AccessType != TemplateAccessTypesEnum.Public ? _tenantId : null;
+                newProjectTemplate.Version = 1;
+                newProjectTemplate.Icons = IconSorterUtil.SortByPriority(projectTemplateIcons);
+                newProjectTemplate.Tags = projectTemplateTags;
+                newProjectTemplate.CreatedByUserId = _userId;
+                newProjectTemplate.LastModifiedByUserId = _userId;
+
                 if (publishProjectTemplateDto.Type == ProjectTemplateTypesEnum.Block || publishProjectTemplateDto.Type == ProjectTemplateTypesEnum.Agent)
                 {
                     // Fetch the flow version using RefId
@@ -751,58 +770,64 @@ namespace WorkspaceAPIs.Services
                         return serviceResponse;
                     }
 
-                    // Extract distinct icons from the DTO, or initialize an empty list if none are provided
-                    var projectTemplateIcons = publishProjectTemplateDto?.Icons?.Distinct().ToList() ?? new List<string>();
+                    newProjectTemplate.RefId = flowVersion.Id;
+                    newProjectTemplate.Schema = flowVersion.ReactFlowObject;
+                    newProjectTemplate.SchemaVersion = flowVersion.VersionNumber;
+                    newProjectTemplate.AccessPath = $"/agent?f={flowVersion.FlowId}&v={flowVersion.Id}";
+                }
+                else
+                {
+                    // Create credits usage in AccountsDb database
+                    HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Read, $"http://localhost:4002/api/ai-model-template/schema/{publishProjectTemplateDto.RefId}", _jwt);
 
-                    // Initialize tags list with the DTO's type, then append any additional tags
-                    var projectTemplateTags = new List<string>() { publishProjectTemplateDto.Type.ToString() };
-                    projectTemplateTags.AddRange(publishProjectTemplateDto.Tags);
-
-                    // Map the DTO to the ProjectTemplate entity and set properties from the flow version
-                    var projectTemplate = publishProjectTemplateDto.Adapt<ProjectTemplate>();
-                    projectTemplate.TenantId = publishProjectTemplateDto.AccessType != TemplateAccessTypesEnum.Public ? _tenantId : null;
-                    projectTemplate.Version = 1;
-                    projectTemplate.RefId = flowVersion.Id;
-                    projectTemplate.Icons = IconSorterUtil.SortByPriority(projectTemplateIcons);
-                    projectTemplate.Tags = projectTemplateTags;
-                    projectTemplate.Schema = flowVersion.ReactFlowObject;
-                    projectTemplate.SchemaVersion = flowVersion.VersionNumber;
-                    projectTemplate.AccessPath = $"/agent?f={flowVersion.FlowId}&v={flowVersion.Id}";
-                    projectTemplate.CreatedByUserId = _userId;
-                    projectTemplate.LastModifiedByUserId = _userId;
-
-                    // If the access type is 'Space', create a ProjectTemplate for each SpaceId
-                    if (projectTemplate.AccessType == TemplateAccessTypesEnum.Space)
+                    // Read and validate the external API response
+                    if (!httpResponse.IsSuccessStatusCode)
                     {
-                        foreach (var spaceId in publishProjectTemplateDto.SpaceIds)
-                        {
-                            // Create a new instance for each SpaceId to avoid reference issues
-                            var projectTemplateWithSpace = projectTemplate.Adapt<ProjectTemplate>();
-                            projectTemplateWithSpace.SpaceId = spaceId;
-                            projectTemplates.Add(projectTemplateWithSpace);
-                        }
+                        _logger.LogError("External API call failed. Status Code: {StatusCode}, Reason: {ReasonPhrase}",
+                            httpResponse.StatusCode,
+                            httpResponse.ReasonPhrase
+                        );
+
+                        // Provide a user-friendly error message
+                        serviceResponse.Message = "Failed to clone template.";
+                        return serviceResponse;
                     }
-                    else
+
+                    // Attempt to read and parse the response content
+                    var responseContent = await httpResponse.Content.ReadAsStringAsync();
+
+                    // Deserialize and validate structure of the service response
+                    var externalServiceResponse = System.Text.Json.JsonSerializer.Deserialize<ServiceResponse<AIModelTemplateSchemaDto>>(
+                        responseContent,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                    );
+
+                    // Ensure response structure and data integrity
+                    if (externalServiceResponse.StatusCode != 200 || externalServiceResponse.Data == null)
                     {
-                        projectTemplates.Add(projectTemplate);
+                        _logger.LogError("Failed to deserialize the external API response for credits usage creation.");
+                        return serviceResponse;
+                    }
+                    newProjectTemplate.RefId = externalServiceResponse.Data.VersionId;
+                    newProjectTemplate.Schema = externalServiceResponse.Data.DataObject;
+                    newProjectTemplate.SchemaVersion = externalServiceResponse.Data.VersionNumber;
+                    newProjectTemplate.AccessPath = $"/project?pid={externalServiceResponse.Data.Id}&v={externalServiceResponse.Data.VersionId}&pn=Test&t=setup&ml={externalServiceResponse.Data.Type.ToString().ToLower()}";
+                }
+
+                // If the access type is 'Space', create a ProjectTemplate for each SpaceId
+                if (newProjectTemplate.AccessType == TemplateAccessTypesEnum.Space)
+                {
+                    foreach (var spaceId in publishProjectTemplateDto.SpaceIds)
+                    {
+                        // Create a new instance for each SpaceId to avoid reference issues
+                        var projectTemplateWithSpace = newProjectTemplate.Adapt<ProjectTemplate>();
+                        projectTemplateWithSpace.SpaceId = spaceId;
+                        projectTemplates.Add(projectTemplateWithSpace);
                     }
                 }
                 else
                 {
-                    // TODO: Update for ml model type like Inferencing, Conversation, and Generative
-                    // Fetch the ml model version using RefId
-                    var flowVersion = await _unitOfWork.FlowVersionRepo
-                        .GetByConditionAsync(w => w.Id == publishProjectTemplateDto.RefId)
-                        .Include(i => i.Flow)
-                        .SingleOrDefaultAsync();
-
-                    // Check if the flow version exists
-                    if (flowVersion == null)
-                    {
-                        _logger.LogInformation("PublishTemplateAsync: No ml model version found for RefId: {RefId}.", publishProjectTemplateDto.RefId);
-                        serviceResponse.Message = "Specified ml model version does not exist.";
-                        return serviceResponse;
-                    }
+                    projectTemplates.Add(newProjectTemplate);
                 }
 
                 // Check if projectTemplates is not null before proceeding with insertion
@@ -1055,10 +1080,45 @@ namespace WorkspaceAPIs.Services
                 }
                 else
                 {
-                    // TODO: Update for ml model type like Inferencing, Conversation, and Generative
-                    _logger.LogInformation("Template type '{Type}' is not supported for flow creation.", projectTemplate.Type);
-                    serviceResponse.Message = $"Template type '{projectTemplate.Type}' is not supported for creating flows.";
-                    return serviceResponse;
+                    var aiProjectRequest = new AIModelTemplateSchemaDto()
+                    {
+                        VersionId = projectTemplate.RefId,
+                        DataObject = projectTemplate.Schema,
+                        VersionNumber = projectTemplate.SchemaVersion,
+                        UsageCount = projectTemplate.UsageCount + 1,
+                    };
+                    // Create credits usage in AccountsDb database
+                    HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Create, "http://localhost:4002/api/ai-model-template/use", _jwt, aiProjectRequest);
+
+                    // Read and validate the external API response
+                    if (!httpResponse.IsSuccessStatusCode)
+                    {
+                        _logger.LogError("External API call failed. Status Code: {StatusCode}, Reason: {ReasonPhrase}",
+                            httpResponse.StatusCode,
+                            httpResponse.ReasonPhrase
+                        );
+
+                        // Provide a user-friendly error message
+                        serviceResponse.Message = "Failed to clone template.";
+                        return serviceResponse;
+                    }
+
+                    // Attempt to read and parse the response content
+                    var responseContent = await httpResponse.Content.ReadAsStringAsync();
+
+                    // Deserialize and validate structure of the service response
+                    var externalServiceResponse = System.Text.Json.JsonSerializer.Deserialize<ServiceResponse<bool>>(
+                        responseContent,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                    );
+
+
+                    // Ensure response structure and data integrity
+                    if (externalServiceResponse.StatusCode != 200 || !externalServiceResponse.Data)
+                    {
+                        _logger.LogError("Failed to deserialize the external API response for credits usage creation.");
+                        return serviceResponse;
+                    }
                 }
 
                 // Increment usage count and update the template
