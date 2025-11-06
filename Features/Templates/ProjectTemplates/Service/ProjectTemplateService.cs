@@ -776,7 +776,7 @@ namespace WorkspaceAPIs.Services
                 }
                 else
                 {
-                    // Create credits usage in AccountsDb database
+                    // Get AI model template schema
                     HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Read, $"http://localhost:4002/api/ai-model-template/schema/{publishProjectTemplateDto.RefId}", _jwt);
 
                     // Read and validate the external API response
@@ -1088,11 +1088,12 @@ namespace WorkspaceAPIs.Services
                     var aiProjectRequest = new AIModelTemplateSchemaDto()
                     {
                         VersionId = projectTemplate.RefId,
-                        DataObject = projectTemplate.Schema,
+                        DataObject = projectTemplate.Schema ?? string.Empty,
                         VersionNumber = projectTemplate.SchemaVersion,
                         UsageCount = projectTemplate.UsageCount + 1,
                     };
-                    // Create credits usage in AccountsDb database
+
+                    // Create AI model by template schema
                     HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Create, "http://localhost:4002/api/ai-model-template/use", _jwt, aiProjectRequest);
 
                     // Read and validate the external API response
