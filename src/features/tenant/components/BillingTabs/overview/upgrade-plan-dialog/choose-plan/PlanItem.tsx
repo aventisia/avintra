@@ -22,8 +22,6 @@ export const PlanItem = ({
   const timeUnit =
     planFrequency === "monthly" || plan.name == "Starter" ? "month" : "year";
 
-  const planPrice = planFrequency === "monthly" ? plan.price : plan.price * 12;
-
   return (
     <CustomRadioItem
       value={plan.id}
@@ -39,7 +37,7 @@ export const PlanItem = ({
 
           <div className="flex items-baseline gap-1">
             <p className="text-base">
-              {formatCurrency(planPrice ?? 0, plan.currency)}
+              {formatCurrency(plan.price ?? 0, plan.currency)}
             </p>
             <span className="text-sm text-muted-foreground">/{timeUnit}</span>
           </div>
