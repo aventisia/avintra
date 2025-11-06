@@ -6,6 +6,16 @@ namespace AspNetToolkit.DTOs;
 public class AIModelTemplateSchemaDto
 {
     /// <summary>
+    /// Gets or sets the unique identifier for the AI model template.
+    /// </summary>
+    public Guid Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of ML model.
+    /// </summary>
+    public AIProjectTypeEnum Type { get; set; }
+
+    /// <summary>
     /// Gets or sets the unique identifier for the version of the model template schema.
     /// </summary>
     public required Guid VersionId { get; set; }
