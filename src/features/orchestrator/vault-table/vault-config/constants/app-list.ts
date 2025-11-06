@@ -1,10 +1,10 @@
 export const appList = [
-  { label: "OpenAi", value: "OpenAiApi" },
-  { label: "AWS", value: "Aws" },
-  { label: "Twilio API", value: "TwilioApi" },
-  { label: "SendGrid API", value: "SendGridApi" },
-  { label: "GitHub API", value: "GitHubApi" },
-  { label: "General Credentials", value: "GeneralCredentialApi" },
+  { label: "OpenAI", value: "OpenAI" },
+  { label: "AWS", value: "AWS" },
+  { label: "Twilio", value: "Twilio" },
+  { label: "SendGrid", value: "SendGrid" },
+  { label: "GitHub", value: "GitHub" },
+  { label: "General Credentials", value: "GeneralCredentials" },
   // { label: "Google Gemini(PaLM)", value: "googleGemini" },
   // { label: "Microsoft Excel OAuth2 API", value: "microsoftExcel" },
   // { label: "Salesforce OAuth2 API", value: "salesforceOAuth2API" },
@@ -17,10 +17,10 @@ export const appList = [
 ];
 
 export const vaultIconMapper: Record<string, string> = {
-  OpenAiApi: "/brand-img/openai.svg",
-  Aws: "/brand-img/aws.svg",
-  TwilioApi: "/brand-img/twilio.svg",
-  SendGridApi: "/brand-img/sendgrid.svg",
-  GitHubApi: "/brand-img/github.svg",
-  GeneralCredentialApi: "/assets/CredentialManager.svg",
+  OpenAI: "/brand-img/openai.svg",
+  AWS: "/brand-img/aws.svg",
+  Twilio: "/brand-img/twilio.svg",
+  SendGrid: "/brand-img/sendgrid.svg",
+  GitHub: "/brand-img/github.svg",
+  GeneralCredentials: "/assets/CredentialManager.svg",
 };

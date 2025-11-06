@@ -21,6 +21,7 @@ import { vaultNameSchema } from "../../constants/vault-zod-schema";
 import { VaultsTableDto } from "../../dtos/vaults-table-dto";
 import { useVaultDialogStore } from "../../stores/vault-dialog-store";
 import { appList } from "../constants/app-list";
+import { appToCredentialNameMapper } from "../constants/app-to-credential-name-mapper";
 
 export const useVaultDynamicForm = () => {
   // Set credential name state (required for availability check)
@@ -152,7 +153,7 @@ export const useVaultDynamicForm = () => {
     ) {
       const savedData = vaultData?.data || {};
 
-      const name = vaultData?.name ?? form.watch("selectedType").label;
+      const name = vaultData?.name ?? appToCredentialNameMapper[form.watch("selectedType").value];
 
       setCredName(name);
 
