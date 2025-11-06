@@ -26,6 +26,13 @@ public class TenantSubscriptionController : BaseApiController
         return ResultHelper(await _tenantSubscriptionService.GetTenantSubscriptionByIdAsync(tenantSubscriptionId));
     }
 
+    // Update a tenant's subscription using the provided subscription details.
+    [HttpPut]
+    public async Task<ActionResult<ServiceResponse<TenantSubscriptionDto>>> UpdateSubscription(SubscriptionUpdateRequestDto subscriptionUpdateRequestDto)
+    {
+        return ResultHelper(await _tenantSubscriptionService.UpdateSubscriptionAsync(subscriptionUpdateRequestDto));
+    }
+
     // Creates a new tenant subscription.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<TenantSubscription>>> CreateTenantSubscription([FromBody] TenantSubscriptionDto tenantSubscriptionDto)

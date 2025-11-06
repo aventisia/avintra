@@ -86,6 +86,13 @@ public interface ITenantSubscriptionService
     Task<ServiceResponse<TenantSubscriptionDto>> CancelSubscriptionAsync(SubscriptionUpdateRequestDto subscriptionUpdateRequestDto);
 
     /// <summary>
+    /// Updates the tenant's subscription using the provided subscription details.
+    /// </summary>
+    /// <param name="subscriptionUpdateRequestDto">The subscription details, including the subscription ID, status, and other relevant information.</param>
+    /// <returns>A task representing the asynchronous operation, containing the result of the subscription cancellation.</returns>
+    Task<ServiceResponse<TenantSubscriptionDto>> UpdateSubscriptionAsync(SubscriptionUpdateRequestDto subscriptionUpdateRequestDto);
+
+    /// <summary>
     /// Cancels the tenant's recurring payment based on the provided subscription details.
     /// </summary>
     /// <param name="subscriptionUpdateRequestDto">The subscription details, including the subscription ID, status, and other relevant information.</param>

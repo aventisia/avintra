@@ -1056,6 +1056,111 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         return serviceResponse;
     }
 
+    // Update the subscription plan for a tenant. If no active subscription exists, the cancellation is skipped.
+    public async Task<ServiceResponse<TenantSubscriptionDto>> UpdateSubscriptionAsync(SubscriptionUpdateRequestDto subscriptionUpdateRequestDto)
+    {
+        // Initialize the service response with a default failure message
+        var serviceResponse = new ServiceResponse<TenantSubscriptionDto>
+        {
+            Data = null,
+            Message = "Failed to update tenant subscription. Please try again later.",
+        };
+
+        try
+        {
+            // Log the start of the subscription update process for tracking purposes
+            _logger.LogInformation("Processing subscription updation for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}",
+                                    _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
+
+            // Check if the provided PlanId is empty (invalid)
+            if (subscriptionUpdateRequestDto.PlanId == Guid.Empty)
+            {
+                // Log the invalid PlanId case
+                _logger.LogWarning("Invalid PlanId provided. PlanId is empty for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}",
+                                    _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
+
+                // Add a message to indicate that the PlanId is invalid
+                serviceResponse.Message = "Invalid PlanId provided. Please provide a valid PlanId.";
+
+                // Return the service response with the error message
+                return serviceResponse;
+            }
+
+            // Fetch the existing active tenant subscription
+            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w => w.Id == subscriptionUpdateRequestDto.SubscriptionId && w.IsActive)
+                .Include(i => i.Plan)
+                .SingleOrDefaultAsync();
+
+            // Check if no active subscription exists
+            if (tenantSubscription == null)
+            {
+                _logger.LogWarning("No active subscription found for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}.",
+                                    _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
+                serviceResponse.Message = "No active subscription found to update.";
+                return serviceResponse;
+            }
+
+            // Fetch the subscription plan based on the provided PlanId and Frequency from the repository
+            var subscriptionPlan = await _unitOfWork.SubscriptionPlanRepo
+                .GetByConditionAsync(w => w.Id == subscriptionUpdateRequestDto.PlanId && w.Frequency == subscriptionUpdateRequestDto.Frequency)
+                .FirstOrDefaultAsync();
+
+            // Check if the subscription plan was found and ensure its type matches the expected type
+            if (subscriptionPlan == null || tenantSubscription.Plan.Type != subscriptionPlan.Type)
+            {
+                _logger.LogWarning("No valid subscription plan found for PlanId: {PlanId}, Frequency: {Frequency}. " +
+                                    "TenantId: {TenantId}, SubscriptionId: {SubscriptionId} could not be processed due to an invalid plan type.",
+                                    subscriptionUpdateRequestDto.PlanId, subscriptionUpdateRequestDto.Frequency, _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
+                serviceResponse.Message = "The specified subscription plan is invalid.";
+                return serviceResponse;
+            }
+
+            // Check if the current subscription already has the requested PlanId
+            if (tenantSubscription.PlanId == subscriptionUpdateRequestDto.PlanId)
+            {
+                _logger.LogWarning("TenantId: {TenantId} already has the requested subscription plan PlanId: {PlanId}. No update needed.",
+                                    _tenantId, subscriptionUpdateRequestDto.PlanId);
+                serviceResponse.Message = "The tenant subscription already uses the requested plan.";
+                return serviceResponse;
+            }
+
+            // Update the subscription (mark it as inactive)
+            tenantSubscription.PlanId = subscriptionUpdateRequestDto.PlanId;
+            tenantSubscription.Frequency = subscriptionUpdateRequestDto.Frequency;
+            tenantSubscription.LastModifiedByUserId = _userId;
+
+
+            _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
+
+            // Save changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to update tenant subscription. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
+                return serviceResponse;
+            }
+
+            // Log success for deactivating the subscription
+            _logger.LogInformation("Tenant subscription updated. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
+
+            // Map the tenant subscription entity to a DTO for response
+            var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
+
+            // Set the service response with the DTO and success metadata
+            serviceResponse.Data = tenantSubscriptionDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Tenant subscription updated successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log any unexpected exceptions that occur during the Updation process
+            _logger.LogError(ex, "An error occurred while updating the subscription. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
+        }
+
+        // Return the service response (either success or failure)
+        return serviceResponse;
+    }
+
     // Cancels the recurring payment for a tenant, keeping the subscription active but stopping future payments.
     public async Task<ServiceResponse<TenantSubscriptionDto>> CancelRecurringPaymentAsync(SubscriptionUpdateRequestDto subscriptionUpdateRequestDto)
     {
