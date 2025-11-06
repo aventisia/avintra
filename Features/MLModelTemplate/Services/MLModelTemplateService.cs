@@ -447,6 +447,8 @@ public class MLModelTemplateService : IMLModelTemplateService
             // Prepare the final schema response with version details, configuration data, and associated LLM names
             var aiModelTemplateConfigDto = new AIModelTemplateSchemaDto()
             {
+                Id = aiProjectVersion.AIProjectId,
+                Type = aiProjectVersion.AIProject.Type ?? AIProjectTypeEnum.Inferencing,
                 VersionId = aiProjectVersion.Id,
                 DataObject = setupData,
                 VersionNumber = aiProjectVersion.VersionNumber,
