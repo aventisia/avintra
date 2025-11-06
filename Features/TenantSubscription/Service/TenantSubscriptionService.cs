@@ -415,8 +415,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Fetch existing tenant subscription (if any), including plan and creator information
             var existingTenantSubscription = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w => w.TenantId == _tenantId && !w.IsActive)
-                .Include(i => i.Plan)
-                .Include(i => i.CreatedByUser)
                 .FirstOrDefaultAsync();
 
             // IMPORTANT NOTE: 
@@ -468,9 +466,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 tenantSubscription.CreatedByUserId = _userId;
                 await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
             }
-
-            // Update tenant subscription if existing
-            if (existingTenantSubscription != null)
+            else
             {
                 _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
             }
@@ -567,7 +563,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
                 tenantSubscription.IsRecurringPayment = tenantSubscriptionPurchaseDto.IsRecurringPayment;
                 tenantSubscription.LastModifiedByUserId = _userId;
-                tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date.AddMonths(1); // TO CHECK
+                tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date; // Not setting next billing date until payment is successful
 
                 // Update the new subscription into the repository
                 _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
