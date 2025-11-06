@@ -1,4 +1,3 @@
-import { Separator } from "@aventisia/ui";
 import {
   DataTable,
   DataTableSkeleton,
@@ -10,23 +9,23 @@ import { useDataTable } from "@aventisia/ui/hooks";
 import { useFetchQueuesWorkItems } from "../hooks/useFetchQueuesWorkItems";
 
 import { PayloadTableHeading } from "./TableHeading";
-import { triggersTableColumns } from "./TriggersTableColumns";
+import { workItemsTableColumns } from "./WorkItemsTableColumns";
 
 /**
- * Renders a table of triggers.
+ * Renders a table of WorkItems.
  *
- * @returns The rendered triggersTable component.
+ * @returns The rendered WorkItemsTable component.
  */
-export const TriggersTable = () => {
+export const WorkItemsTable = () => {
   // Set the document title
   // useDocumentTitle(TABLE_HEADING);
 
-  // Fetch triggers data
+  // Fetch WorkItems data
   const { data } = useFetchQueuesWorkItems();
 
-  // Create a React table for triggers data
+  // Create a React table for WorkItems data
   const table = useDataTable(
-    triggersTableColumns,
+    workItemsTableColumns,
     data?.data || [],
     {},
     [],
@@ -47,22 +46,20 @@ export const TriggersTable = () => {
                 searchColumn={"id"}
                 placeholder="Search..."
               />
-              {/* <DTViewOptions {...{ table, columnDisplayNames }} /> */}
-              <Separator orientation="vertical" className="mx-2 h-6" />
             </div>
           </div>
 
           {/* Data table to render data */}
           <DataTable
             table={table}
-            columnsLength={triggersTableColumns.length}
+            columnsLength={workItemsTableColumns.length}
           />
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />
         </div>
       ) : (
-        // Show data table skeleton while fetching the triggers data
+        // Show data table skeleton while fetching the WorkItems data
         <DataTableSkeleton />
       )}
     </>

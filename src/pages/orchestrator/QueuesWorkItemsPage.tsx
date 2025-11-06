@@ -4,9 +4,9 @@ import { lazy, Suspense } from "react";
 // Lazy load the WorkItemPayloadDataTable component.
 const TriggersTable = lazy(() =>
   import(
-    "@/features/orchestrator/work-items-table/components/TriggersTable"
+    "@/features/orchestrator/work-items-table/components/WorkItemsTable"
   ).then((module) => ({
-    default: module.TriggersTable,
+    default: module.WorkItemsTable,
   })),
 );
 

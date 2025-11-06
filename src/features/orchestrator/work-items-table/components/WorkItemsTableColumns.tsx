@@ -6,10 +6,10 @@ import { TABLE_KEY } from "../constants";
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
 
 /**
- * Array of table columns for the triggers table.
+ * Array of table columns for the WorkItems table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const triggersTableColumns: ColumnDef<QueueWorkItemDto>[] = [
+export const workItemsTableColumns: ColumnDef<QueueWorkItemDto>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => (
