@@ -34,7 +34,7 @@ interface CredentialsSelectFieldProps
 const CredentialsSelectField = ({
   name,
   label,
-  size = "base",
+  size = "sm",
   isRequired,
   description,
   disabled,
