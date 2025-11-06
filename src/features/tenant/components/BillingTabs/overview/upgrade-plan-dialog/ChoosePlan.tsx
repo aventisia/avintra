@@ -155,6 +155,9 @@ const ChoosePlan = ({
                 disabled={isFrequencyChange}
                 value="monthly"
                 className="rounded-full px-8"
+                onClick={() => {
+                  setSelectedPlan(""); // TODO: Temporary fix to avoid ui bug. @vaibhav fix it properly
+                }}
               >
                 Monthly
               </TabsTrigger>
@@ -162,6 +165,9 @@ const ChoosePlan = ({
                 disabled={isFrequencyChange}
                 value="yearly"
                 className="rounded-full px-8"
+                onClick={() => {
+                  setSelectedPlan(""); // TODO: Temporary fix to avoid ui bug. @vaibhav fix it properly
+                }}
               >
                 Yearly
               </TabsTrigger>
