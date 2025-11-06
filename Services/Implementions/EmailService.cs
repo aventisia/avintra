@@ -213,6 +213,14 @@ public class EmailService : IEmailService
                                 "ContactUsRequestEmailTemplate.html",
                                 placeholderValues)
                             );
+            case EmailTypesEnum.SubscriptionPlanUpgrade:
+                return await SendEmail(
+                            toEmailAddress,
+                            "Upgrade Plan Request",
+                            LoadAndRenderEmailTemplate(
+                                "UpgradePlanEmailTemplate.html",
+                                placeholderValues)
+                            );
         }
 
         _logger.LogError($"Email type {emailType} did not match with any email template");

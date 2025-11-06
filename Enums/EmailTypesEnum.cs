@@ -49,4 +49,9 @@ public enum EmailTypesEnum
     /// Request type to create verification code to verify email address for account deactivation.
     /// </summary>
     AccountDeactivation,
+
+    /// <summary>
+    /// Email type to send notification when a subscription plan has been upgraded.
+    /// </summary>
+    SubscriptionPlanUpgrade
 }
