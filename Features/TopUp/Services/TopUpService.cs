@@ -67,9 +67,9 @@ namespace AccountsAPIs.Services
                     decimal defaultTaxRate = 1.18m;
 
                     // Adjust the amount by multiplying it by the tax rate
-                    razorpayOrderRequestDto.Amount = Math.Round(razorpayOrderRequestDto.Amount * defaultTaxRate);
+                    razorpayOrderRequestDto.Amount = Math.Round(razorpayOrderRequestDto.Amount * defaultTaxRate, 2);
                 }
-                
+
                 // Prepare the order request using the provided top-up details
                 var orderRequest = new OrderRequestDto
                 {

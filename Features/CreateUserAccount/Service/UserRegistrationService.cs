@@ -302,6 +302,7 @@ public class UserRegistrationService : IUserRegistrationService
             tenant.Role = tenantOrganizationDto.Role;
             tenant.NumberOfEmployees = tenantOrganizationDto.NumberOfEmployees;
             tenant.Industry = tenantOrganizationDto.Industry;
+            tenant.Currency = tenantOrganizationDto.Country == CountriesEnum.India ? CurrencyTypesEnum.INR : CurrencyTypesEnum.USD;
             tenant.Country = tenantOrganizationDto.Country;
             tenant.LastModifiedByUserId = _userId;
 
