@@ -63,6 +63,9 @@
     <None Update="StaticFiles\EmailTemplates\UpdateEmailRequestCodeEmailTemplate.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="StaticFiles\EmailTemplates\UpgradePlanEmailTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
