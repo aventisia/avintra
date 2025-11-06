@@ -16,7 +16,7 @@ Use simple, professional language. Keep it user-focused rather than technical.
 Explain this automation template as if you're writing for a business or technical user who wants to know what it does and how to use it — but doesn't need to know every node detail
 
 Input automation nodes:
-    {{TEMPLATE_NODES}}
+    {{PAYLOAD_CONTENT}}
     
 Output Format:
     • Title (1 line)
