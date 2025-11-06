@@ -3,6 +3,7 @@ export * from "./constants/constants";
 
 // Types
 export * from "./types/activity-node-data";
+export * from "./types/cloud-connector-node-data";
 export * from "./types/condition-groups-type";
 export * from "./types/conditional-branch-node-data";
 export * from "./types/conditional-node-data";
@@ -17,6 +18,7 @@ export * from "./types/ws-messsage-type";
 
 // Utils
 export * from "./utils/get-activity-node-data";
+export * from "./utils/get-cloud-connector-node-data";
 export * from "./utils/get-conditional-branch-node-data";
 export * from "./utils/get-conditional-node-data";
 export * from "./utils/get-execution-state";

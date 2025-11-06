@@ -11,6 +11,7 @@ import { createConditionalNode } from "./create-nodes/create-conditional-node";
 import { createAINode } from "./create-nodes/create-ai-node";
 import { createBlockNode } from "./create-nodes/create-block-node";
 import { createAgentNode } from "./create-nodes/create-agent-node";
+import { createCloudConnectorNode } from "./create-nodes/create-cloud-connector-node";
 
 /**
  * Creates nodes and edges based on the provided node data and source node ID.
@@ -45,6 +46,9 @@ const createNodesAndEdgesUtil = (
       break;
     case "activityNode":
       nodesAndEdgesObj = createActivityNode(newNodeData, sourceNode);
+      break;
+    case "cloudConnectorNode":
+      nodesAndEdgesObj = createCloudConnectorNode(newNodeData, sourceNode);
       break;
     case "flowEndNode":
       nodesAndEdgesObj = createFlowEndNode(sourceNode.id);
