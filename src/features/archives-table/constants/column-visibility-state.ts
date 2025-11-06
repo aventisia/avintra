@@ -1,4 +1,4 @@
-/** Column visibility initial state for the flows table. */
+/** Column visibility initial state for the Archived flows table. */
 export const columnVisibilityState = {
   id: false,
   name: true,

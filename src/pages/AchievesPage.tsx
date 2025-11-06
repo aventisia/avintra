@@ -1,10 +1,10 @@
 import { DataTableSkeleton } from "@aventisia/ui/data-table";
 import { lazy, Suspense } from "react";
 
-// Lazy load the FlowsTable component.
-const ArchivesTable = lazy(() =>
-  import("@/features/archives-table/components/FlowsTable").then((module) => ({
-    default: module.ArchivesTable,
+// Lazy load the ArchivedFlowsTable component.
+const ArchivedFlowsTable = lazy(() =>
+  import("@/features/archives-table/components/ArchivedFlowsTable").then((module) => ({
+    default: module.ArchivedFlowsTable,
   })),
 );
 
@@ -15,7 +15,7 @@ const ArchivesTable = lazy(() =>
 export const AchievesPage = () => {
   return (
     <Suspense fallback={<DataTableSkeleton />}>
-      <ArchivesTable />
+      <ArchivedFlowsTable />
     </Suspense>
   );
 };

@@ -1,22 +1,22 @@
 /**
- * Data transfer object for the agents table
+ * Data transfer object for the archived flows table
  * @export
- * @interface ArchivesTableDto
+ * @interface ArchivedFlowsTableDto
  */
-export interface ArchivesTableDto {
-  /** Unique identifier for the agent record */
+export interface ArchivedFlowsTableDto {
+  /** Unique identifier for the archived flow record */
   id: string;
 
-  /** Reference ID associated with the agent (e.g., flow or template ID) */
+  /** Reference ID associated with the archived flow (e.g., flow or template ID) */
   refId: string;
 
-  /** Name of the agent or flow */
+  /** Name of the archived flow */
   name: string | null;
 
-  /** Type of the agent (e.g., 'Agent') */
+  /** Type of the archived flow (e.g., 'Agent') */
   type: string;
 
-  /** Count of machines using the agent */
+  /** Count of machines using the archived flow */
   machineCount?: number;
 
   /** Indicates if the version is locked */

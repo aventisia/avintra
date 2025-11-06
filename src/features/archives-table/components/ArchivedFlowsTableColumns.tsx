@@ -5,16 +5,16 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
-import { ArchivesTableDto } from "../dtos/flows-table-dto";
+import { ArchivedFlowsTableDto } from "../dtos/archived-flows-table-dto";
 
-import { FlowRowActions } from "./FlowRowActions";
-import { FlowsTableCellLink } from "./FlowsTableCellLink";
+import { ArchivedFlowRowActions } from "./ArchivedFlowRowActions";
+import { ArchivedFlowsTableCellLink } from "./ArchivedFlowsTableCellLink";
 
 /**
  * Array of table columns for the flows table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const flowsTableColumns: ColumnDef<ArchivesTableDto>[] = [
+export const archivedFlowsTableColumns: ColumnDef<ArchivedFlowsTableDto>[] = [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -48,7 +48,7 @@ export const flowsTableColumns: ColumnDef<ArchivesTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <FlowsTableCellLink
+      <ArchivedFlowsTableCellLink
         rowId={row.original.id}
         refId={row.original.refId}
         cellValue={row.getValue("name")}
@@ -117,8 +117,8 @@ export const flowsTableColumns: ColumnDef<ArchivesTableDto>[] = [
   {
     id: "actions",
     cell: ({ row }) => (
-      // Render the flows row actions component
-      <FlowRowActions rowId={row.original.id} refId={row.original.refId} />
+      // Render the archived flows row actions component
+      <ArchivedFlowRowActions rowId={row.original.id} refId={row.original.refId} />
     ),
   },
 ];

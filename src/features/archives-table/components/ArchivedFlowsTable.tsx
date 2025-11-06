@@ -1,8 +1,6 @@
-import { Separator } from "@aventisia/ui";
 import {
   DataTable,
   DataTableSkeleton,
-  // DTCreateButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
@@ -14,18 +12,15 @@ import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
-import { useFetchFlows } from "../hooks/useFetchFlows";
-
-// import { FlowCrudDialog } from "./flow-crud-dialog/FlowCrudDialog";
-// import { FlowsBulkActions } from "./FlowsBulkActions";
-import { flowsTableColumns } from "./FlowsTableColumns";
+import { useFetchArchivedFlows } from "../hooks/useFetchArchivedFlows";
+import { archivedFlowsTableColumns } from "./ArchivedFlowsTableColumns";
 
 /**
- * Renders a table of flows.
+ * Renders a table of Archived flows.
  *
- * @returns The rendered FlowsTable component.
+ * @returns The rendered ArchivedFlowsTable component.
  */
-export const ArchivesTable = () => {
+export const ArchivedFlowsTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
@@ -35,12 +30,12 @@ export const ArchivesTable = () => {
     columnVisibilityState,
   );
 
-  // Fetch flows data
-  const { data } = useFetchFlows();
+  // Fetch Archived flows data
+  const { data } = useFetchArchivedFlows();
 
-  // Create a React table for flows data
+  // Create a React table for Archived flows data
   const table = useDataTable(
-    flowsTableColumns,
+    archivedFlowsTableColumns,
     data?.data || [],
     columnVisibility,
     sortState,
@@ -52,8 +47,6 @@ export const ArchivesTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Crud ops dialog */}
-          {/* <FlowCrudDialog> */}
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
             <DTHeading heading={TABLE_HEADING} />
@@ -67,23 +60,17 @@ export const ArchivesTable = () => {
               <DTViewOptions
                 {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
               />
-              <Separator orientation="vertical" className="mx-2 h-6" />
-              {/* <DTCreateButton buttonText="Create Agent" /> */}
             </div>
           </div>
 
           {/* Data table to render data */}
-          <DataTable table={table} columnsLength={flowsTableColumns.length} />
-          {/* </FlowCrudDialog> */}
-
+          <DataTable table={table} columnsLength={archivedFlowsTableColumns.length} />
+          
           {/* Data table Pagination component */}
           <DTPagination table={table} />
-
-          {/* Bulk actions for data table */}
-          {/* <FlowsBulkActions table={table} /> */}
         </div>
       ) : (
-        // Show data table skeleton while fetching the flows data
+        // Show data table skeleton while fetching the Archived flows data
         <DataTableSkeleton />
       )}
     </>
