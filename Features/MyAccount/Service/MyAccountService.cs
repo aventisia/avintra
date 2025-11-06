@@ -382,9 +382,14 @@ public class MyAccountService(
                 // Query the current tenant's subscription, including related plan and creator details
                 var subscription = await _unitOfWork.TenantSubscriptionRepo
                     .GetByConditionAsync(w =>
-                        w.TenantId == user.TenantId
+                        w.TenantId == user.TenantId && w.IsActive
                     )
-                    .FirstOrDefaultAsync();
+                    .SingleOrDefaultAsync(); // @rahmat Since tenant should have only one active subscription at max so using SingleOrDefaultAsync() instead of FirstOrDefaultAsync()
+
+                // IMPORTANT NOTE: Once user has completed onboarding, then there will always be an 1 active subscription at 
+                // any point of time even that subscription's status is expired. Users will be able to login even if subscription 
+                // is expired they won't be able to access any paid features. In future, we may downgrade user's subscription to 
+                // free Starter plan automatically once subscription is expired. In that case also there will be always one active subscription.
 
                 // Check if a valid subscription was found
                 if (subscription == null || subscription.Status == SubscriptionStatusTypesEnum.Initiated)
