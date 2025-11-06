@@ -23,23 +23,32 @@ const BillingFrequency = ({
 
   return (
     <>
-      <Tooltip content="Change billing frequency">
+      {import.meta.env.MODE !== "production" ? (
+        <Tooltip content="Change billing frequency">
+          <Button
+            size={"xs"}
+            className="border-muted bg-muted text-muted-foreground"
+            onClick={() => {
+              setChosenPlan("FrequencyChange");
+              setPlanFrequency(
+                currentPlan?.frequency == "Yearly" ? "monthly" : "yearly",
+              );
+              setCurrency(currentPlan?.currency || "USD");
+              setOpen(true);
+            }}
+          >
+            Billed {currentPlan?.frequency}
+            <PencilIcon className="ml-2 h-3 w-3" />
+          </Button>
+        </Tooltip>
+      ) : (
         <Button
           size={"xs"}
-          className="border-muted bg-muted text-muted-foreground"
-          onClick={() => {
-            setChosenPlan("FrequencyChange");
-            setPlanFrequency(
-              currentPlan?.frequency == "Yearly" ? "monthly" : "yearly",
-            );
-            setCurrency(currentPlan?.currency || "USD");
-            setOpen(true);
-          }}
+          className="cursor-default border-muted bg-muted text-muted-foreground"
         >
           Billed {currentPlan?.frequency}
-          <PencilIcon className="ml-2 h-3 w-3" />
         </Button>
-      </Tooltip>
+      )}
     </>
   );
 };
