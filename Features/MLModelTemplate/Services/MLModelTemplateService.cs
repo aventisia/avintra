@@ -666,120 +666,134 @@ public class MLModelTemplateService : IMLModelTemplateService
         return serviceResponse;
     }
 
-    // Uses a selected trending Worc template to create a new ml model
-    public async Task<ServiceResponse<TrendingTemplateDto>> UseTemplateToCreateMLModelAsync(TrendingTemplateDto trendingTemplateDto)
+    // Uses a selected trending AI model template to create a new ML model project version
+    public async Task<ServiceResponse<bool>> UseTemplateToCreateMLModelAsync(AIModelTemplateSchemaDto aiModelTemplateSchemaDto)
     {
-        var serviceResponse = new ServiceResponse<TrendingTemplateDto>
+        var serviceResponse = new ServiceResponse<bool>
         {
-            Message = "Failed to add template. Please try again."
+            Message = "Failed to add the template. Please try again later."
         };
 
         try
         {
-            // Trim string properties for cleanliness, removing any unnecessary whitespaces.
-            trendingTemplateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(trendingTemplateDto);
+            // Clean up the template schema DTO by trimming whitespace from string properties
+            aiModelTemplateSchemaDto = TrimDtoStringPropsUtil.TrimDtoStringProps(aiModelTemplateSchemaDto);
 
-            // Check if the template already exists in the database by matching its ID.
-            var templateEntity = await _unitOfWork.MLModelTemplateRepo
-                .GetByConditionAsync(w => w.Id == trendingTemplateDto.Id)
-                .SingleOrDefaultAsync();
+            // Deserialize the setup object into the appropriate configuration details object
+            var templateDataObject = JsonSerializer.Deserialize<AIModelTemplateConfigDto>(
+                aiModelTemplateSchemaDto.DataObject,
+                new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }
+            );
 
-            if (templateEntity == null)
+            // Create a new AI project instance
+            var aiProject = new AIProject()
             {
-                // If no template is found, log a warning and return an error response.
-                _logger.LogWarning("Template with ID {TemplateId} not found in the database.", trendingTemplateDto.Id);
-                serviceResponse.Message = "Template not found in the database.";
-                return serviceResponse;
-            }
+                Name = $"{templateDataObject.Name} #{aiModelTemplateSchemaDto.UsageCount}",
+                Description = templateDataObject.Description,
+                Type = AIProjectTypeEnum.Inferencing,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId,
+            };
 
-            // Fetch the existing ML model using the RefId from the template.
-            var mlModelEntity = await _unitOfWork.AIProjectRepo
-                .GetByConditionAsync(w => w.Id == trendingTemplateDto.RefId)
-                .AsNoTracking()
-                .Include(i => i.CreatedByUser)
-                .FirstOrDefaultAsync();
-
-            if (mlModelEntity == null)
-            {
-                // If the ML model doesn't exist, we create a new one from the template and set user-related fields.
-                _logger.LogInformation("ML Model not found for template ID {TemplateId}. Creating a new model.", trendingTemplateDto.Id);
-                mlModelEntity = trendingTemplateDto.Adapt<AIProject>();
-                mlModelEntity.CreatedByUserId = _userId;
-                mlModelEntity.LastModifiedByUserId = _userId;
-
-                // Insert the newly created ML model into the repository.
-                await _unitOfWork.AIProjectRepo.InsertAsync(mlModelEntity);
-
-                // Check if the entity was successfully saved; if not, log an error and return the response.
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Failed to save ML model entity for template ID: {TemplateId}.", trendingTemplateDto.Id);
-                    return serviceResponse;
-                }
-
-                // Log successful model creation and saving.
-                _logger.LogInformation("ML Model successfully created for template ID: {TemplateId}.", trendingTemplateDto.Id);
-            }
-
-            // Handle specific configurations based on the model type ('Inferencing' or 'Conversation').
-            if (templateEntity.Type == AIProjectTypeEnum.Inferencing)
-            {
-                // Deserialize and update the Inferencing model configuration.
-                var templateSetup = JsonSerializer.Deserialize<InferencingModelTemplateDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                var inferencingData = templateSetup.Adapt<InferencingModelDto>();
-                inferencingData.Id = mlModelEntity.Id;
-                inferencingData.Name = templateEntity.Name;
-                inferencingData.Description = templateEntity.Description;
-
-                // Log the update process for the Inferencing model.
-                _logger.LogInformation("Updating Inferencing setup for ML model ID: {ModelId}.", mlModelEntity.Id);
-                await _inferencingModelService.UpdateSetupAsync(inferencingData);
-            }
-            else if (templateEntity.Type == AIProjectTypeEnum.Conversational)
-            {
-                // Deserialize and update the Conversation model configuration.
-                var conversationData = JsonSerializer.Deserialize<ConversationModelDto>(templateEntity.ConfigJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                conversationData.Id = mlModelEntity.Id;
-                conversationData.Name = templateEntity.Name;
-                conversationData.Description = templateEntity.Description;
-
-                // Log the update process for the Conversation model.
-                _logger.LogInformation("Updating Conversation setup for ML model ID: {ModelId}.", mlModelEntity.Id);
-                await _conversationModelService.UpdateSetupAsync(conversationData);
-            }
-
-            // Increase the usage count for the template by 1.
-            templateEntity.UsagesCount++;
-
-            // Update the template entity in the repository.
-            _unitOfWork.MLModelTemplateRepo.Update(templateEntity);
-
-            // Try saving the changes and log an error if the save operation fails.
+            // Insert the new AI project into the database
+            await _unitOfWork.AIProjectRepo.InsertAsync(aiProject);
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to save the updated ML model entity for template ID: {TemplateId}.", trendingTemplateDto.Id);
+                _logger.LogError("Failed to save the AI project when creating a new model from template.");
                 return serviceResponse;
             }
 
-            // Fetch the updated ML model entity with the user information included.
-            mlModelEntity = await _unitOfWork.AIProjectRepo
-                .GetByConditionAsync(w => w.Id == mlModelEntity.Id)
-                .AsNoTracking()
-                .Include(i => i.CreatedByUser)
-                .FirstOrDefaultAsync();
+            // Create a new AI project version associated with the AI project
+            var aiProjectVersion = new AIProjectVersion()
+            {
+                AIProjectId = aiProject.Id,
+                BusinessContext = templateDataObject.BusinessContext,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId,
+            };
 
-            // Log success and return the updated template.
-            _logger.LogInformation("Template successfully saved to the Template Library. Template ID: {TemplateId}.", trendingTemplateDto.Id);
-            serviceResponse.Data = mlModelEntity.Adapt<TrendingTemplateDto>();
+            // Insert the new project version into the database
+            await _unitOfWork.AIProjectVersionRepo.InsertAsync(aiProjectVersion);
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save the AI project version when creating a new model from template.");
+                return serviceResponse;
+            }
+
+            // Create a list to store the tasks associated with this new project version
+            var aiProjectVersionTasks = new List<VersionTask>();
+
+            // Define a mapping of tasks to their associated properties
+            var taskMappings = new Dictionary<string, Action>()
+            {
+                { "Summarization", () => AddTaskToProject(aiProject, aiProjectVersion, templateDataObject.Summarization, AIProjectTaskTypesEnum.Summarization, aiProjectVersionTasks) },
+                { "Extraction", () => AddTaskToProject(aiProject, aiProjectVersion, templateDataObject.Extraction, AIProjectTaskTypesEnum.Extraction, aiProjectVersionTasks) },
+                { "QuestionAnswer", () => AddTaskToProject(aiProject, aiProjectVersion, templateDataObject.QuestionAnswer, AIProjectTaskTypesEnum.QuestionAnswer, aiProjectVersionTasks) },
+                { "Classification", () => AddTaskToProject(aiProject, aiProjectVersion, templateDataObject.Classification, AIProjectTaskTypesEnum.Classification, aiProjectVersionTasks) },
+                { "SentimentAnalytics", () => AddTaskToProject(aiProject, aiProjectVersion, templateDataObject.SentimentAnalytics, AIProjectTaskTypesEnum.SentimentAnalytics, aiProjectVersionTasks) },
+            };
+
+            // Iterate through each task type and add it if it exists
+            foreach (var taskMapping in taskMappings)
+            {
+                var taskTypeProperty = aiModelTemplateSchemaDto.GetType().GetProperty(taskMapping.Key);
+                var taskTypeValue = taskTypeProperty?.GetValue(aiModelTemplateSchemaDto);
+
+                if (taskTypeValue != null)
+                {
+                    taskMapping.Value();
+                }
+            }
+
+            // If there are any tasks, insert them into the database
+            if (aiProjectVersionTasks.Any())
+            {
+                await _unitOfWork.VersionTaskRepo.InsertAsync(aiProjectVersionTasks);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to save the version tasks for the new AI project version.");
+                    return serviceResponse;
+                }
+            }
+
+            // Log success and return the response
+            _logger.LogInformation("Successfully created a new AI model project version from template. Project Version ID: {ProjectVersionId}.", aiProjectVersion.Id);
+            serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Template added successfully.";
+            serviceResponse.Message = "Template added successfully and new ML model created.";
+
         }
         catch (Exception ex)
         {
-            // In case of an exception, log the error with relevant details for troubleshooting.
-            _logger.LogError(ex, "An error occurred while saving the template with ID {TemplateId} to the Template Library.", trendingTemplateDto.Id);
+            // Log any exceptions that occur during the process
+            _logger.LogError(ex, "An error occurred while creating a new ML model from template.");
         }
 
+        // Return the service response, indicating success or failure
         return serviceResponse;
+    }
+
+    // Helper method to add tasks to the project
+    private void AddTaskToProject(AIProject aiProject, AIProjectVersion aiProjectVersion, dynamic taskConfig, AIProjectTaskTypesEnum taskType, List<VersionTask> taskList)
+    {
+        if (taskConfig != null)
+        {
+            taskList.Add(new VersionTask
+            {
+                AIProject = aiProject,
+                AIProjectVersion = aiProjectVersion,
+                AIProjectId = aiProject.Id,
+                AIProjectVersionId = aiProjectVersion.Id,
+                Name = taskType.ToString(),
+                SetupObject = JsonSerializer.Serialize(taskConfig.SetupObject, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }),
+                Temperature = taskConfig.Temperature,
+                LLM = taskConfig.LLM,
+                IsBYOKEnabled = taskConfig.ConfigurationType == LLMConfigurationTypesEnum.Cloud,
+                SystemPrompt = taskConfig.NodePrompt,
+                GeneratedPrompt = taskConfig.GeneratedPrompt,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId,
+            });
+        }
     }
 }
