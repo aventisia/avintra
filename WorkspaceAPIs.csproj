@@ -36,7 +36,10 @@
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Update="StaticFiles\Prompts\GenerateTemplateDescriptionPrompt.txt">
+    <None Update="StaticFiles\Prompts\GenerateAgentTemplateDescriptionPrompt.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="StaticFiles\Prompts\GenerateAIModelTemplateDescriptionPrompt.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
