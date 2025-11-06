@@ -22,19 +22,19 @@ public class AppSecretService : IAppSecretService
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
     }
 
-    // Retrieve all app secrets
+    // Retrieve all vault credentials
     public async Task<ServiceResponse<IEnumerable<AppSecretDto>>> GetAllAppSecretsAsync()
     {
         // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<IEnumerable<AppSecretDto>>
         {
             Data = null,
-            Message = "Failed to fetch app secrets. Please try again later."
+            Message = "Failed to fetch credentials. Please try again later."
         };
 
         try
         {
-            // Attempt to retrieve all app secrets from the repository
+            // Attempt to retrieve all credentials from the repository
             var appSecrets = await _unitOfWork.AppSecretRepo
                 .GetAllAsync()
                 .OrderByDescending(w => w.CreatedOn)
@@ -44,85 +44,85 @@ public class AppSecretService : IAppSecretService
             // Adapt the data to the DTO format and assign to service response
             serviceResponse.Data = appSecrets.Adapt<IEnumerable<AppSecretDto>>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "App secrets fetched successfully.";
+            serviceResponse.Message = "Credentials fetched successfully.";
 
-            // Log the number of app secrets fetched
-            _logger.LogInformation("Successfully retrieved {Count} app secrets from the database.", appSecrets.Count);
+            // Log the number of credentials fetched
+            _logger.LogInformation("Successfully retrieved {Count} credentials from the database.", appSecrets.Count);
         }
         catch (Exception ex)
         {
             // Log any error that occurs during the process
-            _logger.LogError(ex, "Error occurred while fetching app secrets.");
+            _logger.LogError(ex, "Error occurred while fetching credentials.");
         }
 
         // Return the service response (could be success or failure)
         return serviceResponse;
     }
 
-    // Checks the availability of a app secret name.
+    // Checks the availability of a credential name.
     public async Task<ServiceResponse<TrueFalseResultDto>> IsAppSecretNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<TrueFalseResultDto>
         {
             Data = null,
-            Message = "Failed to check App secret name availability. Please try again."
+            Message = "Failed to check credential name availability. Please try again."
         };
 
         try
         {
-            // Trim and normalize the app secret name input
+            // Trim and normalize the credential name input
             var appSecretName = checkAvailabilityDto.UserInput?.Trim();
 
             if (string.IsNullOrWhiteSpace(appSecretName))
             {
                 serviceResponse.Data = new TrueFalseResultDto { Result = false };
                 serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "App secret name cannot be empty. Please provide a valid name.";
+                serviceResponse.Message = "Credential name cannot be empty. Please provide a valid name.";
                 return serviceResponse;
             }
 
-            // Check if app secret with the same name exists (case-insensitive)
+            // Check if credential with the same name exists (case-insensitive)
             var existingAppSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => w.Name.ToLower() == appSecretName.ToLower())
                 .SingleOrDefaultAsync();
 
-            // App secret name already exists
+            // Credential name already exists
             if (existingAppSecret != null)
             {
                 serviceResponse.Data = new TrueFalseResultDto { Result = false };
                 serviceResponse.StatusCode = 200;
-                serviceResponse.Message = $"A app secret with the name '{appSecretName}' already exists. Please try a different name.";
+                serviceResponse.Message = $"A credential with the name '{appSecretName}' already exists. Please try a different name.";
                 return serviceResponse;
             }
 
             // Name is available
             serviceResponse.Data = new TrueFalseResultDto { Result = true };
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = $"The app secret name '{appSecretName}' is available.";
+            serviceResponse.Message = $"Credential name '{appSecretName}' is available.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while checking app secret name availability.");
+            _logger.LogError(ex, "Error occurred while checking credential name availability.");
             return serviceResponse;
         }
 
         return serviceResponse;
     }
 
-    // Retrieve app secrets as selectable options (e.g., for a dropdown)
+    // Retrieve credentials as selectable options (e.g., for a dropdown)
     public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableAppSecretOptionsAsync(AppSecretTypesEnum? type)
     {
         // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
         {
             Data = null,
-            Message = "Failed to fetch app secret options. Please try again later."
+            Message = "Failed to fetch credentials list. Please try again later."
         };
 
         try
         {
-            // Attempt to fetch the selectable app secret options from the repository
+            // Attempt to fetch the selectable credential options from the repository
             var options = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => !type.HasValue || w.Type == type)
                 .ProjectToType<SelectOptionDto>()
@@ -131,93 +131,93 @@ public class AppSecretService : IAppSecretService
             // Assign the options to the service response
             serviceResponse.Data = options;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "App secret options fetched successfully.";
+            serviceResponse.Message = "Credentials list fetched successfully.";
 
-            // Log the number of app secret options fetched
-            _logger.LogInformation("Successfully fetched {Count} app secret(s) from the database.", options.Count);
+            // Log the number of credentials list fetched
+            _logger.LogInformation("Successfully fetched {Count} credential(s) from the database.", options.Count);
         }
         catch (Exception ex)
         {
             // Log any error that occurs during the process
-            _logger.LogError(ex, "Error occurred while fetching app secret options.");
+            _logger.LogError(ex, "Error occurred while fetching credentials list options.");
         }
 
         // Return the service response (could be success or failure)
         return serviceResponse;
     }
 
-    // Retrieve a specific app secret by its ID
+    // Retrieve a specific credential by its ID
     public async Task<ServiceResponse<AppSecretDto>> GetAppSecretByIdAsync(Guid appSecretId)
     {
         // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<AppSecretDto>
         {
             Data = null,
-            Message = "Unable to fetch the app secret. Please try again later."
+            Message = "Unable to fetch the credential. Please try again later."
         };
 
         try
         {
-            // Log the request to fetch the app secret by ID
-            _logger.LogInformation("Looking up app secret with ID: {AppSecretId}", appSecretId);
+            // Log the request to fetch the credential by ID
+            _logger.LogInformation("Looking up credential with ID: {AppSecretId}", appSecretId);
 
-            // Attempt to retrieve the app secret by its ID
+            // Attempt to retrieve the credential by its ID
             var appSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => w.Id == appSecretId)
                 .Include(i => i.CreatedByUser)
                 .SingleOrDefaultAsync();
 
-            // If no app secret is found, log and return an appropriate message
+            // If no credential is found, log and return an appropriate message
             if (appSecret == null)
             {
-                _logger.LogWarning("No app secret found with ID: {AppSecretId}", appSecretId);
-                serviceResponse.Message = "App secret not found.";
+                _logger.LogWarning("No credential found with ID: {AppSecretId}", appSecretId);
+                serviceResponse.Message = "Credential not found.";
                 return serviceResponse;
             }
 
             // Adapt the entity to a DTO and assign to the service response
             serviceResponse.Data = appSecret.Adapt<AppSecretDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "App secret retrieved successfully.";
+            serviceResponse.Message = "Credential retrieved successfully.";
 
-            // Log successful retrieval of app secret by ID
-            _logger.LogInformation("Successfully fetched app secret with ID: {AppSecretId}", appSecretId);
+            // Log successful retrieval of credential by ID
+            _logger.LogInformation("Successfully fetched credential with ID: {AppSecretId}", appSecretId);
         }
         catch (Exception ex)
         {
             // Log any error that occurs during the process
-            _logger.LogError(ex, "An error occurred while fetching app secret with ID: {AppSecretId}", appSecretId);
+            _logger.LogError(ex, "An error occurred while fetching credential with ID: {AppSecretId}", appSecretId);
         }
 
         // Return the service response (could be success or failure)
         return serviceResponse;
     }
 
-    // Create a new app secret
+    // Create a new credential
     public async Task<ServiceResponse<AppSecretDto>> CreateAppSecretAsync(AppSecretDto appSecretDto)
     {
         // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<AppSecretDto>
         {
             Data = null,
-            Message = "Failed to create app secret. Please try again later."
+            Message = "Failed to create credential. Please try again later."
         };
 
         try
         {
-            // Log the start of the app secret creation process
-            _logger.LogInformation("Initiating creation of app secret: {AppSecretName}", appSecretDto.Name);
+            // Log the start of the credential creation process
+            _logger.LogInformation("Initiating creation of credential: {CredentialName}", appSecretDto.Name);
 
-            // Check if an app secret with the same name already exists
+            // Check if a credential with the same name already exists
             var existingSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => w.Name.ToLower() == appSecretDto.Name.ToLower())
                 .SingleOrDefaultAsync();
 
-            // If an existing secret is found, return a conflict response
+            // If an existing credential is found, return a conflict response
             if (existingSecret != null)
             {
-                _logger.LogWarning("App secret creation aborted. A secret named '{AppSecretName}' already exists.", appSecretDto.Name);
-                serviceResponse.Message = $"An app secret named '{appSecretDto.Name}' already exists.";
+                _logger.LogWarning("Credential creation aborted. A credential named '{CredentialName}' already exists.", appSecretDto.Name);
+                serviceResponse.Message = $"A credential named '{appSecretDto.Name}' already exists.";
                 serviceResponse.StatusCode = 409;
                 return serviceResponse;
             }
@@ -225,7 +225,7 @@ public class AppSecretService : IAppSecretService
             // Clean up input DTO (trim strings, remove extra spaces, etc.)
             appSecretDto = TrimDtoStringPropsUtil.TrimDtoStringProps(appSecretDto);
 
-            // Validate the data, Pass the cleaned-up app secret data to the validation function
+            // Validate the data, Pass the cleaned-up credential data to the validation function
             var validateData = ValidateData(appSecretDto.Type, appSecretDto.Data);
 
             // Check if validation was successful, If the sanitized data is empty or invalid, return the service response with the validation remark
@@ -235,19 +235,19 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Create a new AppSecret entity
+            // Create a new credential entity
             var newAppSecret = appSecretDto.Adapt<AppSecret>();
             newAppSecret.Data = validateData.SanitizedDataJson;
             newAppSecret.CreatedByUserId = _userId;
             newAppSecret.LastModifiedByUserId = _userId;
 
-            // Insert the new app secret into the repository
+            // Insert the new credential into the repository
             await _unitOfWork.AppSecretRepo.InsertAsync(newAppSecret);
 
             // Attempt to save changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to save newly created app secret: {AppSecretName}", appSecretDto.Name);
+                _logger.LogError("Failed to save newly created credential: {AppSecretName}", appSecretDto.Name);
                 return serviceResponse;
             }
 
@@ -267,58 +267,58 @@ public class AppSecretService : IAppSecretService
             // Save changes
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to insert encrypted key-values for AppSecret ID: {AppSecretId}", appSecretDto.Id);
+                _logger.LogError("Failed to insert encrypted key-values for Credential ID: {AppSecretId}", appSecretDto.Id);
                 return serviceResponse;
             }
 
             // Adapt the entity to DTO and return success response
             serviceResponse.Data = newAppSecret.Adapt<AppSecretDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "App secret created successfully.";
+            serviceResponse.Message = "Credential created successfully.";
 
-            // Log successful creation of the app secret
-            _logger.LogInformation("App secret created successfully with ID: {AppSecretId}", newAppSecret.Id);
+            // Log successful creation of the credential
+            _logger.LogInformation("Credential created successfully with ID: {AppSecretId}", newAppSecret.Id);
         }
         catch (Exception ex)
         {
-            // Log any unexpected errors during app secret creation
-            _logger.LogError(ex, "An unexpected error occurred while creating app secret: {AppSecretName}", appSecretDto.Name);
+            // Log any unexpected errors during Credential creation
+            _logger.LogError(ex, "An unexpected error occurred while creating credential: {AppSecretName}", appSecretDto.Name);
         }
 
         // Return the service response (could be success or failure)
         return serviceResponse;
     }
 
-    // Update an existing app secret
+    // Update an existing credential
     public async Task<ServiceResponse<AppSecretDto>> UpdateAppSecretAsync(AppSecretDto appSecretDto)
     {
         // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<AppSecretDto>
         {
             Data = null,
-            Message = "Failed to update app secret. Please try again later."
+            Message = "Failed to update credential. Please try again later."
         };
 
         try
         {
-            // Log the attempt to update the app secret
-            _logger.LogInformation("Attempting to update app secret with ID: {AppSecretId}", appSecretDto.Id);
+            // Log the attempt to update the credential
+            _logger.LogInformation("Attempting to update credential with ID: {AppSecretId}", appSecretDto.Id);
 
-            // Attempt to retrieve the app secret by ID
+            // Attempt to retrieve the credential by ID
             var existingAppSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => w.Id == appSecretDto.Id)
                 .Include(i => i.EncryptedKeyValues)
                 .SingleOrDefaultAsync();
 
-            // If the app secret doesn't exist, return an error message
+            // If the credential doesn't exist, return an error message
             if (existingAppSecret == null)
             {
-                _logger.LogWarning("Update failed. No app secret found with ID: {AppSecretId}", appSecretDto.Id);
-                serviceResponse.Message = "App secret not found.";
+                _logger.LogWarning("Update failed. No credential found with ID: {AppSecretId}", appSecretDto.Id);
+                serviceResponse.Message = "Credential not found.";
                 return serviceResponse;
             }
 
-            // Check for a duplicate secret by name
+            // Check for a duplicate credential by name
             var duplicateSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => w.Name.ToLower() == appSecretDto.Name.ToLower() && w.Id != appSecretDto.Id)
                 .SingleOrDefaultAsync();
@@ -326,8 +326,8 @@ public class AppSecretService : IAppSecretService
             // If a duplicate exists, return a conflict message
             if (duplicateSecret != null)
             {
-                _logger.LogWarning("Update failed. App secret with name '{AppSecretName}' already exists.", appSecretDto.Name);
-                serviceResponse.Message = $"An app secret with the name '{appSecretDto.Name}' already exists.";
+                _logger.LogWarning("Update failed. Credential with name '{AppSecretName}' already exists.", appSecretDto.Name);
+                serviceResponse.Message = $"A credential with the name '{appSecretDto.Name}' already exists.";
                 serviceResponse.StatusCode = 409;
                 return serviceResponse;
             }
@@ -335,7 +335,7 @@ public class AppSecretService : IAppSecretService
             // Clean up input DTO (trim strings, remove extra spaces, etc.)
             appSecretDto = TrimDtoStringPropsUtil.TrimDtoStringProps(appSecretDto);
 
-            // Validate the data, Pass the cleaned-up app secret data to the validation function
+            // Validate the data, Pass the cleaned-up credential data to the validation function
             var validateData = ValidateData(appSecretDto.Type, appSecretDto.Data);
 
             // Check if validation was successful, If the sanitized data is empty or invalid, return the service response with the validation remark
@@ -350,13 +350,13 @@ public class AppSecretService : IAppSecretService
             existingAppSecret.Data = validateData.SanitizedDataJson;
             existingAppSecret.LastModifiedByUserId = _userId;
 
-            // Update the app secret in the repository
+            // Update the credential in the repository
             _unitOfWork.AppSecretRepo.Update(existingAppSecret);
 
             // Attempt to save changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to save updated app secret: {AppSecretId}", appSecretDto.Id);
+                _logger.LogError("Failed to save updated credential: {AppSecretId}", appSecretDto.Id);
                 return serviceResponse;
             }
 
@@ -425,7 +425,7 @@ public class AppSecretService : IAppSecretService
             {
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogError("Failed to update encrypted key-values for AppSecret ID: {AppSecretId}", appSecretDto.Id);
+                    _logger.LogError("Failed to update encrypted key-values for credential ID: {AppSecretId}", appSecretDto.Id);
                     return serviceResponse;
                 }
             }
@@ -433,145 +433,146 @@ public class AppSecretService : IAppSecretService
             // Return success response
             serviceResponse.Data = existingAppSecret.Adapt<AppSecretDto>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "App secret updated successfully.";
+            serviceResponse.Message = "Credential updated successfully.";
 
-            // Log successful update of the app secret
-            _logger.LogInformation("App secret with ID: {AppSecretId} successfully updated.", appSecretDto.Id);
+            // Log successful update of the credential
+            _logger.LogInformation("Credential with ID: {AppSecretId} successfully updated.", appSecretDto.Id);
         }
         catch (Exception ex)
         {
             // Log any unexpected errors during the update
-            _logger.LogError(ex, "Error occurred while updating app secret with ID: {AppSecretId}", appSecretDto.Id);
+            _logger.LogError(ex, "Error occurred while updating credential with ID: {AppSecretId}", appSecretDto.Id);
         }
 
         // Return the service response (could be success or failure)
         return serviceResponse;
     }
 
-    // Delete a single app secret by ID
+    // Delete a single credential by ID
     public async Task<ServiceResponse<bool>> DeleteAppSecretAsync(Guid appSecretId)
     {
         // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
-            Message = "Failed to delete app secret. Please try again later."
+            Message = "Failed to delete credential. Please try again later."
         };
 
         try
         {
-            // Log the start of the app secret deletion process
-            _logger.LogInformation("Initiating deletion of app secret with ID: {AppSecretId}", appSecretId);
+            // Log the start of the credential deletion process
+            _logger.LogInformation("Initiating deletion of credential with ID: {AppSecretId}", appSecretId);
 
-            // Attempt to retrieve the app secret by ID
+            // Attempt to retrieve the credential by ID
             var appSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => w.Id == appSecretId)
                 .SingleOrDefaultAsync();
 
-            // If no app secret is found, return an error message
+            // If no credential is found, return an error message
             if (appSecret == null)
             {
-                _logger.LogWarning("No app secret found with ID: {AppSecretId}", appSecretId);
-                serviceResponse.Message = "App secret not found.";
+                _logger.LogWarning("No credential found with ID: {AppSecretId}", appSecretId);
+                serviceResponse.Message = "Credential not found.";
                 return serviceResponse;
             }
 
-            // Delete the app secret from the repository
+            // Delete the credential from the repository
             _unitOfWork.AppSecretRepo.Delete(appSecret);
 
             // Attempt to save changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogWarning("Failed to delete app secret with ID: {AppSecretId} due to database save error.", appSecretId);
+                _logger.LogWarning("Failed to delete credential with ID: {AppSecretId} due to database save error.", appSecretId);
                 return serviceResponse;
             }
 
             // Return success response
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "App secret deleted successfully.";
+            serviceResponse.Message = "Credential deleted successfully.";
 
             // Log successful deletion
-            _logger.LogInformation("App secret with ID: {AppSecretId} successfully deleted.", appSecretId);
+            _logger.LogInformation("Credential with ID: {AppSecretId} successfully deleted.", appSecretId);
         }
         catch (Exception ex)
         {
             // Log any unexpected errors during the deletion
-            _logger.LogError(ex, "Unexpected error while deleting app secret with ID: {AppSecretId}", appSecretId);
+            _logger.LogError(ex, "Unexpected error while deleting credential with ID: {AppSecretId}", appSecretId);
         }
 
         // Return the service response (could be success or failure)
         return serviceResponse;
     }
 
-    // Delete multiple app secrets by their IDs
+    // Delete multiple credentials by their IDs
     public async Task<ServiceResponse<bool>> DeleteAppSecretsAsync(List<Guid> appSecretIds)
     {
         // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
-            Message = "Failed to delete app secrets. Please try again later."
+            Message = "Failed to delete credentials. Please try again later."
         };
 
         try
         {
             // Log the initiation of bulk deletion
-            _logger.LogInformation("Initiating bulk deletion for {Count} app secret(s).", appSecretIds.Count);
+            _logger.LogInformation("Initiating bulk deletion for {Count} credential(s).", appSecretIds.Count);
 
-            // Attempt to retrieve the app secrets by their IDs
+            // Attempt to retrieve the credentials by their IDs
             var appSecrets = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => appSecretIds.Contains(w.Id))
                 .ToListAsync();
 
-            // If no app secrets are found, return an error message
+            // If no credentials are found, return an error message
             if (appSecrets == null || appSecrets.Count == 0)
             {
-                _logger.LogWarning("No app secrets found for deletion.");
-                serviceResponse.Message = "No app secrets found to delete.";
+                _logger.LogWarning("No credentials found for deletion.");
+                serviceResponse.Message = "No credentials found to delete.";
                 return serviceResponse;
             }
 
-            // Delete the app secrets from the repository
+            // Delete the credentials from the repository
             _unitOfWork.AppSecretRepo.Delete(appSecrets);
 
             // Attempt to save changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogWarning("Failed to commit bulk deletion of app secrets.");
+                _logger.LogWarning("Failed to commit bulk deletion of credentials.");
                 return serviceResponse;
             }
 
             // Return success response
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "App secrets deleted successfully.";
+            serviceResponse.Message = "Credentials deleted successfully.";
 
             // Log successful bulk deletion
-            _logger.LogInformation("Successfully deleted {Count} app secret(s).", appSecrets.Count);
+            _logger.LogInformation("Successfully deleted {Count} credential(s).", appSecrets.Count);
         }
         catch (Exception ex)
         {
             // Log any unexpected errors during the bulk deletion
-            _logger.LogError(ex, "Unexpected error while bulk deleting app secrets.");
+            _logger.LogError(ex, "Unexpected error while bulk deleting credentials.");
         }
 
         // Return the service response (could be success or failure)
         return serviceResponse;
     }
-    // Retrieves the details of a specific App Secret, including decrypted key-value data.
+
+    // Retrieves the details of a specific Credential, including decrypted key-value data.
     public async Task<ServiceResponse<AppSecretDto>> GetAppSecretDetailAsync(Guid appSecretId)
     {
         // Prepare default response in case of failure
         var serviceResponse = new ServiceResponse<AppSecretDto>
         {
             Data = null,
-            Message = "Unable to load app secret. Please try again later.",
+            Message = "Unable to load credential. Please try again later.",
         };
 
         try
         {
-            // Fetch the AppSecret entity along with its encrypted key-value pairs
+            // Fetch the credential entity along with its encrypted key-value pairs
             var appSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => w.Id == appSecretId)
                 .AsNoTracking()
@@ -580,8 +581,8 @@ public class AppSecretService : IAppSecretService
 
             if (appSecret == null)
             {
-                _logger.LogWarning("No AppSecret found with ID: {AppSecretId}", appSecretId);
-                serviceResponse.Message = "App secret not found.";
+                _logger.LogWarning("No credential found with ID: {AppSecretId}", appSecretId);
+                serviceResponse.Message = "Credential not found.";
                 return serviceResponse;
             }
 
@@ -602,11 +603,11 @@ public class AppSecretService : IAppSecretService
             // Prepare successful response
             serviceResponse.Data = appSecretDto;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "App secret retrieved successfully.";
+            serviceResponse.Message = "Credential retrieved successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving AppSecret with ID: {AppSecretId}", appSecretId);
+            _logger.LogError(ex, "An error occurred while retrieving Credential with ID: {AppSecretId}", appSecretId);
         }
 
         return serviceResponse;
