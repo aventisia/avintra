@@ -6,7 +6,6 @@ public class SubscriptionPlanMappingProfile : IRegister
     {
         // Mapping for subscription plan records.
         config.NewConfig<SubscriptionPlan, SubscriptionPlanDto>()
-            .Map(dest => dest.IsRazorpay, src => src.RazorpayPlanId != null ? true : false)
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName

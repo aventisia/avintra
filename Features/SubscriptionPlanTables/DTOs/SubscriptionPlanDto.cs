@@ -82,16 +82,6 @@ public class SubscriptionPlanDto
     public bool IsDefault { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether this plan is allowed in Razorpay.
-    /// </summary>
-    public bool IsRazorpay { get; set; } = false;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether tax needs to be included for this subscription plan.
-    /// </summary>
-    public bool IncludeTax { get; set; }
-
-    /// <summary>
     /// Indicates whether the plan is disabled.
     /// Nullable to support enabled, disabled, or undefined states.
     /// </summary>
