@@ -1,11 +1,11 @@
 namespace WorkspaceAPIs.DTOs;
 
-#region -------------------- OpenAiApiCredentialsDto --------------------
+#region -------------------- OpenAICredentialsDto --------------------
 
 /// <summary>
 /// Represents the credentials and configuration required to authenticate with the OpenAI API.
 /// </summary>
-public class OpenAiApiCredentialsDto
+public class OpenAICredentialsDto
 {
     /// <summary>
     /// Gets or sets the API key used for authenticating requests to the OpenAI API.
@@ -24,12 +24,12 @@ public class OpenAiApiCredentialsDto
 }
 #endregion
 
-#region -------------------- AwsCredentialsDto --------------------
+#region -------------------- AWSCredentialsDto --------------------
 
 /// <summary>
 /// Contains AWS access credentials and related configuration settings.
 /// </summary>
-public class AwsCredentialsDto
+public class AWSCredentialsDto
 {
     /// <summary>
     /// Gets or sets the AWS region to be used (e.g., "us-east-1").

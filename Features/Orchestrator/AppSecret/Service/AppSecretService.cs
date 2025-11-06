@@ -631,10 +631,10 @@ public class AppSecretService : IAppSecretService
         // Switch statement based on the type of credential
         switch (type)
         {
-            case nameof(AppSecretTypesEnum.OpenAiApi):
+            case nameof(AppSecretTypesEnum.OpenAI):
                 {
-                    // Deserialize JSON into OpenAiApiCredentialsDto
-                    var openAiCredentials = System.Text.Json.JsonSerializer.Deserialize<OpenAiApiCredentialsDto>(rawJson, jsonOptions);
+                    // Deserialize JSON into OpenAICredentialsDto
+                    var openAiCredentials = System.Text.Json.JsonSerializer.Deserialize<OpenAICredentialsDto>(rawJson, jsonOptions);
                     if (openAiCredentials != null)
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(openAiCredentials.ApiKey);
@@ -646,10 +646,10 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.Aws):
+            case nameof(AppSecretTypesEnum.AWS):
                 {
-                    // Deserialize JSON into AwsCredentialsDto
-                    var awsCredentials = System.Text.Json.JsonSerializer.Deserialize<AwsCredentialsDto>(rawJson, jsonOptions);
+                    // Deserialize JSON into AWSCredentialsDto
+                    var awsCredentials = System.Text.Json.JsonSerializer.Deserialize<AWSCredentialsDto>(rawJson, jsonOptions);
                     if (awsCredentials != null)
                     {
                         validationResult.EncryptedValues["SecretAccessKey"] = _encryptionService.EncryptString(awsCredentials.SecretAccessKey);
@@ -675,7 +675,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.TwilioApi):
+            case nameof(AppSecretTypesEnum.Twilio):
                 {
                     // Deserialize JSON into TwilioCredentialsDto
                     var twilioCredentials = System.Text.Json.JsonSerializer.Deserialize<TwilioCredentialsDto>(rawJson, jsonOptions);
@@ -702,7 +702,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.SendGridApi):
+            case nameof(AppSecretTypesEnum.SendGrid):
                 {
                     // Deserialize JSON into SendGridCredentialsDto
                     var sendGridCredentials = System.Text.Json.JsonSerializer.Deserialize<SendGridCredentialsDto>(rawJson, jsonOptions);
@@ -714,7 +714,7 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
-                  case nameof(AppSecretTypesEnum.GitHubApi):
+                  case nameof(AppSecretTypesEnum.GitHub):
                 {
                     var gitHubCredentials = System.Text.Json.JsonSerializer.Deserialize<GitHubCredentialsDto>(rawJson, jsonOptions);
                     if (gitHubCredentials != null)
@@ -734,7 +734,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-                 case nameof(AppSecretTypesEnum.GeneralCredentialApi):
+                 case nameof(AppSecretTypesEnum.GeneralCredentials):
                 {
                     var generalCredential = System.Text.Json.JsonSerializer.Deserialize<GeneralCredentialsDto>(rawJson, jsonOptions);
                     if(generalCredential!= null)
