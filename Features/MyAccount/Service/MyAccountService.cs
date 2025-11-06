@@ -82,6 +82,9 @@ public class MyAccountService(
             // Try to retrieve the access token from the request cookies
             _httpContext.Request.Cookies.TryGetValue(CookieNamesEnum.AccessToken.ToString(), out var accessToken);
 
+            // Try to retrieve the tenant by id
+            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == user.TenantId).FirstOrDefaultAsync();
+
             var userSessionDto = new UserSessionDto()
             {
                 TenantName = user.Tenant.Name,
@@ -90,7 +93,8 @@ public class MyAccountService(
                 UserInitials = GetUserInitialsUtil.GetUserInitials(user.FirstName, user.LastName),
                 AccessToken = accessToken,
                 RefreshToken = session.RefreshToken,
-                RTExpiresOn = session.SessionExpiresOn
+                RTExpiresOn = session.SessionExpiresOn,
+                Country = tenant != null ? tenant.Country : null
             };
 
             // Task successful
@@ -352,6 +356,9 @@ public class MyAccountService(
             _authHelperService.SetCookie(CookieNamesEnum.RefreshToken.ToString(), newRefreshToken, refreshTokenExpiresOn);
             _authHelperService.SetCookie(CookieNamesEnum.UserName.ToString(), user.UserName, refreshTokenExpiresOn);
 
+            // Try to retrieve the tenant by id
+            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == user.TenantId).FirstOrDefaultAsync();
+
             // Create UserSessionDto
             var userSessionDto = new UserSessionDto()
             {
@@ -361,7 +368,8 @@ public class MyAccountService(
                 UserInitials = GetUserInitialsUtil.GetUserInitials(user.FirstName, user.LastName),
                 AccessToken = jwt,
                 RefreshToken = refreshToken,
-                RTExpiresOn = refreshTokenExpiresOn
+                RTExpiresOn = refreshTokenExpiresOn,
+                Country = tenant != null ? tenant.Country : null
             };
 
             // Check if the user is associated with an organization (tenant)

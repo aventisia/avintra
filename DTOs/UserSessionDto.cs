@@ -39,4 +39,9 @@ public class UserSessionDto
     /// Gets or sets the date when the refresh token expires.
     /// </summary>
     public required DateTimeOffset RTExpiresOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the user's country. 
+    /// </summary>
+    public CountriesEnum? Country { get; set; }
 }
