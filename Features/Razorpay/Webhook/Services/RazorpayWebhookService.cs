@@ -1,6 +1,7 @@
 using Newtonsoft.Json.Linq;
 
 namespace AccountsAPIs.Services;
+
 public class WebhookService : IWebhookService
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -692,13 +693,29 @@ public class WebhookService : IWebhookService
                     CardInternational = card?["international"]?.Value<bool>() ?? false,
                 };
 
-                // Insert the new payment method into the repository
-                await _unitOfWork.PaymentMethodRepo.InsertAsync(paymentMethod);
+                // Check if payment method already exists to avoid duplicates
+                var existingPaymentMethod = await _unitOfWork.PaymentMethodRepo
+                    .GetByConditionAsync(w =>
+                        w.TenantId == tenantId &&
+                        w.CardLast4 == paymentMethod.CardLast4 &&
+                        w.CardNetwork == paymentMethod.CardNetwork &&
+                        w.CardType == paymentMethod.CardType &&
+                        w.CardIssuer == paymentMethod.CardIssuer)
+                    .FirstOrDefaultAsync();
 
-                // Save changes to the database
-                if (!await _unitOfWork.SaveAsync())
+                if (existingPaymentMethod == null)
                 {
-                    _logger.LogError("Failed to save payment method for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
+                    // Insert the new payment method into the repository
+                    await _unitOfWork.PaymentMethodRepo.InsertAsync(paymentMethod);
+                    // Save changes to the database
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogError("Failed to save payment method for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
+                    }
+                }
+                else
+                {
+                    paymentMethod = existingPaymentMethod;
                 }
             }
 
