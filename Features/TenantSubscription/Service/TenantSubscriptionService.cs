@@ -413,69 +413,73 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             tenantSubscriptionPurchaseDto = TrimDtoStringPropsUtil.TrimDtoStringProps(tenantSubscriptionPurchaseDto);
 
             // Fetch existing tenant subscription (if any), including plan and creator information
-            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(w =>
-                    w.TenantId == _tenantId &&
-                    w.PlanId == tenantSubscriptionPurchaseDto.PlanId &&
-                    !w.IsActive &&
-                    w.Status == SubscriptionStatusTypesEnum.Initiated &&
-                    w.CreatedOn.Date == DateTimeOffset.UtcNow.Date
-                )
+            var existingTenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w => w.TenantId == _tenantId && !w.IsActive)
                 .Include(i => i.Plan)
                 .Include(i => i.CreatedByUser)
                 .FirstOrDefaultAsync();
 
-            if (tenantSubscription == null)
+            // IMPORTANT NOTE: 
+            // For condition to check existing subscription: Since tenant should have only one active 
+            // subscription at max so if tenant has no active subscription then means onboarding is not completed yet 
+            // user is yet to purchase first free/paid plan.
+            // 
+            // With above logic even if user comes after few days of half completed onboarding still they will be able to use the same
+            // onboarding flow without any issues.
+            //
+            // Once user has completed onboarding, then there will always be an 1 active subscription at 
+            // any point of time even that subscription's status is expired. Users will be able to login even if subscription 
+            // is expired they won't be able to access any paid features. In future, we may downgrade user's subscription to 
+            // free Starter plan automatically once subscription is expired. In that case also there will be always one active subscription.
+
+            // If no existing subscription, initialize a new one
+            var tenantSubscription = existingTenantSubscription == null
+                                    ? tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>()
+                                    : existingTenantSubscription;
+
+            // Map entity and dto properties as per Pro plan requirements
+            tenantSubscription.Frequency = tenantSubscriptionPurchaseDto.Frequency;
+            tenantSubscription.Status = SubscriptionStatusTypesEnum.Initiated;
+            tenantSubscription.PlanId = tenantSubscriptionPurchaseDto.PlanId;
+            tenantSubscription.IsActive = false;
+            tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
+            tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
+            tenantSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
+            tenantSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
+            tenantSubscription.MaxUsers = subscriptionPlan.MaxUsers;
+            tenantSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
+            tenantSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
+            tenantSubscription.LastModifiedByUserId = _userId;
+
+            // If plan is Starter, activate immediately
+            if (subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter)
             {
-                // Map the DTO to the subscription entity
-                tenantSubscription = tenantSubscriptionPurchaseDto.Adapt<TenantSubscription>();
-                tenantSubscription.Frequency = tenantSubscriptionPurchaseDto.Frequency;
-                tenantSubscription.Status = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? SubscriptionStatusTypesEnum.Active : SubscriptionStatusTypesEnum.Initiated;
-                tenantSubscription.IsActive = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? true : false;
-                tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
-                tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
-                tenantSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
-                tenantSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
-                tenantSubscription.MaxUsers = subscriptionPlan.MaxUsers;
-                tenantSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
-                tenantSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
-
-                // Set audit fields for tracking user actions
-                tenantSubscription.CreatedByUserId = _userId;
-                tenantSubscription.LastModifiedByUserId = _userId;
-
-                // Insert the new subscription into the repository
-                await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
-
-                // Save changes to the database
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Failed to persist new tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
-                    return serviceResponse;
-                }
+                tenantSubscription.Status = SubscriptionStatusTypesEnum.Active;
+                tenantSubscription.IsActive = true;
+                // Since Starter plan starts immediately, need to set NextBillingDate accordingly.
+                tenantSubscription.NextBillingDate = tenantSubscriptionPurchaseDto.Frequency == SubscriptionFrequenciesEnum.Monthly
+                                                        ? DateTimeOffset.UtcNow.AddMonths(1)
+                                                        : DateTimeOffset.UtcNow.AddYears(1);
             }
-            else
+
+            // Insert tenant subscription if new
+            if (existingTenantSubscription == null)
             {
-                // Existing subscription found, update the details
-                tenantSubscription.Status = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? SubscriptionStatusTypesEnum.Active : SubscriptionStatusTypesEnum.Initiated;
-                tenantSubscription.PlanId = tenantSubscriptionPurchaseDto.PlanId;
-                tenantSubscription.MaxCredits = subscriptionPlan.MaxCredits;
-                tenantSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
-                tenantSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
-                tenantSubscription.MaxUsers = subscriptionPlan.MaxUsers;
-                tenantSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
-                tenantSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
-                tenantSubscription.LastModifiedByUserId = _userId;
+                tenantSubscription.CreatedByUserId = _userId;
+                await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
+            }
 
-                // Update the subscription in the repository
+            // Update tenant subscription if existing
+            if (existingTenantSubscription != null)
+            {
                 _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
+            }
 
-                // Save changes to the database
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogError("Failed to persist tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
-                    return serviceResponse;
-                }
+            // Save changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to persist tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
+                return serviceResponse;
             }
 
             // Map the subscription purchase DTO to a new BillingDetail entity
@@ -563,7 +567,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
                 tenantSubscription.IsRecurringPayment = tenantSubscriptionPurchaseDto.IsRecurringPayment;
                 tenantSubscription.LastModifiedByUserId = _userId;
-                tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
+                tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date.AddMonths(1); // TO CHECK
 
                 // Update the new subscription into the repository
                 _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
@@ -719,8 +723,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     Price = currentPlan.Price,
                     Currency = currentPlan.Currency,
                     AvailableCredits = availableCredits,
-                    ExpiredOn = tenantSubscription.NextBillingDate,
-                    IsActive = tenantSubscription.NextBillingDate > DateTimeOffset.UtcNow.Date,
+                    ExpiredOn = tenantSubscription.NextBillingDate, // TO CHECK
+                    IsActive = tenantSubscription.NextBillingDate > DateTimeOffset.UtcNow.Date, // TO CHECK
                     IsRecurringPayment = tenantSubscription.IsRecurringPayment,
                     RazorpaySubscriptionId = tenantSubscription?.RazorpaySubscriptionId,
                     Feature = new CurrentSubscriptionPlanDetailDto()
@@ -770,7 +774,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Calculate the total amount (subscription fee + tax)
             var totalAmount = subscriptionFee + tax;
             // Check if the NextBillingDate is not set (i.e., it's null)
-            if (tenantSubscription?.NextBillingDate == null)
+            if (tenantSubscription?.NextBillingDate == null) // TO CHECK
             {
                 // If the subscription frequency is Monthly, set the NextBillingDate to 1 month after the CreatedOn date
                 // Otherwise, if it's Annual, set the NextBillingDate to 1 year after the CreatedOn date
@@ -782,7 +786,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Populate the next payment details
             subscriptionDashboardDto.NextPayment = new NextPaymentDetailDto()
             {
-                DueDate = tenantSubscription.NextBillingDate,
+                DueDate = tenantSubscription.NextBillingDate, // TO CHECK
                 SubscriptionFee = subscriptionFee,
                 Tax = tax,
                 TotalAmount = totalAmount,
@@ -877,7 +881,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 tenantSubscription.RazorpaySubscriptionId = exitingtSubscription?.RazorpaySubscriptionId;
                 tenantSubscription.IsActive = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? true : false;
                 tenantSubscription.Status = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter ? SubscriptionStatusTypesEnum.Active : SubscriptionStatusTypesEnum.Initiated;
-                tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date;
+                tenantSubscription.NextBillingDate = DateTimeOffset.UtcNow.Date; // TO CHECK
                 tenantSubscription.IsRecurringPayment = tenantSubscriptionPurchaseDto.IsRecurringPayment;
                 tenantSubscription.CreatedByUserId = _userId;
                 tenantSubscription.LastModifiedByUserId = _userId;
