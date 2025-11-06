@@ -737,10 +737,6 @@ namespace WorkspaceAPIs.Services
 
                 List<ProjectTemplate>? projectTemplates = new List<ProjectTemplate>();
 
-
-                // Extract distinct icons from the DTO, or initialize an empty list if none are provided
-                var projectTemplateIcons = publishProjectTemplateDto?.Icons?.Distinct().ToList() ?? new List<string>();
-
                 // Initialize tags list with the DTO's type, then append any additional tags
                 var projectTemplateTags = new List<string>() { publishProjectTemplateDto.Type.ToString() };
                 projectTemplateTags.AddRange(publishProjectTemplateDto.Tags);
@@ -749,7 +745,6 @@ namespace WorkspaceAPIs.Services
                 var newProjectTemplate = publishProjectTemplateDto.Adapt<ProjectTemplate>();
                 newProjectTemplate.TenantId = publishProjectTemplateDto.AccessType != TemplateAccessTypesEnum.Public ? _tenantId : null;
                 newProjectTemplate.Version = 1;
-                newProjectTemplate.Icons = IconSorterUtil.SortByPriority(projectTemplateIcons);
                 newProjectTemplate.Tags = projectTemplateTags;
                 newProjectTemplate.CreatedByUserId = _userId;
                 newProjectTemplate.LastModifiedByUserId = _userId;
@@ -770,7 +765,11 @@ namespace WorkspaceAPIs.Services
                         return serviceResponse;
                     }
 
+                    // Extract distinct icons from the DTO, or initialize an empty list if none are provided
+                    var projectTemplateIcons = publishProjectTemplateDto?.Icons?.Distinct().ToList() ?? new List<string>();
+
                     newProjectTemplate.RefId = flowVersion.Id;
+                    newProjectTemplate.Icons = IconSorterUtil.SortByPriority(projectTemplateIcons);
                     newProjectTemplate.Schema = flowVersion.ReactFlowObject;
                     newProjectTemplate.SchemaVersion = flowVersion.VersionNumber;
                     newProjectTemplate.AccessPath = $"/agent?f={flowVersion.FlowId}&v={flowVersion.Id}";
@@ -797,10 +796,14 @@ namespace WorkspaceAPIs.Services
                     var responseContent = await httpResponse.Content.ReadAsStringAsync();
 
                     // Deserialize and validate structure of the service response
-                    var externalServiceResponse = System.Text.Json.JsonSerializer.Deserialize<ServiceResponse<AIModelTemplateSchemaDto>>(
-                        responseContent,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-                    );
+                    var externalServiceResponse = JsonConvert.DeserializeObject<ServiceResponse<AIModelTemplateSchemaDto>>(
+                    responseContent,
+                    new JsonSerializerSettings
+                    {
+                        MissingMemberHandling = MissingMemberHandling.Ignore,
+                        ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
+                    });
+
 
                     // Ensure response structure and data integrity
                     if (externalServiceResponse.StatusCode != 200 || externalServiceResponse.Data == null)
@@ -808,9 +811,11 @@ namespace WorkspaceAPIs.Services
                         _logger.LogError("Failed to deserialize the external API response for credits usage creation.");
                         return serviceResponse;
                     }
+                    var icons = GetServiceItemDetailUtil.GetIconsByDisplayNames(externalServiceResponse.Data.LLMNames);
                     newProjectTemplate.RefId = externalServiceResponse.Data.VersionId;
                     newProjectTemplate.Schema = externalServiceResponse.Data.DataObject;
                     newProjectTemplate.SchemaVersion = externalServiceResponse.Data.VersionNumber;
+                    newProjectTemplate.Icons = IconSorterUtil.SortByPriority(icons);
                     newProjectTemplate.AccessPath = $"/project?pid={externalServiceResponse.Data.Id}&v={externalServiceResponse.Data.VersionId}&pn=Test&t=setup&ml={externalServiceResponse.Data.Type.ToString().ToLower()}";
                 }
 
@@ -1107,10 +1112,13 @@ namespace WorkspaceAPIs.Services
                     var responseContent = await httpResponse.Content.ReadAsStringAsync();
 
                     // Deserialize and validate structure of the service response
-                    var externalServiceResponse = System.Text.Json.JsonSerializer.Deserialize<ServiceResponse<bool>>(
-                        responseContent,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-                    );
+                    var externalServiceResponse = JsonConvert.DeserializeObject<ServiceResponse<bool>>(
+                    responseContent,
+                    new JsonSerializerSettings
+                    {
+                        MissingMemberHandling = MissingMemberHandling.Ignore,
+                        ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
+                    });
 
 
                     // Ensure response structure and data integrity
