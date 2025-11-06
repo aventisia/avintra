@@ -1,4 +1,3 @@
-import { Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import {
   DataTable,
@@ -97,7 +96,6 @@ export const SupportTicketsTable = () => {
                 />
                 {/* Column view filter */}
                 {/* <DTViewOptions table={table} /> */}
-                <Separator orientation="vertical" className="mx-2 h-6" />
                 {/* Create support ticket button */}
                 <Button
                   size={"xs"}

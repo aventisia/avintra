@@ -1,4 +1,3 @@
-import { Separator } from "@aventisia/ui";
 import {
   DataTable,
   DataTableSkeleton,
@@ -73,7 +72,6 @@ export const MachinesTable = () => {
                 <DTViewOptions
                   {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
                 />
-                <Separator orientation="vertical" className="mx-2 h-6" />
                 <DTCreateButton buttonText="Add Machine" />
               </div>
             </div>
