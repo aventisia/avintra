@@ -15,7 +15,7 @@ const ChargeSummary = ({
   planFrequency: PlanFrequency;
 }) => {
   const { basePrice, tax, total, isTaxApplicable, effectiveBilling, GST } =
-    useChargeSummary(plan, planFrequency);
+    useChargeSummary(plan);
 
   const { isPending, insertSubscriptionMutation } =
     useInsertSubscriptionMutation();
