@@ -448,7 +448,7 @@ public class MLModelTemplateService : IMLModelTemplateService
             var aiModelTemplateConfigDto = new AIModelTemplateSchemaDto()
             {
                 Id = aiProjectVersion.AIProjectId,
-                Type = aiProjectVersion.AIProject.Type ?? AIProjectTypeEnum.Inferencing,
+                Type = AIProjectTypeEnum.Inferencing,
                 VersionId = aiProjectVersion.Id,
                 DataObject = setupData,
                 VersionNumber = aiProjectVersion.VersionNumber,
