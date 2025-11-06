@@ -78,7 +78,10 @@ const Overview = () => {
                     currentPlan?.currency ?? "USD",
                   )}
                 </span>{" "}
-                /Month
+                /
+                {currentPlan.frequency.toLowerCase() == "monthly"
+                  ? "month"
+                  : "year"}
               </p>
             </div>
 
