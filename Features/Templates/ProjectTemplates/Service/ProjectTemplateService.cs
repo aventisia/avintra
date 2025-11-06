@@ -1173,8 +1173,22 @@ namespace WorkspaceAPIs.Services
                 return serviceResponse;
             }
 
-            // Get the Generate Template description prompt file
-            var file = new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "Prompts", "GenerateTemplateDescriptionPrompt.txt"));
+            // Determine the prompt file name based on the RefType of the GenerateProjectInstructionRequestDto
+            var promptFileName = genereateProjectInstructionRequestDto.RefType switch
+            {
+                UsageSourceTypesEnum.Agent => "GenerateAgentTemplateDescriptionPrompt.txt",
+                UsageSourceTypesEnum.AIModel => "GenerateAIModelTemplateDescriptionPrompt.txt",
+                _ => "NA"
+            };
+
+            // Build the full path to the prompt file using the current directory and subdirectories
+            var file = new FileInfo(Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "StaticFiles",
+                "Prompts",
+                promptFileName
+            ));
+
             string promptTemplate;
             try
             {
@@ -1187,7 +1201,7 @@ namespace WorkspaceAPIs.Services
                 return serviceResponse;
             }
 
-            var prompt = promptTemplate.Replace("{{TEMPLATE_NODES}}", genereateProjectInstructionRequestDto.Payload);
+            var prompt = promptTemplate.Replace("{{PAYLOAD_CONTENT}}", genereateProjectInstructionRequestDto.Payload);
             var model = "gpt-4o-mini";
             var temperature = 1;
 
