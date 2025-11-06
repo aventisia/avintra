@@ -8,8 +8,11 @@ public class TenantSubscriptionService : ITenantSubscriptionService
     private readonly ITopUpService _topUpService;
     private readonly ILogger<TenantSubscriptionService> _logger;
     private readonly DefaultTenantConfig _defaultTenantConfig;
+    private readonly IEmailService _emailService;
+    private readonly GeneralConfig _generalConfig;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
+    private readonly string? _username;
 
     public TenantSubscriptionService(IUnitOfWork unitOfWork,
     ILogger<TenantSubscriptionService> logger,
@@ -17,7 +20,9 @@ public class TenantSubscriptionService : ITenantSubscriptionService
     DefaultTenantConfig defaultTenantConfig,
     ISubscriptionService subscriptionService,
     ICustomerService customerService,
-    ITopUpService topUpService)
+    ITopUpService topUpService,
+    IEmailService emailService,
+    GeneralConfig generalConfig)
     {
         _unitOfWork = unitOfWork;
         _subscriptionService = subscriptionService;
@@ -29,8 +34,11 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         // Extract tenant ID from JWT token claims
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
+        _username = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname");
         _customerService = customerService;
         _topUpService = topUpService;
+        _emailService = emailService;
+        _generalConfig = generalConfig;
     }
 
     // Retrieves all tenant subscriptions from the database including the creator user.
@@ -960,6 +968,77 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while upgrading the subscription. TenantId: {TenantId}, PlanId: {PlanId}", _tenantId, tenantSubscriptionPurchaseDto.PlanId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Upgrades the subscription plan for a self-hosted tenant. If no existing active subscription is found, a new subscription is created.
+    public async Task<ServiceResponse<TenantSubscriptionDto>> UpgradeSelfHostedSubscriptionPlanAsync(SelfHostedSubscriptionUpgradeDto selfHostedSubscriptionUpgradeDto)
+    {
+        var serviceResponse = new ServiceResponse<TenantSubscriptionDto>
+        {
+            Data = null,
+            Message = "Failed to upgrade tenant subscription. Please try again later.",
+        };
+
+        try
+        {
+            _logger.LogInformation("Attempting to upgrade subscription for TenantId: {TenantId}, requested PlanId: {PlanId}", _tenantId, selfHostedSubscriptionUpgradeDto.PlanId);
+
+            // Retrieve the subscription plan the tenant wants to upgrade to
+            var subscriptionPlan = await _unitOfWork.SubscriptionPlanRepo
+                .GetByConditionAsync(w => w.Id == selfHostedSubscriptionUpgradeDto.PlanId)
+                .SingleOrDefaultAsync();
+
+            if (subscriptionPlan == null)
+            {
+                _logger.LogWarning("No subscription plan found with PlanId: {PlanId}.", selfHostedSubscriptionUpgradeDto.PlanId);
+                serviceResponse.Message = "Subscription plan not found.";
+                return serviceResponse;
+            }
+
+            // Sanitize input data
+            selfHostedSubscriptionUpgradeDto = TrimDtoStringPropsUtil.TrimDtoStringProps(selfHostedSubscriptionUpgradeDto);
+
+            // Try to fetch the existing active tenant subscription (if any)
+            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w =>
+                    w.IsActive && w.TenantId == _tenantId
+                )
+                .Include(i => i.Plan)
+                .SingleOrDefaultAsync();
+
+            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
+
+            // Log and handle failure if email verification fails
+            if (!await _emailService.SendEmailUsingTemplate(
+                EmailTypesEnum.SubscriptionPlanUpgrade,
+                _generalConfig.SalesEmails,
+                new Dictionary<string, string>()
+                {
+                {"{{TenantName}}", tenant.Name },
+                {"{{Email}}", _username },
+                {"{{CurrentPlan}}", tenantSubscription?.Plan?.Type.ToString() ?? "None" },
+                {"{{RequestedPlan}}", "Self-Hosted" },
+                {"{{RequestedOn}}", DateTimeOffset.UtcNow.Date.ToString("MMMM d, yyyy") }
+                }))
+            {
+                _logger.LogError("Failed to send email for subscription upgrade request to {SalesEmails}. Request type: {EmailType}.", _generalConfig.SalesEmails, EmailTypesEnum.ContactUsRequest);
+                return serviceResponse;
+            }
+
+            // Map the tenant subscription entity to a DTO for response
+            var tenantSubscriptionDto = tenantSubscription?.Adapt<TenantSubscriptionDto>();
+
+            // Set the successful service response with the DTO
+            serviceResponse.Data = tenantSubscriptionDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Tenant subscription upgraded successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while upgrading subscription for TenantId: {TenantId}, PlanId: {PlanId}", _tenantId, selfHostedSubscriptionUpgradeDto.PlanId);
         }
 
         return serviceResponse;

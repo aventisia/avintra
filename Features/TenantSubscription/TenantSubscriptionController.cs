@@ -82,6 +82,13 @@ public class TenantSubscriptionController : BaseApiController
         return ResultHelper(await _tenantSubscriptionService.UpgradeSubscriptionPlanAsync(tenantSubscriptionPurchaseDto));
     }
 
+    // Upgrades a self hosted tenant's subscription plan based on the provided details.
+    [HttpPost("self-hosted/upgrade")]
+    public async Task<ActionResult<ServiceResponse<TenantSubscriptionDto>>> UpgradeSelfHostedSubscriptionPlan([FromBody] SelfHostedSubscriptionUpgradeDto selfHostedSubscriptionUpgradeDto)
+    {
+        return ResultHelper(await _tenantSubscriptionService.UpgradeSelfHostedSubscriptionPlanAsync(selfHostedSubscriptionUpgradeDto));
+    }
+
     // Cancels a tenant's subscription using the provided subscription details.
     [HttpPut("cancel-subscription")]
     public async Task<ActionResult<ServiceResponse<TenantSubscriptionDto>>> CancelSubscription(SubscriptionUpdateRequestDto subscriptionUpdateRequestDto)

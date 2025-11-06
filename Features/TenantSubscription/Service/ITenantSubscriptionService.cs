@@ -79,6 +79,13 @@ public interface ITenantSubscriptionService
     Task<ServiceResponse<TenantSubscriptionDto>> UpgradeSubscriptionPlanAsync(TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto);
 
     /// <summary>
+    /// Upgrades the subscription plan for a self-hosted tenant.
+    /// </summary>
+    /// <param name="selfHostedSubscriptionUpgradeDto">Contains the details of the subscription upgrade request, including the subscription and plan information.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the updated subscription details for the tenant.</returns>
+    Task<ServiceResponse<TenantSubscriptionDto>> UpgradeSelfHostedSubscriptionPlanAsync(SelfHostedSubscriptionUpgradeDto selfHostedSubscriptionUpgradeDto);
+
+    /// <summary>
     /// Cancels the tenant's subscription using the provided subscription details.
     /// </summary>
     /// <param name="subscriptionUpdateRequestDto">The subscription details, including the subscription ID, status, and other relevant information.</param>
