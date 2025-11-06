@@ -114,6 +114,7 @@ const VaultDynamicForm = () => {
               control={form.control}
               render={({ field }) => (
                 <AppSelector
+                  autoFocus={true}
                   options={appList}
                   selectedItem={field.value || null}
                   onItemSelect={(item) => field.onChange(item)}
@@ -136,7 +137,7 @@ const VaultDynamicForm = () => {
               <>
                 <InputField
                   name="name"
-                  label="Name"
+                  label="Credential Name"
                   description="Name"
                   autoFocus
                   isRequired

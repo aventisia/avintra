@@ -1,8 +1,6 @@
 import { DotSeparator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import {
-  // DataTable,
-  DataTableSkeleton,
   DTHeading,
   DTPagination,
   DTSearchBox,
@@ -23,6 +21,7 @@ import { VaultCrudDialog } from "./vault-crud-dialog/VaultCrudDialog";
 import { VaultRowActions } from "./vault-row-actions/VaultRowActions";
 import { VaultsBulkActions } from "./vault-row-actions/VaultsBulkActions";
 import { vaultsTableColumns } from "./VaultsTableColumns";
+import { VaultTableSkeleton } from "./VaultTableSkeleton";
 
 /**
  * Renders a table of configs.
@@ -91,47 +90,57 @@ export const VaultTable = () => {
             </div>
           </div>
           {/* DT with only rows and custom design */}
-          <div className="grid grid-cols-2 gap-4">
-            {table.getRowModel().rows.map((row) => (
-              <div
-                key={row.id}
-                className="flex cursor-pointer items-center justify-between rounded-lg border bg-background p-4 shadow-sm transition-shadow hover:shadow-md"
-                onClick={() => {
-                  setShowDialog(true);
-                  setRowId(row.original.id || "");
-                  setAction("read");
-                }}
-              >
-                {/* Left icon with rounded border */}
-                <div className="flex items-center space-x-4">
-                  <div>
-                    <img
-                      src={vaultIconMapper[row.getValue("type") as string]}
-                      alt="icon"
-                      className="h-8 w-8"
-                    />
-                  </div>
+          {table.getRowModel().rows?.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3 rounded-lg border bg-white px-2.5 py-3">
+              {table.getRowModel().rows.map((row) => (
+                <div
+                  key={row.id}
+                  className="flex cursor-pointer items-center justify-between rounded-lg border bg-background px-3.5 py-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200"
+                  onClick={() => {
+                    setShowDialog(true);
+                    setRowId(row.original.id || "");
+                    setAction("read");
+                  }}
+                >
+                  {/* Left icon with rounded border */}
+                  <div className="flex items-center space-x-4">
+                    <div>
+                      <img
+                        src={vaultIconMapper[row.getValue("type") as string]}
+                        alt="icon"
+                        className="size-6"
+                      />
+                    </div>
 
-                  {/* Name, type, description in flex col */}
-                  <div className="flex flex-col">
-                    <span className="text-base">{row.getValue("name")}</span>
-                    <div className="flex items-center">
-                      <span className="text-sm text-muted-foreground">
-                        {(row.getValue("type") as string)?.replace("Api", "")}
+                    {/* Name, type, description in flex col */}
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium">
+                        {row.getValue("name")}
                       </span>
-                      <DotSeparator />
-                      <span className="text-sm text-muted-foreground">
-                        Created on {dateFormatter(row.getValue("createdOn"))}
-                      </span>
+                      <div className="flex items-center">
+                        <span className="text-2xs text-muted-foreground">
+                          {(row.getValue("type") as string)?.replace("Api", "")}
+                        </span>
+                        <DotSeparator />
+                        <span className="text-2xs text-muted-foreground">
+                          Created on {dateFormatter(row.getValue("createdOn"))}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Action trigger */}
-                <VaultRowActions rowId={row.original.id || "rowId"} />
-              </div>
-            ))}
-          </div>
+                  {/* Action trigger */}
+                  <VaultRowActions rowId={row.original.id || "rowId"} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex h-24 flex-col items-center justify-center rounded-lg border gap-3 bg-white px-2.5 py-3">
+              <p className="text-sm text-muted-foreground">
+                No credentials found. Please add new credentials.
+              </p>
+            </div>
+          )}
           {/* Data table Pagination component */}
           <DTPagination table={table} />
 
@@ -140,7 +149,7 @@ export const VaultTable = () => {
         </div>
       ) : (
         // Show data table skeleton while fetching the configs data
-        <DataTableSkeleton />
+        <VaultTableSkeleton />
       )}
       <VaultCrudDialog />
     </>

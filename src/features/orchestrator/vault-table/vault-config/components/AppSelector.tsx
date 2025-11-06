@@ -18,6 +18,7 @@ interface AppSelectorProps {
   onItemSelect: (item: AppOption) => void;
   onItemClear: () => void;
   placeholder?: string;
+  autoFocus?: boolean; // TODO: We should extend React.InputHTMLAttributes<HTMLInputElement> or similar to support other input props
 }
 
 export const AppSelector: React.FC<AppSelectorProps> = ({
@@ -26,6 +27,7 @@ export const AppSelector: React.FC<AppSelectorProps> = ({
   onItemSelect,
   // onItemClear,
   placeholder = "Search and select item...",
+  autoFocus = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -85,6 +87,7 @@ export const AppSelector: React.FC<AppSelectorProps> = ({
             value={
               isOpen ? inputValue : selectedItem ? selectedItem?.label : ""
             }
+            autoFocus={autoFocus}
             onChange={(e) => handleInputChange(e.target.value)}
             onFocus={handleInputFocus}
             placeholder={
