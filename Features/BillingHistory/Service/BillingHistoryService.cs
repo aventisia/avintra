@@ -34,7 +34,12 @@ public class BillingHistoryService : IBillingHistoryService
         {
             // Try to get billing history records
             var billingHistories = await _unitOfWork.BillingHistoryRepo
-                .GetByConditionAsync(w => w.TenantId == _tenantId)
+                .GetByConditionAsync(w =>
+                    w.TenantId == _tenantId &&
+                    (w.PaymentStatus == PaymentStatusTypesEnum.Captured ||
+                     w.PaymentStatus == PaymentStatusTypesEnum.Refunded ||
+                     w.PaymentStatus == PaymentStatusTypesEnum.Failed)
+                )
                 .OrderByDescending(o => o.CreatedOn)
                 .ToListAsync();
 
@@ -75,7 +80,7 @@ public class BillingHistoryService : IBillingHistoryService
                 serviceResponse.Message = "Billing details not found for the current tenant.";
                 return serviceResponse;
             }
-            
+
             // Default mapping from DTO to BillingHistory
             var newBillingHistory = billingHistoryDto.Adapt<BillingHistory>();
             newBillingHistory.BillingDetailId = billingDetail.Id;
