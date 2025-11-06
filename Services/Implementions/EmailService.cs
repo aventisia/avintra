@@ -119,8 +119,7 @@ public class EmailService : IEmailService
                     await client.AuthenticateAsync(_smtpConfig.Username, _smtpConfig.ApiKey);
                 }
                 // Sends the email.
-                var response = await client.SendAsync(message);
-                _logger.LogInformation($"SMTP server response: {response}"); // temporary log for debugging
+                await client.SendAsync(message);
                 await client.DisconnectAsync(true);
             }
 
