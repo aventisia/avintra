@@ -294,9 +294,10 @@ public class MLModelTemplateService : IMLModelTemplateService
                     {
                         Name = summarizationTask.Name,
                         NodePrompt = summarizationTask.SystemPrompt,
+                        GeneratedPrompt = summarizationTask.GeneratedPrompt,
                         LLM = summarizationTask.LLM,
                         Temperature = summarizationTask.Temperature,
-                        ConfigurationType = summarizationTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        IsBYOKEnabled = summarizationTask.IsBYOKEnabled,
                         SetupObject = JsonSerializer.Deserialize<SummarizationTemplateConfigDetailsDto>(summarizationTask.SetupObject, options),
                         SecretKey = null,
                     } : null,
@@ -306,9 +307,10 @@ public class MLModelTemplateService : IMLModelTemplateService
                     {
                         Name = extractionTask.Name,
                         NodePrompt = extractionTask.SystemPrompt,
+                        GeneratedPrompt = extractionTask.GeneratedPrompt,
                         LLM = extractionTask.LLM,
                         Temperature = extractionTask.Temperature,
-                        ConfigurationType = extractionTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        IsBYOKEnabled = extractionTask.IsBYOKEnabled,
                         SetupObject = JsonSerializer.Deserialize<DataExtractionTemplateConfigDetailsDto>(extractionTask.SetupObject, options),
                         SecretKey = null,
                     } : null,
@@ -318,9 +320,10 @@ public class MLModelTemplateService : IMLModelTemplateService
                     {
                         Name = classificationTask.Name,
                         NodePrompt = classificationTask.SystemPrompt,
+                        GeneratedPrompt = classificationTask.GeneratedPrompt,
                         LLM = classificationTask.LLM,
                         Temperature = classificationTask.Temperature,
-                        ConfigurationType = classificationTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        IsBYOKEnabled = classificationTask.IsBYOKEnabled,
                         SetupObject = JsonSerializer.Deserialize<ClassificationTemplateConfigDetailsDto>(classificationTask.SetupObject, options),
                         SecretKey = null,
                     } : null,
@@ -330,9 +333,10 @@ public class MLModelTemplateService : IMLModelTemplateService
                     {
                         Name = sentimentAnalyticsTask.Name,
                         NodePrompt = sentimentAnalyticsTask.SystemPrompt,
+                        GeneratedPrompt = sentimentAnalyticsTask.GeneratedPrompt,
                         LLM = sentimentAnalyticsTask.LLM,
                         Temperature = sentimentAnalyticsTask.Temperature,
-                        ConfigurationType = sentimentAnalyticsTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        IsBYOKEnabled = sentimentAnalyticsTask.IsBYOKEnabled,
                         SetupObject = JsonSerializer.Deserialize<SentimentAnalysisTemplateConfigDetailsDto>(sentimentAnalyticsTask.SetupObject, options),
                         SecretKey = null,
                     } : null,
@@ -342,9 +346,10 @@ public class MLModelTemplateService : IMLModelTemplateService
                     {
                         Name = questionAnswerTask.Name,
                         NodePrompt = questionAnswerTask.SystemPrompt,
+                        GeneratedPrompt = questionAnswerTask.GeneratedPrompt,
                         LLM = questionAnswerTask.LLM,
                         Temperature = questionAnswerTask.Temperature,
-                        ConfigurationType = questionAnswerTask.IsBYOKEnabled ? LLMConfigurationTypesEnum.Cloud : LLMConfigurationTypesEnum.OnPrem,
+                        IsBYOKEnabled = questionAnswerTask.IsBYOKEnabled,
                         SetupObject = JsonSerializer.Deserialize<QuestionAnsweringTemplateConfigDetailsDto>(questionAnswerTask.SetupObject, options),
                         SecretKey = null,
                     } : null,
@@ -710,6 +715,7 @@ public class MLModelTemplateService : IMLModelTemplateService
             {
                 AIProjectId = aiProject.Id,
                 BusinessContext = templateDataObject.BusinessContext,
+                VersionNumber = 1,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId,
             };
@@ -725,30 +731,34 @@ public class MLModelTemplateService : IMLModelTemplateService
             // Create a list to store the tasks associated with this new project version
             var aiProjectVersionTasks = new List<VersionTask>();
 
-            // Define a mapping of tasks to their associated properties
-            var taskMappings = new Dictionary<string, Action>()
+            // Check each task individually and add it to the list if necessary
+            if (templateDataObject.Summarization != null)
             {
-                { "Summarization", () => AddTaskToProject(aiProject, aiProjectVersion, templateDataObject.Summarization, AIProjectTaskTypesEnum.Summarization, aiProjectVersionTasks) },
-                { "Extraction", () => AddTaskToProject(aiProject, aiProjectVersion, templateDataObject.Extraction, AIProjectTaskTypesEnum.Extraction, aiProjectVersionTasks) },
-                { "QuestionAnswer", () => AddTaskToProject(aiProject, aiProjectVersion, templateDataObject.QuestionAnswer, AIProjectTaskTypesEnum.QuestionAnswer, aiProjectVersionTasks) },
-                { "Classification", () => AddTaskToProject(aiProject, aiProjectVersion, templateDataObject.Classification, AIProjectTaskTypesEnum.Classification, aiProjectVersionTasks) },
-                { "SentimentAnalytics", () => AddTaskToProject(aiProject, aiProjectVersion, templateDataObject.SentimentAnalytics, AIProjectTaskTypesEnum.SentimentAnalytics, aiProjectVersionTasks) },
-            };
+                AddTaskToProject(aiProject, aiProjectVersion, templateDataObject.Summarization, AIProjectTaskTypesEnum.Summarization, aiProjectVersionTasks);
+            }
 
-            // Iterate through each task type and add it if it exists
-            foreach (var taskMapping in taskMappings)
+            if (templateDataObject.Extraction != null)
             {
-                var taskTypeProperty = aiModelTemplateSchemaDto.GetType().GetProperty(taskMapping.Key);
-                var taskTypeValue = taskTypeProperty?.GetValue(aiModelTemplateSchemaDto);
+                AddTaskToProject(aiProject, aiProjectVersion, templateDataObject.Extraction, AIProjectTaskTypesEnum.Extraction, aiProjectVersionTasks);
+            }
 
-                if (taskTypeValue != null)
-                {
-                    taskMapping.Value();
-                }
+            if (templateDataObject.QuestionAnswer != null)
+            {
+                AddTaskToProject(aiProject, aiProjectVersion, templateDataObject.QuestionAnswer, AIProjectTaskTypesEnum.QuestionAnswer, aiProjectVersionTasks);
+            }
+
+            if (templateDataObject.Classification != null)
+            {
+                AddTaskToProject(aiProject, aiProjectVersion, templateDataObject.Classification, AIProjectTaskTypesEnum.Classification, aiProjectVersionTasks);
+            }
+
+            if (templateDataObject.SentimentAnalytics != null)
+            {
+                AddTaskToProject(aiProject, aiProjectVersion, templateDataObject.SentimentAnalytics, AIProjectTaskTypesEnum.SentimentAnalytics, aiProjectVersionTasks);
             }
 
             // If there are any tasks, insert them into the database
-            if (aiProjectVersionTasks.Any())
+            if (aiProjectVersionTasks.Count != 0)
             {
                 await _unitOfWork.VersionTaskRepo.InsertAsync(aiProjectVersionTasks);
                 if (!await _unitOfWork.SaveAsync())
@@ -762,7 +772,7 @@ public class MLModelTemplateService : IMLModelTemplateService
             _logger.LogInformation("Successfully created a new AI model project version from template. Project Version ID: {ProjectVersionId}.", aiProjectVersion.Id);
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Template added successfully and new ML model created.";
+            serviceResponse.Message = "Template added successfully and new AI model created.";
 
         }
         catch (Exception ex)
@@ -790,7 +800,7 @@ public class MLModelTemplateService : IMLModelTemplateService
                 SetupObject = JsonSerializer.Serialize(taskConfig.SetupObject, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }),
                 Temperature = taskConfig.Temperature,
                 LLM = taskConfig.LLM,
-                IsBYOKEnabled = taskConfig.ConfigurationType == LLMConfigurationTypesEnum.Cloud,
+                IsBYOKEnabled = taskConfig.IsBYOKEnabled,
                 SystemPrompt = taskConfig.NodePrompt,
                 GeneratedPrompt = taskConfig.GeneratedPrompt,
                 CreatedByUserId = _userId,

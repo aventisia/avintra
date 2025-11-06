@@ -61,10 +61,12 @@ public class BaseModelTemplateConfigDto
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the model configuration type.
+    /// Indicates whether the on-premises LLM (Large Language Model) is used.
     /// </summary>
-    public required LLMConfigurationTypesEnum ConfigurationType { get; set; }
-
+    /// <remarks>
+    /// If <see cref="IsBYOKEnabled"/> is false, the cloud provider LLM will be utilized for this task.
+    /// </remarks>
+    public bool IsBYOKEnabled { get; set; }
     /// <summary>
     /// Gets or sets the model type.
     /// </summary>
@@ -84,6 +86,11 @@ public class BaseModelTemplateConfigDto
     /// Gets or sets the temperature for randomness control.
     /// </summary>
     public required double Temperature { get; set; }
+
+    /// <summary>
+    /// Gets or sets the generated prompt based on the task setup.
+    /// </summary>
+    public string? GeneratedPrompt { get; set; }
 }
 
 //------------------------------- Data Extraction Task -------------------------------
