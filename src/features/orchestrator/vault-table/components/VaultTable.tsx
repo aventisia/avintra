@@ -1,4 +1,4 @@
-import { DotSeparator, Separator } from "@aventisia/ui";
+import { DotSeparator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import {
   // DataTable,
@@ -18,6 +18,7 @@ import { useFetchVaults } from "../hooks/useFetchVaults";
 import { useVaultDialogStore } from "../stores/vault-dialog-store";
 import { vaultIconMapper } from "../vault-config/constants/app-list";
 
+import { PlusIcon } from "@heroicons/react/24/outline";
 import { VaultCrudDialog } from "./vault-crud-dialog/VaultCrudDialog";
 import { VaultRowActions } from "./vault-row-actions/VaultRowActions";
 import { VaultsBulkActions } from "./vault-row-actions/VaultsBulkActions";
@@ -74,8 +75,9 @@ export const VaultTable = () => {
                 searchColumn={SEARCH_COLUMN}
                 placeholder="Search..."
               />
-              <Separator orientation="vertical" className="mx-2 h-6" />
               <Button
+                size={"xs"}
+                className="gap-2 text-sm tracking-wide"
                 onClick={() => {
                   setShowDialog(true);
                   setAction("create");
@@ -83,6 +85,7 @@ export const VaultTable = () => {
                   setType("");
                 }}
               >
+                <PlusIcon className="h-4 w-4" />
                 Add Credential
               </Button>{" "}
             </div>
