@@ -59,7 +59,6 @@ export const AppLayout = () => {
     setSidebarMenuSections(
       getSidebarMenuBasedOnPersmissions(
         userSession?.userRoles || [],
-        userSession?.planType,
       ),
     );
   }, [userSession, isPending]);
