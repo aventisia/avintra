@@ -1,0 +1,27 @@
+meta {
+  name: Delete multiple time triggers
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/time-trigger/delete-multiple
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  req.setBody(
+    JSON.parse(`["${bru.getGlobalEnvVar("TIME_TRIGGER_ID")}"]`)
+  )
+  
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "TIME_TRIGGER_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

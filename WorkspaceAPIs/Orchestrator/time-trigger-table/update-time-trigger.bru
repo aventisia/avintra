@@ -1,0 +1,37 @@
+meta {
+  name: Update time trigger
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/time-trigger
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    id: bru.getGlobalEnvVar("TIME_TRIGGER_ID"),
+    tenantId: "633e911f-a12e-4198-b172-8de02fd202b2",
+    name: "TEST6",
+    timezone: "UTC",
+    frequency: "MinuteByMinute",
+    setupObject: "{\"Frequency\":MinuteByMinute}",
+    effectiveDate: "2025-11-07T09:01:55.770Z",
+    endDate: "2025-11-07T09:01:55.770Z",
+    lastTriggeredTime: "2025-11-07T09:01:55.770Z",
+    nextTriggerTime: "2025-11-07T09:01:55.770Z",
+    exceptionHours: [
+      2
+    ],
+    exceptionWeekdays: [
+      "Monday"
+    ],
+    exceptionDates: [
+      "2025-11-07T09:01:55.770Z"
+    ]
+  })
+}
