@@ -94,7 +94,7 @@ public class MyAccountService(
                 AccessToken = accessToken,
                 RefreshToken = session.RefreshToken,
                 RTExpiresOn = session.SessionExpiresOn,
-                Country = tenant != null ? tenant.Country : null
+                Country = tenant != null ? tenant.Country.ToString() : "NA"
             };
 
             // Task successful
@@ -369,7 +369,7 @@ public class MyAccountService(
                 AccessToken = jwt,
                 RefreshToken = refreshToken,
                 RTExpiresOn = refreshTokenExpiresOn,
-                Country = tenant != null ? tenant.Country : null
+                Country = tenant != null ? tenant.Country.ToString() : "NA"
             };
 
             // Check if the user is associated with an organization (tenant)

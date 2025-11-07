@@ -43,5 +43,5 @@ public class UserSessionDto
     /// <summary>
     /// Gets or sets the user's country. 
     /// </summary>
-    public CountriesEnum? Country { get; set; }
+    public required string Country { get; set; }
 }

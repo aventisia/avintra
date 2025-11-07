@@ -310,7 +310,8 @@ public class AuthService : IAuthService
                 UserInitials = GetUserInitialsUtil.GetUserInitials(user.FirstName, user.LastName),
                 AccessToken = jwt,
                 RefreshToken = refreshToken,
-                RTExpiresOn = refreshTokenExpiresOn
+                RTExpiresOn = refreshTokenExpiresOn,
+                Country = user.Tenant != null ? user.Tenant.Country.ToString() : "NA"
             };
 
             // Check if the user is associated with an organization (tenant)
