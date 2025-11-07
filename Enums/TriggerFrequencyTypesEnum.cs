@@ -3,11 +3,7 @@ namespace AspNetToolkit.Enums;
 
 public enum TriggerFrequencyTypesEnum
 {
-    /// <summary>
-    /// trigger will runs one time only
-    /// </summary>
-    [Description("One Time")] OneTime,
-
+    
     /// <summary>
     /// trigger will runs minute by minute
     /// </summary>
@@ -23,6 +19,8 @@ public enum TriggerFrequencyTypesEnum
     /// </summary>
     [Description("Daily")] Daily,
 
+    [Description ("Weekday")] Weekday,
+
     /// <summary>
     /// trigger will runs weekly
     /// </summary>
@@ -31,10 +29,5 @@ public enum TriggerFrequencyTypesEnum
     /// <summary>
     /// trigger will runs monthly (day of month) like 1,2 last day of month
     /// </summary>
-    [Description("Monthly (day of month)")] MonthlyDayOfMonth,
-
-    /// <summary>
-    /// trigger will runs monthly (day of week) like monday, tuesday
-    /// </summary>
-    [Description("Monthly (day of week)")] MonthlyDayOfWeek,
+    [Description("Monthly (day of month)")] Monthly,
 }
