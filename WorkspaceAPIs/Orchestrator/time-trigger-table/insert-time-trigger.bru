@@ -1,0 +1,45 @@
+meta {
+  name: Insert time trigger
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/time-trigger
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  const { faker } = require('@faker-js/faker');
+  
+  req.setBody({
+    tenantId: "633e911f-a12e-4198-b172-8de02fd202b2",
+    name: "tests1",
+    timezone: "UTC",
+    frequency: "Monthly",
+    setupObject: "string",
+    effectiveDate: "2025-11-07T09:01:55.770Z",
+    endDate: "2025-11-07T09:01:55.770Z",
+    lastTriggeredTime: "2025-11-07T09:01:55.770Z",
+    nextTriggerTime: "2025-11-07T09:01:55.770Z",
+    exceptionHours: [
+      0
+    ],
+    exceptionWeekdays: [
+      "Sunday"
+    ],
+    exceptionDates: [
+      "2025-11-07T09:01:55.770Z"
+    ]
+  })
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "TIME_TRIGGER_ID",
+          res.getBody().data.id
+      );
+  }
+}
