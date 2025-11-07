@@ -1183,7 +1183,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Fetch the subscription plan based on the provided PlanId and Frequency from the repository
             var subscriptionPlan = await _unitOfWork.SubscriptionPlanRepo
                 .GetByConditionAsync(w => w.Id == subscriptionUpdateRequestDto.PlanId && w.Frequency == subscriptionUpdateRequestDto.Frequency)
-                .FirstOrDefaultAsync();
+                .SingleOrDefaultAsync();
 
             // Check if the subscription plan was found and ensure its type matches the expected type
             if (subscriptionPlan == null || tenantSubscription.Plan.Type != subscriptionPlan.Type)
@@ -1206,9 +1206,9 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Update the subscription (mark it as inactive)
             tenantSubscription.PlanId = subscriptionUpdateRequestDto.PlanId;
+            tenantSubscription.Plan = subscriptionPlan;
             tenantSubscription.Frequency = subscriptionUpdateRequestDto.Frequency;
             tenantSubscription.LastModifiedByUserId = _userId;
-
 
             _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
 

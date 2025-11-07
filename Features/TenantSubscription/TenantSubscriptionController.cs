@@ -27,7 +27,7 @@ public class TenantSubscriptionController : BaseApiController
     }
 
     // Update a tenant's subscription using the provided subscription details.
-    [HttpPut]
+    [HttpPut("frequency")]
     public async Task<ActionResult<ServiceResponse<TenantSubscriptionDto>>> UpdateSubscription(SubscriptionUpdateRequestDto subscriptionUpdateRequestDto)
     {
         return ResultHelper(await _tenantSubscriptionService.UpdateSubscriptionAsync(subscriptionUpdateRequestDto));
