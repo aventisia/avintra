@@ -89,13 +89,13 @@ const monthlyPriceProps: InputFieldProps = {
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
   label: "Disable Plan",
-  description: "Disable this plan if it’s no longer available.",
+  description: "Disable this plan if it's no longer available.",
 };
 
 // Price
 const priceProps: InputFieldProps = {
   name: "price",
-  label: "Price (per month)",
+  label: "Price",
   isRequired: true,
 };
 

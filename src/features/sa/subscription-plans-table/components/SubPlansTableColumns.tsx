@@ -67,7 +67,7 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title="Price (per month)"
+        title="Price"
       />
     ),
     cell: ({ row }) => {
