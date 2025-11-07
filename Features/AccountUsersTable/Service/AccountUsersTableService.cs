@@ -108,22 +108,21 @@ public class AccountUsersTableService : IAccountUsersTableService
             }
 
             // Check if the subscription plan is 'Starter'
-            var userCount = 0;
             if (currentSubscription.Plan.Type == SubscriptionPlanTypeEnum.Starter)
             {
                 // Check if user limit has been reached
-                userCount = await _userManager.Users
+                var userCount = await _userManager.Users
                     .Where(w => w.TenantId == _currentTenantService.CurrentTenantId && !w.IsDefault)
                     .CountAsync();
-            }
 
-            // Log and return current user count and max users allowed
-            if (userCount >= currentSubscription.MaxUsers)
-            {
-                _logger.LogWarning("User limit reached. Current user count: {UserCount}, Max users allowed: {MaxUsers}",
-                    userCount, currentSubscription.MaxUsers);
-                serviceResponse.Message = $"User limit reached: Your current plan (Starter) allows a maximum of {currentSubscription.MaxUsers} users.";
-                return serviceResponse;
+                // Log and return current user count and max users allowed
+                if (userCount >= currentSubscription.MaxUsers)
+                {
+                    _logger.LogWarning("User limit reached. Current user count: {UserCount}, Max users allowed: {MaxUsers}",
+                        userCount, currentSubscription.MaxUsers);
+                    serviceResponse.Message = $"User limit reached: Your current plan (Starter) allows a maximum of {currentSubscription.MaxUsers} users.";
+                    return serviceResponse;
+                }
             }
 
             // Convert roles FullName to Name (Frontend will return roles in "FullName" of IdentityRole. However userManger work with "Name" of IdentityRole
