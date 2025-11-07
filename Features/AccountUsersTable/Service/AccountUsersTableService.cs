@@ -11,7 +11,6 @@ public class AccountUsersTableService : IAccountUsersTableService
     private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly string _jwt;
     private readonly Guid _userId;
-    private readonly Guid _tenantId;
 
     public AccountUsersTableService(
         UserManager<AccountUser> userManager,
@@ -26,7 +25,6 @@ public class AccountUsersTableService : IAccountUsersTableService
         // Set _jwt, _userId and _userRoles
         _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
         _userManager = userManager;
         _roleManager = roleManager;
@@ -93,25 +91,38 @@ public class AccountUsersTableService : IAccountUsersTableService
         {
             // Fetch the current active subscription for the tenant
             var currentSubscription = await _unitOfWork.TenantSubscriptionRepo
-                .GetByConditionAsync(w => w.TenantId == _tenantId && w.IsActive)
+                .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.IsActive)
                 .Include(w => w.Plan)
                 .FirstOrDefaultAsync();
 
             // Log: Checking if subscription exists
-            _logger.LogInformation("Checking subscription for TenantId: {TenantId}", _tenantId);
+            _logger.LogInformation("Checking subscription for TenantId: {TenantId}", _currentTenantService.CurrentTenantId);
 
             if (currentSubscription == null)
             {
-                _logger.LogWarning("No active subscription found for TenantId: {TenantId}", _tenantId);
+                _logger.LogWarning("No active subscription found for TenantId: {TenantId}", _currentTenantService.CurrentTenantId);
                 serviceResponse.Message = "No active subscription found. Please subscribe to a plan to continue.";
                 return serviceResponse;
             }
 
             // Check if the subscription plan is 'Starter'
+            var userCount = 0;
             if (currentSubscription.Plan.Type == SubscriptionPlanTypeEnum.Starter)
             {
-                _logger.LogWarning("Access denied for TenantId: {TenantId}. Plan type: Starter", _tenantId);
-                serviceResponse.Message = "Access denied: Your current plan (Starter) does not include this feature.";
+                // Check if user limit has been reached
+                userCount = await _userManager.Users
+                    .Where(w => w.TenantId == _currentTenantService.CurrentTenantId && !w.IsDefault)
+                    .CountAsync();
+            }
+
+            // Log and return current user count and max users allowed
+            if (userCount >= currentSubscription.MaxUsers)
+            {
+                _logger.LogWarning("User limit reached. Current user count: {UserCount}, Max users allowed: {MaxUsers}",
+                    userCount, currentSubscription.MaxUsers);
+                serviceResponse.Message = $"User limit reached: Your current plan (Starter) allows a maximum of {currentSubscription.MaxUsers} users.";
                 return serviceResponse;
             }
 
