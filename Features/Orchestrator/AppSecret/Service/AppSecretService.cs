@@ -720,8 +720,8 @@ public class AppSecretService : IAppSecretService
                     var gitHubCredentials = System.Text.Json.JsonSerializer.Deserialize<GitHubCredentialsDto>(rawJson, jsonOptions);
                     if (gitHubCredentials != null)
                     {
-                       
-                        validationResult.EncryptedValues["AccessToken"] = _encryptionService.EncryptString(gitHubCredentials.AccessToken);                     
+
+                        validationResult.EncryptedValues["AccessToken"] = _encryptionService.EncryptString(gitHubCredentials.AccessToken);
                         gitHubCredentials.AccessToken = string.Empty;
                         gitHubCredentials.Server = string.Empty;
                         gitHubCredentials.User = string.Empty;
@@ -738,30 +738,29 @@ public class AppSecretService : IAppSecretService
                  case nameof(AppSecretTypesEnum.GeneralCredentials):
                 {
                     var generalCredential = System.Text.Json.JsonSerializer.Deserialize<GeneralCredentialsDto>(rawJson, jsonOptions);
-                    if(generalCredential!= null)
+                    if (generalCredential != null)
                     {
                         validationResult.EncryptedValues["Username"] = _encryptionService.EncryptString(generalCredential.Username);
-                         validationResult.EncryptedValues["Password"] = _encryptionService.EncryptString(generalCredential.Password);
-                         generalCredential.Username = string.Empty;
-                         generalCredential.Password = string.Empty;
+                        validationResult.EncryptedValues["Password"] = _encryptionService.EncryptString(generalCredential.Password);
+                        generalCredential.Username = string.Empty;
+                        generalCredential.Password = string.Empty;
 
-                         sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(generalCredential, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(generalCredential, jsonOptions);
                     }
-                     else
+                    else
                     {
                         validationResult.Remark = "Invalid General credentials: required fields missing or format incorrect.";
                     }
                     break;
                 }
 
-
-                 case nameof(AppSecretTypesEnum.OneDriveCredentialApi):
+            case nameof(AppSecretTypesEnum.OneDriveCredentialApi):
                 {
                     var oneDriveCredentials = System.Text.Json.JsonSerializer.Deserialize<OneDriveCredentialsDto>(rawJson, jsonOptions);
-                    if(oneDriveCredentials!= null)
+                    if (oneDriveCredentials != null)
                     {
                         validationResult.EncryptedValues["ClientSecret"] = _encryptionService.EncryptString(oneDriveCredentials.ClientSecret);
-                       
+
                         oneDriveCredentials.OAuthRedirectURL = string.Empty;
                         oneDriveCredentials.AuthorizationURL = string.Empty;
                         oneDriveCredentials.AccessTokenURL = string.Empty;
@@ -769,12 +768,110 @@ public class AppSecretService : IAppSecretService
 
                         sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(oneDriveCredentials, jsonOptions);
                     }
-                     else
+                    else
                     {
                         validationResult.Remark = "Invalid General credentials: required fields missing or format incorrect.";
                     }
                     break;
                 }
+
+                 case nameof(AppSecretTypesEnum.M365CredentialApi):
+                {
+                    var m365Credentials = System.Text.Json.JsonSerializer.Deserialize<M365CredentialsDto>(rawJson, jsonOptions);
+                    if (m365Credentials != null)
+                    {
+                       
+                        validationResult.EncryptedValues["ClientSecret"] = _encryptionService.EncryptString(m365Credentials.ClientSecret);                     
+                        m365Credentials.ClientSecret = string.Empty;
+                        m365Credentials.ClientId = string.Empty;
+                        m365Credentials.AzureTenantId = string.Empty;
+
+
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(m365Credentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid GitHub credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }    
+
+            case nameof(AppSecretTypesEnum.AnthropicApi):
+                {
+                    // Deserialize JSON into AnthropicCredentialsDto
+                    var anthropicCredentials = System.Text.Json.JsonSerializer.Deserialize<AnthropicCredentialsDto>(rawJson, jsonOptions);
+                    if (anthropicCredentials != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(anthropicCredentials.ApiKey);
+                        anthropicCredentials.ApiKey = string.Empty;
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(anthropicCredentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid Anthropic credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+
+            case nameof(AppSecretTypesEnum.GoogleGeminiApi):
+                {
+                    // Deserialize JSON into GoogleGeminiCredentialsDto
+                    var googleGeminiCredentials = System.Text.Json.JsonSerializer.Deserialize<GoogleGeminiCredentialsDto>(rawJson, jsonOptions);
+                    if (googleGeminiCredentials != null)
+                    {
+                       
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(googleGeminiCredentials.ApiKey);
+                        googleGeminiCredentials.ApiKey = string.Empty;
+                        googleGeminiCredentials.Host = string.Empty;
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(googleGeminiCredentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid Google Gemini credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case nameof(AppSecretTypesEnum.GoogleWorkspaceApi):
+                {
+                    // Deserialize JSON into GoogleWorkspaceCredentialsDto
+                    var googleWorkspaceCredentials = System.Text.Json.JsonSerializer.Deserialize<GoogleWorkspaceCredentialsDto>(rawJson, jsonOptions);
+                    if (googleWorkspaceCredentials != null)
+                    {
+
+                        validationResult.EncryptedValues["ClientSecret"] = _encryptionService.EncryptString(googleWorkspaceCredentials.ClientSecret);
+                        googleWorkspaceCredentials.ClientSecret = string.Empty;
+                        googleWorkspaceCredentials.OAuthRedirectURL = string.Empty;
+                        googleWorkspaceCredentials.ClientID = string.Empty;
+
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(googleWorkspaceCredentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid Google Workspace credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+
+                }
+
+            case nameof(AppSecretTypesEnum.AzureOpenAiApi):
+                {
+                    //Deserelize JSON Into AzureOpenAiCredentialsDto
+                    var azureOpenAiCredentials = System.Text.Json.JsonSerializer.Deserialize<AzureOpenAiCredentialsDto>(rawJson, jsonOptions);
+                    if (azureOpenAiCredentials != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(azureOpenAiCredentials.ApiKey);
+                        azureOpenAiCredentials.ApiKey = string.Empty;
+                        azureOpenAiCredentials.ResourceName = string.Empty;
+                        azureOpenAiCredentials.APIVersion = string.Empty;
+                        azureOpenAiCredentials.Endpoint = string.Empty;
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid Azure Open AI credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+
 
             // Default case for unsupported credential types
             default:

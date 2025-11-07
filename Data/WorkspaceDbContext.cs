@@ -45,8 +45,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<KeyStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Vault>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<AppSecret>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<Triggers>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<TriggersFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<TimeTrigger>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<TimeTriggersFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
@@ -67,14 +67,10 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<QueueTransaction>().Property(e => e.Status).HasConversion(new EnumToStringConverter<QueueTransactionStatusTypesEnum>());
         modelBuilder.Entity<KeyStore>().Property(e => e.Type).HasConversion(new EnumToStringConverter<KeyStoreTypesEnum>());
         modelBuilder.Entity<KeyStore>().Property(e => e.AccessLevel).HasConversion(new EnumToStringConverter<AccessLevelTypesEnum>());
-        modelBuilder.Entity<Triggers>().Property(e => e.Environment).HasConversion(new EnumToStringConverter<EnvironmentTypesEnum>());
-        modelBuilder.Entity<Triggers>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<TriggerFrequencyTypesEnum>());
+        modelBuilder.Entity<TimeTrigger>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<TriggerFrequencyTypesEnum>());
         modelBuilder.Entity<FlowUser>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ProjectUserAccessEnum>());
         modelBuilder.Entity<Block>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AccessTypesEnum>());
         modelBuilder.Entity<AppSecret>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AppSecretTypesEnum>());
-
-        modelBuilder.Entity<Triggers>().Property(e => e.RepeateOn).HasColumnType("TEXT[]");
-        modelBuilder.Entity<Triggers>().Property(e => e.NonWorkingDays).HasColumnType("TIMESTAMP[]").HasConversion(v => v, v => v);
 
         // Configure One-to-One relationship between Notification and WorkspaceUser
         modelBuilder.Entity<Notification>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -126,7 +122,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowVersion>().HasMany(many => many.QueueFlowVersions).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
 
         // Configure Many-to-Many relationship between trigger and flow version
-        modelBuilder.Entity<Triggers>().HasMany(many => many.TriggerFlowVersions).WithOne(one => one.Trigger).HasForeignKey(fKey => fKey.TriggerId).IsRequired();
+        modelBuilder.Entity<TimeTrigger>().HasMany(many => many.TimeTriggerFlowVersions).WithOne(one => one.Trigger).HasForeignKey(fKey => fKey.TriggerId).IsRequired();
         modelBuilder.Entity<FlowVersion>().HasMany(many => many.TriggerFlowVersions).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
 
     }
