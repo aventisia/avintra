@@ -1,0 +1,559 @@
+using System.Diagnostics;
+
+namespace WorkspaceAPIs.Services;
+
+public class TimeTriggerService(
+    ILogger<TimeTriggerService> logger,
+    IUnitOfWork unitOfWork,
+    IHttpContextAccessor httpContextAccessor) : ITimeTriggerService
+{
+    private readonly ILogger<TimeTriggerService> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+    // Checks the availability of a time trigger name.
+    public async Task<ServiceResponse<TrueFalseResultDto>> IsTimeTriggerNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<TrueFalseResultDto>
+        {
+            Data = null,
+            Message = "Failed to check trigger name availability. Please try again"
+        };
+
+        try
+        {
+            // Validate trigger name uniqueness
+            var triggerAlreadyExists = await _unitOfWork.TriggerRepo
+                                                     .GetByConditionAsync(w =>
+                                                        w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                                                     .FirstOrDefaultAsync();
+
+            // Trigger already exists
+            if (triggerAlreadyExists != null)
+            {
+                serviceResponse.Data = new TrueFalseResultDto { Result = false };
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "A trigger with same name already exists. Please enter a unique name";
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = new TrueFalseResultDto { Result = true };
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Trigger name is available";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Insert new time trigger 
+
+     public async Task<ServiceResponse<TimeTriggerDto>> CreateNewTimeTriggerAsync(TimeTriggerDto triggerDto)
+    {
+        // Initialize ServiceResponse with a failed response
+        var serviceResponse = new ServiceResponse<TimeTriggerDto>
+        {
+            Data = null,
+            Message = "Failed to insert time trigger. Please try again"
+        };
+
+        try
+        {
+            // Validate trigger name uniqueness
+            var triggerAlreadyExists = await _unitOfWork.TriggerRepo
+                .GetByConditionAsync(w => w.Name.ToLower() == triggerDto.Name.ToLower())
+                .FirstOrDefaultAsync();
+
+            // Trigger already exists
+            if (triggerAlreadyExists != null)
+            {
+                _logger.LogInformation("Time trigger already exists");
+                serviceResponse.StatusCode = 409;
+                serviceResponse.Message = "A time trigger with the same name already exists. Please enter a unique name";
+                return serviceResponse;
+            }
+
+            // Trim dto's string properties
+            triggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(triggerDto);
+
+            // Default mapping
+            var newTimeTrigger = triggerDto.Adapt<TimeTrigger>();
+            newTimeTrigger.LastTriggeredTime = DateTimeOffset.UtcNow;
+            newTimeTrigger.CreatedByUserId = _userId;
+            newTimeTrigger.LastModifiedByUserId = _userId;
+
+            // Insert time trigger
+            await _unitOfWork.TriggerRepo.InsertAsync(newTimeTrigger);
+
+            // Attempt to save changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while inserting new time trigger");
+                return serviceResponse;
+            }          
+
+            // Task successful
+            serviceResponse.Data = newTimeTrigger.Adapt<TimeTriggerDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Time trigger created successfully";
+            _logger.LogInformation("Time trigger created successfully with id {Id} and agents assigned", newTimeTrigger.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Update an existence time trigger
+     public async Task<ServiceResponse<TimeTriggerDto>> UpdateTimeTriggerAsync(TimeTriggerDto triggerDto)
+    {
+        // Initialize ServiceResponse with a failed response
+        var serviceResponse = new ServiceResponse<TimeTriggerDto>
+        {
+            Data = null,
+            Message = "Failed to update time trigger. Please try again"
+        };
+
+        try
+        {
+            // Validate trigger existence
+            var trigger = await _unitOfWork.TriggerRepo
+                .GetByConditionAsync(m =>
+                    m.Id == triggerDto.Id && m.CreatedByUserId == _userId
+                )
+                .FirstOrDefaultAsync();
+
+            // Trigger does not exist
+            if (trigger == null)
+            {
+                _logger.LogInformation("Time Trigger does not exist");
+                serviceResponse.Message = "Time Trigger does not exist";
+                return serviceResponse;
+            }      
+
+            // Trim dto's string properties
+            triggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(triggerDto);
+
+            // Default mapping 
+            triggerDto.Adapt(trigger);
+            trigger.LastModifiedByUserId = _userId;
+            trigger.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            // Update trigger
+            _unitOfWork.TriggerRepo.Update(trigger);
+
+            // Attempt to save changes to the database
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while updating time trigger");
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = trigger.Adapt<TimeTriggerDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Time Trigger updated successfully";
+            _logger.LogInformation("Time Trigger updated successfully with Id {Id}", triggerDto.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+    
+   
+    // Remove an time trigger by its ID
+    public async Task<ServiceResponse<bool>> DeleteTimeTriggerAsync(Guid timeTriggerId)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to delete time trigger. Please try again"
+        };
+
+        try
+        {
+            // Try to get time trigger
+            var trigger = await _unitOfWork.TriggerRepo
+                                            .GetByConditionAsync(m => m.Id == timeTriggerId)
+                                            .Include(a => a.TimeTriggerFlowVersions)
+                                            .FirstOrDefaultAsync();
+
+            // Trigger does not exist
+            if (trigger == null)
+            {
+                _logger.LogInformation($"Time Trigger does not exist");
+                serviceResponse.Message = "Time Trigger does not exist";
+                return serviceResponse;
+            }
+
+            // Delete time trigger
+            _unitOfWork.TriggerRepo.Delete(trigger);
+
+            // Delete-Job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while deleting time trigger");
+                return serviceResponse;
+            }
+
+
+            // Task successful
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Time Trigger deleted successfully";
+
+            _logger.LogInformation("Time Trigger deleted successfully of Id {Id}", timeTriggerId);
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieve all time triggers associated with current user
+    public async Task<ServiceResponse<IEnumerable<TimeTriggerDto>>> GetTimeTriggerListAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<TimeTriggerDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve time triggers, Please try again."
+        };
+
+        try
+        {
+            // Try to get time triggers
+            var timeTriggers = await _unitOfWork.TriggerRepo
+                                            .GetByConditionAsync(m => m.CreatedByUserId == _userId)
+                                            .OrderByDescending(o => o.CreatedOn)
+                                            .Include(a => a.CreatedByUser)
+                                            .Include(a => a.LastModifiedByUser)
+                                            .Include(a => a.TimeTriggerFlowVersions)
+                                                .ThenInclude(fv => fv.FlowVersion)
+                                                .ThenInclude(f => f.Flow)
+                                            .AsNoTracking()
+                                            .ToListAsync();
+
+            // Task successful
+            serviceResponse.Data = timeTriggers.Adapt<IEnumerable<TimeTriggerDto>>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Time triggers retrieved successfully";
+            _logger.LogInformation("Time triggers retrieved successfully");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieve an time trigger by its ID
+    public async Task<ServiceResponse<TimeTriggerDto>> GetTimeTriggerAsync(Guid timeTriggerId)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<TimeTriggerDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve trigger, Please try again"
+        };
+
+        try
+        {
+            // Try to get time trigger
+            var timeTrigger = await _unitOfWork.TriggerRepo
+                                            .GetByConditionAsync(m =>
+                                                m.Id == timeTriggerId && m.CreatedByUserId == _userId
+                                            )
+                                            .Include(a => a.CreatedByUser)
+                                            .Include(a => a.LastModifiedByUser)
+                                            .Include(a => a.TimeTriggerFlowVersions)
+                                                .ThenInclude(fv => fv.FlowVersion)
+                                                .ThenInclude(f => f.Flow)
+                                            .AsNoTracking()
+                                            .FirstOrDefaultAsync();
+
+            if (timeTrigger == null)
+            {
+                serviceResponse.Message = "Time trigger does not exist";
+                _logger.LogInformation("There is no time trigger with Id {Id}", timeTriggerId);
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = timeTrigger.Adapt<TimeTriggerDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Time trigger retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+   
+    // Deletes multiple timetriggers by their IDs.
+    public async Task<ServiceResponse<bool>> DeleteTimeTriggersAsync(IEnumerable<Guid> timeTriggerIds)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to delete time time triggers. Please try again"
+        };
+
+        try
+        {
+            // Validate time triggers existence
+            var timeTriggers = await _unitOfWork.TriggerRepo
+                                            .GetByConditionAsync(w =>
+                                                w.CreatedByUserId == _userId &&
+                                                timeTriggerIds.Contains(w.Id))
+                                            .Include(a => a.TimeTriggerFlowVersions)
+                                            .ToListAsync();
+
+            // Triggers do not exist
+            if (timeTriggers.Count == 0)
+            {
+                _logger.LogInformation($"Triggers do not exist");
+                serviceResponse.Message = "Triggers do not exist";
+                return serviceResponse;
+            }
+
+            // TODO: Check trigger relationship with other entities
+
+            // Delete triggers
+            _unitOfWork.TriggerRepo.Delete(timeTriggers);
+
+            // Delete-Job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("Context SaveChanges failed while deleting triggers");
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = $"{timeTriggers.Count} triggers deleted successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+
+    // Retrieve agent list
+    // public async Task<ServiceResponse<IEnumerable<AssignAgentTriggerDto>>> GetAgentsByTriggerAsync(Guid triggerId)
+    // {
+    //     // Initialize the response with a failed result
+    //     var serviceResponse = new ServiceResponse<IEnumerable<AssignAgentTriggerDto>>
+    //     {
+    //         Data = null,
+    //         Message = "Failed to retrieve agents. Please try again."
+    //     };
+
+    //     try
+    //     {
+    //         // Check if the trigger exists and belongs to the current user
+    //         var trigger = await _unitOfWork.TriggerRepo
+    //                                         .GetByConditionAsync(w =>
+    //                                             w.Id == triggerId &&
+    //                                             w.CreatedByUserId == _userId)
+    //                                         .Include(a => a.TimeTriggerFlowVersions)
+    //                                         .FirstOrDefaultAsync();
+
+    //         // Return an error if the trigger doesn't exist
+    //         if (trigger == null)
+    //         {
+    //             _logger.LogInformation("Trigger with ID {TriggerId} not found for user {UserId}.", triggerId, _userId);
+    //             serviceResponse.Message = "The trigger does not exist.";
+    //             return serviceResponse;
+    //         }
+
+    //         // Retrieve all agents for the current user
+    //         var agents = await _unitOfWork.FlowVersionRepo
+    //                                         .GetByConditionAsync(w =>
+    //                                             w.IsPublished &&
+    //                                             w.CreatedByUserId == _userId)
+    //                                         .Include(f => f.Flow)
+    //                                         .ProjectToType<AssignAgentTriggerDto>()
+    //                                         .ToListAsync();
+
+    //         // Set IsAssigned to true if the agent is already assigned to the trigger
+    //         agents.ForEach(a =>
+    //         {
+    //             a.IsAssigned = (trigger.TimeTriggerFlowVersions ?? Enumerable.Empty<TimeTriggersFlowVersion>()).Any(mf => mf.FlowVersionId == a.Id);
+    //             a.TriggerId = trigger.Id;
+    //         });
+
+    //         // Return the agents along with their assignment status
+    //         serviceResponse.Data = agents;
+    //         serviceResponse.StatusCode = 200;
+    //         serviceResponse.Message = "Agents retrieved successfully";
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "An unexpected error occurred while retrieving agents for trigger {TriggerId}.", triggerId);
+    //         serviceResponse.Message = "An error occurred while retrieving agents from the trigger.";
+    //         return serviceResponse;
+    //     }
+
+    //     return serviceResponse;
+    // }
+
+    // // Retrieve trigger select-option
+    // public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetTriggerToSelectOptionAsync()
+    // {
+    //     // Initialize serviceResponse with failed response
+    //     var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+    //     {
+    //         Data = null,
+    //         Message = "Failed to retrieve triggers, please try again."
+    //     };
+
+    //     try
+    //     {
+    //         // Retrieve the triggers and map them to SelectOptionDto
+    //         var triggersToSelect = await _unitOfWork.TriggerRepo.GetAllAsync()
+    //             .ProjectToType<SelectOptionDto>()
+    //             .AsNoTracking()
+    //             .ToListAsync();
+
+    //         // Set the serviceResponse
+    //         serviceResponse.Data = triggersToSelect;
+    //         serviceResponse.StatusCode = 200;
+    //         serviceResponse.Message = "Triggers retrieved successfully";
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "An error occurred while retrieving the trigger list.");
+    //     }
+
+    //     return serviceResponse;
+    // }
+
+    //  private async Task<ServiceResponse<bool>> AssignOrUpdateAgentsAsync(Guid triggerId, IEnumerable<Guid> agentIds)
+    // {
+    //     var serviceResponse = new ServiceResponse<bool>
+    //     {
+    //         Data = false,
+    //         Message = "Failed to assign agents. Please try again."
+    //     };
+
+    //     try
+    //     {
+    //         // Validate that agent IDs are unique (no duplicates)
+    //         if (agentIds.Count() != agentIds.Distinct().Count())
+    //         {
+    //             _logger.LogInformation("Duplicate agent IDs detected.");
+    //             serviceResponse.Message = "Agent IDs cannot contain duplicates.";
+    //             return serviceResponse;
+    //         }
+
+    //         // Validate agents and fetch valid agent entries
+    //         var agents = await _unitOfWork.FlowVersionRepo
+    //             .GetByConditionAsync(w => agentIds.Contains(w.Id) && w.IsPublished)
+    //             .AsNoTracking()
+    //             .ToListAsync();
+
+    //         var invalidAgentIds = agentIds.Except(agents.Select(a => a.Id)).ToList();
+    //         if (invalidAgentIds.Count != 0)
+    //         {
+    //             _logger.LogInformation("Invalid agent IDs found: {InvalidAgentIds}", string.Join(", ", invalidAgentIds));
+    //             serviceResponse.Message = $"The following agent IDs are invalid or do not belong to the user: {string.Join(", ", invalidAgentIds)}";
+    //             return serviceResponse;
+    //         }
+
+    //         // Get existing trigger flows and determine changes
+    //         var existingTriggerFlows = await _unitOfWork.TriggerFlowRepo
+    //                     .GetByConditionAsync(mf => mf.TriggerId == triggerId)
+    //                     .AsNoTracking()
+    //                     .ToListAsync();
+
+    //         var existingAgentIds = existingTriggerFlows.Select(mf => mf.FlowVersionId).ToList();
+
+    //         var newAgentIds = agentIds.Except(existingAgentIds).ToList();
+    //         var removedAgentIds = existingAgentIds.Except(agentIds).ToList();
+
+    //         // Create new TriggerFlow entries for agents not already assigned
+    //         var triggerFlowsToAdd = newAgentIds.Select(agentId => new TimeTriggersFlowVersion
+    //         {
+    //             TriggerId = triggerId,
+    //             FlowVersionId = agentId,
+    //             CreatedByUserId = _userId,
+    //             LastModifiedByUserId = _userId
+    //         }).ToList();
+
+    //         // Remove existing TriggerFlow entries for agents that are no longer assigned
+    //         var triggerFlowsToRemove = existingTriggerFlows
+    //             .Where(mf => removedAgentIds.Contains(mf.FlowVersionId))
+    //             .ToList();
+
+    //         // Begin the transaction to insert and remove data
+    //         if (triggerFlowsToAdd.Count != 0)
+    //         {
+    //             await _unitOfWork.TriggerFlowRepo.InsertAsync(triggerFlowsToAdd);
+
+    //             // Attempt to save changes to the database
+    //             if (!await _unitOfWork.SaveAsync())
+    //             {
+    //                 _logger.LogInformation("Database save operation failed while assigning or inserting agents.");
+    //                 serviceResponse.Message = "Failed to insert agent assignments for the trigger.";
+    //                 return serviceResponse;
+    //             }
+    //         }
+
+    //         if (triggerFlowsToRemove.Any())
+    //         {
+    //             _unitOfWork.TriggerFlowRepo.Delete(triggerFlowsToRemove);
+
+    //             // Attempt to save changes to the database
+    //             if (!await _unitOfWork.SaveAsync())
+    //             {
+    //                 _logger.LogInformation("Database save operation failed while assigning or deleting agents.");
+    //                 serviceResponse.Message = "Failed to insert agent assignments for the trigger.";
+    //                 return serviceResponse;
+    //             }
+    //         }
+    //         serviceResponse.StatusCode = 200;
+    //         serviceResponse.Message = $"{newAgentIds.Count} agents assigned and {removedAgentIds.Count} agents removed from the trigger.";
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "An unexpected error occurred while assigning agents.");
+    //         return serviceResponse;
+    //     }
+
+    //     return serviceResponse;
+    // }
+
+
+   
+}

@@ -42,6 +42,7 @@ public static class AppServicesExtension
         config.Apply(new FlowUserMappingProfile());
         config.Apply(new BlockMappingProfile());
         config.Apply(new AppSecretMappingProfile());
+        config.Apply(new TimeTriggerMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -83,7 +84,7 @@ public static class AppServicesExtension
         services.AddScoped<IJobTableService, JobTableService>();
         services.AddScoped<IKeyStoreService, KeyStoreService>();
         services.AddScoped<IVaultService, VaultService>();
-        services.AddScoped<ITriggerService, TriggerService>();
+        services.AddScoped<ITimeTriggerService, TimeTriggerService>();
         services.AddScoped<IFileUploadService, FileUploadService>();
         services.AddScoped<IFlowUserService, FlowUserService>();
         services.AddScoped<IBlockService, BlockService>();
