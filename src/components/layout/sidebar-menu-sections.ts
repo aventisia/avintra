@@ -103,7 +103,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
     ],
   },
   {
-    sectionName: "Admin",
+    sectionName: "Tenant Admin",
     menuItems: [
       {
         permissions: ["SA", "TA"],
