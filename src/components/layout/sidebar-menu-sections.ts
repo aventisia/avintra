@@ -38,16 +38,11 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         name: "AI Models",
         route: "/ai-models",
       },
-      // Add Library only if not production
-      ...(import.meta.env.MODE !== "production"
-        ? [
-            {
-              Icon: LibraryIcon,
-              name: "Library",
-              route: "/library",
-            },
-          ]
-        : []),
+      {
+        Icon: LibraryIcon,
+        name: "Library",
+        route: "/library",
+      },
     ],
   },
   {

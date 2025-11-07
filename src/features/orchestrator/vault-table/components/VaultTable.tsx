@@ -142,7 +142,7 @@ export const VaultTable = () => {
             </div>
           )}
           {/* Data table Pagination component */}
-          <DTPagination table={table} />
+          <DTPagination table={table} singularLabel="credential" pluralLabel="credentials" />
 
           {/* Bulk actions for data table */}
           <VaultsBulkActions table={table} />
