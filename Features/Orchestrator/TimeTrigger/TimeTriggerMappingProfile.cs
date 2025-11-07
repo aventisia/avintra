@@ -1,12 +1,11 @@
 namespace WorkspaceAPIs.MappingProfiles;
 
-public class TriggerMappingProfile : IRegister
+public class TimeTriggerMappingProfile : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
         // Mapping to get trigger list of trigger records
-        config.NewConfig<Triggers, TriggerDto>()
-            .Map(dest => dest.AgentIds, src => src.TriggerFlowVersions != null ? src.TriggerFlowVersions.Select(f => f.Id.ToString()) : null)
+        config.NewConfig<TimeTrigger, TimeTriggerDto>()
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
@@ -33,7 +32,7 @@ public class TriggerMappingProfile : IRegister
                     : null);
 
         // Mapping for inserting or updating project record
-        config.NewConfig<TriggerDto, Triggers>()
+        config.NewConfig<TimeTriggerDto, TimeTrigger>()
                 .Ignore(dest => dest.Id)
                 .Ignore(dest => dest.CreatedOn)
                 .Ignore(dest => dest.LastModifiedOn)
@@ -42,10 +41,9 @@ public class TriggerMappingProfile : IRegister
 
 
         // New Mapping for Trigger to SelectOptionDto(For dropdowns or select lists)
-        config.NewConfig<Triggers, SelectOptionDto>()
+        config.NewConfig<TimeTrigger, SelectOptionDto>()
                 .Map(dest => dest.Value, src => src.Id)
-                .Map(dest => dest.Label, src => src.Name)
-                .Map(dest => dest.Description, src => $"{src.Frequency} at time ({TimeOnly.FromDateTime(src.RepeateAt)})")
+                .Map(dest => dest.Label, src => src.Name)             
                 .Map(dest => dest.Disabled, src => src.IsDisabled);
     }
 }

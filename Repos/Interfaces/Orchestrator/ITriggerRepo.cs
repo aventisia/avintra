@@ -1,3 +1,3 @@
 namespace WorkspaceAPIs.Repos;
 
-public interface ITriggerRepo : IRepositoryBase<Triggers, WorkspaceDbContext>;
+public interface ITriggerRepo : IRepositoryBase<TimeTrigger, WorkspaceDbContext>;

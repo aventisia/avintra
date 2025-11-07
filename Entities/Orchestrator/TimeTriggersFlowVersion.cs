@@ -1,6 +1,7 @@
 namespace WorkspaceAPIs.Entities;
 
-public class TriggersFlowVersion : BaseEntity, IMustHaveTenant
+[Table ("worc_FlowVersions")]
+public class TimeTriggersFlowVersion : BaseEntity, IMustHaveTenant
 {
     public Guid TenantId { get; set; }
 
@@ -8,7 +9,7 @@ public class TriggersFlowVersion : BaseEntity, IMustHaveTenant
     /// Represents the trigger that this flow is associated with
     /// </summary>
     [ForeignKey("TriggerId")]
-    public virtual Triggers? Trigger { get; set; }
+    public virtual TimeTrigger? Trigger { get; set; }
 
     /// <summary>
     /// Represents the ID of the trigger this flow is associated with
