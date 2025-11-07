@@ -142,27 +142,44 @@ public class TenantAccountService : ITenantAccountService
             }
 
             // Fetch existing billing details
-            var billingDetail1 = await _unitOfWork.BillingDetailRepo
+            var existingBillingDetail = await _unitOfWork.BillingDetailRepo
                 .GetByConditionAsync(w => w.TenantId == _tenantId)
                 .Include(i => i.BillingHistories)
                 .OrderByDescending(o => o.CreatedOn)
                 .FirstOrDefaultAsync();
 
-            // Check if billing history exists or not
-            if (billingDetail1?.BillingHistories.Count == 0)
+            // Existing Billing detail is null
+            if (existingBillingDetail == null)
+            {
+                _logger.LogInformation("No existing billing detail found for TenantId: {TenantId}", _tenantId);
+                serviceResponse.Message = "No existing billing detail found to update.";
+                return serviceResponse;
+            }
+
+            // Get count of billing histories attached to the billing detail
+            var billingHistoriesCount = existingBillingDetail.BillingHistories.Where(w =>
+                                        w.PaymentStatus == PaymentStatusTypesEnum.Captured ||
+                                        w.PaymentStatus == PaymentStatusTypesEnum.Refunded ||
+                                        w.PaymentStatus == PaymentStatusTypesEnum.Failed).Count();
+
+            
+
+            // Check if billing history exists or not and decide to update or create new billing detail
+            var billingDetailObjForResponse = existingBillingDetail;
+            if (billingHistoriesCount == 0)
             {
                 _logger.LogInformation("No billing history found. Updating existing billing detail.");
 
                 // Update existing Billing Detail
-                organizationBillingDto.Adapt(billingDetail1);
+                organizationBillingDto.Adapt(existingBillingDetail);
 
                 // Set necessary properties for the billing detail
-                billingDetail1.SubscriptionId = tenantSubscription.Id;
-                billingDetail1.LastModifiedByUserId = _userId;
-                billingDetail1.LastModifiedOn = DateTimeOffset.UtcNow;
+                existingBillingDetail.SubscriptionId = tenantSubscription.Id;
+                existingBillingDetail.LastModifiedByUserId = _userId;
+                existingBillingDetail.LastModifiedOn = DateTimeOffset.UtcNow;
 
                 // Update the billing detail
-                _unitOfWork.BillingDetailRepo.Update(billingDetail1);
+                _unitOfWork.BillingDetailRepo.Update(existingBillingDetail);
 
                 if (!await _unitOfWork.SaveAsync())
                 {
@@ -171,22 +188,25 @@ public class TenantAccountService : ITenantAccountService
                 }
 
                 _logger.LogInformation("Billing detail updated successfully for TenantId: {TenantId}", _tenantId);
+
+                // Set the response object to the updated billing detail
+                billingDetailObjForResponse = existingBillingDetail;
             }
             else
             {
                 _logger.LogInformation("Billing history found. Creating new billing detail.");
 
                 // Create a new Billing Detail
-                billingDetail1 = organizationBillingDto.Adapt<BillingDetail>();
+                var newBillingDetail = organizationBillingDto.Adapt<BillingDetail>();
 
                 // Set necessary properties for the billing detail
-                billingDetail1.TenantId = _tenantId;
-                billingDetail1.SubscriptionId = tenantSubscription.Id;
-                billingDetail1.CreatedByUserId = _userId;
-                billingDetail1.LastModifiedByUserId = _userId;
+                newBillingDetail.TenantId = _tenantId;
+                newBillingDetail.SubscriptionId = tenantSubscription.Id;
+                newBillingDetail.CreatedByUserId = _userId;
+                newBillingDetail.LastModifiedByUserId = _userId;
 
                 // Insert new billing detail
-                await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail1);
+                await _unitOfWork.BillingDetailRepo.InsertAsync(newBillingDetail);
 
                 if (!await _unitOfWork.SaveAsync())
                 {
@@ -195,15 +215,17 @@ public class TenantAccountService : ITenantAccountService
                 }
 
                 _logger.LogInformation("New billing detail created successfully for TenantId: {TenantId}", _tenantId);
+
+                // Set the response object to the newly created billing detail
+                billingDetailObjForResponse = newBillingDetail;
             }
 
             // Map the updated or newly created billing details to the response DTO
-            var updatedBillingDetail = billingDetail1.Adapt<BillingDetail>();
-            organizationBillingDto = updatedBillingDetail.Adapt<TenantOrganizationBillingDto>();
-            organizationBillingDto.OrganizationName = tenant.Name;
-            organizationBillingDto.Id = tenant.Id;
+            var organizationBillingResponseDto = billingDetailObjForResponse.Adapt<TenantOrganizationBillingDto>();
+            organizationBillingResponseDto.OrganizationName = tenant.Name;
+            organizationBillingResponseDto.Id = tenant.Id;
 
-            serviceResponse.Data = organizationBillingDto;
+            serviceResponse.Data = organizationBillingResponseDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Tenant organization updated successfully.";
 
