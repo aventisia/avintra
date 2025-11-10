@@ -6,12 +6,12 @@ export enum UsageSourceTypesEnum {
   /**
    * Indicates that the credits were used by or for an AI Agent.
    */
-  Agent = "AI Agent",
+  Agent = "AIAgent",
 
   /**
    * Indicates that the credits were used by or for an AI Model.
    */
-  AIModel = "AI Model",
+  AIModel = "AIModel",
 
   /**
    * Indicates that the credits were consumed by the platform itself.
