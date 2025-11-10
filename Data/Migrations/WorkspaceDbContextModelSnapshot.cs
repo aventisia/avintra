@@ -1405,11 +1405,18 @@ namespace WorkspaceAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<TimeOnly?>("AtTime")
+                        .HasColumnType("time without time zone");
+
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CronExpression")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("EffectiveDate")
                         .HasColumnType("timestamp with time zone");
@@ -1423,12 +1430,15 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<List<int>>("ExceptionHours")
                         .HasColumnType("integer[]");
 
-                    b.Property<int[]>("ExceptionWeekdays")
+                    b.Property<List<int>>("ExceptionWeekdays")
                         .HasColumnType("integer[]");
 
                     b.Property<string>("Frequency")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("Interval")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
@@ -1442,16 +1452,15 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("LastTriggeredTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<List<int>>("MonthDays")
+                        .HasColumnType("integer[]");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("NextTriggerTime")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("SetupObject")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -1465,6 +1474,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
+
+                    b.Property<List<int>>("Weekdays")
+                        .HasColumnType("integer[]");
 
                     b.HasKey("Id");
 
