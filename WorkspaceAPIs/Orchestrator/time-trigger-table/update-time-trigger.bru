@@ -6,32 +6,33 @@ meta {
 
 put {
   url: {{WORC_APIS_BASE_URL}}/time-trigger
-  body: none
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("TIME_TRIGGER_ID"),
-    tenantId: "633e911f-a12e-4198-b172-8de02fd202b2",
-    name: "TEST6",
-    timezone: "UTC",
-    frequency: "MinuteByMinute",
-    setupObject: "{\"Frequency\":MinuteByMinute}",
-    effectiveDate: "2025-11-07T09:01:55.770Z",
-    endDate: "2025-11-07T09:01:55.770Z",
-    lastTriggeredTime: "2025-11-07T09:01:55.770Z",
-    nextTriggerTime: "2025-11-07T09:01:55.770Z",
-    exceptionHours: [
+body:json {
+  {
+    "id": "{{TIME_TRIGGER_ID}}",
+    "tenantId": "633e911f-a12e-4198-b172-8de02fd202b2",
+    "name": "TEST6",
+    "timezone": "Asia/Kolkata",
+    "frequency": "Weekly",
+    "interval": 1,
+    "atTime": "23:30:00",
+    "weekdays": [1, 2, 3, 4, 5],
+    "monthDays": [], 
+    "effectiveDate": "2025-11-07T09:01:55.770Z",
+    "endDate": "2025-11-07T09:01:55.770Z",
+    "lastTriggeredTime": "2025-11-07T09:01:55.770Z",
+    "nextTriggerTime": "2025-11-07T09:01:55.770Z",
+    "exceptionHours": [
       2
     ],
-    exceptionWeekdays: [
+    "exceptionWeekdays": [
       "Monday"
     ],
-    exceptionDates: [
+    "exceptionDates": [
       "2025-11-07T09:01:55.770Z"
     ]
-  })
+  }
 }

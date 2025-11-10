@@ -6,33 +6,34 @@ meta {
 
 post {
   url: {{WORC_APIS_BASE_URL}}/time-trigger
-  body: none
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    tenantId: "633e911f-a12e-4198-b172-8de02fd202b2",
-    name: "tests1",
-    timezone: "UTC",
-    frequency: "Monthly",
-    setupObject: "string",
-    effectiveDate: "2025-11-07T09:01:55.770Z",
-    endDate: "2025-11-07T09:01:55.770Z",
-    lastTriggeredTime: "2025-11-07T09:01:55.770Z",
-    nextTriggerTime: "2025-11-07T09:01:55.770Z",
-    exceptionHours: [
+body:json {
+  {
+    "tenantId": "633e911f-a12e-4198-b172-8de02fd202b2",
+    "name": "tests",
+    "timezone": "Asia/Kolkata",
+    "frequency": "Weekly",
+    "interval": 1,
+    "atTime": "23:30:00",
+    "weekdays": [1, 2, 3, 4, 5],
+    "monthDays": [],
+    "effectiveDate": "2025-11-07T09:01:55.770Z",
+    "endDate": "2025-11-07T09:01:55.770Z",
+    "lastTriggeredTime": "2025-11-07T09:01:55.770Z",
+    "nextTriggerTime": "2025-11-07T09:01:55.770Z",
+    "exceptionHours": [
       0
     ],
-    exceptionWeekdays: [
+    "exceptionWeekdays": [
       "Sunday"
     ],
-    exceptionDates: [
+    "exceptionDates": [
       "2025-11-07T09:01:55.770Z"
     ]
-  })
+  }
 }
 
 script:post-response {
