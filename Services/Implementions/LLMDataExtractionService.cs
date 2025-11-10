@@ -37,7 +37,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             var response = await RequestExternalAPIUtil.RequestExternalAPI(CrudTypesEnum.Read, "http://localhost:4000/api/credit-usage/available-credits", _jwt);
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            // Failed to add credit usage
+            // Failed to get available credits
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError($"Failed to retrieve available credits. Response: {response.StatusCode} - {responseContent}");
