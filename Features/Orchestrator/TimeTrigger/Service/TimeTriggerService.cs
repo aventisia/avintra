@@ -54,7 +54,7 @@ public class TimeTriggerService(
 
     // Insert new time trigger 
 
-     public async Task<ServiceResponse<TimeTriggerDto>> CreateNewTimeTriggerAsync(TimeTriggerDto triggerDto)
+    public async Task<ServiceResponse<TimeTriggerDto>> CreateNewTimeTriggerAsync(TimeTriggerDto triggerDto)
     {
         // Initialize ServiceResponse with a failed response
         var serviceResponse = new ServiceResponse<TimeTriggerDto>
@@ -87,6 +87,18 @@ public class TimeTriggerService(
             newTimeTrigger.LastTriggeredTime = DateTimeOffset.UtcNow;
             newTimeTrigger.CreatedByUserId = _userId;
             newTimeTrigger.LastModifiedByUserId = _userId;
+            newTimeTrigger.CronExpression = CronScheduleUtil.BuildCronExpression(
+                newTimeTrigger.Frequency,
+                newTimeTrigger.Interval,
+                newTimeTrigger.Timezone,
+                newTimeTrigger.AtTime,
+                newTimeTrigger.Weekdays,
+                newTimeTrigger.MonthDays
+            );
+            newTimeTrigger.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
+                newTimeTrigger.CronExpression,
+                newTimeTrigger.Timezone
+            );
 
             // Insert time trigger
             await _unitOfWork.TriggerRepo.InsertAsync(newTimeTrigger);
@@ -96,7 +108,17 @@ public class TimeTriggerService(
             {
                 _logger.LogInformation("Context SaveChanges failed while inserting new time trigger");
                 return serviceResponse;
-            }          
+            }
+
+            // Log a human-readable description of the cron schedule for reference
+            _logger.LogInformation(CronScheduleUtil.BuildHumanDescription(
+                newTimeTrigger.Frequency,
+                newTimeTrigger.Interval,
+                newTimeTrigger.Timezone,
+                newTimeTrigger.AtTime,
+                newTimeTrigger.Weekdays,
+                newTimeTrigger.MonthDays
+            ));
 
             // Task successful
             serviceResponse.Data = newTimeTrigger.Adapt<TimeTriggerDto>();
@@ -114,7 +136,7 @@ public class TimeTriggerService(
     }
 
     // Update an existence time trigger
-     public async Task<ServiceResponse<TimeTriggerDto>> UpdateTimeTriggerAsync(TimeTriggerDto triggerDto)
+    public async Task<ServiceResponse<TimeTriggerDto>> UpdateTimeTriggerAsync(TimeTriggerDto triggerDto)
     {
         // Initialize ServiceResponse with a failed response
         var serviceResponse = new ServiceResponse<TimeTriggerDto>
@@ -138,7 +160,7 @@ public class TimeTriggerService(
                 _logger.LogInformation("Time Trigger does not exist");
                 serviceResponse.Message = "Time Trigger does not exist";
                 return serviceResponse;
-            }      
+            }
 
             // Trim dto's string properties
             triggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(triggerDto);
@@ -147,6 +169,18 @@ public class TimeTriggerService(
             triggerDto.Adapt(trigger);
             trigger.LastModifiedByUserId = _userId;
             trigger.LastModifiedOn = DateTimeOffset.UtcNow;
+            trigger.CronExpression = CronScheduleUtil.BuildCronExpression(
+                trigger.Frequency,
+                trigger.Interval,
+                trigger.Timezone,
+                trigger.AtTime,
+                trigger.Weekdays,
+                trigger.MonthDays
+            );
+            trigger.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
+                trigger.CronExpression,
+                trigger.Timezone
+            );
 
             // Update trigger
             _unitOfWork.TriggerRepo.Update(trigger);
@@ -157,6 +191,16 @@ public class TimeTriggerService(
                 _logger.LogInformation("Context SaveChanges failed while updating time trigger");
                 return serviceResponse;
             }
+
+            //Log a human-readable description of the cron schedule for reference
+            _logger.LogInformation(CronScheduleUtil.BuildHumanDescription(
+                trigger.Frequency,
+                trigger.Interval,
+                trigger.Timezone,
+                trigger.AtTime,
+                trigger.Weekdays,
+                trigger.MonthDays
+            ));
 
             // Task successful
             serviceResponse.Data = trigger.Adapt<TimeTriggerDto>();
@@ -172,8 +216,7 @@ public class TimeTriggerService(
 
         return serviceResponse;
     }
-    
-   
+
     // Remove an time trigger by its ID
     public async Task<ServiceResponse<bool>> DeleteTimeTriggerAsync(Guid timeTriggerId)
     {
@@ -313,7 +356,7 @@ public class TimeTriggerService(
         return serviceResponse;
     }
 
-   
+
     // Deletes multiple timetriggers by their IDs.
     public async Task<ServiceResponse<bool>> DeleteTimeTriggersAsync(IEnumerable<Guid> timeTriggerIds)
     {
@@ -555,5 +598,5 @@ public class TimeTriggerService(
     // }
 
 
-   
+
 }
