@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Entities;
 
-[Table ("worc_FlowVersions")]
+[Table("worc_FlowVersions")]
 public class TimeTriggersFlowVersion : BaseEntity, IMustHaveTenant
 {
     public Guid TenantId { get; set; }
