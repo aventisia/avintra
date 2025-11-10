@@ -5,10 +5,10 @@ export enum ActionTypesEnum {
   /**
    * Indicates an action where an AI agent is triggered to execute.
    */
-  AgentExecution = "Agent Execution",
+  AgentExecution,
 
   /**
    * Indicates an action where an AI model is triggered to execute.
    */
-  AIModelExecution = "AI Model Execution",
+  AIModelExecution,
 }

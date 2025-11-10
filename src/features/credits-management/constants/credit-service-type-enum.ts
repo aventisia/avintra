@@ -5,70 +5,70 @@ export enum CreditServiceTypesEnum {
   /**
    * GPU-accelerated text processing service hosted on-premises.
    */
-  OnPremGpuText = "OnPremGpuText",
+  OnPremGpuText,
 
   /**
    * Input token processing for the GPT-4o Mini model.
    */
-  Gpt4oMiniInput = "Gpt4oMiniInput",
+  Gpt4oMiniInput,
 
   /**
    * Output token generation for the GPT-4o Mini model.
    */
-  Gpt4oMiniOutput = "Gpt4oMiniOutput",
+  Gpt4oMiniOutput,
 
   /**
    * Input token processing for the Gemini 2.5 Flash model.
    */
-  Gemini25FlashInput = "Gemini25FlashInput",
+  Gemini25FlashInput,
 
   /**
    * Output token generation for the Gemini 2.5 Flash model.
    */
-  Gemini25FlashOutput = "Gemini25FlashOutput",
+  Gemini25FlashOutput,
 
   /**
    * Service for executing autonomous agent workflows.
    */
-  AgentExecutionTime = "AgentExecutionTime",
+  AgentExecutionTime,
 
   /**
    * Service for executing AI model inference tasks.
    */
-  AIModelExecutionTime = "AIModelExecutionTime",
+  AIModelExecutionTime,
 
   /**
    * Email communication service using SendGrid.
    */
-  SendGridEmail = "SendGridEmail",
+  SendGridEmail,
 
   /**
    * WhatsApp messaging service powered by Twilio.
    */
-  TwilioWhatsApp = "TwilioWhatsApp",
+  TwilioWhatsApp,
 
   /**
    * SMS messaging service powered by Twilio.
    */
-  TwilioSms = "TwilioSms",
+  TwilioSms,
 
   /**
    * Speech-to-text service hosted on-premises.
    */
-  OnPremSTT = "OnPremSTT",
+  OnPremSTT,
 
   /**
    * Text-to-speech service hosted on-premises.
    */
-  OnPremTTS = "OnPremTTS",
+  OnPremTTS,
 
   /**
    * Speech-to-text service provided by ElevenLabs.
    */
-  ElevenLabsSTT = "ElevenLabsSTT",
+  ElevenLabsSTT,
 
   /**
    * Text-to-speech service provided by ElevenLabs.
    */
-  ElevenLabsTTS = "ElevenLabsTTS",
+  ElevenLabsTTS,
 }
