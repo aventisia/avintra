@@ -19,6 +19,7 @@ export interface ProjectMetaDataDto {
    */
   llm: string; // TODO: Update enum values
 
+  llMs?: string[];
   /**
    * Gets or sets the name of the model. Max-255
    */
