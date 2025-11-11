@@ -73,6 +73,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfig();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
+builder.Services.AddQuartzJobs();
 builder.Services.AddStringEncryptionService();
 builder.Services.AddUploadFileService();
 builder.Services.AddHttpClientService(config);
