@@ -22,7 +22,12 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
         <CardContent className="space-y-3 text-sm">
           <div className="grid grid-cols-3 gap-2">
             <span className="text-muted-foreground">Type</span>
-            <span className="col-span-2">{template?.type}</span>
+            <span className="col-span-2">
+              {template?.type?.replace(
+                ProjectTemplateTypesEnum.AIProject,
+                "AI Model",
+              )}
+            </span>
           </div>
           <div className="grid grid-cols-3 gap-2">
             <span className="text-muted-foreground">Version</span>
