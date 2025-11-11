@@ -1,7 +1,7 @@
 import { Search } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 
-import { useFetchAgentTemplates } from "../hooks/useFetchAgentTemplates";
+import { useFetchProjectTemplates } from "../hooks/useFetchProjectTemplates";
 
 import { TemplateCard } from "./TemplateCard";
 import { TemplateCardSkeleton } from "./TemplateCardSkelton";
@@ -17,7 +17,7 @@ const WorcLibraryTemplates = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
 
-  const { data, isLoading: isAgentDataLoading } = useFetchAgentTemplates();
+  const { data, isLoading } = useFetchProjectTemplates();
 
   // Combine and filter templates based on selected category
   const items = useMemo(() => {
@@ -63,7 +63,7 @@ const WorcLibraryTemplates = ({
   }, [selectedCategory]);
 
   // Show skeletons while loading
-  if (isAgentDataLoading) {
+  if (isLoading) {
     return (
       <div className="mt-2 grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (

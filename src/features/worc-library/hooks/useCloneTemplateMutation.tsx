@@ -5,14 +5,14 @@ import { applyAgentTemplate } from "../apis/wroc-templates-apis";
 import { UseTemplateDTO } from "../dtos/use-template-dto";
 
 /**
- * useAgentTemplateMutation
+ * useCloneTemplateMutation
  *
- * React Query mutation hook to apply an agent template.
+ * React Query mutation hook to clone template.
  * On success, opens Agent Builder with the template's reference ID.
  */
-export const useAgentTemplateMutation = () => {
+export const useCloneTemplateMutation = () => {
   return useMutation({
-    // API call to apply the agent template
+    // API call to apply the template
     mutationFn: async (originalData: UseTemplateDTO) => {
       return applyAgentTemplate({
         id: originalData.id,

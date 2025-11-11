@@ -8,10 +8,10 @@ import { getAgentTemplates } from "../apis/wroc-templates-apis";
  * Custom hook to fetch templates using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
-export const useFetchAgentTemplates = () => {
-  // Get agent templates using react query
+export const useFetchProjectTemplates = () => {
+  // Get templates using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: ["AGENT_TEMPLATES"],
+    queryKey: ["PROJECT_TEMPLATES"],
     queryFn: () => getAgentTemplates(),
   });
 

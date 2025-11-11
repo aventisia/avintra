@@ -6,15 +6,16 @@ import { Clock, Download, Tag, User2 } from "lucide-react";
 
 import { ProjectTemplateTypesEnum } from "../../constants/template-types-enum";
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
-import { useAgentTemplateMutation } from "../../hooks/useAgentTemplateMutation";
+import { useCloneTemplateMutation } from "../../hooks/useCloneTemplateMutation";
 
 export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
-  const { mutateAsync: agentMutation, isPending } = useAgentTemplateMutation();
+  const { mutateAsync: cloneTemplateMutation, isPending } =
+    useCloneTemplateMutation();
 
   // Handles the action to apply the selected template
   const handleUseTemplate = async () => {
     try {
-      await agentMutation(template);
+      await cloneTemplateMutation(template);
     } catch (error) {
       // Mutation error is already handled by hooks
       console.log(error);
