@@ -93,11 +93,15 @@ public class TimeTriggerService(
                 newTimeTrigger.Timezone,
                 newTimeTrigger.AtTime,
                 newTimeTrigger.Weekdays,
-                newTimeTrigger.MonthDays
+                newTimeTrigger.MonthDays,
+                false
             );
             newTimeTrigger.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
                 newTimeTrigger.CronExpression,
-                newTimeTrigger.Timezone
+                newTimeTrigger.Timezone,
+                newTimeTrigger.ExceptionHours,
+                newTimeTrigger.ExceptionWeekdays,
+                newTimeTrigger.ExceptionDates
             );
 
             // Insert time trigger
@@ -111,7 +115,7 @@ public class TimeTriggerService(
             }
 
             // Log a human-readable description of the cron schedule for reference
-            _logger.LogInformation(CronScheduleUtil.BuildHumanDescription(
+            _logger.LogInformation(CronScheduleUtil.BuildDescription(
                 newTimeTrigger.Frequency,
                 newTimeTrigger.Interval,
                 newTimeTrigger.Timezone,
@@ -179,7 +183,10 @@ public class TimeTriggerService(
             );
             trigger.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
                 trigger.CronExpression,
-                trigger.Timezone
+                trigger.Timezone,
+                trigger.ExceptionHours,
+                trigger.ExceptionWeekdays,
+                trigger.ExceptionDates
             );
 
             // Update trigger
@@ -193,7 +200,7 @@ public class TimeTriggerService(
             }
 
             //Log a human-readable description of the cron schedule for reference
-            _logger.LogInformation(CronScheduleUtil.BuildHumanDescription(
+            _logger.LogInformation(CronScheduleUtil.BuildDescription(
                 trigger.Frequency,
                 trigger.Interval,
                 trigger.Timezone,
