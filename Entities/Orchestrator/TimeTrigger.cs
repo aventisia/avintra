@@ -88,7 +88,7 @@ public class TimeTrigger : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the list of specific dates to be excluded from the trigger schedule.
     /// </summary>
-    public List<DateTime>? ExceptionDates { get; set; }
+    public List<DateOnly>? ExceptionDates { get; set; }
 
     /// <summary>
     /// Gets or sets the collection of flow versions associated with this time trigger.
