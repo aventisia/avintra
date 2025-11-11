@@ -1,7 +1,7 @@
-import { LLMsEnum } from "@/enums/llms-enum";
+import { LLMsEnum, LLMsEnumForProduction } from "@/enums/llms-enum";
 
 // Mapping of LLMs to icon paths
-const LLMIconPaths: Record<LLMsEnum, string> = {
+const LLMIconPaths: Record<LLMsEnum | LLMsEnumForProduction, string> = {
   [LLMsEnum["deepseek-r1"]]: "brand-img/deepseek.svg",
   [LLMsEnum.phi4]: "brand-img/phi.svg",
   [LLMsEnum["llama3.1"]]: "brand-img/llama.svg",
@@ -9,6 +9,7 @@ const LLMIconPaths: Record<LLMsEnum, string> = {
   [LLMsEnum.mistral]: "brand-img/mistral.svg",
   [LLMsEnum.gemma]: "brand-img/gemma.svg",
   [LLMsEnum["gpt-4o-mini"]]: "brand-img/openai.svg",
+  [LLMsEnumForProduction["gpt-4o"]]: "brand-img/openai.svg",
 };
 
 // Function to get unique icon paths based on LLM input
@@ -22,6 +23,12 @@ export function getLLMIconPaths(llms: string[]): string[] {
       if (LLMsEnum[llm as keyof typeof LLMsEnum]) {
         return LLMIconPaths[LLMsEnum[llm as keyof typeof LLMsEnum]];
       }
+      if (LLMsEnumForProduction[llm as keyof typeof LLMsEnumForProduction]) {
+        return LLMIconPaths[
+          LLMsEnumForProduction[llm as keyof typeof LLMsEnumForProduction]
+        ];
+      }
+
       return null; // In case an invalid LLM is passed
     })
     .filter(Boolean) as string[]; // Remove any null values
