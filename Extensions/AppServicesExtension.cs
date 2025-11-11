@@ -92,4 +92,31 @@ public static class AppServicesExtension
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
+
+    // Method to configure and register Quartz jobs along with their triggers
+    public static void AddQuartzJobs(this IServiceCollection services)
+    {
+        services.AddQuartz(quartz =>
+        {
+            var jobKey = new JobKey("TimeTriggerExecutionJob");
+
+            // Register the job with the specified job key
+            quartz.AddJob<TimeTriggerExecutionJob>(opts => opts.WithIdentity(jobKey));
+
+            // Configure the trigger to start immediately and run every 30 seconds
+            quartz.AddTrigger(opts => opts
+                .ForJob(jobKey)
+                .WithIdentity("TimeTriggerExecutionJob-trigger")
+                .StartNow() 
+                .WithSimpleSchedule(x => x
+                    .WithIntervalInMinutes(1)
+                    .RepeatForever()));
+        });
+
+        // Register Quartz hosted service to ensure jobs run in the background
+        services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
+        // Register the job with the DI container so it can be injected
+        services.AddTransient<TimeTriggerExecutionJob>();
+    }
 }

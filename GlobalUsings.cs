@@ -20,6 +20,7 @@ global using WorkspaceAPIs.Repos;
 global using WorkspaceAPIs.DTOs;
 global using WorkspaceAPIs.MappingProfiles;
 global using WorkspaceAPIs.Enums;
+global using WorkspaceAPIs.Jobs;
 
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
@@ -38,4 +39,4 @@ global using Ardalis.GuardClauses;
 global using Newtonsoft.Json;
 global using Newtonsoft.Json.Schema;
 global using Newtonsoft.Json.Linq;
-
+global using Quartz;
