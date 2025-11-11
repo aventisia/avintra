@@ -4,6 +4,7 @@ import { Button } from "@aventisia/ui/buttons";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { Clock, Download, Tag, User2 } from "lucide-react";
 
+import { ProjectTemplateTypesEnum } from "../../constants/template-types-enum";
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 import { useAgentTemplateMutation } from "../../hooks/useAgentTemplateMutation";
 import { useModelTemplateMutation } from "../../hooks/useModelTemplateMutation";
@@ -16,7 +17,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
     useAgentTemplateMutation();
 
   // Determine type of template
-  const isModelTemplate = template?.type === "Inferencing";
+  const isModelTemplate = template?.type === ProjectTemplateTypesEnum.AIProject;
   const isAgentTemplate = ["Agent", "Block"].includes(template?.type || "");
 
   // Track loading state based on active mutation
@@ -90,7 +91,10 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
             <div className="flex flex-row flex-wrap items-center gap-2">
               {/* Type Badge */}
               <Badge className="flex items-center gap-1 capitalize">
-                {template.type}
+                {template?.type?.replace(
+                  ProjectTemplateTypesEnum.AIProject,
+                  "AI Model",
+                )}
               </Badge>
 
               {/* Tags */}
