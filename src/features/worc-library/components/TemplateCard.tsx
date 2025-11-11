@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@aventisia/ui/cards";
-import { BotIcon, Copy, Tag } from "lucide-react";
+import { BotIcon, Copy, FileBoxIcon, Tag } from "lucide-react";
 
 import { ProjectTemplateTypesEnum } from "../constants/template-types-enum";
 import { WorcTemplatesDto } from "../dtos/worc-templates-dtos";
@@ -63,7 +63,11 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
           ) : (
             // Fallback icon
             <div className="rounded-lg bg-accent p-1.5 md:p-2">
-              <BotIcon className="h-6 w-6" />
+              {template?.type == ProjectTemplateTypesEnum.AIProject ? (
+                <FileBoxIcon className="h-6 w-6" />
+              ) : (
+                <BotIcon className="h-6 w-6" />
+              )}
             </div>
           )}
         </div>
