@@ -94,16 +94,18 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
               </Badge>
 
               {/* Tags */}
-              {template?.tags?.map((tag) => (
-                <Badge
-                  key={tag}
-                  variant="outline"
-                  className="flex items-center gap-1 bg-slate-100"
-                >
-                  <Tag className="h-3 w-3" />
-                  {tag}
-                </Badge>
-              ))}
+              {template?.tags
+                ?.filter((tag) => tag !== template.type) //Filter tags that are similar to project type
+                .map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant="outline"
+                    className="flex items-center gap-1 bg-slate-100"
+                  >
+                    <Tag className="h-3 w-3" />
+                    {tag}
+                  </Badge>
+                ))}
             </div>
           </div>
 
