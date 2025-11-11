@@ -1,8 +1,8 @@
 import { Badge } from "@aventisia/ui/badge";
+import { cn } from "@aventisia/ui/lib";
 
 import { PlanUsageDto } from "@/features/tenant/dtos/current-plan-dto";
 import { Progress } from "@/features/tenant/shared/Progress";
-import { cn } from "@aventisia/ui/lib";
 
 interface UsageDetailsProps {
   planUsage: PlanUsageDto[] | undefined;

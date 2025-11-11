@@ -13,6 +13,7 @@ import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchArchivedFlows } from "../hooks/useFetchArchivedFlows";
+
 import { archivedFlowsTableColumns } from "./ArchivedFlowsTableColumns";
 
 /**
@@ -64,8 +65,11 @@ export const ArchivedFlowsTable = () => {
           </div>
 
           {/* Data table to render data */}
-          <DataTable table={table} columnsLength={archivedFlowsTableColumns.length} />
-          
+          <DataTable
+            table={table}
+            columnsLength={archivedFlowsTableColumns.length}
+          />
+
           {/* Data table Pagination component */}
           <DTPagination table={table} />
         </div>
