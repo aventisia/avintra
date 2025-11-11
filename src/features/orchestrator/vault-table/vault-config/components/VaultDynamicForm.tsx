@@ -11,7 +11,7 @@ import {
 } from "@/features/dynamic-config-panel";
 import { refineSubmittedIO } from "@/features/dynamic-config-panel/utils/refine-submitted-io";
 
-import { appList } from "../constants/app-list";
+import { vaultAppsSelectOptions } from "../constants/vault-app-select-options";
 import { useAddCredMutation } from "../hooks/useAddCredMutation";
 import { useUpdateCredMutation } from "../hooks/useUpdateCredMutation";
 import { useVaultDynamicForm } from "../hooks/useVaultDynamicForm";
@@ -115,7 +115,7 @@ const VaultDynamicForm = () => {
               render={({ field }) => (
                 <AppSelector
                   autoFocus={true}
-                  options={appList}
+                  options={Object.values(vaultAppsSelectOptions)}
                   selectedItem={field.value || null}
                   onItemSelect={(item) => field.onChange(item)}
                   onItemClear={() => field.onChange(null)}

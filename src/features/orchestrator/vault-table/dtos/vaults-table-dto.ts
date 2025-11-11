@@ -1,3 +1,5 @@
+import { VaultAppsEnum } from "../enums/vault-apps-enum";
+
 /**
  * Represents a data transfer object (DTO) for a credentials.
  */
@@ -17,7 +19,7 @@ export interface VaultsTableDto {
   /**
    * Gets or sets the type of the credentials. Max-255
    */
-  type: string;
+  type: VaultAppsEnum;
 
   /**
    * Gets or sets dynamic input fields as key-value pairs.
