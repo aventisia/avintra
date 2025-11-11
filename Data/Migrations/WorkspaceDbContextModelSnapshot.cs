@@ -1424,8 +1424,8 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset?>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<List<DateTime>>("ExceptionDates")
-                        .HasColumnType("timestamp with time zone[]");
+                    b.Property<List<DateOnly>>("ExceptionDates")
+                        .HasColumnType("date[]");
 
                     b.Property<List<int>>("ExceptionHours")
                         .HasColumnType("integer[]");
