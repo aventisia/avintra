@@ -5,14 +5,14 @@ import { applyAgentTemplate } from "../apis/wroc-templates-apis";
 import { UseTemplateDTO } from "../dtos/use-template-dto";
 
 /**
- * useAgentTemplateMutation
+ * useCloneTemplateMutation
  *
- * React Query mutation hook to apply an agent template.
+ * React Query mutation hook to clone template.
  * On success, opens Agent Builder with the template's reference ID.
  */
-export const useAgentTemplateMutation = () => {
+export const useCloneTemplateMutation = () => {
   return useMutation({
-    // API call to apply the agent template
+    // API call to apply the template
     mutationFn: async (originalData: UseTemplateDTO) => {
       return applyAgentTemplate({
         id: originalData.id,
@@ -31,7 +31,12 @@ export const useAgentTemplateMutation = () => {
 
     // On success, open Agent Builder with the applied template
     onSuccess: (data) => {
-      window.location.href = `${import.meta.env.VITE_AGENTBUILDER_URL}/agent?f=${data.data.refId}`;
+      if (data?.data?.type == "AIProject") {
+        window.location.href = `${import.meta.env.VITE_AISTUDIO_URL}/project?pid=${data.data.id}&v=${data.data.id}&pn=${data.data.name}&t=setup`;
+      }
+      if (data?.data?.type == "Agent" || data?.data?.type == "Block") {
+        window.location.href = `${import.meta.env.VITE_AGENTBUILDER_URL}/agent?f=${data.data.refId}`;
+      }
     },
   });
 };

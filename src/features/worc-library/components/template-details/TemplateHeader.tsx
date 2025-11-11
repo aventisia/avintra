@@ -4,36 +4,18 @@ import { Button } from "@aventisia/ui/buttons";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { Clock, Download, Tag, User2 } from "lucide-react";
 
+import { ProjectTemplateTypesEnum } from "../../constants/template-types-enum";
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
-import { useAgentTemplateMutation } from "../../hooks/useAgentTemplateMutation";
-import { useModelTemplateMutation } from "../../hooks/useModelTemplateMutation";
+import { useCloneTemplateMutation } from "../../hooks/useCloneTemplateMutation";
 
 export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
-  // Initialize mutations for model and agent templates
-  const { mutateAsync: modelMutation, isPending: isPendingModel } =
-    useModelTemplateMutation();
-  const { mutateAsync: agentMutation, isPending: isPendingAgent } =
-    useAgentTemplateMutation();
-
-  // Determine type of template
-  const isModelTemplate = template?.type === "Inferencing";
-  const isAgentTemplate = ["Agent", "Block"].includes(template?.type || "");
-
-  // Track loading state based on active mutation
-  const isPending = isModelTemplate
-    ? isPendingModel
-    : isAgentTemplate
-      ? isPendingAgent
-      : false;
+  const { mutateAsync: cloneTemplateMutation, isPending } =
+    useCloneTemplateMutation();
 
   // Handles the action to apply the selected template
   const handleUseTemplate = async () => {
     try {
-      if (isModelTemplate) {
-        await modelMutation(template);
-      } else if (isAgentTemplate) {
-        await agentMutation(template);
-      }
+      await cloneTemplateMutation(template);
     } catch (error) {
       // Mutation error is already handled by hooks
       console.log(error);
@@ -90,20 +72,25 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
             <div className="flex flex-row flex-wrap items-center gap-2">
               {/* Type Badge */}
               <Badge className="flex items-center gap-1 capitalize">
-                {template.type}
+                {template?.type?.replace(
+                  ProjectTemplateTypesEnum.AIProject,
+                  "AI Model",
+                )}
               </Badge>
 
               {/* Tags */}
-              {template?.tags?.map((tag) => (
-                <Badge
-                  key={tag}
-                  variant="outline"
-                  className="flex items-center gap-1 bg-slate-100"
-                >
-                  <Tag className="h-3 w-3" />
-                  {tag}
-                </Badge>
-              ))}
+              {template?.tags
+                ?.filter((tag) => tag !== template.type) //Filter tags that are similar to project type
+                .map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant="outline"
+                    className="flex items-center gap-1 bg-slate-100"
+                  >
+                    <Tag className="h-3 w-3" />
+                    {tag}
+                  </Badge>
+                ))}
             </div>
           </div>
 

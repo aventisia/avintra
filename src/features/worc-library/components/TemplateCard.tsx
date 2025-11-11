@@ -8,8 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@aventisia/ui/cards";
-import { BotIcon, Copy, Tag } from "lucide-react";
+import { BotIcon, Copy, FileBoxIcon, Tag } from "lucide-react";
 
+import { ProjectTemplateTypesEnum } from "../constants/template-types-enum";
 import { WorcTemplatesDto } from "../dtos/worc-templates-dtos";
 import { useViewTemplate } from "../hooks/useViewTemplate";
 
@@ -62,7 +63,11 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
           ) : (
             // Fallback icon
             <div className="rounded-lg bg-accent p-1.5 md:p-2">
-              <BotIcon className="h-6 w-6" />
+              {template?.type == ProjectTemplateTypesEnum.AIProject ? (
+                <FileBoxIcon className="h-6 w-6" />
+              ) : (
+                <BotIcon className="h-6 w-6" />
+              )}
             </div>
           )}
         </div>
@@ -82,7 +87,12 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
             className="flex w-fit items-center gap-1 bg-slate-100 py-1"
           >
             <Tag className="h-3 w-3" />
-            <span className="leading-3"> {template.type}</span>
+            <span className="leading-3">
+              {template?.type?.replace(
+                ProjectTemplateTypesEnum.AIProject,
+                "AI Model",
+              )}
+            </span>
           </Badge>
         </CardContent>
         <Separator className="mx-4 mb-3 mt-2.5 h-[0.5px] w-auto" />
