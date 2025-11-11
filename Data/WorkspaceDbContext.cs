@@ -45,8 +45,11 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<KeyStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Vault>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<AppSecret>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<TimeTrigger>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<TimeTriggersFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        if (CurrentTenantId == Guid.Empty)
+        {
+            modelBuilder.Entity<TimeTrigger>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+            modelBuilder.Entity<TimeTriggersFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        }
 
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
@@ -181,7 +184,8 @@ public class WorkspaceDbContext : DbContext
     public DbSet<Vault> Vaults { get; set; }
     public DbSet<FlowUser> FlowUsers { get; set; }
     public DbSet<Block> Blocks { get; set; }
-
+    public DbSet<TimeTrigger> TimeTriggers { get; set; }
+    public DbSet<TimeTriggersFlowVersion> TimeTriggersFlowVersions { get; set; }
     public DbSet<AppSecret> AppSecrets { get; set; }
     public DbSet<EncryptedKeyValue> EncryptedKeyValues { get; set; }
 }
