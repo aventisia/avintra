@@ -17,12 +17,6 @@ const getAgentTemplates = () => {
     .then((res) => res.data);
 };
 
-const getModelTemplates = () => {
-  return axiosInstance
-    .get<IHttpResponse<WorcTemplatesDto[]>>(`${baseAPIURL_AI_STUDIO}/trending`)
-    .then((res) => res.data);
-};
-
 const applyAgentTemplate = (data: UseTemplateDTO) => {
   return axiosInstance
     .post<IHttpResponse<UseTemplateDTO>>(`${baseAPIURL_WORC}/use`, data)
@@ -51,7 +45,6 @@ const downloadTemplateResource = (path: string) => {
 
 export {
   getAgentTemplates,
-  getModelTemplates,
   applyAgentTemplate,
   applyModelTemplate,
   getTemplateById,

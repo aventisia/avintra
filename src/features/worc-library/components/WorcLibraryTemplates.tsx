@@ -2,7 +2,6 @@ import { Search } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 
 import { useFetchAgentTemplates } from "../hooks/useFetchAgentTemplates";
-import { useFetchModelTemplates } from "../hooks/useFetchModelTemplates";
 
 import { TemplateCard } from "./TemplateCard";
 import { TemplateCardSkeleton } from "./TemplateCardSkelton";
@@ -18,35 +17,36 @@ const WorcLibraryTemplates = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
 
-  const { data: agentData, isLoading: isAgentDataLoading } =
-    useFetchAgentTemplates();
-  const { data: modelData, isLoading: isModelDataLoading } =
-    useFetchModelTemplates();
+  const { data, isLoading: isAgentDataLoading } = useFetchAgentTemplates();
 
   // Combine and filter templates based on selected category
   const items = useMemo(() => {
-    const agentTemplates = agentData?.data ?? [];
-    const modelTemplates = modelData?.data ?? [];
+    const templates = data?.data ?? [];
 
-    return [...agentTemplates, ...modelTemplates]
+    return templates
       .filter((template) =>
         selectedCategory === "All templates"
           ? true
           : selectedCategory === "AI Model"
-            ? ["Inferencing", "Conversation", "Generative"].includes(
-                template.type,
-              )
+            ? [
+                "AIProject",
+                "Inferencing",
+                "Conversation",
+                "Generative",
+              ].includes(template.type)
             : template.type.includes(selectedCategory),
       )
       ?.filter((template) => {
         const searchText =
-          template.name + template?.tags.toString() + template?.type;
+          template.name +
+          template?.tags.toString() +
+          (template?.type == "AIProject" ? "AIProjectAIModel" : template?.type);
 
         return searchQuery?.trim()
           ? searchText?.toLowerCase().includes(searchQuery.toLowerCase().trim())
           : true;
       });
-  }, [agentData?.data, modelData?.data, searchQuery, selectedCategory]);
+  }, [data?.data, searchQuery, selectedCategory]);
 
   // Calculate total pages for pagination
   const totalPages = Math.ceil(items.length / itemsPerPage);
@@ -63,7 +63,7 @@ const WorcLibraryTemplates = ({
   }, [selectedCategory]);
 
   // Show skeletons while loading
-  if (isAgentDataLoading || isModelDataLoading) {
+  if (isAgentDataLoading) {
     return (
       <div className="mt-2 grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
