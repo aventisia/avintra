@@ -1,7 +1,9 @@
+import { ProjectMetaDataDto } from "@/dtos/project-meta-data-dto";
 import { useLabelDataStore } from "@/features/label-data/stores/label-data-store";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -9,6 +11,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { saveAsTemplateSchema } from "../constants/save-as-template-zod-schema";
 import { useFileStore } from "../stores/file-uploader-store";
+import { getLLMIconPaths } from "../utils/getLLMIconPaths";
 import { useFetchTemplateDetails } from "./useFetchTemplateDetails";
 import { useSaveAsTemplateMutation } from "./useSaveAsTemplateMutation";
 import { useUpdateTemplateMutation } from "./useUpdateTemplateMutation";
@@ -20,13 +23,16 @@ import { useUpdateTemplateMutation } from "./useUpdateTemplateMutation";
  * Integrates schema validation, default values, and submit logic.
  */
 export const useDefineSATForm = () => {
-  const [imgPaths] = useState<string[]>([]);
+  const [imgPaths, setImgPaths] = useState<string[]>([]);
+
+  const queryClient = useQueryClient();
 
   // Get the model data store
-  const { modelName, versionId } = useLabelDataStore(
+  const { modelName, versionId, modelId } = useLabelDataStore(
     useShallow((state) => ({
       modelName: state.modelName,
       versionId: state.versionId,
+      modelId: state.modelId,
     })),
   );
 
@@ -48,6 +54,11 @@ export const useDefineSATForm = () => {
   // Fetch template details
   const { data } = useFetchTemplateDetails();
 
+  // Get models data from query client
+  const modelData = queryClient.getQueryData<{
+    data: ProjectMetaDataDto;
+  }>(["project", modelId]);
+
   // Mutation for creating a new template
   const { mutate, isPending } = useSaveAsTemplateMutation();
 
@@ -66,6 +77,12 @@ export const useDefineSATForm = () => {
       resources: [],
     },
   });
+
+  useEffect(() => {
+    if (modelData?.data && modelData?.data?.llMs) {
+      setImgPaths(getLLMIconPaths(modelData?.data?.llMs));
+    }
+  }, [modelData?.data]);
 
   useEffect(() => {
     if (data?.data) {
