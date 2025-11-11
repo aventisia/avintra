@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "credentials-select",
-    "name": "SendGridApiKey",
-    "label": "SendGrid API Key",
-    "description": "The SendGrid API Key.",
+    "name": "SendGridCredential",
+    "label": "SendGrid Credential",
+    "description": "The SendGrid credential containing valid API key which is used to authenticate API requests.",
     "defaultValue": "",
     "required": true
   },
