@@ -118,7 +118,10 @@ export const archivedFlowsTableColumns: ColumnDef<ArchivedFlowsTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the archived flows row actions component
-      <ArchivedFlowRowActions rowId={row.original.id} refId={row.original.refId} />
+      <ArchivedFlowRowActions
+        rowId={row.original.id}
+        refId={row.original.refId}
+      />
     ),
   },
 ];

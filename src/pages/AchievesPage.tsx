@@ -3,9 +3,11 @@ import { lazy, Suspense } from "react";
 
 // Lazy load the ArchivedFlowsTable component.
 const ArchivedFlowsTable = lazy(() =>
-  import("@/features/archives-table/components/ArchivedFlowsTable").then((module) => ({
-    default: module.ArchivedFlowsTable,
-  })),
+  import("@/features/archives-table/components/ArchivedFlowsTable").then(
+    (module) => ({
+      default: module.ArchivedFlowsTable,
+    }),
+  ),
 );
 
 /**

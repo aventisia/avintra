@@ -19,9 +19,10 @@ import { isVaultNameAvailable } from "../../apis/vaults-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import { vaultNameSchema } from "../../constants/vault-zod-schema";
 import { VaultsTableDto } from "../../dtos/vaults-table-dto";
+import { VaultAppsEnum } from "../../enums/vault-apps-enum";
 import { useVaultDialogStore } from "../../stores/vault-dialog-store";
-import { appList } from "../constants/app-list";
 import { appToCredentialNameMapper } from "../constants/app-to-credential-name-mapper";
+import { vaultAppsSelectOptions } from "../constants/vault-app-select-options";
 
 export const useVaultDynamicForm = () => {
   // Set credential name state (required for availability check)
@@ -151,18 +152,28 @@ export const useVaultDynamicForm = () => {
       vaultConfig.length > 0 &&
       Object.keys(vaultConfigZodSchema.shape).length > 0
     ) {
+      //if (vaultData === undefined) return;
+
       const savedData = vaultData?.data || {};
 
-      const name = vaultData?.name ?? appToCredentialNameMapper[form.watch("selectedType").value];
+      const name =
+        vaultData?.name ??
+        appToCredentialNameMapper[
+          VaultAppsEnum[
+            form.watch("selectedType").value as keyof typeof VaultAppsEnum
+          ] as VaultAppsEnum
+        ];
 
       setCredName(name);
 
       if (action == "create") checkAvailabilityMutation({ userInput: name });
 
       form.reset({
-        selectedType:
-          appList.find((v) => v.value == vaultData?.type) ??
-          form.watch("selectedType"),
+        selectedType: Object.values(vaultAppsSelectOptions).find(
+          (option) =>
+            option.value ===
+            (vaultData ? vaultData?.type : form.watch("selectedType")?.value),
+        ),
         name: name,
         isDisabled: vaultData?.isDisabled,
         ...getDefaultValuesForForm(

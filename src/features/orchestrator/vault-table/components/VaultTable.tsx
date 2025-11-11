@@ -8,15 +8,16 @@ import {
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 import { dateFormatter } from "@aventisia/ui/utils";
+import { PlusIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state";
+import { VaultAppsEnum } from "../enums/vault-apps-enum";
 import { useFetchVaults } from "../hooks/useFetchVaults";
 import { useVaultDialogStore } from "../stores/vault-dialog-store";
-import { vaultIconMapper } from "../vault-config/constants/app-list";
+import { vaultAppIconMapper } from "../vault-config/constants/vault-app-icon-mapper";
 
-import { PlusIcon } from "@heroicons/react/24/outline";
 import { VaultCrudDialog } from "./vault-crud-dialog/VaultCrudDialog";
 import { VaultRowActions } from "./vault-row-actions/VaultRowActions";
 import { VaultsBulkActions } from "./vault-row-actions/VaultsBulkActions";
@@ -106,7 +107,13 @@ export const VaultTable = () => {
                   <div className="flex items-center space-x-4">
                     <div>
                       <img
-                        src={vaultIconMapper[row.getValue("type") as string]}
+                        src={
+                          vaultAppIconMapper[
+                            VaultAppsEnum[
+                              row.getValue("type") as keyof typeof VaultAppsEnum
+                            ] as VaultAppsEnum
+                          ]
+                        }
                         alt="icon"
                         className="size-6"
                       />
@@ -119,7 +126,7 @@ export const VaultTable = () => {
                       </span>
                       <div className="flex items-center">
                         <span className="text-2xs text-muted-foreground">
-                          {(row.getValue("type") as string)?.replace("Api", "")}
+                          {row.getValue("type") as string}
                         </span>
                         <DotSeparator />
                         <span className="text-2xs text-muted-foreground">
@@ -135,14 +142,18 @@ export const VaultTable = () => {
               ))}
             </div>
           ) : (
-            <div className="flex h-24 flex-col items-center justify-center rounded-lg border gap-3 bg-white px-2.5 py-3">
+            <div className="flex h-24 flex-col items-center justify-center gap-3 rounded-lg border bg-white px-2.5 py-3">
               <p className="text-sm text-muted-foreground">
                 No credentials found. Please add new credentials.
               </p>
             </div>
           )}
           {/* Data table Pagination component */}
-          <DTPagination table={table} singularLabel="credential" pluralLabel="credentials" />
+          <DTPagination
+            table={table}
+            singularLabel="credential"
+            pluralLabel="credentials"
+          />
 
           {/* Bulk actions for data table */}
           <VaultsBulkActions table={table} />
