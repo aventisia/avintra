@@ -6,7 +6,6 @@ import { UseTemplateDTO } from "../dtos/use-template-dto";
 import { WorcTemplatesDto } from "../dtos/worc-templates-dtos";
 
 const baseAPIURL_WORC: string = `${import.meta.env.VITE_WORC_API_URL}/project-template`;
-const baseAPIURL_AI_STUDIO: string = `${import.meta.env.VITE_AISTUDIO_API_URL}/ai-model-template`;
 
 /**
  * Retrieves list of templates.
@@ -20,12 +19,6 @@ const getAgentTemplates = () => {
 const applyAgentTemplate = (data: UseTemplateDTO) => {
   return axiosInstance
     .post<IHttpResponse<UseTemplateDTO>>(`${baseAPIURL_WORC}/use`, data)
-    .then((res) => res.data);
-};
-
-const applyModelTemplate = (data: UseTemplateDTO) => {
-  return axiosInstance
-    .post<IHttpResponse<UseTemplateDTO>>(`${baseAPIURL_AI_STUDIO}/use`, data)
     .then((res) => res.data);
 };
 
@@ -46,7 +39,6 @@ const downloadTemplateResource = (path: string) => {
 export {
   getAgentTemplates,
   applyAgentTemplate,
-  applyModelTemplate,
   getTemplateById,
   downloadTemplateResource,
 };

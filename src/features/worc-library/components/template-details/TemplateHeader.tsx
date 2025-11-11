@@ -7,34 +7,14 @@ import { Clock, Download, Tag, User2 } from "lucide-react";
 import { ProjectTemplateTypesEnum } from "../../constants/template-types-enum";
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 import { useAgentTemplateMutation } from "../../hooks/useAgentTemplateMutation";
-import { useModelTemplateMutation } from "../../hooks/useModelTemplateMutation";
 
 export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
-  // Initialize mutations for model and agent templates
-  const { mutateAsync: modelMutation, isPending: isPendingModel } =
-    useModelTemplateMutation();
-  const { mutateAsync: agentMutation, isPending: isPendingAgent } =
-    useAgentTemplateMutation();
-
-  // Determine type of template
-  const isModelTemplate = template?.type === ProjectTemplateTypesEnum.AIProject;
-  const isAgentTemplate = ["Agent", "Block"].includes(template?.type || "");
-
-  // Track loading state based on active mutation
-  const isPending = isModelTemplate
-    ? isPendingModel
-    : isAgentTemplate
-      ? isPendingAgent
-      : false;
+  const { mutateAsync: agentMutation, isPending } = useAgentTemplateMutation();
 
   // Handles the action to apply the selected template
   const handleUseTemplate = async () => {
     try {
-      if (isModelTemplate) {
-        await modelMutation(template);
-      } else if (isAgentTemplate) {
-        await agentMutation(template);
-      }
+      await agentMutation(template);
     } catch (error) {
       // Mutation error is already handled by hooks
       console.log(error);

@@ -31,7 +31,12 @@ export const useAgentTemplateMutation = () => {
 
     // On success, open Agent Builder with the applied template
     onSuccess: (data) => {
-      window.location.href = `${import.meta.env.VITE_AGENTBUILDER_URL}/agent?f=${data.data.refId}`;
+      if (data?.data?.type == "AIProject") {
+        window.location.href = `${import.meta.env.VITE_AISTUDIO_URL}/project?pid=${data.data.id}&v=${data.data.id}&pn=${data.data.name}&t=setup`;
+      }
+      if (data?.data?.type == "Agent" || data?.data?.type == "Block") {
+        window.location.href = `${import.meta.env.VITE_AGENTBUILDER_URL}/agent?f=${data.data.refId}`;
+      }
     },
   });
 };
