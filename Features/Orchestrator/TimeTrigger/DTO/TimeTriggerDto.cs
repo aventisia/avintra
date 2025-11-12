@@ -81,7 +81,7 @@ public class TimeTriggerDto
     /// <summary>
     /// Gets or sets the list of weekdays (1=Monday, ..., 7=Sunday) when the time trigger should be excluded.
     /// </summary>
-    public List<DayOfWeek>? ExceptionWeekdays { get; set; }
+    public List<int>? ExceptionWeekdays { get; set; }
 
     /// <summary>
     /// Gets or sets the list of specific dates when the time trigger should be excluded.
