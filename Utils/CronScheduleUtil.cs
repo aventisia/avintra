@@ -1,4 +1,4 @@
-using Cronos;
+using Quartz;
 
 namespace AspNetToolkit.Utils;
 
@@ -44,25 +44,32 @@ public static class CronScheduleUtil
         // Build CRON based on frequency type
         return frequencyType switch
         {
+            // Every N minutes
             TriggerFrequencyTypesEnum.MinuteByMinute =>
-                $"0 0/{interval} * * *",
+                $"0 0/{interval} * * * ? *", // e.g. every 5 minutes → 0 0/5 * * * ? *
 
+            // Every N hours at specific minute
             TriggerFrequencyTypesEnum.Hourly =>
-            $"{utcMinute} {utcHour}/{interval} * * *",
+                $"0 {utcMinute} 0/{interval} * * ? *", // e.g. every 2 hours at 15 → 0 15 0/2 * * ? *
 
+            // Every N days at specific time (UTC)
             TriggerFrequencyTypesEnum.Daily =>
-                $"0 {utcMinute} {utcHour} */{interval} * {weekdayPart} *",
+                $"0 {utcMinute} {utcHour} 1/{interval} * ? *", // e.g. every day 14:30 UTC → 0 30 14 1/1 * ? *
 
+            // Every week on given weekdays at specific time
             TriggerFrequencyTypesEnum.Weekly =>
-                $"0 {utcMinute} {utcHour} ? * {weekdayPart} *",
+                $"0 {utcMinute} {utcHour} ? * {weekdayPart} *", // e.g. MON,WED,FRI at 10:00 UTC → 0 0 10 ? * MON,WED,FRI *
 
+            // Every N months, on specific day or last working day
             TriggerFrequencyTypesEnum.MonthlyDayOfMonth =>
-            isLastWorkingDay
-                ? $"0 {utcMinute} {utcHour} LW {monthDays?.FirstOrDefault() ?? 1}/{interval} ? *"
-                : $"0 {utcMinute} {utcHour} {string.Join(",", monthDays ?? new List<int> { 1 })} 1/{interval} ? {weekdayPart} *",
+                isLastWorkingDay
+                    ? $"0 {utcMinute} {utcHour} LW 1/{interval} ? *" // e.g. last working day every month 18:00 UTC
+                    : $"0 {utcMinute} {utcHour} {string.Join(",", monthDays ?? new List<int> { 1 })} 1/{interval} ? *",
+            // e.g. day 1, 15 every 2 months at 9:00 UTC
 
+            // Every N months on specific weekday (like first Monday)
             TriggerFrequencyTypesEnum.MonthlyDayOfWeek =>
-                $"0 {utcMinute} {utcHour} ? {1}/{interval} {weekdayPart} *",
+                $"0 {utcMinute} {utcHour} ? 1/{interval} {weekdayPart} *", // e.g. 1st Monday every 2 months → 0 0 9 ? 1/2 MON *
 
             _ => throw new ArgumentOutOfRangeException(nameof(frequencyType))
         };
@@ -75,13 +82,13 @@ public static class CronScheduleUtil
     IReadOnlyCollection<DateOnly>? excludedDates = null)
     {
         // Parse the cron expression (this assumes the cron expression doesn't include seconds)
-        var expr = CronExpression.Parse(cronExpression);
+        var expr = new CronExpression(cronExpression);
 
         // Get the current time in UTC
-        DateTime currentDateTime = DateTime.UtcNow;
+        DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
 
         // Get the next occurrence in the timezone (starting from now)
-        DateTime? next = expr.GetNextOccurrence(currentDateTime);
+        DateTimeOffset? next = expr.GetNextValidTimeAfter(currentDateTime);
 
         // Loop to find a valid next occurrence that is not excluded
         for (int i = 0; i < 500 && next != null; i++)
@@ -104,7 +111,7 @@ public static class CronScheduleUtil
             }
 
             // Skip to the next potential occurrence by adding 1 minute to the current local time
-            next = expr.GetNextOccurrence(currentDateTime.AddMinutes(1));
+            next = expr.GetNextValidTimeAfter(currentDateTime.AddMinutes(1));
         }
 
         // Return the next valid occurrence in UTC if found, otherwise return the last computed value
