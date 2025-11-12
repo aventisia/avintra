@@ -61,7 +61,7 @@ public class TimeTriggerController : BaseApiController
     }
 
     // Retrieve agent list by trigger ID.
-    [HttpGet("{triggerId}/agents")]
+    [HttpGet("{timeTriggerId}/agents")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<AssignAgentTriggerDto>>>> GetAgentsByTriggerAsync(Guid timeTriggerId)
     {
         return ResultHelper(await _timeTriggerService.GetAgentsByTriggerAsync(timeTriggerId));
