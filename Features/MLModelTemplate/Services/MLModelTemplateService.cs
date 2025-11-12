@@ -674,9 +674,9 @@ public class MLModelTemplateService : IMLModelTemplateService
     }
 
     // Uses a selected trending AI model template to create a new ML model project version
-    public async Task<ServiceResponse<bool>> UseTemplateToCreateMLModelAsync(AIModelTemplateSchemaDto aiModelTemplateSchemaDto)
+    public async Task<ServiceResponse<AIModelTemplateSchemaDto>> UseTemplateToCreateMLModelAsync(AIModelTemplateSchemaDto aiModelTemplateSchemaDto)
     {
-        var serviceResponse = new ServiceResponse<bool>
+        var serviceResponse = new ServiceResponse<AIModelTemplateSchemaDto>
         {
             Message = "Failed to add the template. Please try again later."
         };
@@ -727,6 +727,10 @@ public class MLModelTemplateService : IMLModelTemplateService
                 _logger.LogError("Failed to save the AI project version when creating a new model from template.");
                 return serviceResponse;
             }
+            
+            aiModelTemplateSchemaDto.Id = aiProject.Id;
+            aiModelTemplateSchemaDto.VersionId = aiProjectVersion.Id;
+            aiModelTemplateSchemaDto.VersionNumber = aiProjectVersion.VersionNumber;
 
             // Create a list to store the tasks associated with this new project version
             var aiProjectVersionTasks = new List<VersionTask>();
@@ -770,7 +774,7 @@ public class MLModelTemplateService : IMLModelTemplateService
 
             // Log success and return the response
             _logger.LogInformation("Successfully created a new AI model project version from template. Project Version ID: {ProjectVersionId}.", aiProjectVersion.Id);
-            serviceResponse.Data = true;
+            serviceResponse.Data = aiModelTemplateSchemaDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Template added successfully and new AI model created.";
 

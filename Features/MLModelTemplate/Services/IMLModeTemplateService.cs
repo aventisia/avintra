@@ -56,11 +56,11 @@ public interface IMLModelTemplateService
     Task<ServiceResponse<IEnumerable<TrendingTemplateDto>>> GetTrendingMLModelTemplatesAsync();
 
     /// <summary>
-    /// Creates a new machine learning (ML) model based on a selected trending ML model template.
+    /// Creates a new machine learning (ML) model based on the configuration provided by a selected ML model template.
     /// </summary>
-    /// <param name="aiModelTemplateSchemaDto">The ML model template that will be used to define the configuration of the new model.</param>
+    /// <param name="aiModelTemplateSchemaDto">The template containing the configuration details to be used for creating the new ML model.</param>
     /// <returns>
-    /// A task representing the asynchronous operation. The result contains a service response indicating whether the ML model creation was successful.
+    /// A task representing the asynchronous operation. The result contains a service response indicating whether the creation of the ML model was successful.
     /// </returns>
-    Task<ServiceResponse<bool>> UseTemplateToCreateMLModelAsync(AIModelTemplateSchemaDto aiModelTemplateSchemaDto);
+    Task<ServiceResponse<AIModelTemplateSchemaDto>> UseTemplateToCreateMLModelAsync(AIModelTemplateSchemaDto aiModelTemplateSchemaDto);
 }
