@@ -56,9 +56,9 @@ public interface ITimeTriggerService
     /// <summary>
     /// Retrieves a list of agents assigned to a trigger asynchronously.
     /// </summary>
-    /// <param name="triggerId">The ID of the trigger for which assigned agents will be retrieved.</param>
+    /// <param name="timeTriggerId">The ID of the trigger for which assigned agents will be retrieved.</param>
     /// <returns>A service response containing a list of agents assigned to the specified trigger.</returns>
-   // Task<ServiceResponse<IEnumerable<AssignAgentTriggerDto>>> GetAgentsByTriggerAsync(Guid triggerId);
+    Task<ServiceResponse<IEnumerable<AssignAgentTriggerDto>>> GetAgentsByTriggerAsync(Guid timeTriggerId);
 
     /// <summary>
     /// Retrieves a list of triggers formatted as select options.
