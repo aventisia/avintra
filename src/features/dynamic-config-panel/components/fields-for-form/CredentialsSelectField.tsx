@@ -54,7 +54,7 @@ const CredentialsSelectField = ({
     setLoading(true);
 
     // Fetch credentials list. Note: Every credential-field should have name ending with 'Credential'
-    getCredSelectOptions(name.replace("Credential", ""))
+    getCredSelectOptions(name.replace("__CredentialId__", ""))
       .then((data) => {
         setSelectOptions(data?.data);
         setLoading(false);
