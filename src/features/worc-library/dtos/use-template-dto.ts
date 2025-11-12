@@ -24,6 +24,8 @@ export interface UseTemplateDTO {
   /** Optional access level (e.g., 'Public', 'Tenant') */
   accessType?: string;
 
+  accessPath?: string;
+
   /** Optional tags for categorization or filtering */
   tags?: string[];
 
