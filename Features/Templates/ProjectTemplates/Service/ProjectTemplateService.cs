@@ -1080,6 +1080,7 @@ namespace WorkspaceAPIs.Services
 
                     // Update refId as flowId
                     projectTemplateDto.RefId = flowEntity.Id;
+                    projectTemplateDto.AccessPath = $"/agent?f={flowEntity.Id}&v={newFlowVersion.Id}"; ;
 
                     _logger.LogInformation("Flow version saved successfully. Flow ID: {FlowId}, Version: 1", flowEntity.Id);
                 }
@@ -1113,7 +1114,7 @@ namespace WorkspaceAPIs.Services
                     var responseContent = await httpResponse.Content.ReadAsStringAsync();
 
                     // Deserialize and validate structure of the service response
-                    var externalServiceResponse = JsonConvert.DeserializeObject<ServiceResponse<bool>>(
+                    var externalServiceResponse = JsonConvert.DeserializeObject<ServiceResponse<AIModelTemplateSchemaDto>>(
                     responseContent,
                     new JsonSerializerSettings
                     {
@@ -1123,11 +1124,13 @@ namespace WorkspaceAPIs.Services
 
 
                     // Ensure response structure and data integrity
-                    if (externalServiceResponse.StatusCode != 200 || !externalServiceResponse.Data)
+                    if (externalServiceResponse.StatusCode != 200 || externalServiceResponse.Data == null)
                     {
                         _logger.LogError("Failed to deserialize the external API response for credits usage creation.");
                         return serviceResponse;
                     }
+                    projectTemplateDto.RefId = externalServiceResponse.Data.Id;
+                    projectTemplateDto.AccessPath = $"/project?pid={externalServiceResponse.Data.Id}&v={externalServiceResponse.Data.VersionId}&pn=Test&t=setup&ml={externalServiceResponse.Data.Type.ToString().ToLower()}";
                 }
 
                 // Increment usage count and update the template
