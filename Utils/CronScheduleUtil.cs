@@ -74,51 +74,60 @@ public static class CronScheduleUtil
             _ => throw new ArgumentOutOfRangeException(nameof(frequencyType))
         };
     }
-
+    
+    // Computes the next valid trigger time in UTC based on the provided cron expression, excluding specific hours, weekdays, or dates if necessary
     public static DateTimeOffset ComputeNextTriggerUtc(
     string cronExpression,
     IReadOnlyCollection<int>? excludedHours = null,
     IReadOnlyCollection<int>? excludedWeekdays = null,
     IReadOnlyCollection<DateOnly>? excludedDates = null)
     {
-        // Parse the cron expression (this assumes the cron expression doesn't include seconds)
+        // Create a CronExpression object based on the provided cron expression
         var expr = new CronExpression(cronExpression);
 
-        // Get the current time in UTC
+        // Get the current UTC time
         DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
 
-        // Get the next occurrence in the timezone (starting from now)
+        // Get the next valid time after the current UTC time
         DateTimeOffset? next = expr.GetNextValidTimeAfter(currentDateTime);
 
-        // Loop to find a valid next occurrence that is not excluded
-        for (int i = 0; i < 500 && next != null; i++)
+        // Loop up to 750 times to find the next valid time that does not match excluded criteria
+        for (int i = 0; i < 750 && next != null; i++)
         {
-            // Get the weekday (with Sunday as 7)
-            int weekday = currentDateTime.DayOfWeek == DayOfWeek.Sunday ? 7 : (int)currentDateTime.DayOfWeek;
-            int hour = currentDateTime.Hour;
-            var date = DateOnly.FromDateTime(currentDateTime.Date);
+            // Get the DateTime value from the next valid time (in UTC)
+            var nextValue = next.Value.UtcDateTime;
 
-            // Check if this occurrence is excluded
-            bool isExcluded =
-                (excludedHours?.Contains(hour) ?? false) ||
+            // Convert the DateTime to DateOnly (removes time component)
+            var nextDateOnly = DateOnly.FromDateTime(nextValue);
+
+            // Get the day of the week (1 = Monday, 7 = Sunday)
+            int weekday = (int)nextValue.DayOfWeek;
+
+            // Normalize Sunday to 7 to match convention (1 = Monday, 7 = Sunday)
+            if (weekday == 0) weekday = 7;
+
+            // Get the hour of the day (0-23)
+            int hour = nextValue.Hour;
+
+            // Check if the computed time should be excluded (either hour, weekday, or date)
+            if (!((excludedHours?.Contains(hour) ?? false) ||
                 (excludedWeekdays?.Contains(weekday) ?? false) ||
-                (excludedDates?.Contains(date) ?? false);
-
-            if (!isExcluded)
+                (excludedDates?.Contains(nextDateOnly) ?? false)))
             {
-                // If it's not excluded, return the UTC time
-                return next.Value.ToUniversalTime();
+                // If the time is valid (not excluded), return it
+                return next.Value;
             }
 
-            // Skip to the next potential occurrence by adding 1 minute to the current local time
-            next = expr.GetNextValidTimeAfter(currentDateTime.AddMinutes(1));
+            // If the time is excluded, move to the next occurrence (add one hour)
+            next = expr.GetNextValidTimeAfter(next.Value.AddHours(1));
         }
 
-        // Return the next valid occurrence in UTC if found, otherwise return the last computed value
+        // If no valid next occurrence was found after 500 checks, throw an exception
         return next?.ToUniversalTime() ?? throw new InvalidOperationException("Could not find a valid next occurrence.");
     }
 
-    // Builds a human-readable description of a time trigger schedule.
+
+    // Builds a description of a time trigger schedule.
     public static string BuildDescription(
         TriggerFrequencyTypesEnum frequencyType,
         int interval,
