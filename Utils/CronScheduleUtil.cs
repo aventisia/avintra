@@ -56,13 +56,13 @@ public static class CronScheduleUtil
             TriggerFrequencyTypesEnum.Weekly =>
                 $"0 {utcMinute} {utcHour} ? * {weekdayPart} *",
 
-            TriggerFrequencyTypesEnum.Monthly =>
-                isLastWorkingDay
-                    ? $"0 {utcMinute} {utcHour} LW 1/{interval} ? *"
-                    : $"0 {utcMinute} {utcHour} {monthDays?.FirstOrDefault() ?? 1} 1/{interval} {weekdayPart} *",
+            TriggerFrequencyTypesEnum.MonthlyDayOfMonth =>
+            isLastWorkingDay
+                ? $"0 {utcMinute} {utcHour} LW {monthDays?.FirstOrDefault() ?? 1}/{interval} ? *"
+                : $"0 {utcMinute} {utcHour} {string.Join(",", monthDays ?? new List<int> { 1 })} 1/{interval} ? {weekdayPart} *",
 
-            // TriggerFrequencyTypesEnum.Monthly =>
-            //     $"0 {utcMinute} {utcHour} ? 1/{interval} {weekdayPart} *",
+            TriggerFrequencyTypesEnum.MonthlyDayOfWeek =>
+                $"0 {utcMinute} {utcHour} ? {1}/{interval} {weekdayPart} *",
 
             _ => throw new ArgumentOutOfRangeException(nameof(frequencyType))
         };
@@ -155,8 +155,10 @@ public static class CronScheduleUtil
                 $"Every {interval} day{plural(interval)} at {time} ({timezone})",
             TriggerFrequencyTypesEnum.Weekly =>
                 $"Every week on {formatWeekdays(weekdays)} at {time} ({timezone})",
-            TriggerFrequencyTypesEnum.Monthly =>
-                $"Every {interval} month{plural(interval)} on {formatWeekdays(weekdays)} at {time} ({timezone})",
+            TriggerFrequencyTypesEnum.MonthlyDayOfMonth =>
+                $"Every {interval} month{(interval > 1 ? "s" : "")} on day(s) {string.Join(", ", monthDays ?? new List<int> { 1 })} at {time} ({timezone})",
+            TriggerFrequencyTypesEnum.MonthlyDayOfWeek =>
+                $"Every {interval} month{(interval > 1 ? "s" : "")} on {formatWeekdays(weekdays)} at {time} ({timezone})",
 
             _ => "Custom schedule"
         };
