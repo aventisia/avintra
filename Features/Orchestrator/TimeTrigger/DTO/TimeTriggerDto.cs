@@ -12,11 +12,6 @@ public class TimeTriggerDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the Tenant ID associated with the time trigger.
-    /// </summary>
-    public Guid TenantId { get; set; }
-
-    /// <summary>
     /// Gets or sets the name of the time trigger.
     /// </summary>
     public required string Name { get; set; }
@@ -50,7 +45,7 @@ public class TimeTriggerDto
     /// Gets or sets the list of specific days of the month (1-31) on which the trigger should activate.
     /// </summary>
     public List<int>? MonthDays { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the cron expression that defines a schedule for the time trigger.
     /// The cron expression allows for more complex scheduling patterns, such as running a task 
@@ -92,6 +87,11 @@ public class TimeTriggerDto
     /// Gets or sets the list of specific dates when the time trigger should be excluded.
     /// </summary>
     public List<DateOnly>? ExceptionDates { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of agent IDs associated with the time trigger.
+    /// </summary>
+    public List<Guid>? AgentIds { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the time trigger is disabled.

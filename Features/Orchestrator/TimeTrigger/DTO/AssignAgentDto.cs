@@ -11,11 +11,6 @@ public class AssignAgentTriggerDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets Id of the tenant.
-    /// </summary>
-    public Guid TenantId { get; set; }
-
-    /// <summary>
     /// Gets or sets Id of the machine
     /// </summary>
     [RequiredGuid]
