@@ -91,7 +91,7 @@ public class TimeTriggerDto
     /// <summary>
     /// Gets or sets the list of specific dates when the time trigger should be excluded.
     /// </summary>
-    public List<DateTime>? ExceptionDates { get; set; }
+    public List<DateOnly>? ExceptionDates { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the time trigger is disabled.
