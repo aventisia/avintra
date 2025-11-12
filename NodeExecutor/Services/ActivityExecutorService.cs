@@ -431,6 +431,55 @@ namespace NodeExecutor.Services
                     return JsonConvert.DeserializeObject<Dictionary<string, string>>(inputValueStr);
                 }
 
+                // If targetType is string and inputValue type is DataTable
+                if (targetType == typeof(string) && inputValue is DataTable dt)
+                {
+                    var sb = new StringBuilder();
+                    var columns = dt.Columns.Cast<DataColumn>().Select(c => c.ColumnName);
+                    sb.AppendLine(string.Join(",", columns));
+                    foreach (DataRow row in dt.Rows)
+                        sb.AppendLine(string.Join(",", row.ItemArray.Select(x => x?.ToString() ?? "")));
+                    return sb.ToString().Trim();
+                }
+
+                // If targetType is string and inputValue is IEnumerable (but not string)
+                if (targetType == typeof(string) && inputValue is IEnumerable enumerable && !(inputValue is string))
+                {
+                    return JsonConvert.SerializeObject(inputValue);
+                }
+
+                // Handle arrays
+                if (targetType.IsArray && inputValue is string arrStr)
+                {
+                    var elemType = targetType.GetElementType();
+                    var items = arrStr.Split(',').Select(s => ConvertArgument(s.Trim(), elemType)).ToArray();
+                    var array = Array.CreateInstance(elemType, items.Length);
+                    for (int i = 0; i < items.Length; i++)
+                        array.SetValue(items[i], i);
+                    return array;
+                }
+
+                // Handle List<T>
+                if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    var elemType = targetType.GetGenericArguments()[0];
+                    if (inputValue is string listStr)
+                    {
+                        var items = listStr.Split(',').Select(s => ConvertArgument(s.Trim(), elemType)).ToList();
+                        var list = (IList)Activator.CreateInstance(targetType);
+                        foreach (var item in items)
+                            list.Add(item);
+                        return list;
+                    }
+                    if (inputValue is IEnumerable enumerable2)
+                    {
+                        var list = (IList)Activator.CreateInstance(targetType);
+                        foreach (var item in enumerable2)
+                            list.Add(ConvertArgument(item, elemType));
+                        return list;
+                    }
+                }
+
                 return Convert.ChangeType(inputValue, targetType);
             }
             catch
@@ -500,23 +549,7 @@ namespace NodeExecutor.Services
                         try
                         {
                             var value = interpreter.Eval(expr);
-                            if (value is DataTable dt)
-                            {
-                                var sb = new StringBuilder();
-                                var columns = dt.Columns.Cast<DataColumn>().Select(c => c.ColumnName);
-                                sb.AppendLine(string.Join(",", columns));
-                                foreach (DataRow row in dt.Rows)
-                                    sb.AppendLine(string.Join(",", row.ItemArray.Select(x => x?.ToString() ?? "")));
-                                return sb.ToString().Trim();
-                            }
-                            else if (value is System.Collections.IEnumerable enumerable && !(value is string))
-                            {
-                                return JsonConvert.SerializeObject(value);
-                            }
-                            else
-                            {
-                                return value?.ToString() ?? "";
-                            }
+                            return value?.ToString();
                         }
                         catch
                         {
