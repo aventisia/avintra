@@ -12,10 +12,10 @@ import { Table } from "@tanstack/react-table";
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { TriggersTableDto } from "../../dtos/triggers-table-dto";
+import { TimeTriggerDto } from "../../dtos/time-trigger-dto";
 
 interface TriggerBulkActionsProps {
-  table: Table<TriggersTableDto>;
+  table: Table<TimeTriggerDto>;
 }
 
 export function TriggerBulkActions({
@@ -34,8 +34,8 @@ export function TriggerBulkActions({
   // Get mutation function to delete the trigger
   const { mutate: deletetriggers } = useListOptimisticMutation<
     string[],
-    TriggersTableDto | boolean,
-    TriggersTableDto
+    TimeTriggerDto | boolean,
+    TimeTriggerDto
   >(selectedRowIds, triggerOptimisticMutationFn, DATA_QUERY_KEY);
 
   return (
