@@ -111,7 +111,7 @@ builder.Services.AddControllersConfig();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfig();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddQuartzJobs();
 /*--Configure the HTTP request pipeline.--*/
 
 var app = builder.Build();

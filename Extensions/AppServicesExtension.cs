@@ -150,4 +150,29 @@ public static class AppServicesExtension
         // Optionally, register RazorpayConfig itself for further use
         services.AddSingleton(razorpayConfig);
     }
+
+    // Method to configure and register Quartz jobs along with their triggers
+    public static void AddQuartzJobs(this IServiceCollection services)
+    {
+        services.AddQuartz(quartz =>
+        {
+            var jobKey = new JobKey("TenantCreditAllocationJob");
+
+            // Register the job with the specified job key
+            quartz.AddJob<TenantCreditAllocationJob>(opts => opts.WithIdentity(jobKey));
+
+            quartz.AddTrigger(opts => opts
+                .ForJob(jobKey)
+                .WithIdentity("TenantCreditAllocationJob-trigger")
+                .StartNow()
+                .WithCronSchedule("0 0 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc))
+                .WithDescription("Trigger for Tenant Credit Update Job - Runs at 12:00 AM UTC daily"));
+        });
+
+        // Register Quartz hosted service to ensure jobs run in the background
+        services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
+        // Register the job with the DI container so it can be injected
+        services.AddTransient<TenantCreditAllocationJob>();
+    }
 }
