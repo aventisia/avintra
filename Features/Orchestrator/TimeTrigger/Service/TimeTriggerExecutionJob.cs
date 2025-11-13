@@ -13,7 +13,7 @@ public class TimeTriggerExecutionJob : IJob
 
     // Main method for Quartz job execution
     public async Task Execute(IJobExecutionContext context)
-    {  
+    {
         try
         {
             // Get current UTC time
@@ -55,6 +55,7 @@ public class TimeTriggerExecutionJob : IJob
                 trigger.LastTriggeredTime = DateTimeOffset.UtcNow;
                 trigger.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
                     trigger.CronExpression,
+                    trigger.EffectiveDate,
                     trigger.ExceptionHours,
                     trigger.ExceptionWeekdays,
                     trigger.ExceptionDates);
