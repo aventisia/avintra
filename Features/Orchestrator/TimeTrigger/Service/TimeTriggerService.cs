@@ -98,6 +98,7 @@ public class TimeTriggerService(
             );
             newTimeTrigger.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
                 newTimeTrigger.CronExpression,
+                newTimeTrigger.EffectiveDate,
                 newTimeTrigger.ExceptionHours,
                 newTimeTrigger.ExceptionWeekdays,
                 newTimeTrigger.ExceptionDates
@@ -215,6 +216,7 @@ public class TimeTriggerService(
             );
             trigger.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
                 trigger.CronExpression,
+                trigger.EffectiveDate,
                 trigger.ExceptionHours,
                 trigger.ExceptionWeekdays,
                 trigger.ExceptionDates
