@@ -12,20 +12,21 @@ import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { isNameAvailable } from "../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import {
-  triggerNameSchema,
+  numbersToWeekdays,
+  weekdaysToNumbers,
+} from "../constants/form-utils";
+import {
   triggerZodSchema,
+  triggerNameSchema,
 } from "../constants/trigger-zod-schema";
-import { TriggersTableDto } from "../dtos/triggers-table-dto";
-import { useAgentsSelectTableStore } from "../stores/agents-select-table-store";
-
-import { useFetchSelectTableAgents } from "./useFetchSelectAgents";
+import { TimeTriggerDto } from "../dtos/time-trigger-dto";
 
 /**
  * Custom hook for defining a trigger form.
  */
 export const useDefineTriggerForm = () => {
-  // Set trigger name state (required for avaialbility check)
-  const [triggerName, settriggerName] = useState("");
+  // Trigger name state for availability check
+  const [triggerName, setTriggerName] = useState("");
 
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -47,88 +48,28 @@ export const useDefineTriggerForm = () => {
     })),
   );
 
-  const {
-    data: currentAgentsDataResponse,
-    isFetching,
-    isLoading,
-  } = useFetchSelectTableAgents(rowId);
-
-  const { currentAgents, setCurrentAgents, setAllAssigned, setIsReadOnly } =
-    useAgentsSelectTableStore(
-      useShallow((state) => ({
-        currentAgents: state.currentAgents,
-        setCurrentAgents: state.setCurrentAgents,
-        setAllAssigned: state.setAllAssigned,
-        setIsReadOnly: state.setIsReadOnly,
-      })),
-    );
-
-  useEffect(() => {
-    setIsReadOnly(crudAction === "read");
-    setCurrentAgents(
-      currentAgentsDataResponse?.data.filter(
-        (a) => crudAction !== "read" || a.isAssigned,
-      ) ?? [],
-    );
-    if (currentAgentsDataResponse?.data)
-      setAllAssigned(
-        currentAgentsDataResponse?.data.some((x) => x.isAssigned)
-          ? "indeterminate"
-          : currentAgentsDataResponse?.data.every((x) => x.isAssigned),
-      );
-  }, [
-    rowId,
-    isFetching,
-    currentAgentsDataResponse?.data,
-    setAllAssigned,
-    setCurrentAgents,
-    setIsReadOnly,
-    crudAction,
-  ]);
   // Get query client
   const queryClient = useQueryClient();
 
-  // Define form with zod schema
-  /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
+  // Define form with Zod schema
   const form = useForm<z.infer<typeof triggerZodSchema>>({
     resolver: zodResolver(triggerZodSchema),
     defaultValues: {
       id: "",
       name: "",
-      environment: "",
       agentIds: [],
-
       timezone: "",
-      startsOn: undefined,
-
-      frequency: "",
-
-      repeateAt: undefined,
-      //day or weekday
-      repeateOn: [],
-      repeateEvery: 0,
-
-      hasNonWorkingDays: false,
-      nonWorkingDays: undefined,
-
-      hasNonWorkingTime: false,
-      nonWorkingTimeTo: undefined,
-      nonWorkingTimeFrom: undefined,
-
-      isEnds: false,
-      endsOn: undefined,
-
-      triggerForNewItem: false,
-      triggerForNewEmail: false,
-      scheduleAutoDisabling: false,
-      generateStuckAlert: false,
-      generateFailedAlert: false,
-
+      effectiveDate: new Date(), // Default to current date
+      frequency: "OneTime", // Default frequency to "OneTime"
+      atTime: "00:00",
+      interval: "1",
+      weekdays: [],
+      monthDays: [],
+      endDate: null,
+      exceptionHours: [],
+      exceptionWeekdays: [],
+      exceptionDates: [],
       isDisabled: false,
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
-      createdOn: new Date(),
-      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
-      lastModifiedOn: new Date(),
     },
   });
 
@@ -141,60 +82,36 @@ export const useDefineTriggerForm = () => {
   useEffect(() => {
     // Get triggers data from query client
     const triggersData = queryClient.getQueryData<{
-      data: TriggersTableDto[];
+      data: TimeTriggerDto[];
     }>(DATA_QUERY_KEY);
 
-    // Get trigger data by id
+    // Find the trigger by rowId
     const triggerData = triggersData?.data.find((item) => item.id === rowId);
 
-    // Set trigger name
-    settriggerName(triggerData?.name ?? "");
+    // Set trigger name for availability check
+    setTriggerName(triggerData?.name ?? "");
 
-    // Set trigger data to form
+    // Reset form with fetched trigger data
     form.reset({
       id: rowId,
       name: triggerData?.name ?? "",
-      environment: triggerData?.environment,
-      agentIds: triggerData?.agentIds,
-
-      timezone: triggerData?.timezone,
-      startsOn: triggerData?.startsOn,
-      frequency: triggerData?.frequency,
-
-      repeateAt: triggerData?.repeateAt,
-      repeateOn: triggerData?.repeateOn,
-      repeateEvery: triggerData?.repeateEvery,
-
-      hasNonWorkingDays: triggerData?.hasNonWorkingDays,
-      nonWorkingDays: triggerData?.nonWorkingDays,
-
-      hasNonWorkingTime: triggerData?.hasNonWorkingTime,
-      nonWorkingTimeTo: triggerData?.nonWorkingTimeFrom,
-      nonWorkingTimeFrom: triggerData?.nonWorkingTimeTo,
-
-      isEnds: triggerData?.isEnds,
-      endsOn: triggerData?.endsOn,
-
-      triggerForNewItem: triggerData?.triggerForNewItem,
-      triggerForNewEmail: triggerData?.triggerForNewEmail,
-      scheduleAutoDisabling: triggerData?.scheduleAutoDisabling,
-      generateStuckAlert: triggerData?.generateStuckAlert,
-      generateFailedAlert: triggerData?.generateFailedAlert,
-
+      agentIds: triggerData?.agentIds ?? [],
+      timezone: triggerData?.timezone ?? "",
+      effectiveDate: triggerData?.effectiveDate
+        ? new Date(triggerData.effectiveDate)
+        : new Date(),
+      interval: triggerData?.interval?.toString() ?? "1",
+      frequency: triggerData?.frequency ?? "Daily",
+      atTime: triggerData?.atTime?.slice(0, 5) ?? "00:00", // Slice the string from index 0 to 5 (excluding the seconds part)
+      weekdays: numbersToWeekdays(triggerData?.weekdays) ?? [],
+      monthDays: triggerData?.monthDays?.map((v) => v.toString()) ?? [],
+      endDate: triggerData?.endDate ? new Date(triggerData.endDate) : null,
+      exceptionHours:
+        triggerData?.exceptionHours?.map((v) => v.toString()) ?? [],
+      exceptionWeekdays:
+        numbersToWeekdays(triggerData?.exceptionWeekdays) ?? [],
+      exceptionDates: triggerData?.exceptionDates ?? [],
       isDisabled: triggerData?.isDisabled ?? false,
-      // Read (view) only fields
-      createdBy:
-        triggerData?.createdBy ??
-        userSession?.firstName + " " + userSession?.lastName,
-      createdOn: triggerData?.createdOn
-        ? new Date(triggerData?.createdOn)
-        : new Date(),
-      lastModifiedBy:
-        triggerData?.lastModifiedBy ??
-        userSession?.firstName + " " + userSession?.lastName,
-      lastModifiedOn: triggerData?.lastModifiedOn
-        ? new Date(triggerData?.lastModifiedOn)
-        : new Date(),
     });
   }, [rowId, form, queryClient, userSession]);
 
@@ -213,12 +130,17 @@ export const useDefineTriggerForm = () => {
     checkAvailabilityAPIFn: isNameAvailable,
   });
 
-  // Refine form data based on crud action
+  // Refine form data before submission
   const refineFormData = (formData: z.infer<typeof triggerZodSchema>) => {
     return {
       ...formData,
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
+      atTime: formData.atTime + ":00", //add seconds to match BE time format(HH:MM:SS)
+      weekdays: weekdaysToNumbers(formData.weekdays), //convert weekdays to equ numbers
+      monthDays: formData.monthDays?.map((v) => Number(v)), //convert string input to number to match DTO
+      exceptionHours: formData.exceptionHours?.map((v) => Number(v)), //convert string input to number to match DTO
+      exceptionWeekdays: weekdaysToNumbers(formData.exceptionWeekdays), //convert weekdays to equ numbers
     };
   };
 
@@ -227,12 +149,17 @@ export const useDefineTriggerForm = () => {
     toggleFormDirty(isDirty);
   }, [isDirty, toggleFormDirty]);
 
-  // Reset availability message when dialog closes
+  // Reset availability message and invalidate agents list when dialog closes
   useEffect(() => {
-    if (!showDialog) setAvailabilityMessage(null);
-  }, [setAvailabilityMessage, showDialog, currentAgents]);
+    if (!showDialog) {
+      setAvailabilityMessage(null);
+      queryClient.invalidateQueries({
+        queryKey: ["select-trigger-agent", rowId],
+      });
+    }
+  }, [queryClient, rowId, setAvailabilityMessage, showDialog]);
 
-  // Return form and methods
+  // Return form, validation state, and methods
   return {
     form,
     isDirty,
@@ -242,10 +169,6 @@ export const useDefineTriggerForm = () => {
     refineFormData,
     isAvailable,
     availabilityMessage,
-    currentAgentsDataResponse,
-    isFetching,
-    isLoading,
-    setAvailabilityMessage,
     isCheckPending,
     handleInputChange,
   };

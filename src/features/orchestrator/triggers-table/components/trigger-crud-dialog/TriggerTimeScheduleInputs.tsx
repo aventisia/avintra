@@ -1,20 +1,15 @@
-import { ISelectOption } from "@aventisia/ui/types";
-import { enumToArray } from "@aventisia/ui/utils";
-import Enumerable from "linq";
-import { useMemo } from "react";
+import { InputField, MultiSelectField, SelectField } from "@aventisia/ui/form";
 
 import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
-import { DayOfWeek } from "@/react-toolkit/enums/day-of-week-enum";
-import { InputAndTimeComboField } from "@/react-toolkit/ui/form/fields/combo/InputAndTimeComboField";
-import { MultiSelectAndTimeComboField } from "@/react-toolkit/ui/form/fields/combo/MultiSelectAndTimeComboField";
-import { MultiSelectField } from "@/react-toolkit/ui/form/fields/MultiSelectField";
-import { TimePickerField } from "@/react-toolkit/ui/form/fields/TimePickerField";
 
 import {
-  monthlyFrequencyProps,
-  monthlyFrequencyRepeateProps,
-  weeklyFrequencyRepeateProps,
-} from "../../constants/trigger-form-field-props";
+  generateDayOfMonthOptions,
+  generateDayOfWeekOptions,
+  generateHourlyOptions,
+  generateHourMinutesOptions,
+  generateMinutesOptions,
+  generateMonthOptions,
+} from "../../constants/form-utils";
 
 export const TriggerTimeScheduleInputs = ({
   frequency,
@@ -23,60 +18,98 @@ export const TriggerTimeScheduleInputs = ({
 }) => {
   const frequencyKey = frequency as keyof typeof TriggerFrequencyTypesEnum;
 
-  const daysOptions = useMemo(
-    () => [
-      { label: "Last day of the month", value: "lastDayOfMonth" },
-      {
-        label: "Last working day of the month",
-        value: "lastWorkingDayOfMonth",
-      },
-      ...Enumerable.range(1, 31).select<ISelectOption>((x) => ({
-        label: x.toString(),
-        value: x.toString(),
-      })),
-    ],
-    [],
-  );
-
+  // Switch statement for rendering specific frequency input fields
   switch (frequencyKey) {
     case "MinuteByMinute":
+      return (
+        <SelectField
+          name="interval"
+          isRequired
+          label={"Repeat Every (Minutes)"}
+          selectOptions={generateMinutesOptions()}
+        />
+      );
     case "Hourly":
+      return (
+        <>
+          <SelectField
+            name="interval"
+            isRequired
+            label={"Repeat Every (Hours)"}
+            selectOptions={generateHourlyOptions()}
+          />
+
+          <SelectField
+            name="atTime"
+            label={"Minutes"}
+            selectOptions={generateHourMinutesOptions()}
+          />
+        </>
+      );
     case "Daily":
       return (
-        <div className="flex items-center justify-center gap-2 text-sm">
-          <TimePickerField
-            name="repeateAt"
+        <>
+          <SelectField
+            name="interval"
             isRequired
-            showHours={frequencyKey !== "MinuteByMinute"}
-            label={frequencyKey === "Daily" ? "Daily at" : "Every "}
+            label={"Repeat Every (Days of Month)"}
+            selectOptions={generateDayOfMonthOptions()}
           />
-        </div>
+          <InputField
+            type="time"
+            className="w-full"
+            label="Time"
+            name="atTime"
+            defaultValue={"00:00"}
+            step={60}
+          />
+        </>
       );
     case "Weekly":
       return (
-        <div className="flex flex-row items-center text-sm">
-          <MultiSelectAndTimeComboField
+        <>
+          <MultiSelectField
+            name="weekdays"
+            label="Repeat Every (Week)"
             isRequired
-            {...weeklyFrequencyRepeateProps}
+            selectOptions={generateDayOfWeekOptions()}
           />
-        </div>
+          <InputField
+            type="time"
+            className="w-full flex-grow"
+            label="Time"
+            name="atTime"
+            defaultValue={"00:00"}
+            step={60}
+          />
+        </>
       );
     case "MonthlyDayOfMonth":
-    case "MonthlyDayOfWeek":
       return (
-        <div className="group flex flex-col gap-2 text-sm">
-          <InputAndTimeComboField isRequired {...monthlyFrequencyProps} />
-          <MultiSelectField
-            {...monthlyFrequencyRepeateProps}
-            selectOptions={
-              frequencyKey === "MonthlyDayOfMonth"
-                ? daysOptions
-                : enumToArray(DayOfWeek)
-            }
+        <>
+          <SelectField
+            name="interval"
+            label="Repeat Every (Month)"
+            isRequired
+            selectOptions={generateMonthOptions()}
           />
-        </div>
+          <InputField
+            type="time"
+            className="w-full flex-grow"
+            label="Time"
+            name="atTime"
+            defaultValue={"00:00"}
+            step={60}
+          />
+          <MultiSelectField
+            name="monthDays"
+            label="Day(s) of the Month"
+            isRequired
+            selectOptions={generateDayOfMonthOptions()}
+          />
+        </>
       );
     default:
-      return;
+      return null;
   }
 };
