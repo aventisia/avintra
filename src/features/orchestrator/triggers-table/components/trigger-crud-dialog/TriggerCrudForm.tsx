@@ -113,7 +113,7 @@ export const TriggerCrudForm = () => {
             <FormLabelExt
               size={"base"}
               label="Timezone"
-              description="select timezone for the trigger date/time"
+              description="Select the timezone for the trigger."
               isRequired
             />
             <FormControl>
@@ -147,8 +147,8 @@ export const TriggerCrudForm = () => {
           <FormItem size={"base"}>
             <FormLabelExt
               size={"base"}
-              label="Select Agents"
-              description="the agent(s) that need to triggered"
+              label="Select Agent(s)"
+              description="Choose the agent(s) that should be triggered by this event."
               isRequired
             />
 
@@ -181,7 +181,7 @@ export const TriggerCrudForm = () => {
           <FormItem>
             <FormLabelExt
               label="Exception Dates"
-              description="Dates to exclude for triggers.Please enter date in format (YYYY-MM-DD)"
+              description="Dates to exclude for triggers. Please enter date in format (YYYY-MM-DD)"
             />
             <FormControl>
               <TagInput

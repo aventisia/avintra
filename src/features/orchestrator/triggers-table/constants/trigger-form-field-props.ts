@@ -25,7 +25,7 @@ const nameProps: InputFieldProps = {
   label: "Name",
   isRequired: true,
   placeholder: "Trigger Name",
-  description: "Name of the trigger",
+  description: "Specify a name for this trigger.",
 };
 
 const selectFrequencyProps: SelectFieldProps = {
@@ -33,45 +33,41 @@ const selectFrequencyProps: SelectFieldProps = {
   label: "Frequency",
   isRequired: true,
   selectOptions: enumToArray(TriggerFrequencyTypesEnum),
-  description: "Select frequency at which you trigger needs to run or repeat",
+  description: "Choose how frequently the trigger should run or repeat.",
 };
 
-// Effective Date
 const effectiveDateProps: DatePickerFieldProps = {
   name: "effectiveDate",
   label: "Effective Date",
-  description: "The date form when the trigger should start",
+  description: "The date when the trigger will begin.",
   isRequired: true,
 };
 
-// Ends on
 const endDateProps: DatePickerFieldProps = {
   name: "endDate",
   label: "Ends on",
-  description: "The date form when the trigger should end(optional)",
+  description: "The optional date when the trigger should stop.",
 };
 
-// Is Disabled
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
   label: "Disable Trigger",
   description:
-    "Disable this trigger if it's been not in use, or not required anymore",
+    "Disable the trigger when it's not needed or should be temporarily turned off.",
 };
 
-// Exception Hours
 const exceptionHoursProps: MultiSelectFieldProps = {
   name: "exceptionHours",
   label: "Exception Hours",
-  description: "The Hours when the trigger should not work",
+  description: "Select specific hours when this trigger should not be active.",
   selectOptions: generateHourlyOptions(),
 };
 
-// Exception Weekdays
 const exceptionWeekdaysProps: MultiSelectFieldProps = {
   name: "exceptionWeekdays",
   label: "Exception Weekdays",
-  description: "The weekdays when the trigger should not work",
+  description:
+    "Select weekdays when the trigger should not run (e.g., weekends).",
   selectOptions: generateDayOfWeekOptions(),
 };
 
