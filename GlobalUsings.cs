@@ -21,6 +21,7 @@ global using WorkspaceAPIs.DTOs;
 global using WorkspaceAPIs.MappingProfiles;
 global using WorkspaceAPIs.Enums;
 global using WorkspaceAPIs.Jobs;
+global using WorkspaceAPIs.Hubs;
 
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
