@@ -4,18 +4,21 @@ public class MachineService : IMachineService
 {
     private readonly ILogger<MachineService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMachineHub _machineHub;
     private readonly Guid _userId;
 
     public MachineService(
         ILogger<MachineService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IMachineHub machineHub)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _machineHub = machineHub;
     }
 
     // Checks the availability of a machine name.
@@ -102,6 +105,9 @@ public class MachineService : IMachineService
                 _logger.LogInformation("Context SaveChanges failed while inserting new machine");
                 return serviceResponse;
             }
+
+            // Register the new machine with the machine hub
+            await _machineHub.RegisterMachineAsync(newMachine.Id);
 
             // If agent IDs are provided, proceed to assign them
             if (machineDto.AgentIds != null && machineDto.AgentIds.Any())
@@ -225,15 +231,29 @@ public class MachineService : IMachineService
         {
             // Try to get machines
             var machines = await _unitOfWork.MachineRepo
-                                            .GetByConditionAsync(m => m.CreatedByUserId == _userId)
-                                            .OrderByDescending(o => o.CreatedOn)
-                                            .Include(a => a.CreatedByUser)
-                                            .Include(a => a.LastModifiedByUser)
-                                            .Include(a => a.MachineFlows)
-                                                .ThenInclude(fv => fv.FlowVersion)
-                                                .ThenInclude(f => f.Flow)
-                                            .AsNoTracking()
-                                            .ToListAsync();
+                .GetByConditionAsync(m => m.CreatedByUserId == _userId)
+                .OrderByDescending(o => o.CreatedOn)
+                .Include(a => a.CreatedByUser)
+                .Include(a => a.LastModifiedByUser)
+                .Include(a => a.MachineFlows)
+                    .ThenInclude(fv => fv.FlowVersion)
+                    .ThenInclude(f => f.Flow)
+                .AsNoTracking()
+                .ToListAsync();
+
+            foreach (var machine in machines)
+            {
+                // Check if the machine exists in the MachineStore dictionary
+                if (MachineStore.Machines.TryGetValue(machine.Id, out var storedMachine))
+                {
+                    machine.Status = storedMachine.Status;
+                }
+                else
+                {
+                    machine.Status = MachineStatusTypeEnum.Offline;
+                }
+            }
+
 
             // Task successful
             serviceResponse.Data = machines.Adapt<IEnumerable<MachineDto>>();
@@ -264,22 +284,32 @@ public class MachineService : IMachineService
         {
             // Try to get machine
             var machine = await _unitOfWork.MachineRepo
-                                            .GetByConditionAsync(m =>
-                                                m.Id == machineId && m.CreatedByUserId == _userId
-                                            )
-                                            .Include(a => a.CreatedByUser)
-                                            .Include(a => a.LastModifiedByUser)
-                                            .Include(a => a.MachineFlows)
-                                                .ThenInclude(fv => fv.FlowVersion)
-                                                .ThenInclude(f => f.Flow)
-                                            .AsNoTracking()
-                                            .FirstOrDefaultAsync();
+                .GetByConditionAsync(m =>
+                    m.Id == machineId && m.CreatedByUserId == _userId
+                )
+                .Include(a => a.CreatedByUser)
+                .Include(a => a.LastModifiedByUser)
+                .Include(a => a.MachineFlows)
+                    .ThenInclude(fv => fv.FlowVersion)
+                    .ThenInclude(f => f.Flow)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
 
             if (machine == null)
             {
                 serviceResponse.Message = "Machine does not exist";
                 _logger.LogInformation("There is no machine with Id {Id}", machineId);
                 return serviceResponse;
+            }
+
+            // Check if the machine exists in the MachineStore dictionary
+            if (MachineStore.Machines.TryGetValue(machine.Id, out var storedMachine))
+            {
+                machine.Status = storedMachine.Status;
+            }
+            else
+            {
+                machine.Status = MachineStatusTypeEnum.Offline;
             }
 
             // Task successful
@@ -359,6 +389,9 @@ public class MachineService : IMachineService
                 _logger.LogInformation("Context SaveChanges failed while updating machine");
                 return serviceResponse;
             }
+
+            // Register the new machine with the machine hub
+            await _machineHub.RegisterMachineAsync(machine.Id);
 
             // Handle agent assignments
             var existingMachineFlows = machine.MachineFlows.ToList();
