@@ -26,6 +26,7 @@ export const TriggerTimeScheduleInputs = ({
           name="interval"
           isRequired
           label={"Repeat Every (Minutes)"}
+          description="Select the interval in minutes for repeating the trigger."
           selectOptions={generateMinutesOptions()}
         />
       );
@@ -36,12 +37,14 @@ export const TriggerTimeScheduleInputs = ({
             name="interval"
             isRequired
             label={"Repeat Every (Hours)"}
+            description="Select the interval in hours for repeating the trigger."
             selectOptions={generateHourlyOptions()}
           />
 
           <SelectField
             name="atTime"
             label={"Minutes"}
+            description="Select the specific minute when the trigger should occur."
             selectOptions={generateHourMinutesOptions()}
           />
         </>
@@ -53,6 +56,7 @@ export const TriggerTimeScheduleInputs = ({
             name="interval"
             isRequired
             label={"Repeat Every (Days of Month)"}
+            description="Choose the day of the month for repeating the trigger."
             selectOptions={generateDayOfMonthOptions()}
           />
           <InputField
@@ -60,6 +64,7 @@ export const TriggerTimeScheduleInputs = ({
             className="w-full"
             label="Time"
             name="atTime"
+            description="Select the time of day when the trigger should occur."
             defaultValue={"00:00"}
             step={60}
           />
@@ -72,6 +77,7 @@ export const TriggerTimeScheduleInputs = ({
             name="weekdays"
             label="Repeat Every (Week)"
             isRequired
+            description="Select the weekdays for repeating the trigger."
             selectOptions={generateDayOfWeekOptions()}
           />
           <InputField
@@ -80,6 +86,7 @@ export const TriggerTimeScheduleInputs = ({
             label="Time"
             name="atTime"
             defaultValue={"00:00"}
+            description="Choose the time of day when the trigger should occur."
             step={60}
           />
         </>
@@ -91,6 +98,7 @@ export const TriggerTimeScheduleInputs = ({
             name="interval"
             label="Repeat Every (Month)"
             isRequired
+            description="Choose the months for repeating the trigger."
             selectOptions={generateMonthOptions()}
           />
           <InputField
@@ -100,11 +108,13 @@ export const TriggerTimeScheduleInputs = ({
             name="atTime"
             defaultValue={"00:00"}
             step={60}
+            description="Specify the time of day when the trigger should execute."
           />
           <MultiSelectField
             name="monthDays"
             label="Day(s) of the Month"
             isRequired
+            description="Select the specific days of the month for triggering."
             selectOptions={generateDayOfMonthOptions()}
           />
         </>
