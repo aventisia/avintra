@@ -2,33 +2,32 @@ namespace WorkspaceAPIs.Jobs;
 
 public class TimeTriggerExecutionJob : IJob
 {
-    private readonly WorkspaceDbContext _workspaceDbContext;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<TimeTriggerExecutionJob> _logger;
 
-    public TimeTriggerExecutionJob(WorkspaceDbContext workspaceDbContext, ILogger<TimeTriggerExecutionJob> logger)
+    public TimeTriggerExecutionJob(IUnitOfWork unitOfWork, ILogger<TimeTriggerExecutionJob> logger)
     {
-        _workspaceDbContext = workspaceDbContext;
+        _unitOfWork = unitOfWork;
         _logger = logger;
     }
 
     // Main method for Quartz job execution
     public async Task Execute(IJobExecutionContext context)
-    {
-        // Get current UTC time
-        var now = DateTimeOffset.UtcNow;
-
-        // Log job start
-        _logger.LogInformation($"Job started at {now:O}");
-
+    {  
         try
         {
+            // Get current UTC time
+            var now = DateTimeOffset.UtcNow;
+
+            _logger.LogInformation($"Job started at {now:O}");
+
             // Define the current minute window
             var startOfMinute = now.Date.AddHours(now.Hour).AddMinutes(now.Minute);
             var endOfMinute = startOfMinute.AddMinutes(1);
 
             // Retrieve triggers that should fire during this minute
-            var triggers = await _workspaceDbContext.TimeTriggers
-                .Where(w =>
+            var triggers = await _unitOfWork.TriggerRepo
+                .GetByConditionAsync(w =>
                     w.NextTriggerTime >= startOfMinute && w.NextTriggerTime < endOfMinute &&
                     w.EffectiveDate.Date <= now.Date &&
                     (w.EndDate == null || w.EndDate >= now.Date)
@@ -45,10 +44,10 @@ public class TimeTriggerExecutionJob : IJob
                 _logger.LogInformation($"Executing Trigger: {trigger.Name} (ID: {trigger.Id})");
 
                 // Process each linked flow version
-                foreach (var link in trigger.TimeTriggerFlowVersions)
+                foreach (var triggersFlowVersion in trigger.TimeTriggerFlowVersions)
                 {
                     // Log execution of each flow version
-                    _logger.LogInformation($"Executing FlowVersion {link.FlowVersionId} for Trigger {trigger.Name}");
+                    _logger.LogInformation($"Executing FlowVersion {triggersFlowVersion.FlowVersionId} for Trigger {trigger.Name}");
                     // TODO: Add actual execution logic here
                 }
 
@@ -64,18 +63,20 @@ public class TimeTriggerExecutionJob : IJob
                 _logger.LogInformation($"Next Trigger Time for {trigger.Name}: {trigger.NextTriggerTime:O}");
 
                 // Update trigger in the database
-                _workspaceDbContext.TimeTriggers.Update(trigger);
+                _unitOfWork.TriggerRepo.Update(trigger);
             }
 
-            // Save changes to the database (update next trigger times)
-            await _workspaceDbContext.SaveChangesAsync();
+            // Save changes to the database
+            if (await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning("Failed to save trigger updates to the database.");
+            }
 
-            // Log job completion
             _logger.LogInformation($"Job completed successfully at {now:O}");
         }
+
         catch (Exception ex)
         {
-            // Log any errors that occur during job execution
             _logger.LogError(ex, "An error occurred during the trigger execution job.");
         }
     }

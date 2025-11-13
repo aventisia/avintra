@@ -103,7 +103,7 @@ public static class AppServicesExtension
             // Register the job with the specified job key
             quartz.AddJob<TimeTriggerExecutionJob>(opts => opts.WithIdentity(jobKey));
 
-            // Configure the trigger to start immediately and run every 30 seconds
+            // Configure the trigger to start immediately and run every 1 minutes
             quartz.AddTrigger(opts => opts
                 .ForJob(jobKey)
                 .WithIdentity("TimeTriggerExecutionJob-trigger")
