@@ -50,7 +50,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <TableCellLink
-        rowId={row.original.id || "rowId"}
+        rowId={row.original.refId || "rowId"}
         cellValue={row.getValue("name")}
         type={row.original.type || ""}
       />
