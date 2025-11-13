@@ -65,6 +65,11 @@ public class MachineDto
     /// </summary>
     public DateTime LastCheckedIn { get; set; }
 
+    // <summary>
+    /// Gets or sets the connection identifier of the machine.
+    /// </summary>
+    public string ConnectionId { get; set; } = string.Empty;
+
     /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
     /// </summary>
