@@ -1,0 +1,100 @@
+import { ISelectOption } from "@aventisia/ui/types";
+import Enumerable from "linq";
+import timezones from "timezones-list";
+
+// Array of days and their corresponding numbers
+const weekdays = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
+
+const numbers = [1, 2, 3, 4, 5, 6, 7];
+
+// Function to convert weekdays to numbers
+function weekdaysToNumbers(weekdaysArray: string[] | undefined): number[] {
+  if (!weekdaysArray) return [];
+  return weekdaysArray.map((day) => {
+    const index = weekdays.indexOf(day);
+    if (index !== -1) {
+      return numbers[index];
+    }
+    throw new Error(`Invalid weekday: ${day}`);
+  });
+}
+
+// Function to convert numbers to weekdays
+function numbersToWeekdays(numbersArray: number[] | undefined): string[] {
+  if (!numbersArray) return [];
+  return numbersArray.map((num) => {
+    const index = numbers.indexOf(num);
+    if (index !== -1) {
+      return weekdays[index];
+    }
+    throw new Error(`Invalid number: ${num}`);
+  });
+}
+
+// Generate options for each frequency
+const generateMinutesOptions = () =>
+  Array.from({ length: 59 }, (_, i) => ({
+    label: `${i + 1} minute${i === 0 ? "" : "s"}`,
+    value: (i + 1).toString(),
+  })) as unknown as ISelectOption[];
+
+const generateHourMinutesOptions = () =>
+  Array.from({ length: 59 }, (_, i) => ({
+    label: `${i} minute${i === 0 ? "" : "s"}`,
+    value: `00:${String(i).padStart(2, "0")}`,
+  })) as unknown as ISelectOption[];
+
+const generateMonthOptions = () =>
+  Array.from({ length: 12 }, (_, i) => ({
+    label: `${i + 1} month${i === 0 ? "" : "s"}`,
+    value: (i + 1).toString(),
+  })) as unknown as ISelectOption[];
+
+const generateDayOfWeekOptions = () => [
+  { label: "Monday", value: "Monday" },
+  { label: "Tuesday", value: "Tuesday" },
+  { label: "Wednesday", value: "Wednesday" },
+  { label: "Thursday", value: "Thursday" },
+  { label: "Friday", value: "Friday" },
+  { label: "Saturday", value: "Saturday" },
+  { label: "Sunday", value: "Sunday" },
+];
+
+const generateDayOfMonthOptions = () =>
+  Array.from({ length: 31 }, (_, i) => ({
+    label: `Day ${i + 1}`,
+    value: (i + 1).toString(),
+  })) as unknown as ISelectOption[];
+
+const generateHourlyOptions = () =>
+  Array.from({ length: 23 }, (_, i) => ({
+    label: `${i + 1} hour${i === 0 ? "" : "s"}`,
+    value: (i + 1).toString(),
+  })) as unknown as ISelectOption[];
+
+const timezoneOptions = Enumerable.from(timezones)
+  .select<ISelectOption>((t) => ({
+    value: t.tzCode,
+    label: t.label,
+  }))
+  .toArray();
+
+export {
+  weekdaysToNumbers,
+  numbersToWeekdays,
+  generateDayOfMonthOptions,
+  generateDayOfWeekOptions,
+  generateHourlyOptions,
+  generateHourMinutesOptions,
+  generateMinutesOptions,
+  generateMonthOptions,
+  timezoneOptions,
+};
