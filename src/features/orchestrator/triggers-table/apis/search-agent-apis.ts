@@ -5,20 +5,17 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { SearchAgentsDto } from "../dtos/search-agent-dto";
 
 // Base API URL from environment variables
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/agent/search`;
 
 /**
  * Fetch a list of agents matching the search term.
  *
  * @param value - Optional search keyword to filter agents.
- * @param includeUnpublished - Whether to include unpublished agents (default: true).
  * @returns A promise that resolves to a list of matching agents wrapped in an HTTP response object.
  */
-const getSearchAgent = (value?: string, includeUnpublished: boolean = true) => {
+const getSearchAgent = (value?: string) => {
   return axiosInstance
-    .get<
-      IHttpResponse<SearchAgentsDto[]>
-    >(`${baseAPIURL}/flow-version/published/${value}?includeUnpublished=${includeUnpublished}`)
+    .get<IHttpResponse<SearchAgentsDto[]>>(`${baseAPIURL}/${value}`)
     .then((res) => res.data); // Return only the response data
 };
 

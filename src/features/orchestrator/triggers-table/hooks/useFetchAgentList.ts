@@ -9,7 +9,7 @@ import { getSearchAgent } from "../apis/search-agent-apis";
 export const useFetchAgentList = (query: string) => {
   return useQuery({
     queryKey: ["agents-list", query],
-    queryFn: () => getSearchAgent(query, false),
+    queryFn: () => getSearchAgent(query),
     enabled: !!query,
   });
 };
