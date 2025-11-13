@@ -2,13 +2,13 @@ import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
-import { isBefore } from "date-fns";
+import { format } from "date-fns";
 
 import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
-import { TriggersTableDto } from "../dtos/triggers-table-dto";
+import { TimeTriggerDto } from "../dtos/time-trigger-dto";
 
 import { TriggerRowActions } from "./table-actions/TriggerRowActions";
 
@@ -16,7 +16,7 @@ import { TriggerRowActions } from "./table-actions/TriggerRowActions";
  * Array of table columns for the triggers table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
+export const triggersTableColumns: ColumnDef<TimeTriggerDto>[] = [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -55,70 +55,6 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
   },
 
   {
-    accessorKey: "environment",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("environment")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("environment")}
-      </div>
-    ),
-  },
-
-  {
-    accessorKey: "agentIds",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("agentIds")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue<string[]>("agentIds")?.length ?? 0}
-      </div>
-    ),
-  },
-
-  {
-    accessorKey: "timezone",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("timezone")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("timezone")}
-      </div>
-    ),
-  },
-
-  {
-    accessorKey: "startsOn",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("startsOn")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("startsOn"))}
-      </div>
-    ),
-  },
-
-  {
     accessorKey: "frequency",
     header: ({ column }) => (
       <DTColumnHeader
@@ -136,146 +72,139 @@ export const triggersTableColumns: ColumnDef<TriggersTableDto>[] = [
       </div>
     ),
   },
-
   {
-    accessorKey: "repeateAt",
+    accessorKey: "lastTriggeredTime",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("repeateAt")}
+        title={getColumnName("lastTriggeredTime")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {isBefore(row.getValue<Date>("repeateAt"), new Date(2000, 1, 1))
-          ? "NA"
-          : dateFormatter(row.getValue<Date>("repeateAt"), "HH:mm:ss")}
-      </div>
-    ),
-  },
-
-  {
-    accessorKey: "repeateOn",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("repeateOn")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue<string[]>("repeateOn").length > 0
-          ? row.getValue<string[]>("repeateOn").join(", ")
+        {row.getValue("lastTriggeredTime")
+          ? format(row.getValue("lastTriggeredTime"), "dd MMM yyyy, h:mm:ss a")
           : "NA"}
       </div>
     ),
   },
-
   {
-    accessorKey: "repeateEvery",
+    accessorKey: "nextTriggerTime",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("repeateEvery")}
+        title={getColumnName("nextTriggerTime")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("repeateEvery") ?? "NA"}
-      </div>
-    ),
-  },
-
-  {
-    accessorKey: "nonWorkingDays",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("nonWorkingDays")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("nonWorkingDays")
-          ? dateFormatter(
-              row.getValue<Date[]>("nonWorkingDays")[0] ?? new Date(),
-            )
+        {row.getValue("nextTriggerTime")
+          ? format(row.getValue("nextTriggerTime"), "dd MMM yyyy, h:mm:ss a")
           : "NA"}
       </div>
     ),
   },
-
   {
-    accessorKey: "hasNonWorkingTime",
+    accessorKey: "timezone",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("hasNonWorkingTime")}
+        title={getColumnName("timezone")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue<Date>("nonWorkingTimeFrom") &&
-        row.getValue<Date>("nonWorknonWorkingTimeToingTimeFrom")
-          ? `${row.getValue<Date>("nonWorkingTimeFrom")} - ${row.getValue<Date>("nonWorknonWorkingTimeToingTimeFrom")}`
+        {row.getValue("timezone")}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "effectiveDate",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("effectiveDate")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("effectiveDate")
+          ? dateFormatter(row.getValue("effectiveDate"))
           : "NA"}
       </div>
     ),
   },
-
   {
-    accessorKey: "endsOn",
+    accessorKey: "createdBy",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("endsOn")}
+        title={getColumnName("createdBy")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("endsOn") ?? "NA"}
+        {row.getValue("createdBy")}
       </div>
     ),
   },
-
   {
-    accessorKey: "triggerForNewItem",
+    accessorKey: "createdOn",
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        className="w-[7rem]"
+        column={column}
+        title={getColumnName("createdOn")}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {row.getValue("createdOn")
+          ? dateFormatter(row.getValue("createdOn"))
+          : "NA"}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "lastModifiedBy",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("triggerForNewItem")}
+        title={getColumnName("lastModifiedBy")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("triggerForNewItem") ? "Yes" : "No"}
+        {row.getValue("lastModifiedBy")}
       </div>
     ),
   },
-
   {
-    accessorKey: "triggerForNewEmail",
+    accessorKey: "lastModifiedOn",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
+        className="w-[7rem]"
         column={column}
-        title={getColumnName("triggerForNewEmail")}
+        title={getColumnName("lastModifiedOn")}
       />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("triggerForNewEmail") ? "Yes" : "No"}
+        {row.getValue("lastModifiedOn")
+          ? dateFormatter(row.getValue("lastModifiedOn"))
+          : "NA"}
       </div>
     ),
   },
-
   {
     id: "actions",
     cell: ({ row }) => (
