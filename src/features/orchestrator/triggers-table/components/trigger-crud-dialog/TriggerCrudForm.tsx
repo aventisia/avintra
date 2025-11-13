@@ -20,12 +20,12 @@ import { z } from "zod";
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
+import { timezoneOptions } from "../../constants/form-utils";
 import {
-  generateDayOfWeekOptions,
-  generateHourlyOptions,
-  timezoneOptions,
-} from "../../constants/form-utils";
-import {
+  effectiveDateProps,
+  endDateProps,
+  exceptionHoursProps,
+  exceptionWeekdaysProps,
   idProps,
   isDisabledProps,
   nameProps,
@@ -110,7 +110,12 @@ export const TriggerCrudForm = () => {
         control={form.control}
         render={({ field }) => (
           <FormItem size={"base"}>
-            <FormLabelExt size={"base"} label="Timezone" isRequired />
+            <FormLabelExt
+              size={"base"}
+              label="Timezone"
+              description="select timezone for the trigger date/time"
+              isRequired
+            />
             <FormControl>
               <TimezoneSelector
                 options={timezoneOptions}
@@ -140,7 +145,12 @@ export const TriggerCrudForm = () => {
         control={form.control}
         render={({ field }) => (
           <FormItem size={"base"}>
-            <FormLabelExt size={"base"} label="Select Agents" isRequired />
+            <FormLabelExt
+              size={"base"}
+              label="Select Agents"
+              description="the agent(s) that need to triggered"
+              isRequired
+            />
 
             <FormControl>
               <AgentsSelector
@@ -157,25 +167,13 @@ export const TriggerCrudForm = () => {
       />
 
       <div className="grid grid-cols-2 gap-2">
-        <DatePickerField
-          name="effectiveDate"
-          label="Effective Date"
-          isRequired
-        />
-        <DatePickerField name="endDate" label="Ends on" />
+        <DatePickerField {...effectiveDateProps} />
+        <DatePickerField {...endDateProps} />
       </div>
 
-      <MultiSelectField
-        name="exceptionHours"
-        label="Exception Hours"
-        selectOptions={generateHourlyOptions()}
-      />
+      <MultiSelectField {...exceptionHoursProps} />
 
-      <MultiSelectField
-        name="exceptionWeekdays"
-        label="Exception Weekdays"
-        selectOptions={generateDayOfWeekOptions()}
-      />
+      <MultiSelectField {...exceptionWeekdaysProps} />
       <FormField
         name="exceptionDates"
         control={form.control}
@@ -183,7 +181,7 @@ export const TriggerCrudForm = () => {
           <FormItem>
             <FormLabelExt
               label="Exception Dates"
-              description=" Please enter date in format (YYYY-MM-DD)"
+              description="Dates to exclude for triggers.Please enter date in format (YYYY-MM-DD)"
             />
             <FormControl>
               <TagInput
