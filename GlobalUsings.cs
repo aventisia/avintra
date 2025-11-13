@@ -21,6 +21,7 @@ global using AccountsAPIs.DTOs;
 global using AccountsAPIs.Global;
 global using AccountsAPIs.Enums;
 global using AccountsAPIs.Config;
+global using AccountsAPIs.Jobs;
 
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
@@ -43,3 +44,4 @@ global using Mapster;
 global using Ardalis.GuardClauses;
 global using System.Text.RegularExpressions;
 global using System.Text.Json;
+global using Quartz;
