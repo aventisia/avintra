@@ -204,7 +204,7 @@ public class TimeTriggerService(
             // Default mapping 
             triggerDto.Adapt(trigger);
             trigger.LastModifiedByUserId = _userId;
-            trigger.LastModifiedOn = DateTimeOffset.UtcNow;
+            trigger.LastTriggeredTime = DateTimeOffset.UtcNow;
             trigger.CronExpression = CronScheduleUtil.BuildCronExpression(
                 trigger.Frequency,
                 trigger.Interval,
