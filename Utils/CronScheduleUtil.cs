@@ -74,22 +74,23 @@ public static class CronScheduleUtil
             _ => throw new ArgumentOutOfRangeException(nameof(frequencyType))
         };
     }
-    
+
     // Computes the next valid trigger time in UTC based on the provided cron expression, excluding specific hours, weekdays, or dates if necessary
     public static DateTimeOffset ComputeNextTriggerUtc(
     string cronExpression,
+    DateTimeOffset effectiveDate,
     IReadOnlyCollection<int>? excludedHours = null,
     IReadOnlyCollection<int>? excludedWeekdays = null,
     IReadOnlyCollection<DateOnly>? excludedDates = null)
     {
+        // Ensure effectiveDate is not in the past
+        effectiveDate = effectiveDate > DateTimeOffset.UtcNow ? effectiveDate : DateTimeOffset.UtcNow;
+
         // Create a CronExpression object based on the provided cron expression
         var expr = new CronExpression(cronExpression);
 
-        // Get the current UTC time
-        DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
-
         // Get the next valid time after the current UTC time
-        DateTimeOffset? next = expr.GetNextValidTimeAfter(currentDateTime);
+        DateTimeOffset? next = expr.GetNextValidTimeAfter(effectiveDate);
 
         // Loop up to 750 times to find the next valid time that does not match excluded criteria
         for (int i = 0; i < 750 && next != null; i++)
