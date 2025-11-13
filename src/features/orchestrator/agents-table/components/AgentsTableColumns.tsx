@@ -9,6 +9,7 @@ import { getColumnName } from "../constants/column-display-names";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
 
 import { TableActions } from "./table-actions/TableActions";
+import { TableCellLink } from "./TableCellLink";
 
 /**
  * Array of table columns for the agents table.
@@ -48,7 +49,11 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
+      <TableCellLink
+        rowId={row.original.id || "rowId"}
+        cellValue={row.getValue("name")}
+        type={row.original.type || ""}
+      />
     ),
   },
   {
