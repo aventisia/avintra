@@ -6,9 +6,12 @@ import {
 } from "@aventisia/ui/utils";
 import { z } from "zod";
 
-/**
- * Represents the Zod object's item schema for a trigger name.
- */
+import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
+
+const today = new Date();
+// Set today's time to midnight to ignore the time part in comparison
+today.setHours(0, 0, 0, 0);
+
 export const triggerNameSchema = z
   .string()
   .min(1, { message: reqError("Trigger Name") })
@@ -22,85 +25,118 @@ export const triggerNameSchema = z
  */
 export const triggerZodSchema = z
   .object({
+    // Unique identifier for the trigger
     id: z.string(),
+
+    // Trigger name validation using the custom schema
     name: triggerNameSchema,
-    environment: z.string({ required_error: reqError("Environment") }),
-    agentIds: z.array(z.string().optional()).optional(),
 
-    timezone: z.string({ required_error: reqError("Time zone") }),
-    startsOn: z.date({ required_error: reqError("Start on") }),
+    agentIds: z.array(z.string()).min(1, { message: reqError("Agent(s)") }),
 
-    frequency: z.string({ required_error: reqError("Start on") }),
+    // Timezone in which the trigger is set
+    timezone: z.string().min(1, { message: reqError("Timezone") }),
 
-    //time of the trigger
-    repeateAt: z.date().optional(),
+    interval: z.string().default("1"),
 
-    //day or weekday
-    repeateOn: z.array(z.string().optional()).optional(),
+    // Start date for the trigger to be effective
+    effectiveDate: z
+      .date()
+      .min(today, { message: "Start date cannot be in the past" }),
 
-    //count of the repeatation
-    repeateEvery: z
-      .union([z.string().optional(), z.number().optional()])
-      .optional(),
+    // Frequency type for the trigger (enum)
+    frequency: z.enum(
+      Object.keys(TriggerFrequencyTypesEnum) as [string, ...string[]],
+      { required_error: reqError("Frequency") },
+    ),
 
-    hasNonWorkingDays: z.boolean().optional(),
-    nonWorkingDays: z.date().optional(), //TODO - change this to date array when calendar component capable for multiple dates
+    // Specific time when the trigger should fire (optional)
+    atTime: z.string().nullable().optional(),
 
-    hasNonWorkingTime: z.boolean().optional(),
-    nonWorkingTimeFrom: z.date().optional(),
-    nonWorkingTimeTo: z.date().optional(),
+    // Days of the week when the trigger should fire (1=Monday, 7=Sunday)
+    weekdays: z.array(z.string()).optional(),
 
-    isEnds: z.boolean().optional(),
-    endsOn: z.date().optional(),
+    // Days of the month when the trigger should fire (1-31)
+    monthDays: z.array(z.string()).optional(),
 
-    triggerForNewItem: z.boolean().optional(),
-    triggerForNewEmail: z.boolean().optional(),
+    // End date for when the trigger should stop (optional)
+    endDate: z.date().nullable().optional(),
 
-    scheduleAutoDisabling: z.boolean().optional(),
-    generateStuckAlert: z.boolean().optional(),
-    generateFailedAlert: z.boolean().optional(),
+    // Hours of the day to exclude from the trigger (0-23)
+    exceptionHours: z.array(z.string()).optional(),
 
-    isDisabled: z.boolean().default(false),
-    // Read (view) only fields
-    createdBy: z.string(),
-    createdOn: z.date(),
-    lastModifiedBy: z.string(),
-    lastModifiedOn: z.date(),
-  })
-  .refine((check) => check.frequency == "OneTime" || check.repeateAt, {
-    path: ["repeateAt"],
-    message: reqError("Repeate At"),
+    // Weekdays to exclude from triggering (1=Monday, 7=Sunday)
+    exceptionWeekdays: z.array(z.string()).optional(),
+
+    // Specific dates to exclude from triggering
+    exceptionDates: z.array(z.string()).optional(),
+
+    // Flag to disable the trigger (optional)
+    isDisabled: z.boolean().nullable().optional(),
   })
   .refine(
-    (check) =>
-      ["OneTime", "MinuteByMinute", "Hourly", "Daily"].includes(
-        check.frequency,
-      ) || check.repeateOn,
+    (data) =>
+      data.endDate == null
+        ? true
+        : data.endDate !== undefined && data.endDate > data?.effectiveDate,
     {
-      path: ["repeateOn"],
-      message: reqError("Repeate on"),
+      message: "End date must be after start date",
+      path: ["endDate"],
     },
   )
   .refine(
-    (check) =>
-      ["OneTime", "MinuteByMinute", "Hourly", "Daily", "Weekly"].includes(
-        check.frequency,
-      ) || check.repeateEvery,
+    (data) => {
+      if (["Daily", "Weekly", "MonthlyDayOfMonth"].includes(data.frequency)) {
+        return data.atTime;
+      } else return true;
+    },
     {
-      path: ["repeateEvery"],
-      message: reqError("Repeate every"),
+      message: reqError("Time"),
+      path: ["atTime"],
     },
   )
-  .refine((check) => !check.hasNonWorkingDays || check.nonWorkingDays, {
-    path: ["nonWorkingDays"],
-    message: reqError("Non working days"),
-  })
   .refine(
-    (check) =>
-      !check.hasNonWorkingTime ||
-      (check.nonWorkingTimeFrom && check.nonWorkingTimeTo,
-      {
-        path: ["nonWorkingTimeFrom", "nonWorkingTimeTo"],
-        message: reqError("Non working days"),
-      }),
+    (data) => {
+      if (["Weekly"].includes(data.frequency)) {
+        return data.weekdays?.length;
+      } else return true;
+    },
+    {
+      message: reqError("Atleast one day of week"),
+      path: ["weekdays"],
+    },
+  )
+  .refine(
+    (data) => {
+      if (["MonthlyDayOfMonth"].includes(data.frequency)) {
+        return data.monthDays?.length;
+      } else return true;
+    },
+    {
+      message: reqError("Atleast one day"),
+      path: ["monthDays"],
+    },
+  )
+  .refine(
+    (data) => {
+      if (data?.exceptionDates && data?.exceptionDates?.length > 0) {
+        const dateFormat = /^\d{4}-\d{2}-\d{2}$/;
+        return data?.exceptionDates?.every((date) => {
+          // Check if the date matches the format and is in the future
+          const isValidFormat = dateFormat.test(date);
+          if (isValidFormat) {
+            const dateObj = new Date(date);
+            const today = new Date();
+            // Ensure the date is in the future
+            return dateObj > today;
+          }
+          return false;
+        });
+      } else return true;
+    },
+    {
+      message: reqError(
+        "All exception dates must be in the future and in the format YYYY-MM-DD",
+      ),
+      path: ["exceptionDates"],
+    },
   );

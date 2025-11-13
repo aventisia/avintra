@@ -38,6 +38,10 @@
 
   /* TODO: Add dark mode support lator */
 }
+input[type="time"]::-webkit-calendar-picker-indicator {
+  background: none;
+  display: none;
+}
 
 @layer base {
   *,

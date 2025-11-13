@@ -15,7 +15,7 @@ import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchTriggers } from "../hooks/useFetchTriggers";
 
-import { TriggerBulkActions } from "./table-actions/TriggerBulkActions";
+// import { TriggerBulkActions } from "./table-actions/TriggerBulkActions";
 import { TriggerCrudDialog } from "./trigger-crud-dialog/TriggerCrudDialog";
 import { triggersTableColumns } from "./TriggersTableColumns";
 
@@ -81,7 +81,7 @@ export const TriggersTable = () => {
           <DTPagination table={table} />
 
           {/* Bulk actions for data table */}
-          <TriggerBulkActions table={table} />
+          {/* <TriggerBulkActions table={table} /> */}
         </div>
       ) : (
         // Show data table skeleton while fetching the triggers data

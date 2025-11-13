@@ -7,17 +7,18 @@ import {
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
+import { SearchAgentsDto } from "../dtos/search-agent-dto";
 import { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
-import { TriggersTableDto } from "../dtos/triggers-table-dto";
+import { TimeTriggerDto } from "../dtos/time-trigger-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/trigger`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/time-trigger`;
 
 /**
  * Retrieves list of triggers.
  */
 export const getTriggers = () => {
   return axiosInstance
-    .get<IHttpResponse<TriggersTableDto[]>>(`${baseAPIURL}/list`)
+    .get<IHttpResponse<TimeTriggerDto[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
 
@@ -35,18 +36,18 @@ export const isNameAvailable = (postObj: CheckAvailabilityDto) => {
 /**
  * Inserts a new trigger.
  */
-export const insertTrigger = (newtrigger: TriggersTableDto) => {
+export const insertTrigger = (newtrigger: TimeTriggerDto) => {
   return axiosInstance
-    .post<IHttpResponse<TriggersTableDto>>(`${baseAPIURL}`, newtrigger)
+    .post<IHttpResponse<TimeTriggerDto>>(`${baseAPIURL}`, newtrigger)
     .then((res) => res.data);
 };
 
 /**
  * Updates an existing trigger.
  */
-export const updateTrigger = (updatedtrigger: TriggersTableDto) => {
+export const updateTrigger = (updatedtrigger: TimeTriggerDto) => {
   return axiosInstance
-    .put<IHttpResponse<TriggersTableDto>>(`${baseAPIURL}`, updatedtrigger)
+    .put<IHttpResponse<TimeTriggerDto>>(`${baseAPIURL}`, updatedtrigger)
     .then((res) => res.data);
 };
 
@@ -75,7 +76,7 @@ export const getNewTriggerAgents = () => {
  */
 export const geTriggerAgents = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<SelectAgentTableDto[]>>(`${baseAPIURL}/${id}/agents`)
+    .get<IHttpResponse<SearchAgentsDto[]>>(`${baseAPIURL}/${id}/agents`)
     .then((res) => res.data);
 };
 
@@ -91,19 +92,19 @@ export const deleteTriggers = (ids: string[]) => {
 /**
  * Performs an optimistic mutation on a trigger based on the provided CRUD action.
  *
- * @param {IOptimisticMutation<TriggersTableDto | string | string[]>} options - The options for the optimistic mutation.
+ * @param {IOptimisticMutation<TimeTriggerDto | string | string[]>} options - The options for the optimistic mutation.
  * @returns {Promise<any>} - A promise that resolves to the result of the mutation.
  * @throws {Error} - If an invalid action type is provided.
  */
 export const triggerOptimisticMutationFn = ({
   payload,
   crudAction,
-}: IOptimisticMutation<TriggersTableDto | string | string[]>) => {
+}: IOptimisticMutation<TimeTriggerDto | string | string[]>) => {
   switch (crudAction) {
     case "create":
-      return insertTrigger(payload as TriggersTableDto);
+      return insertTrigger(payload as TimeTriggerDto);
     case "update":
-      return updateTrigger(payload as TriggersTableDto);
+      return updateTrigger(payload as TimeTriggerDto);
     case "delete":
       return deleteTrigger(payload as string);
     case "delete-multiple":

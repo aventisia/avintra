@@ -6,7 +6,7 @@ import {
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { TriggersTableDto } from "../../dtos/triggers-table-dto";
+import { TimeTriggerDto } from "../../dtos/time-trigger-dto";
 
 interface TriggerRowDeleteActionProps {
   rowId: string;
@@ -21,8 +21,8 @@ export const TriggerRowDeleteAction = ({
   // Get mutation function to delete the trigger
   const { mutate: deleteTrigger } = useListOptimisticMutation<
     string,
-    TriggersTableDto | boolean,
-    TriggersTableDto
+    TimeTriggerDto | boolean,
+    TimeTriggerDto
   >([rowId], triggerOptimisticMutationFn, DATA_QUERY_KEY);
 
   // Return Delete alert dialog trigger
