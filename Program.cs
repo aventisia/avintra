@@ -56,6 +56,7 @@ builder.Services.CorsPolicyConfig(config);
 builder.Services.CookiePolicyConfig(config);
 builder.Services.HSTSPolicyConfig(config);
 builder.Services.AddAuthenticationConfig(config);
+builder.Services.AddSignalRConfig();
 
 // Database
 builder.Services.AddDbContextConfig(config);
@@ -71,7 +72,6 @@ builder.Services.AddControllersConfig();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfig();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSignalR();
 builder.Services.AddQuartzJobs();
 builder.Services.AddStringEncryptionService();
 builder.Services.AddUploadFileService();
@@ -116,6 +116,6 @@ app.UseMiddleware<TenantResolver>();
 
 app.MapControllers();
 
-app.MapHub<MachineHub>("/api/machine-hub");
+app.MapHub<MachineHub>("/machine-hub");
 
 await app.RunAsync();

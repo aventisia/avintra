@@ -94,6 +94,22 @@ public static class AppServicesExtension
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 
+    // Extension method to configure and register SignalR services.
+    public static void AddSignalRConfig(this IServiceCollection services)
+    {
+        services.AddSignalR();
+
+        // Register SignalR services with optional configuration
+        services.AddSignalR(options =>
+        {
+            // Enables detailed error messages for debugging purposes (should be disabled in production for security)
+            options.EnableDetailedErrors = true;
+
+            // Optional: Set maximum size for received messages in bytes (uncomment and adjust if needed)
+            // options.MaximumReceiveMessageSize = 102_400; // 100 KB
+        });
+    }
+
     // Method to configure and register Quartz jobs along with their triggers
     public static void AddQuartzJobs(this IServiceCollection services)
     {
@@ -108,7 +124,7 @@ public static class AppServicesExtension
             quartz.AddTrigger(opts => opts
                 .ForJob(jobKey)
                 .WithIdentity("TimeTriggerExecutionJob-trigger")
-                .StartNow() 
+                .StartNow()
                 .WithSimpleSchedule(x => x
                     .WithIntervalInMinutes(1)
                     .RepeatForever()));
