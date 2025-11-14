@@ -3,7 +3,6 @@ import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { AccessLevelTypesEnum } from "@/react-toolkit/enums/access-level-types-enum";
 import { KeyStoreTypesEnum } from "@/react-toolkit/enums/key-store-types-enum";
 
 import { TABLE_KEY } from "../constants";
@@ -65,36 +64,6 @@ export const keystoresTableColumns: ColumnDef<KeystoresTableDto>[] = [
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {getEnumValueByKey(KeyStoreTypesEnum, row.getValue("type"))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "accessLevel",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("accessLevel")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {getEnumValueByKey(AccessLevelTypesEnum, row.getValue("accessLevel"))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "isEncrypted",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("isEncrypted")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("isEncrypted") ? "Yes" : "No"}
       </div>
     ),
   },
