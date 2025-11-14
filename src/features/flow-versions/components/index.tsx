@@ -13,16 +13,20 @@ import { useLocation } from "react-router-dom";
 import { useFlowVersionPopoverStore } from "../stores/flow-version-popover-store";
 
 export const FlowVersions = () => {
-  // Fetch flow versions list data
-
   const location = useLocation();
+
   const queryParams = useMemo(
     () => new URLSearchParams(location.search),
     [location.search],
   );
+
   const flowId = queryParams.get("f");
+
   const versionId = queryParams.get("v") || undefined;
+
+  // Fetch flow versions list data
   const { data, isLoading } = useFetchFlowVersions(flowId || "");
+
   // Get store state and actions
   const { isPopoverOpen, togglePopoverOpen } = useFlowVersionPopoverStore(
     useShallow((state) => ({
@@ -48,11 +52,16 @@ export const FlowVersions = () => {
           selectedVersion = matched;
         }
       }
-
-      setVersion(
-        selectedVersion.id || "",
-        selectedVersion.versionNumber || null,
-      );
+      try {
+        setVersion(
+          selectedVersion.id || "",
+          selectedVersion.versionNumber || null,
+        );
+      } catch (error) {
+        throw new Error(
+          "You don't have access to this agent. Please contact the admin.",
+        );
+      }
     }
   }, [data?.data, versionId, setVersion]);
 
