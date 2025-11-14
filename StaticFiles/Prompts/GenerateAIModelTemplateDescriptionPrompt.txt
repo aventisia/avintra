@@ -11,3 +11,10 @@ Use simple, professional language. Keep it user-focused rather than technical.
 Example instruction to the LLM: “Explain this automation template as if you’re writing for a business user who wants to know what it does and how to use it — but doesn’t need to know every detail.”
 
 Content: {{PAYLOAD_CONTENT}}
+
+Output Format:
+    - Title (1 line)
+    - Short Summary (2-3 sentences)
+    - How it Works (1-2 short paragraph)
+    - How to Use or Customize (1 short paragraph)
+    - Optional Enhancements (bullet list, if relevant)
