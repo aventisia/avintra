@@ -17,7 +17,13 @@ export const useFetchFlowVersions = (flowId: string) => {
 
   // Show toast on fetch error
   useEffect(() => {
-    if (isError) toast.error(error.toString());
+    if (isError) {
+      toast.error(error.toString());
+
+      throw new Error(
+        "Invalid Agent ID or error retrieving flow versions. Please check the ID or try again later.",
+      );
+    }
   }, [error, isError]);
 
   // Return isFetching and isLoading flag
