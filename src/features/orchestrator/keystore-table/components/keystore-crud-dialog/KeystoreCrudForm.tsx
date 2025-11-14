@@ -2,6 +2,11 @@ import { Button } from "@aventisia/ui/buttons";
 import {
   AutherCard,
   Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabelExt,
+  FormMessage,
   InputField,
   SelectField,
   SwitchField,
@@ -9,6 +14,8 @@ import {
 } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { z } from "zod";
+
+import { JsonEditor } from "@/components/JsonEditor";
 
 import { keystoreOptimisticMutationFn } from "../../apis/keystores-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -67,6 +74,8 @@ export const KeystoreCrudForm = () => {
   // Is form in read mode?
   const isReadMode = crudAction === "read";
 
+  const keyType = form.watch("type");
+
   // Return the form
   return (
     <Form
@@ -78,21 +87,56 @@ export const KeystoreCrudForm = () => {
       {/* Keystore Id */}
       {isReadMode && <InputField {...idProps} />}
 
-      {crudAction === "create" ? (
-        <SelectField {...typeProps} />
-      ) : (
-        form.getValues("type") !== "" && <SelectField {...typeProps} />
-      )}
-
       {/* Name */}
       <InputField
         {...nameProps}
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
+        autoFocus
       />
+      {crudAction === "create" ? (
+        <SelectField {...typeProps} />
+      ) : (
+        form.getValues("type") !== "" && (
+          <SelectField {...typeProps} disabled={isReadMode} />
+        )
+      )}
 
       {/* value  */}
-      <InputField {...valueProps} />
+      {keyType == "JSON" && (
+        <FormField
+          name="value"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem size={"base"}>
+              <FormLabelExt size={"base"} label="Value" isRequired />
+              <FormControl>
+                <JsonEditor
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={isReadMode}
+                />
+              </FormControl>
+
+              <FormMessage size={"base"} />
+            </FormItem>
+          )}
+        />
+      )}
+
+      {keyType == "TEXT" && <InputField {...valueProps} />}
+
+      {keyType == "BOOLEAN" && (
+        <SelectField
+          name="value"
+          label="Value"
+          isRequired
+          selectOptions={[
+            { label: "True", value: "true" },
+            { label: "False", value: "false" },
+          ]}
+        />
+      )}
 
       {/* description  */}
       <TextareaField {...descriptionProps} />

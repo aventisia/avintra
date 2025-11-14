@@ -53,7 +53,7 @@ export const useDefineKeystoreForm = () => {
     resolver: zodResolver(keystoreZodSchema),
     defaultValues: {
       id: "",
-      type: "",
+      type: "TEXT",
       name: "",
       value: "",
       description: "",
@@ -88,11 +88,11 @@ export const useDefineKeystoreForm = () => {
     // Set keystore data to form
     form.reset({
       id: rowId,
-      type: keystoreData?.type,
-      name: keystoreData?.name,
-      value: keystoreData?.value,
-      description: keystoreData?.description,
-      tags: keystoreData?.tags,
+      type: keystoreData?.type ?? "TEXT",
+      name: keystoreData?.name ?? "",
+      value: keystoreData?.value ?? "",
+      description: keystoreData?.description ?? "",
+      tags: keystoreData?.tags ?? "",
       isEncrypted: keystoreData?.isEncrypted,
 
       isDisabled: keystoreData?.isDisabled,

@@ -55,7 +55,7 @@ export const AgentsTable = () => {
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
             {/* <AgentsTableHeading /> */}
-            <DTHeading heading="Published (Agents + AI Models)" />
+            <DTHeading heading="Published" />
 
             <div className="flex items-center gap-2">
               <DTSearchBox
