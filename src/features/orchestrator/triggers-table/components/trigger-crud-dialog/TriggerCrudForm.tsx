@@ -168,7 +168,12 @@ export const TriggerCrudForm = () => {
 
       <div className="grid grid-cols-2 gap-2">
         <DatePickerField {...effectiveDateProps} />
+        <InputField type="time" name="effectiveTime" step={60} label="Time" />
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
         <DatePickerField {...endDateProps} />
+        <InputField type="time" name="endTime" step={60} label="Time" />
       </div>
 
       <MultiSelectField {...exceptionHoursProps} />

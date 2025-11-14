@@ -43,6 +43,9 @@ export const triggerZodSchema = z
       .date()
       .min(today, { message: "Start date cannot be in the past" }),
 
+    // Specific time when the trigger to be effective (optional)
+    effectiveTime: z.string().nullable().optional(),
+
     // Frequency type for the trigger (enum)
     frequency: z.enum(
       Object.keys(TriggerFrequencyTypesEnum) as [string, ...string[]],
@@ -60,6 +63,9 @@ export const triggerZodSchema = z
 
     // End date for when the trigger should stop (optional)
     endDate: z.date().nullable().optional(),
+
+    // Specific time when the trigger should stop (optional)
+    endTime: z.string().nullable().optional(),
 
     // Hours of the day to exclude from the trigger (0-23)
     exceptionHours: z.array(z.string()).optional(),
