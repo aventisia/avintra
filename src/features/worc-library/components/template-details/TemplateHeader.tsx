@@ -80,8 +80,10 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
 
               {/* Tags */}
               {template?.tags
-                ?.filter((tag) => tag !== template.type) //Filter tags that are similar to project type
-                .map((tag) => (
+                ?.filter(
+                  (tag) => tag.toLowerCase() !== template?.type?.toLowerCase(),
+                ) //Filter tags that are similar to project type
+                ?.map((tag) => (
                   <Badge
                     key={tag}
                     variant="outline"
