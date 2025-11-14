@@ -1,6 +1,6 @@
 import {
-  alphaNumericError,
-  alphaNumericRegex,
+  flexibleNameError,
+  flexibleNameRegex,
   maxLenError,
   reqError,
 } from "@aventisia/ui/utils";
@@ -16,8 +16,8 @@ export const triggerNameSchema = z
   .string()
   .min(1, { message: reqError("Trigger Name") })
   .max(255, { message: maxLenError("Trigger Name", 255) })
-  .regex(alphaNumericRegex, {
-    message: alphaNumericError("Trigger name"),
+  .regex(flexibleNameRegex, {
+    message: flexibleNameError("Trigger name"),
   });
 
 /**

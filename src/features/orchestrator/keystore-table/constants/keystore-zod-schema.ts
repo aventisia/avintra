@@ -1,6 +1,6 @@
 import {
-  alphaNumericError,
-  alphaNumericRegex,
+  flexibleNameError,
+  flexibleNameRegex,
   maxLenError,
   reqError,
 } from "@aventisia/ui/utils";
@@ -13,8 +13,8 @@ export const keystoreNameSchema = z
   .string()
   .min(1, { message: reqError("Key name") })
   .max(255, { message: maxLenError("Key name", 255) })
-  .regex(alphaNumericRegex, {
-    message: alphaNumericError("Key name"),
+  .regex(flexibleNameRegex, {
+    message: flexibleNameError("Key name"),
   });
 
 /**
