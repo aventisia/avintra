@@ -33,6 +33,9 @@ type State = {
   /** Output flow variables */
   flowVariablesObject: FlowVariablesObjectType[] | [];
 
+  /** Config variables */
+  configVariables: string[] | [];
+
   /** Input output json */
   inputOutputObject: DCPFieldSchemaType[] | [];
 
@@ -62,8 +65,11 @@ type Actions = {
   /** Set edges of currently opened flow */
   setEdges: (edges: Edge[]) => void;
 
-  /** Set Flow Vairables */
-  setFlowVariablesObject: (variabels: FlowVariablesObjectType[]) => void;
+  /** Set Flow Variables */
+  setFlowVariablesObject: (variables: FlowVariablesObjectType[]) => void;
+
+  /** Set Config Variables */
+  setConfigVariables: (variables: string[]) => void;
 
   /**Set InputOutput json */
   setInputOutputObject: (inputOutputObject: DCPFieldSchemaType[]) => void;
@@ -90,6 +96,7 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
   nodes: [],
   edges: [],
   flowVariablesObject: [],
+  configVariables: [],
   inputOutputObject: [],
   panOnDrag: false,
   isSavePending: false,
@@ -144,6 +151,10 @@ export const useReactFlowExtStore = create<State & Actions>((set, get) => ({
 
   setFlowVariablesObject: (variables: FlowVariablesObjectType[]) => {
     set({ flowVariablesObject: variables });
+  },
+
+  setConfigVariables: (variables: string[]) => {
+    set({ configVariables: variables });
   },
 
   setInputOutputObject: (inputOutputObject: DCPFieldSchemaType[]) => {
