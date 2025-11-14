@@ -16,7 +16,7 @@ export const KeystoreRowDeleteAction = ({
   rowId,
 }: KeystoreRowDeleteActionProps) => {
   // Get showAlert handler
-  const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { showCustomAlertDialog } = useShowAlertHandler();
 
   // Get mutation function to delete the keystore
   const { mutate: deleteKeystore } = useListOptimisticMutation<
@@ -29,14 +29,16 @@ export const KeystoreRowDeleteAction = ({
   return (
     <DeleteDDMenuItem
       onClick={() => {
-        showDefaultAlertDialog({
+        showCustomAlertDialog({
           confirmActionFn: () =>
             deleteKeystore({
               payload: rowId,
               crudAction: "delete",
             }),
-          alertType: "delete-record",
-          additionalText: "keystore",
+          confirmBtnText: "Yes, delete keystore",
+          title: "Delete keystore?",
+          description:
+            "Are you sure you want to delete keystore? This may break any agent that use it.",
         });
       }}
     />
