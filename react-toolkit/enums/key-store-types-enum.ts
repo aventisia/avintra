@@ -5,8 +5,8 @@
  * also we need to update existing config in the database.
  */
 export enum KeyStoreTypesEnum {
-  TEXT = "TEXT",
-  BOOLEAN = "BOOLEAN",
-  CREDENTIAL = "CREDENTIAL",
+  TEXT = "Text",
+  BOOLEAN = "Boolean",
+  // CREDENTIAL = "Credential",
   JSON = "JSON",
 }
