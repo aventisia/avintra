@@ -15,6 +15,9 @@ export const keystoreNameSchema = z
   .max(255, { message: maxLenError("Key name", 255) })
   .regex(flexibleNameRegex, {
     message: flexibleNameError("Key name"),
+  })
+  .refine((name) => !name.includes("__config__"), {
+    message: "Key name should not contain '__config__'.",
   });
 
 /**
