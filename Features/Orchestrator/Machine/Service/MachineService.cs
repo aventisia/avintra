@@ -107,7 +107,7 @@ public class MachineService : IMachineService
             }
 
             // Register the new machine with the machine hub
-            await _machineHub.RegisterMachineAsync(newMachine.Id);
+            // await _machineHub.RegisterMachineAsync(newMachine.Id);
 
             // If agent IDs are provided, proceed to assign them
             if (machineDto.AgentIds != null && machineDto.AgentIds.Any())
@@ -391,7 +391,7 @@ public class MachineService : IMachineService
             }
 
             // Register the new machine with the machine hub
-            await _machineHub.RegisterMachineAsync(machine.Id);
+            // await _machineHub.RegisterMachineAsync(machine.Id);
 
             // Handle agent assignments
             var existingMachineFlows = machine.MachineFlows.ToList();
