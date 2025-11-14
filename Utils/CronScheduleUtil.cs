@@ -180,4 +180,23 @@ public static class CronScheduleUtil
             _ => "Custom schedule"
         };
     }
+
+    // Converts a given local DateTimeOffset to UTC based on a specified timezone.
+    public static DateTimeOffset ConvertLocalTimeToUtc(string timezone, DateTimeOffset localDateTimeOffset)
+    {
+        // Get the timezone info based on the provided timezone ID.
+        var tz = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+
+        // Ensure the input DateTimeOffset is in the correct timezone.
+        var localDateTime = localDateTimeOffset.DateTime;
+
+        // Get the UTC offset for the given timezone and local DateTime.
+        var localOffset = tz.GetUtcOffset(localDateTime);
+
+        // Create a new DateTimeOffset using the local date and time with the calculated offset.
+        var adjustedDateTimeOffset = new DateTimeOffset(localDateTime, localOffset);
+
+        // Convert the adjusted DateTimeOffset to UTC.
+        return adjustedDateTimeOffset.ToUniversalTime();
+    }
 }
