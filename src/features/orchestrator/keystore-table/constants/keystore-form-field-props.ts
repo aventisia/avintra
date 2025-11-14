@@ -35,9 +35,9 @@ export const accessLevelProps: SelectFieldProps = {
 // Name
 export const nameProps: InputFieldProps = {
   name: "name",
-  label: "Name",
+  label: "Name (Cannot be edited after creation)",
   isRequired: true,
-  placeholder: "exampleKey",
+  placeholder: "Enter a unique name",
 };
 
 // Name

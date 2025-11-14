@@ -1,10 +1,13 @@
 import {
-  flexibleNameError,
-  flexibleNameRegex,
   maxLenError,
   reqError,
+  variableRegex,
+  variableError,
 } from "@aventisia/ui/utils";
 import { z } from "zod";
+
+// Regex to check that '__config__ should not contain in name
+const noConfigRegex = /^(?!.*__config__).*$/;
 
 /**
  * Represents the Zod object's item schema for a keystore name.
@@ -13,10 +16,10 @@ export const keystoreNameSchema = z
   .string()
   .min(1, { message: reqError("Key name") })
   .max(255, { message: maxLenError("Key name", 255) })
-  .regex(flexibleNameRegex, {
-    message: flexibleNameError("Key name"),
+  .regex(variableRegex, {
+    message: variableError("Key name"),
   })
-  .refine((name) => !name.includes("__config__"), {
+  .regex(noConfigRegex, {
     message: "Key name should not contain '__config__'.",
   });
 

@@ -1,6 +1,5 @@
 import { Button } from "@aventisia/ui/buttons";
 import {
-  AutherCard,
   Form,
   FormControl,
   FormField,
@@ -23,7 +22,6 @@ import {
   descriptionProps,
   idProps,
   isDisabledProps,
-  isEncrypterProps,
   nameProps,
   tagsProps,
   typeProps,
@@ -93,6 +91,7 @@ export const KeystoreCrudForm = () => {
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
         autoFocus
+        disabled={crudAction !== "create"}
       />
       {crudAction === "create" ? (
         <SelectField {...typeProps} />
@@ -149,21 +148,8 @@ export const KeystoreCrudForm = () => {
         }}
       />
 
-      {/* Is encrtypted */}
-      <SwitchField {...isEncrypterProps} />
-
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
-
-      {/* AutherCard */}
-      {isReadMode && (
-        <AutherCard
-          createdBy={form.getValues("createdBy")}
-          createdOn={form.getValues("createdOn")}
-          lastModifiedBy={form.getValues("lastModifiedBy")}
-          lastModifiedOn={form.getValues("lastModifiedOn")}
-        />
-      )}
 
       {/* Submit button */}
       {!isReadMode && (

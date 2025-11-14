@@ -14,7 +14,7 @@ interface VaultRowDeleteActionProps {
 
 export const VaultRowDeleteAction = ({ rowId }: VaultRowDeleteActionProps) => {
   // Get showAlert handler
-  const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { showCustomAlertDialog } = useShowAlertHandler();
 
   // Get mutation function to delete the config
   const { mutate: deleteConfig } = useListOptimisticMutation<
@@ -27,14 +27,16 @@ export const VaultRowDeleteAction = ({ rowId }: VaultRowDeleteActionProps) => {
   return (
     <DeleteDDMenuItem
       onClick={() => {
-        showDefaultAlertDialog({
+        showCustomAlertDialog({
           confirmActionFn: () =>
             deleteConfig({
               payload: rowId,
               crudAction: "delete",
             }),
-          alertType: "delete-record",
-          additionalText: "credential",
+          confirmBtnText: "Yes, delete credential",
+          title: "Delete credential?",
+          description:
+            "Are you sure you want to delete credential? This may break any agent that use it.",
         });
       }}
     />
