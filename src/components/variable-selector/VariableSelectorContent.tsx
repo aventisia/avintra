@@ -39,7 +39,7 @@ export const VariableSelectorContent = () => {
       {/* No content message */}
       <CommandEmpty className="h-full">
         <NoContentMessage
-          className="-mt-5"
+          className="mt-5"
           Icon={VariableIcon}
           primaryMessage="No Variables found"
           secondaryMessage="Try a different search term or set a new variable."
