@@ -29,5 +29,5 @@ public interface IMachineHub
     /// <param name="machineId">The unique identifier for the machine that executed the task.</param>
     /// <param name="executionOutput">The result or output of the executed task.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task ExecutionResult(string machineId, string executionOutput);
+    Task ExecutionResult(Guid machineId, string executionOutput);
 }

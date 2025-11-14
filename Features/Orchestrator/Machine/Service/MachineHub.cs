@@ -6,166 +6,171 @@ public class MachineHub : Hub, IMachineHub
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<MachineHub> _logger;
 
-    public MachineHub(IUnitOfWork unitOfWork, ILogger<MachineHub> logger)
+    public MachineHub(ILogger<MachineHub> logger, IUnitOfWork unitOfWork)
     {
-        _unitOfWork = unitOfWork;
         _logger = logger;
+        _unitOfWork = unitOfWork;
     }
 
-    // Registers a machine when it connects, setting its status to "Online" if not already registered.
+    // Triggered when a client successfully connects to the SignalR hub.
+    public override async Task OnConnectedAsync()
+    {
+        try
+        {
+            _logger.LogInformation($"Client with Connection ID {Context.ConnectionId} has connected.");
+
+            // Send the current status of all registered machines to the newly connected client.
+            await Clients.Caller.SendAsync("MachinesStatus", MachineStore.Machines.Values);
+
+            _logger.LogInformation("Successfully sent machine statuses to the connected client.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"An error occurred while handling the connection for client with Connection ID {Context.ConnectionId}.");
+            throw;
+        }
+
+        await base.OnConnectedAsync();
+    }
+
+    // Triggered when a client disconnects from the SignalR hub.
+    // In this case, no specific action is required for the machine status when a client disconnects.
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        try
+        {
+            _logger.LogInformation($"Client with Connection ID {Context.ConnectionId} has disconnected.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"An error occurred while handling the disconnection for client with Connection ID {Context.ConnectionId}.");
+            throw;
+        }
+
+        await base.OnDisconnectedAsync(exception);
+    }
+
+    // Registers a machine by setting its status to "Online" if it isn't already registered.
     public async Task RegisterMachineAsync(Guid machineId)
     {
         try
         {
             _logger.LogInformation($"Attempting to register machine with ID: {machineId}");
 
-            // Check if the machine is already registered in the in-memory store
-            if (MachineStore.Machines.TryGetValue(machineId, out var existingMachineDto))
+            // Check if the machine is already registered in the in-memory store.
+            if (MachineStore.Machines.TryGetValue(machineId, out var machineStatus))
             {
-                _logger.LogWarning($"Machine with ID {machineId} is already registered. Skipping registration.");
+                // If the machine is already registered, update its status to "Online" and refresh the timestamp.
+                machineStatus.Status = MachineStatusTypeEnum.Online;
+                machineStatus.LastUpdated = DateTimeOffset.UtcNow;
+
+                // Save the updated status to the in-memory store.
+                MachineStore.Machines[machineId] = machineStatus;
+
+                // Notify all clients of the updated machine status.
+                await Clients.All.SendAsync("MachinesStatus", MachineStore.Machines.Values);
+                _logger.LogInformation($"Machine with ID {machineId} is already registered and marked as 'Online'.");
                 return;
             }
 
-            // Fetch machine details from the database
-            var machineEntity = await _unitOfWork.MachineRepo.GetByConditionAsync(w => w.Id == machineId).SingleOrDefaultAsync();
-            if (machineEntity == null)
+            // Create a new machine status DTO with the "Online" status and current timestamp.
+            machineStatus = new MachineStatusDto()
             {
-                _logger.LogWarning($"Machine with ID {machineId} not found in the database.");
-                return;
-            }
+                Id = machineId,
+                Status = MachineStatusTypeEnum.Online,
+                LastUpdated = DateTimeOffset.UtcNow,
+            };
 
-            // Update machine status to "Online" and persist changes
-            machineEntity.Status = MachineStatusTypeEnum.Online;
-            machineEntity.LastCheckedIn = DateTime.UtcNow;
-            machineEntity.LastModifiedByUserId = machineEntity.LastModifiedByUserId;
+            // Add the machine to the in-memory store.
+            MachineStore.Machines[machineId] = machineStatus;
 
-            _unitOfWork.MachineRepo.Update(machineEntity);
+            // Notify all clients about the new machine status.
+            await Clients.All.SendAsync("MachinesStatus", MachineStore.Machines.Values.ToList());
 
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError($"Failed to update machine with ID {machineId} and set it to Online. Machine details: {machineEntity}");
-            }
-
-            // Create DTO for the machine and store it in memory
-            var machineDto = machineEntity.Adapt<MachineDto>();
-            machineDto.ConnectionId = Context.ConnectionId;
-            MachineStore.Machines[machineId] = machineDto;
-
-            // Notify all clients about the machine status update
-            await Clients.All.SendAsync("MachineStatusUpdated", machineDto);
+            _logger.LogInformation($"Machine with ID {machineId} successfully registered and set to 'Online'.");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error occurred while registering the machine with ID: {machineId}.");
+            _logger.LogError(ex, $"An error occurred while attempting to register the machine with ID: {machineId}.");
             throw;
         }
     }
 
-    // Handles heartbeat updates from machines, ensuring their status remains "Online".
+    // Handles heartbeat updates from machines, ensuring their status is kept as "Online".
     public async Task Heartbeat(Guid machineId)
     {
         try
         {
             _logger.LogInformation($"Received heartbeat from machine with ID: {machineId}");
 
-            // Check if the machine exists in the in-memory store
-            if (!MachineStore.Machines.TryGetValue(machineId, out var machineDto))
+            // Check if the machine exists in the in-memory store.
+            if (!MachineStore.Machines.TryGetValue(machineId, out var machineStatus))
             {
                 _logger.LogWarning($"Machine with ID {machineId} not found in the in-memory store.");
                 return;
             }
 
-            // Update the heartbeat timestamp and ensure the status is "Online"
-            machineDto.LastCheckedIn = DateTime.UtcNow;
-            machineDto.Status = MachineStatusTypeEnum.Online;
+            // Update the machine's last updated timestamp and keep its status as "Online".
+            machineStatus.LastUpdated = DateTime.UtcNow;
+            machineStatus.Status = MachineStatusTypeEnum.Online;
 
-            // Update the in-memory store
-            MachineStore.Machines[machineId] = machineDto;
+            // Save the updated status to the in-memory store.
+            MachineStore.Machines[machineId] = machineStatus;
 
-            // Notify all clients of the updated machine status
-            await Clients.All.SendAsync("MachineStatusUpdated", machineDto);
-            _logger.LogInformation($"Heartbeat received for machine {machineId}. Status updated to {machineDto.Status}.");
+            // Notify all clients about the updated machine status.
+            await Clients.All.SendAsync("MachinesStatus", MachineStore.Machines.Values);
+
+            _logger.LogInformation($"Heartbeat received for machine with ID {machineId}. Status updated to 'Online'.");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error occurred while processing the heartbeat for machine with ID: {machineId}.");
+            _logger.LogError(ex, $"An error occurred while processing the heartbeat for machine with ID: {machineId}.");
             throw;
         }
     }
 
-    // Handles the execution result of a machine task, setting its status to "Idle" once completed.
-    public async Task ExecutionResult(string machineId, string executionOutput)
+    // Handles the result of a machine task execution, setting the machine's status to "Running" during execution, 
+    // and then "Online" once the execution is complete.
+    public async Task ExecutionResult(Guid machineId, string executionOutput)
     {
         try
         {
-            _logger.LogInformation($"Received execution result for machine with ID: {machineId}. Output: {executionOutput}");
+            _logger.LogInformation($"Execution result received for machine with ID: {machineId}. Output: {executionOutput}");
 
-            // Convert machineId to GUID and check if the machine exists in the in-memory store
-            if (!MachineStore.Machines.TryGetValue(Guid.Parse(machineId), out var machineDto))
+            // Check if the machine exists in the in-memory store.
+            if (!MachineStore.Machines.TryGetValue(machineId, out var machineStatus))
             {
                 _logger.LogWarning($"Machine with ID {machineId} not found in the in-memory store.");
                 return;
             }
 
-            // Update machine status to "Running" while execution is ongoing
-            machineDto.Status = MachineStatusTypeEnum.Running;
-            machineDto.LastCheckedIn = DateTime.UtcNow;
+            // Update the machine status to "Running" while it's processing the task.
+            machineStatus.Status = MachineStatusTypeEnum.Running;
+            machineStatus.LastUpdated = DateTimeOffset.UtcNow;
 
-            // Update the in-memory store
-            MachineStore.Machines[machineDto.Id] = machineDto;
+            // Save the updated status to the in-memory store.
+            MachineStore.Machines[machineId] = machineStatus;
 
-            // Notify all clients of the updated machine status
-            await Clients.All.SendAsync("MachineStatusUpdated", machineDto);
+            // Notify all clients about the updated machine status.
+            await Clients.All.SendAsync("MachinesStatus", MachineStore.Machines.Values);
 
-            // Todo: Add logic for executions
+            _logger.LogInformation($"Machine with ID {machineId} status updated to 'Running'.");
 
-            // After execution completes, update the status to "Idle"
-            machineDto.Status = MachineStatusTypeEnum.Idle;
+            await Task.Delay(3000);
 
-            // Update the in-memory store again with the new status
-            MachineStore.Machines[machineDto.Id] = machineDto;
+            // After the execution completes, set the machine status to "Online".
+            machineStatus.Status = MachineStatusTypeEnum.Online;
+            MachineStore.Machines[machineId] = machineStatus;
 
-            // Notify clients of the updated idle status
-            await Clients.All.SendAsync("MachineStatusUpdated", machineDto);
-            _logger.LogInformation($"Machine with ID {machineId} status updated to Idle after execution.");
+            // Notify clients about the machine's updated status.
+            await Clients.All.SendAsync("MachinesStatus", MachineStore.Machines.Values);
+
+            _logger.LogInformation($"Machine with ID {machineId} status updated to 'Online' after execution.");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error occurred while processing the execution result for machine ID: {machineId}.");
+            _logger.LogError(ex, $"An error occurred while processing the execution result for machine with ID: {machineId}.");
             throw;
         }
-    }
-
-    // Handles the disconnection of machines. Sets their status to "Offline" and removes them from the store.
-    public override async Task OnDisconnectedAsync(Exception? exception)
-    {
-        try
-        {
-            _logger.LogInformation($"Machine with Connection ID {Context.ConnectionId} disconnected.");
-
-            // Find the machine in the in-memory store by its connection ID
-            var disconnectedMachineDto = MachineStore.Machines.Values.SingleOrDefault(m => m.ConnectionId == Context.ConnectionId);
-            if (disconnectedMachineDto != null)
-            {
-                // Set machine status to "Offline" and remove from store
-                disconnectedMachineDto.Status = MachineStatusTypeEnum.Offline;
-                MachineStore.Machines.Remove(disconnectedMachineDto.Id);
-
-                // Notify clients of the updated status
-                await Clients.All.SendAsync("MachineStatusUpdated", disconnectedMachineDto);
-                _logger.LogInformation($"Machine with Connection ID {Context.ConnectionId} has been set to Offline.");
-            }
-            else
-            {
-                _logger.LogWarning($"No machine found with Connection ID {Context.ConnectionId} during disconnection.");
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error occurred while handling machine disconnection with Connection ID {Context.ConnectionId}.");
-            throw;
-        }
-
-        await base.OnDisconnectedAsync(exception);
     }
 }
