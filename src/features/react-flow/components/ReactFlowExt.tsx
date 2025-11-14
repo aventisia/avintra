@@ -34,6 +34,7 @@ import ShareAccessDialog from "@/features/share-access/components";
 import { SaveAsTemplateDialog } from "@/features/save-as-template/components/SaveAsTemplateDialog";
 import ImportFlow from "@/features/import-flow/components/ImportFlow";
 import ShortcutsDialog from "@/features/keyboard-shortcuts/KeyboardShortcutsDialog";
+import { useFetchConfigVariables } from "../hooks/useFetchConfigVariables";
 
 /**
  * A custom extension of the ReactFlow component.
@@ -69,6 +70,8 @@ export const ReactFlowExt = () => {
 
   // Fetch flow details and set document title
   useFetchFlowToLoad();
+
+  useFetchConfigVariables();
 
   // Save flow silently
   useUpdateFlowSilently();
