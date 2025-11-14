@@ -50,7 +50,7 @@ export const triggersTableColumns: ColumnDef<TimeTriggerDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
+      <div title={row.getValue("name")} className="w-auto truncate max-w-80 font-medium">{row.getValue("name")}</div>
     ),
   },
 
@@ -84,7 +84,7 @@ export const triggersTableColumns: ColumnDef<TimeTriggerDto>[] = [
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("lastTriggeredTime")
-          ? format(row.getValue("lastTriggeredTime"), "dd MMM yyyy, h:mm:ss a")
+          ? format(row.getValue("lastTriggeredTime"), "dd MMM yyyy, h:mm a")
           : "NA"}
       </div>
     ),
@@ -101,7 +101,7 @@ export const triggersTableColumns: ColumnDef<TimeTriggerDto>[] = [
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("nextTriggerTime")
-          ? format(row.getValue("nextTriggerTime"), "dd MMM yyyy, h:mm:ss a")
+          ? format(row.getValue("nextTriggerTime"), "dd MMM yyyy, h:mm a")
           : "NA"}
       </div>
     ),
