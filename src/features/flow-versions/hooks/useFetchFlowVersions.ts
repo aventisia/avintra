@@ -21,7 +21,7 @@ export const useFetchFlowVersions = (flowId: string) => {
       toast.error(error.toString());
 
       throw new Error(
-        "Invalid Agent ID or error retrieving flow versions. Please check the ID or try again later.",
+        "Invalid Agent ID or error retrieving agents versions. Please check the ID or try again later.",
       );
     }
   }, [error, isError]);
