@@ -40,7 +40,7 @@ export const AgentStats = ({ data }: StatsProps) => {
         title={"Total Published"}
         mainText={data?.length}
         icon={<BotIcon stroke="var(--primary)" className="h-10 w-10" />}
-        description={`${stats?.agents} Agents & ${stats?.models} AI Models`}
+        // description={`${stats?.agents} Agents & ${stats?.models} AI Models`}
       />
       <StatsCard
         title={"Total Deployed"}
