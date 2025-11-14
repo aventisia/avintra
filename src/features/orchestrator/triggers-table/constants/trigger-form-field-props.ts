@@ -59,7 +59,7 @@ const isDisabledProps: SwitchFieldProps = {
 const exceptionHoursProps: MultiSelectFieldProps = {
   name: "exceptionHours",
   label: "Exception Hours",
-  description: "Select specific hours when this trigger should not be active.",
+  description: "Select specific hours when this trigger should be skipped.",
   selectOptions: generateHourlyOptions(),
 };
 
@@ -67,7 +67,7 @@ const exceptionWeekdaysProps: MultiSelectFieldProps = {
   name: "exceptionWeekdays",
   label: "Exception Weekdays",
   description:
-    "Select weekdays when the trigger should not run (e.g., weekends).",
+    "Select weekdays when the trigger should be skipped (e.g., weekends).",
   selectOptions: generateDayOfWeekOptions(),
 };
 

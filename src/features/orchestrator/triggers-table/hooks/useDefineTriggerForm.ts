@@ -12,7 +12,9 @@ import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { isNameAvailable } from "../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import {
+  getTimeFromDate,
   numbersToWeekdays,
+  setTimeToDate,
   weekdaysToNumbers,
 } from "../constants/form-utils";
 import {
@@ -60,12 +62,14 @@ export const useDefineTriggerForm = () => {
       agentIds: [],
       timezone: "",
       effectiveDate: new Date(), // Default to current date
+      effectiveTime: null,
       frequency: "OneTime", // Default frequency to "OneTime"
       atTime: "00:00",
       interval: "1",
       weekdays: [],
       monthDays: [],
       endDate: null,
+      endTime: null,
       exceptionHours: [],
       exceptionWeekdays: [],
       exceptionDates: [],
@@ -100,12 +104,18 @@ export const useDefineTriggerForm = () => {
       effectiveDate: triggerData?.effectiveDate
         ? new Date(triggerData.effectiveDate)
         : new Date(),
+      effectiveTime: triggerData?.effectiveDate
+        ? getTimeFromDate(new Date(triggerData.effectiveDate))
+        : getTimeFromDate(new Date(new Date().getTime() + 15 * 60000)), //15min ahead
       interval: triggerData?.interval?.toString() ?? "1",
       frequency: triggerData?.frequency ?? "Daily",
       atTime: triggerData?.atTime?.slice(0, 5) ?? "00:00", // Slice the string from index 0 to 5 (excluding the seconds part)
       weekdays: numbersToWeekdays(triggerData?.weekdays) ?? [],
       monthDays: triggerData?.monthDays?.map((v) => v.toString()) ?? [],
       endDate: triggerData?.endDate ? new Date(triggerData.endDate) : null,
+      endTime: triggerData?.endDate
+        ? getTimeFromDate(new Date(triggerData.endDate))
+        : null,
       exceptionHours:
         triggerData?.exceptionHours?.map((v) => v.toString()) ?? [],
       exceptionWeekdays:
@@ -141,6 +151,14 @@ export const useDefineTriggerForm = () => {
       monthDays: formData.monthDays?.map((v) => Number(v)), //convert string input to number to match DTO
       exceptionHours: formData.exceptionHours?.map((v) => Number(v)), //convert string input to number to match DTO
       exceptionWeekdays: weekdaysToNumbers(formData.exceptionWeekdays), //convert weekdays to equ numbers
+      effectiveDate: formData.effectiveTime
+        ? setTimeToDate(formData.effectiveDate, formData.effectiveTime)
+        : formData.effectiveDate,
+      endDate: formData.endDate
+        ? formData.endTime
+          ? setTimeToDate(formData.endDate, formData.endTime)
+          : formData.endDate
+        : null,
     };
   };
 
