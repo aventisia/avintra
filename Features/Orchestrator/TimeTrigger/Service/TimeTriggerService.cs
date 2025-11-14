@@ -65,6 +65,16 @@ public class TimeTriggerService(
 
         try
         {
+            // Convert the effective date to UTC based on the given timezone
+            var triggerEffectiveUtc = CronScheduleUtil.ConvertLocalTimeToUtc(triggerDto.Timezone, triggerDto.EffectiveDate);
+
+            // Check if the effective date has already passed
+            if (DateTimeOffset.UtcNow > triggerEffectiveUtc)
+            {
+                serviceResponse.Message = "The effective date has already passed. Please provide a future date.";
+                return serviceResponse;
+            }
+
             // Validate trigger name uniqueness
             var triggerAlreadyExists = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w => w.Name.ToLower() == triggerDto.Name.ToLower())
@@ -183,6 +193,16 @@ public class TimeTriggerService(
 
         try
         {
+            // Convert the effective date to UTC based on the given timezone
+            var triggerEffectiveUtc = CronScheduleUtil.ConvertLocalTimeToUtc(triggerDto.Timezone, triggerDto.EffectiveDate);
+
+            // Check if the effective date has already passed
+            if (DateTimeOffset.UtcNow > triggerEffectiveUtc)
+            {
+                serviceResponse.Message = "The effective date has already passed. Please provide a future date.";
+                return serviceResponse;
+            }
+
             // Validate trigger existence
             var trigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(m =>

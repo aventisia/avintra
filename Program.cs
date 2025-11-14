@@ -1,5 +1,4 @@
 using Serilog;
-using WorkspaceAPIs.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
