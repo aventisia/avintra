@@ -50,7 +50,7 @@ const VariableSelectorWrapper = ({
         <Tabs defaultValue="variables" className="w-full">
           <TabsList className="w-full">
             <TabsTrigger value="variables" className="w-full">
-              Select Variables
+              Variables
             </TabsTrigger>
             <TabsTrigger value="keystore" className="w-full">
               Key Store
