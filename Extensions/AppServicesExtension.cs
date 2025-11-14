@@ -89,6 +89,7 @@ public static class AppServicesExtension
         services.AddScoped<IFlowUserService, FlowUserService>();
         services.AddScoped<IBlockService, BlockService>();
         services.AddScoped<IAppSecretService, AppSecretService>();
+        services.AddScoped<IMachineHub, MachineHub>();
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
