@@ -91,6 +91,7 @@ export const KeystoreCrudForm = () => {
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
         autoFocus
+        disabled={crudAction !== "create"}
       />
       {crudAction === "create" ? (
         <SelectField {...typeProps} />
