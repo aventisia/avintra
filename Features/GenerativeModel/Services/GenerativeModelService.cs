@@ -353,8 +353,8 @@ public class GenerativeModelService : IGenerativeModelService
                 generativeModelDto.Name,
                 ActionTypesEnum.AIModelExecution,
                 null, // This will never be triggered by an agent
-                null, // No ollama output schema needed
-                false // No json output required
+                null // No ollama output schema needed
+                // isJsonOutput is by default true
             );
 
             // Create conversation history from LLM output

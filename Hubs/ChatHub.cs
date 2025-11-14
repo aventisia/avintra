@@ -92,8 +92,8 @@ public class ChatHub : Hub
                                     "ChatBot",
                                     ActionTypesEnum.AIModelExecution,
                                     null, // Not triggered by an agent
-                                    null, // No specific ollama output schema
-                                    false // No JSON output required
+                                    null // No specific ollama output schema
+                                    // isJsonOutput is by default true
                                     );
 
             // Return the response to the client

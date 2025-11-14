@@ -1410,15 +1410,15 @@ public class InferencingModelService : IInferencingModelService
             aIProjectVersion.AIProject.Name,
             actionType, // this will be AgentExecution or AIModelExecution
             triggeredByAgent, // triggered by an agent
-            ollamaOutputFormatSchema, // ollama output schema needed
-            false // No json output required
+            ollamaOutputFormatSchema // ollama output schema needed
+            // isJsonOutput is by default true
             );
 
         var endTime = DateTime.UtcNow;
         var executionSeconds = (int)Math.Ceiling((endTime - startTime).TotalSeconds);
 
         // Log the generated response for debugging
-        _logger.LogInformation("LLM response received for prompt: {llmResponse}", llmResponse.Data);
+        _logger.LogInformation("LLM response received: {llmResponse}", llmResponse.Data);
 
         // Log the LLM response status and execution time
         _logger.LogInformation("LLM response for prompt status: {ResponseStatus}, Execution Time: {ExecutionTime}s", llmResponse.StatusCode, executionSeconds);
