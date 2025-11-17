@@ -23,6 +23,9 @@ global using WorkspaceAPIs.Enums;
 global using WorkspaceAPIs.Jobs;
 global using WorkspaceAPIs.Hubs;
 
+global using WorkspaceAPIs.Features.CloudConnectors;
+global using WorkspaceAPIs.Features.CloudConnectors.M365;
+
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Security.Claims;
