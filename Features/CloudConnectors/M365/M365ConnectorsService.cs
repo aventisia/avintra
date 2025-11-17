@@ -24,9 +24,9 @@ public class M365ConnectorsService : IM365ConnectorsService
         {
             Data = new CloudConnectorResDto()
             {
-                ConnectorResponsePayload = null,
-                ConnectorProvider = cloudConnectorReqDto.ConnectorProvider,
-                ConnectorUniqueName = cloudConnectorReqDto.ConnectorUniqueName
+                Payload = null,
+                Provider = cloudConnectorReqDto.Provider,
+                Action = cloudConnectorReqDto.Action
             },
             StatusCode = 400
         };
@@ -50,32 +50,32 @@ public class M365ConnectorsService : IM365ConnectorsService
             var accessToken = await clientSecretCredential.GetTokenAsync(
                 new Azure.Core.TokenRequestContext(new[] { "https://graph.microsoft.com/.default" }));
 
-            // Step 3: Define new Graph client and HttpClient with access token
+            // Step 3: Define new Graph client and HttpClient with access token. TODO: We can use httpClient to get 
             var graphClient = new GraphServiceClient(clientSecretCredential);
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Token);
 
             // Step 4: Take action based on connector unique name
             object? m365Response = null;
-            switch (cloudConnectorReqDto.ConnectorUniqueName)
+            switch (cloudConnectorReqDto.Action)
             {
                 case "GetDriveIdAndItemId":
-                    m365Response = await GetDriveAndItemId(graphClient, cloudConnectorReqDto.ConnectorRequestPayload);
+                    m365Response = await GetDriveAndItemId(graphClient, cloudConnectorReqDto.Payload);
                     break;
                 case "AddWorksheet":
-                    m365Response = await AddWorksheetAsync(httpClient, cloudConnectorReqDto.ConnectorRequestPayload);
+                    m365Response = await AddWorksheetAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
                 case "GetWorksheets":
-                    m365Response = await GetWorksheetsAsync(httpClient, cloudConnectorReqDto.ConnectorRequestPayload);
+                    m365Response = await GetWorksheetsAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
                 case "WriteValueToRange":
-                    m365Response = await WriteValueToRangeAsync(httpClient, cloudConnectorReqDto.ConnectorRequestPayload);
+                    m365Response = await WriteValueToRangeAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
                 case "ReadValueFromRange":
-                    m365Response = await ReadValueFromRangeAsync(httpClient, cloudConnectorReqDto.ConnectorRequestPayload);
+                    m365Response = await ReadValueFromRangeAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
                 default:
-                    _logger.LogWarning("Unsupported M365 Connector: {ConnectorUniqueName}", cloudConnectorReqDto.ConnectorUniqueName);
+                    _logger.LogWarning("Unsupported M365 Connector: {Action}", cloudConnectorReqDto.Action);
                     serviceResponse.Message = "Unsupported M365 Connector.";
                     return serviceResponse;
             }
@@ -83,13 +83,13 @@ public class M365ConnectorsService : IM365ConnectorsService
             // Step 5: m365Response is null
             if (m365Response == null)
             {
-                _logger.LogWarning("M365 Connector action returned null response for Connector: {ConnectorUniqueName}", cloudConnectorReqDto.ConnectorUniqueName);
+                _logger.LogWarning("M365 Connector action returned null response for Connector: {Action}", cloudConnectorReqDto.Action);
                 serviceResponse.Message = "M365 Connector action failed.";
                 return serviceResponse;
             }
 
             // Step 6: Request invoked successfully
-            serviceResponse.Data.ConnectorResponsePayload = m365Response;
+            serviceResponse.Data.Payload = m365Response;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "M365 Cloud Connector invoked successfully.";
         }
@@ -106,9 +106,9 @@ public class M365ConnectorsService : IM365ConnectorsService
     private async Task<JsonDocument?> AddWorksheetAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
     {
         // Step 1: Get request parameters
-        var driveId = connectorRequestPayload["DriveId"].ToString();
-        var itemId = connectorRequestPayload["ItemId"].ToString();
-        var worksheetName = connectorRequestPayload["WorksheetName"]?.ToString();
+        var driveId = connectorRequestPayload["driveId"].ToString();
+        var itemId = connectorRequestPayload["itemId"].ToString();
+        var worksheetName = connectorRequestPayload["worksheetName"]?.ToString();
 
         // Step 2: Prepare request payload
         var newWorksheet = new { name = worksheetName };
@@ -126,9 +126,8 @@ public class M365ConnectorsService : IM365ConnectorsService
     private async Task<JsonDocument?> GetWorksheetsAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
     {
         // Step 1: Get request parameters
-        var driveId = connectorRequestPayload["DriveId"].ToString();
-        var itemId = connectorRequestPayload["ItemId"].ToString();
-
+        var driveId = connectorRequestPayload["driveId"].ToString();
+        var itemId = connectorRequestPayload["itemId"].ToString();
         // Step 2: Send request and return response
         var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets";
         var response = await httpClient.GetAsync(url);
@@ -141,12 +140,11 @@ public class M365ConnectorsService : IM365ConnectorsService
     private async Task<JsonDocument?> WriteValueToRangeAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
     {
         // Step 1: Get request parameters
-        var driveId = connectorRequestPayload["DriveId"].ToString();
-        var itemId = connectorRequestPayload["ItemId"].ToString();
-        var worksheetName = connectorRequestPayload["WorksheetName"].ToString();
-        var rangeAddress = connectorRequestPayload["RangeAddress"].ToString();
-        var values = connectorRequestPayload["Values"] as JsonElement?;
-
+        var driveId = connectorRequestPayload["driveId"].ToString();
+        var itemId = connectorRequestPayload["itemId"].ToString();
+        var worksheetName = connectorRequestPayload["worksheetName"].ToString();
+        var rangeAddress = connectorRequestPayload["rangeAddress"].ToString();
+        var values = connectorRequestPayload["values"] as JsonElement?;
         // Step 2: Prepare request payload
         var valuePayload = new { values };
 
@@ -163,10 +161,10 @@ public class M365ConnectorsService : IM365ConnectorsService
     private async Task<JsonDocument?> ReadValueFromRangeAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
     {
         // Step 1: Get request parameters
-        var driveId = connectorRequestPayload["DriveId"].ToString();
-        var itemId = connectorRequestPayload["ItemId"].ToString();
-        var worksheetName = connectorRequestPayload["WorksheetName"].ToString();
-        var rangeAddress = connectorRequestPayload["RangeAddress"].ToString();
+        var driveId = connectorRequestPayload["driveId"].ToString();
+        var itemId = connectorRequestPayload["itemId"].ToString();
+        var worksheetName = connectorRequestPayload["worksheetName"].ToString();
+        var rangeAddress = connectorRequestPayload["rangeAddress"].ToString();
 
         // Step 2: Send request and return response
         var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/range(address='{rangeAddress}')";
