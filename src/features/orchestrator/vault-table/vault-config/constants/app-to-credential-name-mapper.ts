@@ -6,5 +6,6 @@ export const appToCredentialNameMapper: Record<VaultAppsEnum, string> = {
   [VaultAppsEnum.Twilio]: "twilio_auth_token",
   [VaultAppsEnum.SendGrid]: "sendgrid_api_key",
   [VaultAppsEnum.GitHub]: "github_access_token",
+  [VaultAppsEnum.M365]: "m365_credentials",
   [VaultAppsEnum.GeneralCredentials]: "general_credentials",
 };
