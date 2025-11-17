@@ -41,11 +41,6 @@ public class KeyStoreDto
     public required string Value { get; set; }
 
     /// <summary>
-    /// Indicates if the value is encrypted.
-    /// </summary>
-    public bool IsEncrypted { get; set; }
-
-    /// <summary>
     /// Access level of the configuration item (Public or Private).
     /// </summary>
     [Required]

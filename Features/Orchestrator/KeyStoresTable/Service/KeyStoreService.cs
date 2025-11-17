@@ -174,14 +174,6 @@ public class KeyStoreService : IKeyStoreService
             newKeyStore.CreatedByUserId = _userId;
             newKeyStore.LastModifiedByUserId = _userId;
 
-            // If the KeyStore type is "CREDENTIAL", encrypt the Value property to protect sensitive information.
-            if (newKeyStore.Type == KeyStoreTypesEnum.CREDENTIAL)
-            {
-                // Encrypt the credential value before saving it
-                newKeyStore.Value = _stringEncryptionService.EncryptString(newKeyStore.Value);
-                newKeyStore.IsEncrypted = true;
-            }
-
             // Insert the new key store into the repository
             await _unitOfWork.KeyStoreRepo.InsertAsync(newKeyStore);
 
@@ -258,15 +250,6 @@ public class KeyStoreService : IKeyStoreService
 
             // Trim string properties in the DTO for consistency
             keyStoreDto = TrimDtoStringPropsUtil.TrimDtoStringProps(keyStoreDto);
-
-            // If the key store type is "CREDENTIAL" and the value has changed or is not already encrypted,
-            // encrypt the Value property to protect sensitive information.
-            if (keyStoreDto.Type == KeyStoreTypesEnum.CREDENTIAL && !string.IsNullOrEmpty(keyStoreDto.Value))
-            {
-                // Encrypt the credential value prior to saving it
-                keyStoreDto.Value = _stringEncryptionService.EncryptString(keyStore.Value);
-                keyStoreDto.IsEncrypted = true;
-            }
 
             // Map the properties from the keyStoreDto to the existing keyStore entity
             keyStoreDto.Adapt(keyStore);
