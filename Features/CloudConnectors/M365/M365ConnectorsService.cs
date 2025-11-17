@@ -24,7 +24,7 @@ public class M365ConnectorsService : IM365ConnectorsService
         {
             Data = new CloudConnectorResDto()
             {
-                Payload = null,
+                Response = null,
                 Provider = cloudConnectorReqDto.Provider,
                 Action = cloudConnectorReqDto.Action
             },
@@ -50,8 +50,7 @@ public class M365ConnectorsService : IM365ConnectorsService
             var accessToken = await clientSecretCredential.GetTokenAsync(
                 new Azure.Core.TokenRequestContext(new[] { "https://graph.microsoft.com/.default" }));
 
-            // Step 3: Define new Graph client and HttpClient with access token. TODO: We can use httpClient to get 
-            var graphClient = new GraphServiceClient(clientSecretCredential);
+            // Step 3: Define new HttpClient with access token
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Token);
 
@@ -59,19 +58,19 @@ public class M365ConnectorsService : IM365ConnectorsService
             object? m365Response = null;
             switch (cloudConnectorReqDto.Action)
             {
-                case "GetDriveIdAndItemId":
-                    m365Response = await GetDriveAndItemId(graphClient, cloudConnectorReqDto.Payload);
+                case nameof(M365ActionsEnum.GetDriveIdAndItemId):
+                    m365Response = await GetDriveAndItemIdAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
-                case "AddWorksheet":
+                case nameof(M365ActionsEnum.AddWorksheet):
                     m365Response = await AddWorksheetAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
-                case "GetWorksheets":
-                    m365Response = await GetWorksheetsAsync(httpClient, cloudConnectorReqDto.Payload);
+                case nameof(M365ActionsEnum.GetWorksheetNames):
+                    m365Response = await GetWorksheetNamesAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
-                case "WriteValueToRange":
+                case nameof(M365ActionsEnum.WriteValueToRange):
                     m365Response = await WriteValueToRangeAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
-                case "ReadValueFromRange":
+                case nameof(M365ActionsEnum.ReadValueFromRange):
                     m365Response = await ReadValueFromRangeAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
                 default:
@@ -89,7 +88,7 @@ public class M365ConnectorsService : IM365ConnectorsService
             }
 
             // Step 6: Request invoked successfully
-            serviceResponse.Data.Payload = m365Response;
+            serviceResponse.Data.Response = m365Response;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "M365 Cloud Connector invoked successfully.";
         }
@@ -100,6 +99,99 @@ public class M365ConnectorsService : IM365ConnectorsService
         }
 
         return serviceResponse;
+    }
+
+    // Action: Get Drive ID and Item ID from SharePoint url
+    private async Task<JsonDocument> GetDriveAndItemIdAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    {
+        // Step 1: Validate required parameters
+        if (!connectorRequestPayload.ContainsKey("fileUrl") ||
+            connectorRequestPayload["fileUrl"] == null ||
+            string.IsNullOrEmpty(connectorRequestPayload["fileUrl"].ToString()))
+        {
+            _logger.LogWarning("Missing or empty 'fileUrl' in connectorRequestPayload.");
+            return JsonDocument.Parse(@"{""error"": ""Missing or empty fileUrl""}");
+        }
+
+        try
+        {
+            // Step 2: Extract domain and path from FileUrl
+            var fileUri = new Uri(connectorRequestPayload["fileUrl"].ToString()!);
+            var domain = fileUri.Host;
+
+            // Step 2.1: Split the path to separate site and file path
+            var segments = fileUri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+            // Step 2.2: Find the index of "sites" or "teams" (SharePoint site root)
+            int siteRootIdx = Array.FindIndex(segments, s => s.Equals("sites", StringComparison.OrdinalIgnoreCase) || s.Equals("teams", StringComparison.OrdinalIgnoreCase));
+            if (siteRootIdx == -1)
+            {
+                _logger.LogWarning("Invalid SharePoint URL: missing 'sites' or 'teams' segment. URL: {FileUrl}", connectorRequestPayload["fileUrl"]);
+                return JsonDocument.Parse(@"{""error"": ""Invalid SharePoint URL: missing 'sites' or 'teams' segment.""}");
+            }
+
+            // Step 2.3: Site path: from root to site name
+            string sitePath = "/" + string.Join('/', segments.Take(siteRootIdx + 2)); // e.g., /sites/AventisiaTechnologiesPvtLtd
+
+            // Step 2.4: File path: everything after the site path (skip 'site root', 'site name' and 'Shared Documents' e.g. '/sites/AventisiaTechnologiesPvtLtd/Shared Documents')
+            string relativeFilePath = string.Join('/', segments.Skip(siteRootIdx + 3)); // e.g., General/m365_connector_testing.xlsx
+            relativeFilePath = Uri.UnescapeDataString(relativeFilePath);
+
+            // Step 3: Get the sharepoint site
+            var siteUrl = $"https://graph.microsoft.com/v1.0/sites/{domain}:{sitePath}";
+            var siteResponse = await httpClient.GetAsync(siteUrl);
+            if (!siteResponse.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("SharePoint site not found for domain: {Domain}, sitePath: {SitePath}", domain, sitePath);
+                return JsonDocument.Parse(@"{""error"": ""SharePoint site not found""}");
+            }
+            var siteJson = JsonDocument.Parse(await siteResponse.Content.ReadAsStringAsync());
+            if (!siteJson.RootElement.TryGetProperty("id", out var siteIdElement))
+            {
+                _logger.LogWarning("SharePoint site response missing 'id'.");
+                return JsonDocument.Parse(@"{""error"": ""SharePoint site response missing 'id'""}");
+            }
+            var siteId = siteIdElement.GetString();
+
+            // Step 4: Get the default drive associated with the site (use /drive for default document library)
+            var driveUrl = $"https://graph.microsoft.com/v1.0/sites/{siteId}/drive";
+            var driveResponse = await httpClient.GetAsync(driveUrl);
+            if (!driveResponse.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("Default drive not found for site: {SiteId}", siteId);
+                return JsonDocument.Parse(@"{""error"": ""Default drive not found for site""}");
+            }
+            var driveJson = JsonDocument.Parse(await driveResponse.Content.ReadAsStringAsync());
+            if (!driveJson.RootElement.TryGetProperty("id", out var driveIdElement))
+            {
+                _logger.LogWarning("Drive response missing 'id'.");
+                return JsonDocument.Parse(@"{""error"": ""Drive response missing 'id'""}");
+            }
+            var driveId = driveIdElement.GetString();
+
+            // Step 5: Get the drive item (file) by path
+            var itemUrl = $"https://graph.microsoft.com/v1.0/drives/{driveId}/root:/{relativeFilePath}";
+            var itemResponse = await httpClient.GetAsync(itemUrl);
+            if (!itemResponse.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("Drive item not found for path: {RelativeFilePath}", relativeFilePath);
+                return JsonDocument.Parse(@"{""error"": ""Drive item not found for given path""}");
+            }
+            var itemJson = JsonDocument.Parse(await itemResponse.Content.ReadAsStringAsync());
+            if (!itemJson.RootElement.TryGetProperty("id", out var itemIdElement))
+            {
+                _logger.LogWarning("Drive item response missing 'id'.");
+                return JsonDocument.Parse(@"{""error"": ""Drive item response missing 'id'""}");
+            }
+            var itemId = itemIdElement.GetString();
+
+            return JsonDocument.Parse($@"{{""driveId"": ""{driveId}"", ""itemId"": ""{itemId}""}}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception in GetDriveAndItemId");
+            return JsonDocument.Parse($@"{{""error"": ""Exception: {ex.Message.Replace("\"", "'")}""}}");
+        }
     }
 
     // Action: Add worksheet
@@ -123,7 +215,7 @@ public class M365ConnectorsService : IM365ConnectorsService
     }
 
     // Action: Get worksheets
-    private async Task<JsonDocument?> GetWorksheetsAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    private async Task<JsonDocument?> GetWorksheetNamesAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
     {
         // Step 1: Get request parameters
         var driveId = connectorRequestPayload["driveId"].ToString();
@@ -172,74 +264,5 @@ public class M365ConnectorsService : IM365ConnectorsService
 
         // Step 3: Return response as JsonDocument
         return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-    }
-
-    // Helper: Get Drive ID and Item ID from SharePoint Site URL and File Path
-    private async Task<JsonDocument> GetDriveAndItemId(GraphServiceClient graphClient, Dictionary<string, object> connectorRequestPayload)
-    {
-        // Step 1: Validate required parameters
-        if (!connectorRequestPayload.ContainsKey("fileUrl") ||
-            connectorRequestPayload["fileUrl"] == null ||
-            string.IsNullOrEmpty(connectorRequestPayload["fileUrl"].ToString()))
-        {
-            _logger.LogWarning("Missing or empty 'fileUrl' in connectorRequestPayload.");
-            return JsonDocument.Parse(@"{""error"": ""Missing or empty fileUrl""}");
-        }
-
-        try
-        {
-            // Step 2: Extract domain and path from FileUrl
-            var fileUri = new Uri(connectorRequestPayload["fileUrl"].ToString()!);
-            var domain = fileUri.Host;
-
-            // Step 2.1: Split the path to separate site and file path
-            var segments = fileUri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-
-            // Step 2.2: Find the index of "sites" or "teams" (SharePoint site root)
-            int siteRootIdx = Array.FindIndex(segments, s => s.Equals("sites", StringComparison.OrdinalIgnoreCase) || s.Equals("teams", StringComparison.OrdinalIgnoreCase));
-            if (siteRootIdx == -1)
-            {
-                _logger.LogWarning("Invalid SharePoint URL: missing 'sites' or 'teams' segment. URL: {FileUrl}", connectorRequestPayload["fileUrl"]);
-                return JsonDocument.Parse(@"{""error"": ""Invalid SharePoint URL: missing 'sites' or 'teams' segment.""}");
-            }
-
-            // Step 2.3: Site path: from root to site name
-            string sitePath = "/" + string.Join('/', segments.Take(siteRootIdx + 2)); // e.g., /sites/AventisiaTechnologiesPvtLtd
-
-            // Step 2.4: File path: everything after the site path (skip 'site root', 'site name' and 'Shared Documents' e.g. '/sites/AventisiaTechnologiesPvtLtd/Shared Documents')
-            string relativeFilePath = string.Join('/', segments.Skip(siteRootIdx + 3)); // e.g., General/m365_connector_testing.xlsx
-            relativeFilePath = Uri.UnescapeDataString(relativeFilePath);
-
-            // Step 3: Get the sharepoint site
-            var site = await graphClient.Sites[$"{domain}:{sitePath}"].GetAsync();
-            if (site == null)
-            {
-                _logger.LogWarning("SharePoint site not found for domain: {Domain}, sitePath: {SitePath}", domain, sitePath);
-                return JsonDocument.Parse(@"{""error"": ""SharePoint site not found""}");
-            }
-
-            // Step 4: Get the default drive associated with the site (use /drive for default document library)
-            var drive = await graphClient.Sites[site.Id].Drive.GetAsync();
-            if (drive == null)
-            {
-                _logger.LogWarning("Default drive not found for site: {SiteId}", site.Id);
-                return JsonDocument.Parse(@"{""error"": ""Default drive not found for site""}");
-            }
-
-            // Step 5: Get the drive item (file) by path
-            var item = await graphClient.Drives[drive.Id].Root.ItemWithPath(relativeFilePath).GetAsync();
-            if (item == null)
-            {
-                _logger.LogWarning("Drive item not found for path: {RelativeFilePath}", relativeFilePath);
-                return JsonDocument.Parse(@"{""error"": ""Drive item not found for given path""}");
-            }
-
-            return JsonDocument.Parse($@"{{""DriveId"": ""{drive.Id}"", ""ItemId"": ""{item.Id}""}}");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Exception in GetDriveAndItemId");
-            return JsonDocument.Parse($@"{{""error"": ""Exception: {ex.Message.Replace("\"", "'")}""}}");
-        }
     }
 }
