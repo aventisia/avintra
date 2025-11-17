@@ -4,21 +4,18 @@ public class MachineService : IMachineService
 {
     private readonly ILogger<MachineService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMachineHub _machineHub;
     private readonly Guid _userId;
 
     public MachineService(
         ILogger<MachineService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor,
-        IMachineHub machineHub)
+        IHttpContextAccessor httpContextAccessor)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _machineHub = machineHub;
     }
 
     // Checks the availability of a machine name.
@@ -107,7 +104,13 @@ public class MachineService : IMachineService
             }
 
             // Register the new machine with the machine hub
-            // await _machineHub.RegisterMachineAsync(newMachine.Id);
+            MachineStore.AddOrUpdateMachineStatus(new MachineStatusDto()
+            {
+                MachineId = newMachine.Id,
+                AgentId = null,
+                Status = MachineStatusTypeEnum.Online,
+                LastUpdated = DateTimeOffset.UtcNow,
+            });
 
             // If agent IDs are provided, proceed to assign them
             if (machineDto.AgentIds != null && machineDto.AgentIds.Any())
@@ -189,6 +192,12 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
+            // Attempt to remove the machine from the MachineStore by its unique ID
+            if (MachineStore.RemoveMachine(machine.Id))
+            {
+                _logger.LogInformation($"Machine with ID {machine.Id} removed successfully.");
+            }
+
             // Delete machine
             _unitOfWork.MachineRepo.Delete(machine);
 
@@ -253,7 +262,6 @@ public class MachineService : IMachineService
                     machine.Status = MachineStatusTypeEnum.Offline;
                 }
             }
-
 
             // Task successful
             serviceResponse.Data = machines.Adapt<IEnumerable<MachineDto>>();
@@ -391,7 +399,13 @@ public class MachineService : IMachineService
             }
 
             // Register the new machine with the machine hub
-            // await _machineHub.RegisterMachineAsync(machine.Id);
+            MachineStore.AddOrUpdateMachineStatus(new MachineStatusDto()
+            {
+                MachineId = machine.Id,
+                AgentId = null,
+                Status = MachineStatusTypeEnum.Online,
+                LastUpdated = DateTimeOffset.UtcNow,
+            });
 
             // Handle agent assignments
             var existingMachineFlows = machine.MachineFlows.ToList();
@@ -511,6 +525,16 @@ public class MachineService : IMachineService
                 _logger.LogInformation($"Machines do not exist");
                 serviceResponse.Message = "Machines do not exist";
                 return serviceResponse;
+            }
+
+            // Iterate through each machine in the 'machines' collection
+            foreach (var machine in machines)
+            {
+                // Attempt to remove the machine from the MachineStore by its unique ID
+                if (MachineStore.RemoveMachine(machine.Id))
+                {
+                    _logger.LogInformation($"Machine with ID {machine.Id} removed successfully.");
+                }
             }
 
             // TODO: Check machine relationship with other entities
