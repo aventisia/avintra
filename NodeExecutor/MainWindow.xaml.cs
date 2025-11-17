@@ -246,7 +246,7 @@ namespace NodeExecutor
             var startTime = DateTime.UtcNow;
 
             // Deserialize the node data
-            var nodeData = JsonConvert.DeserializeObject<ActivityNodeData>(data);
+            var nodeData = ActivityExecutorService.ConvertNodeData(_agentId, _agentName, _accessToken, data, _executionContext, _interpreter);
 
             if (nodeData == null)
             {
@@ -264,7 +264,7 @@ namespace NodeExecutor
             await Task.Run(async () =>
             {
                 // Execute single node
-                var (isSuccess, nodeExecutionLog) = ActivityExecutorService.ExecuteNode(_agentId, _agentName, _accessToken, nodeData, _executionContext, _interpreter, startTime);
+                var (isSuccess, nodeExecutionLog) = ActivityExecutorService.ExecuteNode(nodeData, _executionContext, _interpreter, startTime);
 
                 // Send the execution log back to the server (must be awaited on UI thread)
                 await Dispatcher.InvokeAsync(async () =>

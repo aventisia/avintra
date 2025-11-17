@@ -94,6 +94,7 @@
     <Compile Include="Activities\AppIntegrations\AzureActivities\GetBlobContainerClientInstanceActivity.cs" />
     <Compile Include="Activities\AppIntegrations\AzureActivities\UploadFileToBlobStorageActivity.cs" />
     <Compile Include="Activities\AppIntegrations\AzureActivities\_AzureCategoryMetaData.cs" />
+    <Compile Include="Activities\AppIntegrations\CloudConnectors\ProcessConnectorRequestActivity.cs" />
     <Compile Include="Activities\AppIntegrations\EmailActivities\ProcessEmailMessagesActivity.cs" />
     <Compile Include="Activities\AppIntegrations\EmailActivities\RetrieveEmailMessagesActivity.cs" />
     <Compile Include="Activities\AppIntegrations\EmailActivities\SendEmailActivity.cs" />
@@ -932,6 +933,9 @@
     </PackageReference>
     <PackageReference Include="SSH.NET">
       <Version>2025.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Configuration.ConfigurationManager">
+      <Version>10.0.0</Version>
     </PackageReference>
     <PackageReference Include="System.Formats.Asn1">
       <Version>9.0.6</Version>

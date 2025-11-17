@@ -1,4 +1,5 @@
 ﻿using CodeActivitiesLibrary.WorkflowLogics.ConditionalsLoopsActivities;
+using CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NodeExecutor.Models;
@@ -19,6 +20,100 @@ namespace NodeExecutor.Services
 {
     public static class ActivityExecutorService
     {
+        public static ActivityNodeData ConvertNodeData(
+            string agentId, 
+            string agentName, 
+            string accessToken, 
+            string stringNodeData, 
+            ExecutionContext executionContext, 
+            Interpreter interpreter)
+        {
+            // If the input string is null or empty, throw an exception
+            if (string.IsNullOrEmpty(stringNodeData))
+            {
+                throw new ArgumentNullException(nameof(stringNodeData), "Input JSON string cannot be null or empty.");
+            }
+
+            // Attempt to deserialize the JSON string to ActivityNodeData
+            try
+            {
+                var nodeData = JsonConvert.DeserializeObject<ActivityNodeData>(stringNodeData);
+
+                // if nodeData null throw exception
+                if (nodeData == null)
+                {
+                    throw new InvalidOperationException("Deserialized ActivityNodeData is null.");
+                }
+
+                // If node Type is not CloundConnector then throw exception
+                if (nodeData.Type == "cloudConnectorNode")
+                {
+                    // Process nodeData's inputs to convert them for cloudConnectorNode
+                    var newNodeInputs = new List<NodeInput>();
+                    var connectorRequestPayload = new Dictionary<string, string>();
+                    foreach (var input in nodeData.NodeInputs)
+                    {
+                        // If input is null or empty, skip
+                        if (string.IsNullOrEmpty(input.Value)) continue;
+
+                        // if input key is agentId, agentName, accessToken then skip
+                        if (input.Key.Equals("AgentId", StringComparison.OrdinalIgnoreCase) ||
+                            input.Key.Equals("AgentName", StringComparison.OrdinalIgnoreCase) ||
+                            input.Key.Equals("AccessToken", StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
+
+                        // If input key contains "__Credential__", then add directly to newNodeInputs
+                        if (input.Key.Contains("__CredentialId__"))
+                        {
+                            // Add cloud provider
+                            newNodeInputs.Add(new NodeInput { Key = "Provider", Value = input.Key.Replace("__CredentialId__", "").Trim() });
+
+                            // Add connector's unqiue idenitifier (Can be added outside the foreach loop but just of the property sequence adding it here)
+                            newNodeInputs.Add(new NodeInput { Key = "Action", Value = nodeData.CodeActivityName });
+
+                            // Add credentail id
+                            newNodeInputs.Add(new NodeInput { Key = "CredentialId", Value = input.Value });
+                            continue;
+                        }
+
+                        // Resolve template if input is string and contains {{ }}
+                        object inputValue = input.Value;
+                        if (input.Value is string strVal && strVal.Contains("{{") && strVal.Contains("}}"))
+                        {
+                            inputValue = ResolveTemplate(strVal, executionContext, interpreter);
+                        }
+
+                        // Convert the input value to string
+                        object convertedValue = ConvertArgument(inputValue, typeof(string));
+
+                        // Add to cloud connector's request payload
+                        connectorRequestPayload[input.Key] = convertedValue?.ToString();
+                    }
+
+                    // Add connectorRequestPayload as JSON string to newNodeInputs
+                    newNodeInputs.Add(new NodeInput { Key = "Payload", Value = JsonConvert.SerializeObject(connectorRequestPayload) });
+
+                    // Update nodeData
+                    nodeData.NodeInputs = newNodeInputs;
+                    nodeData.CodeActivityName = nameof(ProcessConnectorRequestActivity);
+                }
+
+                // Add agentId, agentName, accessToken as NodeInputs at the beginning
+                nodeData.NodeInputs.Insert(0, new NodeInput { Key = "AccessToken", Value = accessToken });
+                nodeData.NodeInputs.Insert(0, new NodeInput { Key = "AgentName", Value = agentName });
+                nodeData.NodeInputs.Insert(0, new NodeInput { Key = "AgentId", Value = agentId });
+
+                // Return the modified nodeData
+                return nodeData;
+            }
+            catch (JsonException jsonEx)
+            {
+                throw new InvalidOperationException("Failed to deserialize JSON string to ActivityNodeData.", jsonEx);
+            }
+        }
+
         private static object GetCodeActivityInstance(string codeActivityName)
         {
             try
@@ -56,14 +151,14 @@ namespace NodeExecutor.Services
             }
         }
 
-        public static (bool, NodeExecutionLog) ExecuteNode(string agentId, string agentName, string accessToken, ActivityNodeData node, ExecutionContext executionContext, Interpreter interpreter, DateTime startTime)
+        public static (bool, NodeExecutionLog) ExecuteNode(ActivityNodeData nodeData, ExecutionContext executionContext, Interpreter interpreter, DateTime startTime)
         {
             // Initiaze the return object
             var nodeExecutionlog = new NodeExecutionLog
             {
-                NodeId = node.Id,
-                NodeName = node.NodeName,
-                NodeUniqueName = node.CodeActivityName,
+                NodeId = nodeData.Id,
+                NodeName = nodeData.NodeName,
+                NodeUniqueName = nodeData.CodeActivityName,
                 IsSuccess = false,
                 Duration = 0,
                 Inputs = new List<NodeLogKeyValue>(),
@@ -78,51 +173,13 @@ namespace NodeExecutor.Services
             try
             {
                 // Get Code activity instance
-                var activityInstance = GetCodeActivityInstance(node.CodeActivityName);
+                var activityInstance = GetCodeActivityInstance(nodeData.CodeActivityName);
 
                 // Get the type of the activity instance
                 var activityType = activityInstance.GetType();
 
-                // Set the AgentId property if it exists
-                var agentIdProp = activityType.GetProperty("AgentId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-                if (agentIdProp != null)
-                {
-                    var argType = typeof(InArgument<string>);
-                    // Build: ctx => agentId
-                    var ctxParam = Expression.Parameter(typeof(ActivityContext), "ctx");
-                    var valueExpr = Expression.Constant(agentId, typeof(string));
-                    var lambda = Expression.Lambda(valueExpr, ctxParam);
-                    var inArgument = Activator.CreateInstance(argType, lambda);
-                    agentIdProp.SetValue(activityInstance, inArgument);
-                }
-
-                // Set the AgentName property if it exists
-                var agentNameProp = activityType.GetProperty("AgentName", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-                if (agentNameProp != null)
-                {
-                    var argType = typeof(InArgument<string>);
-                    // Build: ctx => agentName
-                    var ctxParam = Expression.Parameter(typeof(ActivityContext), "ctx");
-                    var valueExpr = Expression.Constant(agentName, typeof(string));
-                    var lambda = Expression.Lambda(valueExpr, ctxParam);
-                    var inArgument = Activator.CreateInstance(argType, lambda);
-                    agentNameProp.SetValue(activityInstance, inArgument);
-                }
-
-                // Set the AccessToken property if it exists
-                var accessTokenProp = activityType.GetProperty("AccessToken", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-                if (accessTokenProp != null)
-                {
-                    var argType = typeof(InArgument<string>);
-                    // Build: ctx => accessToken
-                    var ctxParam = Expression.Parameter(typeof(ActivityContext), "ctx");
-                    var valueExpr = Expression.Constant(accessToken, typeof(string));
-                    var lambda = Expression.Lambda(valueExpr, ctxParam);
-                    var inArgument = Activator.CreateInstance(argType, lambda);
-                    accessTokenProp.SetValue(activityInstance, inArgument);
-                }
-
-                foreach (var input in node.NodeInputs)
+                // Process node inputs
+                foreach (var input in nodeData.NodeInputs)
                 {
                     // TODO: if input does not have value return (in case of optional fields. all activity optional arugments should have default value)
                     // We can check using reflaction if the property has a default value or not and throw error later
@@ -133,7 +190,7 @@ namespace NodeExecutor.Services
                     if (prop == null) continue;
 
                     // Get input label
-                    var displayName = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? prop.Name;
+                    var displayName = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName;
 
                     // Check if the property is an Argument<T>
                     var propType = prop.PropertyType;
@@ -180,8 +237,8 @@ namespace NodeExecutor.Services
 
                         prop.SetValue(activityInstance, inArgument);
 
-                        // Add to inputValues for logging
-                        inputValues[displayName] = convertedValue;
+                        // Add to inputValues for logging if displayName is not null or empty
+                        if (!string.IsNullOrEmpty(displayName)) inputValues[displayName] = convertedValue;
                     }
                 }
 
@@ -194,7 +251,8 @@ namespace NodeExecutor.Services
                 // Set isSuccess activity status
                 nodeExecutionlog.IsSuccess = outputs != null && Convert.ToBoolean(outputs["IsSuccess"]);
 
-                foreach (var nodeOutput in node.NodeOutputs)
+                // Process node outputs
+                foreach (var nodeOutput in nodeData.NodeOutputs)
                 {
                     // Get the property info for the output key
                     var prop = activityType.GetProperty(nodeOutput.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
