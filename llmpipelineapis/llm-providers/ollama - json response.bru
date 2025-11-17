@@ -1,7 +1,7 @@
 meta {
   name: ollama - json response
   type: http
-  seq: 6
+  seq: 10
 }
 
 post {
@@ -24,6 +24,7 @@ body:json {
         "content": "Give me top 3 benefits of daily exercise"
       }
     ],
+    "files": null,
     "is_json_output": true,
     "json_schema": null,
     "max_output_tokens": null,
@@ -37,4 +38,5 @@ body:json {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

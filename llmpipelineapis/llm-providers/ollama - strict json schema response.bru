@@ -1,7 +1,7 @@
 meta {
   name: ollama - strict json schema response
   type: http
-  seq: 7
+  seq: 12
 }
 
 post {
@@ -15,6 +15,7 @@ body:json {
     "provider": "ollama",
     "model": "gemma3:12b",
     "input": "Give me top 3 benefits of daily exercise",
+    "files": null,
     "is_json_output": true,
     "json_schema": "{\"type\":\"object\",\"properties\":{\"topic\":{\"type\":\"string\"},\"benefits\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"benefit\":{\"type\":\"string\"},\"tags\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"required\":[\"benefit\",\"tags\"],\"additionalProperties\":false}},\"source\":{\"type\":\"string\"}},\"required\":[\"topic\",\"benefits\",\"source\"],\"additionalProperties\":false}",
     "max_output_tokens": null,
@@ -28,4 +29,5 @@ body:json {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
