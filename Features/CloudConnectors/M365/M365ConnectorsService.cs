@@ -180,49 +180,68 @@ public class M365ConnectorsService : IM365ConnectorsService
     private async Task<JsonDocument> GetDriveAndItemId(GraphServiceClient graphClient, Dictionary<string, object> connectorRequestPayload)
     {
         // Step 1: Validate required parameters
-        if (connectorRequestPayload.ContainsKey("fileUrl") == false ||
+        if (!connectorRequestPayload.ContainsKey("fileUrl") ||
             connectorRequestPayload["fileUrl"] == null ||
             string.IsNullOrEmpty(connectorRequestPayload["fileUrl"].ToString()))
         {
-            return JsonDocument.Parse("{}");
+            _logger.LogWarning("Missing or empty 'fileUrl' in connectorRequestPayload.");
+            return JsonDocument.Parse(@"{""error"": ""Missing or empty fileUrl""}");
         }
 
-        // Step 2: Extract domain and path from FileUrl
-        var fileUri = new Uri(connectorRequestPayload["fileUrl"].ToString()!);
-        var domain = fileUri.Host;
-
-        // Split the path to separate site and file path
-        var segments = fileUri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-
-        // Find the index of "sites" or "teams" (SharePoint site root)
-        int siteRootIdx = Array.FindIndex(segments, s => s.Equals("sites", StringComparison.OrdinalIgnoreCase) || s.Equals("teams", StringComparison.OrdinalIgnoreCase));
-        if (siteRootIdx == -1)
+        try
         {
-            _logger.LogWarning("Invalid SharePoint URL: missing 'sites' or 'teams' segment.");
-            return JsonDocument.Parse("{}");
+            // Step 2: Extract domain and path from FileUrl
+            var fileUri = new Uri(connectorRequestPayload["fileUrl"].ToString()!);
+            var domain = fileUri.Host;
+
+            // Step 2.1: Split the path to separate site and file path
+            var segments = fileUri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+            // Step 2.2: Find the index of "sites" or "teams" (SharePoint site root)
+            int siteRootIdx = Array.FindIndex(segments, s => s.Equals("sites", StringComparison.OrdinalIgnoreCase) || s.Equals("teams", StringComparison.OrdinalIgnoreCase));
+            if (siteRootIdx == -1)
+            {
+                _logger.LogWarning("Invalid SharePoint URL: missing 'sites' or 'teams' segment. URL: {FileUrl}", connectorRequestPayload["fileUrl"]);
+                return JsonDocument.Parse(@"{""error"": ""Invalid SharePoint URL: missing 'sites' or 'teams' segment.""}");
+            }
+
+            // Step 2.3: Site path: from root to site name
+            string sitePath = "/" + string.Join('/', segments.Take(siteRootIdx + 2)); // e.g., /sites/AventisiaTechnologiesPvtLtd
+
+            // Step 2.4: File path: everything after the site path (skip 'site root', 'site name' and 'Shared Documents' e.g. '/sites/AventisiaTechnologiesPvtLtd/Shared Documents')
+            string relativeFilePath = string.Join('/', segments.Skip(siteRootIdx + 3)); // e.g., General/m365_connector_testing.xlsx
+            relativeFilePath = Uri.UnescapeDataString(relativeFilePath);
+
+            // Step 3: Get the sharepoint site
+            var site = await graphClient.Sites[$"{domain}:{sitePath}"].GetAsync();
+            if (site == null)
+            {
+                _logger.LogWarning("SharePoint site not found for domain: {Domain}, sitePath: {SitePath}", domain, sitePath);
+                return JsonDocument.Parse(@"{""error"": ""SharePoint site not found""}");
+            }
+
+            // Step 4: Get the default drive associated with the site (use /drive for default document library)
+            var drive = await graphClient.Sites[site.Id].Drive.GetAsync();
+            if (drive == null)
+            {
+                _logger.LogWarning("Default drive not found for site: {SiteId}", site.Id);
+                return JsonDocument.Parse(@"{""error"": ""Default drive not found for site""}");
+            }
+
+            // Step 5: Get the drive item (file) by path
+            var item = await graphClient.Drives[drive.Id].Root.ItemWithPath(relativeFilePath).GetAsync();
+            if (item == null)
+            {
+                _logger.LogWarning("Drive item not found for path: {RelativeFilePath}", relativeFilePath);
+                return JsonDocument.Parse(@"{""error"": ""Drive item not found for given path""}");
+            }
+
+            return JsonDocument.Parse($@"{{""DriveId"": ""{drive.Id}"", ""ItemId"": ""{item.Id}""}}");
         }
-
-        // Site path: from root to site name
-        string sitePath = "/" + string.Join('/', segments.Take(siteRootIdx + 2)); // e.g., /sites/AventisiaTechnologiesPvtLtd
-
-        // File path: everything after the site path
-        string filePath = string.Join('/', segments.Skip(siteRootIdx + 2)); // e.g., Shared Documents/General/m365_connector_testing.xlsx
-        filePath = Uri.UnescapeDataString(filePath);
-
-        // Step 3: Get the sharepoint site
-        var site = await graphClient.Sites[$"{domain}:{sitePath}"].GetAsync();
-
-        // Step 4: Get the drive associated with the site
-        var drives = await graphClient.Sites[site.Id].Drives.GetAsync();
-        var documentsDrive = drives.Value != null ? drives.Value.FirstOrDefault(d => d.Name == "Documents") : null;
-
-        // Remove the first segment ("Shared Documents" or "Documents") from the file path
-        var filePathSegments = filePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        var relativeFilePath = string.Join('/', filePathSegments.Skip(1)); // skip the library name
-
-        // Step 5: Get the drive item (file) by path
-        var item = await graphClient.Drives[documentsDrive.Id].Root.ItemWithPath(relativeFilePath).GetAsync();
-
-        return JsonDocument.Parse($@"{{ ""DriveId"": ""{documentsDrive.Id}"", ""ItemId"": ""{item.Id}"" }}");
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception in GetDriveAndItemId");
+            return JsonDocument.Parse($@"{{""error"": ""Exception: {ex.Message.Replace("\"", "'")}""}}");
+        }
     }
 }
