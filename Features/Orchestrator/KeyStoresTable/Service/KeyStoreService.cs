@@ -32,6 +32,14 @@ public class KeyStoreService : IKeyStoreService
 
         try
         {
+            // Check if the provided key store name is valid
+            if (!IsValidIdentifier(checkAvailabilityDto.UserInput))
+            {
+                _logger.LogError($"Invalid key store name: '{checkAvailabilityDto.UserInput}'. It must start with a letter or underscore and cannot contain spaces or symbols.");
+                serviceResponse.Message = $"The name '{checkAvailabilityDto.UserInput}' is invalid. Please use a valid name.";
+                return serviceResponse;
+            }
+
             // Check if a key store with the same name already exists for the current user
             var existingKeyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
@@ -134,6 +142,14 @@ public class KeyStoreService : IKeyStoreService
 
         try
         {
+            // Check if the provided key store name is valid
+            if (!IsValidIdentifier(keyStoreDto.Name))
+            {
+                _logger.LogError($"Invalid key store name: '{keyStoreDto.Name}'. It must start with a letter or underscore and cannot contain spaces or symbols.");
+                serviceResponse.Message = $"The name '{keyStoreDto.Name}' is invalid. Please use a valid name.";
+                return serviceResponse;
+            }
+
             // Check if a key store with the same name already exists for the user
             var existingKeyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
@@ -201,6 +217,14 @@ public class KeyStoreService : IKeyStoreService
 
         try
         {
+            // Check if the provided key store name is valid
+            if (!IsValidIdentifier(keyStoreDto.Name))
+            {
+                _logger.LogError($"Invalid key store name: '{keyStoreDto.Name}'. It must start with a letter or underscore and cannot contain spaces or symbols.");
+                serviceResponse.Message = $"The name '{keyStoreDto.Name}' is invalid. Please use a valid name.";
+                return serviceResponse;
+            }
+
             // Fetch the existing key store
             var keyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
@@ -412,5 +436,56 @@ public class KeyStoreService : IKeyStoreService
         }
 
         return serviceResponse;
+    }
+
+    // Method to validate if the input string is a valid identifier
+    private bool IsValidIdentifier(string identifier)
+    {
+        // Check if the identifier is null or empty
+        if (string.IsNullOrEmpty(identifier))
+        {
+            return false;
+        }
+
+        // Ensure that the identifier does not contain any spaces
+        if (identifier.Contains(" "))
+        {
+            return false;
+        }
+
+        // Define a regex pattern for a valid identifier
+        // The identifier must start with a letter (A-Za-z) or an underscore (_), and can contain letters, digits (0-9), or underscores (_), but no spaces.
+        var pattern = @"^[A-Za-z_][A-Za-z0-9_]*$";
+
+        // Check if the identifier matches the pattern
+        if (!Regex.IsMatch(identifier, pattern))
+        {
+            // If it doesn't match the pattern, it's invalid
+            return false;
+        }
+
+        // Check if the identifier is a reserved keyword
+        string[] keywords = new string[]
+        {
+            "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked",
+            "class", "const", "continue", "decimal", "default", "delegate", "do", "double",
+            "else", "enum", "event", "explicit", "extern", "false", "finally", "fixed", "float",
+            "for", "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal",
+            "is", "lock", "long", "namespace", "new", "null", "object", "operator", "out", "override",
+            "params", "private", "protected", "public", "readonly", "ref", "return", "sbyte", "sealed",
+            "short", "sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw",
+            "true", "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using",
+            "virtual", "void", "volatile", "while"
+        };
+
+        // If the identifier is a C# keyword, it's invalid
+        if (Array.Exists(keywords, keyword => keyword.Equals(identifier, StringComparison.OrdinalIgnoreCase)))
+        {
+            // If it's a keyword, it's invalid
+            return false;
+        }
+
+        // If it passes all checks, it's a valid identifier
+        return true;
     }
 }
