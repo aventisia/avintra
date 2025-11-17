@@ -35,6 +35,12 @@ public enum AppSecretTypesEnum
     [Description("GitHub API Key")]
     GitHub,
 
+    /// <summary>
+    /// Represents the credentials or configuration necessary to integrate with Microsoft 365 (M365) services.
+    /// </summary>
+    [Description("M365 Credentials")]
+    M365,
+
     [Description("General Credentials")]
     GeneralCredentials,
 
@@ -44,6 +50,7 @@ public enum AppSecretTypesEnum
     [Description("OneDrive API Key")]
     OneDriveCredentialApi,
 
+    // TODO: need to remove this
     /// <summary>
     /// Represents the credentials or configuration necessary to integrate with Microsoft 365 (M365) services.
     /// </summary>
