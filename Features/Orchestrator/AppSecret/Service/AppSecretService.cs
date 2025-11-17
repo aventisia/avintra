@@ -715,7 +715,7 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
-                  case nameof(AppSecretTypesEnum.GitHub):
+            case nameof(AppSecretTypesEnum.GitHub):
                 {
                     var gitHubCredentials = System.Text.Json.JsonSerializer.Deserialize<GitHubCredentialsDto>(rawJson, jsonOptions);
                     if (gitHubCredentials != null)
@@ -734,8 +734,23 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
+            case nameof(AppSecretTypesEnum.M365):
+                {
+                    var m365Credentials = System.Text.Json.JsonSerializer.Deserialize<M365CredentialsDto>(rawJson, jsonOptions);
+                    if (m365Credentials != null)
+                    {
 
-                 case nameof(AppSecretTypesEnum.GeneralCredentials):
+                        validationResult.EncryptedValues["ClientSecret"] = _encryptionService.EncryptString(m365Credentials.ClientSecret);
+                        m365Credentials.ClientSecret = string.Empty;
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(m365Credentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid GitHub credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case nameof(AppSecretTypesEnum.GeneralCredentials):
                 {
                     var generalCredential = System.Text.Json.JsonSerializer.Deserialize<GeneralCredentialsDto>(rawJson, jsonOptions);
                     if (generalCredential != null)
@@ -775,27 +790,6 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-                 case nameof(AppSecretTypesEnum.M365CredentialApi):
-                {
-                    var m365Credentials = System.Text.Json.JsonSerializer.Deserialize<M365CredentialsDto>(rawJson, jsonOptions);
-                    if (m365Credentials != null)
-                    {
-                       
-                        validationResult.EncryptedValues["ClientSecret"] = _encryptionService.EncryptString(m365Credentials.ClientSecret);                     
-                        m365Credentials.ClientSecret = string.Empty;
-                        m365Credentials.ClientId = string.Empty;
-                        m365Credentials.AzureTenantId = string.Empty;
-
-
-                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(m365Credentials, jsonOptions);
-                    }
-                    else
-                    {
-                        validationResult.Remark = "Invalid GitHub credentials: required fields missing or format incorrect.";
-                    }
-                    break;
-                }    
-
             case nameof(AppSecretTypesEnum.AnthropicApi):
                 {
                     // Deserialize JSON into AnthropicCredentialsDto
@@ -819,7 +813,7 @@ public class AppSecretService : IAppSecretService
                     var googleGeminiCredentials = System.Text.Json.JsonSerializer.Deserialize<GoogleGeminiCredentialsDto>(rawJson, jsonOptions);
                     if (googleGeminiCredentials != null)
                     {
-                       
+
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(googleGeminiCredentials.ApiKey);
                         googleGeminiCredentials.ApiKey = string.Empty;
                         googleGeminiCredentials.Host = string.Empty;
