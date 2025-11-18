@@ -23,7 +23,7 @@ import {
   idProps,
   isDisabledProps,
   nameProps,
-  tagsProps,
+  // tagsProps,
   typeProps,
   valueProps,
 } from "../../constants/keystore-form-field-props";
@@ -140,13 +140,13 @@ export const KeystoreCrudForm = () => {
       {/* description  */}
       <TextareaField {...descriptionProps} />
 
-      {/* value  */}
-      <InputField
+      {/* Tags  */}
+      {/* <InputField
         {...{
           ...tagsProps,
           placeholder: crudAction !== "read" ? "inovice,billing" : "",
         }}
-      />
+      /> */}
 
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
