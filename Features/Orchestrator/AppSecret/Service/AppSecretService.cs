@@ -742,8 +742,6 @@ public class AppSecretService : IAppSecretService
 
                         validationResult.EncryptedValues["ClientSecret"] = _encryptionService.EncryptString(m365Credentials.ClientSecret);
                         m365Credentials.ClientSecret = string.Empty;
-                        m365Credentials.AzureTenantId = string.Empty;
-                        m365Credentials.ClientId = string.Empty;
                         sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(m365Credentials, jsonOptions);
                     }
                     else
