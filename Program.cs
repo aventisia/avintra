@@ -116,6 +116,6 @@ app.UseMiddleware<TenantResolver>();
 
 app.MapControllers();
 
-app.MapHub<MachineHub>("/machine-hub");
+app.MapHub<OrchestratorHub>("/orchestrator-hub");
 
 await app.RunAsync();
