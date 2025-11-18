@@ -4,18 +4,24 @@ public class MachineService : IMachineService
 {
     private readonly ILogger<MachineService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IClientStatusStore _clientStatusStore;
+    private readonly ICurrentTenantService _currentTenantService;
     private readonly Guid _userId;
 
     public MachineService(
         ILogger<MachineService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IClientStatusStore clientStatusStore,
+        ICurrentTenantService currentTenantService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _clientStatusStore = clientStatusStore;
+        _currentTenantService = currentTenantService;
     }
 
     // Checks the availability of a machine name.
@@ -103,15 +109,6 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
-            // Register the new machine with the machine hub
-            MachineStore.AddOrUpdateMachineStatus(new MachineStatusDto()
-            {
-                MachineId = newMachine.Id,
-                AgentId = null,
-                Status = MachineStatusTypeEnum.Online,
-                LastUpdated = DateTimeOffset.UtcNow,
-            });
-
             // If agent IDs are provided, proceed to assign them
             if (machineDto.AgentIds != null && machineDto.AgentIds.Any())
             {
@@ -192,10 +189,14 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
-            // Attempt to remove the machine from the MachineStore by its unique ID
-            if (MachineStore.RemoveMachine(machine.Id))
+            // Attempt to retrieve the client status from the store based on the machine's unique ID
+            var clientStatusDto = await _clientStatusStore.GetClientByIdAsync(machine.Id);
+
+            // Check if the client status was found (i.e., the machine exists in the store)
+            if (clientStatusDto != null)
             {
-                _logger.LogInformation($"Machine with ID {machine.Id} removed successfully.");
+                // If the machine was found, remove it from the client status store using its connection ID
+                await _clientStatusStore.RemoveClientByConnectionAsync(clientStatusDto.ConnectionId);
             }
 
             // Delete machine
@@ -250,17 +251,20 @@ public class MachineService : IMachineService
                 .AsNoTracking()
                 .ToListAsync();
 
+            // Retrieve the list of machine statuses for the current tenant
+            var clientStatusDtos = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
+
+            // Iterate through each machine in the 'machines' collection
             foreach (var machine in machines)
             {
-                // Check if the machine exists in the MachineStore dictionary
-                if (MachineStore.Machines.TryGetValue(machine.Id, out var storedMachine))
-                {
-                    machine.Status = storedMachine.Status;
-                }
-                else
-                {
-                    machine.Status = MachineStatusTypeEnum.Offline;
-                }
+                // Find the status of the machine by matching its ClientId with the current machine's Id
+                var clientStatusDto = clientStatusDtos.FirstOrDefault(status => status.ClientId == machine.Id);
+
+                // Set the machine's status based on whether a matching status was found
+                machine.Status = clientStatusDto != null ? clientStatusDto.Status : MachineStatusTypeEnum.Offline;
+
+                // (Optional) Update the machine's last checked-in time if a valid status is found
+                // machine.LastCheckedIn = clientStatusDto != null ? clientStatusDto.LastSeen : MachineStatusTypeEnum.Offline;
             }
 
             // Task successful
@@ -310,15 +314,14 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
-            // Check if the machine exists in the MachineStore dictionary
-            if (MachineStore.Machines.TryGetValue(machine.Id, out var storedMachine))
-            {
-                machine.Status = storedMachine.Status;
-            }
-            else
-            {
-                machine.Status = MachineStatusTypeEnum.Offline;
-            }
+            // Attempt to retrieve the client status from the store based on the machine's unique ID
+            var clientStatusDto = await _clientStatusStore.GetClientByIdAsync(machine.Id);
+
+            // If the client status is found, update the machine's status to match the stored status. If no status is found, mark the machine as 'Offline'.
+            machine.Status = clientStatusDto != null ? clientStatusDto.Status : MachineStatusTypeEnum.Offline;
+
+            // (Optional) Update the machine's 'LastCheckedIn' timestamp if a valid status is found.
+            // machine.LastCheckedIn = clientStatusDto != null ? clientStatusDto.LastSeen : DateTimeOffset.UtcNow;
 
             // Task successful
             serviceResponse.Data = machine.Adapt<MachineDto>();
@@ -397,15 +400,6 @@ public class MachineService : IMachineService
                 _logger.LogInformation("Context SaveChanges failed while updating machine");
                 return serviceResponse;
             }
-
-            // Register the new machine with the machine hub
-            MachineStore.AddOrUpdateMachineStatus(new MachineStatusDto()
-            {
-                MachineId = machine.Id,
-                AgentId = null,
-                Status = MachineStatusTypeEnum.Online,
-                LastUpdated = DateTimeOffset.UtcNow,
-            });
 
             // Handle agent assignments
             var existingMachineFlows = machine.MachineFlows.ToList();
@@ -527,13 +521,20 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
-            // Iterate through each machine in the 'machines' collection
+            // Attempt to retrieve the list of machine statuses for the current tenant
+            var machineStatusesList = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
+
+            // Iterate through each machine in the 'machines' collection that we need to process
             foreach (var machine in machines)
             {
-                // Attempt to remove the machine from the MachineStore by its unique ID
-                if (MachineStore.RemoveMachine(machine.Id))
+                // Find the machine's current status based on its unique client ID
+                var clientStatusDto = machineStatusesList.FirstOrDefault(w => w.ClientId == machine.Id);
+
+                // Check if the machine's status was found in the store
+                if (clientStatusDto != null)
                 {
-                    _logger.LogInformation($"Machine with ID {machine.Id} removed successfully.");
+                    // If a status was found, attempt to remove the machine from the store by its connection ID
+                    await _clientStatusStore.RemoveClientByConnectionAsync(clientStatusDto.ConnectionId);
                 }
             }
 
