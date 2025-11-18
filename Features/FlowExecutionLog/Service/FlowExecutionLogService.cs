@@ -38,7 +38,7 @@ public class FlowExecutionLogService : IFlowExecutionLogService
             //Try to get flow execution logs
             var logs = await _unitOfWork.FlowExecutionLogRepo
             .GetByConditionAsync(v => v.FlowId == flowId)
-            .OrderBy(o => o.ExecutedOn).ToListAsync();
+            .OrderByDescending(o => o.ExecutedOn).ToListAsync();
 
             // Task successful
             serviceResponse.Data = logs.Adapt<IEnumerable<FlowExecutionLogDto>>();
@@ -70,7 +70,7 @@ public class FlowExecutionLogService : IFlowExecutionLogService
             //Try to get flow execution logs
             var logs = await _unitOfWork.FlowExecutionLogRepo
             .GetAllAsync()
-            .OrderBy(o => o.ExecutedOn).ToListAsync();
+            .OrderByDescending(o => o.ExecutedOn).ToListAsync();
 
             // Task successful
             serviceResponse.Data = logs.Adapt<IEnumerable<FlowExecutionLogDto>>();
@@ -103,8 +103,7 @@ public class FlowExecutionLogService : IFlowExecutionLogService
             newLog.ExecutedBy = _username;
             newLog.ExecutedOn = DateTimeOffset.UtcNow;
             newLog.StartTime = DateTimeOffset.UtcNow;
-            newLog.EndTime = DateTimeOffset.UtcNow;
-
+            newLog.EndTime = DateTimeOffset.MinValue;           
             //Insert an execution log
             await _unitOfWork.FlowExecutionLogRepo.InsertAsync(newLog);
 
@@ -155,9 +154,9 @@ public class FlowExecutionLogService : IFlowExecutionLogService
                 serviceResponse.Message = "A flow execution log does not exist";
                 return serviceResponse;
             }
-
+            
             // Auto mapping 
-            var newLog = flowExecutionLogDto.Adapt(log);
+            var newLog = flowExecutionLogDto.Adapt(log);  
 
             //create a new flow execution log
             _unitOfWork.FlowExecutionLogRepo.Update(newLog);
