@@ -4,18 +4,21 @@ public class FlowVersionService : IFlowVersionService
 {
     private readonly ILogger<FlowVersionService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly Guid _userId;
 
     public FlowVersionService(
         ILogger<FlowVersionService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IUserManagementGuardService userManagementGuardService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     // Get a list of flow versions of a single flow using flow identifier
@@ -35,10 +38,9 @@ public class FlowVersionService : IFlowVersionService
             .GetByConditionAsync(w =>
                 w.FlowId == flowId &&
                 (
-                     w.CreatedByUserId == _userId ||
-                    (
-                        w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
-                    )
+                    w.CreatedByUserId == _userId ||
+                    (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(user => user.UserId == _userId)) ||
+                    (w.IsPublished && _userManagementGuardService.HasRole("OM"))
                 )
             )
             .Include(i => i.Flow)
