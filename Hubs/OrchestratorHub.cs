@@ -104,75 +104,69 @@ public class OrchestratorHub : Hub
     }
 
 
-    // Executes an agent on a specific machine. Updates the machine's status and triggers the agent if all conditions are met.
-    public async Task ExecuteAgent(Guid machineId, Guid agentId)
+    // Executes an agent on a specific machine. Updates the machine's status and triggers the agent if all conditions are satisfied.
+    public async Task ExecuteAgent(Guid machineId, object payload)
     {
-        // Retrieve the HTTP context to access user identity details (e.g., clientId, tenantId)
+        // Retrieve the HTTP context to access the user's identity details (e.g., clientId, tenantId).
         var httpContext = Context.GetHttpContext();
         var clientId = Guid.Parse(Context?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         var tenantId = Guid.Parse(Context?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
-        // Validate machineId and agentId to ensure they are not empty GUIDs
-        if (machineId == Guid.Empty || agentId == Guid.Empty)
+        // Ensure the provided machineId is valid and not an empty GUID.
+        if (machineId == Guid.Empty)
         {
-            await Clients.Caller.SendAsync("error", "Invalid machine or agent ID.");
+            await Clients.Caller.SendAsync("error", "Invalid machine ID.");
             return;
         }
 
-        // Retrieve the machine's current status using the machineId from the store
+        // Ensure the provided payload is not null or default.
+        if (payload == null || payload == default)
+        {
+            await Clients.Caller.SendAsync("error", "Invalid payload.");
+            return;
+        }
+
+        // Retrieve the current status of the machine using the provided machineId.
         var clientStatusDto = await _clientStatusStore.GetClientByIdAsync(machineId);
 
-        // If the machine is not found in the store, send an error message
+        // If the machine cannot be found in the system, return an error.
         if (clientStatusDto == null)
         {
             await Clients.Caller.SendAsync("error", "Machine not found.");
             return;
         }
 
-
-        // If the machine is not online, send an error message
+        // If the machine is not online, return an error indicating it's unavailable.
         if (clientStatusDto.Status != MachineStatusTypeEnum.Online)
         {
             await Clients.Caller.SendAsync("error", "Machine is not online or unavailable.");
             return;
         }
 
-        // Retrieve the agent details from the repository to ensure it's valid and published
-        var agent = await _unitOfWork.FlowVersionRepo
-            .GetByConditionAsync(w => w.Id == agentId && w.IsPublished)
-            .FirstOrDefaultAsync();
-
-        // If the agent is not found or not published, return an error message
-        if (agent == null)
-        {
-            await Clients.Caller.SendAsync("error", "Agent not found or not published.");
-            return;
-        }
-
         try
         {
-            // Check if the machine is not already running an agent before starting a new one
+            // Check if the machine is not currently running an agent before attempting to execute a new one.
             if (clientStatusDto.Status != MachineStatusTypeEnum.Running)
             {
-                // Update the machine's status to "Running" to indicate the agent is being executed
+                // Update the machine's status to "Running" to indicate that the agent execution is in progress.
                 clientStatusDto.Status = MachineStatusTypeEnum.Running;
                 clientStatusDto.LastSeen = DateTimeOffset.UtcNow;
 
-                // Update the machine's status in the store
+                // Persist the updated status to the store.
                 await _clientStatusStore.UpdateClientStatusAsync(clientStatusDto);
 
-                // Trigger the agent execution on the machine by sending a command to the machine's connection
-                await Clients.Client(clientStatusDto.ConnectionId).SendAsync("trigger_agent_manual", new { agent });
+                // Send a command to trigger the agent on the machine using its connection ID.
+                await Clients.Client(clientStatusDto.ConnectionId).SendAsync("trigger_agent", payload);
             }
             else
             {
-                // If the machine is already running an agent, send an error message
+                // If the machine is already running an agent, return an error indicating the conflict.
                 await Clients.Caller.SendAsync("error", "The machine is already running an agent.");
             }
         }
         catch (Exception ex)
         {
-            // Catch and report any unexpected exceptions during the execution of the agent
+            // Handle and report any unexpected exceptions that occur during agent execution.
             await Clients.Caller.SendAsync("error", $"An error occurred while executing the agent: {ex.Message}");
         }
     }
