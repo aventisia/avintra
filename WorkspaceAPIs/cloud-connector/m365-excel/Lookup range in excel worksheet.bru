@@ -1,7 +1,7 @@
 meta {
-  name: Read value from range
+  name: Lookup range in excel worksheet
   type: http
-  seq: 7
+  seq: 16
 }
 
 post {
@@ -15,13 +15,13 @@ body:json {
     "agentId": "00000000-0000-0000-0000-000000000000",
     "agentName": "Test",
     "provider": "M365",
-    "action": "ReadValueFromRange",
+    "action": "AddWorksheet",
     "credentialId": "43558714-70a9-4a27-b4b1-a13e0a4ba1b6",
     "payload": {
       "driveId": "b!whRq9wV6jkCLuzc69oeHCN2hyh95YWZGvw93JX0ogFhC2b21p-fWT5Pie-nRfiLl",
       "itemId": "013AXKAIBJURS5AZBJMRBK77B6DM5GYVJR",
       "worksheetName": "Sheet1",
-      "rangeAddress": "B10:D13"
+       "rangeAddress": "B5:E5"
     }
   }
 }
