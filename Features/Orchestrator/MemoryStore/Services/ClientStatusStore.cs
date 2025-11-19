@@ -4,8 +4,8 @@ namespace WorkspaceAPIs.Services;
 
 public class ClientStatusStore : IClientStatusStore
 {
-    // Thread-safe dictionary to store client statuses, with the connection ID as the key.
-    private readonly ConcurrentDictionary<string, ClientStatusDto> ClientStore = new ConcurrentDictionary<string, ClientStatusDto>();
+    // Thread-safe dictionary to store client statuses, with the clientId as the key.
+    private readonly ConcurrentDictionary<Guid, ClientStatusDto> ClientStore = new ConcurrentDictionary<Guid, ClientStatusDto>();
 
     // Adds or updates the client's status in the store.
     public Task AddOrUpdateStatusAsync(ClientStatusDto clientStatusDto)
@@ -13,9 +13,9 @@ public class ClientStatusStore : IClientStatusStore
         // Set the last seen timestamp to the current time (UTC).
         clientStatusDto.LastSeen = DateTimeOffset.UtcNow;
 
-        // Add or update the client status in the dictionary.
+        // Add or update the client status in the dictionary using clientId as the key.
         ClientStore.AddOrUpdate(
-            clientStatusDto.ConnectionId,
+            clientStatusDto.ClientId,
             clientStatusDto,
             (_, existing) =>
             {
@@ -32,24 +32,36 @@ public class ClientStatusStore : IClientStatusStore
         return Task.CompletedTask;
     }
 
-    // Removes a client from the store by its connection identifier.
+    // Removes a client from the store by its connection identifier (we'll update this to use clientId).
     public Task RemoveClientByConnectionAsync(string connectionId)
     {
-        // Attempt to remove the client using its connection ID.
-        ClientStore.TryRemove(connectionId, out _);
+        // Find the client by its connection ID.
+        var clientToRemove = ClientStore.Values
+            .FirstOrDefault(c => c.ConnectionId == connectionId);
+
+        // If found, remove the client from the store.
+        if (clientToRemove != null)
+        {
+            ClientStore.TryRemove(clientToRemove.ClientId, out _);
+        }
+
         return Task.CompletedTask;
     }
 
-    // Retrieves the status of a client by their connection ID.
+    // Retrieves the status of a client by their client ID.
     public Task<ClientStatusDto?> GetStatusByConnectionIdAsync(string connectionId)
     {
-        // Try to get the client status by connection ID.
-        if (ClientStore.TryGetValue(connectionId, out var clientStatus))
+        // Find the client by its connection ID.
+        var client = ClientStore.Values
+            .FirstOrDefault(c => c.ConnectionId == connectionId);
+
+        // Return the client status by clientId if found.
+        if (client != null && ClientStore.TryGetValue(client.ClientId, out var clientStatus))
         {
             return Task.FromResult<ClientStatusDto?>(clientStatus);
         }
 
-        // Return null if the client status doesn't exist.
+        // Return null if no client found with the given connection ID.
         return Task.FromResult<ClientStatusDto?>(null);
     }
 
@@ -69,7 +81,6 @@ public class ClientStatusStore : IClientStatusStore
         var machine = ClientStore.Values
             .FirstOrDefault(c => c.ClientId == clientId && c.Type == ClientTypesEnum.AssistAppMachine);
 
-        // Return the result directly; if no machine is found, it will return null.
         return Task.FromResult<ClientStatusDto?>(machine);
     }
 
@@ -84,11 +95,11 @@ public class ClientStatusStore : IClientStatusStore
         return Task.FromResult<IEnumerable<ClientStatusDto>>(users);
     }
 
-    // Updates the status of a client by their connection ID.
+    // Updates the status of a client by their clientId.
     public Task UpdateClientStatusAsync(ClientStatusDto clientStatusDto)
     {
-        // Attempt to find and update the client's status by connection ID.
-        if (ClientStore.TryGetValue(clientStatusDto.ConnectionId, out var existingClient))
+        // Attempt to find and update the client's status by clientId.
+        if (ClientStore.TryGetValue(clientStatusDto.ClientId, out var existingClient))
         {
             existingClient.Status = clientStatusDto.Status;
             existingClient.LastSeen = DateTimeOffset.UtcNow;
