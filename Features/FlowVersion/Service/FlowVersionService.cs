@@ -39,7 +39,7 @@ public class FlowVersionService : IFlowVersionService
                 w.FlowId == flowId &&
                 (
                     w.CreatedByUserId == _userId ||
-                    (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(user => user.UserId == _userId)) ||
+                    (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)) ||
                     (w.IsPublished && _userManagementGuardService.HasRole("OM"))
                 )
             )
