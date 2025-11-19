@@ -80,4 +80,14 @@ public class UserManagementGuardService : IUserManagementGuardService
         // If everything is fine, return true
         return true;
     }
+
+    /// <summary>
+    /// Checks if the current user has a specific role based on their claims.
+    /// </summary>
+    /// <param name="role">The role to check for.</param>
+    /// <returns>True if the user has the specified role, otherwise false.</returns>
+    public bool HasRole(string role)
+    {
+        return _userRoles.Contains(role, StringComparer.OrdinalIgnoreCase);
+    }
 }

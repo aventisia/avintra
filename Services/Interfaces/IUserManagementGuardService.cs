@@ -25,4 +25,11 @@ public interface IUserManagementGuardService
     /// <param name="userId">The Id of the user (to be managed user).</param>
     /// <returns>True if the current user is allowed, false otherwise.</returns>
     bool IsAllowedToManageOtherDbUser(Guid userId);
+
+    /// <summary>
+    /// Checks if the current user has a specific role based on their claims.
+    /// </summary>
+    /// <param name="role">The role to check for (e.g., "SA", "TA").</param>
+    /// <returns>True if the current user has the specified role, false otherwise.</returns>
+    bool HasRole(string role);
 }
