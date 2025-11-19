@@ -8,5 +8,16 @@ public enum M365ActionsEnum
     AddRowToTable,
     GetWorksheetNames,
     WriteValueToRange,
-    ReadValueFromRange
+    ReadValueFromRange,
+    RenameWorksheet,
+    ReadFormula,
+    DeleteWorksheet,
+    ClearWorksheetRange,
+    DeleteNamedRange,
+    GetColumnFromWorksheetByIndex,
+    SetColorInExcelWorksheet,
+    SelectSpecificRangeOfCellInWorksheet,
+    ResizeColumnsRowsInExcelWorksheet,
+    LookupRangeinExcelWorksheet
+    
 }
