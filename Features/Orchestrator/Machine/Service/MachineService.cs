@@ -136,14 +136,12 @@ public class MachineService : IMachineService
             }
 
             newMachine = await _unitOfWork.MachineRepo
-                            .GetByConditionAsync(m =>
-                                m.Id == newMachine.Id
-                            )
-                            .Include(a => a.CreatedByUser)
-                            .Include(a => a.LastModifiedByUser)
-                            .Include(a => a.MachineFlows)
-                                .ThenInclude(fv => fv.FlowVersion)
-                                .ThenInclude(f => f.Flow)
+                            .GetByConditionAsync(w => w.Id == newMachine.Id)
+                            .Include(i => i.CreatedByUser)
+                            .Include(i => i.LastModifiedByUser)
+                            .Include(i => i.MachineFlows)
+                                .ThenInclude(i2 => i2.FlowVersion)
+                                .ThenInclude(i3 => i3.Flow)
                             .AsNoTracking()
                             .FirstOrDefaultAsync();
 
@@ -177,8 +175,8 @@ public class MachineService : IMachineService
         {
             // Try to get machine
             var machine = await _unitOfWork.MachineRepo
-                                            .GetByConditionAsync(m => m.Id == machineId)
-                                            .Include(a => a.MachineFlows)
+                                            .GetByConditionAsync(w => w.Id == machineId)
+                                            .Include(i => i.MachineFlows)
                                             .FirstOrDefaultAsync();
 
             // Machine does not exist
@@ -241,7 +239,7 @@ public class MachineService : IMachineService
         {
             // Try to get machines
             var machines = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(m => m.CreatedByUserId == _userId)
+                .GetAllAsync()
                 .OrderByDescending(o => o.CreatedOn)
                 .Include(a => a.CreatedByUser)
                 .Include(a => a.LastModifiedByUser)
@@ -296,14 +294,12 @@ public class MachineService : IMachineService
         {
             // Try to get machine
             var machine = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(m =>
-                    m.Id == machineId && m.CreatedByUserId == _userId
-                )
-                .Include(a => a.CreatedByUser)
-                .Include(a => a.LastModifiedByUser)
-                .Include(a => a.MachineFlows)
-                    .ThenInclude(fv => fv.FlowVersion)
-                    .ThenInclude(f => f.Flow)
+                .GetByConditionAsync(w => w.Id == machineId)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.MachineFlows)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                    .ThenInclude(i3 => i3.Flow)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -351,10 +347,8 @@ public class MachineService : IMachineService
         {
             // Validate machine existence
             var machine = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(m =>
-                    m.Id == machineDto.Id && m.CreatedByUserId == _userId
-                )
-                .Include(a => a.MachineFlows)
+                .GetByConditionAsync(w => w.Id == machineDto.Id)
+                .Include(i => i.MachineFlows)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -368,9 +362,9 @@ public class MachineService : IMachineService
 
             // Validate machine name uniqueness
             var machineAlreadyExists = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(m =>
-                    m.Name.ToLower() == machineDto.Name.ToLower() &&
-                    m.Id != machineDto.Id
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == machineDto.Name.ToLower() &&
+                    w.Id != machineDto.Id
                 )
                 .FirstOrDefaultAsync();
 
@@ -467,14 +461,12 @@ public class MachineService : IMachineService
             }
 
             machine = await _unitOfWork.MachineRepo
-                            .GetByConditionAsync(m =>
-                                m.Id == machine.Id
-                            )
-                            .Include(a => a.CreatedByUser)
-                            .Include(a => a.LastModifiedByUser)
-                            .Include(a => a.MachineFlows)
-                                .ThenInclude(fv => fv.FlowVersion)
-                                .ThenInclude(f => f.Flow)
+                            .GetByConditionAsync(w => w.Id == machine.Id)
+                            .Include(i => i.CreatedByUser)
+                            .Include(i => i.LastModifiedByUser)
+                            .Include(i => i.MachineFlows)
+                                .ThenInclude(i2 => i2.FlowVersion)
+                                .ThenInclude(i3 => i3.Flow)
                             .AsNoTracking()
                             .FirstOrDefaultAsync();
 
@@ -507,9 +499,7 @@ public class MachineService : IMachineService
         {
             // Validate machines existence
             var machines = await _unitOfWork.MachineRepo
-                                            .GetByConditionAsync(w =>
-                                                w.CreatedByUserId == _userId &&
-                                                machineIds.Contains(w.Id))
+                                            .GetByConditionAsync(w => machineIds.Contains(w.Id))
                                             .Include(a => a.MachineFlows)
                                             .ToListAsync();
 
@@ -578,10 +568,8 @@ public class MachineService : IMachineService
         {
             // Check if the machine exists and belongs to the current user
             var machine = await _unitOfWork.MachineRepo
-                                            .GetByConditionAsync(w =>
-                                                w.Id == machineId &&
-                                                w.CreatedByUserId == _userId)
-                                            .Include(a => a.MachineFlows)
+                                            .GetByConditionAsync(w => w.Id == machineId)
+                                            .Include(i => i.MachineFlows)
                                             .FirstOrDefaultAsync();
 
             // Return an error if the machine doesn't exist
@@ -594,9 +582,7 @@ public class MachineService : IMachineService
 
             // Retrieve all agents for the current user
             var agents = await _unitOfWork.FlowVersionRepo
-                                            .GetByConditionAsync(w =>
-                                                w.IsPublished &&
-                                                w.CreatedByUserId == _userId)
+                                            .GetByConditionAsync(w => w.IsPublished)
                                             .Include(f => f.Flow)
                                             .ProjectToType<AssignAgentDto>()
                                             .ToListAsync();
@@ -688,7 +674,7 @@ public class MachineService : IMachineService
 
             // Get existing machine flows and determine changes
             var existingMachineFlows = await _unitOfWork.MachineFlowRepo
-                        .GetByConditionAsync(mf => mf.MachineId == machineId)
+                        .GetByConditionAsync(w => w.MachineId == machineId)
                         .AsNoTracking()
                         .ToListAsync();
 
@@ -765,15 +751,13 @@ public class MachineService : IMachineService
 
             // Query machines created by the current user and match the search key
             var machines = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(w =>
-                    w.Name.ToLower().Contains(normalizedKey)
-                )
+                .GetByConditionAsync(w => w.Name.ToLower().Contains(normalizedKey))
                 .OrderByDescending(o => o.CreatedOn)
-                .Include(a => a.CreatedByUser)
-                .Include(a => a.LastModifiedByUser)
-                .Include(a => a.MachineFlows)
-                    .ThenInclude(fv => fv.FlowVersion)
-                    .ThenInclude(f => f.Flow)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.MachineFlows)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                    .ThenInclude(i3 => i3.Flow)
                 .AsNoTracking()
                 .ToListAsync();
 
