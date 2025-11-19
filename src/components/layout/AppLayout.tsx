@@ -2,17 +2,19 @@ import { Sidebar } from "@aventisia/ui/layout";
 import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { useBaseLayoutStore } from "@aventisia/ui/stores";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { DotPattern } from "@/components/layout/DotPattern";
 import { IS_TAURI } from "@/constants/constants";
+import useCheckMachineStatus from "@/features/orchestrator/machines-table/hooks/useCheckMachineStatus";
 import {
   useCheckForUpdate,
   useRedirectOnRelaunch,
 } from "@/features/tauri-updater";
 import { useFetchPaymentStatus } from "@/features/tenant/hooks/useFetchPaymentStatus";
+import useWebSocket from "@/hooks/useWebSocket";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 
 import AppBanner from "./AppBanner";
@@ -21,6 +23,8 @@ import { AppRedirectPage } from "./AppRedirectPage";
 import { getSidebarMenuBasedOnPersmissions } from "./sidebar-menu-sections";
 
 export const AppLayout = () => {
+  const [connectWebsocket, setConnectWebsocket] = useState<boolean>(false);
+
   // Get the state and actions from the base layout store
   const { sidebarExpand, appBanner, setViteEnvVars, setSidebarMenuSections } =
     useBaseLayoutStore(
@@ -40,6 +44,15 @@ export const AppLayout = () => {
 
   useFetchPaymentStatus();
 
+  // Establish websocket connection and expose ref
+  const { connection, isReady } = useWebSocket({
+    url: `${import.meta.env.VITE_WORC_API_URL}/orchestrator-hub?type=WebBrowserUser`,
+    shouldConnect: connectWebsocket,
+  });
+
+  // Check and invalidates machines data based on websocket
+  useCheckMachineStatus(isReady ? connection : null);
+
   // Validate user session
   const { isPending, userSession } = useValidateUserSession();
 
@@ -54,6 +67,12 @@ export const AppLayout = () => {
       APP_NAME: import.meta.env.VITE_APP_NAME,
       COMPANY_NAME: import.meta.env.VITE_COMPANY_NAME,
     });
+
+    // Websocket connection flag
+    setConnectWebsocket(
+      userSession.userRoles.includes("OM") ||
+        userSession.userRoles.includes("SA"), //TODO: Remove SA after testing
+    );
 
     // Set the sidebar menu sections
     setSidebarMenuSections(
