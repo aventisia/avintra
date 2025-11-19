@@ -14,7 +14,7 @@ import {
   BotIcon,
   CheckCheckIcon,
   FileBoxIcon,
-  Library,
+  FolderCogIcon,
   LibraryIcon,
   MonitorPlayIcon,
   ServerIcon,
@@ -85,7 +85,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       },
       {
         permissions: ["SA", "TA", "OM"],
-        Icon: Library,
+        Icon: FolderCogIcon,
         name: "Key Store",
         route: "/orchestrator/keystore",
       },
