@@ -63,7 +63,7 @@ public class OrchestratorHub : Hub
         if (clientType == ClientTypesEnum.AssistAppMachine)
         {
             // Notify all users in the tenant group that a new machine has come online
-            await Clients.Group($"TENANT_{tenantId}").SendAsync("machine_status_update");
+            await Clients.Group($"TENANT_{tenantId}").SendAsync("machine_status_update", "A machine is online now.");
         }
 
         // Complete the connection process by calling the base method
@@ -90,7 +90,7 @@ public class OrchestratorHub : Hub
             // If the disconnected client is a machine, mark it as "Offline" and notify other clients in the same group
             if (clientStatusDto.Type == ClientTypesEnum.AssistAppMachine)
             {
-                await Clients.Group($"TENANT_{clientStatusDto.TenantId}").SendAsync("machine_status_update");
+                await Clients.Group($"TENANT_{clientStatusDto.TenantId}").SendAsync("machine_status_update", "A machine is offline now.");
             }
             else
             {
