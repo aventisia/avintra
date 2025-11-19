@@ -4,18 +4,21 @@ public class FlowBuilderService : IFlowBuilderService
 {
     private readonly ILogger<FlowBuilderService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly Guid _userId;
 
     public FlowBuilderService(
         ILogger<FlowBuilderService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IUserManagementGuardService userManagementGuardService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     // Retrieves the flow version record to load when the user opens it in the studio.
@@ -37,7 +40,8 @@ public class FlowBuilderService : IFlowBuilderService
                     w.FlowId == flowId &&
                     (
                         w.CreatedByUserId == _userId ||
-                        (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId))
+                        (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)) ||
+                        (w.IsPublished && _userManagementGuardService.HasRole("OM"))
                     )
                 )
                 .Include(u => u.CreatedByUser)
