@@ -43,7 +43,6 @@ public class KeyStoreService : IKeyStoreService
             // Check if a key store with the same name already exists for the current user
             var existingKeyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
-                    w.CreatedByUserId == _userId &&
                     w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
                 .FirstOrDefaultAsync();
 
@@ -83,8 +82,8 @@ public class KeyStoreService : IKeyStoreService
         {
             // Retrieve and order the user's key stores by creation date
             var keyStores = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w => w.CreatedByUserId == _userId)
-                .OrderByDescending(w => w.CreatedOn)
+                .GetAllAsync()
+                .OrderByDescending(o => o.CreatedOn)
                 .ProjectToType<KeyStoreDto>()
                 .ToListAsync();
 
@@ -114,7 +113,7 @@ public class KeyStoreService : IKeyStoreService
         {
             // Fetch the key store by ID, ensuring it's created by the current user
             var keyStore = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w => w.Id == keyStoreId && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Id == keyStoreId)
                 .ProjectToType<KeyStoreDto>()
                 .FirstOrDefaultAsync();
 
@@ -153,8 +152,8 @@ public class KeyStoreService : IKeyStoreService
             // Check if a key store with the same name already exists for the user
             var existingKeyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
-                    w.Name.ToLower() == keyStoreDto.Name.ToLower() &&
-                    w.CreatedByUserId == _userId)
+                    w.Name.ToLower() == keyStoreDto.Name.ToLower()
+                )
                 .FirstOrDefaultAsync();
 
             // If an item with the same name exists, return a conflict response
@@ -219,8 +218,7 @@ public class KeyStoreService : IKeyStoreService
 
             // Fetch the existing key store
             var keyStore = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w =>
-                    w.Id == keyStoreDto.Id && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Id == keyStoreDto.Id)
                 .SingleOrDefaultAsync();
 
             // If the item doesn't exist, return an error message
@@ -235,7 +233,6 @@ public class KeyStoreService : IKeyStoreService
             var existingKeyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
                     w.Name.ToLower() == keyStoreDto.Name.ToLower() &&
-                    w.CreatedByUserId == _userId &&
                     w.Id != keyStoreDto.Id)
                 .FirstOrDefaultAsync();
 
@@ -253,6 +250,7 @@ public class KeyStoreService : IKeyStoreService
 
             // Map the properties from the keyStoreDto to the existing keyStore entity
             keyStoreDto.Adapt(keyStore);
+            keyStore.LastModifiedByUserId = _userId;
 
             // Update the key store in the repository
             _unitOfWork.KeyStoreRepo.Update(keyStore);
@@ -291,7 +289,7 @@ public class KeyStoreService : IKeyStoreService
         {
             // Fetch the key store to be deleted
             var keyStore = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w => w.Id == keyStoreId && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Id == keyStoreId)
                 .SingleOrDefaultAsync();
 
             // If the item doesn't exist, return an error message
@@ -339,7 +337,7 @@ public class KeyStoreService : IKeyStoreService
         {
             // Fetch the key stores to be deleted
             var keyStores = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w => w.CreatedByUserId == _userId && keyStoreIds.Contains(w.Id))
+                .GetByConditionAsync(w => keyStoreIds.Contains(w.Id))
                 .ToListAsync();
 
             // If no items are found, return an error message
@@ -387,8 +385,7 @@ public class KeyStoreService : IKeyStoreService
         {
             // Retrieve the encrypted key store by its ID
             var keyStore = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w =>
-                    w.Id == keyStoreId && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Id == keyStoreId)
                 .SingleOrDefaultAsync();
 
             // If the key store doesn't exist, return an error response
