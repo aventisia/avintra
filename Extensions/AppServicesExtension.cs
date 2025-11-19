@@ -89,7 +89,7 @@ public static class AppServicesExtension
         services.AddScoped<IFlowUserService, FlowUserService>();
         services.AddScoped<IBlockService, BlockService>();
         services.AddScoped<IAppSecretService, AppSecretService>();
-        services.AddScoped<IClientStatusStore, ClientStatusStore>();
+        services.AddSingleton<IClientStatusStore, ClientStatusStore>();
         services.AddScoped<ICloudConnectorsService, CloudConnectorsService>();
         services.AddScoped<IM365ConnectorsService, M365ConnectorsService>();
         // Common services

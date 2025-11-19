@@ -14,94 +14,98 @@ public class OrchestratorHub : Hub
         _unitOfWork = unitOfWork;
     }
 
-    // Called when a client successfully connects to the hub. Registers the client, updates status, and adds to appropriate groups.
+    // This method is called when a client successfully connects to the hub.
+    // It registers the client, updates their status, and adds them to the appropriate groups based on their type.
     public override async Task OnConnectedAsync()
     {
         // Retrieve the HTTP context to access user identity and query parameters
         var httpContext = Context.GetHttpContext();
 
-        // Retrieve the client ID and tenant ID from the user's identity
+        // Extract the client ID and tenant ID from the user's identity claims
         var clientId = Guid.Parse(Context?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         var tenantId = Guid.Parse(Context?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
         // Try to parse the client type from the query string (e.g., 'AssistAppMachine', 'WebBrowserUser')
         Enum.TryParse<ClientTypesEnum>(httpContext.Request.Query["type"], true, out var clientType);
 
-        // Try to parse the machineId from the query string if available
+        // Try to parse the machine ID from the query string if available
         Guid.TryParse(httpContext.Request.Query["machineId"], out var machineId);
 
-        // If the client type is a machine, override the clientId with the machineId
+        // If the client type is a machine, use the machine ID as the client ID
         if (clientType == ClientTypesEnum.AssistAppMachine)
             clientId = machineId;
 
         // Get the unique connection ID for this client (used for real-time messaging)
         var connectionId = Context.ConnectionId;
 
-        // Create or update the client status object to store the client's connection details
+        // Create a new ClientStatusDto object to store the client's connection details
         var clientStatusDto = new ClientStatusDto
         {
             TenantId = tenantId,
             ClientId = clientId,
-            ConnectionId = connectionId, 
+            ConnectionId = connectionId,
             Type = clientType,
             Status = MachineStatusTypeEnum.Online,
             LastSeen = DateTimeOffset.UtcNow
         };
 
-        // Store or update the client's status in the status store
+        // Add or update the client's status in the status store
         await _clientStatusStore.AddOrUpdateStatusAsync(clientStatusDto);
 
-        // Add the client to a tenant-specific group for group-based messaging
-        await Groups.AddToGroupAsync(connectionId, $"TENANT_{tenantId}");
+        // Handle clients that are users (e.g., WebBrowserUser, DesktopAppUser)
+        if (clientType == ClientTypesEnum.WebBrowserUser || clientType == ClientTypesEnum.DesktopAppUser)
+        {
+            // Add the user to a tenant-specific group for group-based messaging
+            await Groups.AddToGroupAsync(connectionId, $"TENANT_{tenantId}");
+        }
 
-        // Special handling for machine clients (e.g., AssistAppMachine)
+        // Handle machine clients (e.g., AssistAppMachine)
         if (clientType == ClientTypesEnum.AssistAppMachine)
         {
             // Notify all users in the tenant group that a new machine has come online
-            await Clients.Group($"TENANT_{tenantId}").SendAsync("machine_status_update", clientStatusDto);
+            await Clients.Group($"TENANT_{tenantId}").SendAsync("machine_status_update");
         }
 
-        // Special handling for user clients (e.g., WebBrowserUser, DesktopAppUser)
-        if (clientType == ClientTypesEnum.WebBrowserUser || clientType == ClientTypesEnum.DesktopAppUser)
-        {
-            // Retrieve a list of all machines for the tenant and send to the connected user
-            var machines = await _clientStatusStore.GetMachineStatusesAsync(tenantId);
-            await Clients.Caller.SendAsync("machine_status_update", machines);
-        }
-
-        // Complete the connection process (this is an override of the base method)
+        // Complete the connection process by calling the base method
         await base.OnConnectedAsync();
     }
 
-    // Called when a client disconnects from the hub. Removes the client from the status store and notifies other clients if necessary.
+
+    // This method is triggered when a client disconnects from the hub.
+    // It removes the client from the status store and notifies other connected clients if needed.
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        // Get the connection ID of the client that disconnected
+        // Get the connection ID of the client that just disconnected
         var connectionId = Context.ConnectionId;
 
-        // Retrieve the client's status from the status store using the connection ID
+        // Retrieve the client's status from the status store using their connection ID
         var clientStatusDto = await _clientStatusStore.GetStatusByConnectionIdAsync(connectionId);
 
-        // If a valid client status is found, proceed with disconnection handling
+        // If a valid client status is found, proceed with the disconnection handling
         if (clientStatusDto != null)
         {
-            // Remove the client from the status store
+            // Remove the client’s status from the store
             await _clientStatusStore.RemoveClientByConnectionAsync(connectionId);
 
-            // If the disconnected client is a machine, update its status to "Offline" and notify other clients
+            // If the disconnected client is a machine, mark it as "Offline" and notify other clients in the same group
             if (clientStatusDto.Type == ClientTypesEnum.AssistAppMachine)
             {
-                clientStatusDto.Status = MachineStatusTypeEnum.Offline;
-                await Clients.Group($"TENANT_{clientStatusDto.TenantId}").SendAsync("machine_status_update", clientStatusDto);
+                await Clients.Group($"TENANT_{clientStatusDto.TenantId}").SendAsync("machine_status_update");
+            }
+            else
+            {
+                // For non-machine clients, remove them from their respective tenant group
+                await Groups.RemoveFromGroupAsync(clientStatusDto.ConnectionId, $"TENANT_{clientStatusDto.TenantId}");
             }
         }
 
-        // Complete the disconnection process (this is an override of the base method)
+        // Call the base method to complete the disconnection process
         await base.OnDisconnectedAsync(exception);
     }
 
+
     // Executes an agent on a specific machine. Updates the machine's status and triggers the agent if all conditions are met.
-    public async Task ExecuteAgent(Guid machineId, Guid agentId, bool isExecutionCompleted)
+    public async Task ExecuteAgent(Guid machineId, Guid agentId)
     {
         // Retrieve the HTTP context to access user identity details (e.g., clientId, tenantId)
         var httpContext = Context.GetHttpContext();
@@ -125,27 +129,6 @@ public class OrchestratorHub : Hub
             return;
         }
 
-        // If the execution is marked as completed, update the machine's status to "Online"
-        if (isExecutionCompleted)
-        {
-            // If the machine is already online, return an error since the status doesn't need to be updated
-            if (clientStatusDto.Status == MachineStatusTypeEnum.Online)
-            {
-                await Clients.Caller.SendAsync("error", "Machine is already online.");
-                return;
-            }
-
-            // Update the machine's status to "Online" and set the current timestamp
-            clientStatusDto.Status = MachineStatusTypeEnum.Online;
-            clientStatusDto.LastSeen = DateTimeOffset.UtcNow;
-
-            // Store the updated machine status in the status store
-            await _clientStatusStore.UpdateClientStatusAsync(clientStatusDto);
-
-            // Notify all clients in the tenant's group about the status update of the machine
-            await Clients.Group($"TENANT_{tenantId}").SendAsync("machine_status_update", clientStatusDto);
-            return;
-        }
 
         // If the machine is not online, send an error message
         if (clientStatusDto.Status != MachineStatusTypeEnum.Online)
