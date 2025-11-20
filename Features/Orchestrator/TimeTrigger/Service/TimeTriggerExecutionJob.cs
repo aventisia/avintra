@@ -32,6 +32,7 @@ public class TimeTriggerExecutionJob : IJob
                     trigger.EffectiveDate.Date <= currentUtcTime.Date &&
                     (trigger.EndDate == null || trigger.EndDate >= currentUtcTime.Date)
                 )
+                .Include(i => i.TimeTriggerFlowVersions)
                 .ToListAsync();
 
             // Log the number of triggers found
@@ -89,13 +90,9 @@ public class TimeTriggerExecutionJob : IJob
                 // Insert the created jobs into the database asynchronously
                 await _unitOfWork.JobRepo.InsertAsync(createdJobs);
             }
-            else
-            {
-                _logger.LogInformation("No jobs to insert into the database.");
-            }
 
             // Save changes to the database and check if successful
-            if (await _unitOfWork.SaveAsync())
+            if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogWarning("Failed to save trigger updates to the database.");
             }
