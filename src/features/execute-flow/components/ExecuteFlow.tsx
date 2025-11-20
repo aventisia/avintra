@@ -14,6 +14,9 @@ import { useShallow } from "zustand/react/shallow";
 import { clearNodeExecutionLog, CURRENT_VERSION_ID_KEY } from "..";
 import useWebSocket from "../hooks/useWebSocket";
 import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
+import { extractUniqueConfigKeys } from "../utils/config-key-utils";
+import { Node } from "@xyflow/react";
+import { NodeDataType } from "@/types/node-data-type";
 
 const ExecuteFlow = ({
   isAssist = false,
@@ -67,6 +70,12 @@ const ExecuteFlow = ({
     if (userSession) {
       // Get the access token from the session
       const accessToken = userSession.data?.accessToken;
+
+      console.log(
+        "ConfigKeys:",
+        extractUniqueConfigKeys(nodes as Node<NodeDataType>[]),
+      );
+
       // Open the desktop executor if the app is running in Tauri
       if (IS_TAURI) {
         localStorage.removeItem("flowExecutionStack"); //  Clear any previous subflow stack
