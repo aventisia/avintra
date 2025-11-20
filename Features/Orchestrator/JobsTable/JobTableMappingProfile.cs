@@ -12,6 +12,7 @@ public class JobTableMappingProfile : IRegister
         config.NewConfig<JobTableDto, Job>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.RetryCount)
+            .Ignore(dest => dest.TenantId)
             .Ignore(dest => dest.CreatedOn)
             .IgnoreNullValues(true);
     }
