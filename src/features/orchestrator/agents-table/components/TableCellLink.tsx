@@ -2,8 +2,11 @@ import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 
 interface TableCellLinkProps {
-  /** The ID to open. */
+  /** The agent ID to open. */
   rowId: string;
+
+  /** The version ID */
+  versionId: string;
 
   /** The cell value to display. */
   cellValue: string;
@@ -16,13 +19,14 @@ export const TableCellLink = ({
   rowId,
   cellValue,
   type,
+  versionId,
 }: TableCellLinkProps) => {
   // Function to open agent/model
   const handleOpenAction = (rowId: string) => {
     // Open url based on type
     window.location.href =
       type == "Agent"
-        ? `${import.meta.env.VITE_AGENTBUILDER_URL}/agent?f=${rowId}`
+        ? `${import.meta.env.VITE_AGENTBUILDER_URL}/agent?f=${rowId}&v=${versionId}`
         : "#"; //TODO:Add model url
   };
 
