@@ -535,16 +535,10 @@ namespace WorkspaceAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<TimeSpan?>("Duration")
-                        .HasColumnType("interval");
-
-                    b.Property<DateTime?>("EndTime")
+                    b.Property<DateTimeOffset?>("EndTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ExecutionLogs")
@@ -553,42 +547,46 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("FlowVersionId")
                         .HasColumnType("uuid");
 
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
+                    b.Property<string>("InputArguments")
+                        .HasColumnType("text");
 
-                    b.Property<Guid>("LastModifiedByUserId")
+                    b.Property<Guid?>("MachineId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<string>("OutputArguments")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("RefId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("RetryCount")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("StartTime")
+                    b.Property<DateTimeOffset?>("StartTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
+                    b.Property<string>("TriggerType")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedByUserId");
-
                     b.HasIndex("FlowVersionId");
 
-                    b.HasIndex("LastModifiedByUserId");
+                    b.HasIndex("MachineId");
 
-                    b.ToTable("Jobs");
+                    b.ToTable("worc_Jobs");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.KeyStore", b =>
@@ -1836,29 +1834,19 @@ namespace WorkspaceAPIs.Data.Migrations
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Job", b =>
                 {
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("WorkspaceAPIs.Entities.FlowVersion", "FlowVersion")
                         .WithMany("Jobs")
                         .HasForeignKey("FlowVersionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                    b.HasOne("WorkspaceAPIs.Entities.Machine", "Machine")
                         .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
+                        .HasForeignKey("MachineId");
 
                     b.Navigation("FlowVersion");
 
-                    b.Navigation("LastModifiedByUser");
+                    b.Navigation("Machine");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.KeyStore", b =>
