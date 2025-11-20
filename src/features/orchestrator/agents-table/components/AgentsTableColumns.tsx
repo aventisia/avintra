@@ -8,6 +8,7 @@ import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
 
+import { ExecutionAction } from "./table-actions/ExecutionAction";
 import { TableActions } from "./table-actions/TableActions";
 import { TableCellLink } from "./TableCellLink";
 
@@ -164,6 +165,16 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       <div className="w-auto truncate font-medium">
         {dateFormatter(row.getValue("createdOn"))}
       </div>
+    ),
+  },
+  {
+    id: "execute",
+    cell: ({ row }) => (
+      <ExecutionAction
+        executionState=""
+        rowId={row.original.id}
+        isDisabled={row.original.isDisabled}
+      />
     ),
   },
   {
