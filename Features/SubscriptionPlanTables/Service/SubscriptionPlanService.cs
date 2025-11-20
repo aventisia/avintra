@@ -3,15 +3,13 @@ namespace AccountsAPIs.Services;
 public class SubscriptionPlanService : ISubscriptionPlanService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IPlanService _planService;
     private readonly ILogger<SubscriptionPlanService> _logger;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
 
-    public SubscriptionPlanService(IUnitOfWork unitOfWork, ILogger<SubscriptionPlanService> logger, IHttpContextAccessor httpContextAccessor, IPlanService planService)
+    public SubscriptionPlanService(IUnitOfWork unitOfWork, ILogger<SubscriptionPlanService> logger, IHttpContextAccessor httpContextAccessor)
     {
         _unitOfWork = unitOfWork;
-        _planService = planService;
         _logger = logger;
 
         // Extract user ID from the JWT token in the HTTP context
@@ -535,74 +533,4 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
         return serviceResponse;
     }
-
-    // Creates a new Razorpay plan based on the provided subscription plan details.
-    private async Task<ServiceResponse<PlanResponseDto>> CreateRazorpayPlanAsync(SubscriptionPlan subscriptionPlan)
-    {
-        // Initialize a response object to hold the result from Razorpay
-        var serviceResponse = new ServiceResponse<PlanResponseDto>
-        {
-            Data = null,
-            Message = "Failed to create Razorpay plan. Please try again."
-        };
-
-        try
-        {
-
-            // Start with the base price of the subscription plan
-            decimal baseAmount = subscriptionPlan.Price;
-
-            // Check if tax needs to be included in the price calculation
-            if (subscriptionPlan.IncludeTax)
-            {
-                // Define the default tax rate (1.18 means 18% tax is already included)
-                decimal defaultTaxRate = 1.18m;
-
-                // Apply the tax rate to the base price and convert the amount to cents (multiplied by 100)
-                baseAmount = Math.Round(subscriptionPlan.Price * defaultTaxRate * 100);
-            }
-
-            // Build the Razorpay plan request using details from the local subscription plan
-            var razorpayPlanRequest = new PlanRequestDto
-            {
-                Period = subscriptionPlan.Frequency.ToString().ToLower(),
-                Interval = 1,
-                Item = new PlanItemDto
-                {
-                    Name = subscriptionPlan.Name,
-                    Currency = subscriptionPlan.Currency.ToString().ToUpper(),
-                    Description = string.Empty,
-                    Amount = (int)baseAmount
-                }
-            };
-
-            _logger.LogInformation("Creating Razorpay plan for subscription plan '{PlanName}' with amount {Amount} {Currency}.",
-                subscriptionPlan.Name, subscriptionPlan.Price, subscriptionPlan.Currency);
-
-            // Call the plan service to create the plan in Razorpay
-            var razorpayPlanResponse = await _planService.CreatePlanAsync(razorpayPlanRequest);
-
-            // If plan creation succeeded, log success
-            if (razorpayPlanResponse?.Data != null && razorpayPlanResponse.StatusCode == 200)
-            {
-                _logger.LogInformation("Successfully created Razorpay plan with ID: {PlanId} for plan '{PlanName}'.",
-                    razorpayPlanResponse.Data.Id, subscriptionPlan.Name);
-            }
-            else
-            {
-                _logger.LogWarning("Failed to create Razorpay plan for plan '{PlanName}'. Message: {Message}",
-                    subscriptionPlan.Name, razorpayPlanResponse?.Message ?? "No message");
-            }
-
-            // Return the Razorpay service response to the caller
-            return razorpayPlanResponse;
-        }
-        catch (Exception ex)
-        {
-            // Log any unexpected exceptions
-            _logger.LogError(ex, "An error occurred while creating Razorpay plan for plan '{PlanName}'.", subscriptionPlan.Name);
-            return serviceResponse;
-        }
-    }
-
 }
