@@ -4,7 +4,7 @@ namespace WorkspaceAPIs.Entities;
 /// Represents an execution instance of a flow/agent, tracking its execution details, status, and associated logs. This class provides information about the job's lifecycle.
 /// </summary>
 [Table("worc_Jobs")]
-public class Job : IMustHaveTenant
+public class Job
 {
     /// <summary>
     /// Gets or sets the unique identifier (primary key) for the job record.
