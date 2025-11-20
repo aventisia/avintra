@@ -57,19 +57,19 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       />
     ),
   },
-  {
-    accessorKey: "type",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("type")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
-    ),
-  },
+  // {
+  //   accessorKey: "type",
+  //   header: ({ column }) => (
+  //     <DTColumnHeader
+  //       tableKey={TABLE_KEY}
+  //       column={column}
+  //       title={getColumnName("type")}
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
+  //   ),
+  // },
   {
     accessorKey: "machineCount",
     header: ({ column }) => (
