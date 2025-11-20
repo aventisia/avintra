@@ -468,6 +468,9 @@ public class AgentTableService : IAgentTableService
             var publishedFlowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.IsPublished &&
+                    !w.IsArchived &&
+                    !w.IsDisabled &&
+                    w.Flow.Type == FlowTypesEnum.Agent &&
                     w.Flow.Name.ToLower().Contains(searchKey.ToLower())
                 )
                 .Include(i => i.Flow)
