@@ -214,7 +214,7 @@ public class AgentTableService : IAgentTableService
             // Check if the agent exists and belongs to the current user.
             var agent = await _unitOfWork.FlowVersionRepo
                         .GetByConditionAsync(w =>
-                            w.Id == agentId && w.CreatedByUserId == _userId
+                            w.Id == agentId
                         )
                         .Include(a => a.MachineFlows)
                         .FirstOrDefaultAsync();
@@ -230,7 +230,7 @@ public class AgentTableService : IAgentTableService
             // Check if all provided machine IDs are valid and belong to the current user.
             var machines = await _unitOfWork.MachineRepo
                         .GetByConditionAsync(w =>
-                            machineIds.Contains(w.Id) && w.CreatedByUserId == _userId
+                            machineIds.Contains(w.Id)
                         )
                         .ToListAsync();
 
@@ -333,7 +333,7 @@ public class AgentTableService : IAgentTableService
 
             // Check if the agent exists and belongs to the current user.
             var agent = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w => w.Id == agentId && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Id == agentId)
                 .Include(m => m.MachineFlows)
                 .FirstOrDefaultAsync();
 
@@ -347,7 +347,7 @@ public class AgentTableService : IAgentTableService
 
             // Check if machine flows exist for the provided machine IDs and are assigned to the agent.
             var machineFlows = await _unitOfWork.MachineFlowRepo
-                .GetByConditionAsync(w => machineIds.Contains(w.MachineId) && w.FlowVersionId == agentId && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => machineIds.Contains(w.MachineId) && w.FlowVersionId == agentId)
                 .ToListAsync();
 
             var invalidMachineIds = machineIds.Except(machineFlows.Select(m => m.MachineId)).ToList();
@@ -425,7 +425,7 @@ public class AgentTableService : IAgentTableService
 
             // Retrieve the list of all machines for the current user.
             var machines = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                .GetAllAsync()
                 .Include(m => m.MachineFlows)
                 .ProjectToType<AssignMachineDto>()
                 .ToListAsync();

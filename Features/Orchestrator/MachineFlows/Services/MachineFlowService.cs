@@ -147,8 +147,7 @@ public class MachineFlowService : IMachineFlowService
             // Try to get machine flows
             var machineFlows = await _unitOfWork.MachineFlowRepo
                                             .GetByConditionAsync(m =>
-                                                (machineId == null || m.MachineId == machineId) &&
-                                                m.CreatedByUserId == _userId
+                                                machineId == null || m.MachineId == machineId
                                             )
                                             .Include(fv => fv.FlowVersion)
                                             .ThenInclude(f => f.Flow)
@@ -189,7 +188,7 @@ public class MachineFlowService : IMachineFlowService
             // Try to get machine flow
             var machineFlow = await _unitOfWork.MachineFlowRepo
                                             .GetByConditionAsync(m =>
-                                                m.Id == machineFlowId && m.CreatedByUserId == _userId
+                                                m.Id == machineFlowId
                                             )
                                             .Include(fv => fv.FlowVersion)
                                             .ThenInclude(f => f.Flow)
@@ -235,8 +234,7 @@ public class MachineFlowService : IMachineFlowService
             // Validate machine flow existence
             var machineFlow = await _unitOfWork.MachineFlowRepo
                 .GetByConditionAsync(m =>
-                    m.Id == machineFlowDto.Id &&
-                    m.CreatedByUserId == _userId
+                    m.Id == machineFlowDto.Id
                 )
                 .FirstOrDefaultAsync();
 
@@ -314,7 +312,6 @@ public class MachineFlowService : IMachineFlowService
             // Validate machine flows existence
             var machineFlows = await _unitOfWork.MachineFlowRepo
                                             .GetByConditionAsync(w =>
-                                                w.CreatedByUserId == _userId &&
                                                 machineFlowIds.Contains(w.Id))
                                             .ToListAsync();
 
