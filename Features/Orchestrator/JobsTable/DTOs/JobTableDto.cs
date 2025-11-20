@@ -1,99 +1,98 @@
 namespace WorkspaceAPIs.DTOs;
 
 /// <summary>
-/// Represents the data transfer object (DTO) for a job execution instance, used to display job details in a table format.
-/// This includes job identification, flow name, machine name, status, execution time, and logs.
+/// Data transfer object (DTO) for representing job execution details, used for displaying job information in a tabular format.
+/// It includes essential job attributes such as identification, flow name, machine name, status, execution time, and logs.
 /// </summary>
 public class JobTableDto
 {
     /// <summary>
-    /// Gets or sets Id of the machine flow.
+    /// Gets or sets the unique identifier for the job.
     /// </summary>
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets Id of the tenant.
-    /// </summary>
-    public Guid TenantId { get; set; }
-
-    /// <summary>
-    /// Gets or sets Id of the flow version
-    /// </summary>
-    [RequiredGuid]
-    public required Guid FlowVersionId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the number of retries attempted for the job. 
-    /// This value will increment if the job is retried due to failure or other reasons.
-    /// </summary>
-    public int RetryCount { get; set; }
-
-    /// <summary>
-    /// Gets or sets the name of the flow/agent associated with the job.
+    /// Gets or sets the name of the flow or agent associated with the job.
     /// </summary>
     public string? Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the current status of the job, such as Running, Completed, Failed, or Canceled.
+    /// Gets or sets the unique identifier for the flow or agent linked to the job.
+    /// </summary>
+    public Guid FlowVersionId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the trigger type for the job (e.g., manual, API, event-based).
+    /// </summary>
+    public TriggerTypesEnum TriggerType { get; set; } = TriggerTypesEnum.None;
+
+    /// <summary>
+    /// Gets or sets the identifier of the trigger that initiated the job. This is optional and may be null.
+    /// </summary>
+    public Guid? RefId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the priority level of the job (e.g., Normal, High).
+    /// </summary>
+    public JobPriorityTypesEnum Priority { get; set; } = JobPriorityTypesEnum.Normal;
+
+    /// <summary>
+    /// Gets or sets the timestamp when the job execution started.
+    /// </summary>
+    public DateTimeOffset? StartTime { get; set; }
+
+    /// <summary>
+    /// Gets or sets the timestamp when the job execution finished. This is null if the job is still in progress.
+    /// </summary>
+    public DateTimeOffset? EndTime { get; set; }
+
+    /// <summary>
+    /// Gets the job execution duration in seconds, calculated as the difference between StartTime and EndTime.
+    /// Returns 0 if the job is still running.
+    /// </summary>
+    public double Duration
+    {
+        get
+        {
+            if (StartTime.HasValue && EndTime.HasValue)
+                return (EndTime.Value - StartTime.Value).TotalSeconds;
+            return 0;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the number of retries attempted for the job.
+    /// This value increases if the job is retried due to failure or other reasons.
+    /// </summary>
+    public int RetryCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the current status of the job (e.g., Running, Completed, Failed, Canceled).
     /// </summary>
     public JobStatusTypesEnum Status { get; set; }
 
     /// <summary>
-    /// Gets or sets the start time of the job execution.
-    /// </summary>
-    public DateTime StartTime { get; set; }
-
-    /// <summary>
-    /// Gets or sets the end time of the job execution. This is null if the job is still running.
-    /// </summary>
-    public DateTime? EndTime { get; set; }
-
-    /// <summary>
-    /// Gets or sets the duration of the job execution. It represents the time between the start and end times.
-    /// </summary>
-    public TimeSpan? Duration { get; set; }
-
-    /// <summary>
-    /// Gets or sets the execution logs associated with the job. These logs can provide information on job execution,
-    /// errors, or any other relevant details. It can hold log data in various formats (such as string or JSON).
+    /// Gets or sets the execution logs associated with the job. The logs may be stored as a string or JSON and contain details about the job's steps, errors, or results.
     /// </summary>
     public string? ExecutionLogs { get; set; }
 
     /// <summary>
-    /// Gets or sets the version number of a flow version record
+    /// Gets or sets the unique identifier of the machine where the job is being executed.
     /// </summary>
-    public int VersionNumber { get; set; }
+    public Guid? MachineId { get; set; }
 
     /// <summary>
-    /// Gets or sets a flag indicating whether the user record is disabled.
-    /// This property is nullable to differentiate between true, false, and null.
+    /// Gets or sets the input arguments for the job, stored in JSON format.
     /// </summary>
-    /// <remarks>
-    /// Note: It's important to have this property nullable because we need to differentiate between true, false, and null.
-    /// </remarks>
-    public bool? IsDisabled { get; set; }
+    public string? InputArguments { get; set; }
 
     /// <summary>
-    /// Gets or sets the username of the user who created the user record. 
-    /// This property is intended for use in responses only and should not be included in requests.
+    /// Gets or sets the output arguments from the job, stored in JSON format.
     /// </summary>
-    public string? CreatedBy { get; set; }
+    public string? OutputArguments { get; set; }
 
     /// <summary>
-    /// Gets or sets the date and time when the user record was created. 
-    /// This property is intended for use in responses only and should not be included in requests.
+    /// Gets or sets the timestamp indicating when the job record was created.
     /// </summary>
-    public DateTimeOffset? CreatedOn { get; set; }
-
-    /// <summary>
-    /// Gets or sets the username of the user who last modified the user record.
-    /// This property is intended for use in responses only and should not be included in requests.
-    /// </summary>
-    public string? LastModifiedBy { get; set; }
-
-    /// <summary>
-    /// Gets or sets the date and time when the user record was last modified. 
-    /// This property is intended for use in responses only and should not be included in requests.
-    /// </summary>
-    public DateTimeOffset? LastModifiedOn { get; set; }
+    public DateTimeOffset CreatedOn { get; set; }
 }
