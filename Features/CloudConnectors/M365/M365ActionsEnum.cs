@@ -18,6 +18,11 @@ public enum M365ActionsEnum
     SetColorInExcelWorksheet,
     SelectSpecificRangeOfCellInWorksheet,
     ResizeColumnsRowsInExcelWorksheet,
-    LookupRangeinExcelWorksheet
+    LookupRangeinExcelWorksheet,
+    GetWorkbookInfo,
+    CheckIfWorksheetExistsInWorkbook,
+    AppendRangeToExcelWorksheet,
+    CreateTableInExcel,
+    ExportWorkbookToPdf
     
 }
