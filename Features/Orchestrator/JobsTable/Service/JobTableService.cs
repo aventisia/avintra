@@ -4,18 +4,21 @@ public class JobTableService : IJobTableService
 {
     private readonly ILogger<JobTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    ICurrentTenantService _currentTenantService;
     private readonly Guid _userId;
 
     public JobTableService(
         ILogger<JobTableService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        ICurrentTenantService currentTenantService)
     {
         // Set the user ID from the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _currentTenantService = currentTenantService;
     }
 
     // Retrieves a list of jobs associated with the current user.
@@ -102,28 +105,20 @@ public class JobTableService : IJobTableService
 
         try
         {
-            // TODO: Uncomment this code if we need to check and enforce uniqueness for jobs created by the current user with the same flow version ID to prevent duplicate job entries in the system.            // // Check if a job with the same name already exists
-            // var jobAlreadyExists = await _unitOfWork.JobRepo
-            //                                         .GetByConditionAsync(w =>
-            //                                             w.CreatedByUserId == _userId && 
-            //                                             w.FlowVersionId == jobTableDto.FlowVersionId
-            //                                         )
-            //                                         .FirstOrDefaultAsync();
-
-            // // If a job exists, return conflict status
-            // if (jobAlreadyExists != null)
-            // {
-            //     _logger.LogInformation("Job already exists.");
-            //     serviceResponse.StatusCode = 409;
-            //     serviceResponse.Message = "A job with the same name already exists. Please provide a unique name.";
-            //     return serviceResponse;
-            // }
-
             // Trim the string properties in the DTO
             jobTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobTableDto);
 
-            // Map DTO to Job entity
-            var newJob = jobTableDto.Adapt<Job>();
+            // Convert the Data Transfer Object (DTO) to a Job entity
+            var newJob = new Job()
+            {
+                TenantId = _currentTenantService.CurrentTenantId,
+                FlowVersionId = jobTableDto.FlowVersionId,
+                TriggerType = TriggerTypesEnum.ManualTrigger,
+                // RefId = _userId,
+                Priority = JobPriorityTypesEnum.Normal,
+                Status = JobStatusTypesEnum.Created,
+                CreatedOn = DateTimeOffset.UtcNow,
+            };
 
             // Insert the new job into the repository
             await _unitOfWork.JobRepo.InsertAsync(newJob);
@@ -185,23 +180,6 @@ public class JobTableService : IJobTableService
                 serviceResponse.Message = "Job does not exist.";
                 return serviceResponse;
             }
-
-            // TODO: Uncomment this code if we need to check and enforce uniqueness for jobs created by the current user with the same flow version ID to prevent duplicate job entries in the system.
-            // // Check if another job with the same name exists
-            // var jobAlreadyExists = await _unitOfWork.JobRepo
-            //                                          .GetByConditionAsync(w =>
-            //                                             w.CreatedByUserId == _userId &&
-            //                                             w.Id != jobTableDto.Id)
-            //                                          .FirstOrDefaultAsync();
-
-            // // If the job with the same name exists, return conflict status
-            // if (jobAlreadyExists != null)
-            // {
-            //     _logger.LogInformation("Job with the same name already exists.");
-            //     serviceResponse.StatusCode = 409;
-            //     serviceResponse.Message = "A job with the same name already exists. Please provide a unique name.";
-            //     return serviceResponse;
-            // }
 
             // Trim the string properties in the DTO
             jobTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobTableDto);
