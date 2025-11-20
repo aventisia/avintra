@@ -12,46 +12,60 @@ public class TimeTriggerExecutionJob : IJob
     }
 
     // Main method for Quartz job execution
-    public async Task Execute(IJobExecutionContext context)
+    public async Task Execute(IJobExecutionContext jobExecutionContext)
     {
         try
         {
             // Get current UTC time
-            var now = DateTimeOffset.UtcNow;
+            var currentUtcTime = DateTimeOffset.UtcNow;
 
-            _logger.LogInformation($"Job started at {now:O}");
+            _logger.LogInformation($"Job started at {currentUtcTime:O}");
 
-            // Define the current minute window
-            var startOfMinute = now.Date.AddHours(now.Hour).AddMinutes(now.Minute);
-            var endOfMinute = startOfMinute.AddMinutes(1);
+            // Define the current minute time window
+            var startOfCurrentMinute = currentUtcTime.Date.AddHours(currentUtcTime.Hour).AddMinutes(currentUtcTime.Minute);
+            var endOfCurrentMinute = startOfCurrentMinute.AddMinutes(1);
 
             // Retrieve triggers that should fire during this minute
-            var triggers = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w =>
-                    w.NextTriggerTime >= startOfMinute && w.NextTriggerTime < endOfMinute &&
-                    w.EffectiveDate.Date <= now.Date &&
-                    (w.EndDate == null || w.EndDate >= now.Date)
+            var triggersToExecute = await _unitOfWork.TriggerRepo
+                .GetByConditionAsync(trigger =>
+                    trigger.NextTriggerTime >= startOfCurrentMinute && trigger.NextTriggerTime < endOfCurrentMinute &&
+                    trigger.EffectiveDate.Date <= currentUtcTime.Date &&
+                    (trigger.EndDate == null || trigger.EndDate >= currentUtcTime.Date)
                 )
                 .ToListAsync();
 
             // Log the number of triggers found
-            _logger.LogInformation($"Found {triggers.Count} triggers for execution at {now:O}");
+            _logger.LogInformation($"Found {triggersToExecute.Count} triggers for execution at {currentUtcTime:O}");
+
+            var createdJobs = new List<Job>();
 
             // Process each trigger
-            foreach (var trigger in triggers)
+            foreach (var trigger in triggersToExecute)
             {
-                // Log trigger execution
+                // Log trigger execution start
                 _logger.LogInformation($"Executing Trigger: {trigger.Name} (ID: {trigger.Id})");
 
-                // Process each linked flow version
-                foreach (var triggersFlowVersion in trigger.TimeTriggerFlowVersions)
+
+                foreach (var timeTriggerflowVersion in trigger.TimeTriggerFlowVersions)
                 {
-                    // Log execution of each flow version
-                    _logger.LogInformation($"Executing FlowVersion {triggersFlowVersion.FlowVersionId} for Trigger {trigger.Name}");
-                    // TODO: Add actual execution logic here
+                    var jobToCreate = new Job()
+                    {
+                        TenantId = timeTriggerflowVersion.TenantId,
+                        FlowVersionId = timeTriggerflowVersion.FlowVersionId,
+                        TriggerType = TriggerTypesEnum.TimeTrigger,
+                        RefId = timeTriggerflowVersion.TriggerId,
+                        Priority = JobPriorityTypesEnum.Normal,
+                        Status = JobStatusTypesEnum.Created,
+                        CreatedOn = currentUtcTime,
+                    };
+
+                    createdJobs.Add(jobToCreate);
+
+                    // Log job creation
+                    _logger.LogInformation($"Job created for FlowVersionId: {timeTriggerflowVersion.FlowVersionId} and TenantId: {timeTriggerflowVersion.TenantId}");
                 }
 
-                // Update trigger last executed time and compute next trigger time
+                // Update the trigger's last executed time and calculate the next trigger time
                 trigger.LastTriggeredTime = DateTimeOffset.UtcNow;
                 trigger.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
                     trigger.CronExpression,
@@ -60,22 +74,34 @@ public class TimeTriggerExecutionJob : IJob
                     trigger.ExceptionWeekdays,
                     trigger.ExceptionDates);
 
-                // Log next trigger time
+                // Log the next scheduled trigger time
                 _logger.LogInformation($"Next Trigger Time for {trigger.Name}: {trigger.NextTriggerTime:O}");
 
-                // Update trigger in the database
+                // Update the trigger record in the database
                 _unitOfWork.TriggerRepo.Update(trigger);
             }
 
-            // Save changes to the database
+            // Check if there are any jobs created
+            if (createdJobs.Any())
+            {
+                _logger.LogInformation($"Inserting {createdJobs.Count} jobs into the database.");
+
+                // Insert the created jobs into the database asynchronously
+                await _unitOfWork.JobRepo.InsertAsync(createdJobs);
+            }
+            else
+            {
+                _logger.LogInformation("No jobs to insert into the database.");
+            }
+
+            // Save changes to the database and check if successful
             if (await _unitOfWork.SaveAsync())
             {
                 _logger.LogWarning("Failed to save trigger updates to the database.");
             }
 
-            _logger.LogInformation($"Job completed successfully at {now:O}");
+            _logger.LogInformation($"Job completed successfully at {currentUtcTime:O}");
         }
-
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred during the trigger execution job.");
