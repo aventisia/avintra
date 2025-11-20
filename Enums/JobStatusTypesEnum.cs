@@ -3,6 +3,12 @@ namespace AspNetToolkit.Enums;
 public enum JobStatusTypesEnum
 {
     /// <summary>
+    /// Indicates that the job has been created but has not started running yet.
+    /// </summary>
+    [Description("Created")]
+    Created,
+
+    /// <summary>
     /// Indicates that the job is currently running.
     /// </summary>
     [Description("Running")]
