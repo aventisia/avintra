@@ -49,6 +49,7 @@ public class WorkspaceDbContext : DbContext
         {
             modelBuilder.Entity<TimeTrigger>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             modelBuilder.Entity<TimeTriggersFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+            modelBuilder.Entity<Job>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         }
 
         // Unique property
@@ -74,6 +75,9 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowUser>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ProjectUserAccessEnum>());
         modelBuilder.Entity<Block>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AccessTypesEnum>());
         modelBuilder.Entity<AppSecret>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AppSecretTypesEnum>());
+        modelBuilder.Entity<Job>().Property(e => e.Status).HasConversion(new EnumToStringConverter<JobStatusTypesEnum>());
+        modelBuilder.Entity<Job>().Property(e => e.Priority).HasConversion(new EnumToStringConverter<JobPriorityTypesEnum>());
+        modelBuilder.Entity<Job>().Property(e => e.TriggerType).HasConversion(new EnumToStringConverter<TriggerTypesEnum>());
 
         // Configure One-to-One relationship between Notification and WorkspaceUser
         modelBuilder.Entity<Notification>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
