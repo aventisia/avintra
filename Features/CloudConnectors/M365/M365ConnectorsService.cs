@@ -100,11 +100,26 @@ public class M365ConnectorsService : IM365ConnectorsService
                     break;
                 case nameof(M365ActionsEnum.ResizeColumnsRowsInExcelWorksheet):
                     m365Response = await ResizeColumnsRowsInExcelWorksheetAsync(httpClient, cloudConnectorReqDto.Payload);
-                    break;                  
-                case nameof(M365ActionsEnum. LookupRangeinExcelWorksheet):
-                    m365Response = await  LookupRangeinExcelWorksheetAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
-                
+                case nameof(M365ActionsEnum.LookupRangeinExcelWorksheet):
+                    m365Response = await LookupRangeinExcelWorksheetAsync(httpClient, cloudConnectorReqDto.Payload);
+                    break;
+                case nameof(M365ActionsEnum.GetWorkbookInfo):
+                    m365Response = await GetWorkbookInfoAsync(httpClient, cloudConnectorReqDto.Payload);
+                    break;
+                case nameof(M365ActionsEnum.CheckIfWorksheetExistsInWorkbook):
+                    m365Response = await CheckIfWorksheetExistsInWorkbookAsync(httpClient, cloudConnectorReqDto.Payload);
+                    break;
+                case nameof(M365ActionsEnum.AppendRangeToExcelWorksheet):
+                    m365Response = await AppendRangeToExcelWorksheetAsync(httpClient, cloudConnectorReqDto.Payload);
+                    break;
+                case nameof(M365ActionsEnum.CreateTableInExcel):
+                    m365Response = await CreateTableInExcelAsync(httpClient, cloudConnectorReqDto.Payload);
+                    break;
+                case nameof(M365ActionsEnum.ExportWorkbookToPdf):
+                    m365Response = await ExportWorkbookToPdfAsync(httpClient, cloudConnectorReqDto.Payload);
+                    break;
+                    
                 default:
                     _logger.LogWarning("Unsupported M365 Connector: {Action}", cloudConnectorReqDto.Action);
                     serviceResponse.Message = "Unsupported M365 Connector.";
@@ -354,10 +369,8 @@ public class M365ConnectorsService : IM365ConnectorsService
         var response = await httpClient.DeleteAsync(url);
 
         // Step 3: Return response as JsonDocument
-        return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        return JsonDocument.Parse("{}");
     }
-
-    
 
     // Action: GetColumnNameOnExcelWorksheet
     private async Task<JsonDocument?> GetColumnFromWorksheetByIndexAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
@@ -366,7 +379,7 @@ public class M365ConnectorsService : IM365ConnectorsService
         var driveId = connectorRequestPayload["driveId"].ToString();
         var itemId = connectorRequestPayload["itemId"].ToString();
         var worksheetName = connectorRequestPayload["worksheetName"].ToString();
-        var columnIndex = int.Parse (connectorRequestPayload["columnIndex"].ToString());
+        var columnIndex = int.Parse(connectorRequestPayload["columnIndex"].ToString());
 
         var columnLetter = GetColumnLetter(columnIndex);
         // step 2: send a get request and fetch formula as per cell address
@@ -379,22 +392,22 @@ public class M365ConnectorsService : IM365ConnectorsService
 
     }
     // Helper metho: convert columnindex to letter (A=1,B=2)
-    private static string GetColumnLetter (int columnNumber)
+    private static string GetColumnLetter(int columnNumber)
     {
-       if(columnNumber <=0)
-       {
-        throw new ArgumentException("Column number must be positive");
-       } 
-       var letters = "";
-       while(columnNumber > 0)
-       {
-        columnNumber--;
-        letters = (char) ('A' + columnNumber % 26) + letters;
-        columnNumber /= 26;
-       }
-       return letters;
+        if (columnNumber <= 0)
+        {
+            throw new ArgumentException("Column number must be positive");
+        }
+        var letters = "";
+        while (columnNumber > 0)
+        {
+            columnNumber--;
+            letters = (char)('A' + columnNumber % 26) + letters;
+            columnNumber /= 26;
+        }
+        return letters;
     }
-    
+
     // Action: ClearNamedRange
     private async Task<JsonDocument?> ClearWorksheetRangeAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
     {
@@ -403,10 +416,10 @@ public class M365ConnectorsService : IM365ConnectorsService
         var itemId = connectorRequestPayload["itemId"].ToString();
         var worksheetName = connectorRequestPayload["worksheetName"].ToString();
         var rangeAddress = connectorRequestPayload["rangeAddress"].ToString();
-        var applyTo = connectorRequestPayload.GetValueOrDefault("applyTo", "all").ToString(); // applyTo: "all", "contents", "formats"
+        var applyTo = connectorRequestPayload["applyTo"]?.ToString() ?? "all"; // applyTo: "all", "contents", "formats"
 
         // Step 2: Prepare request payload
-        var payload = new { applyTo };
+        var payload = new { applyTo = applyTo };
         var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
 
         // Step 3: Send POST request and return response
@@ -484,34 +497,37 @@ public class M365ConnectorsService : IM365ConnectorsService
         // Step 1: Get request parameters
         var driveId = connectorRequestPayload["driveId"].ToString();
         var itemId = connectorRequestPayload["itemId"].ToString();
-        var worksheetName = connectorRequestPayload["worksheetName"]?.ToString();
+        var worksheetName = connectorRequestPayload["worksheetName"].ToString();
+
+        // Required: rangeAddress like "A:A", "1:1", "B:D"
         var rangeAddress = connectorRequestPayload["rangeAddress"].ToString();
 
-        var columnWidth = connectorRequestPayload.TryGetValue("columnWidth",out var cw)? (double?) Convert.ToDouble(cw):null;
-        var rowHeight = connectorRequestPayload.TryGetValue("rowHeight",out var rh)? (double?) Convert.ToDouble(rh):null;
+        var columnWidth = connectorRequestPayload.TryGetValue("columnWidth", out var cwObj)
+            ? (double?)Convert.ToDouble(cwObj)
+            : null;
+
+        var rowHeight = connectorRequestPayload.TryGetValue("rowHeight", out var rhObj)
+            ? (double?)Convert.ToDouble(rhObj)
+            : null;
+
+        if (!columnWidth.HasValue && !rowHeight.HasValue)
+            throw new ArgumentException("At least one of 'columnWidth' or 'rowHeight' must be provided.");
 
         // step2: assign value in Payload 
         var payload = new Dictionary<string, object>();
-        
-        if(columnWidth.HasValue)
-        {
-            payload["columnWidth"] = columnWidth.Value;
-        }
-        if(rowHeight.HasValue)
-        {
-            payload["rowHeight"] = rowHeight.Value;
-        }
-       
-        var url = $"https://grapg.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/range(address='{rangeAddress}')/format";
-        var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
-        
-        var response = await httpClient.PatchAsync(url,content);
+        if(columnWidth.HasValue) payload["columnWidth"] = columnWidth.Value;
+        if (rowHeight.HasValue) payload["rowHeight"] = rowHeight.Value;
 
+        // Build URL with range(address='...')
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/range(address='{rangeAddress}')/format";
+        var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
+
+        var response = await httpClient.PostAsync(url, content);
         // Step 3: Return response as JsonDocument
         return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
     }
 
-      private async Task<JsonDocument?> LookupRangeinExcelWorksheetAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    private async Task<JsonDocument?> LookupRangeinExcelWorksheetAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
     {
         // step 1: get the request parameters.
         var driveId = connectorRequestPayload["driveId"].ToString();
@@ -528,5 +544,229 @@ public class M365ConnectorsService : IM365ConnectorsService
 
     }
 
+    // Action: GetWorkbookInfo
+    private async Task<JsonDocument?> GetWorkbookInfoAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    {
+        // Step 1: Get request parameters
+        var driveId = connectorRequestPayload["driveId"].ToString();
+        var itemId = connectorRequestPayload["itemId"].ToString();
+
+        // Step 2: Build Graph API URL
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}";
+        // Step 3: Send GET request
+        var response = await httpClient.GetAsync(url);
+
+        // Step 3: Return response as JsonDocument
+        return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+    }
+
+    // Action: CheckIfWorksheetExistsInWorkbook
+    private async Task<bool> CheckIfWorksheetExistsInWorkbookAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    {
+        var driveId = connectorRequestPayload["driveId"].ToString();
+        var itemId = connectorRequestPayload["itemId"].ToString();
+        var worksheetName = connectorRequestPayload["worksheetName"].ToString();
+
+        try
+        {
+            // Step 1: Check if file exists and is an Excel file
+            var fileUrl = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}";
+            var fileResponse = await httpClient.GetAsync(fileUrl);
+
+            if (!fileResponse.IsSuccessStatusCode)
+                return false;
+
+            var fileJson = JsonDocument.Parse(await fileResponse.Content.ReadAsStringAsync());
+            var root = fileJson.RootElement;
+
+            // Optional: Verify it's an Excel file
+            if (root.TryGetProperty("file", out var fileProp) &&
+                fileProp.TryGetProperty("mimeType", out var mimeType))
+            {
+                var mime = mimeType.GetString();
+                if (mime != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    return false;
+            }
+
+            // Step 2: validate if worksheet exists
+            var encodedWorksheetName = Uri.EscapeDataString(worksheetName);
+            var sheetUrl = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{encodedWorksheetName}";
+
+            var sheetResponse = await httpClient.GetAsync(sheetUrl);
+            return sheetResponse.IsSuccessStatusCode;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private async Task<byte[]> ExportWorkbookToPdfAsync(HttpClient httpClient,Dictionary<string, object> connectorRequestPayload)
+    {
+        var driveId = connectorRequestPayload["driveId"].ToString();
+        var itemId = connectorRequestPayload["itemId"].ToString();
+
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/exportPdf";
+        var response = await httpClient.PostAsync(url, null);
+        response.EnsureSuccessStatusCode();
+
+        // PDF is binary → return byte[]
+        return await response.Content.ReadAsByteArrayAsync();
+    }
+
+    //Action : Create Table in Excel.
+    private async Task<JsonDocument> CreateTableInExcelAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    {
+        var driveId = connectorRequestPayload["driveId"].ToString();
+        var itemId = connectorRequestPayload["itemId"].ToString();
+        var worksheetName = connectorRequestPayload["worksheetName"]?.ToString();
+        var address = connectorRequestPayload["address"].ToString(); // e.g., "A1:D10"
+        var hasHeaders = connectorRequestPayload.ContainsKey("hasHeaders")
+            ? Convert.ToBoolean(connectorRequestPayload["hasHeaders"])
+            : true;
+        var tableName = connectorRequestPayload["tableName"]?.ToString() ?? "Table1";
+
+        var payload = new
+        {
+            address = address,
+            hasHeaders = hasHeaders,
+            name = tableName
+        };
+
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/tables/add";
+        var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
+
+        var response = await httpClient.PostAsync(url, content);
+
+        return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+    }
+
+    // Action: AppendRangeToExcelWorksheet
+    private async Task<JsonDocument> AppendRangeToExcelWorksheetAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    {
+        //Step 1: get the request parameters.
+        var driveId = connectorRequestPayload["driveId"].ToString();
+        var itemId = connectorRequestPayload["itemId"].ToString();
+        var worksheetName = connectorRequestPayload["worksheetName"]?.ToString();
+        var startingColumn = connectorRequestPayload["startingColumn"]?.ToString() ?? "A";
+        var firstRowHasHeaders = connectorRequestPayload.ContainsKey("firstRowHasHeaders")
+            ? Convert.ToBoolean(connectorRequestPayload["firstRowHasHeaders"])
+            : true;
+
+        var dataRows = connectorRequestPayload["dataRows"] as IEnumerable<object>;
+        if (dataRows == null || !dataRows.Any())
+            throw new ArgumentException("dataRows must be provided and non-empty.");
+
+        // Step 2: Get last used row
+        int lastRow = 0;
+        var usedRangeUrl = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/usedRange";
+        var usedRangeResponse = await httpClient.GetAsync(usedRangeUrl);
+
+        if (usedRangeResponse.IsSuccessStatusCode)
+        {
+            var usedRangeContent = await usedRangeResponse.Content.ReadAsStringAsync();
+            using var usedRangeDoc = JsonDocument.Parse(usedRangeContent);
+            var address = usedRangeDoc.RootElement.GetProperty("address").GetString();
+            lastRow = ParseLastRowFromAddress(address);
+        }
+        // If 404 (empty sheet), lastRow remains 0 → start at row 1
+
+        // Step 3: Build 2D values array 
+        var values = BuildValuesArray(dataRows, firstRowHasHeaders);
+        if (values.GetLength(0) == 0)
+            return JsonDocument.Parse("{\"message\":\"No data to append.\"}");
+
+        int rowsToAppend = values.GetLength(0);
+        int colsToAppend = values.GetLength(1);
+
+        // Step 4: Compute column letters
+        int startColIndex = ColumnLetterToIndex(startingColumn);
+        string startColLetter = ColumnIndexToLetter(startColIndex);
+        string endColLetter = ColumnIndexToLetter(startColIndex + colsToAppend - 1);
+
+        // Step 5: Compute target range
+        int startRow = lastRow + 1;
+        int endRow = startRow + rowsToAppend - 1;
+        string targetRange = $"{startColLetter}{startRow}:{endColLetter}{endRow}";
+
+        // Step 6: Send PATCH request
+        var payload = new { values = values };
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/range(address='{targetRange}')";
+        var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
+        var response = await httpClient.PatchAsync(url, content);
+
+        // Step 7: Return response as JsonDocument
+        return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+
+    }
+
+    //Helper method : Parse last row from address (e.g., "Sheet1!A1:D15" → 15)
+    private static int ParseLastRowFromAddress(string address)
+    {
+        var parts = address.Split('!');
+        var rangePart = parts.Length == 2 ? parts[1] : parts[0];
+        var cells = rangePart.Split(':');
+        var lastCell = cells.Length == 2 ? cells[1] : cells[0];
+        var match = Regex.Match(lastCell, @"\d+$");
+        return match.Success ? int.Parse(match.Value) : 1;
+    }
+
+    // Helper method : Build 2D object array from rows 
+    private static object[,] BuildValuesArray(IEnumerable<object> dataRows, bool skipFirstRow)
+    {
+        var rowsList = dataRows.ToList();
+        int startRowIdx = skipFirstRow ? 1 : 0;
+        int rowCount = Math.Max(0, rowsList.Count - startRowIdx);
+        if (rowCount <= 0) return new object[0, 0];
+
+        // Determine max column count across all rows
+        int colCount = rowsList.Skip(startRowIdx)
+            .Select(r => (r as IEnumerable<object>)?.Count() ?? 0)
+            .DefaultIfEmpty(0)
+            .Max();
+
+        var values = new object[rowCount, colCount];
+        for (int i = 0; i < rowCount; i++)
+        {
+            var sourceRow = rowsList[i + startRowIdx] as IEnumerable<object>;
+            var cells = sourceRow?.Cast<object>().ToList() ?? new List<object>();
+            for (int j = 0; j < colCount; j++)
+            {
+                values[i, j] = j < cells.Count ? (cells[j]?.ToString() ?? string.Empty) : string.Empty;
+            }
+        }
+        return values;
+    }
+
+    // Helper method : "A" → 1, "AA" → 27 
+    private static int ColumnLetterToIndex(string letter)
+    {
+        if (string.IsNullOrWhiteSpace(letter))
+            throw new ArgumentException("Column letter cannot be null or empty.");
+        letter = letter.ToUpperInvariant();
+        int index = 0;
+        foreach (char c in letter)
+        {
+            if (c < 'A' || c > 'Z')
+                throw new ArgumentException($"Invalid character '{c}' in column letter.");
+            index = index * 26 + (c - 'A' + 1);
+        }
+        return index;
+    }
+
+    // Helper method : 1 → "A", 27 → "AA" (supports all Excel columns)
+    private static string ColumnIndexToLetter(int index)
+    {
+        if (index < 1)
+            throw new ArgumentException("Column index must be >= 1.");
+        var result = "";
+        while (index > 0)
+        {
+            index--;
+            result = (char)('A' + (index % 26)) + result;
+            index /= 26;
+        }
+        return result;
+    }
 
 }
