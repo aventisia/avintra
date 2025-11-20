@@ -4,12 +4,13 @@ import { useOpenFlow } from "../../hooks/useOpenFlow";
 
 interface AAIOpenActionProps {
   flowId: string;
+  versionId: string;
 }
 
 /**
  * Renders a dropdown menu item for opening a flow.
  */
-export const AAIOpenAction = ({ flowId }: AAIOpenActionProps) => {
+export const AAIOpenAction = ({ flowId, versionId }: AAIOpenActionProps) => {
   // Get handle function to open flow
   const handleOpenFlowAction = useOpenFlow();
 
@@ -19,7 +20,7 @@ export const AAIOpenAction = ({ flowId }: AAIOpenActionProps) => {
       size="sm"
       content="Open"
       Icon={ArrowTopRightOnSquareIcon}
-      onClick={() => handleOpenFlowAction(flowId)}
+      onClick={() => handleOpenFlowAction(flowId, versionId)}
     />
   );
 };

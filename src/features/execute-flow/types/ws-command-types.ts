@@ -4,6 +4,7 @@ export type WebSocketCommandType =
   | "process-node"
   | "next-node"
   | "save-execution-log"
+  | "process-config-keys"
   | "start"
   | "pause"
   | "resume"

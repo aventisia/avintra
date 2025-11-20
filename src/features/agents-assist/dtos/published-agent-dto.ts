@@ -10,7 +10,7 @@ export interface PublishedAgentDto {
   /**
    * Gets or sets the identifier of the associated flow.
    */
-  flowId: string;
+  refId: string;
 
   /**
    * Gets or sets the name of the flow. Max-255
