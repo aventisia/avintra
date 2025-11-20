@@ -41,7 +41,13 @@ public class FlowBuilderService : IFlowBuilderService
                     (
                         w.CreatedByUserId == _userId ||
                         (w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)) ||
-                        (w.IsPublished && _userManagementGuardService.HasRole("OM"))
+                        (
+                            w.IsPublished &&
+                            (
+                                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()) ||
+                                _userManagementGuardService.HasRole(CustomRolesEnum.TU.ToString())
+                            )
+                        )
                     )
                 )
                 .Include(u => u.CreatedByUser)
