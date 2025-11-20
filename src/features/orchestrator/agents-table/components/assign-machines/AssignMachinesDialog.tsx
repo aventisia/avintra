@@ -31,20 +31,24 @@ const AssignMachinesDialog = () => {
       }}
     >
       <DialogContent className="h-[60vh]">
-        <DialogDefaultHeader heading={`Assign Machines`} />
-        <div className="h-[calc(60vh-5.1rem)] p-2">
-          <div className="flex w-full items-center justify-between px-2">
-            <div className="flex items-center gap-2">
+        <DialogDefaultHeader heading={`Machines`} />
+        <div className="h-[calc(60vh-5.1rem)] p-2 px-4">
+          <div className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-2 text-md font-semibold">
               {view == "Search" ? (
-                <Button
-                  onClick={() => setView("Machines")}
-                  variant={"ghost"}
-                  size={"icon6"}
-                >
-                  <ArrowLeftIcon />
-                </Button>
-              ) : null}
-              <span>Machines</span>
+                <>
+                  <Button
+                    onClick={() => setView("Machines")}
+                    variant={"ghost"}
+                    size={"icon6"}
+                  >
+                    <ArrowLeftIcon />
+                  </Button>
+                  <span>Assign Machines</span>
+                </>
+              ) : (
+                <span className="pl-1">Assigned Machines</span>
+              )}
             </div>
             {view == "Machines" ? (
               <Button
