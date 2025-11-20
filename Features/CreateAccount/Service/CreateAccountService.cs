@@ -83,8 +83,8 @@ public class CreateAccountService : ICreateAccountService
 
             // Decide user role basis "@aventisia.com"
             var userRole = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(createAccountDto.Email) == "aventisia.com"
-                                ? CustomRolesEnum.TU.ToString()
-                                : CustomRolesEnum.TU.ToString();
+                                ? CustomRolesEnum.TD.ToString()
+                                : CustomRolesEnum.TD.ToString();
 
             // Decide tenant name basis "@aventisia.com"
             var tenantName = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(createAccountDto.Email) == "aventisia.com"

@@ -123,7 +123,7 @@ public class UserRegistrationService : IUserRegistrationService
             }
 
             // Initialize user roles for tenant admin assignment
-            var userRoles = new List<string> { nameof(CustomRolesEnum.TA), nameof(CustomRolesEnum.OM), nameof(CustomRolesEnum.TU) };
+            var userRoles = new List<string> { nameof(CustomRolesEnum.TA), nameof(CustomRolesEnum.OM), nameof(CustomRolesEnum.TD) };
 
             // Assign roles to user
             var addToRolesResult = await _userManager.AddToRolesAsync(newUser, userRoles);
