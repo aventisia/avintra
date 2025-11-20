@@ -33,11 +33,10 @@ public class JobTableService : IJobTableService
 
             // Fetch jobs created by the current user
             var jobs = await _unitOfWork.JobRepo
-                                        .GetByConditionAsync(w =>
-                                            w.CreatedByUserId == _userId)
-                                        .Include(fv => fv.FlowVersion)
-                                            .ThenInclude(f => f.Flow)
-                                        .OrderByDescending(w => w.CreatedOn)
+                                        .GetAllAsync()
+                                        .Include(i => i.FlowVersion)
+                                            .ThenInclude(i2 => i2.Flow)
+                                        .OrderByDescending(o => o.CreatedOn)
                                         .ProjectToType<JobTableDto>()
                                         .ToListAsync();
 
@@ -71,8 +70,7 @@ public class JobTableService : IJobTableService
             // Fetch a specific job created by the current user
             var job = await _unitOfWork.JobRepo
                                         .GetByConditionAsync(w =>
-                                            w.Id == jobId &&
-                                            w.CreatedByUserId == _userId
+                                            w.Id == jobId
                                         )
                                         .OrderByDescending(w => w.CreatedOn)
                                         .ProjectToType<JobTableDto>()
@@ -126,8 +124,6 @@ public class JobTableService : IJobTableService
 
             // Map DTO to Job entity
             var newJob = jobTableDto.Adapt<Job>();
-            newJob.CreatedByUserId = _userId;
-            newJob.LastModifiedByUserId = _userId;
 
             // Insert the new job into the repository
             await _unitOfWork.JobRepo.InsertAsync(newJob);
@@ -178,8 +174,7 @@ public class JobTableService : IJobTableService
             var job = await _unitOfWork.JobRepo
                                         .GetByConditionAsync(w =>
                                             w.Id == jobTableDto.Id &&
-                                            w.FlowVersionId == jobTableDto.FlowVersionId &&
-                                            w.CreatedByUserId == _userId
+                                            w.FlowVersionId == jobTableDto.FlowVersionId
                                         )
                                         .SingleOrDefaultAsync();
 
@@ -213,8 +208,6 @@ public class JobTableService : IJobTableService
 
             // Map the updated values from DTO to the job entity
             jobTableDto.Adapt(job);
-            job.LastModifiedByUserId = _userId;
-            job.LastModifiedOn = DateTimeOffset.UtcNow;
 
             // Update the job in the repository
             _unitOfWork.JobRepo.Update(job);
@@ -255,8 +248,7 @@ public class JobTableService : IJobTableService
             // Fetch the job to be deleted
             var job = await _unitOfWork.JobRepo
                                         .GetByConditionAsync(w =>
-                                            w.Id == jobId &&
-                                            w.CreatedByUserId == _userId)
+                                            w.Id == jobId)
                                         .SingleOrDefaultAsync();
 
             // If the job does not exist, return error message
@@ -306,7 +298,6 @@ public class JobTableService : IJobTableService
             // Fetch the jobs to be deleted
             var jobs = await _unitOfWork.JobRepo
                                             .GetByConditionAsync(w =>
-                                                w.CreatedByUserId == _userId &&
                                                 jobIds.Contains(w.Id))
                                             .ToListAsync();
 
@@ -356,8 +347,7 @@ public class JobTableService : IJobTableService
             // Retrieve the job to retry
             var job = await _unitOfWork.JobRepo
                                         .GetByConditionAsync(w =>
-                                            w.Id == jobId &&
-                                            w.CreatedByUserId == _userId)
+                                            w.Id == jobId)
                                         .SingleOrDefaultAsync();
 
             // Job does not exist
@@ -379,8 +369,6 @@ public class JobTableService : IJobTableService
             // Reset the job status and set other necessary properties for retry
             job.Status = JobStatusTypesEnum.Running;
             job.RetryCount++;
-            job.LastModifiedByUserId = _userId;
-            job.LastModifiedOn = DateTimeOffset.UtcNow;
 
             // Update job in the repository
             _unitOfWork.JobRepo.Update(job);
@@ -419,7 +407,7 @@ public class JobTableService : IJobTableService
         {
             // Retrieve the job to cancel
             var job = await _unitOfWork.JobRepo
-                                        .GetByConditionAsync(w => w.Id == jobId && w.CreatedByUserId == _userId)
+                                        .GetByConditionAsync(w => w.Id == jobId)
                                         .SingleOrDefaultAsync();
 
             // Job does not exist
@@ -440,8 +428,6 @@ public class JobTableService : IJobTableService
 
             // Set job status to canceled
             job.Status = JobStatusTypesEnum.Canceled;
-            job.LastModifiedByUserId = _userId;
-            job.LastModifiedOn = DateTimeOffset.UtcNow;
 
             // Update job in the repository
             _unitOfWork.JobRepo.Update(job);
