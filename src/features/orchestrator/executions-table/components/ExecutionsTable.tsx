@@ -1,7 +1,6 @@
 import {
   DataTable,
   DataTableSkeleton,
-  // DTCreateButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
@@ -9,14 +8,15 @@ import {
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
+import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
+import { useEffect, useState } from "react";
 
 import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
+import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
 import { useFetchExecutions } from "../hooks/useFetchExecutions";
 
-// import { ExecutionCrudDialog } from "./execution-crud-dialog/ExecutionCrudDialog";
-// import { ExecutionBulkActions } from "./execution-row-actions/ExecutionBulkActions";
 import { executionsTableColumns } from "./ExecutionsTableColumns";
 
 /**
@@ -25,6 +25,8 @@ import { executionsTableColumns } from "./ExecutionsTableColumns";
  * @returns The rendered executionsTable component.
  */
 export const ExecutionsTable = () => {
+  const [tabValue, setTabValue] = useState<string>("Created");
+
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
@@ -46,16 +48,60 @@ export const ExecutionsTable = () => {
     true,
   );
 
+  useEffect(() => {
+    const statusColumn = table.getColumn("status");
+
+    if (!statusColumn) return;
+
+    if (tabValue === "Running") {
+      statusColumn.setFilterValue(JobStatusTypesEnum.Running);
+    } else if (tabValue === "Created") {
+      statusColumn.setFilterValue(JobStatusTypesEnum.Created);
+    } else if (tabValue === "History") {
+      statusColumn.setFilterValue([
+        JobStatusTypesEnum.Completed,
+        JobStatusTypesEnum.Failed,
+        JobStatusTypesEnum.Canceled,
+      ]);
+    }
+  }, [tabValue, table]);
+
   // Return the rendered DataTable component.
   return (
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Crud ops dialog */}
-          {/* <ExecutionCrudDialog> */}
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <DTHeading heading={TABLE_HEADING} />
+            <div className="flex items-center gap-2">
+              <DTHeading heading={TABLE_HEADING} />
+              <Tabs
+                value={tabValue}
+                // className="w-full"
+                onValueChange={setTabValue}
+              >
+                <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
+                  <TabsTrigger
+                    value="Created"
+                    className="w-full rounded-lg py-1"
+                  >
+                    Scheduled
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="Running"
+                    className="w-full rounded-lg py-1"
+                  >
+                    Current
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="History"
+                    className="w-full rounded-lg py-1"
+                  >
+                    History
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
 
             <div className="flex items-center gap-2">
               <DTSearchBox
@@ -66,7 +112,6 @@ export const ExecutionsTable = () => {
               <DTViewOptions
                 {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
               />
-              {/* <DTCreateButton /> */}
             </div>
           </div>
 
@@ -75,13 +120,9 @@ export const ExecutionsTable = () => {
             table={table}
             columnsLength={executionsTableColumns.length}
           />
-          {/* </ExecutionCrudDialog> */}
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />
-
-          {/* Bulk actions for data table */}
-          {/* <ExecutionBulkActions table={table} /> */}
         </div>
       ) : (
         // Show data table skeleton while fetching the executions data
