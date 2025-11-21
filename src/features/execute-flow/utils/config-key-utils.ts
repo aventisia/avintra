@@ -12,10 +12,15 @@ export function extractUniqueConfigKeys(nodes: Node<NodeDataType>[]): string[] {
   const allKeys = nodes
     ?.flatMap((node) => node?.data?.inputs?.map((input) => input?.value) || []) // Extract values from inputs
     ?.flatMap((value) => {
-      // Match and extract {{__config__Key}} format keys
       if (typeof value === "string") {
-        const match = value.match(/\{\{__config__([^}]+)\}\}/);
-        return match ? [match[1]] : [];
+        // Match and extract all {{__config__Key}} format keys
+        const matches = value.match(/\{\{__config__([^}]+)\}\}/g);
+        // If there are matches, extract the keys and return them as an array
+        return matches
+          ? matches.map((match) =>
+              match.replace(/\{\{__config__(.*?)\}\}/, "$1"),
+            )
+          : [];
       }
       return []; // If value is not a string, return an empty array
     });
