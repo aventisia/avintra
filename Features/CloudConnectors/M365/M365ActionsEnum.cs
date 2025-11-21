@@ -23,6 +23,10 @@ public enum M365ActionsEnum
     CheckIfWorksheetExistsInWorkbook,
     AppendRangeToExcelWorksheet,
     CreateTableInExcel,
-    ExportWorkbookToPdf
+    DeleteWorkbookNamedRangeWorksheet,
+    GetTableRangeFromExcelWorksheet,
+    AddNamedItem,
+    DeleteNamedItem,
+    ListNamedItems
     
 }
