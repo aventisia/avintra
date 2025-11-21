@@ -118,4 +118,40 @@ export interface ExecutionsTableDto {
    * Gets or sets the logs related to the action execution. Can be null.
    */
   actionExecutionLogs?: string | null; // Could be null, empty, or a string
+
+  /**
+   * Gets or sets the trigger type for the job (e.g., manual, API, event-based).
+   */
+  triggerType?: string;
+
+  /**
+   * Gets or sets the identifier of the trigger that initiated the job. This is optional and may be null.
+   */
+  refId?: string; // Corresponds to Guid in C#
+
+  /**
+   * Gets or sets the priority level of the job (e.g., Normal, High).
+   */
+  priority?: string;
+
+  /**
+   * Gets or sets the execution logs associated with the job.
+   * The logs may be stored as a string or JSON and contain details about the job's steps, errors, or results.
+   */
+  executionLogs?: string;
+
+  /**
+   * Gets or sets the unique identifier of the machine where the job is being executed.
+   */
+  machineId?: string; // Corresponds to Guid in C#
+
+  /**
+   * Gets or sets the input arguments for the job, stored in JSON format.
+   */
+  inputArguments?: string;
+
+  /**
+   * Gets or sets the output arguments from the job, stored in JSON format.
+   */
+  outputArguments?: string;
 }
