@@ -73,7 +73,7 @@ export const ExecutionsTable = () => {
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               <DTHeading heading={TABLE_HEADING} />
               <Tabs
                 value={tabValue}
@@ -107,7 +107,7 @@ export const ExecutionsTable = () => {
               <DTSearchBox
                 table={table}
                 searchColumn={SEARCH_COLUMN}
-                placeholder="Search executions..."
+                placeholder="Search..."
               />
               <DTViewOptions
                 {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}

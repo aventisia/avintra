@@ -80,8 +80,8 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       {
         permissions: ["SA", "TA", "OM"],
         Icon: MonitorPlayIcon,
-        name: "executions",
-        route: "/orchestrator/executions",
+        name: "Jobs",
+        route: "/orchestrator/jobs",
       },
       {
         permissions: ["SA", "TA", "OM"],

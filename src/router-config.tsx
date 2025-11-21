@@ -190,7 +190,7 @@ const routerConfig: RouteObject[] = [
             ),
           },
           {
-            path: "/orchestrator/executions/:id?/:a?",
+            path: "/orchestrator/jobs/:id?/:a?",
             element: (
               <ProtectedRoute
                 persmissions={["SA", "TA", "OM"]}

@@ -1,30 +1,30 @@
 import { CrudActionType } from "@aventisia/ui/types";
 
 /**
- * The unique key for the executions query to be used in the query client. ["executions"]
+ * The unique key for the jobs query to be used in the query client. ["jobs"]
  */
-const DATA_QUERY_KEY = ["executions"];
+const DATA_QUERY_KEY = ["jobs"];
 
 /**
- * The heading for the executions table.
+ * The heading for the jobs table.
  */
-const TABLE_HEADING = "Executions";
+const TABLE_HEADING = "Jobs";
 
-const TABLE_KEY = "executions";
+const TABLE_KEY = "jobs";
 
 /**
- * The column used for searching in the executions.
+ * The column used for searching in the jobs.
  */
 const SEARCH_COLUMN = "name";
 
 const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Execution", description: "" };
+      return { heading: "Create Job", description: "" };
     case "read":
-      return { heading: "Execution", description: "" };
+      return { heading: "Job", description: "" };
     case "update":
-      return { heading: "Edit Execution", description: "" };
+      return { heading: "Edit Job", description: "" };
     default:
       return { heading: "", description: "" };
   }
