@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogDefaultHeader,
 } from "@aventisia/ui/dialog";
+import { Tooltip } from "@aventisia/ui/tooltip";
 import { ArrowLeftIcon, PlusIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -40,9 +41,9 @@ const AssignMachinesDialog = () => {
                   <Button
                     onClick={() => setView("Machines")}
                     variant={"ghost"}
-                    size={"icon6"}
+                    size={"icon7"}
                   >
-                    <ArrowLeftIcon />
+                    <ArrowLeftIcon className="h-5 w-5" />
                   </Button>
                   <span>Assign Machines</span>
                 </>
@@ -51,13 +52,15 @@ const AssignMachinesDialog = () => {
               )}
             </div>
             {view == "Machines" ? (
-              <Button
-                onClick={() => setView("Search")}
-                variant={"ghost"}
-                size={"icon7"}
-              >
-                <PlusIcon />
-              </Button>
+              <Tooltip content="Assign Machines">
+                <Button
+                  onClick={() => setView("Search")}
+                  variant={"ghost"}
+                  size={"icon7"}
+                >
+                  <PlusIcon className="h-5 w-5" />
+                </Button>
+              </Tooltip>
             ) : null}
           </div>
           {view == "Machines" ? <MachinesList /> : <AssignMachineSearch />}
