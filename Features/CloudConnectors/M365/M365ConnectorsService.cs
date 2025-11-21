@@ -416,7 +416,9 @@ public class M365ConnectorsService : IM365ConnectorsService
         var itemId = connectorRequestPayload["itemId"].ToString();
         var worksheetName = connectorRequestPayload["worksheetName"].ToString();
         var rangeAddress = connectorRequestPayload["rangeAddress"].ToString();
-        var applyTo = connectorRequestPayload["applyTo"]?.ToString() ?? "all"; // applyTo: "all", "contents", "formats"
+        var applyTo = connectorRequestPayload["applyTo"]?.ToString();
+        
+        applyTo = char.ToUpper(applyTo[0]) + applyTo.Substring(1) ?? "All"; // applyTo: "all", "contents", "formats"
 
         // Step 2: Prepare request payload
         var payload = new { applyTo = applyTo };
@@ -437,8 +439,8 @@ public class M365ConnectorsService : IM365ConnectorsService
         var itemId = connectorRequestPayload["itemId"].ToString();
         var worksheetName = connectorRequestPayload["worksheetName"].ToString();
         var rangeAddress = connectorRequestPayload["rangeAddress"].ToString();
-        var shiftTo = connectorRequestPayload.GetValueOrDefault("shiftTo", "up").ToString(); // shiftTo: "up", "Left"
-
+        var shiftTo = connectorRequestPayload.GetValueOrDefault("shiftTo", "Up").ToString(); // shiftTo: "up", "Left"
+        shiftTo = char.ToUpper(shiftTo[0]) + shiftTo.Substring(1) ?? "Up";
         var payload = new { shiftTo };
         var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
 
