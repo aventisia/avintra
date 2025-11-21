@@ -1,83 +1,60 @@
+import { LoadingSpinner } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { Tooltip } from "@aventisia/ui/tooltip";
-import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";
-import { Loader2 } from "lucide-react";
+import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
+import { useShallow } from "zustand/react/shallow";
+
+import { useCreateJobMutation } from "@/features/orchestrator/jobs-table/hooks/useCreateJobMutation";
+
+import { useAssignMachineStore } from "../../stores/assign-machine-store";
 
 type ExecutionActionProps = {
   rowId: string;
   isDisabled: boolean;
   executionState: string;
 };
+
 export const ExecutionAction = ({
   rowId,
   isDisabled,
   executionState,
 }: ExecutionActionProps) => {
+  const { flowVersionId } = useAssignMachineStore(
+    useShallow((s) => ({
+      flowVersionId: s.flowVersionId,
+      setMachineIds: s.setMachineIds,
+    })),
+  );
+
+  const { createJobMutation, isPending } = useCreateJobMutation();
+
   return (
-    <div className="flex items-center max-w-5">
-      {executionState === "executing" || executionState === "paused" ? (
-        <div className="group flex h-8 gap-1 rounded-lg bg-white/10">
-          {executionState === "executing" ? (
-            <Tooltip content="Pause">
-              <Button
-                variant="ghost"
-                size="icon8"
-                className="hover:bg-white/10"
-                // onClick={() => sendCommand("pause")}
-              >
-                <PauseIcon className="h-[1.1rem] w-[1.1rem] text-slate-500" />
-              </Button>
-            </Tooltip>
-          ) : (
-            <Tooltip content="Resume">
-              <Button
-                variant="ghost"
-                size="icon8"
-                className="hover:bg-white/10"
-                // onClick={() => sendCommand("resume")}
-              >
-                <PlayIcon className="h-[1.1rem] w-[1.1rem] text-green-500/80" />
-              </Button>
-            </Tooltip>
-          )}
-          <Tooltip content="Abort">
-            <Button
-              variant="ghost"
-              size="icon8"
-              className="hover:bg-white/10"
-              // onClick={() => {
-              //   localStorage.setItem(
-              //     "conditionalExecutionGroup",
-              //     JSON.stringify([]),
-              //   );
-              //   localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
-              //   setExecutionState("stopped");
-              //   sendCommand("abort");
-              // }}
-            >
-              <StopIcon className="h-[1.1rem] w-[1.1rem] text-red-500/80" />
-            </Button>
-          </Tooltip>
-        </div>
+    <div className="flex items-center gap-2">
+      {executionState === "executing" ? (
+        <Tooltip content="Abort">
+          <Button variant="ghost" size="icon7" className="hover:bg-slate-200">
+            <StopIcon className="h-[1.125rem] w-[1.125rem] text-red-500/80" />
+          </Button>
+        </Tooltip>
       ) : (
         <Tooltip content="Execute">
           <Button
             variant="ghost"
-            size="icon8"
-            className="hover:bg-white/10"
+            size="icon7"
+            className="hover:bg-slate-200"
             disabled={isDisabled}
-            // onClick={() => {
-            //   if (isAssist) {
-            //     getFlow(flowId || "");
-            //   } else startExecution();
-            // }}
-            onClick={() => console.log(rowId)}
+            onClick={() => {
+              createJobMutation({
+                flowVersionId: flowVersionId,
+                machineId: rowId,
+              });
+            }}
           >
-            {executionState === "launching-executor" ? (
-              <Loader2 className="h-[1.1rem] w-[1.1rem] animate-spin text-white/80" />
+            {isPending ? (
+              <LoadingSpinner className="h-[1rem] w-[1rem] animate-spin text-primary" />
             ) : (
               <>
-                <PlayIcon className="h-[1.1rem] w-[1.1rem] text-green-500/80" />
+                <PlayIcon className="h-[1.125rem] w-[1.125rem] text-green-500/80" />
               </>
             )}
           </Button>
