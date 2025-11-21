@@ -85,16 +85,18 @@ public class TimeTriggerExecutionJob : IJob
             // Check if there are any jobs created
             if (createdJobs.Any())
             {
-                _logger.LogInformation($"Inserting {createdJobs.Count} jobs into the database.");
-
-                // Insert the created jobs into the database asynchronously
+                // Insert the created jobs into the database asynchronously using the repository's InsertAsync method.
                 await _unitOfWork.JobRepo.InsertAsync(createdJobs);
             }
 
-            // Save changes to the database and check if successful
-            if (!await _unitOfWork.SaveAsync())
+            // Check if there are any triggers that need to be executed
+            if (triggersToExecute.Count != 0)
             {
-                _logger.LogWarning("Failed to save trigger updates to the database.");
+                // Save changes to the database
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogWarning("Failed to save trigger updates to the database.");
+                }
             }
 
             _logger.LogInformation($"Job completed successfully at {currentUtcTime:O}");
