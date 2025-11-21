@@ -8,32 +8,7 @@ import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { ExecutionsTableDto } from "../dtos/executions-table-dto";
 
-// import { ExecutionRowActions } from "./execution-row-actions/ExecutionRowActions";
-
 export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
-  // {
-  //   accessorKey: "id",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && "indeterminate")
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //       className="translate-y-[2px]"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //       className="translate-y-[2px]"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  // },
   {
     accessorKey: "name",
     header: ({ column }) => (
@@ -76,6 +51,21 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
         {row.getValue("status") ?? 0}
       </div>
     ),
+    filterFn: (row, columnId, filterValue) => {
+      const status = row.getValue(columnId);
+
+      // If filterValue is a single string
+      if (typeof filterValue === "string") {
+        return status === filterValue;
+      }
+
+      // If filterValue is an array (for History tab)
+      if (Array.isArray(filterValue)) {
+        return filterValue.includes(status);
+      }
+
+      return true;
+    },
   },
 
   {
@@ -90,7 +80,9 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {format(row.getValue("startTime"), "dd MMM yyyy, h:mm:ss a")}
+        {row.getValue("startTime")
+          ? format(row.getValue("startTime"), "dd MMM yyyy, h:mm:ss a")
+          : "NA"}
       </div>
     ),
   },
@@ -107,7 +99,9 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {format(row.getValue("endTime"), "dd MMM yyyy, h:mm:ss a")}
+        {row.getValue("endTime")
+          ? format(row.getValue("endTime"), "dd MMM yyyy, h:mm:ss a")
+          : "NA"}
       </div>
     ),
   },
@@ -145,22 +139,6 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
       </div>
     ),
   },
-
-  // {
-  //   accessorKey: "executionLogs",
-  //   header: ({ column }) => (
-  //     <DTColumnHeader
-  //       tableKey={TABLE_KEY}
-  //       column={column}
-  //       title={getColumnName("executionLogs") ?? 0}
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="w-auto truncate font-medium">
-  //       {row.getValue("executionLogs") ?? 0}
-  //     </div>
-  //   ),
-  // },
 
   {
     accessorKey: "executedBy",

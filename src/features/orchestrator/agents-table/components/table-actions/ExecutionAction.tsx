@@ -4,7 +4,7 @@ import { Tooltip } from "@aventisia/ui/tooltip";
 import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { useShallow } from "zustand/react/shallow";
 
-import { useCreateJobMutation } from "@/features/orchestrator/jobs-table/hooks/useCreateJobMutation";
+import { useCreateJobMutation } from "@/features/orchestrator/agents-table/hooks/useCreateJobMutation";
 
 import { useAssignMachineStore } from "../../stores/assign-machine-store";
 

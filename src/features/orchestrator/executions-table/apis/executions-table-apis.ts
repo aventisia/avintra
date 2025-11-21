@@ -1,15 +1,10 @@
-import {
-  CheckAvailabilityDto,
-  IHttpResponse,
-  IOptimisticMutation,
-  TrueFalseResultDto,
-} from "@aventisia/ui/dtos";
+import { IHttpResponse, IOptimisticMutation } from "@aventisia/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { ExecutionsTableDto } from "../dtos/executions-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/flow-execution-log`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/job`;
 
 /**
  * Retrieves list of Executions.
@@ -17,17 +12,6 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/flow-execution-
 export const getExecutions = () => {
   return axiosInstance
     .get<IHttpResponse<ExecutionsTableDto[]>>(`${baseAPIURL}/list`)
-    .then((res) => res.data);
-};
-
-/**
- * Checks the availability of a Execution name.
- */
-export const isNameAvailable = (postObj: CheckAvailabilityDto) => {
-  return axiosInstance
-    .post<
-      IHttpResponse<TrueFalseResultDto>
-    >(`${baseAPIURL}/is-available`, postObj)
     .then((res) => res.data);
 };
 
