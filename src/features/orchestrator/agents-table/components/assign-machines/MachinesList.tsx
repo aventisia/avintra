@@ -1,5 +1,4 @@
-import { LoadingSpinner, NoContentMessage } from "@aventisia/ui";
-import { Button } from "@aventisia/ui/buttons";
+import { NoContentMessage } from "@aventisia/ui";
 import {
   CommandInput,
   Command,
@@ -8,18 +7,18 @@ import {
   CommandEmpty,
 } from "@aventisia/ui/command";
 import { ScrollArea } from "@aventisia/ui/scroll";
-import { Trash2Icon, MonitorIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { MonitorIcon } from "lucide-react";
+import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { AssignMachineDto } from "../../dtos/assign-machine-dto";
 import { useFetchMachines } from "../../hooks/useFetchMachines";
-import { useRemoveMachineMutation } from "../../hooks/useRemoveMachineMutation";
 import { useAssignMachineStore } from "../../stores/assign-machine-store";
+import { ExecutionAction } from "../table-actions/ExecutionAction";
+
+import { MachinesListItemActions } from "./assign-machine-item-actions";
 
 const MachinesList = () => {
-  const [currDel, setCurrDel] = useState<string>("");
-
   const { flowVersionId, setMachineIds } = useAssignMachineStore(
     useShallow((s) => ({
       flowVersionId: s.flowVersionId,
@@ -28,8 +27,6 @@ const MachinesList = () => {
   );
 
   const { data } = useFetchMachines(flowVersionId);
-
-  const { mutate, isPending } = useRemoveMachineMutation();
 
   useEffect(() => {
     if (data)
@@ -70,22 +67,13 @@ const MachinesList = () => {
                   >
                     {/* Content container */}
                     <p className="grow">{val.name}</p>
-                    <div>
-                      <Button
-                        onClick={() => {
-                          setCurrDel(val.id);
-                          mutate({ flowVersionId, machineIds: [val.id] });
-                        }}
-                        variant="caution"
-                        size="icon7"
-                        disabled={isPending && currDel == val.id}
-                      >
-                        {isPending && currDel == val.id ? (
-                          <LoadingSpinner className="h-4 w-4" />
-                        ) : (
-                          <Trash2Icon className="h-4 w-4" />
-                        )}
-                      </Button>
+                    <div className="flex items-center gap-2">
+                      <ExecutionAction
+                        executionState=""
+                        isDisabled={false}
+                        rowId={val.id}
+                      />
+                      <MachinesListItemActions id={val.id} />
                     </div>
                   </div>
                 </CommandItem>

@@ -36,21 +36,21 @@ export const AgentStats = ({ data }: StatsProps) => {
   return (
     <div className="my-4 grid grid-cols-3 gap-3">
       <StatsCard
-        key="Total Published"
-        title={"Total Published"}
+        key="Total Published Agents"
+        title={"Total Published Agents"}
         mainText={data?.length}
         icon={<BotIcon stroke="var(--primary)" className="h-10 w-10" />}
         // description={`${stats?.agents} Agents & ${stats?.models} AI Models`}
       />
       <StatsCard
-        title={"Total Deployed"}
-        key={"Total Deployed"}
+        title={"Total Deployed Machines"}
+        key={"Total Deployed Machines"}
         mainText={stats?.totalMachineCount ?? 0}
         icon={<Monitor stroke="var(--primary)" className="h-10 w-10" />}
       />
       <StatsCard
-        title={"Active"}
-        key={"Active"}
+        title={"Total Active Machines"}
+        key={"Total Active Machines"}
         mainText={stats?.active ?? 0}
         icon={<BsRobot fill="var(--primary)" className="h-10 w-10" />}
       />

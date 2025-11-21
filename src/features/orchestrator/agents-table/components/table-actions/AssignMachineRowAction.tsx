@@ -28,7 +28,7 @@ export const AssignMachineRowAction: React.FC<DTEditRowActionProps> = ({
     <SimpleDDMenuItem
       size={size}
       disabled={isDisabled}
-      content="Assign Machine"
+      content="Machines"
       Icon={MonitorCheck}
       onClick={() => {
         setFlowVersionId(rowId);
