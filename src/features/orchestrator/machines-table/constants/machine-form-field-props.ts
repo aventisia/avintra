@@ -39,6 +39,16 @@ export const hostnameProps: InputFieldProps = {
   isRequired: true,
 };
 
+// Os Unique Id
+export const os_unique_idProps: InputFieldProps = {
+  name: "os_unique_id",
+  label: "OS Unique ID",
+  placeholder: "",
+  isRequired: true,
+  description:
+    "To find your operating system's unique ID, open the desktop app and check the login screen for the os_id displayed there.",
+};
+
 // IP Address
 export const ipAddressProps: InputFieldProps = {
   name: "ipAddress",

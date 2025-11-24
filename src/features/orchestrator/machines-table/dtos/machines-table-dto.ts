@@ -33,6 +33,8 @@ export interface MachinesTableDto {
    */
   hostname?: string;
 
+  os_unique_id?: string;
+
   /**
    * Gets or sets the type of machine os.
    */
