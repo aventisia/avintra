@@ -27,10 +27,13 @@ export const AgentsAssistItem = ({ agentData }: AgentsAssistItemProps) => {
       </div>
 
       <div className="flex w-12 items-center justify-end gap-3">
-        <ExecuteFlow isAssist flowId={agentData.flowId || ""} />
+        <ExecuteFlow isAssist flowId={agentData.refId || ""} />
         {/* Actions container */}
         {import.meta.env.MODE !== "production" && (
-          <AAListItemActions flowId={agentData.flowId || ""} />
+          <AAListItemActions
+            flowId={agentData.refId || ""}
+            versionId={agentData.id}
+          />
         )}
       </div>
     </div>

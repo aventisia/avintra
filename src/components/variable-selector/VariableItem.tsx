@@ -4,9 +4,13 @@ import { useShallow } from "zustand/react/shallow";
 
 interface VariableItemProps {
   value: string;
+  isConfigValue?: boolean;
 }
 
-export const VariableItem: React.FC<VariableItemProps> = ({ value }) => {
+export const VariableItem: React.FC<VariableItemProps> = ({
+  value,
+  isConfigValue = false,
+}) => {
   // Get variable selector store state and actions
   const { setOpenState, setSelectedValue } = useVariableSelectorStore(
     useShallow((state) => ({
@@ -15,9 +19,9 @@ export const VariableItem: React.FC<VariableItemProps> = ({ value }) => {
     })),
   );
 
-  // Hanlde onValueSelect from Variable List
+  // Handle onValueSelect from Variable List
   const handleOnSelectValue = (val: string) => {
-    setSelectedValue(val);
+    setSelectedValue(isConfigValue ? "__config__" + val : val);
     setOpenState(false);
   };
 

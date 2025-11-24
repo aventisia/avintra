@@ -1,12 +1,10 @@
 import { useVariableSelectorStore } from "@/stores/variable-selector-store";
 import { cn } from "@aventisia/ui/lib";
-import {
-  Popover,
-  PopoverContent,
-  PopoverDefaultHeader,
-} from "@aventisia/ui/popover";
+import { Popover, PopoverContent } from "@aventisia/ui/popover";
 import { useShallow } from "zustand/react/shallow";
 import { VariableSelectorContent } from "./VariableSelectorContent";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
+import { ConfigSelectorContent } from "./ConfigSelectorContent";
 
 interface VariableSelectorWrapperProps
   extends React.ComponentPropsWithoutRef<typeof PopoverContent> {
@@ -49,11 +47,22 @@ const VariableSelectorWrapper = ({
         className={cn(className, "max-h-96 shadow-sm")}
         {...props}
       >
-        <PopoverDefaultHeader
-          heading={"Select Variable"}
-          className="border-none"
-        />
-        <VariableSelectorContent />
+        <Tabs defaultValue="variables" className="w-full">
+          <TabsList className="w-full">
+            <TabsTrigger value="variables" className="w-full">
+              Variables
+            </TabsTrigger>
+            <TabsTrigger value="keystore" className="w-full">
+              Key Store
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="variables">
+            <VariableSelectorContent />
+          </TabsContent>
+          <TabsContent value="keystore">
+            <ConfigSelectorContent />
+          </TabsContent>
+        </Tabs>
       </PopoverContent>
     </Popover>
   );

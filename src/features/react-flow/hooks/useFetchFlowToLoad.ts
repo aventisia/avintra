@@ -57,7 +57,7 @@ export const useFetchFlowToLoad = () => {
   }, [isLoading, setIsFlowLoading]);
 
   useEffect(() => {
-    if (!data) return;
+    if (!data?.data) return;
     // Set currently opened flow
     setCurrentFlow({
       id: data.data.id,

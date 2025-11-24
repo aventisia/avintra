@@ -11,7 +11,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/agent`;
  */
 const getAgents = () => {
   return axiosInstance
-    .get<IHttpResponse<PublishedAgentDto[]>>(`${baseAPIURL}/publish-flows`)
+    .get<IHttpResponse<PublishedAgentDto[]>>(`${baseAPIURL}/published`)
     .then((res) => res.data);
 };
 
