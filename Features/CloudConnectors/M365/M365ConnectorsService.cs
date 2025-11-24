@@ -86,8 +86,8 @@ public class M365ConnectorsService : IM365ConnectorsService
                 case nameof(M365ActionsEnum.ClearWorksheetRange):
                     m365Response = await ClearWorksheetRangeAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
-                case nameof(M365ActionsEnum.DeleteNamedRange):
-                    m365Response = await DeleteNamedRangeAsync(httpClient, cloudConnectorReqDto.Payload);
+                case nameof(M365ActionsEnum.DeleteRange):
+                    m365Response = await DeleteRangeAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
                 case nameof(M365ActionsEnum.GetColumnFromWorksheetByIndex):
                     m365Response = await GetColumnFromWorksheetByIndexAsync(httpClient, cloudConnectorReqDto.Payload);
@@ -116,10 +116,26 @@ public class M365ConnectorsService : IM365ConnectorsService
                 case nameof(M365ActionsEnum.CreateTableInExcel):
                     m365Response = await CreateTableInExcelAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
-                case nameof(M365ActionsEnum.ExportWorkbookToPdf):
-                    m365Response = await ExportWorkbookToPdfAsync(httpClient, cloudConnectorReqDto.Payload);
+                case nameof(M365ActionsEnum.DeleteWorkbookNamedRangeWorksheet):
+                    m365Response = await DeleteWorkbookNamedRangeAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
-                    
+                case nameof(M365ActionsEnum.GetTableRangeFromExcelWorksheet):
+                    m365Response = await GetTableRangeFromExcelWorksheetAsync(httpClient, cloudConnectorReqDto.Payload);
+                    break;
+                case nameof(M365ActionsEnum.AddNamedItem):
+                    m365Response = await AddNamedItemAsync(httpClient, cloudConnectorReqDto.Payload);
+                    break;
+                case nameof(M365ActionsEnum.DeleteNamedItem):
+                    m365Response = await DeleteNamedItemAsync(httpClient, cloudConnectorReqDto.Payload);
+                    break;
+                case nameof(M365ActionsEnum.ListNamedItems):
+                    m365Response = await ListNamedItemsAsync(httpClient, cloudConnectorReqDto.Payload);
+                    break;
+                case nameof(M365ActionsEnum.ClearRange):
+                    m365Response = await ClearRangeAsync(httpClient, cloudConnectorReqDto.Payload);
+                    break;
+                
+
                 default:
                     _logger.LogWarning("Unsupported M365 Connector: {Action}", cloudConnectorReqDto.Action);
                     serviceResponse.Message = "Unsupported M365 Connector.";
@@ -349,7 +365,10 @@ public class M365ConnectorsService : IM365ConnectorsService
         var cellAddress = connectorRequestPayload["CellAddress"].ToString();
 
         // step 2: send a get request and fetch formula as per cell address
-        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/range(address='{cellAddress}')";
+        var encodedWorksheet = Uri.EscapeDataString(worksheetName);
+        var encodedAddress = Uri.EscapeDataString(cellAddress);
+
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{encodedWorksheet}/range?address={encodedAddress}";
         var response = await httpClient.GetAsync(url);
 
         // Step 3: Return response as JsonDocument
@@ -416,37 +435,180 @@ public class M365ConnectorsService : IM365ConnectorsService
         var itemId = connectorRequestPayload["itemId"].ToString();
         var worksheetName = connectorRequestPayload["worksheetName"].ToString();
         var rangeAddress = connectorRequestPayload["rangeAddress"].ToString();
-        var applyTo = connectorRequestPayload["applyTo"]?.ToString() ?? "all"; // applyTo: "all", "contents", "formats"
 
-        // Step 2: Prepare request payload
-        var payload = new { applyTo = applyTo };
+        // Parse Excel range address accurately (e.g., "A1", "B2:D5")
+        (int rowCount, int colCount) = ParseExcelRange(rangeAddress);
+
+        // Build 2D array of empty strings matching the range size
+        var values = new string[rowCount][];
+        for (int r = 0; r < rowCount; r++)
+        {
+            values[r] = new string[colCount];
+            for (int c = 0; c < colCount; c++)
+            {
+                values[r][c] = "";
+            }
+        }
+
+        var payload = new { valuesRange = values };
+
+
+        // Step 1: Build URL with query parameter (NOT path injection)
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{Uri.EscapeDataString(worksheetName)}/range?address={Uri.EscapeDataString(rangeAddress)}";
         var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
 
-        // Step 3: Send POST request and return response
-        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/range(address='{rangeAddress}'/clear";
-        var response = await httpClient.PostAsync(url, content);
+        // Step 4: Send PATCH request
+        var response = await httpClient.PatchAsync(url, content);
+        response.EnsureSuccessStatusCode();
 
         return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+
+    }
+
+    // Clear Range 
+    private async Task<JsonDocument?> ClearRangeAsync (HttpClient httpClient,Dictionary<string,object> connectorRequestPayload)
+    {
+         // Step 1: Get request parameters
+        var driveId = connectorRequestPayload["driveId"].ToString();
+        var itemId = connectorRequestPayload["itemId"].ToString();
+        var worksheetName = connectorRequestPayload["worksheetName"].ToString();
+        var rangeAddress = connectorRequestPayload["rangeAddress"].ToString();
+
+        var applyTo = connectorRequestPayload["applyTo"].ToString();
+        // applyTo : Formats,All,Contents
+
+        var payload = new
+        {
+            values = applyTo
+        };
+
+        // Step 1: Build URL with query parameter (NOT path injection)
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/range(address='{rangeAddress}')/clear";                   
+        var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
+
+        // Step 4: Send PATCH request
+        var response = await httpClient.PostAsync(url, content);
+        response.EnsureSuccessStatusCode();
+
+        return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+   
+    }
+
+
+
+
+
+
+
+    // Action: DeleteWorkbookNamedRange
+    private async Task<JsonDocument?> DeleteWorkbookNamedRangeAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    {
+        var driveId = connectorRequestPayload["driveId"].ToString();
+        var itemId = connectorRequestPayload["itemId"].ToString();
+        var name = connectorRequestPayload["name"].ToString();
+
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/names/{Uri.EscapeDataString(name)}";
+
+        var response = await httpClient.DeleteAsync(url);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new HttpRequestException($"Failed to delete named range '{name}'. Status: {response.StatusCode}. Details: {errorContent}");
+        }
+
+        // Success: 204 No Content → return empty JSON object
+        return JsonDocument.Parse("{}");
+    }
+
+
+    // Helper: Parses Excel range like "A1" or "B2:D5" into (rowCount, colCount)
+    private static (int rowCount, int colCount) ParseExcelRange(string range)
+    {
+        if (string.IsNullOrWhiteSpace(range))
+            throw new ArgumentException("Range cannot be null or empty.", nameof(range));
+
+        string[] parts = range.Split(':');
+        (int startRow, int startCol) = ParseCellReference(parts[0]);
+
+        if (parts.Length == 1)
+        {
+            // Single cell: e.g., "A1"
+            return (1, 1);
+        }
+        else if (parts.Length == 2)
+        {
+            // Range: e.g., "A1:C3"
+            (int endRow, int endCol) = ParseCellReference(parts[1]);
+
+            int rowCount = Math.Abs(endRow - startRow) + 1;
+            int colCount = Math.Abs(endCol - startCol) + 1;
+
+            return (rowCount, colCount);
+        }
+        else
+        {
+            throw new ArgumentException("Invalid range format.", nameof(range));
+        }
+    }
+
+    // Helper: Converts "A1" → (1, 1), "Z100" → (100, 26)
+    private static (int row, int col) ParseCellReference(string cell)
+    {
+        if (string.IsNullOrWhiteSpace(cell))
+            throw new ArgumentException("Cell reference cannot be null or empty.", nameof(cell));
+
+        var colPart = new System.Text.StringBuilder();
+        var rowPart = new System.Text.StringBuilder();
+
+        foreach (char c in cell)
+        {
+            if (char.IsDigit(c))
+                rowPart.Append(c);
+            else if (char.IsLetter(c))
+                colPart.Append(char.ToUpper(c));
+            else
+                throw new ArgumentException($"Invalid character '{c}' in cell reference.", nameof(cell));
+        }
+
+        if (rowPart.Length == 0 || colPart.Length == 0)
+            throw new ArgumentException("Invalid cell reference format.", nameof(cell));
+
+        int row = int.Parse(rowPart.ToString());
+        int col = 0;
+        string colStr = colPart.ToString();
+        foreach (char c in colStr)
+        {
+            col = col * 26 + (c - 'A' + 1);
+        }
+
+        return (row, col);
     }
 
     //Action: DeleteNamedRange
-    private async Task<JsonDocument?> DeleteNamedRangeAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    private async Task<JsonDocument?> DeleteRangeAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
     {
         // Step 1: Get request parameters
         var driveId = connectorRequestPayload["driveId"].ToString();
         var itemId = connectorRequestPayload["itemId"].ToString();
         var worksheetName = connectorRequestPayload["worksheetName"].ToString();
         var rangeAddress = connectorRequestPayload["rangeAddress"].ToString();
-        var shiftTo = connectorRequestPayload.GetValueOrDefault("shiftTo", "up").ToString(); // shiftTo: "up", "Left"
+        var shiftTo = connectorRequestPayload.GetValueOrDefault("shiftTo", "Up").ToString(); // shiftTo: "Up", "Left"
+        
+        shiftTo = char.ToUpper(shiftTo[0]) + shiftTo.Substring(1) ?? "Up";
 
-        var payload = new { shiftTo };
+        var payload = new
+        {
+            shiftToRange = shiftTo
+        };
+
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/range(address='{rangeAddress}')/delete"; 
         var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
-
-        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/range(address='{rangeAddress}'/delete";
         var response = await httpClient.PostAsync(url, content);
         return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
 
     }
+
 
     //Action: SetColorInExcelWorksheet
     private async Task<JsonDocument?> SetColorInExcelWorksheetAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
@@ -515,7 +677,7 @@ public class M365ConnectorsService : IM365ConnectorsService
 
         // step2: assign value in Payload 
         var payload = new Dictionary<string, object>();
-        if(columnWidth.HasValue) payload["columnWidth"] = columnWidth.Value;
+        if (columnWidth.HasValue) payload["columnWidth"] = columnWidth.Value;
         if (rowHeight.HasValue) payload["rowHeight"] = rowHeight.Value;
 
         // Build URL with range(address='...')
@@ -601,18 +763,90 @@ public class M365ConnectorsService : IM365ConnectorsService
         }
     }
 
-    private async Task<byte[]> ExportWorkbookToPdfAsync(HttpClient httpClient,Dictionary<string, object> connectorRequestPayload)
+    // private async Task<JsonDocument?> GetUsedRangeAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    // {
+    //     //Get request parameters
+    //     var driveId = connectorRequestPayload["driveId"].ToString();
+    //     var itemId = connectorRequestPayload["itemId"].ToString();
+    //     var worksheetName = connectorRequestPayload["worksheetName"].ToString();
+
+    //     var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/usedRange()";
+
+    //     var response = await httpClient.GetAsync(url);
+    //     return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+    // }
+
+
+    // private async Task<JsonDocument?> ActivateWorksheetAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    // {
+    //     // Step 1: Get request parameters
+    //     var driveId = connectorRequestPayload["driveId"].ToString();
+    //     var itemId = connectorRequestPayload["itemId"].ToString();
+    //     var worksheetName = connectorRequestPayload["worksheetName"].ToString();
+
+    //     var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/activate";
+
+    //     var response = await httpClient.PostAsync(url, null);
+    //     return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+    // }
+
+
+
+    //Action : ListNamedItem
+    private async Task<JsonDocument?> ListNamedItemsAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
     {
+        // Step 1: Get request parameters
         var driveId = connectorRequestPayload["driveId"].ToString();
         var itemId = connectorRequestPayload["itemId"].ToString();
 
-        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/exportPdf";
-        var response = await httpClient.PostAsync(url, null);
-        response.EnsureSuccessStatusCode();
+        // Step 2: Graph API URL
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/names";
 
-        // PDF is binary → return byte[]
-        return await response.Content.ReadAsByteArrayAsync();
+        var response = await httpClient.GetAsync(url);
+        return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
     }
+
+    //Action : DeleteNamedItem
+    private async Task<JsonDocument?> DeleteNamedItemAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    {
+        // Step 1: Get request parameters
+        var driveId = connectorRequestPayload["driveId"].ToString();
+        var itemId = connectorRequestPayload["itemId"].ToString();
+        var name = connectorRequestPayload["name"].ToString();
+
+        // Step 2: Graph API URL
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/names/{name}";
+
+        var response = await httpClient.DeleteAsync(url);
+        return response.IsSuccessStatusCode ? JsonDocument.Parse("{}") : null;
+    }
+    //Action : AddNamedItem
+    private async Task<JsonDocument?> AddNamedItemAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    {
+        // Step 1: Get request parameters
+        var driveId = connectorRequestPayload["driveId"].ToString();
+        var itemId = connectorRequestPayload["itemId"].ToString();
+        var namedItemName = connectorRequestPayload["namedItemName"].ToString();
+        var namedItemReference = connectorRequestPayload["namedItemReference"].ToString();
+
+        // Step 2: Build request payload
+        var payload = new
+        {
+            name = namedItemName,
+            reference = namedItemReference
+        };
+
+        // Step 3: Graph API URL
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/names/add";
+        var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
+
+        // Step 4: Send  post request
+        var response = await httpClient.PostAsync(url, content);
+
+        // Step 5: Return JSON response
+        return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+    }
+
 
     //Action : Create Table in Excel.
     private async Task<JsonDocument> CreateTableInExcelAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
@@ -628,26 +862,53 @@ public class M365ConnectorsService : IM365ConnectorsService
 
         var payload = new
         {
-            address = address,
-            hasHeaders = hasHeaders,
-            name = tableName
+            properties = new
+            {
+                address = address,
+                hasHeaders = hasHeaders,
+                name = tableName
+            }
         };
 
-        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/tables/add";
+        // Build URL: POST to /tables/add
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{Uri.EscapeDataString(worksheetName)}/tables/add";
         var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
-
         var response = await httpClient.PostAsync(url, content);
 
         return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
     }
 
-    // Action: AppendRangeToExcelWorksheet
-    private async Task<JsonDocument> AppendRangeToExcelWorksheetAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    // Action: GetTableRangeFromExcelWorksheet
+    private async Task<JsonDocument?> GetTableRangeFromExcelWorksheetAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
     {
-        //Step 1: get the request parameters.
+        // Step 1: Get request parameters
+        var driveId = connectorRequestPayload["driveId"]?.ToString();
+        var itemId = connectorRequestPayload["itemId"]?.ToString();
+        var tableName = connectorRequestPayload["tableName"]?.ToString();
+
+        // Step 2: Build Graph API endpoint for table range
+        var tableRangeUrl = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/tables/{Uri.EscapeDataString(tableName)}/range";
+
+        // Step 3: Send GET request
+        var tableRangeResponse = await httpClient.GetAsync(tableRangeUrl);
+
+        if (!tableRangeResponse.IsSuccessStatusCode)
+        {
+            var errorContent = await tableRangeResponse.Content.ReadAsStringAsync();
+            throw new InvalidOperationException($"Failed to get table range. Status: {tableRangeResponse.StatusCode}, Response: {errorContent}");
+        }
+
+        // Step 4: Parse and return JSON response
+        return JsonDocument.Parse(await tableRangeResponse.Content.ReadAsStringAsync());
+    }
+
+    // Action: AppendRangeToExcelWorksheet
+    private async Task<JsonDocument?> AppendRangeToExcelWorksheetAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    {
+        // Step 1: Get request parameters
         var driveId = connectorRequestPayload["driveId"].ToString();
         var itemId = connectorRequestPayload["itemId"].ToString();
-        var worksheetName = connectorRequestPayload["worksheetName"]?.ToString();
+        var worksheetName = connectorRequestPayload["worksheetName"]?.ToString() ?? throw new ArgumentException("worksheetName is required.");
         var startingColumn = connectorRequestPayload["startingColumn"]?.ToString() ?? "A";
         var firstRowHasHeaders = connectorRequestPayload.ContainsKey("firstRowHasHeaders")
             ? Convert.ToBoolean(connectorRequestPayload["firstRowHasHeaders"])
@@ -659,7 +920,7 @@ public class M365ConnectorsService : IM365ConnectorsService
 
         // Step 2: Get last used row
         int lastRow = 0;
-        var usedRangeUrl = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/usedRange";
+        var usedRangeUrl = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{Uri.EscapeDataString(worksheetName)}/usedRange";
         var usedRangeResponse = await httpClient.GetAsync(usedRangeUrl);
 
         if (usedRangeResponse.IsSuccessStatusCode)
@@ -669,12 +930,11 @@ public class M365ConnectorsService : IM365ConnectorsService
             var address = usedRangeDoc.RootElement.GetProperty("address").GetString();
             lastRow = ParseLastRowFromAddress(address);
         }
-        // If 404 (empty sheet), lastRow remains 0 → start at row 1
-
-        // Step 3: Build 2D values array 
+        // If no data (404), start at row 1
+        // Step 3: Build 2D array of string values
         var values = BuildValuesArray(dataRows, firstRowHasHeaders);
         if (values.GetLength(0) == 0)
-            return JsonDocument.Parse("{\"message\":\"No data to append.\"}");
+            return JsonDocument.Parse("{\"message\": \"No data to append.\"}");
 
         int rowsToAppend = values.GetLength(0);
         int colsToAppend = values.GetLength(1);
@@ -686,18 +946,21 @@ public class M365ConnectorsService : IM365ConnectorsService
 
         // Step 5: Compute target range
         int startRow = lastRow + 1;
-        int endRow = startRow + rowsToAppend - 1;
-        string targetRange = $"{startColLetter}{startRow}:{endColLetter}{endRow}";
+        string targetRange = $"{startColLetter}{startRow}:{endColLetter}{startRow + rowsToAppend - 1}";
+
+        var payload = new
+        {
+            values = values
+        };
+
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{Uri.EscapeDataString(worksheetName)}/range?address={Uri.EscapeDataString(targetRange)}";
+        var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
 
         // Step 6: Send PATCH request
-        var payload = new { values = values };
-        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/range(address='{targetRange}')";
-        var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
         var response = await httpClient.PatchAsync(url, content);
 
         // Step 7: Return response as JsonDocument
         return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-
     }
 
     //Helper method : Parse last row from address (e.g., "Sheet1!A1:D15" → 15)
