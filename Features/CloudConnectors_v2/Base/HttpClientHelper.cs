@@ -1,0 +1,92 @@
+﻿namespace WorkspaceAPIs.Features.CloudConnectors;
+
+public static class HttpClientHelper
+{
+    private static readonly HttpClient httpClient;
+
+    static HttpClientHelper()
+    {
+        httpClient = new HttpClient();
+        httpClient.Timeout = TimeSpan.FromSeconds(60);
+    }
+
+    public static async Task<JsonDocument?> GetAsync(string url, string? jwt = null, Dictionary<string, string>? headers = null)
+    {
+        return await ProcessAsync(HttpMethod.Get, url, jwt, null, headers);
+    }
+
+    public static async Task<JsonDocument?> PostAsync(string url, object content, string? jwt = null, Dictionary<string, string>? headers = null)
+    {
+        return await ProcessAsync(HttpMethod.Post, url, jwt, content, headers);
+    }
+
+    public static async Task<JsonDocument?> PutAsync(string url, object content, string? jwt = null, Dictionary<string, string>? headers = null)
+    {
+        return await ProcessAsync(HttpMethod.Put, url, jwt, content, headers);
+    }
+
+    public static async Task<JsonDocument?> PatchAsync(string url, object content, string? jwt = null, Dictionary<string, string>? headers = null)
+    {
+        return await ProcessAsync(HttpMethod.Patch, url, jwt, content, headers);
+    }
+
+    public static async Task<JsonDocument?> DeleteAsync(string url, string? jwt = null, Dictionary<string, string>? headers = null)
+    {
+        return await ProcessAsync(HttpMethod.Delete, url, jwt, null, headers);
+    }
+
+    public static async Task<JsonDocument?> ProcessAsync(
+        HttpMethod httpMethod,
+        string url,
+        string? jwt = null,
+        object? content = null,
+        Dictionary<string, string>? headers = null)
+    {
+        using (var request = new HttpRequestMessage(httpMethod, url))
+        {
+            // Set the Bearer token in Authorization header
+            if (jwt != null)
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+
+            // Add additional headers
+            if (headers != null)
+            {
+                foreach (var kv in headers)
+                {
+                    request.Headers.Remove(kv.Key); // Remove if already exists
+                    request.Headers.Add(kv.Key, kv.Value);
+                }
+            }
+
+            // If content is not null, Set content
+            if (content != null)
+                request.Content = new StringContent(JsonConvert.SerializeObject(content), Encoding.UTF8, "application/json");
+
+            try
+            {
+                var response = await httpClient.SendAsync(request);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    try
+                    {
+                        return JsonDocument.Parse(responseContent);
+                    }
+                    catch (System.Text.Json.JsonException ex)
+                    {
+                        return JsonDocument.Parse($@"{{""error"": ""Exception: {ex.Message.Replace("\"", "'")}""}}");
+                    }
+                }
+                else
+                {
+                    return JsonDocument.Parse($@"{{""error"": ""Exception: {response.StatusCode} - {responseContent.Replace("\"", "'")}""}}");
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonDocument.Parse($@"{{""error"": ""Exception: {ex.Message.Replace("\"", "'")}""}}");
+            }
+        }
+    }
+}
