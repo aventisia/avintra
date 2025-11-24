@@ -1,10 +1,10 @@
-namespace WorkspaceAPIs.Features.CloudConnectors;
+// namespace WorkspaceAPIs.Features.CloudConnectors;
 
-public class VaultCredentialObj
-{
-    public required string Name { get; set; }
+// public class VaultCredentialObj
+// {
+//     public required string Name { get; set; }
 
-    public AppSecretTypesEnum Type { get; set; }
+//     public AppSecretTypesEnum Type { get; set; }
 
-    public required Dictionary<string, object> Data { get; set; }
-}
+//     public required Dictionary<string, object> Data { get; set; }
+// }
