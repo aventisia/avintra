@@ -13,7 +13,7 @@ public enum M365ActionsEnum
     ReadFormula,
     DeleteWorksheet,
     ClearWorksheetRange,
-    DeleteNamedRange,
+    DeleteRange,
     GetColumnFromWorksheetByIndex,
     SetColorInExcelWorksheet,
     SelectSpecificRangeOfCellInWorksheet,
@@ -27,6 +27,7 @@ public enum M365ActionsEnum
     GetTableRangeFromExcelWorksheet,
     AddNamedItem,
     DeleteNamedItem,
-    ListNamedItems
+    ListNamedItems,
+    ClearRange
     
 }
