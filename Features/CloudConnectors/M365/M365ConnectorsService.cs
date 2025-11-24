@@ -86,8 +86,8 @@ public class M365ConnectorsService : IM365ConnectorsService
                 case nameof(M365ActionsEnum.ClearWorksheetRange):
                     m365Response = await ClearWorksheetRangeAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
-                case nameof(M365ActionsEnum.DeleteNamedRange):
-                    m365Response = await DeleteNamedRangeAsync(httpClient, cloudConnectorReqDto.Payload);
+                case nameof(M365ActionsEnum.DeleteRange):
+                    m365Response = await DeleteRangeAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
                 case nameof(M365ActionsEnum.GetColumnFromWorksheetByIndex):
                     m365Response = await GetColumnFromWorksheetByIndexAsync(httpClient, cloudConnectorReqDto.Payload);
@@ -131,8 +131,10 @@ public class M365ConnectorsService : IM365ConnectorsService
                 case nameof(M365ActionsEnum.ListNamedItems):
                     m365Response = await ListNamedItemsAsync(httpClient, cloudConnectorReqDto.Payload);
                     break;
-
-
+                case nameof(M365ActionsEnum.ClearRange):
+                    m365Response = await ClearRangeAsync(httpClient, cloudConnectorReqDto.Payload);
+                    break;
+                
 
                 default:
                     _logger.LogWarning("Unsupported M365 Connector: {Action}", cloudConnectorReqDto.Action);
@@ -463,6 +465,41 @@ public class M365ConnectorsService : IM365ConnectorsService
 
     }
 
+    // Clear Range 
+    private async Task<JsonDocument?> ClearRangeAsync (HttpClient httpClient,Dictionary<string,object> connectorRequestPayload)
+    {
+         // Step 1: Get request parameters
+        var driveId = connectorRequestPayload["driveId"].ToString();
+        var itemId = connectorRequestPayload["itemId"].ToString();
+        var worksheetName = connectorRequestPayload["worksheetName"].ToString();
+        var rangeAddress = connectorRequestPayload["rangeAddress"].ToString();
+
+        var applyTo = connectorRequestPayload["applyTo"].ToString();
+        // applyTo : Formats,All,Contents
+
+        var payload = new
+        {
+            values = applyTo
+        };
+
+        // Step 1: Build URL with query parameter (NOT path injection)
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/range(address='{rangeAddress}')/clear";                   
+        var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
+
+        // Step 4: Send PATCH request
+        var response = await httpClient.PostAsync(url, content);
+        response.EnsureSuccessStatusCode();
+
+        return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+   
+    }
+
+
+
+
+
+
+
     // Action: DeleteWorkbookNamedRange
     private async Task<JsonDocument?> DeleteWorkbookNamedRangeAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
     {
@@ -549,7 +586,7 @@ public class M365ConnectorsService : IM365ConnectorsService
     }
 
     //Action: DeleteNamedRange
-    private async Task<JsonDocument?> DeleteNamedRangeAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+    private async Task<JsonDocument?> DeleteRangeAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
     {
         // Step 1: Get request parameters
         var driveId = connectorRequestPayload["driveId"].ToString();
@@ -557,14 +594,15 @@ public class M365ConnectorsService : IM365ConnectorsService
         var worksheetName = connectorRequestPayload["worksheetName"].ToString();
         var rangeAddress = connectorRequestPayload["rangeAddress"].ToString();
         var shiftTo = connectorRequestPayload.GetValueOrDefault("shiftTo", "Up").ToString(); // shiftTo: "Up", "Left"
+        
         shiftTo = char.ToUpper(shiftTo[0]) + shiftTo.Substring(1) ?? "Up";
+
         var payload = new
         {
             shiftToRange = shiftTo
         };
 
-
-        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/range(address='{rangeAddress}'/delete";
+        var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/range(address='{rangeAddress}')/delete"; 
         var content = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
         var response = await httpClient.PostAsync(url, content);
         return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
