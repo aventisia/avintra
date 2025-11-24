@@ -25,7 +25,7 @@ import { executionsTableColumns } from "./ExecutionsTableColumns";
  * @returns The rendered executionsTable component.
  */
 export const ExecutionsTable = () => {
-  const [tabValue, setTabValue] = useState<string>("Created");
+  const [tabValue, setTabValue] = useState<string>("Running");
 
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
@@ -73,35 +73,7 @@ export const ExecutionsTable = () => {
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <DTHeading heading={TABLE_HEADING} />
-              <Tabs
-                value={tabValue}
-                // className="w-full"
-                onValueChange={setTabValue}
-              >
-                <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
-                  <TabsTrigger
-                    value="Created"
-                    className="w-full rounded-lg py-1"
-                  >
-                    Scheduled
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="Running"
-                    className="w-full rounded-lg py-1"
-                  >
-                    Current
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="History"
-                    className="w-full rounded-lg py-1"
-                  >
-                    History
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
+            <DTHeading heading={TABLE_HEADING} />
 
             <div className="flex items-center gap-2">
               <DTSearchBox
@@ -109,6 +81,32 @@ export const ExecutionsTable = () => {
                 searchColumn={SEARCH_COLUMN}
                 placeholder="Search..."
               />
+              <Tabs
+                value={tabValue}
+                // className="w-full"
+                onValueChange={setTabValue}
+              >
+                <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
+                  <TabsTrigger
+                    value="Running"
+                    className="w-full rounded-lg py-0.5"
+                  >
+                    Current
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="Created"
+                    className="w-full rounded-lg py-0.5"
+                  >
+                    Scheduled
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="History"
+                    className="w-full rounded-lg py-0.5"
+                  >
+                    History
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
               <DTViewOptions
                 {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
               />

@@ -13,6 +13,7 @@ import {
   ipAddressProps,
   isDisabledProps,
   nameProps,
+  os_unique_idProps,
   osTypeProps,
 } from "../../constants/machine-form-field-props";
 import { machineZodSchema } from "../../constants/machine-zod-schema";
@@ -109,6 +110,9 @@ export const MachineCrudForm = () => {
 
       {/* Host Name */}
       <InputField {...hostnameProps} disabled={isReadMode} />
+
+      {/* OS Id */}
+      <InputField {...os_unique_idProps} disabled={isReadMode} />
 
       {/* environment */}
       {form.getValues("environment") !== "" && (
