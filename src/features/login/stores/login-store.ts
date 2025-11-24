@@ -10,6 +10,8 @@ type State = {
   /** To store login details */
   loginData: ILoginData | null;
 
+  osId: string;
+
   /** To store 2-fa details */
   twoFACodeData: ITwoFACodeData | null;
 };
@@ -20,6 +22,8 @@ type Actions = {
 
   /** Set the login data */
   setLoginData: (loginData: ILoginData | null) => void;
+
+  setOsId: (id: string) => void;
 
   /** Set the 2-fa code data */
   setTwoFACodeData: (twoFACodeData: ITwoFACodeData | null) => void;
@@ -32,9 +36,11 @@ export const useLoginStore = create<State & Actions>((set) => ({
   stepNo: 1,
   loginData: null,
   twoFACodeData: null,
+  osId: "",
 
   setStepNo: (stepNo) => set({ stepNo }),
   setLoginData: (loginData) => set({ loginData }),
+  setOsId: (osId) => set({ osId }),
   setTwoFACodeData: (twoFACodeData) => set({ twoFACodeData }),
   resetLoginProcess: () =>
     set({ loginData: null, twoFACodeData: null, stepNo: 1 }),

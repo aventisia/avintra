@@ -5,6 +5,9 @@ interface PwdLoginDto {
 
   /** Password of user's account */
   pwd: string;
+
+  /** OS id (optional) */
+  os_unique_id?: string;
 }
 
 export { type PwdLoginDto };

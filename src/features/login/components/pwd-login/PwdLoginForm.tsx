@@ -6,13 +6,23 @@ import * as z from "zod";
 
 import { pwdProps } from "../../constants/form-field-props";
 import { pwdLoginZodSchema } from "../../constants/pwd-login-zod-schema";
+import { PwdLoginDto } from "../../dtos/pwd-login-dto";
 import { useAuthenticateUserMutation } from "../../hooks/useAuthenticateUserMutation";
 import { useDefinePwdLoginForm } from "../../hooks/useDefinePwdLoginForm";
 
 export const PwdLoginForm = () => {
   // Define form
-  const { form, isSubmitting, loginData, setLoginData, resetLoginProcess } =
-    useDefinePwdLoginForm();
+  const {
+    form,
+    isSubmitting,
+    loginData,
+    osId,
+    setLoginData,
+    resetLoginProcess,
+  } = useDefinePwdLoginForm();
+
+  // Check if the environment is a Tauri app
+  const isTauriApp = typeof window !== "undefined" && "isTauri" in window;
 
   // Get mutation
   const { authenticateUserMutation, isAuthPending } =
@@ -34,11 +44,19 @@ export const PwdLoginForm = () => {
       pwd: formData.pwd,
     });
 
-    // Try to Authenticate user
-    authenticateUserMutation({
+    // Payload
+    const payload: PwdLoginDto = {
       email: loginData.email,
       pwd: formData.pwd,
-    });
+    };
+
+    // Include os_unique_id in payload only if it's a Tauri app
+    if (isTauriApp) {
+      payload.os_unique_id = osId;
+    }
+
+    // Try to Authenticate user
+    authenticateUserMutation(payload);
   };
 
   // Return form
