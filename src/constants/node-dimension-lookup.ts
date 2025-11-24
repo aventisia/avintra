@@ -24,6 +24,7 @@ export const nodeDimensionLookup: Record<CustomNodeType, NodeDimensionType> = {
   ifElseNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   triggerNode: { width: START_END_NODE_WIDTH, height: START_END_NODE_HEIGHT },
   activityNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
+  cloudConnectorNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   conditionalNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   whileLoopNode: { width: NODE_WIDTH, height: NODE_HEIGHT },
   forLoopNode: { width: NODE_WIDTH, height: NODE_HEIGHT },

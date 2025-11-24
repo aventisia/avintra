@@ -5,6 +5,7 @@ import { BranchEndNode } from "@/components/nodes/BranchEndNode";
 import { BranchNode } from "@/components/nodes/BranchNode";
 import { BranchNode1 } from "@/components/nodes/BranchNode1";
 import { CallAgentNode } from "@/components/nodes/CallAgentNode";
+import { CloudConnectorNode } from "@/components/nodes/CloudConnectorNode";
 import { ConditionalNode } from "@/components/nodes/ConditionalNode";
 import { FlowEndNode } from "@/components/nodes/FlowEndNode";
 import { ForLoopNode } from "@/components/nodes/ForLoopNode";
@@ -36,6 +37,7 @@ export const CustomNodeTypeObj = {
   // ------------------------------------Base node types
   triggerNode: TriggerNode,
   activityNode: ActivityNode,
+  cloudConnectorNode: CloudConnectorNode,
 
   //AI Node
   aiNode: AIModelNode,

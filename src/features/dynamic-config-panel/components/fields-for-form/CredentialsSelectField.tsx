@@ -1,3 +1,4 @@
+import { LoadingSpinner } from "@aventisia/ui";
 import {
   BaseFieldProps,
   FormControl,
@@ -13,8 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@aventisia/ui/select";
-import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 import { useEffect, useState } from "react";
+import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 import { getCredSelectOptions } from "../../apis/app-secret-apis.ts";
 import { CredSelectDto } from "../../dtos/cred-select-dto.ts.ts";
 
@@ -34,7 +35,7 @@ interface CredentialsSelectFieldProps
 const CredentialsSelectField = ({
   name,
   label,
-  size = "base",
+  size = "sm",
   isRequired,
   description,
   disabled,
@@ -46,20 +47,14 @@ const CredentialsSelectField = ({
 
   const [selectOptions, setSelectOptions] = useState<CredSelectDto[]>([]);
 
-  const [, setLoading] = useState<boolean>(true);
-
-  function getQueryForVaultKey(vaultKey: string): string {
-    const serviceMap: Record<string, string> = {
-      OpenAiServiceVaultId: "OpenAiApi",
-      SendGridServiceVaultId: "SendGridApi",
-      TwilioServiceVaultId: "TwilioApi",
-    };
-
-    return serviceMap[vaultKey] || "";
-  }
+  const [isLoading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    getCredSelectOptions(getQueryForVaultKey(name))
+    // Set loading state
+    setLoading(true);
+
+    // Fetch credentials list. Note: Every credential-field should have name ending with 'Credential'
+    getCredSelectOptions(name.replace("__CredentialId__", ""))
       .then((data) => {
         setSelectOptions(data?.data);
         setLoading(false);
@@ -95,31 +90,39 @@ const CredentialsSelectField = ({
                     ref={field.ref}
                     {...props}
                   >
-                    <SelectValue placeholder={placeholder ?? "Select"} />
+                    <SelectValue
+                      className="placeholder:text-muted-foreground"
+                      placeholder={placeholder ?? "Select credential"}
+                    />
                   </SelectTrigger>
 
                   <SelectContent>
-                    {selectOptions.map((item) => (
-                      <SelectItem
-                        size={size}
-                        key={item.value}
-                        value={item.value}
-                      >
-                        {item.label}
-                      </SelectItem>
-                    ))}
+                    {selectOptions.length === 0 ? (
+                      <div className="flex h-20 items-center justify-center gap-2 p-4 text-xs text-muted-foreground">
+                        {isLoading ? (
+                          <>
+                            <LoadingSpinner className="size-3.5 text-primary" />
+                            Fetching credentials...
+                          </>
+                        ) : (
+                          "No credentials found"
+                        )}
+                      </div>
+                    ) : (
+                      selectOptions.map((item) => (
+                        <SelectItem
+                          size={size}
+                          key={item.value}
+                          value={item.value}
+                        >
+                          {item.label}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
-
-                {/* 💡 Show LLM as badge when available */}
-                {/* {selectedOption?.llm && (
-                <div className="mt-1 ml-1">
-                  <Badge variant="default">{selectedOption.llm}</Badge>
-                </div>
-              )}*/}
               </div>
             </FormControl>
-
             <FormMessage {...{ size }} />
           </FormItem>
         )}

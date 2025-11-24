@@ -94,9 +94,11 @@ const AppHeader: React.FC = () => {
           )}
           <PublishFlow />
           {!isAssist && (
-            <Tooltip content="More">
-              <HeaderActionMenu />
-            </Tooltip>
+            <div className="flex items-center">
+              <Tooltip content="More">
+                <HeaderActionMenu />
+              </Tooltip>
+            </div>
           )}
         </div>
       </Header>

@@ -8,6 +8,7 @@ import {
   LoopNodeData,
   WebSocketCommandType,
   getActivityNodeData,
+  getCloudConnectorNodeData,
   getConditionNodeData,
   getConditionalBranchNodeData,
   getLoopNodeData,
@@ -444,6 +445,14 @@ const sendNodeToProcess = (
         "process-node",
         JSON.stringify(
           getActivityNodeData(nodeToProcess as Node<NodeDataType>, nextNodeId),
+        ),
+      );
+      return;
+    case "cloudConnectorNode": // Get cloud connector node data -> Send the command to websocket
+      sendCommand(
+        "process-node",
+        JSON.stringify(
+          getCloudConnectorNodeData(nodeToProcess as Node<NodeDataType>, nextNodeId),
         ),
       );
       return;

@@ -10,6 +10,7 @@ const allowedNodeTypes: CustomNodeType[] = [
   "conditionalNode",
   "forLoopNode",
   "activityNode",
+  "cloudConnectorNode",
 ];
 
 /**

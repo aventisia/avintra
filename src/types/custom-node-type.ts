@@ -8,6 +8,7 @@ export type CustomNodeType =
   | "branchNode1"
   | "branchEndNode"
   | "activityNode"
+  | "cloudConnectorNode"
   | "ifElseNode"
   | "conditionalNode"
   | "whileLoopNode"
