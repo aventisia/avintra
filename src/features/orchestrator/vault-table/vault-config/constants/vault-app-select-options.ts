@@ -9,7 +9,7 @@ export const vaultAppsSelectOptions: Record<
   [VaultAppsEnum.Twilio]: { label: "Twilio", value: "Twilio" },
   [VaultAppsEnum.SendGrid]: { label: "SendGrid", value: "SendGrid" },
   [VaultAppsEnum.GitHub]: { label: "GitHub", value: "GitHub" },
-  [VaultAppsEnum.M365]: { label: "M365", value: "M365" },
+  [VaultAppsEnum.M365Excel]: { label: "M365 Excel", value: "M365Excel" },
   [VaultAppsEnum.GeneralCredentials]: {
     label: "General Credentials",
     value: "GeneralCredentials",
