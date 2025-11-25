@@ -74,4 +74,13 @@ public interface IMachineService
     /// A <see cref="ServiceResponse{T}"/> containing a collection of <see cref="MachineDto"/> objects matching the search criteria.
     /// </returns>
     Task<ServiceResponse<IEnumerable<MachineDto>>> FindMachinesByKeywordAsync(string searchKey);
+
+    /// <summary>
+    /// Validates the machine based on the provided operating system information.
+    /// </summary>
+    /// <param name="osInformationDto">The operating system information (e.g., OSId and HostName) to validate against existing machines.</param>
+    /// <returns>
+    /// A <see cref="ServiceResponse{T}"/> containing a boolean value indicating whether the machine is valid or not.
+    /// </returns>
+    Task<ServiceResponse<bool>> ValidateMachineAsync(OSInformationDto osInformationDto);
 }
