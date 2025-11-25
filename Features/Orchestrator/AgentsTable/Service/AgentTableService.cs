@@ -4,18 +4,24 @@ public class AgentTableService : IAgentTableService
 {
     private readonly ILogger<AgentTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IClientStatusStore _clientStatusStore;
+    private readonly ICurrentTenantService _currentTenantService;
     private readonly Guid _userId;
 
     public AgentTableService(
         ILogger<AgentTableService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IClientStatusStore clientStatusStore,
+        ICurrentTenantService currentTenantService)
     {
         // Extract the user ID from the HTTP context and assign it to _userId.
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _clientStatusStore = clientStatusStore;
+        _currentTenantService = currentTenantService;
     }
 
     // Retrieves a list of published flow versions for a specific flow by its identifier.
@@ -429,6 +435,18 @@ public class AgentTableService : IAgentTableService
                 .Include(m => m.Machine)
                 .ProjectToType<AssignMachineDto>()
                 .ToListAsync();
+
+            var clientStatusDtos = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
+
+            // Iterate through each machine in the 'machines' collection
+            foreach (var machine in machines)
+            {
+                // Find the status of the machine by matching its ClientId with the current machine's Id
+                var clientStatusDto = clientStatusDtos.FirstOrDefault(status => status.ClientId == machine.Id);
+
+                // Set the machine's status based on whether a matching status was found
+                machine.Status = clientStatusDto != null ? clientStatusDto.Status : MachineStatusTypeEnum.Offline;
+            }
 
             // Return the machines along with their assignment status.
             serviceResponse.Data = machines;
