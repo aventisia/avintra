@@ -10,11 +10,9 @@ import {
   environmentTypeProps,
   hostnameProps,
   idProps,
-  ipAddressProps,
   isDisabledProps,
   nameProps,
   os_unique_idProps,
-  osTypeProps,
 } from "../../constants/machine-form-field-props";
 import { machineZodSchema } from "../../constants/machine-zod-schema";
 import { MachinesTableDto } from "../../dtos/machines-table-dto";
@@ -94,8 +92,7 @@ export const MachineCrudForm = () => {
         disabled={isReadMode}
       />
 
-      <div className="grid grid-cols-2 gap-2">
-        {/* os type */}
+      {/* <div className="grid grid-cols-2 gap-2">
         {crudAction === "create" ? (
           <SelectField {...osTypeProps} disabled={isReadMode} />
         ) : (
@@ -104,9 +101,8 @@ export const MachineCrudForm = () => {
           )
         )}
 
-        {/* Ip Address */}
         <InputField {...ipAddressProps} disabled={isReadMode} />
-      </div>
+      </div> */}
 
       {/* Host Name */}
       <InputField {...hostnameProps} disabled={isReadMode} />
