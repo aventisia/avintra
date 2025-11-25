@@ -4,7 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { useLoginStore } from "../../stores/login-store";
 
-const DisplayOSId = () => {
+const DisplayOSInfo = () => {
   const [id, setId] = useState<string>("");
   const [isTauri, setIsTauri] = useState(false);
   const { setOsId } = useLoginStore(
@@ -45,4 +45,4 @@ const DisplayOSId = () => {
   );
 };
 
-export default DisplayOSId;
+export default DisplayOSInfo;
