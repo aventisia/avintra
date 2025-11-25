@@ -4,7 +4,7 @@ import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { maskIP, TABLE_KEY } from "../constants";
+import { TABLE_KEY } from "../constants";
 import { getColumnName, statusColor } from "../constants/column-display-names";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
 
@@ -82,19 +82,19 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
     ),
   },
 
-  {
-    accessorKey: "type",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("type")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
-    ),
-  },
+  // {
+  //   accessorKey: "type",
+  //   header: ({ column }) => (
+  //     <DTColumnHeader
+  //       tableKey={TABLE_KEY}
+  //       column={column}
+  //       title={getColumnName("type")}
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
+  //   ),
+  // },
 
   {
     accessorKey: "status",
@@ -131,21 +131,21 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
     ),
   },
 
-  {
-    accessorKey: "ipAddress",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("ipAddress")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {maskIP(row.getValue("ipAddress"))}
-      </div>
-    ),
-  },
+  // {
+  //   accessorKey: "ipAddress",
+  //   header: ({ column }) => (
+  //     <DTColumnHeader
+  //       tableKey={TABLE_KEY}
+  //       column={column}
+  //       title={getColumnName("ipAddress")}
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="w-auto truncate font-medium">
+  //       {maskIP(row.getValue("ipAddress"))}
+  //     </div>
+  //   ),
+  // },
 
   {
     accessorKey: "hostname",

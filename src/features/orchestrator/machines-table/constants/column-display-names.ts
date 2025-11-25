@@ -7,7 +7,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "id", value: "Select Row" },
   { key: "name", value: "Name" },
   { key: "ipAddress", value: "IP Address" },
-  { key: "hostname", value: "Host Name" },
+  { key: "hostname", value: "Hostname/Username" },
   { key: "type", value: "OS Type" },
   { key: "environment", value: "Environment" },
   { key: "agentCount", value: "Agents" },
