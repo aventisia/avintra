@@ -1,5 +1,4 @@
 use std::process::Command;
-use serde::Serialize;
 
 #[tauri::command]
 pub fn launch_desktop_executor(
@@ -179,52 +178,4 @@ pub fn get_os_installation_id() -> Result<String, String> {
     {
         Err("OS installation GUID is only available on Windows and Linux".into())
     }
-}
-
-/// Gets currently logged-in username
-///
-/// Windows: Reads USERNAME environment variable
-/// Linux: Reads USER environment variable
-pub fn get_username() -> Result<String, String> {
-    #[cfg(target_os = "windows")]
-    {
-        // Read USERNAME environment variable (e.g., "john.doe", "Administrator")
-        std::env::var("USERNAME")
-            .map_err(|_| "Failed to get USERNAME environment variable".into())
-    }
-
-    #[cfg(target_os = "linux")]
-    {
-        // Read USER environment variable (e.g., "john", "root")
-        std::env::var("USER")
-            .map_err(|_| "Failed to get USER environment variable".into())
-    }
-
-    #[cfg(not(any(target_os = "windows", target_os = "linux")))]
-    {
-        Err("Username retrieval is only available on Windows and Linux".into())
-    }
-}
-
-/// OS and user identification information
-#[derive(Serialize)]
-pub struct OSInfo {
-    /// Unique OS installation identifier (persists across reboots, changes on OS reinstall)
-    os_id: String,
-    /// Currently logged-in user's account name
-    username: String,
-}
-
-/// Retrieves os and user identification for unique user tracking
-///
-/// Returns OS installation ID and username. Combine them for unique identifier per user per machine.
-#[tauri::command]
-pub fn get_os_info() -> Result<OSInfo, String> {
-    // Get unique OS installation identifier
-    let os_id = get_os_installation_id()?;
-    
-    // Get current logged-in username
-    let username = get_username()?;
-    
-    Ok(OSInfo { os_id, username })
 }

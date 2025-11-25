@@ -19,7 +19,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::launch_desktop_executor,
             commands::launch_ui_inspector,
-            commands::get_os_info,
+            commands::get_os_installation_id,
             websocket::get_websocket_port
         ])
         .setup(|app| {
