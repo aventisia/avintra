@@ -3,7 +3,7 @@ import { ContentHeader } from "@/components/ui/ContentHeader";
 //import { SocialButtons } from "@/components/ui/SocialButtons";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 
-import DisplayOSId from "./DisplayOSId";
+import DisplayOSInfo from "./DisplayOSInfo";
 // import { SeparatorWithText } from "@/react-toolkit/ui/SeparatorWithText";
 import { GetTenantInfoForm } from "./GetTenantInfoForm";
 import { GoToCreateAccount } from "./GoToCreateAccount";
@@ -32,7 +32,7 @@ export const GetTenantInfo = () => {
       {/* Don't have an account? Create free account */}
       <GoToCreateAccount />
 
-      <DisplayOSId />
+      <DisplayOSInfo />
     </ContentContainer>
   );
 };
