@@ -27,6 +27,11 @@ public class AssignMachineDto
     public string? Name { get; set; }
 
     /// <summary>
+    /// Gets or sets status of the machine.
+    /// </summary>
+    public MachineStatusTypeEnum Status { get; set; }
+
+    /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
     /// </summary>
     /// <remarks>
