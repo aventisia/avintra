@@ -96,6 +96,7 @@ export const useDefineMachineForm = () => {
       environment: machineData?.environment,
       ipAddress: machineData?.ipAddress ?? "0.0.0.0",
       hostname: machineData?.hostname,
+      osId: machineData?.osId ?? "",
 
       isDisabled: machineData?.isDisabled,
       createdBy:
