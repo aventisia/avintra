@@ -581,18 +581,12 @@ public class MachineService : IMachineService
             }
 
             // Retrieve all agents for the current user
-            var agents = await _unitOfWork.FlowVersionRepo
-                                            .GetByConditionAsync(w => w.IsPublished)
-                                            .Include(f => f.Flow)
+            var agents = await _unitOfWork.MachineFlowRepo
+                                            .GetByConditionAsync(w => w.MachineId== machineId)
+                                            .Include(i => i.FlowVersion)
+                                                .ThenInclude(i2 => i2.Flow)
                                             .ProjectToType<AssignAgentDto>()
                                             .ToListAsync();
-
-            // Set IsAssigned to true if the agent is already assigned to the machine
-            agents.ForEach(a =>
-            {
-                a.IsAssigned = (machine.MachineFlows ?? Enumerable.Empty<MachineFlow>()).Any(mf => mf.FlowVersionId == a.Id);
-                a.MachineId = machine.Id;
-            });
 
             // Return the agents along with their assignment status
             serviceResponse.Data = agents;
