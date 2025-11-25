@@ -19,7 +19,7 @@ type MachineStatusDetails = {
   running: number;
   idle: number;
   linux: number;
-  windows: number;
+  agents: number;
   dev: number;
   uat: number;
   prod: number;
@@ -40,7 +40,7 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
         (x) => x.status === MachineStatusTypesEnum.Running,
       ),
       linux: statuses.count((x) => x.type === MachineOsTypesEnum.Linux),
-      windows: statuses.count((x) => x.type === MachineOsTypesEnum.Windows),
+      agents: statuses.sum((x) => x.agentCount ?? 0),
       dev: statuses.count(
         (x) => x.environment === MachineEnvironmentTypesEnum.Development,
       ),
@@ -57,7 +57,7 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
     <div className="my-4 grid grid-cols-3 gap-3">
       <StatsCard
         title={"Machines"}
-        // description={`${stats?.linux} Linux & ${stats?.windows} Windows`}
+        description={`${stats?.agents} Agents`}
         mainText={data?.length}
         icon={<Monitor stroke="var(--primary)" className="h-10 w-10" />}
       />
