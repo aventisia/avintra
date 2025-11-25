@@ -1,7 +1,12 @@
 use std::process::Command;
 
 #[tauri::command]
-pub fn launch_desktop_executor(ws_port: u16, agent_id: String, agent_name: String, access_token: String) -> Result<(), String> {
+pub fn launch_desktop_executor(
+    ws_port: u16,
+    agent_id: String,
+    agent_name: String,
+    access_token: String,
+) -> Result<(), String> {
     // Get the directory where tauri_app.exe is running
     let current_exe = std::env::current_exe().map_err(|e| e.to_string())?;
     let exe_dir = current_exe
@@ -59,55 +64,23 @@ pub fn launch_ui_inspector(ws_port: u16) -> Result<(), String> {
     Ok(())
 }
 
-// Machine identification utilities for Windows systems.
-//
-// This module provides functions to retrieve unique hardware and software identifiers
-// from Windows machines. These can be used for device fingerprinting,
-// licensing, or system identification purposes.
-
-// Retrieves the system's hardware UUID from the BIOS/UEFI firmware.
-//
-// This function queries the Win32_ComputerSystemProduct WMI class to get the
-// universally unique identifier (UUID) assigned by the hardware manufacturer.
-// The UUID is burned into the system's BIOS/UEFI firmware and persists across
-// OS reinstalls.
-//
-// Use this when you need a persistent hardware identifier that survives
-// OS reinstalls, disk replacements, and system resets.
-//
-// Platform Support:
-// - Windows: Fully supported via PowerShell and WMI
-// - Other platforms: Returns an error (not yet implemented)
-//
-// How it works:
-// 1. Executes a PowerShell command with minimal profile loading for speed
-// 2. Queries WMI for the system product UUID
-// 3. Validates and returns the cleaned UUID string
-//
-// Returns:
-// - Ok(String): The hardware UUID (e.g., "12345678-ABCD-1234-ABCD-123456789012")
-// - Err(String): Description of what went wrong
-//
-// Errors:
-// This function will return an error if:
-// - PowerShell fails to execute (permissions, missing binary, etc.)
-// - The WMI query fails or returns no data
-// - The UUID string is empty or invalid
-//
-// Security Considerations:
-// - Requires PowerShell execution rights
-// - May require elevated privileges depending on system configuration
-// - The UUID is a persistent hardware identifier that survives OS reinstalls
-//
-// Example:
-// ```
-// match get_hardware_uuid() {
-//     Ok(uuid) => println!("Hardware UUID: {}", uuid),
-//     Err(e) => eprintln!("Failed to get hardware UUID: {}", e),
-// }
-// ```
-#[command]
-pub fn get_hardware_uuid() -> Result<String, String> {
+/// Provides functions to retrieve unique hardware and software identifiers for device fingerprinting, licensing, or system identification.
+/// Retrieves the system's hardware UUID from BIOS/UEFI firmware (Windows only).
+///
+/// - Uses PowerShell to query `Win32_ComputerSystemProduct` WMI class for the UUID.
+/// - Returns a persistent hardware identifier that survives OS reinstalls and disk replacements.
+/// - Returns `Ok(uuid)` on success, or `Err(reason)` on failure (e.g., PowerShell/WMI errors, empty UUID).
+/// - Requires PowerShell execution rights; may need elevation.
+///
+/// Example:
+/// ```
+/// match get_hardware_uuid() {
+///     Ok(uuid) => println!("Hardware UUID: {}", uuid),
+///     Err(e) => eprintln!("Failed to get hardware UUID: {}", e),
+/// }
+/// ```
+#[tauri::command]
+pub fn get_machine_hardware_uuid() -> Result<String, String> {
     #[cfg(target_os = "windows")]
     {
         use std::process::Command;
@@ -151,18 +124,18 @@ pub fn get_hardware_uuid() -> Result<String, String> {
     }
 }
 
-// Retrieves a unique OS installation identifier for Windows and Linux.
-// 
-// This function returns a system-unique identifier that persists across reboots
-// and is specific to the OS installation. Works with both physical machines and VMs.
-// 
-// # Platform-specific behavior:
-// - **Windows**: Returns MachineGuid from registry (GUID format)
-// - **Linux**: Returns machine-id from systemd (32-char hex string)
-// 
-// # Returns
-// - `Ok(String)`: The unique installation identifier
-// - `Err(String)`: Error message if the identifier cannot be retrieved
+/// Retrieves a unique OS installation identifier for Windows and Linux.
+///
+/// - Returns a system-unique identifier that persists across reboots and is specific to the OS installation.
+/// - Works with both physical machines and VMs.
+///
+/// # Platform-specific behavior
+/// - **Windows**: Returns `MachineGuid` from the registry (GUID format).
+/// - **Linux**: Returns `machine-id` from systemd (32-char hex string).
+///
+/// # Returns
+/// - `Ok(String)`: The unique installation identifier.
+/// - `Err(String)`: Error message if the identifier cannot be retrieved.
 #[tauri::command]
 pub fn get_os_installation_id() -> Result<String, String> {
     // Windows implementation using registry
