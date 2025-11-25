@@ -86,8 +86,8 @@ public class LoginWithPwdService : ILoginWithPwdService
                 var osInformation = new OSInformationDto
                 {
                     OSId = pwdLoginDto.OSInfo.OSId,
-                    HostName = pwdLoginDto.OSInfo.HostName,
-                    ClientName = pwdLoginDto.OSInfo.ClientName
+                    HostName = string.Empty,    // TODO: Implement HostName usage in future
+                    ClientName = string.Empty   // TODO: Implement ClientName usage in future TODO: message future use
                 };
 
                 try
@@ -99,19 +99,6 @@ public class LoginWithPwdService : ILoginWithPwdService
                         null,
                         osInformation
                     );
-
-                    // Check if the API call was successful
-                    if (!httpResponse.IsSuccessStatusCode)
-                    {
-                        _logger.LogError("Machine validation failed. Status: {StatusCode}, Reason: {ReasonPhrase}",
-                            httpResponse.StatusCode,
-                            httpResponse.ReasonPhrase
-                        );
-
-                        // Set failure message
-                        serviceResponse.Message = "Machine validation failed.";
-                        return serviceResponse;
-                    }
 
                     // Read and parse the response content
                     var responseContent = await httpResponse.Content.ReadAsStringAsync();
