@@ -80,9 +80,9 @@ public class MachineController : BaseApiController
         return ResultHelper(await _machineService.FindMachinesByKeywordAsync(searchKey));
     }
 
-    [AllowAnonymous]
     // Validate the machine using its operating system information.
-    [HttpGet("validate")]
+    [AllowAnonymous]
+    [HttpPost("validate")]
     public async Task<ActionResult<ServiceResponse<bool>>> ValidateMachine(OSInformationDto osInformationDto)
     {
         return ResultHelper(await _machineService.ValidateMachineAsync(osInformationDto));
