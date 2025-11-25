@@ -2,7 +2,6 @@ import { Button } from "@aventisia/ui/buttons";
 import { Form, InputField, SelectField, SwitchField } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
 import { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
 
 import { machineOptimisticMutationFn } from "../../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -10,16 +9,13 @@ import {
   environmentTypeProps,
   hostnameProps,
   idProps,
-  ipAddressProps,
   isDisabledProps,
   nameProps,
   os_unique_idProps,
-  osTypeProps,
 } from "../../constants/machine-form-field-props";
 import { machineZodSchema } from "../../constants/machine-zod-schema";
 import { MachinesTableDto } from "../../dtos/machines-table-dto";
 import { useDefineMachineForm } from "../../hooks/useDefineMachineForm";
-import { useAgentsSelectTableStore } from "../../stores/agents-select-table-store";
 
 import { AddedByAutherCard } from "./AddedByAutherCard";
 
@@ -45,14 +41,6 @@ export const MachineCrudForm = () => {
     MachinesTableDto
   >([rowId], machineOptimisticMutationFn, DATA_QUERY_KEY);
 
-  // Get store state and actions
-  const { currentAgents } = useAgentsSelectTableStore(
-    useShallow((state) => ({
-      currentAgents: state.currentAgents,
-      setAvailableLicenses: state.setAvailableLicenses,
-    })),
-  );
-
   // Is form in read mode?
   const isReadMode = crudAction === "read";
 
@@ -60,7 +48,6 @@ export const MachineCrudForm = () => {
   const onSubmit = (formData: z.infer<typeof machineZodSchema>) => {
     const payload = {
       ...(refineFormData(formData) as unknown as MachinesTableDto),
-      agentIds: currentAgents?.filter((x) => x.isAssigned).map((m) => m.id),
     };
 
     // Create or update the machine
@@ -94,8 +81,7 @@ export const MachineCrudForm = () => {
         disabled={isReadMode}
       />
 
-      <div className="grid grid-cols-2 gap-2">
-        {/* os type */}
+      {/* <div className="grid grid-cols-2 gap-2">
         {crudAction === "create" ? (
           <SelectField {...osTypeProps} disabled={isReadMode} />
         ) : (
@@ -104,9 +90,8 @@ export const MachineCrudForm = () => {
           )
         )}
 
-        {/* Ip Address */}
         <InputField {...ipAddressProps} disabled={isReadMode} />
-      </div>
+      </div> */}
 
       {/* Host Name */}
       <InputField {...hostnameProps} disabled={isReadMode} />

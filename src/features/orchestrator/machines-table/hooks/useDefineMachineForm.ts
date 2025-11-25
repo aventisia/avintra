@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { isMachineNameAvailable } from "../apis/machines-table-apis";
@@ -16,9 +17,6 @@ import {
   machineZodSchema,
 } from "../constants/machine-zod-schema";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
-import { useAgentsSelectTableStore } from "../stores/agents-select-table-store";
-
-import { useFetchSelectTableAgents } from "./useFetchSelectAgents";
 
 /**
  * Custom hook for defining a machine form.
@@ -46,46 +44,6 @@ export const useDefineMachineForm = () => {
       toggleFormDirty: state.toggleFormDirty,
     })),
   );
-
-  const {
-    data: currentAgentsDataResponse,
-    isFetching,
-    isLoading,
-  } = useFetchSelectTableAgents(rowId);
-
-  // Get store state and actions
-  const { currentAgents, setCurrentAgents, setAllAssigned, setIsReadOnly } =
-    useAgentsSelectTableStore(
-      useShallow((state) => ({
-        currentAgents: state.currentAgents,
-        setCurrentAgents: state.setCurrentAgents,
-        setAllAssigned: state.setAllAssigned,
-        setIsReadOnly: state.setIsReadOnly,
-      })),
-    );
-
-  useEffect(() => {
-    setIsReadOnly(crudAction === "read");
-    setCurrentAgents(
-      currentAgentsDataResponse?.data.filter(
-        (a) => crudAction !== "read" || a.isAssigned,
-      ) ?? [],
-    );
-    if (currentAgentsDataResponse?.data)
-      setAllAssigned(
-        currentAgentsDataResponse?.data.some((x) => x.isAssigned)
-          ? "indeterminate"
-          : currentAgentsDataResponse?.data.every((x) => x.isAssigned),
-      );
-  }, [
-    rowId,
-    isFetching,
-    currentAgentsDataResponse?.data,
-    setAllAssigned,
-    setCurrentAgents,
-    setIsReadOnly,
-    crudAction,
-  ]);
 
   // Get query client
   const queryClient = useQueryClient();
@@ -134,11 +92,11 @@ export const useDefineMachineForm = () => {
     form.reset({
       id: rowId,
       name: machineData?.name ?? "",
-      type: machineData?.type ?? "",
-      // licenseId: machineData?.licenseId ?? "",
+      type: machineData?.type ?? MachineOsTypesEnum.Windows,
       environment: machineData?.environment,
-      ipAddress: machineData?.ipAddress,
+      ipAddress: machineData?.ipAddress ?? "0.0.0.0",
       hostname: machineData?.hostname,
+      osId: machineData?.osId ?? "",
 
       isDisabled: machineData?.isDisabled,
       createdBy:
@@ -183,7 +141,7 @@ export const useDefineMachineForm = () => {
   // Save the form dirty state
   useEffect(() => {
     toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty, currentAgents]);
+  }, [isDirty, toggleFormDirty]);
 
   // Reset availability message when dialog closes
   useEffect(() => {
@@ -196,8 +154,6 @@ export const useDefineMachineForm = () => {
     isDirty,
     rowId,
     crudAction,
-    isFetching,
-    isLoading,
     setShowDialog,
     refineFormData,
     isAvailable,

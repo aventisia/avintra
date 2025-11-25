@@ -26,7 +26,7 @@ export const AssignAgentRowAction: React.FC<DTEditRowActionProps> = ({
     <SimpleDDMenuItem
       size={size}
       className=""
-      content="Assign Agent"
+      content="Agents"
       Icon={BotIcon}
       onClick={() => {
         setMachineId(rowId);
