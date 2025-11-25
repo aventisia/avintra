@@ -57,7 +57,7 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
     <div className="my-4 grid grid-cols-3 gap-10 gap-x-8">
       <StatsCard
         title={"Machines"}
-        description={`${stats?.linux} Linux & ${stats?.windows} Windows`}
+        // description={`${stats?.linux} Linux & ${stats?.windows} Windows`}
         mainText={data?.length}
         icon={<Monitor stroke="var(--primary)" className="h-10 w-10" />}
       />
