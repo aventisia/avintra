@@ -734,7 +734,7 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
-            case nameof(AppSecretTypesEnum.M365):
+            case nameof(AppSecretTypesEnum.M365Excel):
                 {
                     var m365Credentials = System.Text.Json.JsonSerializer.Deserialize<M365CredentialsDto>(rawJson, jsonOptions);
                     if (m365Credentials != null)
@@ -768,29 +768,8 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
-
-            case nameof(AppSecretTypesEnum.OneDriveCredentialApi):
-                {
-                    var oneDriveCredentials = System.Text.Json.JsonSerializer.Deserialize<OneDriveCredentialsDto>(rawJson, jsonOptions);
-                    if (oneDriveCredentials != null)
-                    {
-                        validationResult.EncryptedValues["ClientSecret"] = _encryptionService.EncryptString(oneDriveCredentials.ClientSecret);
-
-                        oneDriveCredentials.OAuthRedirectURL = string.Empty;
-                        oneDriveCredentials.AuthorizationURL = string.Empty;
-                        oneDriveCredentials.AccessTokenURL = string.Empty;
-                        oneDriveCredentials.ClientID = string.Empty;
-
-                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(oneDriveCredentials, jsonOptions);
-                    }
-                    else
-                    {
-                        validationResult.Remark = "Invalid General credentials: required fields missing or format incorrect.";
-                    }
-                    break;
-                }
-
-            case nameof(AppSecretTypesEnum.AnthropicApi):
+            
+            case nameof(AppSecretTypesEnum.Anthropic):
                 {
                     // Deserialize JSON into AnthropicCredentialsDto
                     var anthropicCredentials = System.Text.Json.JsonSerializer.Deserialize<AnthropicCredentialsDto>(rawJson, jsonOptions);
@@ -807,7 +786,7 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-            case nameof(AppSecretTypesEnum.GoogleGeminiApi):
+            case nameof(AppSecretTypesEnum.GoogleGemini):
                 {
                     // Deserialize JSON into GoogleGeminiCredentialsDto
                     var googleGeminiCredentials = System.Text.Json.JsonSerializer.Deserialize<GoogleGeminiCredentialsDto>(rawJson, jsonOptions);
@@ -825,7 +804,7 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
-            case nameof(AppSecretTypesEnum.GoogleWorkspaceApi):
+            case nameof(AppSecretTypesEnum.GoogleWorkspace):
                 {
                     // Deserialize JSON into GoogleWorkspaceCredentialsDto
                     var googleWorkspaceCredentials = System.Text.Json.JsonSerializer.Deserialize<GoogleWorkspaceCredentialsDto>(rawJson, jsonOptions);
@@ -847,7 +826,7 @@ public class AppSecretService : IAppSecretService
 
                 }
 
-            case nameof(AppSecretTypesEnum.AzureOpenAiApi):
+            case nameof(AppSecretTypesEnum.AzureOpenAI):
                 {
                     //Deserelize JSON Into AzureOpenAiCredentialsDto
                     var azureOpenAiCredentials = System.Text.Json.JsonSerializer.Deserialize<AzureOpenAiCredentialsDto>(rawJson, jsonOptions);
