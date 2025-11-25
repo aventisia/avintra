@@ -54,7 +54,7 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
   }, [data]);
 
   return (
-    <div className="my-4 grid grid-cols-3 gap-10 gap-x-8">
+    <div className="my-4 grid grid-cols-3 gap-3">
       <StatsCard
         title={"Machines"}
         // description={`${stats?.linux} Linux & ${stats?.windows} Windows`}
