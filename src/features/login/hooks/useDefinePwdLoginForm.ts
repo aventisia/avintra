@@ -8,10 +8,10 @@ import { useLoginStore } from "../stores/login-store";
 
 export const useDefinePwdLoginForm = () => {
   // Get store state
-  const { loginData, osId, resetLoginProcess, setLoginData } = useLoginStore(
+  const { loginData, osInfo, resetLoginProcess, setLoginData } = useLoginStore(
     useShallow((state) => ({
       loginData: state.loginData,
-      osId: state.osId,
+      osInfo: state.osInfo,
       resetLoginProcess: state.resetLoginProcess,
       setLoginData: state.setLoginData,
     })),
@@ -37,7 +37,7 @@ export const useDefinePwdLoginForm = () => {
     isSubmitting,
     isDirty,
     loginData,
-    osId,
+    osInfo,
     resetLoginProcess,
     setLoginData,
   };

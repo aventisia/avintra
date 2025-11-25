@@ -1,33 +1,38 @@
 import { invoke } from "@tauri-apps/api/core";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useLoginStore } from "../../stores/login-store";
+import { IOSInfo } from "../../types/os-info";
 
 const DisplayOSInfo = () => {
-  const [id, setId] = useState<string>("");
-  const [isTauri, setIsTauri] = useState(false);
-  const { setOsId } = useLoginStore(
+  // Check if running in Tauri
+  const isTauri = "isTauri" in window;
+
+  const { osInfo, setOsInfo } = useLoginStore(
     useShallow((state) => ({
-      setOsId: state.setOsId,
+      osInfo: state.osInfo,
+      setOsInfo: state.setOsInfo,
     })),
   );
 
   useEffect(() => {
     const checkEnvironment = async () => {
-      // Check if running in Tauri
-      const isInTauri = typeof window !== "undefined" && "isTauri" in window;
-      setIsTauri(isInTauri);
-
-      if (isInTauri) {
+      if (isTauri) {
         try {
-          const installationId = (await invoke(
-            "get_os_installation_id",
-          )) as string;
-          setId(installationId || "");
-          setOsId(installationId || "");
+          const currOSInfo = (await invoke("get_os_info")) as unknown as {
+            os_id: string;
+            username: string;
+          };
+
+          const extractedOSInfo = {
+            osId: currOSInfo.os_id,
+            hostname: currOSInfo.username,
+          } as IOSInfo;
+
+          setOsInfo(extractedOSInfo || null);
         } catch (err) {
-          console.log("OS ID error:", err);
+          console.log("OS Info error:", err);
         }
       }
     };
@@ -40,7 +45,7 @@ const DisplayOSInfo = () => {
 
   return (
     <p className="text-muted-foreground text-center text-md w-full">
-      {`(os_id: ${id ? id : "NA"})`}
+      {`(os_id: ${osInfo?.osId ? osInfo?.osId : "NA"}, hostname/username: ${osInfo?.hostname ? osInfo?.hostname : "NA"})`}
     </p>
   );
 };

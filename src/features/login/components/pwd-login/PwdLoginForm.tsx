@@ -16,13 +16,13 @@ export const PwdLoginForm = () => {
     form,
     isSubmitting,
     loginData,
-    osId,
+    osInfo,
     setLoginData,
     resetLoginProcess,
   } = useDefinePwdLoginForm();
 
   // Check if the environment is a Tauri app
-  const isTauriApp = typeof window !== "undefined" && "isTauri" in window;
+  const isTauriApp = "isTauri" in window;
 
   // Get mutation
   const { authenticateUserMutation, isAuthPending } =
@@ -50,9 +50,9 @@ export const PwdLoginForm = () => {
       pwd: formData.pwd,
     };
 
-    // Include os_unique_id in payload only if it's a Tauri app
-    if (isTauriApp) {
-      payload.os_unique_id = osId;
+    // Include osInfo in payload only if it's a Tauri app
+    if (isTauriApp && osInfo) {
+      payload.osInfo = osInfo;
     }
 
     // Try to Authenticate user
