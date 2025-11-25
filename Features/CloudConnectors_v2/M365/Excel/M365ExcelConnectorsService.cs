@@ -77,8 +77,78 @@ public class M365ExcelConnectorsService : IM365ExcelConnectorsService
                     var postObj = new { name = payload["worksheetName"] };
                     return await HttpClientHelper.PostAsync(wsUrl, postObj, accessToken);
                 }
+
+            case nameof(M365ExcelActionsEnum.DeleteWorksheet):
+                {
+                    var worksheetName = payload["worksheetName"].ToString()!;
+                    var finalUrl = $"{wsUrl}/{worksheetName}";
+
+                    return await HttpClientHelper.DeleteAsync(finalUrl, accessToken);
+                }
+
+            case nameof(M365ExcelActionsEnum.RenameWorksheet):
+                {
+                    var worksheetName = payload["worksheetName"].ToString()!;
+                    var newWorksheetName = payload["newWorksheetName"].ToString()!;
+                    var finalUrl = $"{wsUrl}/{worksheetName}";
+                    var patchObj = new { name = newWorksheetName };
+
+                    return await HttpClientHelper.PatchAsync(finalUrl, patchObj, accessToken);
+                }
+            case nameof(M365ExcelActionsEnum.GetWorkbookInfo):
+                return await HttpClientHelper.GetAsync(wsUrl, accessToken);
+
+            case nameof(M365ExcelActionsEnum.CheckWorksheetExists):
+                {
+                    return JsonDocument.Parse(
+                        System.Text.Json.JsonSerializer.Serialize(new
+                        {
+                            exists = await _m365ConnectorsService.CheckIfWorksheetExistInWorkbookAsync(wsUrl, payload["worksheetName"].ToString()!, accessToken)
+                        }));
+                }
+            case nameof(M365ExcelActionsEnum.LookupRangeinExcelWorksheet):
+                {
+                    var worksheetName = payload["worksheetName"].ToString()!;
+                    var rangeAddress = payload["rangeAddress"].ToString()!;
+
+                    // /workbook/worksheets/Sheet1/range(address='A1:B5')
+                    var finalUrl = $"{wsUrl}/{worksheetName}/range(address='{rangeAddress}')";
+
+                    return await HttpClientHelper.GetAsync(finalUrl, accessToken);
+                }
+
+            case nameof(M365ExcelActionsEnum.ListNamedItems):
+                {
+                    var finalUrl = $"{wsUrl}/names";
+                    return await HttpClientHelper.GetAsync(finalUrl, accessToken);
+                }
+            case nameof(M365ExcelActionsEnum.DeleteNamedItem):
+                {
+                    var namedItem = payload["namedItem"].ToString()!;
+                    var finalUrl = $"{wsUrl}/names/{namedItem}";
+                    return await HttpClientHelper.DeleteAsync(finalUrl, accessToken);
+                }
+            case nameof(M365ExcelActionsEnum.SetColorInExcelWorksheet):
+                {
+                    var worksheetName = payload["worksheetName"].ToString()!;
+                    var rangeAddress = payload["rangeAddress"].ToString()!;
+                    var color = payload["color"].ToString()!;
+                    var finalUrl = $"{wsUrl}/{worksheetName}/range(address='{rangeAddress}')/format/fill";
+                    var body = new { values = color };
+
+                    return await HttpClientHelper.PatchAsync(finalUrl, body, accessToken);
+                }
+            case nameof(M365ExcelActionsEnum.SelectSpecificRangeOfCellInWorksheet):
+                {
+                    var worksheetName = payload["worksheetName"].ToString()!;
+                    var rangeAddress = payload["rangeAddress"].ToString()!;
+                    var finalUrl = $"{wsUrl}/{worksheetName}/range(address='{rangeAddress}')";
+
+                    return await HttpClientHelper.GetAsync(finalUrl, accessToken);
+                }
             case nameof(M365ExcelActionsEnum.GetWorksheetNames):
                 return await HttpClientHelper.GetAsync(wsUrl, accessToken);
+
             case nameof(M365ExcelActionsEnum.WriteValueToRange):
                 {
                     var patchObj = new { values = payload["values"] as JsonElement? };

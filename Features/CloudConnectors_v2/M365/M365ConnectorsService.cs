@@ -123,4 +123,27 @@ public class M365ConnectorsService : IM365ConnectorsService
             return JsonDocument.Parse($@"{{""error"": ""Exception: {ex.Message.Replace("\"", "'")}""}}");
         }
     }
+
+    public async Task<bool> CheckIfWorksheetExistInWorkbookAsync(string url,string worksheetName,string accessToken)
+    {
+        var response = await HttpClientHelper.GetAsync(url, accessToken);
+
+        if (response == null)
+            return false;
+
+        var worksheets = response.RootElement.GetProperty("value");
+
+        foreach (var ws in worksheets.EnumerateArray())
+        {
+            // validate worksheet existance
+            if (ws.GetProperty("name").GetString()!
+                   .Equals(worksheetName, StringComparison.OrdinalIgnoreCase))
+            {
+                return true; 
+            }
+        }
+        // worksheet not exist
+        return false; 
+    }
+
 }
