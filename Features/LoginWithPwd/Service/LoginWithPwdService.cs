@@ -86,7 +86,8 @@ public class LoginWithPwdService : ILoginWithPwdService
                 var osInformation = new OSInformationDto
                 {
                     OSId = pwdLoginDto.OSInfo.OSId,
-                    HostName = pwdLoginDto.OSInfo.HostName
+                    HostName = pwdLoginDto.OSInfo.HostName,
+                    ClientName = pwdLoginDto.OSInfo.ClientName
                 };
 
                 try
