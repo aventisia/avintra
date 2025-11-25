@@ -79,7 +79,10 @@ public class MachineService : IMachineService
         {
             // Validate machine name uniqueness
             var machineAlreadyExists = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == machineDto.Name.ToLower())
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == machineDto.Name.ToLower() ||
+                    w.OSId.ToLower() == machineDto.OSId.ToLower()
+                )
                 .FirstOrDefaultAsync();
 
             // Machine already exists
@@ -363,7 +366,10 @@ public class MachineService : IMachineService
             // Validate machine name uniqueness
             var machineAlreadyExists = await _unitOfWork.MachineRepo
                 .GetByConditionAsync(w =>
-                    w.Name.ToLower() == machineDto.Name.ToLower() &&
+                    (
+                        w.Name.ToLower() == machineDto.Name.ToLower() ||
+                        w.OSId.ToLower() == machineDto.OSId.ToLower()
+                    ) &&
                     w.Id != machineDto.Id
                 )
                 .FirstOrDefaultAsync();
@@ -582,7 +588,7 @@ public class MachineService : IMachineService
 
             // Retrieve all agents for the current user
             var agents = await _unitOfWork.MachineFlowRepo
-                                            .GetByConditionAsync(w => w.MachineId== machineId)
+                                            .GetByConditionAsync(w => w.MachineId == machineId)
                                             .Include(i => i.FlowVersion)
                                                 .ThenInclude(i2 => i2.Flow)
                                             .ProjectToType<AssignAgentDto>()
