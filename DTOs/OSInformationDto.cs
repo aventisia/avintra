@@ -14,4 +14,9 @@ public class OSInformationDto
     /// Gets or sets the host name of the machine.
     /// </summary>
     public required string HostName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the client name associated with the operating system.
+    /// </summary>
+    public required string ClientName { get; set; }
 }
