@@ -36,49 +36,17 @@ public enum AppSecretTypesEnum
     GitHub,
 
     /// <summary>
-    /// Represents the credentials or configuration necessary to integrate with Microsoft 365 (M365) services.
+    /// Represents the credentials or configuration necessary to integrate with Microsoft 365 Excel services.
     /// </summary>
-    [Description("M365 Credentials")]
-    M365,
+    [Description("M365 Excel Credentials")]
+    M365Excel,
 
     [Description("General Credentials")]
     GeneralCredentials,
 
-
-
-    // TODO: @mayuri needs to verify if this is needed or not. Currently added to avoid build errors.
-    [Description("OneDrive API Key")]
-    OneDriveCredentialApi,
-
-    // TODO: need to remove this
-    /// <summary>
-    /// Represents the credentials or configuration necessary to integrate with Microsoft 365 (M365) services.
-    /// </summary>
-    [Description("M365 Credentials")]
-    M365CredentialApi,
-
-    /// <summary>
-    /// Represents the API key used to authenticate with Anthropic's AI models.
-    /// </summary>
-    [Description("Anthropic API Key")]
-    AnthropicApi,
-
-    /// <summary>
-    /// Represents the API key used to connect with Google's Gemini AI platform.
-    /// </summary>
-    [Description("Google Gemini API Key")]
-    GoogleGeminiApi,
-
-    /// <summary>
-    /// Represents credentials or configuration for integrating with Google Workspace (e.g., Gmail, Drive, Calendar).
-    /// </summary>
-    [Description("Google Workspace")]
-    GoogleWorkspaceApi,
-
-    /// <summary>
-    ///Represents the API key used to authenticate with Azure-hosted OpenAI services (e.g., GPT models via Azure).
-    /// </summary>
-    [Description("Azure Open AI API Key")]
-    AzureOpenAiApi
-
+    // TODO: implement additional secret types below
+    Anthropic,
+    GoogleGemini,
+    GoogleWorkspace,
+    AzureOpenAI
 }
