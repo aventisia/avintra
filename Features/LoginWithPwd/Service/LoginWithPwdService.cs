@@ -77,7 +77,7 @@ public class LoginWithPwdService : ILoginWithPwdService
             serviceResponse.StatusCode = 400;
 
             // Check if OSInfo is provided in the login DTO
-            if (pwdLoginDto.OSInfo != null)
+            if (pwdLoginDto?.OSInfo != null && pwdLoginDto.OSInfo.ClientType == ClientTypesEnum.AssistAppMachine)
             {
                 // Log the start of the machine validation check
                 _logger.LogInformation("Starting machine validation with OS information.");
@@ -86,8 +86,8 @@ public class LoginWithPwdService : ILoginWithPwdService
                 var osInformation = new OSInformationDto
                 {
                     OSId = pwdLoginDto.OSInfo.OSId,
-                    HostName = pwdLoginDto.OSInfo.HostName,
-                    ClientName = pwdLoginDto.OSInfo.ClientName
+                    ClientType = pwdLoginDto.OSInfo.ClientType,   // TODO: Implement ClientType usage in future
+                    HostName = string.Empty    // TODO: Implement HostName usage in future
                 };
 
                 try
@@ -100,29 +100,40 @@ public class LoginWithPwdService : ILoginWithPwdService
                         osInformation
                     );
 
-                    // Check if the API call was successful
+                    // Check if the response is successful
                     if (!httpResponse.IsSuccessStatusCode)
                     {
-                        _logger.LogError("Machine validation failed. Status: {StatusCode}, Reason: {ReasonPhrase}",
-                            httpResponse.StatusCode,
-                            httpResponse.ReasonPhrase
-                        );
-
-                        // Set failure message
-                        serviceResponse.Message = "Machine validation failed.";
+                        _logger.LogWarning("Machine validation failed with status code: {StatusCode}", httpResponse.StatusCode);
+                        serviceResponse.Message = "Machine validation failed with external service.";
                         return serviceResponse;
                     }
 
                     // Read and parse the response content
                     var responseContent = await httpResponse.Content.ReadAsStringAsync();
+                    if (string.IsNullOrEmpty(responseContent))
+                    {
+                        _logger.LogError("Machine validation response content is empty.");
+                        serviceResponse.Message = "Invalid response content from machine validation service.";
+                        return serviceResponse;
+                    }
+
+                    // Deserialize response content into a service response object
                     var externalServiceResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<ServiceResponse<bool>>(responseContent);
 
-                    // Validate the response from the external service
-                    if (externalServiceResponse == null || externalServiceResponse.StatusCode != 200 || !externalServiceResponse.Data)
+                    // Validate the structure of the external service response
+                    if (externalServiceResponse == null)
                     {
-                        // Log the error
-                        _logger.LogError("Invalid response during machine validation. Status: {StatusCode}, Success: {SuccessFlag}",
-                                          externalServiceResponse?.StatusCode, externalServiceResponse?.Data);
+                        _logger.LogError("Error deserializing response content: {ResponseContent}", responseContent);
+                        serviceResponse.Message = "Error deserializing machine validation response.";
+                        return serviceResponse;
+                    }
+
+                    // Validate the response from the external service
+                    if (externalServiceResponse.StatusCode != 200 || !externalServiceResponse.Data)
+                    {
+                        // Log the error details
+                        _logger.LogError("Machine validation failed. Status: {StatusCode}, Success: {SuccessFlag}, Message: {Message}",
+                                          externalServiceResponse.StatusCode, externalServiceResponse.Data, externalServiceResponse.Message);
 
                         // Set failure message
                         serviceResponse.Message = externalServiceResponse.Message;
@@ -133,8 +144,7 @@ public class LoginWithPwdService : ILoginWithPwdService
                 }
                 catch (Exception ex)
                 {
-                    // Log unexpected errors
-                    _logger.LogError(ex, "Error during machine validation.");
+                    _logger.LogError(ex, "Unexpected error during machine validation.");
                     return serviceResponse;
                 }
             }
