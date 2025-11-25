@@ -27,21 +27,22 @@ export const osTypeProps: SelectFieldProps = {
 export const nameProps: InputFieldProps = {
   name: "name",
   label: "Name",
-  placeholder: "exampleMachine",
   isRequired: true,
+  autoFocus: true,
 };
 
 // Host Name
 export const hostnameProps: InputFieldProps = {
   name: "hostname",
-  label: "Host Name",
-  placeholder: "example.com",
+  label: "Hostname/Username",
   isRequired: true,
+  description:
+    "To find your operating system's hostname/username, open the desktop app and check the login screen for the hostname/username displayed there.",
 };
 
 // Os Unique Id
 export const os_unique_idProps: InputFieldProps = {
-  name: "os_unique_id",
+  name: "osId",
   label: "OS Unique ID",
   placeholder: "",
   isRequired: true,
