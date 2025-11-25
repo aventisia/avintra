@@ -423,19 +423,12 @@ public class AgentTableService : IAgentTableService
                 return serviceResponse;
             }
 
-            // Retrieve the list of all machines for the current user.
-            var machines = await _unitOfWork.MachineRepo
-                .GetAllAsync()
-                .Include(m => m.MachineFlows)
+            // Retrieve the list of all machine flows.
+            var machines = await _unitOfWork.MachineFlowRepo
+                .GetByConditionAsync(w => w.FlowVersionId == agentId)
+                .Include(m => m.Machine)
                 .ProjectToType<AssignMachineDto>()
                 .ToListAsync();
-
-            // Check if each machine is already assigned to the agent.
-            machines.ForEach(m =>
-            {
-                m.IsAssigned = (agent.MachineFlows ?? Enumerable.Empty<MachineFlow>()).Any(mf => mf.MachineId == m.Id);
-                m.AgentId = agent.Id;
-            });
 
             // Return the machines along with their assignment status.
             serviceResponse.Data = machines;
