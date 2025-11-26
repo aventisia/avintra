@@ -1,25 +1,25 @@
 namespace WorkspaceAPIs.Enums;
 
 /// <summary>
-/// Defines the various client types that can interact with the system.
+/// Defines the types of clients that can interact with the system.
 /// </summary>
 public enum ClientTypesEnum
 {
     /// <summary>
-    /// A user accessing the system via a web browser.
+    /// A user accessing the system through a web browser (desktop or mobile).
     /// </summary>
     [Description("A user accessing the system via a web browser.")]
-    WebBrowserUser,
+    WebBrowser,
 
     /// <summary>
-    /// A user interacting with the system through a desktop application.
+    /// A user interacting with the system via a desktop application, typically with offline support and advanced features.
     /// </summary>
-    [Description("A user interacting with the system through a desktop application.")]
-    DesktopAppUser,
+    [Description("A user accessing the system via a desktop application.")]
+    WorcDesktopApp,
 
     /// <summary>
-    /// An automated machine that uses agent execution to perform tasks and assist with system operations.
+    /// An automated machine performing tasks and system operations without direct user interaction.
     /// </summary>
-    [Description("An automated machine that uses agent execution to perform tasks and assist with system operations.")]
-    AssistAppMachine
+    [Description("An automated machine performing tasks and system operations.")]
+    WorcMachine
 }
