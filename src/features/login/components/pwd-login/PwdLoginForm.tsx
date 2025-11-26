@@ -1,5 +1,3 @@
-import { IS_TAURI } from "@/constants/constants";
-
 import { SubmitButton } from "@aventisia/ui/buttons";
 import { InputField } from "@aventisia/ui/form";
 import { Form } from "@aventisia/ui/form";
@@ -14,14 +12,8 @@ import { useDefinePwdLoginForm } from "../../hooks/useDefinePwdLoginForm";
 
 export const PwdLoginForm = () => {
   // Define form
-  const {
-    form,
-    isSubmitting,
-    loginData,
-    osInfo,
-    setLoginData,
-    resetLoginProcess,
-  } = useDefinePwdLoginForm();
+  const { form, isSubmitting, loginData, setLoginData, resetLoginProcess } =
+    useDefinePwdLoginForm();
 
   // Get mutation
   const { authenticateUserMutation, isAuthPending } =
@@ -48,11 +40,6 @@ export const PwdLoginForm = () => {
       email: loginData.email,
       pwd: formData.pwd,
     };
-
-    // Include osInfo in payload only if it's a Tauri app
-    if (IS_TAURI && osInfo) {
-      payload.osInfo = osInfo;
-    }
 
     // Try to Authenticate user
     authenticateUserMutation(payload);

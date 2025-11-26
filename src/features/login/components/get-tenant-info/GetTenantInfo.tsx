@@ -4,7 +4,6 @@ import { IS_TAURI } from "@/constants/constants";
 //import { SocialButtons } from "@/components/ui/SocialButtons";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 
-import DisplayOSInfo from "./DisplayOSInfo";
 // import { SeparatorWithText } from "@/react-toolkit/ui/SeparatorWithText";
 import { GetTenantInfoForm } from "./GetTenantInfoForm";
 import { GoToCreateAccount } from "./GoToCreateAccount";
@@ -32,7 +31,6 @@ export const GetTenantInfo = () => {
 
       {/* Don't have an account? Create free account */}
       {!IS_TAURI && <GoToCreateAccount />}
-      <DisplayOSInfo />
     </ContentContainer>
   );
 };
