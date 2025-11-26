@@ -1263,4 +1263,49 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         // Return the service response (either success or failure)
         return serviceResponse;
     }
+    
+    public async Task<ServiceResponse<List<TenantSubscriptionInfoDto>>> GetAllSubscriptionsAsync()
+    {
+        // Initialize ServiceResponse with a default failed response
+        var serviceResponse = new ServiceResponse<List<TenantSubscriptionInfoDto>>
+        {
+            Data = new List<TenantSubscriptionInfoDto>(),
+            StatusCode = 200,
+            Message = "Tenant subscriptions retrieved successfully."
+        };
+
+        try
+        {
+            _logger.LogInformation("Attempting to retrieve all subscriptions.");
+
+            // Fetch all active subscriptions with their history retention details
+            var subscriptions = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w => w.IsActive)
+                .ToListAsync();
+
+            _logger.LogInformation("Retrieved {Count} active subscriptions.", subscriptions.Count);
+
+            // Check if any subscriptions are retrieved
+            if (subscriptions.Any())
+            {
+                serviceResponse.Data = subscriptions.Select(s => new TenantSubscriptionInfoDto
+                {
+                    SubscriptionId = s.Id,
+                    TenantId = s.TenantId,
+                    HistoryRetentionDays = s.HistoryRetentionDays
+                }).ToList();
+            }
+            else
+            {
+                // If no subscriptions found, return an empty list
+                serviceResponse.Data = new List<TenantSubscriptionInfoDto>();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while retrieving subscriptions.");
+        }
+
+        return serviceResponse;
+    }
 }
