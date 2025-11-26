@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
 import { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
@@ -86,9 +87,10 @@ export const useDefineMachineForm = () => {
       id: rowId,
       name: machineData?.name ?? "",
       type: machineData?.type ?? MachineOsTypesEnum.Windows,
-      environment: machineData?.environment,
+      environment:
+        machineData?.environment ?? MachineEnvironmentTypesEnum.Development,
       ipAddress: machineData?.ipAddress ?? "0.0.0.0",
-      hostname: machineData?.hostname,
+      hostname: machineData?.hostname ?? "",
       osId: machineData?.osId ?? "",
 
       isDisabled: machineData?.isDisabled,

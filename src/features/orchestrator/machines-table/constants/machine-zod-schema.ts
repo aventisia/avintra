@@ -36,7 +36,7 @@ export const machineZodSchema = z.object({
   type: z.string().min(1, { message: reqError("Machine OS Type") }),
   environment: z.string().min(1, { message: reqError("Environment Type") }),
   ipAddress: ipAddressSchema,
-  hostname: z.string().min(1, { message: reqError("Host Name") }),
+  hostname: z.string().min(1, { message: reqError("Username") }),
   osId: z.string().min(1, { message: reqError("OS Unique Id") }),
 
   isDisabled: z.boolean().default(false),
