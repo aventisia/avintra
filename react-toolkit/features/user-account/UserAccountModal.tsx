@@ -9,12 +9,10 @@ import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { IS_TAURI } from "@/constants/constants";
 import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { DefaultTenantsEnum } from "@/react-toolkit/enums/default-tenants-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import Lucide from "@/react-toolkit/ui/Lucide";
 
@@ -84,65 +82,36 @@ const UserAccountModal = ({
             "flex flex-col justify-center gap-1 px-3.5 pb-2 pt-2.5",
           )}
         >
-          <Link
-            to="/account"
-            onClick={() => setisPopOverOpen(false)}
-            className="truncate whitespace-nowrap text-base font-medium uppercase leading-4 hover:text-primary"
-          >
+          <span className="truncate whitespace-nowrap text-base font-medium uppercase leading-4">
             {userSession
               ? userSession?.firstName + " " + userSession?.lastName
               : "User Name"}
-          </Link>
+          </span>
           <span className="truncate whitespace-nowrap text-2xs font-normal lowercase">
             {userSession ? userSession?.email : "useremail@domain.com"}
           </span>
-          {userSession?.tenantName === userSession?.email ||
-          userSession?.tenantName ===
-            DefaultTenantsEnum.IndividualUsers ? null : (
-            <span className="truncate whitespace-nowrap text-2xs font-medium">
+          {userSession?.tenantName === userSession?.email ? null : (
+            <span
+              title={userSession ? userSession?.tenantName : "Tenant Name"}
+              className="truncate whitespace-nowrap text-2xs font-medium"
+            >
               {userSession ? userSession?.tenantName : "Tenant Name"}
             </span>
           )}
         </div>
         <Separator className="my-1 h-[0.5px]" />
-        {!IS_TAURI && (
-          <>
-            <Button
-              variant={"ghost"}
-              className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
-              onClick={() => {
-                navigate("/account");
-                setisPopOverOpen(false);
-              }}
-            >
-              <Lucide icon="User" className="h-4 w-4" />
-              My Account
-            </Button>
-            {/* <Button
-              variant={"ghost"}
-              className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
-              onClick={() => {
-                navigate("/account/email-settings");
-                setisPopOverOpen(false);
-              }}
-            >
-              <Lucide icon="MailCheck" className="h-4 w-4" />
-              Email settings
-            </Button>
-            <Button
-              variant={"ghost"}
-              className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
-              onClick={() => {
-                navigate("/account/device-history");
-                setisPopOverOpen(false);
-              }}
-            >
-              <Lucide icon="Smartphone" className="h-4 w-4" />
-              Device history
-            </Button> */}
-            <Separator className="my-1 h-[0.5px]" />{" "}
-          </>
-        )}
+        <Button
+          variant={"ghost"}
+          className="h-9 justify-start gap-2 rounded-sm align-middle font-normal"
+          onClick={() => {
+            navigate("/account");
+            setisPopOverOpen(false);
+          }}
+        >
+          <Lucide icon="User" className="h-4 w-4" />
+          My Account
+        </Button>
+        <Separator className="my-1 h-[0.5px]" />
         {/* Logout */}
         <Button
           variant={"ghost"}

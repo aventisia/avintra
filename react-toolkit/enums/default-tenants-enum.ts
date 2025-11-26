@@ -1,3 +1,5 @@
+// TODO: Not required anymore after refactoring the use of this enum we can delete this file.
+
 /**
  * Represents the default tenants for the application.
  * IMPORTANT NOTE: Any changes to this file should be manually synced with back-end enum file.
