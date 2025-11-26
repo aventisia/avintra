@@ -1,5 +1,9 @@
 import { PrimaryCategoryType } from "../features/action-selector/types/primary-category-type";
-import.meta.glob("../features/action-selector/constants/*.json");
+
+// Glob all JSON files in the constants folder
+const modules = import.meta.glob(
+  "../features/action-selector/constants/*.json",
+);
 
 function mergeActionSelectorData(
   existingData: PrimaryCategoryType[],
@@ -62,13 +66,11 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
       "../features/action-selector/constants/_DevActionSelectorData.json";
   }
 
-  let finalNodeList: PrimaryCategoryType[] = [];
-
-  // Explicitly import default Desktop automation module
-  const desktopAutomationModule = (await import(
-    desktopNodesJson
-  )) as unknown as { default: PrimaryCategoryType[] };
-  finalNodeList = [...finalNodeList, ...desktopAutomationModule.default];
+  // Get default Desktop automation modules
+  const loader = modules[desktopNodesJson];
+  if (!loader) throw new Error("Action selector data JSON not found");
+  const module = (await loader()) as { default: PrimaryCategoryType[] };
+  let finalNodeList: PrimaryCategoryType[] = module.default;
 
   // Explicitly import Cloud Connector module
   const cloudConnectorModule = (await import(
