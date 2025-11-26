@@ -77,21 +77,28 @@ public class MachineService : IMachineService
 
         try
         {
-            // Validate machine name uniqueness
-            var machineAlreadyExists = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(w =>
-                    w.Name.ToLower() == machineDto.Name.ToLower() ||
-                    w.OSId.ToLower() == machineDto.OSId.ToLower()
-                )
-                .FirstOrDefaultAsync();
-
-            // Machine already exists
-            if (machineAlreadyExists != null)
+            // Define fields to check for uniqueness (name, OSId, hostname)
+            var fieldsToCheck = new Dictionary<string, string>
             {
-                _logger.LogInformation("Machine already exists");
-                serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A machine with the same name already exists. Please enter a unique name";
-                return serviceResponse;
+                { "Name", machineDto.Name },
+                { "OSId", machineDto.OSId },
+                { "Hostname", machineDto.Hostname }
+            };
+
+            foreach (var field in fieldsToCheck)
+            {
+                var existingMachine = await _unitOfWork.MachineRepo
+                    .GetByConditionAsync(w =>
+                        EF.Functions.Like(w.GetType().GetProperty(field.Key).GetValue(w, null).ToString().ToLower(), field.Value.ToLower()))
+                    .FirstOrDefaultAsync();
+
+                if (existingMachine != null)
+                {
+                    _logger.LogInformation($"Validation failed: A machine with the {field.Key} '{field.Value}' already exists.");
+                    serviceResponse.StatusCode = 409; // Conflict
+                    serviceResponse.Message = $"A machine with the same {field.Key} '{field.Value}' already exists. Please enter a unique {field.Key}.";
+                    return serviceResponse;
+                }
             }
 
             // Trim dto's string properties
@@ -363,26 +370,31 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
-            // Validate machine name uniqueness
-            var machineAlreadyExists = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(w =>
-                    (
-                        w.Name.ToLower() == machineDto.Name.ToLower() ||
-                        w.OSId.ToLower() == machineDto.OSId.ToLower()
-                    ) &&
-                    w.Id != machineDto.Id
-                )
-                .FirstOrDefaultAsync();
-
-            // Machine already exists
-            if (machineAlreadyExists != null)
+            // Define fields to check for uniqueness (name, OSId, hostname)
+            var fieldsToCheck = new Dictionary<string, string>
             {
-                _logger.LogInformation("Machine name already exists");
-                serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A machine with the same name already exists. Please enter a unique name";
-                return serviceResponse;
-            }
+                { "Name", machineDto.Name },
+                { "OSId", machineDto.OSId },
+                { "Hostname", machineDto.Hostname }
+            };
 
+            foreach (var field in fieldsToCheck)
+            {
+                var existingMachine = await _unitOfWork.MachineRepo
+                    .GetByConditionAsync(w =>
+                        w.Id != machineDto.Id &&
+                        EF.Functions.Like(w.GetType().GetProperty(field.Key).GetValue(w, null).ToString().ToLower(), field.Value.ToLower())
+                    )
+                    .FirstOrDefaultAsync();
+
+                if (existingMachine != null)
+                {
+                    _logger.LogInformation($"Validation failed: A machine with the {field.Key} '{field.Value}' already exists.");
+                    serviceResponse.StatusCode = 409; // Conflict
+                    serviceResponse.Message = $"A machine with the same {field.Key} '{field.Value}' already exists. Please enter a unique {field.Key}.";
+                    return serviceResponse;
+                }
+            }
             // Trim dto's string properties
             machineDto = TrimDtoStringPropsUtil.TrimDtoStringProps(machineDto);
 
