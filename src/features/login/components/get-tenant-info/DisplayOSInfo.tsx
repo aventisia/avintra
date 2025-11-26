@@ -1,3 +1,5 @@
+import { IS_TAURI } from "@/constants/constants";
+
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -6,9 +8,6 @@ import { useLoginStore } from "../../stores/login-store";
 import { IOSInfo } from "../../types/os-info";
 
 const DisplayOSInfo = () => {
-  // Check if running in Tauri
-  const isTauri = "isTauri" in window;
-
   const { osInfo, setOsInfo } = useLoginStore(
     useShallow((state) => ({
       osInfo: state.osInfo,
@@ -18,7 +17,7 @@ const DisplayOSInfo = () => {
 
   useEffect(() => {
     const checkEnvironment = async () => {
-      if (isTauri) {
+      if (IS_TAURI) {
         try {
           const currOSInfo = (await invoke("get_os_info")) as unknown as {
             os_id: string;
@@ -41,12 +40,17 @@ const DisplayOSInfo = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!isTauri) return null;
+  if (!IS_TAURI) return null;
 
   return (
-    <p className="text-muted-foreground text-center text-md w-full">
-      {`(os_id: ${osInfo?.osId ? osInfo?.osId : "NA"}, hostname/username: ${osInfo?.hostname ? osInfo?.hostname : "NA"})`}
-    </p>
+    <div className=" flex flex-col gap-1 w-full">
+      <p className="text-muted-foreground text-center text-md ">
+        {`os_id: ${osInfo?.osId ? osInfo?.osId : "NA"}`}
+      </p>
+      <p className="text-muted-foreground text-center text-md ">
+        {`username: ${osInfo?.hostname ? osInfo?.hostname : "NA"}`}
+      </p>
+    </div>
   );
 };
 

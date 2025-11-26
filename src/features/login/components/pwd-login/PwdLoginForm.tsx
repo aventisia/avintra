@@ -1,3 +1,5 @@
+import { IS_TAURI } from "@/constants/constants";
+
 import { SubmitButton } from "@aventisia/ui/buttons";
 import { InputField } from "@aventisia/ui/form";
 import { Form } from "@aventisia/ui/form";
@@ -20,9 +22,6 @@ export const PwdLoginForm = () => {
     setLoginData,
     resetLoginProcess,
   } = useDefinePwdLoginForm();
-
-  // Check if the environment is a Tauri app
-  const isTauriApp = "isTauri" in window;
 
   // Get mutation
   const { authenticateUserMutation, isAuthPending } =
@@ -51,7 +50,7 @@ export const PwdLoginForm = () => {
     };
 
     // Include osInfo in payload only if it's a Tauri app
-    if (isTauriApp && osInfo) {
+    if (IS_TAURI && osInfo) {
       payload.osInfo = osInfo;
     }
 
