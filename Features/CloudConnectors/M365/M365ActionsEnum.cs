@@ -4,6 +4,8 @@ public enum M365ActionsEnum
 {
     GetDriveIdAndItemId,
     AddWorksheet,
+    AddTableToWorksheet,
+    AddRowToTable,
     GetWorksheetNames,
     WriteValueToRange,
     ReadValueFromRange,

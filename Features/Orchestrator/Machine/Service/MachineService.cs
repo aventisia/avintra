@@ -77,18 +77,28 @@ public class MachineService : IMachineService
 
         try
         {
-            // Validate machine name uniqueness
-            var machineAlreadyExists = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == machineDto.Name.ToLower())
-                .FirstOrDefaultAsync();
-
-            // Machine already exists
-            if (machineAlreadyExists != null)
+            // Define fields to check for uniqueness (name, OSId, hostname)
+            var fieldsToCheck = new Dictionary<string, string>
             {
-                _logger.LogInformation("Machine already exists");
-                serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A machine with the same name already exists. Please enter a unique name";
-                return serviceResponse;
+                { "Name", machineDto.Name },
+                { "OSId", machineDto.OSId },
+                { "Hostname", machineDto.Hostname }
+            };
+
+            foreach (var field in fieldsToCheck)
+            {
+                var existingMachine = await _unitOfWork.MachineRepo
+                    .GetByConditionAsync(w =>
+                        EF.Functions.Like(w.GetType().GetProperty(field.Key).GetValue(w, null).ToString().ToLower(), field.Value.ToLower()))
+                    .FirstOrDefaultAsync();
+
+                if (existingMachine != null)
+                {
+                    _logger.LogInformation($"Validation failed: A machine with the {field.Key} '{field.Value}' already exists.");
+                    serviceResponse.StatusCode = 409; // Conflict
+                    serviceResponse.Message = $"A machine with the same {field.Key} '{field.Value}' already exists. Please enter a unique {field.Key}.";
+                    return serviceResponse;
+                }
             }
 
             // Trim dto's string properties
@@ -360,23 +370,31 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
-            // Validate machine name uniqueness
-            var machineAlreadyExists = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(w =>
-                    w.Name.ToLower() == machineDto.Name.ToLower() &&
-                    w.Id != machineDto.Id
-                )
-                .FirstOrDefaultAsync();
-
-            // Machine already exists
-            if (machineAlreadyExists != null)
+            // Define fields to check for uniqueness (name, OSId, hostname)
+            var fieldsToCheck = new Dictionary<string, string>
             {
-                _logger.LogInformation("Machine name already exists");
-                serviceResponse.StatusCode = 409;
-                serviceResponse.Message = "A machine with the same name already exists. Please enter a unique name";
-                return serviceResponse;
-            }
+                { "Name", machineDto.Name },
+                { "OSId", machineDto.OSId },
+                { "Hostname", machineDto.Hostname }
+            };
 
+            foreach (var field in fieldsToCheck)
+            {
+                var existingMachine = await _unitOfWork.MachineRepo
+                    .GetByConditionAsync(w =>
+                        w.Id != machineDto.Id &&
+                        EF.Functions.Like(w.GetType().GetProperty(field.Key).GetValue(w, null).ToString().ToLower(), field.Value.ToLower())
+                    )
+                    .FirstOrDefaultAsync();
+
+                if (existingMachine != null)
+                {
+                    _logger.LogInformation($"Validation failed: A machine with the {field.Key} '{field.Value}' already exists.");
+                    serviceResponse.StatusCode = 409; // Conflict
+                    serviceResponse.Message = $"A machine with the same {field.Key} '{field.Value}' already exists. Please enter a unique {field.Key}.";
+                    return serviceResponse;
+                }
+            }
             // Trim dto's string properties
             machineDto = TrimDtoStringPropsUtil.TrimDtoStringProps(machineDto);
 
@@ -582,7 +600,7 @@ public class MachineService : IMachineService
 
             // Retrieve all agents for the current user
             var agents = await _unitOfWork.MachineFlowRepo
-                                            .GetByConditionAsync(w => w.MachineId== machineId)
+                                            .GetByConditionAsync(w => w.MachineId == machineId)
                                             .Include(i => i.FlowVersion)
                                                 .ThenInclude(i2 => i2.Flow)
                                             .ProjectToType<AssignAgentDto>()
@@ -763,6 +781,52 @@ public class MachineService : IMachineService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while searching machines with key: {SearchKey}", searchKey);
+        }
+
+        return serviceResponse;
+    }
+
+    // Validate a machine based on its operating system information.
+    public async Task<ServiceResponse<bool>> ValidateMachineAsync(OSInformationDto osInformationDto)
+    {
+        // Initialize ServiceResponse with a failed validation response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            StatusCode = 200,
+            Message = "Machine validation failed. Please try again later."
+        };
+
+        try
+        {
+            // Attempt to find the machine by its OSId
+            var machine = await _unitOfWork.MachineRepo
+                .GetByConditionAsync(w => w.OSId == osInformationDto.OSId)
+                .SingleOrDefaultAsync();
+
+            if (machine == null)
+            {
+                serviceResponse.Message = $"No machine found with the OSId {osInformationDto.OSId}. Please check the OSId and try again.";
+                _logger.LogInformation("No machine found with OSId {OSId}", osInformationDto.OSId);
+                return serviceResponse;
+            }
+
+            // TODO: Check the machine's status (e.g., Online, Offline, etc.)
+            // Example: If you want to check if the machine is online, you could add:
+            // if (machine.Status != MachineStatusTypeEnum.Online)
+            // {
+            //     serviceResponse.Message = "The machine is not currently online and cannot be validated.";
+            //     return serviceResponse;
+            // }
+
+            // Validation successful
+            serviceResponse.Data = true;
+            serviceResponse.Message = $"Machine with OSId {osInformationDto.OSId} successfully validated.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error during machine validation: {ex.Message}");
+            serviceResponse.Message = "An error occurred while validating the machine. Please try again later.";
         }
 
         return serviceResponse;

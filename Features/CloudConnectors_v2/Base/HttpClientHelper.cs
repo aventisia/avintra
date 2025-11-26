@@ -15,19 +15,19 @@ public static class HttpClientHelper
         return await ProcessAsync(HttpMethod.Get, url, jwt, null, headers);
     }
 
-    public static async Task<JsonDocument?> PostAsync(string url, object content, string? jwt = null, Dictionary<string, string>? headers = null)
+    public static async Task<JsonDocument?> PostAsync(string url, object content, string? jwt = null, Dictionary<string, string>? headers = null, string mediaType = "application/json")
     {
-        return await ProcessAsync(HttpMethod.Post, url, jwt, content, headers);
+        return await ProcessAsync(HttpMethod.Post, url, jwt, content, headers, mediaType);
     }
 
-    public static async Task<JsonDocument?> PutAsync(string url, object content, string? jwt = null, Dictionary<string, string>? headers = null)
+    public static async Task<JsonDocument?> PutAsync(string url, object content, string? jwt = null, Dictionary<string, string>? headers = null, string mediaType = "application/json")
     {
-        return await ProcessAsync(HttpMethod.Put, url, jwt, content, headers);
+        return await ProcessAsync(HttpMethod.Put, url, jwt, content, headers, mediaType);
     }
 
-    public static async Task<JsonDocument?> PatchAsync(string url, object content, string? jwt = null, Dictionary<string, string>? headers = null)
+    public static async Task<JsonDocument?> PatchAsync(string url, object content, string? jwt = null, Dictionary<string, string>? headers = null, string mediaType = "application/json")
     {
-        return await ProcessAsync(HttpMethod.Patch, url, jwt, content, headers);
+        return await ProcessAsync(HttpMethod.Patch, url, jwt, content, headers, mediaType);
     }
 
     public static async Task<JsonDocument?> DeleteAsync(string url, string? jwt = null, Dictionary<string, string>? headers = null)
@@ -40,7 +40,8 @@ public static class HttpClientHelper
         string url,
         string? jwt = null,
         object? content = null,
-        Dictionary<string, string>? headers = null)
+        Dictionary<string, string>? headers = null,
+        string mediaType = "application/json")
     {
         using (var request = new HttpRequestMessage(httpMethod, url))
         {
@@ -58,9 +59,13 @@ public static class HttpClientHelper
                 }
             }
 
-            // If content is not null, Set content
-            if (content != null)
+            // Handle application/json
+            if (content != null && mediaType == "application/json")
                 request.Content = new StringContent(JsonConvert.SerializeObject(content), Encoding.UTF8, "application/json");
+            
+            // Handle application/x-www-form-urlencoded
+            if (content != null && mediaType == "application/x-www-form-urlencoded" && content is Dictionary<string, string> dictContent)
+                request.Content = new FormUrlEncodedContent(dictContent);
 
             try
             {

@@ -23,6 +23,11 @@ public class Machine : BaseEntity, IMustHaveTenant
     public required string Hostname { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier that uniquely represents the operating system.
+    /// </summary>
+    public string OSId { get; set; } = string.Empty;
+
+    /// <summary>
     /// Represents the operating system of the machine, e.g., Windows, Linux
     /// </summary>
     [Required]

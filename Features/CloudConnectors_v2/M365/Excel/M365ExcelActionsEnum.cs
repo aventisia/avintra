@@ -4,17 +4,9 @@ public enum M365ExcelActionsEnum
 {
     GetDriveIdAndItemId,
     AddWorksheet,
+    AddTableToWorksheet,
+    AddRowToTable,
     GetWorksheetNames,
     WriteValueToRange,
-    ReadValueFromRange,
-    DeleteWorksheet,
-    RenameWorksheet,
-    GetWorkbookInfo,
-    CheckWorksheetExists,
-    ListNamedItems,
-    DeleteNamedItem,
-    LookupRangeinExcelWorksheet,
-    SetColorInExcelWorksheet,
-    SelectSpecificRangeOfCellInWorksheet
-    
+    ReadValueFromRange
 }

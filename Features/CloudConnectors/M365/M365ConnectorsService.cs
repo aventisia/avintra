@@ -355,7 +355,6 @@
 
 //     }
 
-    // TODO: Not working
 //     // Action: Read formula from Excel cell GET
 //     private async Task<JsonDocument?> ReadFormulaAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
 //     {
@@ -392,7 +391,6 @@
 //         return JsonDocument.Parse("{}");
 //     }
 
-        // TODO: Not working
 //     // Action: GetColumnNameOnExcelWorksheet
 //     private async Task<JsonDocument?> GetColumnFromWorksheetByIndexAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
 //     {
@@ -429,7 +427,6 @@
 //         return letters;
 //     }
 
-    // TODO: Not working
 //     // Action: ClearNamedRange
 //     private async Task<JsonDocument?> ClearWorksheetRangeAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
 //     {
@@ -467,7 +464,6 @@
 //         return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
 
 //     }
-    // TODO: Not working
 
 //     // Clear Range 
 //     private async Task<JsonDocument?> ClearRangeAsync (HttpClient httpClient,Dictionary<string,object> connectorRequestPayload)
@@ -502,7 +498,7 @@
 
 
 
-    // TODO: Not working
+
 
 //     // Action: DeleteWorkbookNamedRange
 //     private async Task<JsonDocument?> DeleteWorkbookNamedRangeAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
@@ -589,8 +585,6 @@
 //         return (row, col);
 //     }
 
-        // TODO: Not working
-
 //     //Action: DeleteNamedRange
 //     private async Task<JsonDocument?> DeleteRangeAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
 //     {
@@ -659,7 +653,6 @@
 //         return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
 //     }
 
-      // TODO: Not working
 //     //Action: ResizeColumnsRowsInExcelWorksheet
 //     private async Task<JsonDocument?> ResizeColumnsRowsInExcelWorksheetAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
 //     {
@@ -770,6 +763,34 @@
 //         }
 //     }
 
+//     // private async Task<JsonDocument?> GetUsedRangeAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+//     // {
+//     //     //Get request parameters
+//     //     var driveId = connectorRequestPayload["driveId"].ToString();
+//     //     var itemId = connectorRequestPayload["itemId"].ToString();
+//     //     var worksheetName = connectorRequestPayload["worksheetName"].ToString();
+
+//     //     var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/usedRange()";
+
+//     //     var response = await httpClient.GetAsync(url);
+//     //     return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+//     // }
+
+
+//     // private async Task<JsonDocument?> ActivateWorksheetAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
+//     // {
+//     //     // Step 1: Get request parameters
+//     //     var driveId = connectorRequestPayload["driveId"].ToString();
+//     //     var itemId = connectorRequestPayload["itemId"].ToString();
+//     //     var worksheetName = connectorRequestPayload["worksheetName"].ToString();
+
+//     //     var url = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/workbook/worksheets/{worksheetName}/activate";
+
+//     //     var response = await httpClient.PostAsync(url, null);
+//     //     return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+//     // }
+
+
 
 //     //Action : ListNamedItem
 //     private async Task<JsonDocument?> ListNamedItemsAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
@@ -799,8 +820,6 @@
 //         var response = await httpClient.DeleteAsync(url);
 //         return response.IsSuccessStatusCode ? JsonDocument.Parse("{}") : null;
 //     }
-
-      // TODO: Not working
 //     //Action : AddNamedItem
 //     private async Task<JsonDocument?> AddNamedItemAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
 //     {
@@ -828,7 +847,7 @@
 //         return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
 //     }
 
-          // TODO: Not working
+
 //     //Action : Create Table in Excel.
 //     private async Task<JsonDocument> CreateTableInExcelAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
 //     {
@@ -858,7 +877,7 @@
 
 //         return JsonDocument.Parse(await response.Content.ReadAsStringAsync());
 //     }
-          // TODO: Not working
+
 //     // Action: GetTableRangeFromExcelWorksheet
 //     private async Task<JsonDocument?> GetTableRangeFromExcelWorksheetAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
 //     {
@@ -883,7 +902,6 @@
 //         return JsonDocument.Parse(await tableRangeResponse.Content.ReadAsStringAsync());
 //     }
 
-          // TODO: Not working
 //     // Action: AppendRangeToExcelWorksheet
 //     private async Task<JsonDocument?> AppendRangeToExcelWorksheetAsync(HttpClient httpClient, Dictionary<string, object> connectorRequestPayload)
 //     {
