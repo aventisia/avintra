@@ -113,31 +113,41 @@ public static class AppServicesExtension
             // options.MaximumReceiveMessageSize = 102_400; // 100 KB
         });
     }
-
     // Method to configure and register Quartz jobs along with their triggers
     public static void AddQuartzJobs(this IServiceCollection services)
     {
         services.AddQuartz(quartz =>
         {
-            var jobKey = new JobKey("TimeTriggerExecutionJob");
+            // TimeTriggerExecutionJob configuration
+            var timeTriggerExecutionJobKey = new JobKey("TimeTriggerExecutionJob");
+            quartz.AddJob<TimeTriggerExecutionJob>(opts => opts.WithIdentity(timeTriggerExecutionJobKey));
 
-            // Register the job with the specified job key
-            quartz.AddJob<TimeTriggerExecutionJob>(opts => opts.WithIdentity(jobKey));
-
-            // Configure the trigger to start immediately and run every 1 minutes
             quartz.AddTrigger(opts => opts
-                .ForJob(jobKey)
+                .ForJob(timeTriggerExecutionJobKey)
                 .WithIdentity("TimeTriggerExecutionJob-trigger")
                 .StartNow()
                 .WithSimpleSchedule(x => x
                     .WithIntervalInMinutes(1)
                     .RepeatForever()));
+
+            // TenantHistoryCleanupJob configuration
+            var tenantHistoryCleanupJobKey = new JobKey("TenantHistoryCleanupJob");
+            quartz.AddJob<TenantHistoryCleanupJob>(opts => opts.WithIdentity(tenantHistoryCleanupJobKey));
+
+            quartz.AddTrigger(opts => opts
+                .ForJob(tenantHistoryCleanupJobKey)
+                .WithIdentity("TenantHistoryCleanupJob-trigger")
+                .StartNow()
+                .WithCronSchedule("0 0 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Runs daily at 12:00 AM UTC
+                .WithDescription("Trigger for Tenant History Cleanup Job - Runs at 12:00 AM UTC daily"));
+
         });
 
         // Register Quartz hosted service to ensure jobs run in the background
         services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
-        // Register the job with the DI container so it can be injected
+        // Register the jobs with the DI container so they can be injected
         services.AddTransient<TimeTriggerExecutionJob>();
+        services.AddTransient<TenantHistoryCleanupJob>();
     }
 }
