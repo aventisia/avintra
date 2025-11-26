@@ -18,9 +18,4 @@ public class PwdLoginDto : BaseEmailProperty
     /// </summary>
     [DisplayName("Password")]
     public required string Pwd { get; set; }
-
-    /// <summary>
-    /// Gets or sets the operating system information of the user's device.
-    /// </summary>
-    public OSInformationDto? OSInfo { get; set; }
 }
