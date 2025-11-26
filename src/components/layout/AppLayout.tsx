@@ -7,7 +7,6 @@ import { Outlet } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { DotPattern } from "@/components/layout/DotPattern";
-import { IS_TAURI } from "@/constants/constants";
 import useCheckMachineStatus from "@/features/orchestrator/machines-table/hooks/useCheckMachineStatus";
 import {
   useCheckForUpdate,
@@ -93,7 +92,7 @@ export const AppLayout = () => {
           />
           <AppBanner />
           <AppHeader />
-          {!IS_TAURI && <Sidebar />}
+          <Sidebar />
           <ScrollArea
             className={cn(
               appBanner
@@ -104,10 +103,9 @@ export const AppLayout = () => {
             <main
               className={cn(
                 "px-7 py-0 transition-[margin] duration-500",
-                !IS_TAURI &&
-                  (sidebarExpand
-                    ? "md:ml-[--sidebar-max-width]"
-                    : "md:ml-[--sidebar-min-width]"),
+                sidebarExpand
+                  ? "md:ml-[--sidebar-max-width]"
+                  : "md:ml-[--sidebar-min-width]",
               )}
             >
               <Outlet />
