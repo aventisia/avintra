@@ -25,15 +25,39 @@ public class OrchestratorHub : Hub
         var clientId = Guid.Parse(Context?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         var tenantId = Guid.Parse(Context?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
-        // Try to parse the client type from the query string (e.g., 'AssistAppMachine', 'WebBrowserUser')
-        Enum.TryParse<ClientTypesEnum>(httpContext.Request.Query["type"], true, out var clientType);
+        // Try to parse the client type from the query string (e.g., 'WorcMachine', 'WebBrowser')
+        Enum.TryParse<ClientTypesEnum>(httpContext.Request.Query["clientType"], true, out var clientType);
 
-        // Try to parse the machine ID from the query string if available
-        Guid.TryParse(httpContext.Request.Query["machineId"], out var machineId);
+        // Optionally, you can also retrieve other parameters as strings, if needed
+        string? osId = httpContext.Request.Query["osId"];
+        string? hostname = httpContext.Request.Query["hostname"];
+        string? appVersion = httpContext.Request.Query["appVersion"];
 
-        // If the client type is a machine, use the machine ID as the client ID
-        if (clientType == ClientTypesEnum.AssistAppMachine)
-            clientId = machineId;
+
+        // Check if both osId and hostname are provided in the query string
+        if (!string.IsNullOrEmpty(osId) && !string.IsNullOrEmpty(hostname))
+        {
+            // Attempt to find a machine that matches the osId and hostname for the given tenant
+            var machine = await _unitOfWork.MachineRepo
+                .GetByConditionAsync(w =>
+                    w.TenantId == tenantId &&
+                    w.OSId.ToLower() == osId.ToLower() &&
+                    w.Hostname.ToLower() == hostname.ToLower()
+                )
+                .SingleOrDefaultAsync();
+
+            // If a machine is found, set the clientId to the machine's ID and set the clientType to WorcMachine
+            if (machine != null)
+            {
+                clientId = machine.Id;
+                clientType = ClientTypesEnum.WorcMachine;
+            }
+            else
+            {
+                // If no machine is found, default the clientType to WorcDesktopApp (i.e., desktop application)
+                clientType = ClientTypesEnum.WorcDesktopApp;
+            }
+        }
 
         // Get the unique connection ID for this client (used for real-time messaging)
         var connectionId = Context.ConnectionId;
@@ -52,15 +76,15 @@ public class OrchestratorHub : Hub
         // Add or update the client's status in the status store
         await _clientStatusStore.AddOrUpdateStatusAsync(clientStatusDto);
 
-        // Handle clients that are users (e.g., WebBrowserUser, DesktopAppUser)
-        if (clientType == ClientTypesEnum.WebBrowserUser || clientType == ClientTypesEnum.DesktopAppUser)
+        // Handle clients that are users (e.g., WebBrowser, DesktopAppUser)
+        if (clientType == ClientTypesEnum.WebBrowser || clientType == ClientTypesEnum.WorcDesktopApp)
         {
             // Add the user to a tenant-specific group for group-based messaging
             await Groups.AddToGroupAsync(connectionId, $"TENANT_{tenantId}");
         }
 
-        // Handle machine clients (e.g., AssistAppMachine)
-        if (clientType == ClientTypesEnum.AssistAppMachine)
+        // Handle machine clients (e.g., WorcMachine)
+        if (clientType == ClientTypesEnum.WorcMachine)
         {
             // Notify all users in the tenant group that a new machine has come online
             await Clients.Group($"TENANT_{tenantId}").SendAsync("machine_status_update", "A machine is online now.");
@@ -88,7 +112,7 @@ public class OrchestratorHub : Hub
             await _clientStatusStore.RemoveClientByConnectionAsync(connectionId);
 
             // If the disconnected client is a machine, mark it as "Offline" and notify other clients in the same group
-            if (clientStatusDto.Type == ClientTypesEnum.AssistAppMachine)
+            if (clientStatusDto.Type == ClientTypesEnum.WorcMachine)
             {
                 await Clients.Group($"TENANT_{clientStatusDto.TenantId}").SendAsync("machine_status_update", "A machine is offline now.");
             }

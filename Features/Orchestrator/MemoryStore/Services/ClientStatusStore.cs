@@ -69,17 +69,17 @@ public class ClientStatusStore : IClientStatusStore
     public Task<IEnumerable<ClientStatusDto>> GetMachineStatusesAsync(Guid tenantId)
     {
         var machines = ClientStore.Values
-            .Where(c => c.TenantId == tenantId && c.Type == ClientTypesEnum.AssistAppMachine)
+            .Where(w => w.TenantId == tenantId && w.Type == ClientTypesEnum.WorcMachine)
             .ToList();
 
         return Task.FromResult<IEnumerable<ClientStatusDto>>(machines);
     }
 
-    // Retrieves a client based on the unique client identifier (clientId) for the AssistAppMachine type.
+    // Retrieves a client based on the unique client identifier (clientId) for the WorcMachine type.
     public Task<ClientStatusDto?> GetClientByIdAsync(Guid clientId)
     {
         var machine = ClientStore.Values
-            .FirstOrDefault(c => c.ClientId == clientId && c.Type == ClientTypesEnum.AssistAppMachine);
+            .FirstOrDefault(w => w.ClientId == clientId && w.Type == ClientTypesEnum.WorcMachine);
 
         return Task.FromResult<ClientStatusDto?>(machine);
     }
@@ -89,7 +89,7 @@ public class ClientStatusStore : IClientStatusStore
     {
         var users = ClientStore.Values
             .Where(c => c.TenantId == tenantId &&
-                (c.Type == ClientTypesEnum.WebBrowserUser || c.Type == ClientTypesEnum.DesktopAppUser))
+                (c.Type == ClientTypesEnum.WebBrowser || c.Type == ClientTypesEnum.WorcDesktopApp))
             .ToList();
 
         return Task.FromResult<IEnumerable<ClientStatusDto>>(users);
