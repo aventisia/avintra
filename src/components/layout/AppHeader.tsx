@@ -92,6 +92,7 @@ const AppHeader: React.FC = () => {
               <FlowComments className="mt-0 mlg:mt-4" />
             </div>
           )}
+          <PublishFlow />
           {!isAssist && (
             <div className="flex items-center">
               <Tooltip content="More">
