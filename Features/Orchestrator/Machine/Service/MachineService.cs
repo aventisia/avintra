@@ -92,36 +92,22 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
-            // Check for uniqueness for the 'OSId' field
-            var existingMachineByOSId = await _unitOfWork.MachineRepo
+            // Check for the existence of a machine with the same 'OSId' and 'Hostname' (case-insensitive)
+            var existingMachine = await _unitOfWork.MachineRepo
                 .GetByConditionAsync(w =>
                     w.Id != machineDto.Id &&
-                    w.OSId == machineDto.OSId)
-                .FirstOrDefaultAsync();
-
-            if (existingMachineByOSId != null)
-            {
-                _logger.LogInformation($"Validation failed: A machine with the OSId '{machineDto.OSId}' already exists.");
-                serviceResponse.StatusCode = 409;
-                serviceResponse.Message = $"A machine with the same OSId '{machineDto.OSId}' already exists. Please enter a unique OSId.";
-                return serviceResponse;
-            }
-
-            // Check for uniqueness for the 'Hostname' field
-            var existingMachineByHostname = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(w =>
-                    w.Id != machineDto.Id &&
+                    w.OSId.ToLower() == machineDto.OSId.ToLower() &&
                     w.Hostname.ToLower() == machineDto.Hostname.ToLower())
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync();  // Get the first match (if any)
 
-            if (existingMachineByHostname != null)
+            // If a machine with the same OSId and Hostname already exists, log the validation failure
+            if (existingMachine != null)
             {
-                _logger.LogInformation($"Validation failed: A machine with the Hostname '{machineDto.Hostname}' already exists.");
+                _logger.LogInformation($"Validation failed: A machine with OSId '{machineDto.OSId}' and Hostname '{machineDto.Hostname}' already exists.");
                 serviceResponse.StatusCode = 409;
-                serviceResponse.Message = $"A machine with the same Hostname '{machineDto.Hostname}' already exists. Please enter a unique Hostname.";
+                serviceResponse.Message = $"A machine with OSId '{machineDto.OSId}' and Hostname '{machineDto.Hostname}' already exists. Please enter a unique combination of OSId and Hostname.";
                 return serviceResponse;
             }
-
             // Trim dto's string properties
             machineDto = TrimDtoStringPropsUtil.TrimDtoStringProps(machineDto);
 
@@ -406,33 +392,21 @@ public class MachineService : IMachineService
                 return serviceResponse;
             }
 
-            // Check for uniqueness for the 'OSId' field
-            var existingMachineByOSId = await _unitOfWork.MachineRepo
+            // Check for the existence of a machine with the same 'OSId' and 'Hostname' (case-insensitive)
+            var existingMachine = await _unitOfWork.MachineRepo
                 .GetByConditionAsync(w =>
                     w.Id != machineDto.Id &&
-                    w.OSId == machineDto.OSId)
+                    w.OSId.ToLower() == machineDto.OSId.ToLower() &&
+                    w.Hostname.ToLower() == machineDto.Hostname.ToLower()
+                )
                 .FirstOrDefaultAsync();
 
-            if (existingMachineByOSId != null)
+            // If a machine with the same OSId and Hostname already exists, log the validation failure
+            if (existingMachine != null)
             {
-                _logger.LogInformation($"Validation failed: A machine with the OSId '{machineDto.OSId}' already exists.");
+                _logger.LogInformation($"Validation failed: A machine with OSId '{machineDto.OSId}' and Hostname '{machineDto.Hostname}' already exists.");
                 serviceResponse.StatusCode = 409;
-                serviceResponse.Message = $"A machine with the same OSId '{machineDto.OSId}' already exists. Please enter a unique OSId.";
-                return serviceResponse;
-            }
-
-            // Check for uniqueness for the 'Hostname' field
-            var existingMachineByHostname = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(w =>
-                    w.Id != machineDto.Id &&
-                    w.Hostname.ToLower() == machineDto.Hostname.ToLower())
-                .FirstOrDefaultAsync();
-
-            if (existingMachineByHostname != null)
-            {
-                _logger.LogInformation($"Validation failed: A machine with the Hostname '{machineDto.Hostname}' already exists.");
-                serviceResponse.StatusCode = 409;
-                serviceResponse.Message = $"A machine with the same Hostname '{machineDto.Hostname}' already exists. Please enter a unique Hostname.";
+                serviceResponse.Message = $"A machine with OSId '{machineDto.OSId}' and Hostname '{machineDto.Hostname}' already exists. Please enter a unique combination of OSId and Hostname.";
                 return serviceResponse;
             }
 
