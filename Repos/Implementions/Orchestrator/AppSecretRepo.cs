@@ -1,4 +1,4 @@
-namespace AccountsAPIs.Repos;
+namespace WorkspaceAPIs.Repos;
 
 public class AppSecretRepo : RepositoryBase<AppSecret, WorkspaceDbContext>, IAppSecretRepo
 {
