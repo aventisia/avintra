@@ -35,20 +35,21 @@ public class M365ConnectorsService : IM365ConnectorsService
                 return null;
             }
 
-            // Step 3: Create request body
-            var postObj = new
+            // Step 3: Create request body. It has to be in Dictionary<string, string> format for FormUrlEncodedContent
+            var postObj = new Dictionary<string, string>
             {
-                client_id = vaultCredential.Data["ClientId"].ToString()!,
-                scope = "https://graph.microsoft.com/.default",
-                client_secret = vaultCredential.Data["ClientSecret"].ToString()!,
-                grant_type = "client_credentials"
+                { "client_id", vaultCredential.Data["ClientId"].ToString()! },
+                { "scope", "https://graph.microsoft.com/.default" },
+                { "client_secret", vaultCredential.Data["ClientSecret"].ToString()! },
+                { "grant_type", "client_credentials" }
             };
 
             // Step 4: Send POST request to get token
             var jsonDocument = await HttpClientHelper.PostAsync(
-                $"https://login.microsoftonline.com/{vaultCredential.Data["AzureTenantId"]}/oauth2/v2.0/token",
-                postObj);
-
+                url: $"https://login.microsoftonline.com/{vaultCredential.Data["AzureTenantId"]}/oauth2/v2.0/token",
+                content: postObj,
+                mediaType: "application/x-www-form-urlencoded");
+            
             // Step 5: Extract access token
             var accessToken = jsonDocument.RootElement.GetProperty("access_token").GetString();
             if (accessToken == null)
