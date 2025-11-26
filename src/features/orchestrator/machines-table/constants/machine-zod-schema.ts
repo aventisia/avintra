@@ -1,6 +1,6 @@
 import {
-  alphaNumericError,
-  alphaNumericRegex,
+  flexibleNameError,
+  flexibleNameRegex,
   maxLenError,
   reqError,
 } from "@aventisia/ui/utils";
@@ -15,8 +15,8 @@ export const machineNameSchema = z
   .string()
   .min(1, { message: reqError("Machine Name") })
   .max(255, { message: maxLenError("Machine Name", 255) })
-  .regex(alphaNumericRegex, {
-    message: alphaNumericError("Machine name"),
+  .regex(flexibleNameRegex, {
+    message: flexibleNameError("Machine name"),
   });
 
 const ipAddressSchema = z
