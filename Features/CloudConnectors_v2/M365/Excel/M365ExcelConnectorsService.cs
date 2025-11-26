@@ -65,7 +65,7 @@ public class M365ExcelConnectorsService : IM365ExcelConnectorsService
     private async Task<JsonDocument?> TakeM365ExcelActionAsync(string action, string accessToken, Dictionary<string, object> payload)
     {
         // Construct workbook and worksheet URLs
-        string wbUrl = $"{_m365ConnectorsService.GRAPH_BASE_URL}/drives/{payload["driveId"]}/items/{payload["itemId"]}/workbook";
+        string wbUrl = $"{_m365ConnectorsService.GRAPH_BASE_URL}/drives/{payload.GetValueOrDefault("driveId", "drive-id")}/items/{payload.GetValueOrDefault("itemId", "item-id")}/workbook";
         string wsUrl = $"{wbUrl}/worksheets/{payload.GetValueOrDefault("worksheetName", "")}";
 
         switch (action)
@@ -74,7 +74,7 @@ public class M365ExcelConnectorsService : IM365ExcelConnectorsService
                 return await _m365ConnectorsService.GetDriveAndItemIdAsync(accessToken, payload["fileUrl"].ToString()!);
             case nameof(M365ExcelActionsEnum.AddWorksheet):
                 {
-                    var postObj = new { name = payload["worksheetName"] };
+                    var postObj = new { name = payload["newWorksheetName"] };
                     return await HttpClientHelper.PostAsync(wsUrl, postObj, accessToken);
                 }
             case nameof(M365ExcelActionsEnum.GetWorksheetNames):
