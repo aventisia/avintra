@@ -69,7 +69,7 @@ const MachinesList = () => {
                     <p className="grow">{val.name}</p>
                     <div className="flex items-center gap-2">
                       <ExecutionAction
-                        executionState=""
+                        executionState={val.status}
                         isDisabled={false}
                         rowId={val.id}
                       />
