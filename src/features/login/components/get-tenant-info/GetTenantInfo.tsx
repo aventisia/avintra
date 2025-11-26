@@ -1,5 +1,6 @@
 import { ContentContainer } from "@/components/ui/ContentContainer";
 import { ContentHeader } from "@/components/ui/ContentHeader";
+import { IS_TAURI } from "@/constants/constants";
 //import { SocialButtons } from "@/components/ui/SocialButtons";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 
@@ -30,8 +31,7 @@ export const GetTenantInfo = () => {
       <GetTenantInfoForm />
 
       {/* Don't have an account? Create free account */}
-      <GoToCreateAccount />
-
+      {!IS_TAURI && <GoToCreateAccount />}
       <DisplayOSInfo />
     </ContentContainer>
   );
