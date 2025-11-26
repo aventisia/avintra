@@ -1,4 +1,5 @@
 import { PrimaryCategoryType } from "../features/action-selector/types/primary-category-type";
+import.meta.glob("../features/action-selector/constants/*.json");
 
 function mergeActionSelectorData(
   existingData: PrimaryCategoryType[],
