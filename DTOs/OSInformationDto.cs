@@ -16,7 +16,7 @@ public class OSInformationDto
     public required string HostName { get; set; }
 
     /// <summary>
-    /// Gets or sets the client name associated with the operating system.
+    /// Gets or sets the type of client interacting with the system, such as a web browser user, desktop application user, or an automated assistive machine.
     /// </summary>
-    public required string ClientName { get; set; }
+    public ClientTypesEnum ClientType { get; set; } = ClientTypesEnum.DesktopAppUser;
 }
