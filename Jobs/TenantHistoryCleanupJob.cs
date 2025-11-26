@@ -1,0 +1,109 @@
+namespace WorkspaceAPIs.Jobs
+{
+    /// <summary>
+    /// A job that handles the cleanup of tenant credit history records based on a retention policy.
+    /// It fetches tenant subscription data from an external API and processes the cleanup.
+    /// </summary>
+    public class TenantHistoryCleanupJob : IJob
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<TenantHistoryCleanupJob> _logger;
+
+        public TenantHistoryCleanupJob(IUnitOfWork unitOfWork, ILogger<TenantHistoryCleanupJob> logger)
+        {
+            _unitOfWork = unitOfWork;
+            _logger = logger;
+        }
+
+        // The main method that Quartz calls to execute the job. It processes tenant credit history cleanup.
+        public async Task Execute(IJobExecutionContext context)
+        {
+            var currentDateTime = DateTimeOffset.UtcNow;
+
+            // Log the start of the job with a timestamp
+            _logger.LogInformation($"Tenant credit history retention job started at {currentDateTime:O}.");
+
+            try
+            {
+                // Call external API to get tenant subscription information
+                HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(
+                    CrudTypesEnum.Read,
+                    "http://localhost:4000/api/subscription/tenants",
+                    null,
+                    null
+                );
+
+                // Handle failed external API call
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    _logger.LogError("External API call failed. Status Code: {StatusCode}, Reason: {ReasonPhrase}",
+                        httpResponse.StatusCode,
+                        httpResponse.ReasonPhrase
+                    );
+
+                    return; 
+                }
+
+                // Parse the response content
+                var responseContent = await httpResponse.Content.ReadAsStringAsync();
+
+                // Deserialize the response into tenant subscription data
+                var tenantSubscriptions = JsonConvert.DeserializeObject<ServiceResponse<List<TenantSubscriptionInfoDto>>>(
+                    responseContent,
+                    new JsonSerializerSettings
+                    {
+                        MissingMemberHandling = MissingMemberHandling.Ignore,
+                        ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
+                    }
+                );
+
+                // Validate the external service response
+                if (tenantSubscriptions?.StatusCode != 200 || tenantSubscriptions?.Data == null)
+                {
+                    _logger.LogError("Failed to deserialize the external API response or no valid data found.");
+                    return; // Exit early if the data is not valid or missing
+                }
+
+                _logger.LogInformation($"Found {tenantSubscriptions.Data.Count} active tenant subscriptions to process for retention cleanup.");
+
+                // Process each tenant's subscription and cleanup their credit history records
+                foreach (var tenantSubscription in tenantSubscriptions.Data)
+                {
+                    var retentionDate = currentDateTime.AddDays(-tenantSubscription.HistoryRetentionDays).Date;
+
+                    // Log tenant-specific retention policy details
+                    _logger.LogInformation($"Processing Tenant ID {tenantSubscription.TenantId}: " +
+                                           $"Retention Period = {tenantSubscription.HistoryRetentionDays} days, " +
+                                           $"Retention Date = {retentionDate:O}.");
+
+                    // Retrieve tenant credit history records older than the retention date
+                    var jobs = await _unitOfWork.JobRepo
+                        .GetByConditionAsync(w => w.TenantId == tenantSubscription.TenantId && w.CreatedOn < retentionDate)
+                        .ToListAsync();
+
+                    // If old records are found, log and delete them
+                    if (jobs.Any())
+                    {
+                        _logger.LogInformation($"Found {jobs.Count()} credit history records for Tenant ID {tenantSubscription.TenantId} older than {retentionDate:O}.");
+
+                        // Attempt to delete the outdated records
+                        _unitOfWork.JobRepo.Delete(jobs);
+
+                        // Save the changes to the database
+                        if (!await _unitOfWork.SaveAsync())
+                        {
+                            _logger.LogWarning($"Failed to delete tenant credit history records for Tenant ID {tenantSubscription.TenantId}. Changes were not saved.");
+                        }
+                    }
+                }
+
+                // Job completed successfully
+                _logger.LogInformation($"Tenant credit history retention job completed successfully at {currentDateTime:O}.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing the tenant credit history retention job.");
+            }
+        }
+    }
+}
