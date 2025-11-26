@@ -66,17 +66,12 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         name: "queues",
         route: "/orchestrator/queues",
       },
-      // Add triggers only if not production
-      ...(import.meta.env.MODE !== "production"
-        ? [
-            {
-              permissions: ["SA", "TA", "OM"],
-              Icon: AiOutlineThunderbolt,
-              name: "triggers",
-              route: "/orchestrator/triggers",
-            },
-          ]
-        : []),
+      {
+        permissions: ["SA", "TA", "OM"],
+        Icon: AiOutlineThunderbolt,
+        name: "triggers",
+        route: "/orchestrator/triggers",
+      },
       {
         permissions: ["SA", "TA", "OM"],
         Icon: MonitorPlayIcon,
