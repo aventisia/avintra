@@ -781,6 +781,7 @@ public class MachineService : IMachineService
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
+            StatusCode = 200,
             Message = "Machine validation failed. Please try again later."
         };
 
@@ -808,7 +809,6 @@ public class MachineService : IMachineService
 
             // Validation successful
             serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
             serviceResponse.Message = $"Machine with OSId {osInformationDto.OSId} successfully validated.";
         }
         catch (Exception ex)
