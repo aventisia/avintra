@@ -166,17 +166,6 @@ public static class AppServicesExtension
                 .StartNow()
                 .WithCronSchedule("0 0 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Runs daily at 12:00 AM UTC
                 .WithDescription("Trigger for Tenant Credit Update Job - Runs at 12:00 AM UTC daily"));
-
-            // Register the TenantHistoryCleanupJob and its trigger
-            var tenantHistoryCleanupJobKey = new JobKey("TenantHistoryCleanupJob");
-            quartz.AddJob<TenantHistoryCleanupJob>(opts => opts.WithIdentity(tenantHistoryCleanupJobKey));
-
-            quartz.AddTrigger(opts => opts
-                .ForJob(tenantHistoryCleanupJobKey)
-                .WithIdentity("TenantHistoryCleanupJob-trigger")
-                .StartNow()
-                .WithCronSchedule("0 0 2 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Runs daily at 2:00 AM UTC
-                .WithDescription("Trigger for Tenant History Cleanup Job - Runs at 2:00 AM UTC daily"));
         });
 
         // Register Quartz hosted service to ensure jobs run in the background
@@ -184,6 +173,5 @@ public static class AppServicesExtension
 
         // Register the jobs with the DI container so they can be injected
         services.AddTransient<TenantCreditAllocationJob>();
-        services.AddTransient<TenantHistoryCleanupJob>();
     }
 }
