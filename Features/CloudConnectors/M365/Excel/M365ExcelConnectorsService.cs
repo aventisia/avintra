@@ -1,4 +1,4 @@
-namespace WorkspaceAPIs.Features.CloudConnectors.M365Excel;
+namespace WorkspaceAPIs.Features.CloudConnectors.M365.Excel;
 
 public class M365ExcelConnectorsService : IM365ExcelConnectorsService
 {
@@ -70,8 +70,6 @@ public class M365ExcelConnectorsService : IM365ExcelConnectorsService
 
         switch (action)
         {
-            case nameof(M365ExcelActionsEnum.GetDriveIdAndItemId):
-                return await _m365ConnectorsService.GetDriveAndItemIdAsync(accessToken, payload["fileUrl"].ToString()!);
             case nameof(M365ExcelActionsEnum.AddWorksheet):
                 {
                     var postObj = new { name = payload["newWorksheetName"].ToString()! };

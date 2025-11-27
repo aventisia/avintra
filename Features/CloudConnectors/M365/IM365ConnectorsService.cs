@@ -7,4 +7,6 @@ public interface IM365ConnectorsService
     Task<string?> GetM365AccessTokenAsync(Guid credentialId);
 
     Task<JsonDocument> GetDriveAndItemIdAsync(string accessToken, string fileUrl);
+
+    Task<ServiceResponse<CloudConnectorResDto>> InvokeCloudConnectorAsync(CloudConnectorReqDto cloudConnectorReqDto);
 }

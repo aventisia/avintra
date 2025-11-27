@@ -49,7 +49,7 @@ public class M365ConnectorsService : IM365ConnectorsService
                 url: $"https://login.microsoftonline.com/{vaultCredential.Data["AzureTenantId"]}/oauth2/v2.0/token",
                 content: postObj,
                 mediaType: "application/x-www-form-urlencoded");
-            
+
             // Step 5: Extract access token
             var accessToken = jsonDocument.RootElement.GetProperty("access_token").GetString();
             if (accessToken == null)
@@ -122,6 +122,67 @@ public class M365ConnectorsService : IM365ConnectorsService
         {
             _logger.LogError(ex, "Exception in GetDriveAndItemId");
             return JsonDocument.Parse($@"{{""error"": ""Exception: {ex.Message.Replace("\"", "'")}""}}");
+        }
+    }
+
+    public async Task<ServiceResponse<CloudConnectorResDto>> InvokeCloudConnectorAsync(CloudConnectorReqDto cloudConnectorReqDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<CloudConnectorResDto>
+        {
+            Data = new CloudConnectorResDto()
+            {
+                Response = null,
+                Provider = cloudConnectorReqDto.Provider,
+                Action = cloudConnectorReqDto.Action
+            },
+            StatusCode = 400
+        };
+
+        try
+        {
+            // Step 1: Get access token from M365ConnectorsService
+            var accessToken = await GetM365AccessTokenAsync(cloudConnectorReqDto.CredentialId);
+            if (accessToken == null)
+            {
+                _logger.LogWarning("Failed to obtain M365 access token for Credential ID: {CredentialId}", cloudConnectorReqDto.CredentialId);
+                serviceResponse.Message = "Failed to obtain M365 access token.";
+                return serviceResponse;
+            }
+
+            // Step 2: Take action based on M365 Excel connector unique name
+            var m365ExcelResponse = await TakeM365ActionAsync(cloudConnectorReqDto.Action, accessToken, cloudConnectorReqDto.Payload);
+            if (m365ExcelResponse == null)
+            {
+                _logger.LogWarning("M365 Excel connector action returned null response for connector: {Action}", cloudConnectorReqDto.Action);
+                serviceResponse.Message = "M365 Excel connector action failed.";
+                return serviceResponse;
+            }
+
+            // Step 3: Request invoked successfully
+            serviceResponse.Data.Response = m365ExcelResponse;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "M365 Excel connector invoked successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Take action based on connector unique name
+    private async Task<JsonDocument?> TakeM365ActionAsync(string action, string accessToken, Dictionary<string, object> payload)
+    {
+        switch (action)
+        {
+            case nameof(M365ActionsEnum.GetFileDriveAndItemId):
+                return await GetDriveAndItemIdAsync(accessToken, payload["fileUrl"].ToString()!);
+            default:
+                _logger.LogWarning("Unsupported M365 connector: {Action}", action);
+                return null;
         }
     }
 }

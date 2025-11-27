@@ -1,4 +1,4 @@
-namespace WorkspaceAPIs.Features.CloudConnectors.M365Excel;
+namespace WorkspaceAPIs.Features.CloudConnectors.M365.Excel;
 
 public interface IM365ExcelConnectorsService
 {

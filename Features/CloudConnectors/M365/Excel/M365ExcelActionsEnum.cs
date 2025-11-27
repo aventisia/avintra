@@ -1,8 +1,7 @@
-namespace WorkspaceAPIs.Features.CloudConnectors.M365Excel;
+namespace WorkspaceAPIs.Features.CloudConnectors.M365.Excel;
 
 public enum M365ExcelActionsEnum
 {
-    GetDriveIdAndItemId,
     AddWorksheet,
     AddTableToWorksheet,
     AddRowToTable,
