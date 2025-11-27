@@ -41,9 +41,15 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
 
         protected override IAsyncResult BeginExecute(AsyncCodeActivityContext context, AsyncCallback callback, object state)
         {
-            // Get connector provider
+            // Capture all required values from context at the start
             var connectorProvider = Provider.Get(context);
-            
+            var action = Action.Get(context);
+            var credentialId = CredentialId.Get(context);
+            var payload = Payload.Get(context);
+            var agentId = AgentId.Get(context);
+            var agentName = AgentName.Get(context);
+            var accessToken = AccessToken.Get(context);
+
             // Get api url from config
             var apiUrl = $"{ConfigurationManager.AppSettings["WorcApiUrl"]}/cloud-connector/{connectorProvider.ToLower()}/invoke";
 
@@ -58,11 +64,11 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                     var requestObj = new
                     {
                         provider = connectorProvider,
-                        action = Action.Get(context),
-                        credentialId = CredentialId.Get(context),
-                        payload = Payload.Get(context),
-                        agentId = AgentId.Get(context),
-                        agentName = AgentName.Get(context)
+                        action = action,
+                        credentialId = credentialId,
+                        payload = payload,
+                        agentId = agentId,
+                        agentName = agentName
                     };
 
                     // Send HTTP POST request
@@ -72,7 +78,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                         // Set up headers
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken.Get(context));
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                         // Construct content
                         var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -101,7 +107,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
             try
             {
                 var responseContent = task.GetAwaiter().GetResult();
-                
+
                 // Parse the API response
                 var responseObj = JsonConvert.DeserializeObject<JObject>(responseContent);
                 if (responseObj != null)
