@@ -28,12 +28,30 @@
         "actions": [
           {
             "type": "cloudConnectorNode",
-            "name": "SendEmailThroughSendGridConnector",
+            "name": "SendGrid/SendEmailThroughSendGridConnector",
             "label": "Send Email with SendGrid",
             "description": "Sends an email using SendGrid's API.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/SendGrid.svg"
+          }
+        ]
+      },
+      {
+        "label": "M365",
+        "description": "Work with Microsoft 365 services",
+        "icon": null,
+        "img": "/assets/M365.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/GetFileDriveAndItemIdConnector",
+            "label": "Get File Drive and Item ID in M365",
+            "description": "Retrieves the Drive ID and Item ID of a file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
           }
         ]
       },
@@ -46,7 +64,7 @@
         "actions": [
           {
             "type": "cloudConnectorNode",
-            "name": "AddNewWorksheetConnector",
+            "name": "M365/Excel/AddNewWorksheetConnector",
             "label": "Add New Worksheet in M365 Excel",
             "description": "Adds a new worksheet to an Excel file stored in OneDrive or SharePoint.",
             "docsLink": "https://docs.aventisia.com",
