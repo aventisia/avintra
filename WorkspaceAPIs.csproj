@@ -43,10 +43,10 @@
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Update="StaticFiles\Prompts\GenerateAgentTemplateDescriptionPrompt.txt">
+    <None Update="Features/CloudConnectors_v2/StaticFiles/**/*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="StaticFiles\Prompts\GenerateAIModelTemplateDescriptionPrompt.txt">
+    <None Update="StaticFiles\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

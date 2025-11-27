@@ -1,0 +1,60 @@
+[
+  {
+    "label": "Data Transformations",
+    "description": "Clean, transform, and structure your data with ease",
+    "icon": "DataTransformationsIcon",
+    "img": null,
+    "actionCategories": []
+  },
+  {
+    "label": "UI Interface Automations",
+    "description": "Automate your desktop with actions that mimic user interactions, from mouse clicks to keyboard entries",
+    "icon": "UIAutomationAndUserActionsIcon",
+    "img": null,
+    "actionCategories": []
+  },
+  {
+    "label": "App Integrations",
+    "description": "Seamlessly integrate with apps and services such as Twilio, Slack, and more",
+    "icon": "AppIntegrationsIcon",
+    "img": null,
+    "actionCategories": [
+      {
+        "label": "SendGrid",
+        "description": "Send, receive, and manage emails.",
+        "icon": null,
+        "img": "/assets/SendGrid.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "SendEmailThroughSendGridConnector",
+            "label": "Send Email with SendGrid",
+            "description": "Sends an email using SendGrid's API.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/SendGrid.svg"
+          }
+        ]
+      },
+      {
+        "label": "M365 Excel",
+        "description": "Read and write data to Excel files stored in OneDrive or SharePoint.",
+        "icon": null,
+        "img": "/assets/M365.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "AddNewWorksheetConnector",
+            "label": "Add New Worksheet in M365 Excel",
+            "description": "Adds a new worksheet to an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          }
+        ]
+      }
+    ]
+  }
+]
