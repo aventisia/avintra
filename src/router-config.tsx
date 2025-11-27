@@ -60,7 +60,7 @@ const routerConfig: RouteObject[] = [
         path: "/agents",
         element: (
           <ProtectedRoute
-            persmissions={["SA", "TA", "OM", "TD", "TU"]} //Include TU in in /agents to redirect / path to /agents-assist through ProtectedRoutes
+            persmissions={["SA", "TA", "OM", "TD"]}
             page={<FlowsPage />}
           />
         ),
@@ -88,9 +88,12 @@ const routerConfig: RouteObject[] = [
         element: <ProtectedRoute persmissions={["SA"]} page={<ComingSoon />} />,
       },
       {
-        path: "/agents-assist",
+        path: "/assist/agents",
         element: (
-          <ProtectedRoute persmissions={["TU"]} page={<AgentsAssistPage />} />
+          <ProtectedRoute
+            persmissions={["SA", "TA", "OM", "TU"]}
+            page={<AgentsAssistPage />}
+          />
         ),
       },
 
