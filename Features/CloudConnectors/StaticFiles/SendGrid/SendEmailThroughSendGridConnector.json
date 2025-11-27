@@ -95,11 +95,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Data",
-    "label": "Data",
+    "name": "Response",
+    "label": "Response",
     "description": "Returns the response data from SendGrid after sending the email.",
     "defaultValue": {
-      "value": "Data",
+      "value": "Response",
       "enabled": true
     },
     "required": false
@@ -112,7 +112,7 @@
     "description": "Returns the HTTP status code from SendGrid after sending the email.",
     "defaultValue": {
       "value": "StatusCode",
-      "enabled": true
+      "enabled": false
     },
     "required": false
   },
@@ -124,7 +124,7 @@
     "description": "Returns the HTTP status message from SendGrid after sending the email.",
     "defaultValue": {
       "value": "Message",
-      "enabled": true
+      "enabled": false
     },
     "required": false
   }

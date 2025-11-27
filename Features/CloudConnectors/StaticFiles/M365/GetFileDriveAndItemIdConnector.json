@@ -20,11 +20,11 @@
   {
     "direction": "Output",
     "type": "config-panel-output",
-    "name": "Data",
-    "label": "Data",
-    "description": "Returns the details of the newly added worksheet.",
+    "name": "Response",
+    "label": "Response",
+    "description": "Returns the Drive ID and Item ID of the specified file.",
     "defaultValue": {
-      "value": "Data",
+      "value": "Response",
       "enabled": true
     },
     "required": false
@@ -34,10 +34,10 @@
     "type": "config-panel-output",
     "name": "StatusCode",
     "label": "Status Code",
-    "description": "Returns the HTTP status code from the Excel API after adding the new worksheet.",
+    "description": "Returns the HTTP status code from the M365 API after retrieving the Drive and Item ID.",
     "defaultValue": {
       "value": "StatusCode",
-      "enabled": true
+      "enabled": false
     },
     "required": false
   },
@@ -46,10 +46,10 @@
     "type": "config-panel-output",
     "name": "Message",
     "label": "Message",
-    "description": "Returns the HTTP status message from the Excel API after adding the new worksheet.",
+    "description": "Returns the HTTP status message from the M365 API after retrieving the Drive and Item ID.",
     "defaultValue": {
       "value": "Message",
-      "enabled": true
+      "enabled": false
     },
     "required": false
   }

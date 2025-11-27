@@ -22,7 +22,7 @@ public class M365ConnectorsService : IM365ConnectorsService
             var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialId);
             if (vaultCredential == null)
             {
-                _logger.LogWarning("No credential found with ID: {CredentialId} for M365Excel", credentialId);
+                _logger.LogWarning("No credential found with ID: {CredentialId} for M365", credentialId);
                 return null;
             }
 

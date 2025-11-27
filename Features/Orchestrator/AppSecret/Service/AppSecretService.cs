@@ -734,7 +734,7 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
-            case nameof(AppSecretTypesEnum.M365Excel):
+            case nameof(AppSecretTypesEnum.M365):
                 {
                     var m365Credentials = System.Text.Json.JsonSerializer.Deserialize<M365CredentialsDto>(rawJson, jsonOptions);
                     if (m365Credentials != null)
