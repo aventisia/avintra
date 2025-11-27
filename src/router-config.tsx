@@ -17,6 +17,7 @@ import {
 import { STCreatePage } from "./features/support-tickets-table/components/support-ticket-create-page/STCreatePage";
 import { SupportTicketEditForm } from "./features/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
 import { AchievesPage } from "./pages/AchievesPage";
+import { AgentsAssistPage } from "./pages/AgentsAssistPage";
 import ComingSoon from "./pages/CommingSoon";
 import { CreditsUsagePage } from "./pages/CreditsUsagePage";
 import { FlowsPage } from "./pages/FlowsPage";
@@ -57,20 +58,42 @@ const routerConfig: RouteObject[] = [
       },
       {
         path: "/agents",
-        element: <FlowsPage />,
+        element: (
+          <ProtectedRoute
+            persmissions={["SA", "TA", "OM", "TD", "TU"]} //Include TU in in /agents to redirect / path to /agents-assist through ProtectedRoutes
+            page={<FlowsPage />}
+          />
+        ),
       },
       {
         path: "/ai-models",
-        element: <ModelsPage />,
+        element: (
+          <ProtectedRoute
+            persmissions={["SA", "TA", "OM", "TD"]}
+            page={<ModelsPage />}
+          />
+        ),
       },
       {
         path: "/library",
-        element: <LibraryPage />,
+        element: (
+          <ProtectedRoute
+            persmissions={["SA", "TA", "OM", "TD"]}
+            page={<LibraryPage />}
+          />
+        ),
       },
       {
         path: "/home",
         element: <ProtectedRoute persmissions={["SA"]} page={<ComingSoon />} />,
       },
+      {
+        path: "/agents-assist",
+        element: (
+          <ProtectedRoute persmissions={["TU"]} page={<AgentsAssistPage />} />
+        ),
+      },
+
       {
         path: "/account",
         element: <MyAccountPage />,
