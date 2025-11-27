@@ -1,4 +1,4 @@
-[Route("file/cloud-connector")]
+[Route("cloud-connector/config-file")]
 [ApiController]
 [Authorize]
 public class CloudConnectorsConfigFilesController : ControllerBase
