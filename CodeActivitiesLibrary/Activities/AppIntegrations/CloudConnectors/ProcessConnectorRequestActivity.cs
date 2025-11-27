@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Activities;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.IO;
@@ -45,13 +46,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
             var connectorProvider = Provider.Get(context);
             var action = Action.Get(context);
             var credentialId = CredentialId.Get(context);
-            var payload = Payload.Get(context);
+            var payload = ParsePayloadForCamelCase(Payload.Get(context)) ;
             var agentId = AgentId.Get(context);
             var agentName = AgentName.Get(context);
             var accessToken = AccessToken.Get(context);
 
             // Get api url from config
-            var apiUrl = $"{ConfigurationManager.AppSettings["WorcApiUrl"]}/cloud-connector/{connectorProvider.ToLower()}/invoke";
+            var apiUrl = $"{ConfigurationManager.AppSettings["WORC_API_URL"]}/cloud-connector/{connectorProvider.ToLower()}/invoke";
 
             // Declare task completion source
             var taskCompletionSource = new TaskCompletionSource<string>(state);
@@ -63,16 +64,22 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                     // Create request object
                     var requestObj = new
                     {
+                        agentId = agentId,
+                        agentName = agentName,
                         provider = connectorProvider,
                         action = action,
                         credentialId = credentialId,
-                        payload = payload,
-                        agentId = agentId,
-                        agentName = agentName
+                        payload = payload
                     };
 
+
+                    // Ensure camelCase serialization
+                    var json = JsonConvert.SerializeObject(requestObj, new JsonSerializerSettings
+                    {
+                        ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
+                    });
+
                     // Send HTTP POST request
-                    var json = JsonConvert.SerializeObject(requestObj);
                     using (var client = new HttpClient())
                     {
                         // Set up headers
@@ -131,6 +138,32 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                 StatusCode.Set(context, null);
                 StatusMessage.Set(context, $"Error: {ex.GetBaseException().Message}");
                 IsSuccess.Set(context, false);
+            }
+        }
+
+        /// <summary>
+        /// Parses a JSON string payload into a Dictionary so that camelCase contract resolver applies during serialization.
+        /// Falls back to JObject or string if not valid JSON.
+        /// </summary>
+        /// <param name="payloadString">The payload string to parse.</param>
+        /// <returns>Parsed object for payload property.</returns>
+        private object ParsePayloadForCamelCase(string payloadString)
+        {
+            if (!string.IsNullOrWhiteSpace(payloadString))
+            {
+                try
+                {
+                    return JsonConvert.DeserializeObject<Dictionary<string, object>>(payloadString);
+                }
+                catch
+                {
+                    try { return JObject.Parse(payloadString); }
+                    catch { return payloadString; } // fallback: send as string if not valid JSON
+                }
+            }
+            else
+            {
+                return new Dictionary<string, object>(); // send empty object if no payload
             }
         }
     }
