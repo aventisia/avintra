@@ -34,10 +34,10 @@ export const nameProps: InputFieldProps = {
 // Host Name
 export const hostnameProps: InputFieldProps = {
   name: "hostname",
-  label: "Hostname/Username",
+  label: "Username",
   isRequired: true,
   description:
-    "To find your operating system's hostname/username, open the desktop app and check the login screen for the hostname/username displayed there.",
+    "Enter the username of the machine that needs to be registered. This can be found on the login screen of the desktop app on the machine.",
 };
 
 // Os Unique Id
@@ -47,7 +47,7 @@ export const os_unique_idProps: InputFieldProps = {
   placeholder: "",
   isRequired: true,
   description:
-    "To find your operating system's unique ID, open the desktop app and check the login screen for the os_id displayed there.",
+    "Enter the OS installation ID of the machine that needs to be registered. This can be found on the login screen of the desktop app on the machine.",
 };
 
 // IP Address

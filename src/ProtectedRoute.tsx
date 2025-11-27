@@ -45,6 +45,10 @@ const ProtectedRoute = ({
   if (!hasPermission || !isPlanAllowed) {
     return <Navigate to="/page-not-found" state={{ from: location }} replace />;
   }
+  // If the user has the "TU" role, redirect to "/agents-assist" instead of the default route. Condition is used since "/" navigates to "/agents"
+  if (userRoles.includes("TU") && location?.pathname !== "/agents-assist") {
+    return <Navigate to="/redirect?url=/agents-assist" replace />;
+  }
 
   return page;
 };

@@ -5,6 +5,7 @@ import {
   DTHeading,
   DTPagination,
   DTSearchBox,
+  DTExportButton,
   DTViewOptions,
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
@@ -72,6 +73,7 @@ export const MachinesTable = () => {
                 <DTViewOptions
                   {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
                 />
+                <DTExportButton table={table} fileName={"machine_table"} />
                 <DTCreateButton buttonText="Add Machine" />
               </div>
             </div>

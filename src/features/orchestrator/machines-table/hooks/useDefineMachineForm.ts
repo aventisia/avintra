@@ -1,21 +1,17 @@
-import { useCheckAvailability } from "@aventisia/ui/hooks";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
 import { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
-import { isMachineNameAvailable } from "../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
-import {
-  machineNameSchema,
-  machineZodSchema,
-} from "../constants/machine-zod-schema";
+import { machineZodSchema } from "../constants/machine-zod-schema";
 import { MachinesTableDto } from "../dtos/machines-table-dto";
 
 /**
@@ -23,7 +19,7 @@ import { MachinesTableDto } from "../dtos/machines-table-dto";
  */
 export const useDefineMachineForm = () => {
   // Set machine name state (required for avaialbility check)
-  const [machineName, setMachineName] = useState("");
+  // const [machineName, setMachineName] = useState("");
 
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -34,7 +30,7 @@ export const useDefineMachineForm = () => {
 
   // Get data-table crud dialog store state and actions
   const {
-    crudDialogOptions: { showDialog, rowId, crudAction },
+    crudDialogOptions: { rowId, crudAction },
     toggleFormDirty,
     setShowDialog,
   } = useDTCrudDialogStore(
@@ -56,7 +52,7 @@ export const useDefineMachineForm = () => {
       id: "",
       name: "",
       type: "",
-      // licenseId: "",
+      osId: "",
       environment: "",
       ipAddress: "",
       hostname: "",
@@ -68,8 +64,6 @@ export const useDefineMachineForm = () => {
     },
   });
 
-  //TODO - isDirty state whenever the assign agent select table changes
-  // Select agents table is not updating the selection on edit machine.
   // Destructor form values and methods
   const {
     formState: { isDirty },
@@ -86,16 +80,17 @@ export const useDefineMachineForm = () => {
     const machineData = machinesData?.data.find((item) => item.id === rowId);
 
     // Set machine name
-    setMachineName(machineData?.name ?? "");
+    // setMachineName(machineData?.name ?? "");
 
     // Set machine data to form
     form.reset({
       id: rowId,
       name: machineData?.name ?? "",
       type: machineData?.type ?? MachineOsTypesEnum.Windows,
-      environment: machineData?.environment,
+      environment:
+        machineData?.environment ?? MachineEnvironmentTypesEnum.Development,
       ipAddress: machineData?.ipAddress ?? "0.0.0.0",
-      hostname: machineData?.hostname,
+      hostname: machineData?.hostname ?? "",
       osId: machineData?.osId ?? "",
 
       isDisabled: machineData?.isDisabled,
@@ -112,29 +107,34 @@ export const useDefineMachineForm = () => {
         ? new Date(machineData?.lastModifiedOn)
         : new Date(),
     });
+
+    // Focus the name field after reset.
+    setTimeout(() => {
+      form.setFocus("name", { shouldSelect: false });
+    }, 0);
   }, [rowId, form, queryClient, userSession]);
 
   // Get check availability state and methods
-  const {
-    isAvailable,
-    isCheckPending,
-    handleInputChange,
-    availabilityMessage,
-    setAvailabilityMessage,
-  } = useCheckAvailability<z.infer<typeof machineZodSchema>, z.ZodString>({
-    defaultInputValue: machineName,
-    fieldName: "name",
-    form,
-    fieldSchema: machineNameSchema,
-    checkAvailabilityAPIFn: isMachineNameAvailable,
-  });
+  // const {
+  //   isAvailable,
+  //   isCheckPending,
+  //   handleInputChange,
+  //   availabilityMessage,
+  //   setAvailabilityMessage,
+  // } = useCheckAvailability<z.infer<typeof machineZodSchema>, z.ZodString>({
+  //   defaultInputValue: machineName,
+  //   fieldName: "name",
+  //   form,
+  //   fieldSchema: machineNameSchema,
+  //   checkAvailabilityAPIFn: isMachineNameAvailable,
+  // });
 
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof machineZodSchema>) => {
     return {
       ...formData,
       lastModifiedBy: userSession?.email ?? "",
-      lastModifiedOn: new Date(),
+      lastModifiedOn: new Date().toISOString(),
     };
   };
 
@@ -144,9 +144,9 @@ export const useDefineMachineForm = () => {
   }, [isDirty, toggleFormDirty]);
 
   // Reset availability message when dialog closes
-  useEffect(() => {
-    if (!showDialog) setAvailabilityMessage(null);
-  }, [setAvailabilityMessage, showDialog]);
+  // useEffect(() => {
+  //   if (!showDialog) setAvailabilityMessage(null);
+  // }, [setAvailabilityMessage, showDialog]);
 
   // Return form and methods
   return {
@@ -156,10 +156,10 @@ export const useDefineMachineForm = () => {
     crudAction,
     setShowDialog,
     refineFormData,
-    isAvailable,
-    availabilityMessage,
-    setAvailabilityMessage,
-    isCheckPending,
-    handleInputChange,
+    // isAvailable,
+    // availabilityMessage,
+    // setAvailabilityMessage,
+    // isCheckPending,
+    // handleInputChange,
   };
 };
