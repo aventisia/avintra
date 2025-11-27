@@ -17,18 +17,13 @@ const TauriAppFooter = () => {
     const getUserMetadata = async () => {
       if (IS_TAURI) {
         try {
-          const currOSInfo = (await invoke(
+          const data = (await invoke(
             "get_user_metadata",
           )) as unknown as UserMetaData;
 
-          setMetadata(currOSInfo || null);
+          setMetadata(data || null);
         } catch (err) {
-          setMetadata({
-            username: "vaibhav",
-            os_id: "1234-acda-2a3d-12ad-34cf",
-            app_version: "0.2.1",
-          });
-          console.log("OS Info error:", err);
+          console.log("Tuari metadata error:", err);
         }
       }
     };
