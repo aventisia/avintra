@@ -1,22 +1,23 @@
 import { LoadingSpinner } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCreateJobMutation } from "@/features/orchestrator/agents-table/hooks/useCreateJobMutation";
+import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
 
 import { useAssignMachineStore } from "../../stores/assign-machine-store";
 
 type ExecutionActionProps = {
   rowId: string;
-  isDisabled: boolean;
-  executionState: string;
+  isDisabled?: boolean;
+  executionState: MachineStatusTypesEnum;
 };
 
 export const ExecutionAction = ({
   rowId,
-  isDisabled,
   executionState,
 }: ExecutionActionProps) => {
   const { flowVersionId } = useAssignMachineStore(
@@ -30,7 +31,7 @@ export const ExecutionAction = ({
 
   return (
     <div className="flex items-center gap-2">
-      {executionState === "executing" ? (
+      {executionState === "Running" ? (
         <Tooltip content="Abort">
           <Button variant="ghost" size="icon7" className="hover:bg-slate-200">
             <StopIcon className="h-[1.125rem] w-[1.125rem] text-red-500/80" />
@@ -42,7 +43,7 @@ export const ExecutionAction = ({
             variant="ghost"
             size="icon7"
             className="hover:bg-slate-200"
-            disabled={isDisabled}
+            disabled={executionState === "Offline"}
             onClick={() => {
               createJobMutation({
                 flowVersionId: flowVersionId,
@@ -54,7 +55,12 @@ export const ExecutionAction = ({
               <LoadingSpinner className="h-[1rem] w-[1rem] animate-spin text-primary" />
             ) : (
               <>
-                <PlayIcon className="h-[1.125rem] w-[1.125rem] text-green-500/80" />
+                <PlayIcon
+                  className={cn(
+                    "h-[1.125rem] w-[1.125rem] text-green-500/80",
+                    executionState === "Offline" && "text-gray-400",
+                  )}
+                />
               </>
             )}
           </Button>

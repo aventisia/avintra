@@ -1,5 +1,6 @@
 import { MachineEnvironmentTypesEnum } from "@/react-toolkit/enums/machine-environment-types-enum";
 import type { MachineOsTypesEnum } from "@/react-toolkit/enums/machine-os-types-enum";
+import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
 
 /**
  * data transfer object for getting the machine data to select and assign to agent.
@@ -26,4 +27,8 @@ export interface AssignMachineDto {
   environment?: MachineEnvironmentTypesEnum;
   lastModifiedOn: Date;
   isAssigned: boolean;
+  /**
+   * Gets or sets the status of the machine. Max-100
+   */
+  status: MachineStatusTypesEnum;
 }

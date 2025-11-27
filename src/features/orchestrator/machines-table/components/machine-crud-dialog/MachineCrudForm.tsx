@@ -1,6 +1,7 @@
-import { Button } from "@aventisia/ui/buttons";
+import { SubmitButton } from "@aventisia/ui/buttons";
 import { Form, InputField, SelectField, SwitchField } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
+import { useEffect } from "react";
 import { z } from "zod";
 
 import { machineOptimisticMutationFn } from "../../apis/machines-table-apis";
@@ -21,21 +22,15 @@ import { AddedByAutherCard } from "./AddedByAutherCard";
 
 export const MachineCrudForm = () => {
   // Define machine form
-  const {
-    form,
-    rowId,
-    crudAction,
-    isAvailable,
-    availabilityMessage,
-    setAvailabilityMessage,
-    isCheckPending,
-    handleInputChange,
-    setShowDialog,
-    refineFormData,
-  } = useDefineMachineForm();
+  const { form, rowId, crudAction, isDirty, setShowDialog, refineFormData } =
+    useDefineMachineForm();
 
   // Define optimistic mutation to crete or update the machine
-  const { mutate: mutateMachine } = useListOptimisticMutation<
+  const {
+    mutate: mutateMachine,
+    isPending,
+    isSuccess,
+  } = useListOptimisticMutation<
     MachinesTableDto,
     MachinesTableDto | boolean,
     MachinesTableDto
@@ -57,11 +52,16 @@ export const MachineCrudForm = () => {
     });
 
     // Reset the availability message
-    setAvailabilityMessage(null);
+    // setAvailabilityMessage(null);
 
-    // Close the dialog
-    setShowDialog(false);
+    // Close the dialog if not creating the record
+    if (crudAction !== "create") setShowDialog(false);
   };
+
+  // Close dialog and reset form when mutation is successful
+  useEffect(() => {
+    if (crudAction === "create" && isSuccess) setShowDialog(false);
+  }, [isSuccess, crudAction, setShowDialog]);
 
   // Return the form
   return (
@@ -69,15 +69,16 @@ export const MachineCrudForm = () => {
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
       className="px-2.5 pb-5"
+      disabled={isReadMode}
     >
       {/* Machine Id */}
-      {isReadMode && <InputField {...idProps} disabled={isReadMode} />}
+      {crudAction === "update" && <InputField {...idProps} disabled />}
 
       {/* Name */}
       <InputField
         {...nameProps}
-        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-        nonErrorMessage={availabilityMessage}
+        // onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        // nonErrorMessage={availabilityMessage}
         disabled={isReadMode}
       />
 
@@ -121,14 +122,14 @@ export const MachineCrudForm = () => {
 
       {/* Submit button */}
       {!isReadMode && (
-        <div className="!mt-12 flex w-full justify-end">
-          <Button
-            type="submit"
-            disabled={!isAvailable || isCheckPending}
+        <div className="!mt-5 flex w-full justify-end">
+          <SubmitButton
             className="min-w-[5rem]"
-          >
-            {crudAction === "create" ? "Add" : "Save changes"}
-          </Button>
+            primaryText={crudAction === "create" ? "Add" : "Save changes"}
+            secondaryText="Adding..."
+            isPending={isPending}
+            disabled={!isDirty}
+          />
         </div>
       )}
     </Form>
