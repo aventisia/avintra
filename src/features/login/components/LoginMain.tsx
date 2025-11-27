@@ -1,6 +1,8 @@
+import { TauriAppFooter } from "@/components/layout/TauriAppFooter";
 import { LeftContainer } from "@/components/ui/LeftContainer";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { RightContainer } from "@/components/ui/RightContainer";
+import { IS_TAURI } from "@/constants/constants";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
 
@@ -34,18 +36,14 @@ export const LoginMain = () => {
           <LeftContainer>
             {/* Logo + Help link */}
             <LoginHeader />
-
             {/* Step 1 - Get tenant info step */}
             {stepNo === 1 && <GetTenantInfo />}
-
             {/* Step 2 - Pwd login step */}
             {stepNo === 2 && <PwdLogin />}
-
             {/* Step 3 - 2FA step */}
             {stepNo === 3 && <TwoFA />}
-
             {/* App footer */}
-            <MinimalFooter />
+            {IS_TAURI ? <TauriAppFooter /> : <MinimalFooter />}{" "}
           </LeftContainer>
 
           <RightContainer
