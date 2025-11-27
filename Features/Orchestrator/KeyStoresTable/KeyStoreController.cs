@@ -2,7 +2,7 @@ namespace WorkspaceAPIs.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("key-store")]
+[Route("api/key-store")]
 public class KeyStoreController : BaseApiController
 {
     private readonly IKeyStoreService _keyStoreService;

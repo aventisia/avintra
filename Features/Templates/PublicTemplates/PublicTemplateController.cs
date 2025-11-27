@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("template")]
+[Route("api/template")]
 [ApiController]
 public class PublicTemplateController : BaseApiController
 {

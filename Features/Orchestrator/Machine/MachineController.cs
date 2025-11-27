@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("machine"), ApiController, Authorize]
+[Route("api/machine"), ApiController, Authorize]
 public class MachineController : BaseApiController
 {
     private readonly IMachineService _machineService;

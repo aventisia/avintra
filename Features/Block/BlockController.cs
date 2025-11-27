@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("block")]
+[Route("api/block")]
 [ApiController]
 [Authorize]
 public class BlockController : BaseApiController

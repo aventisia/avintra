@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("flow-execution-log")]
+[Route("api/flow-execution-log")]
 [ApiController]
 [Authorize]
 public class FlowExecutionLogController : BaseApiController
@@ -50,7 +50,7 @@ public class FlowExecutionLogController : BaseApiController
     // Delete multiple flow execution log by their IDs.
     [HttpPost("delete-multiple")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteFLowExecutionLogList([FromBody] List<Guid> ids)
-    {      
+    {
         return ResultHelper(await _flowExecutionLogService.DeleteFLowExecutionLogListAsync(ids));
     }
 }

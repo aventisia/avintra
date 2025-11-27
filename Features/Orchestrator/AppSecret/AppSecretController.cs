@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("app-secret")]
+[Route("api/app-secret")]
 [ApiController]
 [Authorize]
 public class AppSecretController : BaseApiController

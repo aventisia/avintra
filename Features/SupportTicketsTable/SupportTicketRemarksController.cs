@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("supportticket-remarks")]
+[Route("api/supportticket-remarks")]
 [ApiController]
 [Authorize]
 public class SupportTicketRemarksController : BaseApiController

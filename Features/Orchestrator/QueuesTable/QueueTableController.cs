@@ -1,6 +1,7 @@
 namespace WorkspaceAPIs.Controllers
 ;
-[Route("queue")]
+
+[Route("api/queue")]
 [ApiController]
 [Authorize]
 public class QueueTableController : BaseApiController

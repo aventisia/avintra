@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("notification/global")]
+[Route("api/notification/global")]
 [ApiController]
 [Authorize(Roles = "SA")]
 public class GlobalNotificationController : BaseApiController

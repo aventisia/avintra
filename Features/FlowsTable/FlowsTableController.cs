@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("flow")]
+[Route("api/flow")]
 [ApiController]
 [Authorize]
 public class FlowsTableController : BaseApiController
@@ -54,7 +54,7 @@ public class FlowsTableController : BaseApiController
         // If only one ID is passed, call the single delete method.
         if (ids.Count == 1)
             return ResultHelper(await _flowsTableService.DeleteFlowAsync(ids[0]));
-        
+
         // Otherwise, call the multiple delete method.
         return ResultHelper(await _flowsTableService.DeleteFlowsAsync(ids));
     }

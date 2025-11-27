@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("agent")]
+[Route("api/agent")]
 [ApiController]
 [Authorize]
 public class AgentTableController : BaseApiController

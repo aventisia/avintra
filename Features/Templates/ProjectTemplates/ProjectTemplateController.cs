@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("project-template")]
+[Route("api/project-template")]
 [ApiController]
 [Authorize]
 public class ProjectTemplateController : BaseApiController

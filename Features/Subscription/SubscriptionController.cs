@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("subscription")]
+[Route("api/subscription")]
 [ApiController]
 [Authorize]
 public class SubscriptionController : BaseApiController

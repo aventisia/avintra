@@ -112,8 +112,6 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/static-files/cloud-connectors"
 });
 
-app.UsePathBase(new PathString("/api"));
-
 app.UseAuthentication();
 
 app.UseAuthorization();

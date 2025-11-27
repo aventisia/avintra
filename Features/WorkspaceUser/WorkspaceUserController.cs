@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("user")]
+[Route("api/user")]
 [ApiController]
 [Authorize]
 public class WorkspaceUserController : BaseApiController
