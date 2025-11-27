@@ -1,3 +1,4 @@
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { DCPFieldSchemaType } from "..";
 import { generateOutputConfigFromData } from "../utils/generate-ai-config";
 
@@ -5,6 +6,9 @@ const modules = {
   ...import.meta.glob("../constants/config-json/*.json"),
   ...import.meta.glob("../constants/custom-config-json/*.json"),
 };
+
+// In-memory cache for node configs
+const nodeConfigCache: Record<string, DCPFieldSchemaType[] | undefined> = {};
 
 /**
  * Gets the node config JSON for a given nodeUniqueName/activityName.
@@ -15,6 +19,11 @@ export const getNodeConfig = async (
   nodeUniqueName: string,
   nodeType?: string,
 ) => {
+  // Check cache first
+  if (nodeConfigCache[nodeUniqueName]) {
+    return nodeConfigCache[nodeUniqueName];
+  }
+
   if (nodeType == "blockNode") {
     const blockConfig = JSON.parse(
       sessionStorage.getItem("block-config") || "{}",
@@ -24,6 +33,22 @@ export const getNodeConfig = async (
 
   if (nodeUniqueName == "AIModel") {
     return (await generateOutputConfigFromData()) as DCPFieldSchemaType[];
+  }
+
+  if (nodeUniqueName.length > 9 && nodeUniqueName.slice(-9) === "Connector") {
+    try {
+      const connectorConfig = await axiosInstance
+        .get<
+          DCPFieldSchemaType[]
+        >(`${import.meta.env.VITE_WORC_API_URL}/cloud-connector/config-file/${nodeUniqueName}.json`)
+        .then((res) => res.data);
+      if (connectorConfig) {
+        nodeConfigCache[nodeUniqueName] = connectorConfig;
+        return connectorConfig;
+      }
+    } catch (error) {
+      console.error(`Cloud Connector ${nodeUniqueName} fetch error:`, error);
+    }
   }
 
   // Get the path to the JSON file based on the nodeUniqueName

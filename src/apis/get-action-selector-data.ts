@@ -1,3 +1,4 @@
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { PrimaryCategoryType } from "../features/action-selector/types/primary-category-type";
 
 // Glob all JSON files in the constants folder
@@ -69,17 +70,24 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
   // Get default Desktop automation modules
   const loader = modules[desktopNodesJson];
   if (!loader) throw new Error("Action selector data JSON not found");
-  const module = (await loader()) as { default: PrimaryCategoryType[] };
-  let finalNodeList: PrimaryCategoryType[] = module.default;
+  const desktopNodesModule = (await loader()) as {
+    default: PrimaryCategoryType[];
+  };
+  let finalNodeList: PrimaryCategoryType[] = desktopNodesModule.default;
 
-  // Explicitly import Cloud Connector module
-  const cloudConnectorModule = (await import(
-    "../features/action-selector/constants/_CloudConnectorActionSelectorData.json"
-  )) as unknown as { default: PrimaryCategoryType[] };
-  finalNodeList = mergeActionSelectorData(
-    finalNodeList,
-    cloudConnectorModule.default,
-  );
+  // Fetch Cloud Connector module from remote URL using axiosInstance
+  try {
+    const response = await axiosInstance
+      .get<
+        PrimaryCategoryType[]
+      >(`${import.meta.env.VITE_WORC_API_URL}/cloud-connector/config-file/CloudConnectorActionSelectorMappingFile.json`)
+      .then((res) => res.data);
+    if (response) {
+      finalNodeList = mergeActionSelectorData(finalNodeList, response);
+    }
+  } catch (error) {
+    console.error("Cloud Connector mapping file fetch error:", error);
+  }
 
   // Explicitly import AI Integrations module
   const aiIntegrationsModule = (await import(
