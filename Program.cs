@@ -105,18 +105,18 @@ app.UseRouting();
 
 app.UseCors("CorsPolicy");
 
+app.UseAuthentication();
+
+app.UseAuthorization();
+
+app.UseMiddleware<TenantResolver>();
+
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
         Path.Combine(builder.Environment.ContentRootPath, "Features", "CloudConnectors", "StaticFiles")),
     RequestPath = "/static-files/cloud-connectors"
 });
-
-app.UseAuthentication();
-
-app.UseAuthorization();
-
-app.UseMiddleware<TenantResolver>();
 
 app.MapControllers();
 
