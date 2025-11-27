@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365excel/invoke
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/invoke
   body: json
   auth: none
 }
@@ -15,8 +15,8 @@ body:json {
     "agentId": "00000000-0000-0000-0000-000000000000",
     "agentName": "Test",
     "provider": "M365",
-    "action": "GetDriveIdAndItemId",
-    "credentialId": "32202153-a0b8-4be6-8a0c-24e8b2828a04",
+    "action": "GetFileDriveAndItemId",
+    "credentialId": "43558714-70a9-4a27-b4b1-a13e0a4ba1b6",
     "payload": {
       "fileUrl": "https://aventisia.sharepoint.com/sites/AventisiasProducts/Shared%20Documents/m365_connectors_test_files/m365_excel_actions.xlsx"
     }
