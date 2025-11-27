@@ -1,5 +1,4 @@
 using Serilog;
-using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,6 +98,8 @@ if (!app.Environment.IsEnvironment("Localhost")) app.UseHsts();
 
 app.UseSerilogRequestLogging();
 
+app.UseStaticFiles();
+
 app.UseCookiePolicy();
 
 app.UseRouting();
@@ -110,13 +111,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<TenantResolver>();
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "Features", "CloudConnectors", "StaticFiles")),
-    RequestPath = "/static-files/cloud-connectors"
-});
 
 app.MapControllers();
 
