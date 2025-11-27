@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("api/flow-execution-log")]
+[Route("flow-execution-log")]
 [ApiController]
 [Authorize]
 public class FlowExecutionLogController : BaseApiController

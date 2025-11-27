@@ -1,7 +1,7 @@
 namespace WorkspaceAPIs.Controllers;
 
 [ApiController]
-[Route("api/job")]
+[Route("job")]
 public class JobController : BaseApiController
 {
     private readonly IJobTableService _jobTableService;

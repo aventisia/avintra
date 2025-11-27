@@ -2,7 +2,7 @@ namespace WorkspaceAPIs.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/Vault")]
+[Route("Vault")]
 public class VaultController : BaseApiController
 {
     private readonly IVaultService _vaultService;

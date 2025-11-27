@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Features.CloudConnectors.M365;
 
-[Route("api/cloud-connector/m365")]
+[Route("cloud-connector/m365")]
 [ApiController]
 [Authorize]
 public class M365ConnectorsController : BaseApiController

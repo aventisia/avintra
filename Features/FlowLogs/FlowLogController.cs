@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("api/Flow-log")]
+[Route("Flow-log")]
 [ApiController]
 [Authorize]
 

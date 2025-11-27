@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("api/flow-comment")]
+[Route("flow-comment")]
 [ApiController]
 [Authorize]
 public class FlowCommentController : BaseApiController

@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("api/notification/unread")]
+[Route("notification/unread")]
 [ApiController]
 [Authorize]
 public class UnreadNotificationController : BaseApiController

@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("api/time-trigger")]
+[Route("time-trigger")]
 [ApiController]
 [Authorize]
 public class TimeTriggerController : BaseApiController

@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("api/upload-file")]
+[Route("upload-file")]
 [ApiController]
 [Authorize]
 public class FileUploadController(IFileUploadService uploadedDocService) : BaseApiController

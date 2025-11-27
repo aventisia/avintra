@@ -104,6 +104,8 @@ app.UseCookiePolicy();
 
 app.UseRouting();
 
+app.UsePathBase(new PathString("/api"));
+
 app.UseCors("CorsPolicy");
 
 app.UseAuthentication();

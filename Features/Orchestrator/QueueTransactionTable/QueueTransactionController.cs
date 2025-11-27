@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("api/queue-transaction")]
+[Route("queue-transaction")]
 [ApiController]
 [Authorize]
 public class QueueTransactionController : BaseApiController

@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("api/flow")]
+[Route("flow")]
 [ApiController]
 [Authorize]
 public class FlowBuilderController : BaseApiController
