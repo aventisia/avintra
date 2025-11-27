@@ -36,10 +36,10 @@ public enum AppSecretTypesEnum
     GitHub,
 
     /// <summary>
-    /// Represents the credentials or configuration necessary to integrate with Microsoft 365 Excel services.
+    /// Represents the credentials or configuration necessary to integrate with Microsoft 365 services.
     /// </summary>
-    [Description("M365 Excel Credentials")]
-    M365Excel,
+    [Description("M365 Credentials")]
+    M365,
 
     [Description("General Credentials")]
     GeneralCredentials,
