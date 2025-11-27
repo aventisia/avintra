@@ -1,5 +1,6 @@
 import { LoadingSpinner } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { useShallow } from "zustand/react/shallow";
@@ -54,7 +55,12 @@ export const ExecutionAction = ({
               <LoadingSpinner className="h-[1rem] w-[1rem] animate-spin text-primary" />
             ) : (
               <>
-                <PlayIcon className="h-[1.125rem] w-[1.125rem] text-green-500/80" />
+                <PlayIcon
+                  className={cn(
+                    "h-[1.125rem] w-[1.125rem] text-green-500/80",
+                    executionState === "Offline" && "text-gray-400",
+                  )}
+                />
               </>
             )}
           </Button>

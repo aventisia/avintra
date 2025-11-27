@@ -16,7 +16,7 @@ export const MachineRowDeleteAction = ({
   rowId,
 }: MachineRowDeleteActionProps) => {
   // Get showAlert handler
-  const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { showCustomAlertDialog } = useShowAlertHandler();
 
   // Get mutation function to delete the machine
   const { mutate: deleteMachine } = useListOptimisticMutation<
@@ -29,14 +29,16 @@ export const MachineRowDeleteAction = ({
   return (
     <DeleteDDMenuItem
       onClick={() => {
-        showDefaultAlertDialog({
+        showCustomAlertDialog({
           confirmActionFn: () =>
             deleteMachine({
               payload: rowId,
               crudAction: "delete",
             }),
-          alertType: "delete-record",
-          additionalText: "machine",
+          confirmBtnText: "Yes, delete machine",
+          title: "Delete Machine?",
+          description:
+            "Are you sure you want to delete this machine? This action will unassign any agents connected to it, which may affect your workflow.",
         });
       }}
     />

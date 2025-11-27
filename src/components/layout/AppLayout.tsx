@@ -7,14 +7,18 @@ import { Outlet } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { DotPattern } from "@/components/layout/DotPattern";
+import { IS_TAURI } from "@/constants/constants";
 import useCheckMachineStatus from "@/features/orchestrator/machines-table/hooks/useCheckMachineStatus";
 import {
   useCheckForUpdate,
   useRedirectOnRelaunch,
 } from "@/features/tauri-updater";
 import { useFetchPaymentStatus } from "@/features/tenant/hooks/useFetchPaymentStatus";
+import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
 import useWebSocket from "@/hooks/useWebSocket";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
+import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
+import { getWebSocketUrl } from "@/utils/get-websocket-url";
 
 import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
@@ -35,6 +39,14 @@ export const AppLayout = () => {
       })),
     );
 
+  const { osID, hostname, appVersion } = useTuariUserMetadataStore(
+    useShallow((state) => ({
+      osID: state.osID,
+      hostname: state.hostname,
+      appVersion: state.appVersion,
+    })),
+  );
+
   // Redirect to relaunch URL if available (if app is inside Tauri)
   useRedirectOnRelaunch();
 
@@ -43,17 +55,24 @@ export const AppLayout = () => {
 
   useFetchPaymentStatus();
 
+  // Validate user session
+  const { isPending, userSession } = useValidateUserSession();
+
+  useTauriUserMetadata();
+
   // Establish websocket connection and expose ref
   const { connection, isReady } = useWebSocket({
-    url: `${import.meta.env.VITE_WORC_API_URL}/orchestrator-hub?type=WebBrowserUser`,
+    url: getWebSocketUrl({
+      osID,
+      appVersion,
+      hostname,
+      userRoles: userSession?.userRoles,
+    }),
     shouldConnect: connectWebsocket,
   });
 
   // Check and invalidates machines data based on websocket
   useCheckMachineStatus(isReady ? connection : null);
-
-  // Validate user session
-  const { isPending, userSession } = useValidateUserSession();
 
   // Set environment variables and sidebar menu sections only once
   useEffect(() => {
@@ -67,17 +86,23 @@ export const AppLayout = () => {
       COMPANY_NAME: import.meta.env.VITE_COMPANY_NAME,
     });
 
-    // Websocket connection flag
-    setConnectWebsocket(
-      userSession.userRoles.includes("OM") ||
-        userSession.userRoles.includes("SA"), //TODO: Remove SA after testing
-    );
-
     // Set the sidebar menu sections
     setSidebarMenuSections(
       getSidebarMenuBasedOnPersmissions(userSession?.userRoles || []),
     );
-  }, [userSession, isPending]);
+  }, [isPending, setSidebarMenuSections, setViteEnvVars, userSession]);
+
+  useEffect(() => {
+    // If the user session is still pending, do not proceed
+    if (isPending || !userSession) return;
+
+    // Set WebSocket connection to `false` if only "TD" role is present and if its tauri app connect websocket after getting the user metadata.
+    if (IS_TAURI) {
+      setConnectWebsocket(userSession.userRoles[0] !== "TD" && osID != "");
+    } else {
+      setConnectWebsocket(userSession.userRoles[0] !== "TD");
+    }
+  }, [isPending, osID, userSession]);
 
   return (
     <>
