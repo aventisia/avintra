@@ -43,7 +43,7 @@
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Update="Features/CloudConnectors_v2/StaticFiles/**/*.*">
+    <None Update="Features/CloudConnectors/StaticFiles/**/*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="StaticFiles\**">
