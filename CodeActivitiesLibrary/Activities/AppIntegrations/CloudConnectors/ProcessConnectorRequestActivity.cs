@@ -32,8 +32,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
         [DisplayName("Connector Request Payload")]
         public InArgument<string> Payload { get; set; }
 
-        [DisplayName("Data")]
-        public OutArgument<JToken> Data { get; set; }
+        [DisplayName("Response")]
+        public OutArgument<JToken> Response { get; set; }
 
         [DisplayName("Status Code")]
         public OutArgument<int> StatusCode { get; set; }
@@ -119,14 +119,14 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                 var responseObj = JsonConvert.DeserializeObject<JObject>(responseContent);
                 if (responseObj != null)
                 {
-                    Data.Set(context, responseObj["data"]);
+                    Response.Set(context, responseObj["data"]);
                     StatusCode.Set(context, responseObj["statusCode"]?.ToObject<int>());
                     StatusMessage.Set(context, responseObj["message"]?.ToString());
                     IsSuccess.Set(context, responseObj["statusCode"]?.ToObject<int>() == 200);
                 }
                 else
                 {
-                    Data.Set(context, null);
+                    Response.Set(context, null);
                     StatusCode.Set(context, null);
                     StatusMessage.Set(context, "Failed to process the api response.");
                     IsSuccess.Set(context, false);
@@ -134,8 +134,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
             }
             catch (Exception ex)
             {
-                Data.Set(context, null);
-                StatusCode.Set(context, null);
+                Response.Set(context, null);
+                StatusCode.Set(context, 400);
                 StatusMessage.Set(context, $"Error: {ex.GetBaseException().Message}");
                 IsSuccess.Set(context, false);
             }
