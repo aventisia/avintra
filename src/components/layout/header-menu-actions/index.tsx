@@ -69,10 +69,9 @@ export const HeaderActionMenu: React.FC = () => {
       const wsPort = await invoke("get_websocket_port");
 
       // Call the Tauri command to launch the UI inspector
-      const res = await invoke("launch_ui_inspector", {
+      await invoke("launch_ui_inspector", {
         wsPort,
       });
-      console.log(res);
     } catch (error) {
       // Inform the user about the failure
       toast.error(

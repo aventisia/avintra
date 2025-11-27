@@ -2739,24 +2739,6 @@
         ]
       },
       {
-        "label": "SendGrid",
-        "description": "Send, receive, and manage emails.",
-        "icon": null,
-        "img": "/assets/SendGrid.svg",
-        "listType": null,
-        "actions": [
-          {
-            "type": "activityNode",
-            "name": "SendEmailThroughSendGridActivity",
-            "label": "Send Email with SendGrid",
-            "description": "Sends an email using SendGrid's API.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/assets/SendGrid.svg"
-          }
-        ]
-      },
-      {
         "label": "SAP",
         "description": "Perform SAP Actions.",
         "icon": null,
