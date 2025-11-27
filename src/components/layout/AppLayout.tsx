@@ -66,7 +66,6 @@ export const AppLayout = () => {
       osID,
       appVersion,
       hostname,
-      userRoles: userSession?.userRoles,
     }),
     shouldConnect: connectWebsocket,
   });
