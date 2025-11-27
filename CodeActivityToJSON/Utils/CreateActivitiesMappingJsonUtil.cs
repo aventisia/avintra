@@ -12,14 +12,17 @@ namespace CodeActivityToJSON.Utils
 {
     public static class CreateActivitiesMappingJsonUtil
     {
-        private static List<string> _excludedCategories = new List<string>
+        public static List<string> _excludedCategories = new List<string>
         {
-            "None",
+            //"CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities",
+            "CodeActivitiesLibrary.AppIntegrations.SendGridActivities",
+            "None"
         };
 
-        private static List<string> _excludedActivities = new List<string>
+        public static List<string> _excludedActivities = new List<string>
         {
             "InvokeSoapWebServiceActivity",
+            "SendEmailThroughSendGridActivity",
             "ConditionalBranchActivity",
         };
 
@@ -99,6 +102,11 @@ namespace CodeActivityToJSON.Utils
                             var displayName = activity.GetCustomAttributes(typeof(DisplayNameAttribute), false).FirstOrDefault() as DisplayNameAttribute;
                             var description = activity.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as DescriptionAttribute;
                             if (displayName == null || description == null) continue;
+
+                            if (activity.Name == "ApplyConditionalFormattingActivity")
+                            {
+                                Console.WriteLine("Debug");
+                            }
 
                             // Add the activity to the action category
                             actionCategory.Actions.Add(new NodeAction

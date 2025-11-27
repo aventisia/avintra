@@ -12,13 +12,16 @@ namespace CodeActivityToJSON.Utils
 {
     public static class CreateDevActivitiesMappingJsonUtil
     {
-        private static List<string> _excludedCategories = new List<string>
+        public static List<string> _excludedCategories = new List<string>
         {
-            "None",
+            //"CodeActivitiesLibrary.AppIntegrations.M365ExcelActivities",
+            "CodeActivitiesLibrary.AppIntegrations.SendGridActivities",
+            "None"
         };
 
-        private static List<string> _excludedActivities = new List<string>
+        public static List<string> _excludedActivities = new List<string>
         {
+            "SendEmailThroughSendGridActivity",
             "ConditionalBranchActivity",
         };
 
@@ -62,12 +65,13 @@ namespace CodeActivityToJSON.Utils
                     // Check if the attribute is not null and matches the primary category
                     if (attribute != null && attribute.PrimaryCategory == category.Label)
                     {
-                        if (_excludedCategories.Contains(attribute.Label))
+                        // Skip excluded categories
+                        if (_excludedCategories.Contains(categoryMetadataType.Namespace))
                         {
-                            Console.WriteLine($"Skipping category {attribute.Label} for dev mapping file");
+                            Console.WriteLine($"Skipping category {categoryMetadataType.Namespace} for prod mapping file");
                             continue;
                         }
-
+                        
                         // Create ActionCategory object
                         var actionCategory = new ActionCategory
                         {
@@ -85,13 +89,6 @@ namespace CodeActivityToJSON.Utils
                             // Not the same namespace as the category metadata type
                             if (categoryMetadataType.Namespace != activity.Namespace) continue;
 
-                            // Skip excluded categories
-                            if (_excludedCategories.Contains(activity.Namespace))
-                            {
-                                Console.WriteLine($"Skipping category {activity.Namespace} for prod mapping file");
-                                continue;
-                            }
-
                             // Skip excluded activities
                             if (_excludedActivities.Contains(activity.Name))
                             {
@@ -104,6 +101,11 @@ namespace CodeActivityToJSON.Utils
                             var displayName = activity.GetCustomAttributes(typeof(DisplayNameAttribute), false).FirstOrDefault() as DisplayNameAttribute;
                             var description = activity.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as DescriptionAttribute;
                             if (displayName == null || description == null) continue;
+
+                            if (activity.Name == "ApplyConditionalFormattingActivity")
+                            {
+                                Console.WriteLine("Debug");
+                            }
 
                             // Add the activity to the action category
                             actionCategory.Actions.Add(new NodeAction

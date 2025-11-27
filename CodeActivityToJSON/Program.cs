@@ -70,6 +70,13 @@ namespace CodeActivityToJSON
                     continue;
                 }
 
+                // Skip excluded categories
+                if (CreateDevActivitiesMappingJsonUtil._excludedActivities.Contains(activity.Name))
+                {
+                    //Console.WriteLine($"Skipping category {activity.Namespace} for prod mapping file");
+                    continue;
+                }
+
                 var json = ConvertActivityToJsonUtil.ConvertActivityToJson(activity);
                 if (string.IsNullOrEmpty(json) || json == "[]")
                 {
