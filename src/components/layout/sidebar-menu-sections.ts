@@ -46,12 +46,6 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         route: "/library",
         permissions: ["SA", "TA", "OM", "TD"],
       },
-      {
-        permissions: ["TU"],
-        Icon: BotIcon,
-        name: "agents",
-        route: "/agents-assist",
-      },
     ],
   },
   {
@@ -99,6 +93,28 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         name: "Vault",
         route: "/orchestrator/vault",
       },
+    ],
+  },
+  {
+    sectionName: "Assist",
+    menuItems: [
+      {
+        permissions: ["SA", "TA", "OM", "TU"],
+        Icon: BotIcon,
+        name: "my agents",
+        route: "/assist/agents",
+      },
+      // Add Assist my queue only if not production
+      ...(import.meta.env.MODE !== "production"
+        ? [
+            {
+              permissions: ["SA", "TA", "OM", "TU"],
+              Icon: QueueListIcon,
+              name: "my queue",
+              route: "/assist/queue",
+            },
+          ]
+        : []),
     ],
   },
   {

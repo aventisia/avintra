@@ -38,7 +38,7 @@ export const MachineRowDeleteAction = ({
           confirmBtnText: "Yes, delete machine",
           title: "Delete Machine?",
           description:
-            "Are you sure you want to delete this machine? This action will unassign any agents connected to it, which may affect your workflow.",
+            "Are you sure you want to delete this machine? This action will unassign any agents connected to it, which may affect your workflows.",
         });
       }}
     />

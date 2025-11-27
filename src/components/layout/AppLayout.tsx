@@ -66,7 +66,6 @@ export const AppLayout = () => {
       osID,
       appVersion,
       hostname,
-      userRoles: userSession?.userRoles,
     }),
     shouldConnect: connectWebsocket,
   });
@@ -96,11 +95,14 @@ export const AppLayout = () => {
     // If the user session is still pending, do not proceed
     if (isPending || !userSession) return;
 
-    // Set WebSocket connection to `false` if only "TD" role is present and if its tauri app connect websocket after getting the user metadata.
+    // Check if the user has exactly one "TD" role
+    const hasSingleTD =
+      userSession.userRoles.includes("TD") &&
+      userSession.userRoles.length === 1;
     if (IS_TAURI) {
-      setConnectWebsocket(userSession.userRoles[0] !== "TD" && osID != "");
+      setConnectWebsocket(!hasSingleTD && osID != "");
     } else {
-      setConnectWebsocket(userSession.userRoles[0] !== "TD");
+      setConnectWebsocket(!hasSingleTD);
     }
   }, [isPending, osID, userSession]);
 

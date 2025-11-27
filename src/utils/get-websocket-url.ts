@@ -4,14 +4,12 @@ import { ClientTypesEnum } from "@/enums/client-type-enum";
 /**
  * Generates the WebSocket URL required to establish a connection.
  * The URL includes the app's version, the hostname, the OS ID, and the client type.
- * The client type is determined based on whether the app is running in Tauri or a web browser,
- * and the user roles to determine if it's a "WorcMachine" or "WorcDesktopApp".
+ * The client type is determined based on whether the app is running in Tauri or a web browser.
  *
  * @param {Object} params - The parameters needed to build the WebSocket URL.
  * @param {string} params.appVersion - The version of the app making the WebSocket connection (optional, for Tauri only).
  * @param {string} params.hostname - The hostname of the machine or app instance (optional, for Tauri only).
  * @param {string} params.osID - The unique OS ID of the machine (optional, for Tauri only).
- * @param {string[] | undefined} params.userRoles - The roles assigned to the user (if available).
  *
  * @returns {string} The complete WebSocket URL with all the necessary query parameters.
  */
@@ -19,19 +17,15 @@ export const getWebSocketUrl = ({
   appVersion,
   hostname,
   osID,
-  userRoles = [], // Default to an empty array if userRoles is undefined
 }: {
   osID: string;
   hostname: string;
   appVersion: string;
-  userRoles: string[] | undefined;
 }) => {
   // Determine the client type based on whether the app is running in Tauri or a web browser
   const clientType = IS_TAURI
-    ? userRoles.includes("TU") // If the app is in Tauri and the user has the "TU" role, it's a "WorcMachine"
-      ? ClientTypesEnum.WorcMachine
-      : ClientTypesEnum.WorcDesktopApp // Otherwise, it's a "WorcDesktopApp"
-    : ClientTypesEnum.WebBrowser; // If not in Tauri, default to "WebBrowser" for web clients
+    ? ClientTypesEnum.WorcDesktopApp
+    : ClientTypesEnum.WebBrowser;
 
   // Construct the WebSocket URL
   let url = `${import.meta.env.VITE_WORC_API_URL}/orchestrator-hub?clientType=${clientType}`;
