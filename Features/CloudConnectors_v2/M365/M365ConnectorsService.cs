@@ -116,7 +116,7 @@ public class M365ConnectorsService : IM365ConnectorsService
             var itemJsonDocument = await HttpClientHelper.GetAsync(itemUrl, accessToken);
             var itemId = itemJsonDocument.RootElement.GetProperty("id").GetString();
 
-            return JsonDocument.Parse($@"{{""driveId"": ""{driveId}"", ""itemId"": ""{itemId}""}}");
+            return JsonDocument.Parse($@"{{""siteId"": ""{siteId}"", ""driveId"": ""{driveId}"", ""itemId"": ""{itemId}"", ""driveAndItemId"": ""{driveId}/items/{itemId}""}}");
         }
         catch (Exception ex)
         {
