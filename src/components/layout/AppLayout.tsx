@@ -3,7 +3,7 @@ import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { DotPattern } from "@/components/layout/DotPattern";
@@ -27,6 +27,7 @@ import { getSidebarMenuBasedOnPersmissions } from "./sidebar-menu-sections";
 
 export const AppLayout = () => {
   const [connectWebsocket, setConnectWebsocket] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   // Get the state and actions from the base layout store
   const { sidebarExpand, appBanner, setViteEnvVars, setSidebarMenuSections } =
@@ -85,11 +86,21 @@ export const AppLayout = () => {
       COMPANY_NAME: import.meta.env.VITE_COMPANY_NAME,
     });
 
-    // Set the sidebar menu sections
-    setSidebarMenuSections(
-      getSidebarMenuBasedOnPersmissions(userSession?.userRoles || []),
+    const filteredSidebarMenu = getSidebarMenuBasedOnPersmissions(
+      userSession?.userRoles || [],
     );
-  }, [isPending, setSidebarMenuSections, setViteEnvVars, userSession]);
+    // Set the sidebar menu sections
+    setSidebarMenuSections(filteredSidebarMenu);
+
+    //Navigate user to first option of filteredSidebarMenu
+    navigate(filteredSidebarMenu[0]?.menuItems[0]?.route);
+  }, [
+    isPending,
+    navigate,
+    setSidebarMenuSections,
+    setViteEnvVars,
+    userSession,
+  ]);
 
   useEffect(() => {
     // If the user session is still pending, do not proceed
