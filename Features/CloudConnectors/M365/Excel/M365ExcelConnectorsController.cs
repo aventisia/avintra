@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Features.CloudConnectors.M365.Excel;
 
-[Route("cloud-connector/m365excel")]
+[Route("cloud-connector/m365/excel")]
 [ApiController]
 [Authorize]
 public class M365ExcelConnectorsController : BaseApiController

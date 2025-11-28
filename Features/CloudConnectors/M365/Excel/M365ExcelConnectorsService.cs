@@ -70,7 +70,7 @@ public class M365ExcelConnectorsService : IM365ExcelConnectorsService
 
         switch (action)
         {
-            case nameof(M365ExcelActionsEnum.AddWorksheet):
+            case nameof(M365ExcelActionsEnum.AddNewWorksheet):
                 {
                     var postObj = new { name = payload["newWorksheetName"].ToString()! };
                     return await HttpClientHelper.PostAsync(wsUrl, postObj, accessToken);
