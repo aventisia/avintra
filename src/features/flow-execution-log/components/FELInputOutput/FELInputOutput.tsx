@@ -16,7 +16,22 @@ const FELInputOutput = ({ jsonData, title }: FELInputOutputProps) => {
 
   const safeParse = (str: string, fallback = {}) => {
     try {
-      return JSON.parse(str);
+      const parsedJson = JSON.parse(str);
+      // Additionally parse any stringified JSON within the object
+      Object.keys(parsedJson).forEach((key) => {
+        if (
+          typeof parsed[key] === "string" &&
+          (parsed[key].trim().startsWith("{") ||
+            parsed[key].trim().startsWith("["))
+        ) {
+          try {
+            parsed[key] = JSON.parse(parsed[key]);
+          } catch {
+            // leave as string if not valid JSON
+          }
+        }
+      });
+      return parsedJson;
     } catch {
       return fallback;
     }

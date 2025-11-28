@@ -98,5 +98,10 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
     aiIntegrationsModule.default,
   );
 
+  // Sort finalNodeList.actionCategories by label alphabetically
+  finalNodeList.forEach(category => {
+    category.actionCategories.sort((a, b) => a.label.localeCompare(b.label));
+  });
+
   return finalNodeList;
 }
