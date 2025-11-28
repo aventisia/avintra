@@ -75,6 +75,22 @@ public class M365ExcelConnectorsService : IM365ExcelConnectorsService
                     var postObj = new { name = payload["newWorksheetName"].ToString()! };
                     return await HttpClientHelper.PostAsync(wsUrl, postObj, accessToken);
                 }
+            case nameof(M365ExcelActionsEnum.RenameWorksheet):
+                {
+                    var worksheetName = payload.GetValueOrDefault("WorksheetName", "").ToString().Trim();
+                    var newName = payload.GetValueOrDefault("newWorksheetName", "").ToString().Trim();
+                    var worksheetUrl = $"{wbUrl}/worksheets(name='{worksheetName}')";
+                    var patchPayload = new { name = newName };
+
+                    return await HttpClientHelper.PatchAsync(worksheetUrl, patchPayload, accessToken);
+                }
+            case nameof(M365ExcelActionsEnum.AddWorksheet):
+                {
+                    var worksheetName = payload.GetValueOrDefault("worksheetName", "").ToString().Trim();
+                    var addWorksheetUrl = $"{wbUrl}/worksheets/add";
+                    var requestBody = new { name = worksheetName };
+                    return await HttpClientHelper.PostAsync(addWorksheetUrl, requestBody, accessToken);
+                }
             case nameof(M365ExcelActionsEnum.GetWorksheetNames):
                 return await HttpClientHelper.GetAsync(wsUrl, accessToken);
             case nameof(M365ExcelActionsEnum.WriteValueToRange):
@@ -84,6 +100,26 @@ public class M365ExcelConnectorsService : IM365ExcelConnectorsService
                 }
             case nameof(M365ExcelActionsEnum.ReadValueFromRange):
                 return await HttpClientHelper.GetAsync($"{wsUrl}/range(address='{payload["rangeAddress"]}')", accessToken);
+            case nameof(M365ExcelActionsEnum.DeleteWorksheet):
+                {
+                    var worksheetName = payload.GetValueOrDefault("worksheetName", "").ToString().Trim();
+                    var deleteUrl = $"{wbUrl}/worksheets(name='{worksheetName}')";
+                    return await HttpClientHelper.DeleteAsync(deleteUrl, accessToken);
+                }
+            case nameof(M365ExcelActionsEnum.SetColorInExcelWorksheet):
+                {
+                    var rangeAddress = payload["rangeAddress"].ToString();
+                    var color = payload["color"].ToString();
+                    if (!color.StartsWith("#"))
+                    {
+                        color = "#" + color;
+                    }
+
+                    var finalUrl = $"{wsUrl}/range(address='{rangeAddress}')/format/fill";
+                    var body = new { values = color };
+
+                    return await HttpClientHelper.PatchAsync(finalUrl, body, accessToken);
+                }
             default:
                 _logger.LogWarning("Unsupported M365 Excel connector: {Action}", action);
                 return null;

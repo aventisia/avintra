@@ -7,5 +7,9 @@ public enum M365ExcelActionsEnum
     AddRowToTable,
     GetWorksheetNames,
     WriteValueToRange,
-    ReadValueFromRange
+    ReadValueFromRange,
+    DeleteWorksheet,
+    SetColorInExcelWorksheet,
+    AddWorksheet,
+    RenameWorksheet
 }
