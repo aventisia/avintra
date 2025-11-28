@@ -20,12 +20,12 @@ const FELInputOutput = ({ jsonData, title }: FELInputOutputProps) => {
       // Additionally parse any stringified JSON within the object
       Object.keys(parsedJson).forEach((key) => {
         if (
-          typeof parsed[key] === "string" &&
-          (parsed[key].trim().startsWith("{") ||
-            parsed[key].trim().startsWith("["))
+          typeof parsedJson[key] === "string" &&
+          (parsedJson[key].trim().startsWith("{") ||
+            parsedJson[key].trim().startsWith("["))
         ) {
           try {
-            parsed[key] = JSON.parse(parsed[key]);
+            parsedJson[key] = JSON.parse(parsedJson[key]);
           } catch {
             // leave as string if not valid JSON
           }
