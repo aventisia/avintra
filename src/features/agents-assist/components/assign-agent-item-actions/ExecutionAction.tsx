@@ -1,9 +1,12 @@
 import { LoadingSpinner } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
+import { cn } from "@aventisia/ui/lib";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
+import { useShallow } from "zustand/react/shallow";
 
 import { useCreateJobMutation } from "@/features/orchestrator/agents-table/hooks/useCreateJobMutation";
+import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
 
 type ExecutionActionProps = {
   rowId: string;
@@ -16,7 +19,12 @@ export const ExecutionAction = ({
   isDisabled,
   executionState,
 }: ExecutionActionProps) => {
-  const machineId = "";
+  const { osID: machineId } = useTuariUserMetadataStore(
+    useShallow((state) => ({
+      osID: state.osID,
+    })),
+  );
+
   const { createJobMutation, isPending } = useCreateJobMutation();
 
   return (
@@ -45,7 +53,12 @@ export const ExecutionAction = ({
               <LoadingSpinner className="h-[1rem] w-[1rem] animate-spin text-primary" />
             ) : (
               <>
-                <PlayIcon className="h-[1.125rem] w-[1.125rem] text-green-500/80" />
+                <PlayIcon
+                  className={cn(
+                    "h-[1.125rem] w-[1.125rem] text-green-500/80",
+                    isDisabled && "text-gray-400",
+                  )}
+                />
               </>
             )}
           </Button>
