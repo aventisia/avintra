@@ -7,7 +7,6 @@ import { CrudActionTypeLong } from "@/react-toolkit/constants";
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
-import { LandingRedirect } from "./components/layout/LandingRedirect";
 import {
   AccountDeactivation,
   DeviceHistory,
@@ -53,10 +52,6 @@ const routerConfig: RouteObject[] = [
     element: <AppLayout />,
     errorElement: <AppErrorPage />,
     children: [
-      {
-        path: "/",
-        element: <LandingRedirect />,
-      },
       {
         path: "/agents",
         element: (
