@@ -1,12 +1,13 @@
 import { NotFoundPage } from "@aventisia/ui/layout";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
-import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
+import { createBrowserRouter, RouteObject } from "react-router-dom";
 
 import { CrudActionTypeLong } from "@/react-toolkit/constants";
 
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
+import { LandingRedirect } from "./components/layout/LandingRedirect";
 import {
   AccountDeactivation,
   DeviceHistory,
@@ -54,7 +55,7 @@ const routerConfig: RouteObject[] = [
     children: [
       {
         path: "/",
-        element: <Navigate to="/agents" />,
+        element: <LandingRedirect />,
       },
       {
         path: "/agents",
