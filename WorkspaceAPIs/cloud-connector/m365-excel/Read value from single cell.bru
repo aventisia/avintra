@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/invoke
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365excel/invoke
   body: json
   auth: none
 }
@@ -16,12 +16,12 @@ body:json {
     "agentName": "Test",
     "provider": "M365",
     "action": "ReadValueFromRange",
-    "credentialId": "43558714-70a9-4a27-b4b1-a13e0a4ba1b6",
+    "credentialId": "DUMMY",
     "payload": {
       "driveId": "b!whRq9wV6jkCLuzc69oeHCN2hyh95YWZGvw93JX0ogFhC2b21p-fWT5Pie-nRfiLl",
-      "itemId": "013AXKAIBJURS5AZBJMRBK77B6DM5GYVJR",
+        "itemId": "013AXKAIBJURS5AZBJMRBK77B6DM5GYVJR",
       "worksheetName": "Sheet1",
-      "rangeAddress": "B5"
+      "rangeAddress": "B6"
     }
   }
 }
