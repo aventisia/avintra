@@ -21,11 +21,11 @@ namespace NodeExecutor.Services
     public static class ActivityExecutorService
     {
         public static ActivityNodeData ConvertNodeData(
-            string agentId, 
-            string agentName, 
-            string accessToken, 
-            string stringNodeData, 
-            ExecutionContext executionContext, 
+            string agentId,
+            string agentName,
+            string accessToken,
+            string stringNodeData,
+            ExecutionContext executionContext,
             Interpreter interpreter)
         {
             // If the input string is null or empty, throw an exception
@@ -67,11 +67,22 @@ namespace NodeExecutor.Services
                         // If input key contains "__Credential__", then add directly to newNodeInputs
                         if (input.Key.Contains("__CredentialId__"))
                         {
+                            // Split the action unique name
+                            var actionNameSegments = nodeData.CodeActivityName.Split('/');
+                            var providerName = string.Join("/", actionNameSegments.Take(actionNameSegments.Length - 1));
+                            var actionName = actionNameSegments.Last();
+
+                            // Remove Connector suffix from action name
+                            if (actionName.EndsWith("Connector", StringComparison.OrdinalIgnoreCase))
+                            {
+                                actionName = actionName.Substring(0, actionName.Length - "Connector".Length);
+                            }
+
                             // Add cloud provider
-                            newNodeInputs.Add(new NodeInput { Key = "Provider", Value = input.Key.Replace("__CredentialId__", "").Trim() });
+                            newNodeInputs.Add(new NodeInput { Key = "Provider", Value = providerName });
 
                             // Add connector's unqiue idenitifier (Can be added outside the foreach loop but just of the property sequence adding it here)
-                            newNodeInputs.Add(new NodeInput { Key = "Action", Value = nodeData.CodeActivityName });
+                            newNodeInputs.Add(new NodeInput { Key = "Action", Value = actionName });
 
                             // Add credentail id
                             newNodeInputs.Add(new NodeInput { Key = "CredentialId", Value = input.Value });
