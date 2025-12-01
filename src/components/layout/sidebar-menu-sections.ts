@@ -98,12 +98,17 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
   {
     sectionName: "Assist",
     menuItems: [
-      {
-        permissions: ["SA", "TA", "OM", "TU"],
-        Icon: BotIcon,
-        name: "my agents",
-        route: "/assist/agents",
-      },
+      // Add Assist my agents only if not production
+      ...(import.meta.env.MODE !== "production"
+        ? [
+            {
+              permissions: ["SA", "TA", "OM", "TU"],
+              Icon: BotIcon,
+              name: "my agents",
+              route: "/assist/agents",
+            },
+          ]
+        : []),
       // Add Assist my queue only if not production
       ...(import.meta.env.MODE !== "production"
         ? [
