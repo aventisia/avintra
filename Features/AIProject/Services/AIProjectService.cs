@@ -4,12 +4,14 @@ namespace MLModelBuilderAPIs.Services
     {
         private readonly ILogger<AIProjectService> _logger;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IAIProjectUserService _aiProjectUserService;
         private readonly Guid _userId;
 
         // Constructor that initializes the dependencies for the service.
         public AIProjectService(
             ILogger<AIProjectService> logger,
             IUnitOfWork unitOfWork,
+            IAIProjectUserService aiProjectUserService,
             IHttpContextAccessor httpContextAccessor)
         {
             // Extract current user ID from HTTP context claims (using claim type "uid").
@@ -21,6 +23,7 @@ namespace MLModelBuilderAPIs.Services
             
             // Initialize UnitOfWork for accessing repositories
             _unitOfWork = unitOfWork;
+            _aiProjectUserService = aiProjectUserService;
         }
 
         // Retrieves the list of AI projects either created by or shared with the current user.
@@ -170,6 +173,17 @@ namespace MLModelBuilderAPIs.Services
                     _logger.LogError("Failed to save new AI project to database for user {UserId}", _userId);
                     return serviceResponse;
                 }
+
+                // Create a new aiProjectUserDto to associate the user with the AIProject
+                var aiProjectUserDto = new AIProjectUserDto()
+                {
+                    MLModelId = newAIProjectEntity.Id,
+                    UserId = _userId,
+                    AccessType = ProjectUserAccessEnum.Owner
+                };
+
+                // Insert the AIProjectUser to associate the user with the AIProject
+                await _aiProjectUserService.InsertAIProjectUserAsync(aiProjectUserDto);
 
                 _logger.LogInformation("New AI project created with ID {ProjectId} for user {UserId}", newAIProjectEntity.Id, _userId);
 
