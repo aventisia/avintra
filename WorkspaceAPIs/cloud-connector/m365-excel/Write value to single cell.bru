@@ -5,8 +5,7 @@ meta {
 }
 
 post {
-  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365excel/invoke
-  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365excel/invoke
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/excel/invoke
   body: json
   auth: none
 }
@@ -19,9 +18,9 @@ body:json {
     "action": "WriteValueToRange",
     "credentialId": "DUMMY",
     "payload": {
-      "driveAndItemId": "b!whRq9wV6jkCLuzc69oeHCN2hyh95YWZGvw93JX0ogFhC2b21p-fWT5Pie-nRfiLl/items/013AXKAIBJURS5AZBJMRBK77B6DM5GYVJR",
+       "driveAndItemId": "b!whRq9wV6jkCLuzc69oeHCN2hyh95YWZGvw93JX0ogFhC2b21p-fWT5Pie-nRfiLl/items/013AXKAIBJURS5AZBJMRBK77B6DM5GYVJR",
       "worksheetName": "Sheet1",
-      "rangeAddress": "B5",
+      "rangeAddress": "A1",
       "values": [
         [
           "Hello World"

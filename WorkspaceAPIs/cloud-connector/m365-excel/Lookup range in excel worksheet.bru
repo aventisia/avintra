@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365excel/invoke
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/excel/invoke
   body: json
   auth: none
 }
@@ -14,15 +14,13 @@ body:json {
   {
     "agentId": "00000000-0000-0000-0000-000000000000",
     "agentName": "Test",
-    "provider": "M365",
-    "action": "LookupRangeinExcelWorksheet",
+    "provider": "M365ExcelTEST",
+    "action": "LookupRangeInExcelWorksheet",
     "credentialId": "DUMMY",
-    "payload": 
-    {
-      "driveId": "b!whRq9wV6jkCLuzc69oeHCN2hyh95YWZGvw93JX0ogFhC2b21p-fWT5Pie-nRfiLl",
-        "itemId": "013AXKAIBJURS5AZBJMRBK77B6DM5GYVJR",
-        "worksheetName": "Test2", 
-       "rangeAddress": "A1:C3"
+    "payload": {
+       "driveAndItemId": "b!whRq9wV6jkCLuzc69oeHCN2hyh95YWZGvw93JX0ogFhC2b21p-fWT5Pie-nRfiLl/items/013AXKAIBJURS5AZBJMRBK77B6DM5GYVJR",
+      "worksheetName": "Test2",
+      "rangeAddress": "A1"
     }
   }
 }
