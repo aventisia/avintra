@@ -9,6 +9,7 @@ public static class AppServicesExtension
         var tenantDbConnectionString = $"{connConfig.TenantDb.Credentials}{connConfig.TenantDb.Host}{connConfig.TenantDb.Database}{connConfig.TenantDb.Other}";
 
         services.AddDbContext<WorkspaceDbContext>(options => options.UseNpgsql(appDbConnectionString));
+        services.AddDbContext<WorkspaceInternalDbContext>(options => options.UseNpgsql(appDbConnectionString));
         services.AddDbContext<TenantDbContext>(options => options.UseNpgsql(tenantDbConnectionString));
     }
 
