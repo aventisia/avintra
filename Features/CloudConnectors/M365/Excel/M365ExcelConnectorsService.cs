@@ -95,7 +95,7 @@ public class M365ExcelConnectorsService : IM365ExcelConnectorsService
                 return await HttpClientHelper.GetAsync(wsUrl, accessToken);
             case nameof(M365ExcelActionsEnum.WriteValueToRange):
                 {
-                    var patchObj = new { values = JsonConvert.DeserializeObject<object>(payload["values"].ToString()!) };
+                    var patchObj = new { values = JsonConvert.DeserializeObject<object>(payload["valuesToWrite"].ToString()!) };
                     return await HttpClientHelper.PatchAsync($"{wsUrl}/range(address='{payload["rangeAddress"]}')", patchObj, accessToken);
                 }
             case nameof(M365ExcelActionsEnum.ReadValueFromRange):

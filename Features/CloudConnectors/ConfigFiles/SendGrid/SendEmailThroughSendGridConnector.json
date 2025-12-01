@@ -1,131 +1,103 @@
-[
-  {
-    "direction": "Input",
-    "type": "credentials-select",
-    "name": "__CredentialId__SendGrid",
-    "label": "SendGrid Credential",
-    "description": "The SendGrid credential containing valid API key which is used to authenticate API requests.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "From",
-    "label": "From",
-    "description": "The sender\u0027s email address.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "To",
-    "label": "To",
-    "description": "The recipient\u0027s email address(es) (comma-separated).",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "Cc",
-    "label": "CC",
-    "description": "The CC recipients\u0027 email addresses (comma-separated).",
-    "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "Bcc",
-    "label": "BCC",
-    "description": "The BCC recipients\u0027 email addresses (comma-separated).",
-    "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "Subject",
-    "label": "Subject",
-    "description": "The subject of the email.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "Body",
-    "label": "Body",
-    "description": "The body of the email.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "select",
-    "name": "BodyFormat",
-    "label": "Body Format",
-    "description": "The format of the email body (Text or Html).",
-    "defaultValue": "Text",
-    "required": false,
-    "selectOptions": [
-      {
-        "label": "Plain",
-        "value": "Text",
-        "description": "Plain text format"
-      },
-      {
-        "label": "Html",
-        "value": "Html",
-        "description": "HTML format"
+{
+  "name": "SendEmailThroughSendGrid",
+  "description": "Sends an email using the SendGrid API. Provide valid SendGrid credentials, sender and recipient details, subject, body, and optional attachments. The connector will return the response data, status code, and message from SendGrid after sending the email.",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__SendGrid",
+      "label": "SendGrid Credential",
+      "description": "The SendGrid credential containing valid API key which is used to authenticate API requests.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "From",
+      "label": "From",
+      "description": "The sender's email address.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "To",
+      "label": "To",
+      "description": "The recipient's email address(es) (comma-separated).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Cc",
+      "label": "CC",
+      "description": "The CC recipients' email addresses (comma-separated).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Bcc",
+      "label": "BCC",
+      "description": "The BCC recipients' email addresses (comma-separated).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Subject",
+      "label": "Subject",
+      "description": "The subject of the email.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Body",
+      "label": "Body",
+      "description": "The body of the email.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "BodyFormat",
+      "label": "Body Format",
+      "description": "The format of the email body (Text or Html).",
+      "defaultValue": "Text",
+      "selectOptions": [
+        {
+          "label": "Plain",
+          "value": "Text",
+          "description": "Plain text format"
+        },
+        {
+          "label": "Html",
+          "value": "Html",
+          "description": "HTML format"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Attachments",
+      "label": "Attachments",
+      "description": "Paths to files to attach to the email (comma-separated).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from SendGrid after sending the email.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
       }
-    ]
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "Attachments",
-    "label": "Attachments",
-    "description": "Paths to files to attach to the email (comma-separated).",
-    "defaultValue": "",
-    "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "Response",
-    "label": "Response",
-    "description": "Returns the response data from SendGrid after sending the email.",
-    "defaultValue": {
-      "value": "Response",
-      "enabled": true
-    },
-    "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "StatusCode",
-    "label": "Status Code",
-    "description": "Returns the HTTP status code from SendGrid after sending the email.",
-    "defaultValue": {
-      "value": "StatusCode",
-      "enabled": false
-    },
-    "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "Message",
-    "label": "Message",
-    "description": "Returns the HTTP status message from SendGrid after sending the email.",
-    "defaultValue": {
-      "value": "Message",
-      "enabled": false
-    },
-    "required": false
-  }
-]
+    }
+  ]
+}
