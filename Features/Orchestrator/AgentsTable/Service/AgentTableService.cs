@@ -48,11 +48,28 @@ public class AgentTableService : IAgentTableService
                 .Include(i => i.MachineFlows)
                 .Include(i => i.CreatedByUser)
                 .OrderBy(o => o.VersionNumber)
+                .ProjectToType<AgentTableDto>()
                 .AsNoTracking()
                 .ToListAsync();
 
+            // Retrieve the list of machine statuses for the current tenant
+            var clientStatusDtos = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
+
+            // Iterate through each agent in the 'publishedFlowVersions' collection
+            foreach (var agent in publishedFlowVersions)
+            {
+                // Find the machine status by matching the agent's ID with the corresponding ClientId
+                var clientStatusDto = clientStatusDtos.FirstOrDefault(w => w.AgentId != null && w.AgentId == agent.Id);
+
+                // Assign the machine status from the client status if found, otherwise set it to 'Offline'
+                agent.Status = clientStatusDto != null ? clientStatusDto.Status : MachineStatusTypeEnum.Offline;
+
+                // (Optional) Update the agents's last execution time based on the status, if available
+                // machine.LastCheckedIn = clientStatusDto != null ? clientStatusDto.LastSeen : MachineStatusTypeEnum.Offline;
+            }
+
             // If successful, map the retrieved flow versions to AgentTableDto and set the response.
-            serviceResponse.Data = publishedFlowVersions.Adapt<IEnumerable<AgentTableDto>>();
+            serviceResponse.Data = publishedFlowVersions;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Versions retrieved successfully";
         }
