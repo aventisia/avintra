@@ -800,4 +800,88 @@ public class MachineService : IMachineService
 
         return serviceResponse;
     }
+
+    // Removes multiple agents from a machine.
+    public async Task<ServiceResponse<bool>> RemoveAgentsFromMachineAsync(Guid machineId, IEnumerable<Guid> agentIds)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to remove agents from the machine. Please try again."
+        };
+
+        try
+        {
+            // Check if the provided agent IDs are unique.
+            if (agentIds.Count() != agentIds.Distinct().Count())
+            {
+                _logger.LogInformation("Duplicate agent IDs detected.");
+                serviceResponse.Message = "Agent IDs cannot contain duplicates.";
+                return serviceResponse;
+            }
+
+            // Retrieve the machine details based on the provided machineId.
+            var machine = await _unitOfWork.MachineRepo
+                .GetByConditionAsync(w => w.Id == machineId)
+                .Include(m => m.MachineFlows)
+                .FirstOrDefaultAsync();
+
+            if (machine == null)
+            {
+                // If machine does not exist, return failure.
+                _logger.LogInformation("Machine not found.");
+                serviceResponse.Message = "The machine does not exist.";
+                return serviceResponse;
+            }
+
+            // Check if the agents are currently assigned to the specified machine.
+            var machineFlows = await _unitOfWork.MachineFlowRepo
+                .GetByConditionAsync(w => agentIds.Contains(w.FlowVersionId) && w.MachineId == machineId)
+                .ToListAsync();
+
+            var invalidAgentIds = agentIds.Except(machineFlows.Select(m => m.FlowVersionId)).ToList();
+
+            if (invalidAgentIds.Any())
+            {
+                // If there are invalid agent IDs, return failure.
+                _logger.LogInformation("Invalid agent IDs found: {InvalidAgentIds}", string.Join(", ", invalidAgentIds));
+                serviceResponse.Message = $"The following agent IDs are invalid or not assigned to this machine: {string.Join(", ", invalidAgentIds)}";
+                return serviceResponse;
+            }
+
+            // Identify the agents to remove from the machine.
+            var agentsToRemove = agentIds.Intersect(machine.MachineFlows?.Select(mf => mf.FlowVersionId) ?? Enumerable.Empty<Guid>()).ToList();
+
+            if (!agentsToRemove.Any())
+            {
+                // If no agents are assigned to the machine, inform the user.
+                _logger.LogInformation("No agents are currently assigned to the provided machine.");
+                serviceResponse.Message = "No agents are assigned to this machine.";
+                return serviceResponse;
+            }
+
+            // Remove the selected agent-machine associations (MachineFlows).
+            _unitOfWork.MachineFlowRepo.Delete(machineFlows);
+
+            // Attempt to save changes to the database.
+            if (!await _unitOfWork.SaveAsync())
+            {
+                // If saving changes fails, log and return failure.
+                _logger.LogInformation("Database save operation failed while removing agents from the machine.");
+                return serviceResponse;
+            }
+
+            // Return success with the count of removed agents.
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = $"{agentsToRemove.Count} agents successfully removed from the machine.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred while removing agents from the machine.");
+        }
+
+        // Return the final service response.
+        return serviceResponse;
+    }
 }

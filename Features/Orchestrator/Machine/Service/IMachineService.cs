@@ -74,4 +74,12 @@ public interface IMachineService
     /// A <see cref="ServiceResponse{T}"/> containing a collection of <see cref="MachineDto"/> objects matching the search criteria.
     /// </returns>
     Task<ServiceResponse<IEnumerable<MachineDto>>> FindMachinesByKeywordAsync(string searchKey);
+
+    /// <summary>
+    /// Remove a set of agents from a specified machine.
+    /// </summary>
+    /// <param name="machineId">The ID of the machine from whom the agents will be removed.</param>
+    /// <param name="agentIds">A collection of agent IDs to be removed from the machine.</param>
+    /// <returns>A service response indicating whether the operation was successful.</returns>
+    Task<ServiceResponse<bool>> RemoveAgentsFromMachineAsync(Guid machineId, IEnumerable<Guid> agentIds);
 }
