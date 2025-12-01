@@ -41,8 +41,10 @@ export const getNodeConfig = async (
         .get(`${import.meta.env.VITE_WORC_API_URL}/cloud-connector/config-file/${nodeUniqueName}.json`)
         .then((res) => res.data);
       if (connectorConfig) {
-        nodeConfigCache[nodeUniqueName] = connectorConfig.fields as DCPFieldSchemaType[];
-        return connectorConfig;
+        const connectorFields = connectorConfig.fields as DCPFieldSchemaType[];
+        // Cache the fetched config
+        nodeConfigCache[nodeUniqueName] = connectorFields;
+        return connectorFields;
       }
     } catch (error) {
       console.error(`Cloud Connector ${nodeUniqueName} fetch error:`, error);
