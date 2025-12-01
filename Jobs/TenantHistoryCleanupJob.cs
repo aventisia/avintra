@@ -6,12 +6,12 @@ namespace WorkspaceAPIs.Jobs
     /// </summary>
     public class TenantHistoryCleanupJob : IJob
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
         private readonly ILogger<TenantHistoryCleanupJob> _logger;
 
-        public TenantHistoryCleanupJob(IUnitOfWork unitOfWork, ILogger<TenantHistoryCleanupJob> logger)
+        public TenantHistoryCleanupJob(WorkspaceInternalDbContext workspaceInternalDbContext, ILogger<TenantHistoryCleanupJob> logger)
         {
-            _unitOfWork = unitOfWork;
+            _workspaceInternalDbContext = workspaceInternalDbContext;
             _logger = logger;
         }
 
@@ -77,8 +77,8 @@ namespace WorkspaceAPIs.Jobs
                                            $"Retention Date = {retentionDate:O}.");
 
                     // Retrieve tenant history records older than the retention date
-                    var jobs = await _unitOfWork.JobRepo
-                        .GetByConditionAsync(w => w.TenantId == tenantSubscription.TenantId && w.CreatedOn.Date <= retentionDate)
+                    var jobs = await _workspaceInternalDbContext.Jobs
+                        .Where(w => w.TenantId == tenantSubscription.TenantId && w.CreatedOn.Date <= retentionDate)
                         .ToListAsync();
 
                     // If old records are found, log and delete them
@@ -87,13 +87,8 @@ namespace WorkspaceAPIs.Jobs
                         _logger.LogInformation($"Found {jobs.Count()} history records for Tenant ID {tenantSubscription.TenantId} older than {retentionDate:O}.");
 
                         // Attempt to delete the outdated records
-                        _unitOfWork.JobRepo.Delete(jobs);
-
-                        // Save the changes to the database
-                        if (!await _unitOfWork.SaveAsync())
-                        {
-                            _logger.LogWarning($"Failed to delete tenant history records for Tenant ID {tenantSubscription.TenantId}. Changes were not saved.");
-                        }
+                        _workspaceInternalDbContext.Jobs.RemoveRange(jobs);
+                        await _workspaceInternalDbContext.SaveChangesAsync();
                     }
                 }
 
