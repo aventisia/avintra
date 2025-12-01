@@ -37,7 +37,7 @@ public class FlowUserService : IFlowUserService
         {
             // Fetch flow users linked to the given flowId
             var flowUsers = await _unitOfWork.FlowUserRepo
-                .GetByConditionAsync(w => w.FlowId == flowId && w.UserId != _userId)
+                .GetByConditionAsync(w => w.FlowId == flowId)
                 .Include(i => i.User)
                 .ProjectToType<FlowUserDto>()
                 .ToListAsync();
