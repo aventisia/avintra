@@ -33,7 +33,7 @@ public class AIProjectUserService : IAIProjectUserService
             _logger.LogInformation($"Fetching users for AI project with Id {aiProjectId}, excluding current user {_userId}.");
 
             var aiProjectUsers = await _unitOfWork.AIProjectUserRepo
-                .GetByConditionAsync(u => u.AIProjectId == aiProjectId && u.UserId != _userId)
+                .GetByConditionAsync(u => u.AIProjectId == aiProjectId)
                 .Include(u => u.User)
                 .ProjectToType<AIProjectUserDto>()
                 .ToListAsync();
