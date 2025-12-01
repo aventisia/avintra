@@ -91,7 +91,7 @@ public class M365ConnectorsService : IM365ConnectorsService
             if (siteRootIdx == -1)
             {
                 _logger.LogWarning("Invalid SharePoint URL: missing 'sites' or 'teams' segment. URL: {FileUrl}", fileUrl);
-                return JsonDocument.Parse(@"{""error"": ""Invalid SharePoint URL: missing 'sites' or 'teams' segment.""}");
+                return JsonDocument.Parse(@"{""statusCode"": 400, ""error"": ""Invalid SharePoint URL: missing 'sites' or 'teams' segment.""}");
             }
 
             // Site path: from root to site name
@@ -121,7 +121,7 @@ public class M365ConnectorsService : IM365ConnectorsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception in GetDriveAndItemId");
-            return JsonDocument.Parse($@"{{""error"": ""Exception: {ex.Message.Replace("\"", "'")}""}}");
+            return JsonDocument.Parse($@"{{""statusCode"": 500, ""error"": ""Exception: {ex.Message.Replace("\"", "'")}""}}");
         }
     }
 
