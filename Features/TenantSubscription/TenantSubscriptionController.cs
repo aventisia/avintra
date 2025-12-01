@@ -102,4 +102,12 @@ public class TenantSubscriptionController : BaseApiController
     {
         return ResultHelper(await _tenantSubscriptionService.CancelRecurringPaymentAsync(subscriptionUpdateRequestDto));
     }
+
+    // Retrieves all active tenant subscriptions along with their retention history details.
+    [AllowAnonymous]
+    [HttpGet("retention")]
+    public async Task<ActionResult<ServiceResponse<TenantSubscriptionInfoDto>>> GetAllSubscriptions()
+    {
+        return ResultHelper(await _tenantSubscriptionService.GetAllSubscriptionsAsync());
+    }
 }

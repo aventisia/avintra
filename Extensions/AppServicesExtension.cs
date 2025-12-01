@@ -156,23 +156,22 @@ public static class AppServicesExtension
     {
         services.AddQuartz(quartz =>
         {
-            var jobKey = new JobKey("TenantCreditAllocationJob");
-
-            // Register the job with the specified job key
-            quartz.AddJob<TenantCreditAllocationJob>(opts => opts.WithIdentity(jobKey));
+            // Register the TenantCreditAllocationJob and its trigger
+            var tenantCreditAllocationJobKey = new JobKey("TenantCreditAllocationJob");
+            quartz.AddJob<TenantCreditAllocationJob>(opts => opts.WithIdentity(tenantCreditAllocationJobKey));
 
             quartz.AddTrigger(opts => opts
-                .ForJob(jobKey)
+                .ForJob(tenantCreditAllocationJobKey)
                 .WithIdentity("TenantCreditAllocationJob-trigger")
                 .StartNow()
-                .WithCronSchedule("0 0 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc))
+                .WithCronSchedule("0 0 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Runs daily at 12:00 AM UTC
                 .WithDescription("Trigger for Tenant Credit Update Job - Runs at 12:00 AM UTC daily"));
         });
 
         // Register Quartz hosted service to ensure jobs run in the background
         services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
-        // Register the job with the DI container so it can be injected
+        // Register the jobs with the DI container so they can be injected
         services.AddTransient<TenantCreditAllocationJob>();
     }
 }

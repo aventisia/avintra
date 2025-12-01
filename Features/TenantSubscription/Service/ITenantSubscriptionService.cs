@@ -105,4 +105,10 @@ public interface ITenantSubscriptionService
     /// <param name="subscriptionUpdateRequestDto">The subscription details, including the subscription ID, status, and other relevant information.</param>
     /// <returns>A task representing the asynchronous operation, containing the result of the recurring payment cancellation.</returns>
     Task<ServiceResponse<TenantSubscriptionDto>> CancelRecurringPaymentAsync(SubscriptionUpdateRequestDto subscriptionUpdateRequestDto);
+
+    /// <summary>
+    /// Retrieves all tenant subscriptions, including retention period details.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation, containing a list of all tenant subscriptions with retention period.</returns>
+    Task<ServiceResponse<List<TenantSubscriptionInfoDto>>> GetAllSubscriptionsAsync();
 }

@@ -76,56 +76,6 @@ public class LoginWithPwdService : ILoginWithPwdService
             // Now error HTTP status code becomes 400
             serviceResponse.StatusCode = 400;
 
-            // Check if OSInfo is provided in the login DTO
-            if (pwdLoginDto.OSInfo != null)
-            {
-                // Log the start of the machine validation check
-                _logger.LogInformation("Starting machine validation with OS information.");
-
-                // Construct the OSInformationDto object from the provided login DTO
-                var osInformation = new OSInformationDto
-                {
-                    OSId = pwdLoginDto.OSInfo.OSId,
-                    HostName = string.Empty,    // TODO: Implement HostName usage in future
-                    ClientName = string.Empty   // TODO: Implement ClientName usage in future TODO: message future use
-                };
-
-                try
-                {
-                    // Call the external API for machine validation
-                    HttpResponseMessage httpResponse = await RequestExternalAPIUtil.RequestExternalAPI(
-                        CrudTypesEnum.Create,
-                        "http://localhost:4001/api/machine/validate",
-                        null,
-                        osInformation
-                    );
-
-                    // Read and parse the response content
-                    var responseContent = await httpResponse.Content.ReadAsStringAsync();
-                    var externalServiceResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<ServiceResponse<bool>>(responseContent);
-
-                    // Validate the response from the external service
-                    if (externalServiceResponse == null || externalServiceResponse.StatusCode != 200 || !externalServiceResponse.Data)
-                    {
-                        // Log the error
-                        _logger.LogError("Invalid response during machine validation. Status: {StatusCode}, Success: {SuccessFlag}",
-                                          externalServiceResponse?.StatusCode, externalServiceResponse?.Data);
-
-                        // Set failure message
-                        serviceResponse.Message = externalServiceResponse.Message;
-                        return serviceResponse;
-                    }
-
-                    _logger.LogInformation("Machine validation passed.");
-                }
-                catch (Exception ex)
-                {
-                    // Log unexpected errors
-                    _logger.LogError(ex, "Error during machine validation.");
-                    return serviceResponse;
-                }
-            }
-
             // Get user again (Includes Tenant and Roles)
             user = await _unitOfWork.AccountUserRepo
                     .GetByConditionAsync(w => w.Id == user.Id)
