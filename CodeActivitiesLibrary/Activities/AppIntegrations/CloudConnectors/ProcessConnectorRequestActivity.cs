@@ -24,6 +24,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
         [RequiredArgument]
         [DisplayName("Connector Unique Name")]
         public InArgument<string> Action { get; set; }
+        
         [RequiredArgument]
         [DisplayName("Credential Id")]
         public InArgument<string> CredentialId { get; set; }
@@ -32,14 +33,10 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
         [DisplayName("Connector Request Payload")]
         public InArgument<string> Payload { get; set; }
 
-        [DisplayName("Response")]
-        public OutArgument<JToken> Response { get; set; }
+        [DisplayName("Result")]
+        public OutArgument<JToken> Result { get; set; }
 
-        [DisplayName("Status Code")]
-        public OutArgument<int> StatusCode { get; set; }
-
-        // Note: Status message output is already present StatusMessage in BaseAsyncCodeActivity
-
+        
         protected override IAsyncResult BeginExecute(AsyncCodeActivityContext context, AsyncCallback callback, object state)
         {
             // Capture all required values from context at the start
@@ -119,23 +116,20 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                 var responseObj = JsonConvert.DeserializeObject<JObject>(responseContent);
                 if (responseObj != null)
                 {
-                    Response.Set(context, responseObj["data"]);
-                    StatusCode.Set(context, responseObj["statusCode"]?.ToObject<int>());
-                    StatusMessage.Set(context, responseObj["message"]?.ToString());
+                    Result.Set(context, responseObj["data"]);
+                    StatusMessage.Set(context, responseObj["statusCode"].ToString() + ":" + responseObj["message"]?.ToString());
                     IsSuccess.Set(context, responseObj["statusCode"]?.ToObject<int>() == 200);
                 }
                 else
                 {
-                    Response.Set(context, null);
-                    StatusCode.Set(context, null);
+                    Result.Set(context, null);
                     StatusMessage.Set(context, "Failed to process the api response.");
                     IsSuccess.Set(context, false);
                 }
             }
             catch (Exception ex)
             {
-                Response.Set(context, null);
-                StatusCode.Set(context, 400);
+                Result.Set(context, null);
                 StatusMessage.Set(context, $"Error: {ex.GetBaseException().Message}");
                 IsSuccess.Set(context, false);
             }
