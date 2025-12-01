@@ -29,7 +29,7 @@
           {
             "type": "cloudConnectorNode",
             "name": "SendGrid/SendEmailThroughSendGridConnector",
-            "label": "Send email with SendGrid",
+            "label": "Send email",
             "description": "Sends an email using SendGrid's API.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
@@ -47,7 +47,7 @@
           {
             "type": "cloudConnectorNode",
             "name": "M365/GetFileDriveAndItemIdConnector",
-            "label": "Get file's Drive and Item ID in M365",
+            "label": "Get file's Drive and Item ID",
             "description": "Retrieves the Drive ID and Item ID of a file stored in OneDrive or SharePoint.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
@@ -65,8 +65,35 @@
           {
             "type": "cloudConnectorNode",
             "name": "M365/Excel/AddNewWorksheetConnector",
-            "label": "Add new worksheet in M365 Excel",
+            "label": "Add new worksheet",
             "description": "Adds a new worksheet to an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/GetWorksheetNamesConnector",
+            "label": "Get worksheet names",
+            "description": "Retrieves the list of worksheet names from an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/ReadValueFromRangeConnector",
+            "label": "Read value from range",
+            "description": "Reads one or more values from a specified range in a worksheet of an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/WriteValueToRangeConnector",
+            "label": "Write value to range",
+            "description": "Writes one or more values to a specified range in a worksheet of an Excel file stored in OneDrive or SharePoint.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/M365.svg"
