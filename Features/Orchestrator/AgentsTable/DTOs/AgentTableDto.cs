@@ -34,11 +34,6 @@ public class AgentTableDto
     public bool IsLocked { get; set; }
 
     /// <summary>
-    /// Represents the status of the agent. Possible values are: Idle, Online, Offline, Running, Stopped
-    /// </summary>
-    public MachineStatusTypeEnum Status { get; set; } = MachineStatusTypeEnum.Idle;
-
-    /// <summary>
     /// Gets or sets a value indicating whether the version is in draft state.
     /// </summary>
     public bool IsDraft { get; set; }

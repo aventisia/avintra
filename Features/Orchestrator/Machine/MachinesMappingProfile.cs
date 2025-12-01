@@ -28,6 +28,7 @@ public class MachinesMappingProfile : IRegister
             .Map(dest => dest.Id, src => src.FlowVersionId)
             .Map(dest => dest.Name, src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : null)
             .Map(dest => dest.MachineId, src => src.MachineId)
+            .Map(dest => dest.VersionNumber, src => src.FlowVersion.VersionNumber)
             .Map(dest => dest.IsAssigned, src => true)
             .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName : null)
             .Map(dest => dest.LastModifiedBy, src => src.LastModifiedByUser != null ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName : null)

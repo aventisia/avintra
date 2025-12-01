@@ -621,6 +621,18 @@ public class MachineService : IMachineService
                                             .ProjectToType<AssignAgentDto>()
                                             .ToListAsync();
 
+            var clientStatusDtos = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
+
+            // Iterate through each agent in the 'agents' collection
+            foreach (var agen in agents)
+            {
+                // Find the status of the agent by matching its AgentId with the current agent's Id
+                var clientStatusDto = clientStatusDtos.FirstOrDefault(w => w.AgentId != null && w.AgentId == agen.Id);
+
+                // Set the agent's status based on whether a matching status was found
+                agen.Status = clientStatusDto != null ? clientStatusDto.Status : MachineStatusTypeEnum.Offline;
+            }
+
             // Return the agents along with their assignment status
             serviceResponse.Data = agents;
             serviceResponse.StatusCode = 200;
