@@ -1,15 +1,17 @@
 import { LLMsEnum, LLMsEnumForProduction } from "@/enums/llms-enum";
 
 // Mapping of LLMs to icon paths
-const LLMIconPaths: Record<LLMsEnum | LLMsEnumForProduction, string> = {
-  [LLMsEnum["deepseek-r1"]]: "brand-img/deepseek.svg",
-  [LLMsEnum.phi4]: "brand-img/phi.svg",
-  [LLMsEnum["llama3.1"]]: "brand-img/llama.svg",
-  [LLMsEnum["llama3.2"]]: "brand-img/llama.svg",
-  [LLMsEnum.mistral]: "brand-img/mistral.svg",
-  [LLMsEnum.gemma]: "brand-img/gemma.svg",
-  [LLMsEnum["gpt-4o-mini"]]: "brand-img/openai.svg",
-  [LLMsEnumForProduction["gpt-4o"]]: "brand-img/openai.svg",
+type AllLLMKeys = keyof typeof LLMsEnum | keyof typeof LLMsEnumForProduction;
+
+const LLMIconPaths: Record<AllLLMKeys, string> = {
+  "deepseek-r1": "brand-img/deepseek.svg",
+  phi4: "brand-img/phi.svg",
+  "llama3.1": "brand-img/llama.svg",
+  "llama3.2": "brand-img/llama.svg",
+  mistral: "brand-img/mistral.svg",
+  gemma: "brand-img/gemma.svg",
+  "gpt-4o-mini": "brand-img/openai.svg",
+  "gpt-4o": "brand-img/openai.svg",
 };
 
 // Function to get unique icon paths based on LLM input
@@ -18,20 +20,7 @@ export function getLLMIconPaths(llms: string[]): string[] {
   const uniqueLLMs = Array.from(new Set(llms)); // Remove duplicates from the input
 
   // Map each LLM to its corresponding icon path
-  const iconPaths = uniqueLLMs
-    .map((llm) => {
-      if (LLMsEnum[llm as keyof typeof LLMsEnum]) {
-        return LLMIconPaths[LLMsEnum[llm as keyof typeof LLMsEnum]];
-      }
-      if (LLMsEnumForProduction[llm as keyof typeof LLMsEnumForProduction]) {
-        return LLMIconPaths[
-          LLMsEnumForProduction[llm as keyof typeof LLMsEnumForProduction]
-        ];
-      }
-
-      return null; // In case an invalid LLM is passed
-    })
-    .filter(Boolean) as string[]; // Remove any null values
-
-  return iconPaths;
+  return uniqueLLMs
+    .map((llm) => LLMIconPaths[llm as AllLLMKeys] || null)
+    .filter(Boolean) as string[];
 }
