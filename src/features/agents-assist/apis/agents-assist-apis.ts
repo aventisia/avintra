@@ -3,6 +3,7 @@ import { IHttpResponse } from "@aventisia/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { AgentsAssistDto } from "../dtos/agent-assist-dto";
+import { RemoveAgentsDto } from "../dtos/remove-agents-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/machine`;
 
@@ -12,5 +13,16 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORC_API_URL}/machine`;
 export const getMachineAgents = (machineId: string) => {
   return axiosInstance
     .get<IHttpResponse<AgentsAssistDto[]>>(`${baseAPIURL}/${machineId}/agents`)
+    .then((res) => res.data);
+};
+
+/**
+ * Remove agents to the machine.
+ */
+export const removeAgents = (assignAgentDto: RemoveAgentsDto) => {
+  return axiosInstance
+    .post<
+      IHttpResponse<boolean>
+    >(`${baseAPIURL}/${assignAgentDto.machineId}/remove-agents`, assignAgentDto.agentIds)
     .then((res) => res.data);
 };

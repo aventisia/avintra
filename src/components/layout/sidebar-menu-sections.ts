@@ -105,7 +105,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
               permissions: ["SA", "TA", "OM", "TU"],
               Icon: BotIcon,
               name: "my agents",
-              route: "/assist/agents",
+              route: "/assist/my-agents",
             },
           ]
         : []),
@@ -116,7 +116,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
               permissions: ["SA", "TA", "OM", "TU"],
               Icon: QueueListIcon,
               name: "my queue",
-              route: "/assist/queue",
+              route: "/assist/my-queue",
             },
           ]
         : []),
