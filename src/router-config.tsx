@@ -84,7 +84,7 @@ const routerConfig: RouteObject[] = [
         element: <ProtectedRoute persmissions={["SA"]} page={<ComingSoon />} />,
       },
       {
-        path: "/assist/agents",
+        path: "/assist/my-agents",
         element: (
           <ProtectedRoute
             persmissions={["SA", "TA", "OM", "TU"]}
