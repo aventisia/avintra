@@ -1,0 +1,66 @@
+[
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Excel Credential",
+      "description": "The M365 Excel credential containing valid tenant ID, client ID, and client secret which is used to authenticate API requests.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DriveAndItemId",
+      "label": "Drive and Item ID",
+      "description": " The Drive ID and Item ID of the Excel file in OneDrive or SharePoint (format: driveId/items/itemId).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetName",
+      "label": "Worksheet Name",
+      "description": "The name of the worksheet to be deleted from the Excel file.",
+      "defaultValue": "New Worksheet",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Response",
+      "label": "Response",
+      "description": "Returns the details of the deleted worksheet.",
+      "defaultValue": {
+        "value": "Response",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "StatusCode",
+      "label": "Status Code",
+      "description": "Returns the HTTP status code from the Excel API after delete the worksheet.",
+      "defaultValue": {
+        "value": "StatusCode",
+        "enabled": false
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Message",
+      "label": "Message",
+      "description": "Returns the HTTP status message from the Excel API after delete the worksheet.",
+      "defaultValue": {
+        "value": "Message",
+        "enabled": false
+      },
+      "required": false
+    }
+  ]
+  
