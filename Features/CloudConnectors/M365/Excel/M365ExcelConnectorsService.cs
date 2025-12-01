@@ -110,7 +110,25 @@ public class M365ExcelConnectorsService : IM365ExcelConnectorsService
                     var body = new { values = color };
 
                     return await HttpClientHelper.PatchAsync(finalUrl, body, accessToken);
-                }              
+                }
+            case nameof(M365ExcelActionsEnum.GetWorkbookInfo):
+                {
+                    var workbookUrl = $"{wbUrl}";
+                    return await HttpClientHelper.GetAsync(workbookUrl, accessToken);
+                }
+            case nameof(M365ExcelActionsEnum.LookupRangeInExcelWorksheet):
+                {
+                    var rangeAddress = payload.GetValueOrDefault("rangeAddress", "").ToString().Trim();
+                    var rangeUrl = $"{wsUrl}/range(address='{rangeAddress}')";
+                    return await HttpClientHelper.GetAsync(rangeUrl, accessToken);
+                }
+
+            case nameof(M365ExcelActionsEnum.SelectRangeInExcelWorksheet): 
+                {
+                    var rangeAddress = payload.GetValueOrDefault("rangeAddress", "").ToString().Trim();
+                    var rangeUrl = $"{wsUrl}/range(address='{rangeAddress}')";
+                    return await HttpClientHelper.GetAsync(rangeUrl, accessToken);
+                }
             default:
                 _logger.LogWarning("Unsupported M365 Excel connector: {Action}", action);
                 return null;

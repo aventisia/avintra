@@ -11,5 +11,8 @@ public enum M365ExcelActionsEnum
     DeleteWorksheet,
     SetColorInExcelWorksheet,
     AddWorksheet,
-    RenameWorksheet
+    RenameWorksheet,
+    GetWorkbookInfo,
+    LookupRangeInExcelWorksheet,
+    SelectRangeInExcelWorksheet
 }
