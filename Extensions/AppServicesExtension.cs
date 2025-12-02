@@ -1,3 +1,5 @@
+using WorkspaceAPIs.Features.CloudConnectors.M365.SendGrid;
+
 namespace WorkspaceAPIs.Extensions;
 
 public static class AppServicesExtension
@@ -94,6 +96,7 @@ public static class AppServicesExtension
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
         services.AddScoped<IM365ConnectorsService, M365ConnectorsService>();
         services.AddScoped<IM365ExcelConnectorsService, M365ExcelConnectorsService>();
+        services.AddScoped<ISendGridConnectorsService, SendGridConnectorsService>();
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
