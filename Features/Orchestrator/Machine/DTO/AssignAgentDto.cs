@@ -74,7 +74,7 @@ public class AssignAgentDto
     public bool IsAssigned { get; set; }
 
     /// <summary>
-    /// Represents the status of the agent. Possible values are: Idle, Online, Offline, Running, Stopped
+    /// Represents the status of the agent. Possible values are: CreatingJob, LaunchingExecutor, Executing, Paused, Stopped
     /// </summary>
-    public MachineStatusTypeEnum Status { get; set; } = MachineStatusTypeEnum.Idle;
+    public AgentExecutionStatus Status { get; set; } = AgentExecutionStatus.Stopped;
 }

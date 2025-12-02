@@ -630,7 +630,9 @@ public class MachineService : IMachineService
                 var clientStatusDto = clientStatusDtos.FirstOrDefault(w => w.AgentId != null && w.AgentId == agen.Id);
 
                 // Set the agent's status based on whether a matching status was found
-                agen.Status = clientStatusDto != null ? clientStatusDto.Status : MachineStatusTypeEnum.Offline;
+                agen.Status = clientStatusDto?.Status == MachineStatusTypeEnum.Running
+                    ? AgentExecutionStatus.Executing
+                    : AgentExecutionStatus.Stopped;
             }
 
             // Return the agents along with their assignment status
