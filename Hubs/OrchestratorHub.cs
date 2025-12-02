@@ -6,14 +6,14 @@ namespace WorkspaceAPIs.Hubs;
 public class OrchestratorHub : Hub
 {
     private readonly IClientStatusStore _clientStatusStore;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<OrchestratorHub> _logger;
+    private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
 
-    public OrchestratorHub(IClientStatusStore clientStatusStore, IUnitOfWork unitOfWork, ILogger<OrchestratorHub> logger)
+    public OrchestratorHub(IClientStatusStore clientStatusStore, ILogger<OrchestratorHub> logger, WorkspaceInternalDbContext workspaceInternalDbContext)
     {
         _clientStatusStore = clientStatusStore;
-        _unitOfWork = unitOfWork;
         _logger = logger;
+        _workspaceInternalDbContext = workspaceInternalDbContext;
     }
 
     // This method is called when a client successfully connects to the hub.
@@ -31,6 +31,7 @@ public class OrchestratorHub : Hub
 
             // Try to parse the client type from the query string (e.g., 'WorcMachine', 'WebBrowser')
             Enum.TryParse<ClientTypesEnum>(httpContext.Request.Query["clientType"], true, out var clientType);
+
             // Optionally, you can also retrieve other parameters as strings, if needed
             string? osId = httpContext.Request.Query["osId"];
             string? hostname = httpContext.Request.Query["hostname"];
@@ -41,8 +42,8 @@ public class OrchestratorHub : Hub
             // Check if OSId and Hostname are provided
             if (!string.IsNullOrEmpty(osId) && !string.IsNullOrEmpty(hostname))
             {
-                var machine = await _unitOfWork.MachineRepo
-                    .GetByConditionAsync(w =>
+                var machine = await _workspaceInternalDbContext.Machine
+                    .Where(w =>
                         w.TenantId == tenantId &&
                         w.OSId.ToLower() == osId.ToLower() &&
                         w.Hostname.ToLower() == hostname.ToLower()
@@ -149,8 +150,8 @@ public class OrchestratorHub : Hub
             _logger.LogInformation("Executing agent {AgentId} on machine {MachineId}.", agentId, machineId);
 
             // Retrieve the agent details from the database and check if it is published.
-            var agent = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w => w.Id == agentId && w.IsPublished)
+            var agent = await _workspaceInternalDbContext.FlowVersions
+                .Where(w => w.Id == agentId && w.IsPublished)
                 .Include(i => i.MachineFlows)
                 .SingleOrDefaultAsync();
 
