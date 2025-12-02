@@ -1,12 +1,16 @@
-[
+{
+  "name": "SelectRangeInExcelWorksheet",
+  "description": "Select the specified range address from the Excel file ",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "fields": [
     {
       "direction": "Input",
       "type": "credentials-select",
       "name": "__CredentialId__M365",
       "label": "M365 Excel Credential",
       "description": "The M365 Excel credential containing valid tenant ID, client ID, and client secret which is used to authenticate API requests.",
-      "defaultValue": "",
-      "required": true
+      "defaultValue": ""   
     },
     {
       "direction": "Input",
@@ -14,8 +18,7 @@
       "name": "DriveAndItemId",
       "label": "Drive and Item ID",
       "description": " The Drive ID and Item ID of the Excel file in OneDrive or SharePoint (format: driveId/items/itemId).",
-      "defaultValue": "",
-      "required": true
+      "defaultValue": ""
     },
     {
         "direction": "Input",
@@ -23,53 +26,26 @@
         "name": "WorksheetName",
         "label": "Worksheet Name",
         "description": "The name of the worksheet to be select range in the Excel file.",
-        "defaultValue": "Worksheet Name",
-        "required": true
+        "defaultValue": "Sheet1"
     },
     {
         "direction": "Input",
         "type": "text",
         "name": "RangeAddress",
         "label": "Range Address",
-        "description": "Select the specified range address from the selected range address in the Excel file .",
-        "defaultValue": "Range Address",
-        "required": true
+        "description": "Select the specified range address from the selected range address in the Excel file ",
+        "defaultValue": "A1"
     },
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "Response",
-      "label": "Response",
-      "description": "Returns the details of the selected ranged cell in the worksheet.",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the details of the specified range address from the selected range in the Excel file",
       "defaultValue": {
-        "value": "Response",
+        "value": "Result",
         "enabled": true
-      },
-      "required": false
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "StatusCode",
-      "label": "Status Code",
-      "description": "Returns the HTTP status code from the Excel API after read value from the ranged cell in the Excel file.",
-      "defaultValue": {
-        "value": "StatusCode",
-        "enabled": false
-      },
-      "required": false
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "Message",
-      "label": "Message",
-      "description": "Returns the HTTP status message from the Excel API read value from the selected ranged cell in the Excel file.",
-      "defaultValue": {
-        "value": "Message",
-        "enabled": false
-      },
-      "required": false
+      }
     }
   ]
-  
+}

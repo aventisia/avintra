@@ -1,21 +1,24 @@
-[
+{
+  "name": "DeleteWorksheet",
+  "description": "Delete worksheet to a specified Excel file stored in OneDrive or SharePoint using the Microsoft 365 Excel API. Provide valid M365 credentials, the target Excel file's Drive and Item ID, and the name for the worksheet. The connector will return the status code and message from the API.",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "fields": [
     {
       "direction": "Input",
       "type": "credentials-select",
       "name": "__CredentialId__M365",
       "label": "M365 Excel Credential",
       "description": "The M365 Excel credential containing valid tenant ID, client ID, and client secret which is used to authenticate API requests.",
-      "defaultValue": "",
-      "required": true
+      "defaultValue": ""
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "DriveAndItemId",
       "label": "Drive and Item ID",
-      "description": " The Drive ID and Item ID of the Excel file in OneDrive or SharePoint (format: driveId/items/itemId).",
-      "defaultValue": "",
-      "required": true
+      "description": "The Drive ID and Item ID of the Excel file in OneDrive or SharePoint (format: driveId/items/itemId).",
+      "defaultValue": ""
     },
     {
       "direction": "Input",
@@ -23,44 +26,18 @@
       "name": "WorksheetName",
       "label": "Worksheet Name",
       "description": "The name of the worksheet to be deleted from the Excel file.",
-      "defaultValue": "New Worksheet",
-      "required": true
+      "defaultValue": "Worksheet Name"
     },
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "Response",
-      "label": "Response",
-      "description": "Returns the details of the deleted worksheet.",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the details of the newly added worksheet.",
       "defaultValue": {
-        "value": "Response",
+        "value": "Result",
         "enabled": true
-      },
-      "required": false
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "StatusCode",
-      "label": "Status Code",
-      "description": "Returns the HTTP status code from the Excel API after delete the worksheet.",
-      "defaultValue": {
-        "value": "StatusCode",
-        "enabled": false
-      },
-      "required": false
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "Message",
-      "label": "Message",
-      "description": "Returns the HTTP status message from the Excel API after delete the worksheet.",
-      "defaultValue": {
-        "value": "Message",
-        "enabled": false
-      },
-      "required": false
+      }
     }
   ]
-  
+}

@@ -97,7 +97,53 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/RenameWorksheetConnector",
+            "label": "Rename Worksheet",
+            "description": "Rename worksheet of an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/DeleteWorksheetConnector",
+            "label": "Delete Worksheet",
+            "description": "Delete worksheet of an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/SetColorInExcelWorksheetConnector",
+            "label": "Set Color In Excel Worksheet",
+            "description": "Set color in excel worksheet of an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/LookupRangeInExcelWorksheet",
+            "label": "Lookup Range In Excel Worksheet",
+            "description": "Lookup Range In Excel Worksheet of an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "M365/Excel/SelectRangeInExcelWorksheet",
+            "label": "Select Range In Excel Worksheet",
+            "description": "Select range in excel worksheet of an Excel file stored in OneDrive or SharePoint.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg"
           }
+
         ]
       }
     ]
