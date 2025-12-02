@@ -32,19 +32,19 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: BotIcon,
         name: "agents",
         route: "/agents",
-        permissions: ["SA", "TA", "OM", "TD"],
+        permissions: ["TD"],
       },
       {
         Icon: FileBoxIcon,
         name: "AI Models",
         route: "/ai-models",
-        permissions: ["SA", "TA", "OM", "TD"],
+        permissions: ["TD"],
       },
       {
         Icon: LibraryIcon,
         name: "Library",
         route: "/library",
-        permissions: ["SA", "TA", "OM", "TD"],
+        permissions: ["TD"],
       },
     ],
   },
@@ -52,43 +52,43 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
     sectionName: "Orchestrator",
     menuItems: [
       {
-        permissions: ["SA", "TA", "OM"],
+        permissions: ["OM"],
         Icon: BotIcon,
         name: "Published",
         route: "/orchestrator/published-agents",
       },
       {
-        permissions: ["SA", "TA", "OM"],
+        permissions: ["OM"],
         Icon: DesktopIcon,
         name: "machines",
         route: "/orchestrator/machines",
       },
       {
-        permissions: ["SA", "TA", "OM"],
+        permissions: ["OM"],
         Icon: QueueListIcon,
         name: "queues",
         route: "/orchestrator/queues",
       },
       {
-        permissions: ["SA", "TA", "OM"],
+        permissions: ["OM"],
         Icon: AiOutlineThunderbolt,
         name: "triggers",
         route: "/orchestrator/triggers",
       },
       {
-        permissions: ["SA", "TA", "OM"],
+        permissions: ["OM"],
         Icon: MonitorPlayIcon,
         name: "Jobs",
         route: "/orchestrator/jobs",
       },
       {
-        permissions: ["SA", "TA", "OM"],
+        permissions: ["OM"],
         Icon: FolderCogIcon,
         name: "Key Store",
         route: "/orchestrator/keystore",
       },
       {
-        permissions: ["SA", "TA", "OM"],
+        permissions: ["OM"],
         Icon: Shield,
         name: "Vault",
         route: "/orchestrator/vault",
@@ -102,7 +102,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       ...(import.meta.env.MODE !== "production"
         ? [
             {
-              permissions: ["SA", "TA", "OM", "TU"],
+              permissions: ["TU"],
               Icon: BotIcon,
               name: "my agents",
               route: "/assist/my-agents",
@@ -113,7 +113,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       ...(import.meta.env.MODE !== "production"
         ? [
             {
-              permissions: ["SA", "TA", "OM", "TU"],
+              permissions: ["TU"],
               Icon: QueueListIcon,
               name: "my queue",
               route: "/assist/my-queue",
@@ -126,7 +126,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
     sectionName: "Tenant Admin",
     menuItems: [
       {
-        permissions: ["SA", "TA"],
+        permissions: ["TA"],
         Icon: IdentificationIcon,
         name: "tenant",
         route: "/tenant",
@@ -135,7 +135,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       ...(import.meta.env.MODE !== "production"
         ? [
             {
-              permissions: ["SA", "TA"],
+              permissions: ["TA"],
               Icon: Workflow,
               name: "integrations",
               route: "/integrations",
@@ -143,31 +143,31 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
           ]
         : []),
       {
-        permissions: ["SA", "TA"],
+        permissions: ["TA"],
         Icon: Wallet,
         name: "credits Usage",
         route: "/credits-usage",
       },
       {
-        permissions: ["SA", "TA"],
+        permissions: ["TA"],
         Icon: CheckCheckIcon,
         name: "Approvals",
         route: "/approvals",
       },
       {
-        permissions: ["SA", "TA"],
+        permissions: ["TA"],
         Icon: UsersIcon,
         name: "users",
         route: "/users",
       },
       {
-        permissions: ["SA", "TA"],
+        permissions: ["TA"],
         Icon: ArchiveIcon,
         name: "archive",
         route: "/archive",
       },
       {
-        permissions: ["SA", "TA"],
+        permissions: ["TA"],
         Icon: QuestionMarkCircleIcon,
         name: "support",
         route: "/supportticket",
