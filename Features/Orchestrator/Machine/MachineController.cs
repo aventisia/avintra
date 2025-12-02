@@ -59,11 +59,11 @@ public class MachineController : BaseApiController
         return ResultHelper(await _machineService.DeleteMachinesAsync(machineIds));
     }
 
-    // Retrieve agent list by machine ID.
-    [HttpGet("{machineId}/agents")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AssignAgentDto>>>> GetAgentsByMachineAsync(Guid machineId)
+    // Retrieve agent list by machine os ID.
+    [HttpGet("{osId}/agents")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AssignAgentDto>>>> GetAgentsByMachineOSId(string osId)
     {
-        return ResultHelper(await _machineService.GetAgentsByMachineAsync(machineId));
+        return ResultHelper(await _machineService.GetAgentsByMachineOSIdAsync(osId));
     }
 
     // Retrieve the select-option list of machines

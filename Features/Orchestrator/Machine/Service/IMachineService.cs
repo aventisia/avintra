@@ -56,9 +56,9 @@ public interface IMachineService
     /// <summary>
     /// Retrieves a list of agents assigned to a machine asynchronously.
     /// </summary>
-    /// <param name="machineId">The ID of the machine for which assigned agents will be retrieved.</param>
+    /// <param name="osId">The OS ID of the machine for which assigned agents will be retrieved.</param>
     /// <returns>A service response containing a list of agents assigned to the specified machine.</returns>
-    Task<ServiceResponse<IEnumerable<AssignAgentDto>>> GetAgentsByMachineAsync(Guid machineId);
+    Task<ServiceResponse<IEnumerable<AssignAgentDto>>> GetAgentsByMachineOSIdAsync(string osId);
 
     /// <summary>
     /// Retrieves a list of machines formatted as select options.

@@ -6,7 +6,7 @@ namespace WorkspaceAPIs.DTOs;
 public class AssignAgentDto
 {
     /// <summary>
-    /// Gets or sets Id of the machine flow.
+    /// Gets or sets Id of the flow version.
     /// </summary>
     public Guid Id { get; set; }
 
