@@ -56,7 +56,7 @@ export function UpdateBanner() {
           }
           case "Finished":
             toast.success(
-              `Worc Desktop App v${update.version} downloaded successfully. Restarting app...`,
+              `WorcDesktopApp v${update.version} downloaded successfully. Restarting app...`,
             );
             setProgress(0);
             break;

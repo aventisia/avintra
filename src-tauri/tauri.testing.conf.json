@@ -13,7 +13,7 @@
   "app": {
     "windows": [
       {
-        "title": "Worc Desktop App DEV",
+        "title": "WorcDesktopApp DEV",
         "resizable": true,
         "fullscreen": false
       }
