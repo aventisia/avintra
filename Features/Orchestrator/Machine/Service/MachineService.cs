@@ -588,7 +588,7 @@ public class MachineService : IMachineService
     }
 
     // Retrieve agent list
-    public async Task<ServiceResponse<IEnumerable<AssignAgentDto>>> GetAgentsByMachineAsync(Guid machineId)
+    public async Task<ServiceResponse<IEnumerable<AssignAgentDto>>> GetAgentsByMachineOSIdAsync(string osId)
     {
         // Initialize the response with a failed result
         var serviceResponse = new ServiceResponse<IEnumerable<AssignAgentDto>>
@@ -601,21 +601,21 @@ public class MachineService : IMachineService
         {
             // Check if the machine exists and belongs to the current user
             var machine = await _unitOfWork.MachineRepo
-                                            .GetByConditionAsync(w => w.Id == machineId)
+                                            .GetByConditionAsync(w => w.OSId.ToLower() == osId.ToLower())
                                             .Include(i => i.MachineFlows)
                                             .FirstOrDefaultAsync();
 
             // Return an error if the machine doesn't exist
             if (machine == null)
             {
-                _logger.LogInformation("Machine with ID {MachineId} not found for user {UserId}.", machineId, _userId);
+                _logger.LogInformation("Machine with OS ID {OSId} not found for user {UserId}.", osId, _userId);
                 serviceResponse.Message = "The machine does not exist.";
                 return serviceResponse;
             }
 
             // Retrieve all agents for the current user
             var agents = await _unitOfWork.MachineFlowRepo
-                                            .GetByConditionAsync(w => w.MachineId == machineId)
+                                            .GetByConditionAsync(w => w.MachineId == machine.Id)
                                             .Include(i => i.FlowVersion)
                                                 .ThenInclude(i2 => i2.Flow)
                                             .ProjectToType<AssignAgentDto>()
@@ -640,8 +640,7 @@ public class MachineService : IMachineService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An unexpected error occurred while retrieving agents for machine {MachineId}.", machineId);
-            serviceResponse.Message = "An error occurred while retrieving agents from the machine.";
+            _logger.LogError(ex, "An unexpected error occurred while retrieving agents for machine OSId {osId}.", osId);
             return serviceResponse;
         }
 
