@@ -80,17 +80,17 @@ public static class HttpClientHelper
                     }
                     catch (System.Text.Json.JsonException ex)
                     {
-                        return JsonDocument.Parse($@"{{""error"": ""Exception: {ex.Message.Replace("\"", "'")}""}}");
+                        return JsonDocument.Parse($@"{{""statusCode"": {(int)response.StatusCode}, ""error"": ""Exception: {ex.Message.Replace("\"", "'")}""}}");
                     }
                 }
                 else
                 {
-                    return JsonDocument.Parse($@"{{""error"": ""Exception: {response.StatusCode} - {responseContent.Replace("\"", "'")}""}}");
+                    return JsonDocument.Parse($@"{{""statusCode"": {(int)response.StatusCode}, ""error"": ""Exception: {responseContent.Replace("\"", "'")}""}}");
                 }
             }
             catch (Exception ex)
             {
-                return JsonDocument.Parse($@"{{""error"": ""Exception: {ex.Message.Replace("\"", "'")}""}}");
+                return JsonDocument.Parse($@"{{""statusCode"": 500, ""error"": ""Exception: {ex.Message.Replace("\"", "'")}""}}");
             }
         }
     }

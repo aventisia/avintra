@@ -207,6 +207,7 @@ public class OrchestratorHub : Hub
                     // Update the machine's status to "Running" to indicate that the agent execution is in progress.
                     clientStatusDto.Status = MachineStatusTypeEnum.Running;
                     clientStatusDto.LastSeen = DateTimeOffset.UtcNow;
+                    clientStatusDto.AgentId = agentId;
 
                     // Persist the updated machine status to the store.
                     await _clientStatusStore.UpdateClientStatusAsync(clientStatusDto);

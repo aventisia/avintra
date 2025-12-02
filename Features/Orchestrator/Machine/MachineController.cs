@@ -79,4 +79,11 @@ public class MachineController : BaseApiController
     {
         return ResultHelper(await _machineService.FindMachinesByKeywordAsync(searchKey));
     }
+
+    // Removes multiple agents from a specific machine using the machineId and a list of agentIds.
+    [HttpPost("{machineId}/remove-agents")]
+    public async Task<ActionResult<ServiceResponse<bool>>> RemoveAgentsFromMachine(Guid machineId, [FromBody] IEnumerable<Guid> agentIds)
+    {
+        return ResultHelper(await _machineService.RemoveAgentsFromMachineAsync(machineId, agentIds));
+    }
 }

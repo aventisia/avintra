@@ -1,57 +1,35 @@
-[
+{
+  "name": "GetWorksheetNames",
+  "description": "Retrieves the list of worksheet names from a specified Excel file stored in OneDrive or SharePoint using the Microsoft 365 Excel API. Provide valid M365 credentials and the target Excel file's Drive and Item ID. The connector will return the worksheet names, along with the status code and message from the API.",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "fields": [
     {
       "direction": "Input",
       "type": "credentials-select",
       "name": "__CredentialId__M365",
-      "label": "M365 Excel Credential",
-      "description": "The M365 Excel credential containing valid tenant ID, client ID, and client secret which is used to authenticate API requests.",
-      "defaultValue": "",
-      "required": true
+      "label": "M365 Excel API Credential",
+      "description": "Credential for authenticating with Microsoft 365 Excel API (requires tenant ID, client ID, and client secret).",
+      "defaultValue": ""
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "DriveAndItemId",
-      "label": "Drive and Item ID",
-      "description": " The Drive ID and Item ID of the Excel file in OneDrive or SharePoint (format: driveId/items/itemId).",
-      "defaultValue": "",
-      "required": true
+      "label": "Excel File (Drive and Item ID)",
+      "description": "The Drive ID and Item ID of the Excel file in OneDrive or SharePoint to retrieve worksheet names from. Format: driveId/items/itemId.",
+      "defaultValue": ""
     },
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "Response",
-      "label": "Response",
-      "description": "Returns the details of the excel file worksheet",
+      "name": "Result",
+      "label": "Worksheet Names Result",
+      "description": "Returns the list of worksheet names from the specified Excel file.",
       "defaultValue": {
-        "value": "Response",
+        "value": "Result",
         "enabled": true
-      },
-      "required": false
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "StatusCode",
-      "label": "Status Code",
-      "description": "Returns the HTTP status code from the Excel API after retrieving the worksheet.",
-      "defaultValue": {
-        "value": "StatusCode",
-        "enabled": false
-      },
-      "required": false
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "Message",
-      "label": "Message",
-      "description": "Returns the HTTP status message from the Excel API after retrieving the worksheet.",
-      "defaultValue": {
-        "value": "Message",
-        "enabled": false
-      },
-      "required": false
+      }
     }
   ]
-  
+}

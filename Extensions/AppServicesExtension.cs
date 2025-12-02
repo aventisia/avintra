@@ -11,6 +11,7 @@ public static class AppServicesExtension
         var tenantDbConnectionString = $"{connConfig.TenantDb.Credentials}{connConfig.TenantDb.Host}{connConfig.TenantDb.Database}{connConfig.TenantDb.Other}";
 
         services.AddDbContext<WorkspaceDbContext>(options => options.UseNpgsql(appDbConnectionString));
+        services.AddDbContext<WorkspaceInternalDbContext>(options => options.UseNpgsql(appDbConnectionString));
         services.AddDbContext<TenantDbContext>(options => options.UseNpgsql(tenantDbConnectionString));
     }
 
@@ -141,9 +142,8 @@ public static class AppServicesExtension
                 .ForJob(tenantHistoryCleanupJobKey)
                 .WithIdentity("TenantHistoryCleanupJob-trigger")
                 .StartNow()
-                .WithCronSchedule("0 0 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Runs daily at 12:00 AM UTC
-                .WithDescription("Trigger for Tenant History Cleanup Job - Runs at 12:00 AM UTC daily"));
-
+                .WithCronSchedule("0 0 2 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Runs daily at 2:00 AM UTC
+                .WithDescription("Trigger for Tenant History Cleanup Job - Runs at 2:00 AM UTC daily"));
         });
 
         // Register Quartz hosted service to ensure jobs run in the background

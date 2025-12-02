@@ -2,12 +2,12 @@ namespace WorkspaceAPIs.Jobs;
 
 public class TimeTriggerExecutionJob : IJob
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
     private readonly ILogger<TimeTriggerExecutionJob> _logger;
 
-    public TimeTriggerExecutionJob(IUnitOfWork unitOfWork, ILogger<TimeTriggerExecutionJob> logger)
+    public TimeTriggerExecutionJob(WorkspaceInternalDbContext workspaceInternalDbContext, ILogger<TimeTriggerExecutionJob> logger)
     {
-        _unitOfWork = unitOfWork;
+        _workspaceInternalDbContext = workspaceInternalDbContext;
         _logger = logger;
     }
 
@@ -26,8 +26,8 @@ public class TimeTriggerExecutionJob : IJob
             var endOfCurrentMinute = startOfCurrentMinute.AddMinutes(1);
 
             // Retrieve triggers that should fire during this minute
-            var triggersToExecute = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(trigger =>
+            var triggersToExecute = await _workspaceInternalDbContext.TimeTriggers
+                .Where(trigger =>
                     trigger.NextTriggerTime >= startOfCurrentMinute && trigger.NextTriggerTime < endOfCurrentMinute &&
                     trigger.EffectiveDate.Date <= currentUtcTime.Date &&
                     (trigger.EndDate == null || trigger.EndDate >= currentUtcTime.Date)
@@ -79,24 +79,21 @@ public class TimeTriggerExecutionJob : IJob
                 _logger.LogInformation($"Next Trigger Time for {trigger.Name}: {trigger.NextTriggerTime:O}");
 
                 // Update the trigger record in the database
-                _unitOfWork.TriggerRepo.Update(trigger);
+                _workspaceInternalDbContext.TimeTriggers.Update(trigger);
             }
 
             // Check if there are any jobs created
             if (createdJobs.Any())
             {
                 // Insert the created jobs into the database asynchronously using the repository's InsertAsync method.
-                await _unitOfWork.JobRepo.InsertAsync(createdJobs);
+                await _workspaceInternalDbContext.Jobs.AddRangeAsync(createdJobs);
             }
 
             // Check if there are any triggers that need to be executed
             if (triggersToExecute.Count != 0)
             {
                 // Save changes to the database
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogWarning("Failed to save trigger updates to the database.");
-                }
+                await _workspaceInternalDbContext.SaveChangesAsync();
             }
 
             _logger.LogInformation($"Job completed successfully at {currentUtcTime:O}");

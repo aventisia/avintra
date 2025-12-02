@@ -6,12 +6,14 @@ public class FlowsTableService : IFlowsTableService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly IFlowVersionService _flowVersionService;
+    private readonly IFlowUserService _flowUserService;
 
     public FlowsTableService(
         ILogger<FlowsTableService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IFlowVersionService flowVersionService)
+        IFlowVersionService flowVersionService,
+        IFlowUserService flowUserService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -19,6 +21,7 @@ public class FlowsTableService : IFlowsTableService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _flowVersionService = flowVersionService;
+        _flowUserService = flowUserService;
     }
 
     // Retrieves all flows created by the user.
@@ -169,6 +172,17 @@ public class FlowsTableService : IFlowsTableService
                 _logger.LogInformation("Context SaveChanges failed while inserting new flow");
                 return serviceResponse;
             }
+            
+            // Create a new FlowUserDto to associate the user with the flow
+            var flowUserDto = new FlowUserDto()
+            {
+                FlowId = newFlow.Id,
+                UserId = _userId,
+                Type = ProjectUserAccessEnum.Owner
+            };
+
+            // Insert the FlowUserDto to associate the user with the flow
+            await _flowUserService.InsertFlowUserAsync(flowUserDto);
 
             // Insert a flow version
             var flowVersion = new FlowVersionDto

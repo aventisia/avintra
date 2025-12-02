@@ -21,6 +21,11 @@ public class ClientStatusDto
     public Guid ClientId { get; set; }
 
     /// <summary>
+    /// Gets or sets the unique identifier for the agent.
+    /// </summary>
+    public Guid? AgentId { get; set; }
+
+    /// <summary>
     /// Gets or sets the type of the client (e.g., WebBrowserUser, DesktopAppUser, AssistAppMachine), indicating the platform or application used.
     /// </summary>
     public ClientTypesEnum Type { get; set; }

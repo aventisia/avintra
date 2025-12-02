@@ -1,65 +1,43 @@
-[
-  {
-    "direction": "Input",
-    "type": "credentials-select",
-    "name": "__CredentialId__M365",
-    "label": "M365 Excel Credential",
-    "description": "The M365 Excel credential containing valid tenant ID, client ID, and client secret which is used to authenticate API requests.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "DriveAndItemId",
-    "label": "Drive and Item ID",
-    "description": " The Drive ID and Item ID of the Excel file in OneDrive or SharePoint (format: driveId/items/itemId).",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "NewWorksheetName",
-    "label": "New Worksheet Name",
-    "description": "The name of the new worksheet to be added to the Excel file.",
-    "defaultValue": "New Worksheet",
-    "required": true
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "Response",
-    "label": "Response",
-    "description": "Returns the details of the newly added worksheet.",
-    "defaultValue": {
-      "value": "Response",
-      "enabled": true
+{
+  "name": "AddNewWorksheet",
+  "description": "Adds a new worksheet to a specified Excel file stored in OneDrive or SharePoint using the Microsoft 365 Excel API. Provide valid M365 credentials, the target Excel file's Drive and Item ID, and the name for the new worksheet. The connector will return the details of the newly added worksheet, along with the status code and message from the API.",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Excel Credential",
+      "description": "The M365 Excel credential containing valid tenant ID, client ID, and client secret which is used to authenticate API requests.",
+      "defaultValue": ""
     },
-    "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "StatusCode",
-    "label": "Status Code",
-    "description": "Returns the HTTP status code from the Excel API after adding the new worksheet.",
-    "defaultValue": {
-      "value": "StatusCode",
-      "enabled": false
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DriveAndItemId",
+      "label": "Drive and Item ID",
+      "description": "The Drive ID and Item ID of the Excel file in OneDrive or SharePoint (format: driveId/items/itemId).",
+      "defaultValue": ""
     },
-    "required": false
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "Message",
-    "label": "Message",
-    "description": "Returns the HTTP status message from the Excel API after adding the new worksheet.",
-    "defaultValue": {
-      "value": "Message",
-      "enabled": false
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "NewWorksheetName",
+      "label": "New Worksheet Name",
+      "description": "The name of the new worksheet to be added to the Excel file.",
+      "defaultValue": "New Worksheet"
     },
-    "required": false
-  }
-]
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the details of the newly added worksheet.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "name": "WriteValueToRange",
+  "description": "Writes one or more values to a specified range in a worksheet of an Excel file stored in OneDrive or SharePoint using the Microsoft 365 Excel API. Provide valid M365 credentials, the target Excel file's Drive and Item ID, worksheet name, range address, and the values to write. The connector will update the specified range and return the result, status code, and message from the API.",
+  "version": "1.0.0",
+  "author": "@gaurav",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialId__M365",
+      "label": "M365 Excel API Credential",
+      "description": "Credential for authenticating with Microsoft 365 Excel API (requires tenant ID, client ID, and client secret).",
+      "defaultValue": ""      
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DriveAndItemId",
+      "label": "Excel File (Drive and Item ID)",
+      "description": "The Drive ID and Item ID of the Excel file in OneDrive or SharePoint where the value will be written. Format: driveId/items/itemId.",
+      "defaultValue": ""      
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetName",
+      "label": "Worksheet Name",
+      "description": "The name of the worksheet in the Excel file where the value will be written (e.g., 'Sheet1').",
+      "defaultValue": "Sheet1"      
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "RangeAddress",
+      "label": "Range Address",
+      "description": "The address of the range in the worksheet where the value will be written (e.g., 'A1' or 'A1:B10').",
+      "defaultValue": "A1"      
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ValuesToWrite",
+      "label": "Values to Write",
+      "description": "The values to write to the specified range in the worksheet (e.g., [[\"Value1\", \"Value2\"], [\"Value3\", \"Value4\"]]).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Write Result",
+      "description": "Returns the result of writing the value to the specified range in the worksheet.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}
