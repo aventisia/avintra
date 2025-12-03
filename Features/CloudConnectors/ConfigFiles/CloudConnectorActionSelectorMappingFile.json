@@ -145,6 +145,33 @@
           }
 
         ]
+      },
+      {
+        "label": "Twilio",
+        "description": "Work with Twilio services",
+        "icon": null,
+         "img": "/assets/Twilio.svg",
+        "listType": null,
+        "actions": [
+            {
+              "type": "cloudConnectorNode",
+              "name": "M365/Twilio/SendTextSms",
+              "label": "Send Text Sms",
+              "description": "Send text message using an twilio service ",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+              "img": "/assets/Twilio.svg"
+            },
+            {
+              "type": "cloudConnectorNode",
+              "name": "M365/Twilio/SendWhatsappMessage",
+              "label": "Send Whatsapp Message",
+              "description": "Send whatsapp message using an twilio service ",
+              "docsLink": "https://docs.aventisia.com",
+              "icon": null,
+               "img": "/assets/Twilio.svg"
+            }         
+          ]
       }
     ]
   }
