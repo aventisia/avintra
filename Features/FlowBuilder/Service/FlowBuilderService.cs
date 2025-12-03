@@ -102,27 +102,7 @@ public class FlowBuilderService : IFlowBuilderService
 
         try
         {
-            // Step 1: Validate required parameters based on the specified publish type
-            if ((publishFlowVersionDto.Type == PublishTypesEnum.Block ||
-                 publishFlowVersionDto.Type == PublishTypesEnum.BlockTemplate ||
-                 publishFlowVersionDto.Type == PublishTypesEnum.AgentTemplate) &&
-                string.IsNullOrEmpty(publishFlowVersionDto.Name))
-            {
-                // Log warning if 'Name' is not provided for Block, BlockTemplate, or AgentTemplate types
-                _logger.LogWarning("PublishFlowVersionAsync: 'Name' is required for Block, BlockTemplate, or AgentTemplate types.");
-                serviceResponse.Message = "'Name' is a mandatory field for the selected type.";
-                return serviceResponse;
-            }
-
-            if (publishFlowVersionDto.Type == PublishTypesEnum.Block && publishFlowVersionDto.AccessType == null)
-            {
-                // Log warning if 'AccessType' is missing for Block type
-                _logger.LogWarning("PublishFlowVersionAsync: Missing 'AccessType' for Block type.");
-                serviceResponse.Message = "'AccessType' must be specified for the Block type.";
-                return serviceResponse;
-            }
-
-            // Step 2: Fetch the flow version with matching ID, flow ID, and ownership or shared access by current user
+            // Fetch the flow version with matching ID, flow ID, and ownership or shared access by current user
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Id == publishFlowVersionDto.Id &&
@@ -161,12 +141,16 @@ public class FlowBuilderService : IFlowBuilderService
                 return serviceResponse;
             }
 
-            // Step 3: Handle publish based on the type specified in the DTO
+            // Handle publish based on the type specified in the DTO
             switch (publishFlowVersionDto.Type)
             {
                 case PublishTypesEnum.Agent:
-                    // Log the start of publishing Agent type
-                    _logger.LogInformation($"Publishing flow version as Agent. FlowVersionId: {publishFlowVersionDto.Id}, FlowId: {publishFlowVersionDto.Id}");
+                case PublishTypesEnum.Block:
+                    // Determine the publish type for logging and message purposes
+                    var publishType = publishFlowVersionDto.Type.ToString();
+
+                    // Log the start of publishing
+                    _logger.LogInformation($"Publishing flow version as {publishType}. FlowVersionId: {publishFlowVersionDto.Id}, FlowId: {publishFlowVersionDto.Id}");
 
                     // Adapt the DTO values into the flow version object
                     publishFlowVersionDto.Adapt(flowVersion);
@@ -180,75 +164,13 @@ public class FlowBuilderService : IFlowBuilderService
                     _unitOfWork.FlowVersionRepo.Update(flowVersion);
                     if (!await _unitOfWork.SaveAsync())
                     {
-                        _logger.LogError("Failed to save changes while publishing the flow version as Agent.");
+                        _logger.LogError($"Failed to save changes while publishing the flow version as {publishType}.");
                         return serviceResponse;
                     }
 
                     // Log success and set response message
-                    _logger.LogInformation("Flow version successfully published as Agent.");
-                    serviceResponse.Message = "Flow version published successfully as Agent.";
-                    break;
-
-                case PublishTypesEnum.Block:
-                    // Log the start of publishing Block type
-                    _logger.LogInformation($"Publishing flow version as Block. FlowVersionId: {publishFlowVersionDto.Id}, FlowId: {publishFlowVersionDto.Id}");
-
-                    // Create a new Block using values from the DTO
-                    var block = new Block
-                    {
-                        Name = !string.IsNullOrEmpty(publishFlowVersionDto.Name) ? publishFlowVersionDto.Name : string.Empty,
-                        Description = !string.IsNullOrEmpty(publishFlowVersionDto.Description) ? publishFlowVersionDto.Description : null,
-                        Type = publishFlowVersionDto.AccessType ?? AccessTypesEnum.TenantLevel,
-                        FlowVersionId = flowVersion.Id,
-                        InputOutputObject = publishFlowVersionDto.InputOutputObject,
-                        ReactFlowObject = publishFlowVersionDto.ReactFlowObject,
-                        FlowVariablesObject = publishFlowVersionDto.FlowVariablesObject,
-                        CreatedByUserId = _userId,
-                        LastModifiedByUserId = _userId
-                    };
-
-                    // Insert and persist changes
-                    await _unitOfWork.BlockRepo.InsertAsync(block);
-                    if (!await _unitOfWork.SaveAsync())
-                    {
-                        _logger.LogError("Failed to save changes while publishing the flow version as Block.");
-                        return serviceResponse;
-                    }
-
-                    // Log success and set response message
-                    _logger.LogInformation("Flow version successfully published as Block.");
-                    serviceResponse.Message = "Block added successfully.";
-                    break;
-
-                case PublishTypesEnum.AgentTemplate:
-                case PublishTypesEnum.BlockTemplate:
-                    // Log the start of publishing Template type (AgentTemplate/BlockTemplate)
-                    _logger.LogInformation($"Publishing flow version as Template. FlowVersionId: {publishFlowVersionDto.Id}, FlowId: {publishFlowVersionDto.Id}");
-
-                    // Create a new template (WorcTemplate)
-                    var template = new ProjectTemplate
-                    {
-                        Name = !string.IsNullOrEmpty(publishFlowVersionDto.Name) ? publishFlowVersionDto.Name : string.Empty,
-                        Description = publishFlowVersionDto.Description,
-                        RefId = flowVersion.Id,
-                        Schema = publishFlowVersionDto.ReactFlowObject,
-                        AccessPath = $"/agent?f={flowVersion.FlowId}&v={flowVersion.Id}",
-                        SchemaVersion = flowVersion.VersionNumber,
-                        CreatedByUserId = _userId,
-                        LastModifiedByUserId = _userId
-                    };
-
-                    // Insert and persist changes
-                    await _unitOfWork.ProjectTemplateRepo.InsertAsync(template);
-                    if (!await _unitOfWork.SaveAsync())
-                    {
-                        _logger.LogError("Failed to save changes while publishing the flow version as Template.");
-                        return serviceResponse;
-                    }
-
-                    // Log success and set response message
-                    _logger.LogInformation("Flow version successfully published as Template.");
-                    serviceResponse.Message = "Template added successfully.";
+                    _logger.LogInformation($"Flow version successfully published as {publishType}.");
+                    serviceResponse.Message = $"{publishType} published successfully.";
                     break;
 
                 default:

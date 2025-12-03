@@ -6,26 +6,36 @@ namespace WorkspaceAPIs.DTOs;
 public class BlockDto
 {
     /// <summary>
-    /// Gets or sets the unique identifier for the block.
+    /// Gets or sets the unique identifier for the flow version.
     /// </summary>
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the block.
+    /// Gets or sets the unique identifier for the flow to which this flow belongs.
+    /// </summary>
+    public required Guid FlowId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the flow.
     /// </summary>
     [StringLength(255)]
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the description of the block.
+    /// Gets or sets the description of the flow.
     /// </summary>
     [StringLength(500)]
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the access level for the block. Possible values include: Agent Level, Tenant Level, and Public.
+    /// Gets or sets the access level for the flow. Possible values include: Agent Level, Tenant Level, and Public.
     /// </summary>
     public AccessTypesEnum Type { get; set; }
+
+    /// <summary>
+    /// Gets or sets the version number of a flow version record
+    /// </summary>
+    public int VersionNumber { get; set; }
 
     /// <summary>
     /// Gets or sets the JSON string representing the flow version’s nodes, edges, and viewport. The default value is an empty object.
@@ -41,11 +51,6 @@ public class BlockDto
     /// Gets or sets the JSON string defining the input and output structure for the flow version.
     /// </summary>
     public string? InputOutputObject { get; set; }
-
-    /// <summary>
-    /// Gets or sets the unique identifier for the flow version to which this block belongs.
-    /// </summary>
-    public required Guid FlowVersionId { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the block is disabled.

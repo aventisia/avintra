@@ -4,14 +4,16 @@ public class JobTableService : IJobTableService
 {
     private readonly ILogger<JobTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    ICurrentTenantService _currentTenantService;
+    private readonly ICurrentTenantService _currentTenantService;
+    private readonly IJobsExecutorService _jobsExecutorService;
     private readonly Guid _userId;
 
     public JobTableService(
         ILogger<JobTableService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IJobsExecutorService jobsExecutorService)
     {
         // Set the user ID from the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -19,6 +21,7 @@ public class JobTableService : IJobTableService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
+        _jobsExecutorService = jobsExecutorService;
     }
 
     // Retrieves a list of jobs associated with the current user.
@@ -129,6 +132,9 @@ public class JobTableService : IJobTableService
                 _logger.LogInformation("Failed to save changes while inserting new job.");
                 return serviceResponse;
             }
+
+            // Execute the new job asynchronously
+            await _jobsExecutorService.ExecuteJobCommandAsync(newJob);
 
             // Success - return the created job
             serviceResponse.Data = newJob.Adapt<JobTableDto>();

@@ -6,7 +6,7 @@ namespace WorkspaceAPIs.DTOs;
 public class SearchBlockDto
 {
     /// <summary>
-    /// Gets or sets the unique identifier for the block.
+    /// Gets or sets the unique identifier for the flow version.
     /// </summary>
     public Guid Id { get; set; }
 
@@ -28,9 +28,14 @@ public class SearchBlockDto
     public AccessTypesEnum Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the unique identifier for the flow version to which this block belongs.
+    /// Gets or sets the version number of a flow version record
     /// </summary>
-    public required Guid FlowVersionId { get; set; }
+    public int VersionNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique identifier for the flow to which this block belongs.
+    /// </summary>
+    public required Guid FlowId { get; set; }
 
     /// <summary>
     /// Gets or sets a flag indicating whether the block is disabled.
