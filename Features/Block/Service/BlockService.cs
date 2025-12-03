@@ -340,7 +340,7 @@ namespace WorkspaceAPIs.Services
             var serviceResponse = new ServiceResponse<IEnumerable<SearchBlockDto>>
             {
                 Data = null,
-                Message = "Failed to search for flow versions. Please try again."
+                Message = "Failed to search for blocks. Please try again."
             };
 
             // If the search key is empty or null, return a message indicating the issue.
@@ -359,7 +359,7 @@ namespace WorkspaceAPIs.Services
                         w.IsPublished &&
                         !w.IsArchived &&
                         w.Flow.Type == FlowTypesEnum.Block &&
-                        w.Flow.Name.Contains(searchKey, StringComparison.OrdinalIgnoreCase)
+                        w.Flow.Name.ToLower().Contains(searchKey.ToLower())
                     );
 
                 // Execute the query and map the result to SearchBlockDto
@@ -370,13 +370,13 @@ namespace WorkspaceAPIs.Services
 
                 serviceResponse.Data = flowVersions;
                 serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "Flow versions found.";
+                serviceResponse.Message = "Block retrived Successfully.";
 
-                _logger.LogInformation($"Successfully retrieved {flowVersions.Count()} flow versions for search key: {searchKey}");
+                _logger.LogInformation($"Successfully retrieved {flowVersions.Count()} blocks for search key: {searchKey}");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error occurred while searching for flow versions with key: {searchKey}");
+                _logger.LogError(ex, $"Error occurred while searching for blocks with key: {searchKey}");
             }
 
             return serviceResponse;
