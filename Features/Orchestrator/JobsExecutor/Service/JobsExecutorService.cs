@@ -147,6 +147,9 @@ public class JobsExecutorService : IJobsExecutorService
                 _logger.LogWarning("Machine {MachineId} is not online or idle. Job execution cannot be triggered.", job.MachineId);
                 await _hubContext.Clients.User(userConnectionId).SendAsync("ReceiveJobStatus", "Assigned machine is not online or idle", _userId);
             }
+
+            job.Status = JobStatusTypesEnum.Running;
+
             // Update the job in the repository
             _unitOfWork.JobRepo.Update(job);
 
