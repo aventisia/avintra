@@ -105,7 +105,7 @@ public class JobsExecutorService : IJobsExecutorService
                     _logger.LogWarning("Machine status not found for client with ID: {ClientId} in tenant: {TenantId}", machineStatusDto.ClientId, job.TenantId);
                     return;
                 }
-                
+
                 job.MachineId = machineStatusDto.ClientId;
             }
 
@@ -146,6 +146,16 @@ public class JobsExecutorService : IJobsExecutorService
                 // If the machine is not online or idle, log the warning and notify the user
                 _logger.LogWarning("Machine {MachineId} is not online or idle. Job execution cannot be triggered.", job.MachineId);
                 await _hubContext.Clients.User(userConnectionId).SendAsync("ReceiveJobStatus", "Assigned machine is not online or idle", _userId);
+            }
+            // Update the job in the repository
+            _unitOfWork.JobRepo.Update(job);
+
+            // Try to save changes asynchronously
+            if (!await _unitOfWork.SaveAsync())
+            {
+                // Log the failure for debugging or auditing purposes
+                _logger.LogError("Failed to save changes for Job ID: {JobId} with Machine ID: {MachineId}. Client ID: {ClientId}",
+                    job.Id, job.MachineId, job.MachineId);
             }
 
             _logger.LogInformation($"Job {job.Id} completed successfully.");
