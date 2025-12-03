@@ -3,57 +3,55 @@ namespace WorkspaceAPIs.Services;
 public interface IBlockService
 {
     /// <summary>
-    /// Retrieves a collection of blocks associated with the specified flowVersionId.
+    /// Retrieves a collection of flow versions associated with the specified flowId.
     /// </summary>
-    /// <param name="flowVersionId">The reference Flow Version ID.</param>
-    /// <returns>A service response containing a list of blocks linked to the given flowVersionId.</returns>
-    Task<ServiceResponse<IEnumerable<BlockDto>>> GetBlocksByIdAsync(Guid? flowVersionId);
+    /// <param name="flowId">The reference Flow ID.</param>
+    /// <returns>A service response containing a list of flow versions linked to the given flowId.</returns>
+    Task<ServiceResponse<IEnumerable<FlowVersionDto>>> GetBlocksByIdAsync(Guid? flowId);
 
     /// <summary>
-    /// Retrieves a specific block by its unique identifier.
+    /// Retrieves a specific flow version by its unique identifier.
     /// </summary>
-    /// <param name="blockId">The unique identifier of the block.</param>
-    /// <returns>A service response containing the BlockDto if found, otherwise null.</returns>
-    Task<ServiceResponse<BlockDto>> GetBlockByIdAsync(Guid blockId);
+    /// <param name="flowVersionId">The unique identifier of the flow version.</param>
+    /// <returns>A service response containing the FlowVersionDto if found, otherwise null.</returns>
+    Task<ServiceResponse<FlowVersionDto>> GetBlockByIdAsync(Guid flowVersionId);
 
     /// <summary>
-    /// Adds a new block to a flow version.
+    /// Adds a new flow version to a flow.
     /// </summary>
-    /// <param name="blockDto">The data representing the block to be added.</param>
-    /// <returns>A service response containing the newly added block.</returns>
-    Task<ServiceResponse<BlockDto>> InsertBlockAsync(BlockDto blockDto);
+    /// <param name="blockDto">The data representing the flow version to be added.</param>
+    /// <returns>A service response containing the newly added flow version.</returns>
+    Task<ServiceResponse<FlowVersionDto>> InsertBlockAsync(BlockDto blockDto);
 
     /// <summary>
-    /// Updates the information of an existing block.
+    /// Updates the information of an existing flow version.
     /// </summary>
-    /// <param name="blockDto">The data of the block to be updated.</param>
-    /// <returns>A service response containing the updated block.</returns>
-    Task<ServiceResponse<BlockDto>> UpdateBlockAsync(BlockDto blockDto);
+    /// <param name="blockDto">The data of the flow version to be updated.</param>
+    /// <returns>A service response containing the updated flow version.</returns>
+    Task<ServiceResponse<FlowVersionDto>> UpdateBlockAsync(BlockDto blockDto);
 
     /// <summary>
-    /// Removes a block permanently.
+    /// Removes a flow version permanently.
     /// </summary>
-    /// <param name="blockId">The unique identifier of the block to be deleted.</param>
+    /// <param name="flowVersionId">The unique identifier of the flow version to be deleted.</param>
     /// <returns>A service response indicating whether the delete operation was successful.</returns>
-    Task<ServiceResponse<bool>> DeleteBlockAsync(Guid blockId);
+    Task<ServiceResponse<bool>> DeleteBlockAsync(Guid flowVersionId);
 
     /// <summary>
-    /// Removes multiple blocks based on a list of unique identifiers.
+    /// Removes multiple flow versions based on a list of unique identifiers.
     /// </summary>
-    /// <param name="blockIds">A collection of GUIDs representing the blocks to be removed.</param>
+    /// <param name="flowVersionIds">A collection of GUIDs representing the flow versions to be removed.</param>
     /// <returns>A service response indicating whether the delete operation was successful.</returns>
-    Task<ServiceResponse<bool>> DeleteMultipleBlocksAsync(IEnumerable<Guid> blockIds);
-    
+    Task<ServiceResponse<bool>> DeleteMultipleBlocksAsync(IEnumerable<Guid> flowVersionIds);
+
     /// <summary>
-    /// Searches for blocks based on a search key and optional flow version identifier.
+    /// Searches for flow versions based on a search key and optional flow ID.
     /// </summary>
-    /// <param name="searchKey">The keyword used to search block names. The search is case-insensitive.</param>
-    /// <param name="flowVersionId">An optional flow version identifier. If provided, the search will only return blocks of type "AgentLevel" with a matching flow version ID.</param>
+    /// <param name="searchKey">The keyword used to search flow names. The search is case-insensitive.</param>
+    /// <param name="flowId">An optional flow identifier. If provided, the search will only return flow versions linked to this flow.</param>
     /// <returns>A service response containing a collection of <see cref="SearchBlockDto"/> objects matching the search criteria.</returns>
     /// <remarks>
-    /// This method retrieves blocks based on the provided search key and applies access control logic based on block type and user permissions.
-    /// If no flow version ID is provided, blocks of type "Public" and "TenantLevel" are returned for any user.
-    /// If a flow version ID is provided, only blocks of type "AgentLevel" with the matching flow version are returned.
+    /// This method retrieves flow versions based on the provided search key and applies access control logic based on user permissions.
     /// </remarks>
-    Task<ServiceResponse<IEnumerable<SearchBlockDto>>> SearchBlocksAsync(string searchKey, Guid? flowVersionId);
+    Task<ServiceResponse<IEnumerable<SearchBlockDto>>> SearchBlocksAsync(string searchKey, Guid? flowId);
 }
