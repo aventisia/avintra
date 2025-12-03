@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import { AiOutlineThunderbolt } from "react-icons/ai";
 
+import { IS_TAURI } from "@/constants/constants";
+
 const sidebarMenuSections: SidebarMenuSectionType[] = [
   {
     sectionName: "my projects",
@@ -99,7 +101,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
     sectionName: "Assist",
     menuItems: [
       // Add Assist my agents only if not production
-      ...(import.meta.env.MODE !== "production"
+      ...(import.meta.env.MODE !== "production" && IS_TAURI
         ? [
             {
               permissions: ["TU"],
@@ -110,7 +112,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
           ]
         : []),
       // Add Assist my queue only if not production
-      ...(import.meta.env.MODE !== "production"
+      ...(import.meta.env.MODE !== "production" && IS_TAURI
         ? [
             {
               permissions: ["TU"],
