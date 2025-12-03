@@ -1,4 +1,5 @@
 using WorkspaceAPIs.Features.CloudConnectors.M365.SendGrid;
+using WorkspaceAPIs.Features.CloudConnectors.M365.Twilio;
 
 namespace WorkspaceAPIs.Extensions;
 
@@ -98,6 +99,7 @@ public static class AppServicesExtension
         services.AddScoped<IM365ConnectorsService, M365ConnectorsService>();
         services.AddScoped<IM365ExcelConnectorsService, M365ExcelConnectorsService>();
         services.AddScoped<ISendGridConnectorsService, SendGridConnectorsService>();
+        services.AddScoped<ITwilioConnectorsService,TwilioConnectorsService>();
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }

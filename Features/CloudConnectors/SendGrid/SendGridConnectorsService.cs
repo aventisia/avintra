@@ -95,41 +95,8 @@ public class SendGridConnectorsService : ISendGridConnectorsService
         }
         return serviceResponse;
     }
-    // private async Task<string?> GetSendGridApiKeyAsync(Guid credentialId)
-    // {
-    //     var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialId);
-    //     if (vaultCredential == null)
-    //     {
-    //         _logger.LogWarning("Vault credential not found for ID: {CredentialId}", credentialId);
-    //         return null;
-    //     }
 
-    //     // Assuming API key is stored encrypted in vaultCredential.Data["ApiKey"]
-    //     if (vaultCredential.Data == null || !vaultCredential.Data.TryGetValue("ApiKey", out var apiKeyValue))
-    //     {
-    //         _logger.LogWarning("No 'ApiKey' found in vault credential Data for ID: {CredentialId}", credentialId);
-    //         return null;
-    //     }
-
-    //     var encryptedApiKey = apiKeyValue?.ToString();
-    //     if (string.IsNullOrWhiteSpace(encryptedApiKey))
-    //     {
-    //         _logger.LogWarning("ApiKey value is null or empty for credential ID: {CredentialId}", credentialId);
-    //         return null;
-    //     }
-
-    //     try
-    //     {
-    //         var decryptedApiKey = _stringEncryptionService.DecryptString(encryptedApiKey);
-    //         return decryptedApiKey;
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         _logger.LogError(ex, "Failed to decrypt SendGrid API key for Credential ID: {CredentialId}", credentialId);
-    //         return null;
-    //     }
-    // }
-
+    // Get sendgrid apikey from the vault credential id.
     private async Task<string?> GetSendGridApiKeyAsync(Guid credentialId)
     {
         var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialId);
