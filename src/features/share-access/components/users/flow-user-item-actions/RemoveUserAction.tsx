@@ -32,8 +32,7 @@ export const RemoveUserAction = ({ id }: RemoveUserActionProps) => {
           },
           title: "Remove User",
           confirmBtnText: "Remove",
-          description:
-            "Are you sure you want to remove this user's access to the Agent?",
+          description: "Are you sure you want to remove this user's access?",
         });
       }}
     >
