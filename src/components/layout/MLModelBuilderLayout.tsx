@@ -1,5 +1,5 @@
 import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
-import { FlowParticipantsFacePile } from "@/features/share-access/components/FlowParticipantsFacePile";
+import { FlowParticipantsFacePile } from "@/features/share-access/components/share-avatars/FlowParticipantsFacePile";
 import { useClearQueryParamsOutsideView } from "@/hooks/useClearQueryParamsOutsideView";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { Header } from "@/react-toolkit/layout/Header";
