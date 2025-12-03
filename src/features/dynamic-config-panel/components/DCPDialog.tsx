@@ -10,6 +10,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import CallAgentConfigForm from "@/features/call-agent/components/CallAgentConfigForm";
 import CallBlockConfigForm from "@/features/call-block/components/CallBlockConfigForm";
 import ModelConfigForm from "@/features/call-model/components/ModelConfigForm";
+import CreateModel from "@/features/create-model/components/CreateModel";
 
 export const DCPDialog = ({ children }: React.PropsWithChildren) => {
   // Ref and state for dynamic <p> height
@@ -89,29 +90,39 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
     >
       {children}
       <DialogContent
-        side={"right"}
+        side={nodeData?.name == "CreatedAIModelActivity" ? "right" : "right"}
         className={cn(
           "!max-w-[32rem]",
           nodeData?.name === "ConditionalBranchActivity" && "!max-w-[40rem]",
           nodeData?.name === "LoopActivity" && "!max-w-[40rem]",
+          // nodeData?.name == "CreatedAIModelActivity" &&
+          //   "z-50 mt-[calc(var(--header-height)-4*var(--header-padding))] h-[calc(100vh-var(--header-height)-2*var(--header-padding))] !max-w-[calc((100vw-(2*var(--header-padding)))/2)]",
+          nodeData?.name == "CreatedAIModelActivity" &&
+            "right-2 z-50 mt-[calc(var(--header-height)+1.5*var(--header-padding))] h-[calc(100vh-var(--header-height)-2*var(--header-padding))] !max-w-[calc((100vw-(2*var(--header-padding)))/2)] rounded-e-xl border",
         )}
       >
-        <DCPDialogHeader className="border-none px-3.5 py-3 text-lg tracking-wide" />
-        <p
-          ref={infoRef}
-          className="mx-2.5 rounded-lg bg-accent px-3 py-2 text-xs"
-        >
-          ℹ️ {nodeData?.description || "No description available."}
-          {renderInfoLink()}
-        </p>
-        <ScrollArea
-          style={{
-            height: `calc(100vh - 3.8rem - ${infoHeight}px)`,
-          }}
-          className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4"
-        >
-          {renderFormComponent()}
-        </ScrollArea>
+        {nodeData?.name == "CreatedAIModelActivity" ? (
+          <CreateModel />
+        ) : (
+          <>
+            <DCPDialogHeader className="border-none px-3.5 py-3 text-lg tracking-wide" />
+            <p
+              ref={infoRef}
+              className="mx-2.5 rounded-lg bg-accent px-3 py-2 text-xs"
+            >
+              ℹ️ {nodeData?.description || "No description available."}
+              {renderInfoLink()}
+            </p>
+            <ScrollArea
+              style={{
+                height: `calc(100vh - 3.8rem - ${infoHeight}px)`,
+              }}
+              className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4"
+            >
+              {renderFormComponent()}
+            </ScrollArea>
+          </>
+        )}
       </DialogContent>
     </DialogWrapper>
   );

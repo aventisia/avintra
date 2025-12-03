@@ -29,8 +29,13 @@ export const AIModelNode = ({
 
   useEffect(() => {
     if (data.type !== "aiNode") return;
-    if (data?.selectedModel) {
-      const newLabel = data?.selectedModel?.name;
+    const isNewMod = ["Attach AI Model", "Create AI Model"].includes(
+      data.label,
+    );
+    if (data?.selectedModel || isNewMod) {
+      const newLabel = data?.selectedModel
+        ? data?.selectedModel?.name
+        : "AI Model";
       if (newLabel) {
         // Find the node by id and update its label
         const updatedNodes = nodes.map((node: Node) => {
@@ -50,7 +55,7 @@ export const AIModelNode = ({
         setNodes(updatedNodes);
       }
     }
-  }, [data?.selectedModel]);
+  }, [data.label, data?.selectedModel]);
 
   //Get llm for the selected model
   const llm = data?.selectedModel?.llMs as unknown as string[];
@@ -76,7 +81,7 @@ export const AIModelNode = ({
           <div className="flex h-full w-full flex-col items-start gap-2.5 bg-[#1E1B4B] p-3 text-white">
             <div className="flex items-center gap-3">
               <BrainCircuitIcon className="text-white" />
-              <h3 className="line-clamp-1 flex-1 text-start text-lg font-semibold capitalize">
+              <h3 className="w-56 flex-1 truncate text-start text-lg font-semibold capitalize">
                 {data.label}
               </h3>
             </div>
