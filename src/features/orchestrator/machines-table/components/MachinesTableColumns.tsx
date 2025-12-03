@@ -199,7 +199,10 @@ export const machinesTableColumns: ColumnDef<MachinesTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the machines row actions component
-      <MachineRowActions rowId={row.original.id ?? "rowId"} />
+      <MachineRowActions
+        osId={row.original.osId ?? ""}
+        rowId={row.original.id ?? "rowId"}
+      />
     ),
   },
 ];

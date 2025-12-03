@@ -18,14 +18,15 @@ import { AgentsListItemActions } from "./assign-agent-item-actions";
 import { ExecutionAction } from "./ExecutionAction";
 
 const AgentsList = () => {
-  const { machineId } = useAssignAgentsStore(
+  const { osId, machineId } = useAssignAgentsStore(
     useShallow((s) => ({
       machineId: s.machineId,
-      setMachineId: s.setMachineId,
+      osId: s.osId,
     })),
   );
 
-  const { data } = useFetchSelectTableAgents(machineId);
+  // Use OS id to only to fetch agents list for all other crud operations and query keys machine id is used
+  const { data } = useFetchSelectTableAgents({ osId, machineId });
 
   return (
     <Command>
