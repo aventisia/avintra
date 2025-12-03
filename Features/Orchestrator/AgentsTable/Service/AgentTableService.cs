@@ -131,14 +131,15 @@ public class AgentTableService : IAgentTableService
         {
             // Try to retrieve the archived flow versions from the repository.
             var archivedFlowVersions = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(v =>
-                    (flowId == null || v.FlowId == flowId) &&
-                    v.IsArchived
+                .GetByConditionAsync(w =>
+                    (flowId == null || w.FlowId == flowId) &&
+                    w.Flow.Type == FlowTypesEnum.Agent &&
+                    w.IsArchived
                 )
-                .Include(f => f.Flow)
-                .Include(mf => mf.MachineFlows)
-                .Include(c => c.CreatedByUser)
-                .Include(c => c.LastModifiedByUser)
+                .Include(i => i.Flow)
+                .Include(i => i.MachineFlows)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
                 .OrderBy(o => o.VersionNumber)
                 .AsNoTracking()
                 .ToListAsync();
@@ -171,14 +172,15 @@ public class AgentTableService : IAgentTableService
         {
             // Try to retrieve the draft flow versions from the repository.
             var draftFlowVersions = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(v =>
-                    (flowId == null || v.FlowId == flowId) &&
-                    !v.IsPublished &&
-                    !v.IsArchived
+                .GetByConditionAsync(w =>
+                    (flowId == null || w.FlowId == flowId) &&
+                    w.Flow.Type == FlowTypesEnum.Agent &&
+                    !w.IsPublished &&
+                    !w.IsArchived
                 )
-                .Include(f => f.Flow)
-                .Include(mf => mf.MachineFlows)
-                .Include(c => c.CreatedByUser)
+                .Include(i => i.Flow)
+                .Include(i => i.MachineFlows)
+                .Include(i => i.CreatedByUser)
                 .OrderBy(o => o.VersionNumber)
                 .AsNoTracking()
                 .ToListAsync();
@@ -518,7 +520,7 @@ public class AgentTableService : IAgentTableService
         {
             // Retrieve the flow versions to be disabled
             var flowVersionsToDisable = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w => flowVersionIds.Contains(w.Id))
+                .GetByConditionAsync(w => w.Flow.Type == FlowTypesEnum.Agent && flowVersionIds.Contains(w.Id))
                 .ToListAsync();
 
             if (!flowVersionsToDisable.Any())
