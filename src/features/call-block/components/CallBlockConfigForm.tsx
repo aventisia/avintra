@@ -53,7 +53,6 @@ const CallBlockConfigForm = () => {
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof nodeConfigZodSchema>) => {
-    console.log(formData);
     // Extract node inputs and outputs from formData
     const { inputs, outputs } = refineSubmittedIO(
       nodeUniqueName,

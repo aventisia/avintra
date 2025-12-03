@@ -39,7 +39,7 @@ const PublishFlow = () => {
         ),
         id: flowsData?.data.versionId || "",
         accessType: "TenantLevel",
-        type: "Agent",
+        type: flowsData?.data.type,
       });
     }
   };
@@ -51,8 +51,8 @@ const PublishFlow = () => {
         showCustomAlertDialog({
           confirmActionFn: () => handlePublish(),
           confirmBtnText: "Publish",
-          description: "Are you sure you want to publish the agent?",
-          title: "Publish Agent",
+          description: `Are you sure you want to publish the ${flowsData?.data.type.toLowerCase()}?`,
+          title: `Publish ${flowsData?.data.type}`,
           isDestructive: false,
         })
       }

@@ -99,13 +99,15 @@ export const BlockSelector: React.FC<BlockSelectorProps> = ({
               isOpen
                 ? inputValue // Show input while typing
                 : selectedItem
-                  ? `${selectedItem.name}` // Show selected item when closed
+                  ? `${selectedItem.name} - v${selectedItem.versionNumber}` // Show selected item when closed
                   : ""
             }
             onChange={(e) => handleInputChange(e.target.value)}
             onFocus={handleInputFocus}
             placeholder={
-              selectedItem && isOpen ? `${selectedItem.name}` : placeholder
+              selectedItem && isOpen
+                ? `${selectedItem.name} - v${selectedItem.versionNumber}`
+                : placeholder
             }
           />
 
@@ -179,7 +181,7 @@ export const BlockSelector: React.FC<BlockSelectorProps> = ({
                   >
                     <div className="flex flex-col">
                       <p className="truncate text-sm font-medium">
-                        {`${result.name}`}
+                        {`${result.name} - v${result.versionNumber}`}
                       </p>
                     </div>
                   </div>
