@@ -5,7 +5,24 @@ meta {
 }
 
 post {
-  url: 
-  body: none
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/twilio/invoke
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Test",
+    "provider": "Twilio",
+    "action": "SendWhatsappMessage",
+    "credentialId": "b1702907-6d5e-4034-b9f4-695570ead53d",//"c6c0bfea-257a-42fb-a43f-14e6fbbd98fa",
+    "payload": {
+     "FromPhoneNumber": "+14155238886",
+      "ToNumber": "+919049107094",
+      "MessageBody": "Hello, Test the Whatsapp message "
+      
+               }
+  }
+  // dev "b1702907-6d5e-4034-b9f4-695570ead53d",
 }
