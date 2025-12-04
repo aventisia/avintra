@@ -23,6 +23,12 @@ public class JobController : BaseApiController
         return ResultHelper(await _jobTableService.GetJobByIdAsync(jobId));
     }
 
+    [HttpGet("detail/{jobId}")]
+    public async Task<ActionResult<ServiceResponse<JobTableDto>>> GetJobDetailById(Guid jobId)
+    {
+        return ResultHelper(await _jobTableService.GetJobDetailByIdAsync(jobId));
+    }
+
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<JobTableDto>>> CreateJobAsync([FromBody] JobTableDto jobTableDto)
     {

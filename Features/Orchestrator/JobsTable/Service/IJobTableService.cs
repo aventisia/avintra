@@ -19,6 +19,13 @@ public interface IJobTableService
     Task<ServiceResponse<JobTableDto>> GetJobByIdAsync(Guid jobId);
 
     /// <summary>
+    /// Fetches a job detail by its unique identifier.
+    /// </summary>
+    /// <param name="jobId">The identifier of the job to retrieve.</param>
+    /// <returns>A task representing the service response containing the details of the job.</returns>
+    Task<ServiceResponse<JobDetailDto>> GetJobDetailByIdAsync(Guid jobId);
+
+    /// <summary>
     /// Creates a new job with the provided data.
     /// </summary>
     /// <param name="jobTableDto">The data needed to create the new job.</param>

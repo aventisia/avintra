@@ -96,6 +96,53 @@ public class JobTableService : IJobTableService
         return serviceResponse;
     }
 
+    /// <summary>
+    /// Retrieves the details of a specific job by its ID for the current user.
+    /// </summary>
+    /// <param name="jobId">The unique identifier of the job to retrieve.</param>
+    /// <returns>A service response containing the job details or an error message.</returns>
+    public async Task<ServiceResponse<JobDetailDto>> GetJobDetailByIdAsync(Guid jobId)
+    {
+        var serviceResponse = new ServiceResponse<JobDetailDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve job details. Please try again later."
+        };
+
+        try
+        {
+            // Attempt to fetch the job details from the repository
+            var job = await _unitOfWork.JobRepo
+                .GetByConditionAsync(w => w.Id == jobId)
+                .OrderByDescending(w => w.CreatedOn)
+                .ProjectToType<JobDetailDto>()
+                .FirstOrDefaultAsync();
+
+            // If job not found, log and return a "not found" response
+            if (job == null)
+            {
+                _logger.LogWarning($"Job not found for Job ID: {jobId}");
+                serviceResponse.Message = "Job not found.";
+                serviceResponse.StatusCode = 404; // Not Found
+                return serviceResponse;
+            }
+
+            // If job is found, log success and return job details
+            _logger.LogInformation($"Job details retrieved successfully for Job ID: {jobId}");
+
+            serviceResponse.Data = job;
+            serviceResponse.StatusCode = 200; // OK
+            serviceResponse.Message = "Job details retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log the error and return a failed response
+            _logger.LogError($"Error retrieving job details for Job ID {jobId}: {ex}");
+        }
+
+        return serviceResponse;
+    }
+
     // Adds a new job.
     public async Task<ServiceResponse<JobTableDto>> InsertJobAsync(JobTableDto jobTableDto)
     {
