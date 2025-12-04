@@ -1,8 +1,8 @@
-namespace WorkspaceAPIs.Features.CloudConnectors.M365.SendGrid;
+namespace WorkspaceAPIs.Features.CloudConnectors.SendGrid;
 
 public enum SendGridActionsEnum
 {
-    SendEmail,
+    SendEmailThroughSendGrid,
     SendEmailUsingTemplate,
     LoadAndRenderEmailTemplate
 }

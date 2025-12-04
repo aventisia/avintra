@@ -1,5 +1,5 @@
-using WorkspaceAPIs.Features.CloudConnectors.M365.SendGrid;
-using WorkspaceAPIs.Features.CloudConnectors.M365.Twilio;
+using WorkspaceAPIs.Features.CloudConnectors.SendGrid;
+using WorkspaceAPIs.Features.CloudConnectors.Twilio;
 
 namespace WorkspaceAPIs.Extensions;
 

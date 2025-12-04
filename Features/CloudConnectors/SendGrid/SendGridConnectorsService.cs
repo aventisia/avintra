@@ -2,7 +2,7 @@ using SendGrid;
 using SendGrid.Helpers.Mail;
 using WorkspaceAPIs.Services;
 
-namespace WorkspaceAPIs.Features.CloudConnectors.M365.SendGrid;
+namespace WorkspaceAPIs.Features.CloudConnectors.SendGrid;
 
 public class SendGridConnectorsService : ISendGridConnectorsService
 {

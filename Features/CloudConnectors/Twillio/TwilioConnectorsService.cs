@@ -1,7 +1,7 @@
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
-namespace WorkspaceAPIs.Features.CloudConnectors.M365.Twilio;
+namespace WorkspaceAPIs.Features.CloudConnectors.Twilio;
 
 public class TwilioConnectorsService : ITwilioConnectorsService
 {

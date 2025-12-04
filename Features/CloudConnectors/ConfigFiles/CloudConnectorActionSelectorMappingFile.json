@@ -127,7 +127,7 @@
           },
           {
             "type": "cloudConnectorNode",
-            "name": "M365/Excel/LookupRangeInExcelWorksheet",
+            "name": "M365/Excel/LookupRangeInExcelWorksheetConnector",
             "label": "Lookup Range In Excel Worksheet",
             "description": "Lookup Range In Excel Worksheet of an Excel file stored in OneDrive or SharePoint.",
             "docsLink": "https://docs.aventisia.com",
@@ -136,7 +136,7 @@
           },
           {
             "type": "cloudConnectorNode",
-            "name": "M365/Excel/SelectRangeInExcelWorksheet",
+            "name": "M365/Excel/SelectRangeInExcelWorksheetConnector",
             "label": "Select Range In Excel Worksheet",
             "description": "Select range in excel worksheet of an Excel file stored in OneDrive or SharePoint.",
             "docsLink": "https://docs.aventisia.com",
@@ -155,7 +155,7 @@
         "actions": [
             {
               "type": "cloudConnectorNode",
-              "name": "M365/Twilio/SendTextSms",
+              "name": "Twilio/SendTextSmsConnector",
               "label": "Send Text Sms",
               "description": "Send text message using an twilio service ",
               "docsLink": "https://docs.aventisia.com",
@@ -164,7 +164,7 @@
             },
             {
               "type": "cloudConnectorNode",
-              "name": "M365/Twilio/SendWhatsappMessage",
+              "name": "Twilio/SendWhatsappMessageConnector",
               "label": "Send Whatsapp Message",
               "description": "Send whatsapp message using an twilio service ",
               "docsLink": "https://docs.aventisia.com",
