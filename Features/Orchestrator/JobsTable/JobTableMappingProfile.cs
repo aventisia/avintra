@@ -9,6 +9,7 @@ public class JobTableMappingProfile : IRegister
             .Map(dest => dest.Name, src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : null);
 
         config.NewConfig<Job, JobDetailDto>()
+            .Map(dest => dest.FlowId, src => src.FlowVersion != null ? src.FlowVersion.FlowId : Guid.Empty)
             .Map(dest => dest.Name, src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : null)
             .Map(dest => dest.InputOutputObject, src => src.FlowVersion != null ? src.FlowVersion.InputOutputObject : null)
             .Map(dest => dest.ReactFlowObject, src => src.FlowVersion != null ? src.FlowVersion.ReactFlowObject : null)

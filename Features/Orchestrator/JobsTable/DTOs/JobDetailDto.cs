@@ -17,6 +17,11 @@ public class JobDetailDto
     public string? Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the unique identifier for the flow to the job.
+    /// </summary>
+    public Guid FlowId { get; set; }
+
+    /// <summary>
     /// Gets or sets the unique identifier for the flow version related to this job.
     /// </summary>
     public Guid FlowVersionId { get; set; }
