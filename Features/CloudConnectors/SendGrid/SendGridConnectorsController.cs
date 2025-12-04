@@ -1,6 +1,6 @@
-namespace WorkspaceAPIs.Features.CloudConnectors.M365.SendGrid;
+namespace WorkspaceAPIs.Features.CloudConnectors.SendGrid;
 
-[Route("cloud-connector/m365/sendgrid")]
+[Route("cloud-connector/sendgrid")]
 [ApiController]
 [Authorize]
 public class SendGridConnectorsController : BaseApiController
