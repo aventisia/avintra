@@ -1,6 +1,6 @@
-namespace WorkspaceAPIs.Features.CloudConnectors.M365.Twilio;
+namespace WorkspaceAPIs.Features.CloudConnectors.Twilio;
 
-[Route("cloud-connector/m365/twilio")]
+[Route("cloud-connector/twilio")]
 [ApiController]
 [Authorize]
 public class TwilioConnectorsController : BaseApiController

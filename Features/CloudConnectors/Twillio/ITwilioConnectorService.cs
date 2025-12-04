@@ -1,4 +1,4 @@
-namespace WorkspaceAPIs.Features.CloudConnectors.M365.Twilio;
+namespace WorkspaceAPIs.Features.CloudConnectors.Twilio;
 
 public interface ITwilioConnectorsService
 {
