@@ -22,6 +22,7 @@ import { usePostCreditConsumptionMutation } from "./usePostCreditConsumptionMuta
 
 export default function useWebSocket() {
   const socketRef = useRef<WebSocket | null>(null);
+  const isConnected = useRef(false); // Track connection state
 
   // Get setExecutionState action from current flow store
   const { currentFlow, setExecutionState } = useCurrentFlowStore(
@@ -74,6 +75,9 @@ export default function useWebSocket() {
     let socket: WebSocket | null = null;
 
     const connect = async () => {
+      // If already connected, prevent new connection
+      if (isConnected.current) return;
+
       // Create WebSocket connection
       const wsPort = await invoke("get_websocket_port");
       socket = new WebSocket(`ws://127.0.0.1:${wsPort}`);
@@ -81,6 +85,9 @@ export default function useWebSocket() {
 
       // Open the connection
       socket.onopen = () => {
+        // Mark as connected
+        isConnected.current = true;
+
         console.log("WebSocket connected at port: " + wsPort);
       };
 
@@ -128,6 +135,7 @@ export default function useWebSocket() {
       // Handle connection close
       socket.onclose = () => {
         console.log("WebSocket disconnected");
+        isConnected.current = false; // Mark as disconnected, can reconnect in the future
       };
     };
 
