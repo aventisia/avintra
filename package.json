@@ -45,6 +45,7 @@
     "@tiptap/react": "^2.6.4",
     "@tiptap/starter-kit": "^2.6.4",
     "@uiw/react-codemirror": "^4.25.3",
+    "@xyflow/react": "^12.9.3",
     "axios": "^1.7.2",
     "date-fns": "^3.6.0",
     "easy-currencies": "^1.8.3",
