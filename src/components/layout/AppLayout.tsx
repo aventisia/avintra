@@ -125,7 +125,7 @@ export const AppLayout = () => {
       userSession.userRoles.length === 1;
 
     if (!IS_TAURI && hasSingleTU) {
-      navigate("/redirect?msg=Please Login through Desktop app");
+      navigate("/assist");
     }
   }, [isPending, osID, userSession]);
 

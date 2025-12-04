@@ -21,6 +21,7 @@ import { AgentsAssistPage } from "./pages/AgentsAssistPage";
 import ComingSoon from "./pages/CommingSoon";
 import { CreditsUsagePage } from "./pages/CreditsUsagePage";
 import { FlowsPage } from "./pages/FlowsPage";
+import { GetDesktopPage } from "./pages/GetDesktopPage";
 import { AppIntegrationsPage } from "./pages/IntegrationsPage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { ModelsPage } from "./pages/ModelsPage";
@@ -294,6 +295,10 @@ const routerConfig: RouteObject[] = [
         element: <NotFoundPage />,
       },
     ],
+  },
+  {
+    path: "/assist",
+    element: <GetDesktopPage />,
   },
   {
     path: "/redirect",
