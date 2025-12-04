@@ -158,7 +158,20 @@ public class JobTableService : IJobTableService
             // Trim the string properties in the DTO
             jobTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobTableDto);
 
-            // Convert the Data Transfer Object (DTO) to a Job entity
+            if (!string.IsNullOrEmpty(jobTableDto.OSId))
+            {
+                var machine = await _unitOfWork.MachineRepo
+                    .GetByConditionAsync(w =>
+                        w.OSId.ToLower() == jobTableDto.OSId.ToLower())
+                    .SingleOrDefaultAsync();
+
+                // Log whether a machine was found or not
+                if (machine != null)
+                {
+                    jobTableDto.MachineId = machine.Id;
+                    _logger.LogInformation("Machine found with ID: {MachineId}", machine.Id);
+                }
+            }            // Convert the Data Transfer Object (DTO) to a Job entity
             var newJob = new Job()
             {
                 TenantId = _currentTenantService.CurrentTenantId,

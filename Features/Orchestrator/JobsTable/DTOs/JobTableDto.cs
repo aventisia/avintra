@@ -92,6 +92,11 @@ public class JobTableDto
     public string? OutputArguments { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier that uniquely represents the operating system.
+    /// </summary>
+    public string? OSId { get; set; }
+
+    /// <summary>
     /// Gets or sets the timestamp indicating when the job record was created.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; }
