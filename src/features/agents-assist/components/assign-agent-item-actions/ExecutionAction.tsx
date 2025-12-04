@@ -91,7 +91,7 @@ export const ExecutionAction = ({
             size="icon8"
             className="hover:bg-white/10"
             onClick={() => {
-              createJobMutation({ flowVersionId: rowId, machineId: machineId });
+              createJobMutation({ flowVersionId: rowId, osId: machineId });
             }}
           >
             {isPending ? (
