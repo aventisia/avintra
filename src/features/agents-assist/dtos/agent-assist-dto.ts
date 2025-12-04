@@ -18,6 +18,8 @@ export interface AgentsAssistDto {
    * Gets or sets the name of the agent.
    */
   name: string;
+
+  status: string;
   /**
    * Get or set disable
    */
