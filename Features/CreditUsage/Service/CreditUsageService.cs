@@ -299,7 +299,7 @@ public class CreditUsageService : ICreditUsageService
 
             // Calculate how many credits are needed based on the consumed units
             TenantCredit? tenantAvailableCredit = null;
-            double creditUsed = (int)Math.Ceiling(creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit) * existingCreditPlan.Credits;
+            double creditUsed = (int)Math.Ceiling(creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit * existingCreditPlan.Credits);
 
             // Apply the tenant's discount to creditUsed if it exists; otherwise, leave it unchanged.
             creditUsed = tenant.Discount.HasValue ? creditUsed * tenant.Discount.Value : creditUsed;
@@ -446,7 +446,7 @@ public class CreditUsageService : ICreditUsageService
             {
                 // Calculate how many credits are needed based on the consumed units
                 var creditPlan = existingCreditPlans.First(p => p.ServiceType == creditUsageDto.ServiceType);
-                double creditUsed = (int)Math.Ceiling(creditUsageDto.ConsumedUnit / creditPlan.OneUnit) * creditPlan.Credits;
+                double creditUsed = (int)Math.Ceiling(creditUsageDto.ConsumedUnit / creditPlan.OneUnit * creditPlan.Credits);
 
                 // Apply the tenant's discount to creditUsed if it exists; otherwise, leave it unchanged.
                 creditUsed = tenant.Discount.HasValue ? creditUsed * tenant.Discount.Value : creditUsed;
