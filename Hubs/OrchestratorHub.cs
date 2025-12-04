@@ -106,7 +106,7 @@ public class OrchestratorHub : Hub
                         (w.MachineId == null || w.MachineId == clientId)
                     )
                     .OrderByDescending(o => o.CreatedOn)
-                    .SingleOrDefaultAsync();
+                    .FirstOrDefaultAsync();
 
                 // If a job is found, assign it to the machine and update the status
                 if (job != null)
