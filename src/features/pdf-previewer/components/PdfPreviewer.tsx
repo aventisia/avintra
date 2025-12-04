@@ -83,7 +83,7 @@ export const PdfPreviewer: React.FC = () => {
 
   const handlePdfSelect = (newPdf: FileViewerDto) => {
     setSelectedPdf(newPdf);
-    downloadPdf(newPdf.path || "");
+    //downloadPdf(newPdf.path || ""); // TODO: Remove this code since it's already handled in the useEffect
     setPageNumber(1); // Reset page number when switching PDFs
     setIsPdfLoading(false);
   };
