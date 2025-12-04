@@ -87,8 +87,8 @@ export const AgentsAssistTable = () => {
                   {/* Action trigger */}
                   <div className="flex items-center gap-2">
                     <ExecutionAction
-                      executionState=""
-                      isDisabled={true}
+                      executionState={row.original.status}
+                      isDisabled={false}
                       rowId={row.original.id}
                     />
                     {/* Actions container */}

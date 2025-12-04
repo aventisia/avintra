@@ -8,6 +8,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { DotPattern } from "@/components/layout/DotPattern";
 import { IS_TAURI } from "@/constants/constants";
+import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger";
 import useCheckMachineStatus from "@/features/orchestrator/machines-table/hooks/useCheckMachineStatus";
 import {
   useCheckForUpdate,
@@ -77,6 +78,9 @@ export const AppLayout = () => {
   // Check and invalidates machines data based on websocket
   useCheckMachineStatus(isReady ? connection : null);
 
+  // Execute agent based on websocket command
+  useCheckJobTrigger(isReady ? connection : null);
+
   // Set environment variables and sidebar menu sections only once
   useEffect(() => {
     // If the user session is still pending, do not proceed
@@ -117,6 +121,15 @@ export const AppLayout = () => {
       setConnectWebsocket(!hasSingleTD && osID != "");
     } else {
       setConnectWebsocket(!hasSingleTD);
+    }
+
+    //If TU role user login through web display message to use Desktop app
+    const hasSingleTU =
+      userSession.userRoles.includes("TU") &&
+      userSession.userRoles.length === 1;
+
+    if (!IS_TAURI && hasSingleTU) {
+      navigate("/assist");
     }
   }, [isPending, osID, userSession]);
 

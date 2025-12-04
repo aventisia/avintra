@@ -6,13 +6,14 @@ import { MachineRowDeleteAction } from "./MachineRowDeleteAction";
 
 interface MachineRowActionsProps {
   rowId: string;
+  osId: string;
 }
 
-export const MachineRowActions = ({ rowId }: MachineRowActionsProps) => {
+export const MachineRowActions = ({ rowId, osId }: MachineRowActionsProps) => {
   return (
     // Dropdown menu for machine table row action */}
     <DataTableRowActions>
-      <AssignAgentRowAction rowId={rowId} />
+      <AssignAgentRowAction rowId={rowId} osId={osId} />
 
       {/* View the machine details */}
       {/* <DTRowAction rowId={rowId} crudAction="read" /> */}

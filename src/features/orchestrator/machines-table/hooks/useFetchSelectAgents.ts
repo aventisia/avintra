@@ -8,11 +8,17 @@ import { getMachineAgents } from "../apis/machines-table-apis";
  * Custom hook to fetch agents using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
-export const useFetchSelectTableAgents = (machineId: string) => {
+export const useFetchSelectTableAgents = ({
+  machineId,
+  osId,
+}: {
+  osId: string;
+  machineId: string;
+}) => {
   // Get agents using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: ["select-agent", machineId],
-    queryFn: () => getMachineAgents(machineId),
+    queryFn: () => getMachineAgents(osId),
   });
 
   // Show toast on fetch error
