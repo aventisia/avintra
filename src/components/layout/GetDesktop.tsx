@@ -68,7 +68,15 @@ const GetDesktop = () => {
           </div>
 
           {/* CTA Button for Downloading Desktop Application */}
-          <Button className="mx-auto flex items-center gap-2">
+          <Button
+            onClick={() => {
+              window.open(
+                `${import.meta.env.VITE_ACCOUNTS_API_URL}/desktop-app/download/`,
+                "_blank",
+              );
+            }}
+            className="mx-auto flex items-center gap-2"
+          >
             <DownloadIcon className="h-5 w-5" />
             Download for Desktop
           </Button>
