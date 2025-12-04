@@ -60,7 +60,7 @@ public class JobsExecutorService : IJobsExecutorService
             if (job == null || job.Id == Guid.Empty)
             {
                 _logger.LogWarning("Invalid job received. Job is null or has an invalid Id.");
-                await _hubContext.Clients.User(userConnectionId).SendAsync("ReceiveJobStatus", "Invalid job data", _userId);
+                await _hubContext.Clients.User(userConnectionId).SendAsync("error", "Invalid job data", _userId);
                 return;
             }
 
@@ -74,12 +74,9 @@ public class JobsExecutorService : IJobsExecutorService
             if (jobDetails == null)
             {
                 _logger.LogWarning("Job {JobId} not found in the database.", job.Id);
-                await _hubContext.Clients.User(userConnectionId).SendAsync("ReceiveJobStatus", "Job not found", _userId);
+                await _hubContext.Clients.User(userConnectionId).SendAsync("error", "Job not found", _userId);
                 return;
             }
-
-            // Prepare the payload for triggering the job execution (ReactFlowObject from FlowVersion)
-            var payload = jobDetails.FlowVersion.ReactFlowObject;
 
             // Log the job and payload preparation
             _logger.LogInformation("Preparing job execution for Job ID: {JobId}, using FlowVersion ID: {FlowVersionId}", job.Id, jobDetails.FlowVersion.Id);
@@ -116,7 +113,7 @@ public class JobsExecutorService : IJobsExecutorService
             if (clientStatus == null)
             {
                 _logger.LogWarning("Machine {MachineId} not found in the client status store.", job.MachineId);
-                await _hubContext.Clients.User(userConnectionId).SendAsync("ReceiveJobStatus", "Assigned machine not found", _userId);
+                await _hubContext.Clients.User(userConnectionId).SendAsync("error", "Assigned machine not found", _userId);
                 return;
             }
 
@@ -136,19 +133,17 @@ public class JobsExecutorService : IJobsExecutorService
 
                 // Trigger the job execution on the assigned machine (send payload to the client machine)
                 _logger.LogInformation("Triggering job execution on machine {MachineId}.", job.MachineId);
-                await _hubContext.Clients.Client(clientStatus.ConnectionId).SendAsync("trigger_agent", payload);
+                await _hubContext.Clients.Client(clientStatus.ConnectionId).SendAsync("trigger_agent", job.Id);
 
                 // Send job execution status update to the user
-                await _hubContext.Clients.User(userConnectionId).SendAsync("ReceiveJobStatus", "Job execution triggered", _userId);
+                await _hubContext.Clients.User(userConnectionId).SendAsync("error", "Job execution triggered", _userId);
             }
             else
             {
                 // If the machine is not online or idle, log the warning and notify the user
                 _logger.LogWarning("Machine {MachineId} is not online or idle. Job execution cannot be triggered.", job.MachineId);
-                await _hubContext.Clients.User(userConnectionId).SendAsync("ReceiveJobStatus", "Assigned machine is not online or idle", _userId);
+                await _hubContext.Clients.User(userConnectionId).SendAsync("error", "Assigned machine is not online or idle", _userId);
             }
-
-            job.Status = JobStatusTypesEnum.Running;
 
             // Update the job in the repository
             _unitOfWork.JobRepo.Update(job);
@@ -166,7 +161,7 @@ public class JobsExecutorService : IJobsExecutorService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error executing job {JobId}.", job?.Id);
-            await _hubContext.Clients.User(userConnectionId).SendAsync("ReceiveJobStatus", "Job failed", _userId);
+            await _hubContext.Clients.User(userConnectionId).SendAsync("error", "Job failed", _userId);
         }
     }
 }
