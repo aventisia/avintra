@@ -68,6 +68,7 @@ export interface JobTableDto {
    * Gets or sets the unique identifier of the machine where the job is being executed.
    */
   machineId?: string; // Corresponds to Guid in C#
+  osId?: string; // Corresponds to Guid in C#
 
   /**
    * Gets or sets the input arguments for the job, stored in JSON format.
