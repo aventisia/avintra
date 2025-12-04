@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{WORC_APIS_BASE_URL}}/cloud-connector/m365/sendgrid/invoke
+  url: {{WORC_APIS_BASE_URL}}/cloud-connector/sendgrid/invoke
   body: json
   auth: none
 }
@@ -15,7 +15,7 @@ body:json {
     "agentId": "00000000-0000-0000-0000-000000000000",
     "agentName": "Test",
     "provider": "SendGrid",
-    "action": "SendEmail",
+    "action": "SendEmailThroughSendGrid",
     "credentialId":  "DUMMY",
     "payload": {
        "toEmail": "mayuri@aventisia.com",
