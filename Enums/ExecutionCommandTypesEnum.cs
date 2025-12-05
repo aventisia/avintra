@@ -5,9 +5,15 @@ public enum ExecutionCommandTypesEnum
     /// <summary>
     /// Initiates a new job, workflow, or script execution on the agent.
     /// </summary>
-    [Description("Initiate execution of a job or workflow")]
-    Execute,
+    [Description("Initiate the execution of a job, workflow, or script")]
+    Initiate,
 
+    /// <summary>
+    /// Starts the execution of a job, workflow, or script on the agent.
+    /// </summary>
+    [Description("Start the execution of a job, workflow, or script on the agent")]
+    Execute,
+    
     /// <summary>
     /// Requests a graceful stop, allowing the job to finish its current task.
     /// </summary>

@@ -126,7 +126,7 @@ public class OrchestratorHub : Hub
                     var executionRequest = new ExecutionCommandDto()
                     {
                         JobId = job.Id,
-                        Command = ExecutionCommandTypesEnum.Execute,
+                        Command = ExecutionCommandTypesEnum.Initiate,
                         AgentId = job.FlowVersionId,
                         MachineId = job.MachineId.Value,
                     };
@@ -316,7 +316,7 @@ public class OrchestratorHub : Hub
                     var executionRequest = new ExecutionCommandDto()
                     {
                         JobId = job.Id,
-                        Command = ExecutionCommandTypesEnum.Execute,
+                        Command = ExecutionCommandTypesEnum.Initiate,
                         AgentId = job.FlowVersionId,
                         MachineId = job.MachineId.Value,
                     };

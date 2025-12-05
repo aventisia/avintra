@@ -93,7 +93,7 @@ public class JobsExecutorService : IJobsExecutorService
             var executionCommandDto = new ExecutionCommandDto
             {
                 JobId = job.Id,
-                Command = ExecutionCommandTypesEnum.Execute,
+                Command = ExecutionCommandTypesEnum.Initiate,
                 AgentId = jobDetails.FlowVersionId,
                 MachineId = job.MachineId.Value
             };
@@ -147,7 +147,7 @@ public class JobsExecutorService : IJobsExecutorService
             }
 
             // Check machine's status before executing or resuming the job
-            if ((executionCommandDto.Command == ExecutionCommandTypesEnum.Execute || executionCommandDto.Command == ExecutionCommandTypesEnum.Resume) &&
+            if ((executionCommandDto.Command == ExecutionCommandTypesEnum.Initiate || executionCommandDto.Command == ExecutionCommandTypesEnum.Resume) &&
                 machineStatus.Status != MachineStatusTypeEnum.Online && machineStatus.Status != MachineStatusTypeEnum.Idle)
             {
                 _logger.LogWarning("Machine {MachineId} is not online or idle. Job execution cannot be triggered.", executionCommandDto.MachineId);
@@ -156,7 +156,8 @@ public class JobsExecutorService : IJobsExecutorService
             }
 
             // Check if the machine is running before stopping, pausing, or cleaning up
-            if ((executionCommandDto.Command == ExecutionCommandTypesEnum.Pause ||
+            if ((executionCommandDto.Command == ExecutionCommandTypesEnum.Execute ||
+                 executionCommandDto.Command == ExecutionCommandTypesEnum.Pause ||
                  executionCommandDto.Command == ExecutionCommandTypesEnum.Stop ||
                  executionCommandDto.Command == ExecutionCommandTypesEnum.Cancel ||
                  executionCommandDto.Command == ExecutionCommandTypesEnum.Cleanup) &&
@@ -176,6 +177,7 @@ public class JobsExecutorService : IJobsExecutorService
             // Update machine status based on command
             switch (executionCommandDto.Command)
             {
+                case ExecutionCommandTypesEnum.Initiate:
                 case ExecutionCommandTypesEnum.Execute:
                 case ExecutionCommandTypesEnum.Resume:
                     machineStatus.Status = MachineStatusTypeEnum.Running;
