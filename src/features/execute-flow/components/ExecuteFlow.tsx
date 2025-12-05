@@ -42,7 +42,7 @@ const ExecuteFlow = ({
   const minCredits = 10;
 
   // Start execution
- const startExecution = async () => {
+  const startExecution = async () => {
     const creditsData = await getAvailableCredits();
 
     if (creditsData?.data && creditsData.data.availableCredits < minCredits) {
@@ -58,6 +58,8 @@ const ExecuteFlow = ({
       id: currFlowData?.data.id,
       versionId: currFlowData?.data.versionId,
       name: currFlowData?.data.name,
+      jobId: "",
+      machineId: "",
     });
     const { nodes, edges } = deepParse(
       currFlowData?.data.reactFlowObject ?? "{}",
