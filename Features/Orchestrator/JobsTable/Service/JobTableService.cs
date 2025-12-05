@@ -239,14 +239,14 @@ public class JobTableService : IJobTableService
                 return serviceResponse;
             }
 
-            // Ensure the job status can only be updated to 'Completed' or 'Failed'
-            if (jobTableDto.Status != JobStatusTypesEnum.Completed && jobTableDto.Status != JobStatusTypesEnum.Failed)
-            {
-                // Reject the update if the new status is neither 'Completed' nor 'Failed'
-                _logger.LogInformation($"Job with ID {jobTableDto.Id} cannot be updated because its status must be either 'Completed' or 'Failed'. Current status: {jobTableDto.Status}.");
-                serviceResponse.Message = "Job can only be updated to 'Completed' or 'Failed'.";
-                return serviceResponse;
-            }
+            // // Ensure the job status can only be updated to 'Completed' or 'Failed'
+            // if (jobTableDto.Status == JobStatusTypesEnum.Completed || jobTableDto.Status == JobStatusTypesEnum.Failed)
+            // {
+            //     // Reject the update if the new status is neither 'Completed' nor 'Failed'
+            //     _logger.LogInformation($"Job with ID {jobTableDto.Id} cannot be updated because its status must be either 'Completed' or 'Failed'. Current status: {jobTableDto.Status}.");
+            //     serviceResponse.Message = "Job can only be updated to 'Completed' or 'Failed'.";
+            //     return serviceResponse;
+            // }
 
             // Trim the string properties in the DTO
             jobTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobTableDto);

@@ -345,77 +345,77 @@ public class OrchestratorHub : Hub
         }
     }
 
+    // TODO: 
+    // public async Task ExecuteAgent(ExecutionCommandDto executionCommandDto)
+    // {
+    //     try
+    //     {
+    //         // Log the attempt to execute the agent on the specified machine
+    //         _logger.LogInformation("Attempting to execute agent {AgentId} on machine {MachineId}.", executionCommandDto.AgentId, executionCommandDto.MachineId);
 
-    public async Task ExecuteAgent(ExecutionCommandDto executionCommandDto)
-    {
-        try
-        {
-            // Log the attempt to execute the agent on the specified machine
-            _logger.LogInformation("Attempting to execute agent {AgentId} on machine {MachineId}.", executionCommandDto.AgentId, executionCommandDto.MachineId);
+    //         // Initialize variable to hold machine status
+    //         ClientStatusDto? clientStatusDto = null;
 
-            // Initialize variable to hold machine status
-            ClientStatusDto? clientStatusDto = null;
+    //         // Retrieve user identity and tenant ID from the HTTP context
+    //         var httpContext = Context.GetHttpContext();
+    //         var clientId = Guid.Parse(Context?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+    //         var tenantId = Guid.Parse(Context?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
-            // Retrieve user identity and tenant ID from the HTTP context
-            var httpContext = Context.GetHttpContext();
-            var clientId = Guid.Parse(Context?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-            var tenantId = Guid.Parse(Context?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
+    //         // Fetch the machine status from the client status store
+    //         clientStatusDto = await _clientStatusStore.GetClientByIdAsync(executionCommandDto.MachineId);
 
-            // Fetch the machine status from the client status store
-            clientStatusDto = await _clientStatusStore.GetClientByIdAsync(executionCommandDto.MachineId);
+    //         // If the machine cannot be found, return an error message
+    //         if (clientStatusDto == null)
+    //         {
+    //             _logger.LogWarning("Machine {MachineId} not found.", executionCommandDto.MachineId);
+    //             await Clients.Caller.SendAsync("error", "Machine not found.");
+    //             return;
+    //         }
 
-            // If the machine cannot be found, return an error message
-            if (clientStatusDto == null)
-            {
-                _logger.LogWarning("Machine {MachineId} not found.", executionCommandDto.MachineId);
-                await Clients.Caller.SendAsync("error", "Machine not found.");
-                return;
-            }
+    //         // If the machine is offline or unavailable, return an error
+    //         if (clientStatusDto.Status != MachineStatusTypeEnum.Online)
+    //         {
+    //             _logger.LogWarning("Machine {MachineId} is not online or unavailable.", executionCommandDto.MachineId);
+    //             await Clients.Caller.SendAsync("error", "Machine is not online or unavailable.");
+    //             return;
+    //         }
 
-            // If the machine is offline or unavailable, return an error
-            if (clientStatusDto.Status != MachineStatusTypeEnum.Online)
-            {
-                _logger.LogWarning("Machine {MachineId} is not online or unavailable.", executionCommandDto.MachineId);
-                await Clients.Caller.SendAsync("error", "Machine is not online or unavailable.");
-                return;
-            }
+    //         // If the machine is not running an agent, proceed with agent execution
+    //         if (clientStatusDto.Status != MachineStatusTypeEnum.Running)
+    //         {
+    //             // Update machine status to "Running" to indicate the agent execution is in progress
+    //             clientStatusDto.Status = MachineStatusTypeEnum.Running;
+    //             clientStatusDto.LastSeen = DateTimeOffset.UtcNow;
+    //             clientStatusDto.AgentId = executionCommandDto.AgentId;
 
-            // If the machine is not running an agent, proceed with agent execution
-            if (clientStatusDto.Status != MachineStatusTypeEnum.Running)
-            {
-                // Update machine status to "Running" to indicate the agent execution is in progress
-                clientStatusDto.Status = MachineStatusTypeEnum.Running;
-                clientStatusDto.LastSeen = DateTimeOffset.UtcNow;
-                clientStatusDto.AgentId = executionCommandDto.AgentId;
+    //             // Save the updated machine status
+    //             await _clientStatusStore.UpdateClientStatusAsync(clientStatusDto);
 
-                // Save the updated machine status
-                await _clientStatusStore.UpdateClientStatusAsync(clientStatusDto);
-
-                // Trigger the agent execution on the assigned machine
-                if (!string.IsNullOrEmpty(clientStatusDto.ConnectionId))
-                {
-                    await Clients.Client(clientStatusDto.ConnectionId).SendAsync("trigger_agent", executionCommandDto);
-                    _logger.LogInformation("Agent {AgentId} triggered on machine {MachineId}.", executionCommandDto.AgentId, executionCommandDto.MachineId);
-                }
-                else
-                {
-                    _logger.LogWarning("Machine {MachineId} is not connected. Cannot trigger agent {AgentId}.", executionCommandDto.MachineId, executionCommandDto.AgentId);
-                    await Clients.Caller.SendAsync("error", "Machine connection lost.");
-                }
-            }
-            else
-            {
-                // If the machine is already running an agent, notify the client
-                _logger.LogWarning("Machine {MachineId} is already running an agent.", executionCommandDto.MachineId);
-                await Clients.Caller.SendAsync("error", "The machine is already running an agent.");
-            }
-        }
-        catch (Exception ex)
-        {
-            // Log any exceptions and send an error message to the client
-            _logger.LogError(ex, "An error occurred while executing agent {AgentId} on machine {MachineId}.", executionCommandDto.AgentId, executionCommandDto.MachineId);
-            await Clients.Caller.SendAsync("error", $"An error occurred while executing the agent: {ex.Message}");
-        }
-    }
+    //             // Trigger the agent execution on the assigned machine
+    //             if (!string.IsNullOrEmpty(clientStatusDto.ConnectionId))
+    //             {
+    //                 await Clients.Client(clientStatusDto.ConnectionId).SendAsync("trigger_agent", executionCommandDto);
+    //                 _logger.LogInformation("Agent {AgentId} triggered on machine {MachineId}.", executionCommandDto.AgentId, executionCommandDto.MachineId);
+    //             }
+    //             else
+    //             {
+    //                 _logger.LogWarning("Machine {MachineId} is not connected. Cannot trigger agent {AgentId}.", executionCommandDto.MachineId, executionCommandDto.AgentId);
+    //                 await Clients.Caller.SendAsync("error", "Machine connection lost.");
+    //             }
+    //         }
+    //         else
+    //         {
+    //             // If the machine is already running an agent, notify the client
+    //             _logger.LogWarning("Machine {MachineId} is already running an agent.", executionCommandDto.MachineId);
+    //             await Clients.Caller.SendAsync("error", "The machine is already running an agent.");
+    //         }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         // Log any exceptions and send an error message to the client
+    //         _logger.LogError(ex, "An error occurred while executing agent {AgentId} on machine {MachineId}.", executionCommandDto.AgentId, executionCommandDto.MachineId);
+    //         await Clients.Caller.SendAsync("error", $"An error occurred while executing the agent: {ex.Message}");
+    //     }
+    // }
 
 }
