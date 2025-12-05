@@ -222,14 +222,6 @@ public class JobTableService : IJobTableService
 
         try
         {
-            // Ensure the job status can only be updated to 'Completed' or 'Failed'
-            if (jobTableDto.Status != JobStatusTypesEnum.Completed && jobTableDto.Status != JobStatusTypesEnum.Failed)
-            {
-                // If the current status is not 'Completed' or 'Failed', reject the update
-                _logger.LogInformation($"Job with ID {jobTableDto.Id} cannot be updated because its status must be either 'Completed' or 'Failed'. Current status: {jobTableDto.Status}.");
-                serviceResponse.Message = "Job can only be updated to 'Completed' or 'Failed'.";
-                return serviceResponse;
-            }
 
             // Fetch the job that needs to be updated
             var job = await _unitOfWork.JobRepo
@@ -244,6 +236,15 @@ public class JobTableService : IJobTableService
             {
                 _logger.LogInformation("Job does not exist.");
                 serviceResponse.Message = "Job does not exist.";
+                return serviceResponse;
+            }
+
+            // Ensure the job status can only be updated to 'Completed' or 'Failed'
+            if (jobTableDto.Status != JobStatusTypesEnum.Completed && jobTableDto.Status != JobStatusTypesEnum.Failed)
+            {
+                // Reject the update if the new status is neither 'Completed' nor 'Failed'
+                _logger.LogInformation($"Job with ID {jobTableDto.Id} cannot be updated because its status must be either 'Completed' or 'Failed'. Current status: {jobTableDto.Status}.");
+                serviceResponse.Message = "Job can only be updated to 'Completed' or 'Failed'.";
                 return serviceResponse;
             }
 
@@ -262,6 +263,46 @@ public class JobTableService : IJobTableService
                 _logger.LogInformation("Failed to save changes while updating job.");
                 return serviceResponse;
             }
+
+            // Create a new ExecutionCommandDto to determine which action to trigger based on job status.
+            var executionCommand = new ExecutionCommandDto()
+            {
+                JobId = job.Id,
+                MachineId = job.MachineId ?? Guid.Empty,
+                AgentId = job.FlowVersionId,
+            };
+
+            // Switch statement to set the correct execution command based on the job's current status.
+            switch (job.Status)
+            {
+                case JobStatusTypesEnum.Completed:
+                    executionCommand.Command = ExecutionCommandTypesEnum.Cleanup;
+                    break;
+
+                case JobStatusTypesEnum.Failed:
+                case JobStatusTypesEnum.Canceled:
+                    executionCommand.Command = ExecutionCommandTypesEnum.Cancel;
+                    break;
+
+                case JobStatusTypesEnum.Paused:
+                    executionCommand.Command = ExecutionCommandTypesEnum.Pause;
+                    break;
+
+                case JobStatusTypesEnum.Resumed:
+                    executionCommand.Command = ExecutionCommandTypesEnum.Resume;
+                    break;
+
+                case JobStatusTypesEnum.Retrying:
+                    executionCommand.Command = ExecutionCommandTypesEnum.Execute;
+                    break;
+
+                default:
+                    executionCommand.Command = ExecutionCommandTypesEnum.Cleanup;
+                    break;
+            }
+
+            // Trigger the appropriate execution command for the job.
+            await _jobsExecutorService.TriggerExecutionAsync(executionCommand);
 
             // Success - return the updated job
             serviceResponse.Data = job.Adapt<JobTableDto>();
