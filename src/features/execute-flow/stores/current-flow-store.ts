@@ -15,6 +15,8 @@ interface ICurrentFlowDetails {
   type?: FlowTypesEnum;
   description?: string;
   accessType?: string;
+  jobId: string;
+  machineId: string;
 }
 
 interface ConditionalExecutionGroup {
@@ -82,6 +84,8 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
     isArchived: false,
     type: FlowTypesEnum.Agent,
     description: "",
+    jobId: "",
+    machineId: "",
   },
   isFlowLoading: false,
   isFlowSaving: false,

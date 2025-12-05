@@ -31,7 +31,7 @@ export function generateCreditConsumptionList(
   agentId: string,
   agentName: string,
   // versionId: string,
-  postCommand: "abort" | "complete" | null,
+  postCommand: "abort" | "complete" | "error" | null,
 ): CreditConsumptionDto[] | null {
   if (!postCommand) return null;
 
@@ -69,8 +69,8 @@ export function generateCreditConsumptionList(
     });
   }
 
-  // Add base agent execution consumption if flow completed
-  if (postCommand === "complete") {
+  // Add base agent execution consumption if flow completed | aborted | error
+  if (postCommand !== null) {
     consumptionList.push({
       serviceType: CreditServiceTypesEnum.AgentExecutionTime,
       consumedUnit: getAgentExecutionDuration(nodes, [

@@ -26,12 +26,13 @@ export default function useCheckJobTrigger(connection: HubConnection | null) {
     }
 
     // Handler for 'trigger_agent' event received from hub
-    const handleExecuteFlow = (data: unknown) => {
+    const handleExecuteFlow = (data: { jobId: string }) => {
       console.log("trigger_agent received:", data);
-      getJobById(data as string).then((data) => {
-        // data.data.id
-        startExecution(data.data);
-      });
+      getJobById(data?.jobId as string)
+        .then((data) => {
+          startExecution(data.data);
+        })
+        .catch((err) => console.log("Error Fetching Job by Job Id", err));
     };
 
     // Subscribe to the machine status update event

@@ -6,7 +6,7 @@ export interface JobDetailsDto {
   id: string;
 
   /** Agent name */
-  name: string;
+  name?: string;
 
   /** Agent Id */
   flowId: string;
@@ -15,25 +15,29 @@ export interface JobDetailsDto {
   flowVersionId: string;
 
   /**Trigger type */
-  triggerType: string;
+  triggerType?: string;
 
-  priority: string;
+  priority?: string;
 
   status: string;
 
   machineId: string;
 
   /** Version no */
-  versionNumber: number;
+  versionNumber?: number;
 
   /** Flow's nodes, edges, and viewport JSON data in string format */
-  reactFlowObject: string;
+  reactFlowObject?: string;
 
   /** Output Variables object, i..e the Flow Variables */
-  flowVariablesObject: string;
+  flowVariablesObject?: string;
 
   /** Flow's inputs outputs JSON data in string format */
   inputOutputObject?: string;
 
-  type: FlowTypesEnum;
+  type?: FlowTypesEnum;
+
+  startTime?: Date | string;
+
+  endTime?: Date | string;
 }

@@ -14,3 +14,9 @@ export const getJobById = (id: string) => {
     .get<IHttpResponse<JobDetailsDto>>(`${baseAPIURL}/detail/${id}`)
     .then((res) => res.data);
 };
+
+export const updateJobData = (data: JobDetailsDto) => {
+  return axiosInstance
+    .put<IHttpResponse<JobDetailsDto>>(`${baseAPIURL}`, data)
+    .then((res) => res.data);
+};

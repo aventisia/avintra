@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { IS_TAURI } from "@/constants/constants";
+import { JobStatusTypesEnum } from "@/features/orchestrator/executions-table/enums/job-status-type-enum";
 import { Execution } from "@/types/execution-types";
 
 import {
@@ -15,7 +16,9 @@ import {
   WebSocketMessageType,
 } from "..";
 import { getLocalExecutionLog } from "../apis/get-version-execution-log";
+import { updateJobData } from "../apis/job-trigger-apis";
 import { useCurrentFlowStore } from "../stores/current-flow-store";
+import { useJobDataStore } from "../stores/job-data-store";
 import { generateCreditConsumptionList } from "../utils/generateCreditConsumptionList";
 
 import { usePostCreditConsumptionMutation } from "./usePostCreditConsumptionMutation";
@@ -32,10 +35,19 @@ export default function useWebSocket() {
     })),
   );
 
+  const { startTime, endTime, status, updateField } = useJobDataStore(
+    useShallow((state) => ({
+      updateField: state.updateField,
+      startTime: state.startTime,
+      endTime: state.endTime,
+      status: state.status,
+    })),
+  );
+
   const { postCreditConsumption } = usePostCreditConsumptionMutation();
 
-  const [pendingPostCommand, setPendingPostCommand] = useState<
-    "abort" | "complete" | null
+  const [currExecCommand, setCurrExecCommand] = useState<
+    "abort" | "complete" | "error" | null
   >(null);
 
   // Function to send command to web socket
@@ -54,8 +66,27 @@ export default function useWebSocket() {
           }),
         );
 
-        if (command === "abort" || command === "complete") {
-          setPendingPostCommand(command); // for credits
+        if (command === "start") {
+          updateField("startTime", new Date());
+        }
+
+        if (
+          command === "abort" ||
+          command === "complete" ||
+          command == "error"
+        ) {
+          const endTime = new Date();
+          const status =
+            command === "complete"
+              ? JobStatusTypesEnum.Completed
+              : command === "abort"
+                ? JobStatusTypesEnum.Canceled
+                : JobStatusTypesEnum.Failed;
+
+          updateField("endTime", endTime);
+          updateField("status", status);
+
+          setCurrExecCommand(command); // for credits and job data
         }
 
         // Update the execution state based on the command
@@ -155,7 +186,7 @@ export default function useWebSocket() {
 
   useEffect(() => {
     // Only run if one of the commands is pending
-    if (!pendingPostCommand) return;
+    if (!currExecCommand) return;
 
     const handleExecutionData = async () => {
       try {
@@ -164,13 +195,23 @@ export default function useWebSocket() {
         const executionData: Execution[] = localLogs ?? [];
 
         // Handle Credit Consumption
-        if (pendingPostCommand) {
+        if (currExecCommand) {
           const consumptionList = generateCreditConsumptionList(
             executionData,
             currentFlow.id,
             currentFlow.name,
-            pendingPostCommand,
+            currExecCommand,
           );
+
+          await updateJobData({
+            flowId: currentFlow.id,
+            flowVersionId: currentFlow.versionId,
+            id: currentFlow.jobId,
+            machineId: currentFlow.machineId,
+            status,
+            startTime,
+            endTime,
+          });
 
           if (consumptionList) {
             await postCreditConsumption(consumptionList); // Post the consumption data
@@ -187,18 +228,23 @@ export default function useWebSocket() {
         );
       } finally {
         // Reset both commands after execution is done
-        setPendingPostCommand(null);
+        setCurrExecCommand(null);
       }
     };
 
     // Run the function to handle both tasks
     handleExecutionData();
   }, [
+    currExecCommand,
     currentFlow.id,
+    currentFlow.jobId,
+    currentFlow.machineId,
     currentFlow.name,
     currentFlow.versionId,
-    pendingPostCommand,
+    endTime,
     postCreditConsumption,
+    startTime,
+    status,
   ]);
 
   return { sendCommand };
