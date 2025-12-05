@@ -126,7 +126,7 @@ public class JobsExecutorService : IJobsExecutorService
     public async Task TriggerExecutionAsync(ExecutionCommandDto executionCommandDto)
     {
         // Retrieve the user's connection status
-        var userStatus = await _clientStatusStore.GetClientByIdAsync(_userId);
+        var userStatus = await _clientStatusStore.GetStatusByClientIdAsync(_userId);
 
         if (userStatus == null)
         {
