@@ -129,6 +129,7 @@ public class OrchestratorHub : Hub
                         Command = ExecutionCommandTypesEnum.Initiate,
                         AgentId = job.FlowVersionId,
                         MachineId = job.MachineId.Value,
+                        TenantId = tenantId
                     };
 
                     await Clients.Caller.SendAsync("trigger_agent", executionRequest);
@@ -319,6 +320,7 @@ public class OrchestratorHub : Hub
                         Command = ExecutionCommandTypesEnum.Initiate,
                         AgentId = job.FlowVersionId,
                         MachineId = job.MachineId.Value,
+                        TenantId = tenantId,
                     };
 
                     await Clients.Client(clientStatusDto.ConnectionId).SendAsync("trigger_agent", executionRequest);

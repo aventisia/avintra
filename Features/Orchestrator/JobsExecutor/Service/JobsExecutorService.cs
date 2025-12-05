@@ -95,7 +95,8 @@ public class JobsExecutorService : IJobsExecutorService
                 JobId = job.Id,
                 Command = ExecutionCommandTypesEnum.Initiate,
                 AgentId = jobDetails.FlowVersionId,
-                MachineId = job.MachineId.Value
+                MachineId = job.MachineId.Value,
+                TenantId = job.TenantId
             };
 
             // Delegate the actual execution to the TriggerExecutionAsync method
@@ -203,6 +204,14 @@ public class JobsExecutorService : IJobsExecutorService
 
             // Send the execution command to the client machine
             await _hubContext.Clients.Client(machineStatus.ConnectionId).SendAsync("trigger_agent", executionCommandDto);
+
+            if (machineStatus.Status == MachineStatusTypeEnum.Online || machineStatus.Status == MachineStatusTypeEnum.Idle)
+            {
+                // Notify the tenant group that a machine is online
+                await _hubContext.Clients.Group($"TENANT_{executionCommandDto.TenantId}").SendAsync("machine_status_update", "A machine is online now.");
+                _logger.LogInformation("Machine {ClientId} is online. Notified tenant group {TenantId}.", executionCommandDto.MachineId, executionCommandDto.TenantId);
+
+            }
 
             // Notify user of successful job trigger
             await _hubContext.Clients.User(userStatus.ConnectionId).SendAsync("success", "Job execution triggered", _userId);

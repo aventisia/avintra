@@ -239,15 +239,6 @@ public class JobTableService : IJobTableService
                 return serviceResponse;
             }
 
-            // // Ensure the job status can only be updated to 'Completed' or 'Failed'
-            // if (jobTableDto.Status == JobStatusTypesEnum.Completed || jobTableDto.Status == JobStatusTypesEnum.Failed)
-            // {
-            //     // Reject the update if the new status is neither 'Completed' nor 'Failed'
-            //     _logger.LogInformation($"Job with ID {jobTableDto.Id} cannot be updated because its status must be either 'Completed' or 'Failed'. Current status: {jobTableDto.Status}.");
-            //     serviceResponse.Message = "Job can only be updated to 'Completed' or 'Failed'.";
-            //     return serviceResponse;
-            // }
-
             // Trim the string properties in the DTO
             jobTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobTableDto);
 
@@ -270,6 +261,7 @@ public class JobTableService : IJobTableService
                 JobId = job.Id,
                 MachineId = job.MachineId ?? Guid.Empty,
                 AgentId = job.FlowVersionId,
+                TenantId = job.TenantId
             };
 
             // Switch statement to set the correct execution command based on the job's current status.
@@ -293,6 +285,7 @@ public class JobTableService : IJobTableService
                     break;
 
                 case JobStatusTypesEnum.Retrying:
+                case JobStatusTypesEnum.Running:
                     executionCommand.Command = ExecutionCommandTypesEnum.Execute;
                     break;
 
