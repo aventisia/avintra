@@ -17,7 +17,6 @@ public class JobsExecutorService : IJobsExecutorService
         IHubContext<OrchestratorHub> hubContext,
         IClientStatusStore clientStatusStore)
     {
-        // Set the user ID from the HTTP context (retrieved from the JWT or session)
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
@@ -29,28 +28,21 @@ public class JobsExecutorService : IJobsExecutorService
     // Method to execute a job command
     public async Task ExecuteJobCommandAsync(Job job)
     {
-        _logger.LogInformation("Starting to fetch connection ID for user: {UserId}", _userId);
+        _logger.LogInformation("Fetching connection ID for user: {UserId}", _userId);
 
-        // Get the user's connection ID from the client status store
-        var clientStatusList = await _clientStatusStore.GetUserStatusesAsync(job.TenantId);
-
-        // Log the number of client statuses retrieved
-        _logger.LogInformation("Retrieved {ClientStatusCount} client statuses for tenant: {TenantId}", clientStatusList.Count(), job.TenantId);
-
-        var clientStatusDto = clientStatusList.FirstOrDefault(w => w.ClientId == _userId);
+        // Retrieve the user's status from the client status store
+        var clientStatusDto = await _clientStatusStore.GetStatusByClientIdAsync(_userId);
 
         if (clientStatusDto == null)
         {
-            // Log when the client status is not found
-            _logger.LogWarning("Client status not found for user with ID: {UserId}", _userId);
+            _logger.LogWarning("User {UserId} status not found.", _userId);
             return;
         }
-        var userConnectionId = clientStatusDto.ConnectionId;
 
-        // If the user's connection ID is empty or not found, exit early
-        if (string.IsNullOrEmpty(userConnectionId))
+        // If the connection ID is not found, exit early
+        if (string.IsNullOrEmpty(clientStatusDto.ConnectionId))
         {
-            _logger.LogWarning("User {UserId} connection ID is not found. Unable to send job status.", _userId);
+            _logger.LogWarning("User {UserId} connection ID is missing.", _userId);
             return;
         }
 
@@ -59,109 +51,171 @@ public class JobsExecutorService : IJobsExecutorService
             // Validate the job object
             if (job == null || job.Id == Guid.Empty)
             {
-                _logger.LogWarning("Invalid job received. Job is null or has an invalid Id.");
-                await _hubContext.Clients.User(userConnectionId).SendAsync("error", "Invalid job data", _userId);
+                _logger.LogWarning("Invalid job data for Job ID: {JobId}.", job?.Id);
+                await _hubContext.Clients.User(clientStatusDto.ConnectionId).SendAsync("error", "Invalid job data", _userId);
                 return;
             }
 
-            // Retrieve job details from the database (with associated FlowVersion)
+            // Retrieve job details, including FlowVersion, from the database
             var jobDetails = await _unitOfWork.JobRepo
                 .GetByConditionAsync(w => w.Id == job.Id)
                 .Include(i => i.FlowVersion)
                 .SingleOrDefaultAsync();
 
-            // If job not found, return an error to the client
             if (jobDetails == null)
             {
                 _logger.LogWarning("Job {JobId} not found in the database.", job.Id);
-                await _hubContext.Clients.User(userConnectionId).SendAsync("error", "Job not found", _userId);
+                await _hubContext.Clients.User(clientStatusDto.ConnectionId).SendAsync("error", "Job not found", _userId);
                 return;
             }
 
-            // Log the job and payload preparation
-            _logger.LogInformation("Preparing job execution for Job ID: {JobId}, using FlowVersion ID: {FlowVersionId}", job.Id, jobDetails.FlowVersion.Id);
+            _logger.LogInformation("Preparing job execution for Job ID: {JobId}, FlowVersion ID: {FlowVersionId}", job.Id, jobDetails.FlowVersion.Id);
 
-            var machineId = job.MachineId;
-
+            // Determine the machine for job execution
             if (job.MachineId == null || job.MachineId == Guid.Empty)
             {
-                // Log that the machine ID is null and we need to fetch it
-                _logger.LogInformation("MachineId is null for job ID: {JobId}. Attempting to retrieve machine statuses for tenant: {TenantId}", job.Id, job.TenantId);
+                _logger.LogInformation("Machine ID is null for Job ID: {JobId}, attempting to find an online machine.", job.Id);
 
-                // Get the machine statuses for the tenant
+                // Fetch machine statuses for the tenant
                 var machineList = await _clientStatusStore.GetMachineStatusesAsync(job.TenantId);
-
-                // Log the number of machine statuses retrieved
-                _logger.LogInformation("Retrieved {MachineStatusCount} machine statuses for tenant: {TenantId}", machineList.Count(), job.TenantId);
-
                 var machineStatusDto = machineList.FirstOrDefault(w => w.Status == MachineStatusTypeEnum.Online);
 
                 if (machineStatusDto == null)
                 {
-                    // Log when the client status is not found
-                    _logger.LogWarning("Machine status not found for client with ID: {ClientId} in tenant: {TenantId}", machineStatusDto.ClientId, job.TenantId);
+                    _logger.LogWarning("No online machine found for TenantId: {TenantId}.", job.TenantId);
                     return;
                 }
 
                 job.MachineId = machineStatusDto.ClientId;
             }
 
-            // Retrieve machine status from the client status store
-            var clientStatus = await _clientStatusStore.GetClientByIdAsync(job.MachineId.Value);
-
-            // If machine not found, return an error to the client
-            if (clientStatus == null)
+            // Create an ExecutionCommandDto to trigger the job execution
+            var executionCommandDto = new ExecutionCommandDto
             {
-                _logger.LogWarning("Machine {MachineId} not found in the client status store.", job.MachineId);
-                await _hubContext.Clients.User(userConnectionId).SendAsync("error", "Assigned machine not found", _userId);
-                return;
-            }
+                JobId = job.Id,
+                Command = ExecutionCommandTypesEnum.Execute,
+                AgentId = jobDetails.FlowVersionId,
+                MachineId = job.MachineId.Value
+            };
 
-            // Check if the machine is online or idle, which is required to execute the job
-            if (clientStatus.Status == MachineStatusTypeEnum.Online || clientStatus.Status == MachineStatusTypeEnum.Idle)
-            {
-                // Log the machine's current status
-                _logger.LogInformation("Machine {MachineId} is {MachineStatus}. Preparing to trigger job execution.", job.MachineId, clientStatus.Status);
+            // Delegate the actual execution to the TriggerExecutionAsync method
+            await TriggerExecutionAsync(executionCommandDto);
 
-                // Update the machine's status to "Running" to indicate job execution is in progress
-                clientStatus.Status = MachineStatusTypeEnum.Running;
-                clientStatus.LastSeen = DateTimeOffset.UtcNow;
-                clientStatus.AgentId = jobDetails.FlowVersionId;
+            // Log the successful execution trigger
+            _logger.LogInformation("Job {JobId} execution successfully triggered.", job.Id);
 
-                // Persist the updated machine status in the client status store
-                await _clientStatusStore.UpdateClientStatusAsync(clientStatus);
-
-                // Trigger the job execution on the assigned machine (send payload to the client machine)
-                _logger.LogInformation("Triggering job execution on machine {MachineId}.", job.MachineId);
-                await _hubContext.Clients.Client(clientStatus.ConnectionId).SendAsync("trigger_agent", job.Id);
-
-                // Send job execution status update to the user
-                await _hubContext.Clients.User(userConnectionId).SendAsync("error", "Job execution triggered", _userId);
-            }
-            else
-            {
-                // If the machine is not online or idle, log the warning and notify the user
-                _logger.LogWarning("Machine {MachineId} is not online or idle. Job execution cannot be triggered.", job.MachineId);
-                await _hubContext.Clients.User(userConnectionId).SendAsync("error", "Assigned machine is not online or idle", _userId);
-            }
-
-            // Update the job in the repository
+            // Update job status in the repository
             _unitOfWork.JobRepo.Update(job);
 
-            // Try to save changes asynchronously
+            // Save changes asynchronously
             if (!await _unitOfWork.SaveAsync())
             {
-                // Log the failure for debugging or auditing purposes
-                _logger.LogError("Failed to save changes for Job ID: {JobId} with Machine ID: {MachineId}. Client ID: {ClientId}",
-                    job.Id, job.MachineId, job.MachineId);
+                _logger.LogError("Failed to save changes for Job ID: {JobId}.", job.Id);
             }
 
-            _logger.LogInformation($"Job {job.Id} completed successfully.");
+            _logger.LogInformation("Job {JobId} executed successfully.", job.Id);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error executing job {JobId}.", job?.Id);
-            await _hubContext.Clients.User(userConnectionId).SendAsync("error", "Job failed", _userId);
+            await _hubContext.Clients.User(clientStatusDto.ConnectionId).SendAsync("error", "Job execution failed", _userId);
+        }
+    }
+
+    // Method to trigger the job execution on the assigned machine
+    public async Task TriggerExecutionAsync(ExecutionCommandDto executionCommandDto)
+    {
+        // Retrieve the user's connection status
+        var userStatus = await _clientStatusStore.GetClientByIdAsync(_userId);
+
+        if (userStatus == null)
+        {
+            _logger.LogWarning("User {UserId} is not connected.", _userId);
+            return;
+        }
+
+        try
+        {
+            // Retrieve the machine's current status
+            var machineStatus = await _clientStatusStore.GetClientByIdAsync(executionCommandDto.MachineId);
+
+            if (machineStatus == null)
+            {
+                _logger.LogWarning("Machine {MachineId} not found in client status store.", executionCommandDto.MachineId);
+                await _hubContext.Clients.User(userStatus.ConnectionId).SendAsync("error", "Assigned machine not found", _userId);
+                return;
+            }
+
+            // Check machine's status before executing or resuming the job
+            if ((executionCommandDto.Command == ExecutionCommandTypesEnum.Execute || executionCommandDto.Command == ExecutionCommandTypesEnum.Resume) &&
+                machineStatus.Status != MachineStatusTypeEnum.Online && machineStatus.Status != MachineStatusTypeEnum.Idle)
+            {
+                _logger.LogWarning("Machine {MachineId} is not online or idle. Job execution cannot be triggered.", executionCommandDto.MachineId);
+                await _hubContext.Clients.User(userStatus.ConnectionId).SendAsync("error", "Assigned machine is not online or idle", _userId);
+                return;
+            }
+
+            // Check if the machine is running before stopping, pausing, or cleaning up
+            if ((executionCommandDto.Command == ExecutionCommandTypesEnum.Pause ||
+                 executionCommandDto.Command == ExecutionCommandTypesEnum.Stop ||
+                 executionCommandDto.Command == ExecutionCommandTypesEnum.Cancel ||
+                 executionCommandDto.Command == ExecutionCommandTypesEnum.Cleanup) &&
+                machineStatus.Status != MachineStatusTypeEnum.Running)
+            {
+                _logger.LogWarning("Machine {MachineId} is not running. Cannot pause, stop, cancel, or clean up.", executionCommandDto.MachineId);
+                await _hubContext.Clients.User(userStatus.ConnectionId).SendAsync("error", "Machine is not running", _userId);
+                return;
+            }
+
+            // Log preparation for job execution
+            _logger.LogInformation("Preparing to trigger job execution on machine {MachineId} for Job {JobId}.", executionCommandDto.MachineId, executionCommandDto.JobId);
+
+            // Update machine's status and last seen time
+            machineStatus.LastSeen = DateTimeOffset.UtcNow;
+
+            // Update machine status based on command
+            switch (executionCommandDto.Command)
+            {
+                case ExecutionCommandTypesEnum.Execute:
+                case ExecutionCommandTypesEnum.Resume:
+                    machineStatus.Status = MachineStatusTypeEnum.Running;
+                    machineStatus.AgentId = executionCommandDto.AgentId;
+                    break;
+
+                case ExecutionCommandTypesEnum.Pause:
+                    machineStatus.Status = MachineStatusTypeEnum.Stopped;
+                    machineStatus.AgentId = executionCommandDto.AgentId;
+                    break;
+
+                case ExecutionCommandTypesEnum.Abort:
+                case ExecutionCommandTypesEnum.Stop:
+                case ExecutionCommandTypesEnum.Cancel:
+                case ExecutionCommandTypesEnum.Cleanup:
+                    machineStatus.Status = MachineStatusTypeEnum.Online;
+                    machineStatus.AgentId = null;
+                    break;
+            }
+
+            // Persist the updated machine status
+            await _clientStatusStore.UpdateClientStatusAsync(machineStatus);
+
+            // Send the execution command to the client machine
+            await _hubContext.Clients.Client(machineStatus.ConnectionId).SendAsync("trigger_agent", executionCommandDto);
+
+            // Notify user of successful job trigger
+            await _hubContext.Clients.User(userStatus.ConnectionId).SendAsync("success", "Job execution triggered", _userId);
+
+            // Log successful job execution
+            _logger.LogInformation("Job {JobId} executed successfully on machine {MachineId}.", executionCommandDto.JobId, executionCommandDto.MachineId);
+        }
+        catch (Exception ex)
+        {
+            // Log any errors that occur during job execution
+            _logger.LogError(ex, "Error executing job {JobId}.", executionCommandDto?.JobId);
+            if (userStatus != null)
+            {
+                await _hubContext.Clients.User(userStatus.ConnectionId).SendAsync("error", "Job execution failed", _userId);
+            }
         }
     }
 }
