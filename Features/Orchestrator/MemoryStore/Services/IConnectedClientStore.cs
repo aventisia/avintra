@@ -28,6 +28,14 @@ public interface IClientStatusStore
     Task<ClientStatusDto?> GetStatusByConnectionIdAsync(string connectionId);
 
     /// <summary>
+    /// Retrieves the status of a client based on their unique client identifier.
+    /// This method returns the client's status information or null if no status is found for the provided client ID.
+    /// </summary>
+    /// <param name="clientId">The unique identifier of the client whose status is being queried.</param>
+    /// <returns>A task representing the asynchronous operation, containing the client's status (as a <see cref="ClientStatusDto"/>) or null if no status is found.</returns>
+    Task<ClientStatusDto?> GetStatusByClientIdAsync(Guid clientId);
+
+    /// <summary>
     /// Retrieves the status information of a client based on their unique client identifier.
     /// Returns the client's status details or null if no status is found for the provided client ID.
     /// </summary>

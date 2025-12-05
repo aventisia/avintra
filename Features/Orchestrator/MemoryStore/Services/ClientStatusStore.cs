@@ -64,6 +64,20 @@ public class ClientStatusStore : IClientStatusStore
         // Return null if no client found with the given connection ID.
         return Task.FromResult<ClientStatusDto?>(null);
     }
+    
+    // Retrieves the status of a client by their client ID.
+    public Task<ClientStatusDto?> GetStatusByClientIdAsync(Guid clientId)
+    {
+        // Find the client by its client ID.
+        if (ClientStore.TryGetValue(clientId, out var clientStatus))
+        {
+            // Return the client status if found.
+            return Task.FromResult<ClientStatusDto?>(clientStatus);
+        }
+
+        // Return null if no client found with the given client ID.
+        return Task.FromResult<ClientStatusDto?>(null);
+    }
 
     // Retrieves a list of machine clients for a specific tenant.
     public Task<IEnumerable<ClientStatusDto>> GetMachineStatusesAsync(Guid tenantId)
