@@ -198,7 +198,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             // Return Success
             serviceResponse.Data.Response = finalResponse;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Success";
+            serviceResponse.Message = "Llm provider connector invoked successfully";
             return serviceResponse;
 
         }
