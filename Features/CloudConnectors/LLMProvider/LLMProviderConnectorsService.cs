@@ -1,3 +1,5 @@
+using System.Text.Json.Nodes;
+
 namespace WorkspaceAPIs.Features.CloudConnectors.LLMProvider;
 
 public class LLMProviderConnectorsService : ILLMProviderConnectorsService
@@ -50,48 +52,41 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
                 return serviceResponse;
             }
 
+            // Extract provider from CloudConnectorReqDto (string)
+            string? providerStr = cloudConnectorReqDto.Provider?.Trim();
+
+            // Parse to enum
+           if (!Enum.TryParse<LLMProviderEnum>(providerStr, true, out LLMProviderEnum provider))
+            {
+                _logger.LogError("Invalid provider specified: {Provider}", providerStr);
+                serviceResponse.Message = $"Unsupported provider: {providerStr}. Valid values: OpenAI, Ollama, DeepInfra.";
+                serviceResponse.StatusCode = 400;
+                return serviceResponse;
+            }
+
             // Parse Payload as JSON Document
             using var requestDoc = JsonDocument.Parse(payloadJson);
             var root = requestDoc.RootElement;
 
             // Extract fields from payload
-            string? model = root.GetProperty("model").GetString() ?? "gpt-4o";
-            string? LLMMessage = root.GetProperty("LLMMessage").GetString();
-            List<string>? files = null;
-            if (root.TryGetProperty("files", out var filesProp) && filesProp.ValueKind == JsonValueKind.Array)
-            {
-                files = new List<string>();
-                foreach (var file in filesProp.EnumerateArray())
-                {
-                    if (file.ValueKind == JsonValueKind.String)
-                    {
-                        files.Add(file.GetString());
-                    }
-                }
-            }
-            bool isJsonOutput = root.TryGetProperty("is_json_output", out var jsonOutProp) ? jsonOutProp.GetBoolean() : false;
-            bool stream = root.TryGetProperty("stream", out var streamProp) ? streamProp.GetBoolean() : false;
-            float temperature = root.TryGetProperty("temperature", out var tempProp) ? tempProp.GetSingle() : 1.0f;
-            float top_p = root.TryGetProperty("top_p", out var topPProp) ? topPProp.GetSingle() : 1.0f;
-            int? max_output_tokens = root.TryGetProperty("max_output_tokens", out var maxTokensProp) ? maxTokensProp.GetInt32() : null;
-            string? jsonSchema = root.TryGetProperty("json_schema", out var schemaProp)? schemaProp.GetString(): null;
-            bool isByokEnabled = root.TryGetProperty("is_byok_enabled", out var byokProp) ? byokProp.GetBoolean(): false;
-            string? payloadCredentialId = root.TryGetProperty("credential_id", out var credIdProp) ? credIdProp.GetString(): null;
 
-            // 'input' (string or array of LLMMessage) 
-            object messages;
+            // Required
+            string? model = root.GetProperty("model").GetString() ?? "gpt-4o-mini";
+
+            // Input: Union[str, List[LLMMessage]]
+            object inputMessages;
             if (root.TryGetProperty("input", out var inputElement))
             {
                 if (inputElement.ValueKind == JsonValueKind.String)
                 {
-                    messages = new[]
+                    inputMessages = new[]
                     {
                     new { role = "user", content = inputElement.GetString() }
                 };
                 }
                 else if (inputElement.ValueKind == JsonValueKind.Array)
                 {
-                    messages = inputElement;
+                    inputMessages = inputElement;
                 }
                 else
                 {
@@ -105,27 +100,108 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
                 return serviceResponse;
             }
 
-            // Build OpenAI Request Payload 
-            var openAiPayload = new Dictionary<string, object>
-            {
-                ["model"] = model,
-                ["LLMMessage"] = messages,
-            };
-            // Handle the open ai request body optional property 
-            if (temperature != 1.0f) openAiPayload["temperature"] = temperature;
-            if (top_p != 1.0f) openAiPayload["top_p"] = top_p;
-            if ( max_output_tokens.HasValue) openAiPayload["max_tokens"] =  max_output_tokens.Value;
-            if (isJsonOutput)
-                openAiPayload["response_format"] = new { type = "json_object" };
+            // Optional Fields 
+            bool isJsonOutput = root.TryGetProperty("is_json_output", out var jsonOutProp) ? jsonOutProp.GetBoolean() : false;
+            string? jsonSchema = root.TryGetProperty("json_schema", out var schemaProp) ? schemaProp.GetString() : null;
+            int? maxOutputTokens = root.TryGetProperty("max_output_tokens", out var maxTokensProp) ? maxTokensProp.GetInt32() : null;
+            bool isByokEnabled = root.TryGetProperty("is_byok_enabled", out var byokProp) ? byokProp.GetBoolean() : false;
+            float temperature = root.TryGetProperty("temperature", out var tempProp) ? tempProp.GetSingle() : 1.0f;
+            float topP = root.TryGetProperty("top_p", out var topPProp) ? topPProp.GetSingle() : 1.0f;
+            bool stream = root.TryGetProperty("stream", out var streamProp) ? streamProp.GetBoolean() : false;
 
-            openAiPayload["stream"] = stream;
+            // Files (List of base64-encoded strings)
+            List<string>? files = null;
+            if (root.TryGetProperty("files", out var filesProp) && filesProp.ValueKind == JsonValueKind.Array)
+            {
+                files = new List<string>();
+                foreach (var file in filesProp.EnumerateArray())
+                {
+                    if (file.ValueKind == JsonValueKind.String)
+                    {
+                        files.Add(file.GetString());
+                    }
+                }
+            }
+
+            // credential_id (if passed in payload, override or echo back)
+            string? payloadCredentialId = root.TryGetProperty("credential_id", out var credIdProp)
+                ? credIdProp.GetString() : null;
+
+            // Build FINAL Payload for Internal LLM Pipeline API
+            var llmPipelinePayload = new Dictionary<string, object>
+            {
+                ["provider"] = provider.ToString(),
+                ["model"] = model,
+                ["input"] = inputMessages,
+                ["files"] = files,
+                ["is_json_output"] = isJsonOutput,
+                ["json_schema"] = jsonSchema,
+                ["max_output_tokens"] = maxOutputTokens,
+                ["is_byok_enabled"] = isByokEnabled,
+                ["credential_id"] = payloadCredentialId,
+                ["temperature"] = temperature,
+                ["top_p"] = topP,
+                ["stream"] = stream
+            };
 
             // call open AI Api 
             using var httpClient = new HttpClient();
-            
-            // Task success
-            
+            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", openAiApiKey);
+
+            string endpoint = "https://dev-llmpipeline.aventisia.com/api/llm.generate";
+            //string endpoint = "https://localhost:4001/api/llm.generate";
+
+            var jsonContent = new StringContent(
+                System.Text.Json.JsonSerializer.Serialize(llmPipelinePayload), Encoding.UTF8, "application/json");
+
+            using var response = await httpClient.PostAsync(endpoint, jsonContent);
+            string responseBody = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"LLM Pipeline API error: {response.StatusCode} - {responseBody}");
+            }
+
+            // Parse Response using JsonNode 
+            JsonNode? apiResponseNode = JsonNode.Parse(responseBody);
+
+            if (apiResponseNode == null)
+            {
+                throw new InvalidOperationException("Failed to parse LLM pipeline response.");
+            }
+
+            var finalResponse = new JsonObject
+            {
+                ["provider"] =  provider.ToString(),
+                ["credential_id"] = payloadCredentialId,
+                ["created_on"] = DateTime.UtcNow.ToString("o"),
+                ["action"] = cloudConnectorReqDto.Action
+            };
+
+            if (apiResponseNode is JsonObject apiResponseObj)
+            {
+                foreach (var prop in apiResponseObj)
+                {
+                    finalResponse[prop.Key] = prop.Value != null
+                    ? JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(prop.Value)) : null;
+                }
+
+            }
+            else
+            {
+                serviceResponse.Message = "LLM pipeline response is not a JSON object.";
+                serviceResponse.StatusCode = 502;
+                return serviceResponse;
+            }
+
+            // Return Success
+            serviceResponse.Data.Response = finalResponse;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Success";
+            return serviceResponse;
+
         }
+        //The requested operation requires an element of type 'Number', but the target element has type 'String'.
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while invoking open Ai connector.");
@@ -135,7 +211,6 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
         }
         return serviceResponse;
     }
-
     // Get openAi apikey from the vault credential id.
     private async Task<(string ApiKey, string? Organization)?> GetOpenAICredentialsAsync(Guid credentialId)
     {
