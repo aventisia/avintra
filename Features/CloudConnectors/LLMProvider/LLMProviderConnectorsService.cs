@@ -148,7 +148,8 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             using var httpClient = new HttpClient();
             //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", openAiApiKey);
 
-            string endpoint = "https://dev-llmpipeline.aventisia.com/api/llm.generate";
+            string endpoint = "  https://dev-llmpipeline.aventisia.com/api/llm/generate";
+          
             //string endpoint = "https://localhost:4001/api/llm.generate";
 
             var jsonContent = new StringContent(
