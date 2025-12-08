@@ -65,6 +65,7 @@ public static class SharedServicesExtension
         services.AddSingleton(Guard.Against.Null(config.GetSection("TenantResolverConfig").Get<TenantResolverConfig>(), message: "TenantResolverConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("FileUploadConfig").Get<FileUploadConfig>(), message: "FileUploadConfig cannot be null"));
         services.AddSingleton(Guard.Against.Null(config.GetSection("HttpClientUrlConfig").Get<HttpClientUrlConfig>(), message: "HttpClientUrlConfig cannot be null"));
+        services.AddSingleton(Guard.Against.Null(config.GetSection("RateLimiterConfig").Get<RateLimiterConfig>(), message: "RateLimiterConfig cannot be null"));
 
         // Scoped
         services.AddScoped<ICurrentTenantService, CurrentTenantService>();
