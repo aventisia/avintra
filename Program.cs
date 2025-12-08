@@ -105,6 +105,8 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseRateLimiter(); 
+
 app.UseMiddleware<TenantResolver>();
 
 app.MapControllers();
