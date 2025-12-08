@@ -130,7 +130,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             // Build FINAL Payload for Internal LLM Pipeline API
             var llmPipelinePayload = new Dictionary<string, object>
             {
-                ["provider"] = provider.ToString(),
+                ["provider"] = provider.ToString().ToLowerInvariant(),
                 ["model"] = model,
                 ["input"] = inputMessages,
                 ["files"] = files,
@@ -172,7 +172,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
 
             var finalResponse = new JsonObject
             {
-                ["provider"] =  provider.ToString(),
+                ["provider"] =  provider.ToString().ToLowerInvariant(),
                 ["credential_id"] = payloadCredentialId,
                 ["created_on"] = DateTime.UtcNow.ToString("o"),
                 ["action"] = cloudConnectorReqDto.Action
