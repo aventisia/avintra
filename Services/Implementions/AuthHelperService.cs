@@ -277,7 +277,9 @@ public class AuthHelperService : IAuthHelperService
     // Removes a cookie with the specified name.
     public void RemoveCookie(string name)
     {
-        _httpContext.Response.Cookies.Delete(name);
+        var cookieOptions = new CookieOptions();
+        cookieOptions.Expires = DateTimeOffset.UtcNow.AddDays(-1);
+        _httpContext.Response.Cookies.Append(name, "", cookieOptions);
     }
 
     // Creates or updates a user in other databases asynchronously.
