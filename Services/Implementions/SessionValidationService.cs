@@ -26,8 +26,7 @@ public class SessionValidationService : ISessionValidationService
 
         // Query the database for the active session using the provided session ID
         var activeSession = await _tenantDbContext.ReadOnlyActiveSessions
-            .Where(x => x.Id == sessionId)
-            .SingleOrDefaultAsync();
+            .FirstOrDefaultAsync(x => x.Id == sessionId);
 
         // If no session was found in the database, return false
         if (activeSession == null)
