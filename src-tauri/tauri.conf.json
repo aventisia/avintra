@@ -15,7 +15,8 @@
       {
         "title": "WorcDesktopApp",
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "userAgent": "WorcDesktopApp/0.1.36"
       }
     ],
     "security": {
