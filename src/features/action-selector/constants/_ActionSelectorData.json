@@ -2397,42 +2397,6 @@
         ]
       },
       {
-        "label": "Twilio",
-        "description": "Activities for integrating with Twilio services",
-        "icon": null,
-        "img": "/assets/Twilio.svg",
-        "listType": null,
-        "actions": [
-          {
-            "type": "activityNode",
-            "name": "SendTextSmsActivity",
-            "label": "Send SMS (Twilio)",
-            "description": "Sends an SMS using Twilio service.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/assets/Twilio.svg"
-          },
-          {
-            "type": "activityNode",
-            "name": "SendWhatsappMessageActivity",
-            "label": "Send WhatsApp Message (Twilio)",
-            "description": "Sends a WhatsApp message using Twilio service.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/assets/Twilio.svg"
-          },
-          {
-            "type": "activityNode",
-            "name": "SendWhatsAppMessageViaMessagingServiceActivity",
-            "label": "Send WhatsApp Message via Messaging Service",
-            "description": "Sends a WhatsApp message using Twilio Messaging Service.",
-            "docsLink": "https://docs.aventisia.com",
-            "icon": null,
-            "img": "/assets/Twilio.svg"
-          }
-        ]
-      },
-      {
         "label": "Terminal Emulation",
         "description": "Automate terminal and mainframe interactions.",
         "icon": null,
