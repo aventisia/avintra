@@ -1181,6 +1181,7 @@ namespace WorkspaceAPIs.Services
             {
                 UsageSourceTypesEnum.Agent => "GenerateAgentTemplateDescriptionPrompt.txt",
                 UsageSourceTypesEnum.AIModel => "GenerateAIModelTemplateDescriptionPrompt.txt",
+                UsageSourceTypesEnum.Platform => "ImprovedPromptInstructions.txt",
                 _ => "NA"
             };
 
