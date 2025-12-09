@@ -70,6 +70,7 @@ public static class SharedServicesExtension
         // Scoped
         services.AddScoped<ICurrentTenantService, CurrentTenantService>();
         services.AddScoped<IUserManagementGuardService, UserManagementGuardService>();
+        services.AddScoped<ISessionValidationService, SessionValidationService>();
     }
 
     // Method to add the email service to the service collection
