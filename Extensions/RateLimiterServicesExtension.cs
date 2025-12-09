@@ -4,30 +4,54 @@ public static class RateLimiterServicesExtension
 {
     public static void SharedRateLimiter(this IServiceCollection services, IConfiguration config)
     {
+        // Load rate limiter configuration from appsettings.json
         var rateLimiterConfig = config.GetSection("RateLimiterConfig").Get<RateLimiterConfig>() ?? new RateLimiterConfig();
 
+        // Register the global rate limiter
         services.AddRateLimiter(options =>
         {
+            // Partitioned rate limiter allows creating a limiter per client (IP/user/endpoint)
             options.GlobalLimiter =
                 PartitionedRateLimiter.Create<HttpContext, string>(context =>
                 {
-                    // Client identity
+                    // Get client IP address
                     var ip = context.Connection.RemoteIpAddress?.ToString();
-                    var host = context.Request.Host.Host;
-                    var clientId = ip ?? host ?? "unknown-client";
 
-                    // Path, ensuring it is never null
-                    var path = context.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
+                    // Get user ID if the user is authenticated
+                    var userId = context.User?.Identity?.IsAuthenticated == true
+                        ? context.User?.FindFirstValue("uid")
+                        : string.Empty;
 
-                    // Endpoint-specific rule
-                    var endpoint = rateLimiterConfig.Endpoints.FirstOrDefault(f => path.ToLower().Equals(f.Path.ToLower()));
+                    // Get host as a fallback if IP is not available
+                    var host = context?.Request.Host.Host;
 
+                    // Construct the client identifier:
+                    // - Authenticated users: combine IP + userId
+                    // - Unauthenticated users: use IP or host
+                    var clientId = !string.IsNullOrEmpty(userId)
+                        ? $"{ip ?? host}:{userId}"
+                        : $"{ip ?? host ?? "unknown-client"}";
+                    Console.WriteLine($"Client ID: {clientId}");
+
+                    // Get request path (ensure lowercase for consistent matching)
+                    var path = context?.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
+                    Console.WriteLine($"Request Path: {path}");
+
+                    // Find endpoint-specific rate limiting configuration
+                    var endpoint = rateLimiterConfig.Endpoints
+                        .FirstOrDefault(f => path.Equals(f.Path, StringComparison.OrdinalIgnoreCase));
+
+                    // Construct the rate limiter key
+                    // - If endpoint config exists: use clientId + endpoint path
+                    // - Otherwise: use clientId + "default"
+                    var rateLimitKey = endpoint != null ? $"{clientId}:{endpoint.Path}" : $"{clientId}:default";
+                    Console.WriteLine($"Rate Limit Key: {rateLimitKey}");
+
+                    // If there is an endpoint-specific configuration, use its rules
                     if (endpoint != null)
                     {
-                        var key = $"{clientId}:{endpoint.Path}";
-
                         return RateLimitPartition.GetFixedWindowLimiter(
-                            key,
+                            rateLimitKey,
                             _ => new FixedWindowRateLimiterOptions
                             {
                                 PermitLimit = endpoint.PermitLimit,
@@ -37,9 +61,9 @@ public static class RateLimiterServicesExtension
                             });
                     }
 
-                    // Default rule
+                    // Default rate limiting configuration
                     return RateLimitPartition.GetFixedWindowLimiter(
-                        $"{clientId}:default",
+                        rateLimitKey,
                         _ => new FixedWindowRateLimiterOptions
                         {
                             PermitLimit = rateLimiterConfig.Default.PermitLimit,
@@ -49,10 +73,15 @@ public static class RateLimiterServicesExtension
                             QueueProcessingOrder = QueueProcessingOrder.OldestFirst
                         });
                 });
+
+            // Action to perform when a request is rejected due to rate limiting
             options.OnRejected = async (context, token) =>
             {
-                context.HttpContext.Response.StatusCode = 429;
-                await context.HttpContext.Response.WriteAsync("Too many requests. Please try later again... ", cancellationToken: token);
+                context.HttpContext.Response.StatusCode = 429; // HTTP 429 Too Many Requests
+                await context.HttpContext.Response.WriteAsync(
+                    "Too many requests. Please try later again... ",
+                    cancellationToken: token
+                );
             };
         });
     }
