@@ -21,6 +21,7 @@ import { supportTicketRemarksZodSchema } from "../../constants/support-ticket-zo
 import { SupportTicketRemarksDto } from "../../dtos/SupportTicketRemarksDto";
 import { useDefineSTRemarkForm } from "../../hooks/useDefineSTRemarkForm";
 import { useFetchSupportTicket } from "../../hooks/useFetchSupportTicket";
+import { useSanitizer } from "../../hooks/useSanitizer";
 import { useSupportTicketsTableStore } from "../../stores/support-tickets-table-store";
 import { RichTextAreaField } from "../richtextarea/RichTextAreaField";
 import { STRemarkRowActionsNew } from "../st-remark-row-actions/STRemarkRowActionsNew";
@@ -32,6 +33,8 @@ export const SupportTicketEditForm = () => {
   // Define support ticket edit form with support ticket remark form
   const { form, isDirty, remarksQueryKey, crudAction, rowId, refineFormData } =
     useDefineSTRemarkForm();
+
+  const sanitizeHtml = useSanitizer();
 
   // // Get the query client for cache management
   const queryClient = useQueryClient();
@@ -157,7 +160,7 @@ export const SupportTicketEditForm = () => {
             <p className="p-2">Message</p>
           </div>
           <div className="w-full p-2 text-base font-light">
-            {parse(description ?? "")}
+            {parse(sanitizeHtml(description ?? ""))}
           </div>
         </div>
         {/* Remarks linked with the support ticket */}
@@ -223,7 +226,9 @@ export const SupportTicketEditForm = () => {
                       </div>
                     </>
                   ) : (
-                    <div className="w-full">{parse(remark.message ?? "")}</div>
+                    <div className="w-full">
+                      {parse(sanitizeHtml(remark.message ?? ""))}
+                    </div>
                   )}
                 </div>
               ))}
