@@ -150,7 +150,7 @@
         "label": "Twilio",
         "description": "Work with Twilio services",
         "icon": null,
-         "img": "/assets/Twilio.svg",
+        "img": "/assets/Twilio.svg",
         "listType": null,
         "actions": [
             {
