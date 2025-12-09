@@ -8,6 +8,6 @@ const ACTIVITY_EVENTS = [
 ] as const;
 
 // Time to logout session if user inactive
-const IDLE_TIMEOUT_MINUTES = 1 * 60 * 1000; //15 min
+const IDLE_TIMEOUT_MINUTES = 15 * 60 * 1000; //15 min
 
 export { ACTIVITY_EVENTS, IDLE_TIMEOUT_MINUTES };
