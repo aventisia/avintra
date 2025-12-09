@@ -15,6 +15,7 @@ import {
   useRedirectOnRelaunch,
 } from "@/features/tauri-updater";
 import { useFetchPaymentStatus } from "@/features/tenant/hooks/useFetchPaymentStatus";
+import { useAutoLogout } from "@/hooks/useAutoLogout";
 import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
 import useWebSocket from "@/hooks/useWebSocket";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
@@ -108,6 +109,9 @@ export const AppLayout = () => {
       navigate(landingUrl);
     }
   }, [landingUrl, location?.pathname, navigate]);
+
+  // Track if user is inactive for given period of time and logout
+  useAutoLogout();
 
   useEffect(() => {
     // If the user session is still pending, do not proceed
