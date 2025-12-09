@@ -73,8 +73,6 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// app.UseRateLimiter();
-
 if (app.Environment.IsEnvironment("Localhost"))
 {
     app.UseDeveloperExceptionPage();
@@ -106,6 +104,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseRateLimiter(); 
+
+app.UseMiddleware<SessionValidator>();
 
 app.UseMiddleware<TenantResolver>();
 
