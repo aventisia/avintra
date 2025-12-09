@@ -23,9 +23,14 @@ export interface SearchBlocksDto {
   type: string;
 
   /**
+   * Version number.
+   */
+  versionNumber?: number;
+
+  /**
    * Identifier for the associated flow version.
    */
-  flowVersionId: string;
+  flowId: string;
 
   /**
    * Indicates if the block is disabled.

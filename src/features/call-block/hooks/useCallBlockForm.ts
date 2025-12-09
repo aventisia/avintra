@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { z, ZodTypeAny } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import { useGetSelectedBlockData } from "./useGetSelectedBlockData";
-import { getFlowBlock } from "@/features/flow-block/apis/flow-block-apis";
+import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
 
 export const useCallBlockForm = () => {
   // Local state for node config and zod schema
@@ -51,6 +51,7 @@ export const useCallBlockForm = () => {
 
   // Extract stable primitive values for effect dependencies
   const selectedBlockId = selectedBlock?.id;
+  const selectedBlockFlowId = selectedBlock?.flowId;
 
   // Get name (activityName), inputs and outputs from nodeData
   const nodeUniqueName = nodeData?.name ?? "CallBlockActivity";
@@ -60,11 +61,11 @@ export const useCallBlockForm = () => {
 
   // Fetch config on mount or when nodeData changes
   useEffect(() => {
-    if (!selectedBlockId) return;
+    if (!selectedBlockId || !selectedBlockFlowId) return;
 
     setIsLoading(true);
 
-    getFlowBlock(selectedBlockId)
+    getFlowToLoad(selectedBlockFlowId, selectedBlockId)
       .then((config) => {
         if (config?.data?.inputOutputObject) {
           const IOObj = JSON.parse(config?.data.inputOutputObject || "{}");
@@ -81,7 +82,7 @@ export const useCallBlockForm = () => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [selectedBlockId]);
+  }, [selectedBlockId, selectedBlockFlowId]); // ✅ Only primitive deps
 
   // Get input and output keys (required at the time of form submission)
   const inputKeys: string[] = nodeConfig
