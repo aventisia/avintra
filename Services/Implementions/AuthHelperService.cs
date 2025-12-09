@@ -275,12 +275,12 @@ public class AuthHelperService : IAuthHelperService
     }
 
     // Removes a cookie with the specified name.
-    public void RemoveCookie(string name)
+    public void RemoveCookie(string name, string? subPath = null)
     {
         _httpContext.Response.Cookies.Delete(name, new CookieOptions
         {
             Domain = _cookiePolicyConfig.Domain,
-            Path = "/"
+            Path = string.IsNullOrWhiteSpace(subPath) ? "/" : subPath
         });
 
     }

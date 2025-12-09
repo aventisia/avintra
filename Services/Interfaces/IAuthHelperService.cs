@@ -68,7 +68,8 @@ public interface IAuthHelperService
     /// Removes a cookie with the specified name.
     /// </summary>
     /// <param name="name">The name of the cookie to remove.</param>
-    void RemoveCookie(string name);
+    /// <param name="subPath">The subpath of the cookie. Default is null.</param>
+    void RemoveCookie(string name, string? subPath = null);
 
     /// <summary>
     /// Creates or updates a user in other databases asynchronously.
