@@ -116,8 +116,6 @@ builder.Services.AddQuartzJobs();
 
 var app = builder.Build();
 
-// app.UseRateLimiter();
-
 if (IsEnvironmentLocalhost)
 {
     app.UseDeveloperExceptionPage();
@@ -150,6 +148,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseRateLimiter(); 
+
+app.UseMiddleware<SessionValidator>();
 
 app.UseMiddleware<TenantResolver>();
 
