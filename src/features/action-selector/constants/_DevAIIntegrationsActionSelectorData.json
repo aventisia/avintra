@@ -1,0 +1,73 @@
+[
+  {
+    "label": "AI Integrations",
+    "description": "Integrate AI models for smarter, dynamic automation workflows, enhancing process efficiency and intelligence.",
+    "icon": "IntelligentAutomationIcon",
+    "img": null,
+    "actionCategories": [
+      {
+        "label": "AI Actions",
+        "description": "Actions to build, deploy, and integrate AI models for tasks like text processing, image recognition, and speech conversion.",
+        "icon": null,
+        "img": "/function.png",
+        "listType": "list",
+        "actions": [
+          {
+            "type": "aiNode",
+            "name": "InvokeInferenceModelWebServiceActivity",
+            "label": "Attach AI Model",
+            "description": "Attach an existing AI model from AI Studio to your automation workflow.",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/InferencingModel.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "OlmOCRActivity",
+            "label": "Olm OCR",
+            "description": "Perform OCR on a PDF document using AI",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/olmocr.png"
+          },
+          {
+            "type": "aiNode",
+            "name": "Text/CreateAIAgent",
+            "label": "Text Model",
+            "description": "Create and configure a text-based AI model for tasks like classification and text generation.",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/InferencingModel.svg"
+          },
+          {
+            "type": "aiNode",
+            "name": "Vision/CreateAIAgent",
+            "label": "Vision Model",
+            "description": "Use AI for OCR to extract text from PDF documents.",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/InferencingModel.svg"
+          },
+          {
+            "type": "aiNode",
+            "name": "STT/CreateAIAgent",
+            "label": "Speech To Text Model",
+            "description": "Convert spoken language into written text using AI.",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/SpeechToText.svg"
+          },
+          {
+            "type": "aiNode",
+            "name": "TTS/CreateAIAgent",
+            "label": "Text To Speech Model",
+            "description": "Convert text into natural-sounding speech using AI.",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/TextToSpeech.svg"
+          }
+        ]
+      }
+    ]
+  }
+]

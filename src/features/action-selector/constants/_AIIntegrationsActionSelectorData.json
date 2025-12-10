@@ -16,16 +16,7 @@
             "type": "aiNode",
             "name": "InvokeInferenceModelWebServiceActivity",
             "label": "Attach AI Model",
-            "description": "Attach existing AI model built in AI Studio",
-            "docsLink": null,
-            "icon": "",
-            "img": "/assets/InferencingModel.svg"
-          },
-          {
-            "type": "aiNode",
-            "name": "CreatedAIModelActivity",
-            "label": "Create AI Model",
-            "description": "Build and configure a new AI model directly within this environment",
+            "description": "Attach an existing AI model from AI Studio to your automation workflow.",
             "docsLink": null,
             "icon": "",
             "img": "/assets/InferencingModel.svg"
@@ -38,6 +29,26 @@
             "docsLink": null,
             "icon": "",
             "img": "/assets/olmocr.png"
+          },
+          {
+            "type": "aiNode",
+            "name": "AIModel",
+            "label": "Conversation Model",
+            "description": "Enable natural, AI-powered conversational experiences",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/ConversationModel.svg",
+            "disabled": true
+          },
+          {
+            "type": "aiNode",
+            "name": "AIModel",
+            "label": "Generative Model",
+            "description": "Generate content such as text, images, or code using AI",
+            "docsLink": null,
+            "icon": "",
+            "img": "/assets/GenerativeModel.svg",
+            "disabled": true
           },
           {
             "type": "aiNode",
