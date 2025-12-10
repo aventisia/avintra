@@ -3,9 +3,8 @@ import ReactJson from "react-json-view";
 
 interface JsonViewerProps {
   jsonData: string;
-  title: string;
 }
-const JsonViewer = ({ jsonData, title }: JsonViewerProps) => {
+const JsonViewer = ({ jsonData }: JsonViewerProps) => {
   const safeParse = (str: string, fallback = {}) => {
     try {
       const parsedJson = JSON.parse(str);
@@ -33,13 +32,8 @@ const JsonViewer = ({ jsonData, title }: JsonViewerProps) => {
   const parsed = safeParse(jsonData);
 
   return (
-    <div className="border-dividers overflow-hidden rounded-lg m-2 border border-solid">
-      <div className="border-dividers flex items-center justify-center border-b border-solid">
-        <div className="ml-2 flex-grow items-center justify-center">
-          <span className="text-sm">{title}</span>
-        </div>
-      </div>
-      <ScrollArea className="h-[calc(70vh)] w-full p-1">
+    <div className="border-dividers overflow-hidden rounded-lg border border-solid">
+      <ScrollArea className="h-[calc(65vh)] w-full p-1">
         <ReactJson
           style={{
             // overflowX: "auto",

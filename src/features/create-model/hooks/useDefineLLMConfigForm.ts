@@ -1,21 +1,35 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { llmConfigZodSchema } from "../constants/llm-config-zod-schema";
-import { useMemo } from "react";
-import { providersData } from "../constants/llm-providers";
+import { useEffect } from "react";
+import {
+  useDynamicConfigPanelStore,
+  useUpdateNodeDataIO,
+} from "@/features/dynamic-config-panel";
+import { useShallow } from "zustand/react/shallow";
 
 export const useDefineLLMConfigForm = () => {
+  const { nodeId, nodeData, setShowDialog } = useDynamicConfigPanelStore(
+    useShallow((state) => ({
+      nodeData: state.nodeData,
+      nodeId: state.nodeId,
+      setShowDialog: state.setShowDialog,
+    })),
+  );
+
   // Define form with zod schema
   const form = useForm<z.infer<typeof llmConfigZodSchema>>({
     resolver: zodResolver(llmConfigZodSchema),
     defaultValues: {
-      hasOwnApiKey: false,
-      credentials: "",
-      llmProvider: "",
+      input: "",
+      is_byok_enabled: false,
+      credential_id: "",
+      provider: "",
       model: "",
       temperature: 0.2,
-      topP: 0,
+      top_p: 0,
+      AIModelResult: { value: "AIModelResult", enabled: true },
     },
   });
 
@@ -23,32 +37,84 @@ export const useDefineLLMConfigForm = () => {
     formState: { isSubmitting, isDirty },
   } = form;
 
-  const hasOwnApiKey = form.watch("hasOwnApiKey");
-  const llmProvider = form.watch("llmProvider");
+  // Get handlers to update node inputs and outputs
+  const { updateNodeDataIO, updateFlowVariablesObject } = useUpdateNodeDataIO();
 
-  // Filter providers by availability if BYOK is false
-  const visibleProviders = useMemo(() => {
-    return hasOwnApiKey
-      ? providersData
-      : providersData.filter((p) => p.models.some((m) => m.available));
-  }, [hasOwnApiKey]);
+  // Function to convert an array of key-value input/output objects back into a form object
+  const convertToFormData = (
+    keyValueArray: { key: string; value: unknown }[],
+  ): FieldValues => {
+    return keyValueArray.reduce((acc, { key, value }) => {
+      acc[key] = value;
+      return acc;
+    }, {} as FieldValues);
+  };
 
-  // Filter models based on provider and BYOK
-  const visibleModels = useMemo(() => {
-    return (
-      providersData
-        .find((p) => p.value === llmProvider)
-        ?.models.filter((m) => hasOwnApiKey || m.available) || []
-    );
-  }, [llmProvider, hasOwnApiKey]);
+  // Function to convert form data into an array of key-value objects for inputs
+  const convertToKeyValueArray = (
+    formData: FieldValues,
+  ): { key: string; value: unknown }[] => {
+    return Object.keys(formData)
+      .map((key) => ({
+        key,
+        value: formData[key],
+      }))
+      .filter((v) => v.key !== "AIModelResult"); // execute output
+  };
+
+  // Define submit handler
+  const onSubmit = (formData: z.infer<typeof llmConfigZodSchema>) => {
+    const inputs = convertToKeyValueArray(formData);
+
+    const outputs = [
+      {
+        key: "AIModelResult",
+        value: {
+          value: formData.AIModelResult.value,
+          enabled: formData.AIModelResult.enabled,
+        },
+      },
+    ];
+
+    if (nodeId) {
+      updateNodeDataIO(nodeId, inputs, outputs);
+      updateFlowVariablesObject(nodeId, [
+        {
+          key: "AIModelResult",
+          value: {
+            value: formData.AIModelResult.value,
+            enabled: formData.AIModelResult.enabled,
+          },
+        },
+      ]);
+    }
+
+    // Close the dialog
+    setShowDialog(false);
+  };
+
+  useEffect(() => {
+    form.reset({
+      is_byok_enabled: false,
+      model: "gpt-4o-mini",
+      provider: "openai",
+      temperature: 1,
+      top_p: 1,
+    });
+    if (nodeData?.inputs && nodeData?.outputs) {
+      form.reset({
+        ...convertToFormData(nodeData?.inputs),
+        ...convertToFormData(nodeData?.outputs),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodeData?.inputs]);
 
   // Return form and methods
   return {
     form,
     isSubmitting,
     isDirty,
-    hasOwnApiKey,
-    visibleModels,
-    visibleProviders,
+    onSubmit,
   };
 };
