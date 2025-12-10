@@ -10,6 +10,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import CallAgentConfigForm from "@/features/call-agent/components/CallAgentConfigForm";
 import CallBlockConfigForm from "@/features/call-block/components/CallBlockConfigForm";
 import ModelConfigForm from "@/features/call-model/components/ModelConfigForm";
+import { LLMConfigForm } from "@/features/create-model/components/llm-config/LLMConfigForm";
 
 export const DCPDialog = ({ children }: React.PropsWithChildren) => {
   // Ref and state for dynamic <p> height
@@ -31,7 +32,7 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
     }
   }, [showDialog, nodeData?.description, nodeData?.docsLink]);
 
-  // Function to render correct form component based on nodeData.name
+  // Function to render correct form component based on nodeData.type
   const renderFormComponent = () => {
     switch (nodeData?.type) {
       case "callAgentNode":
@@ -40,6 +41,18 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
         return <CallBlockConfigForm />;
       case "aiNode":
         return <ModelConfigForm />;
+      default:
+        return <DCPForm />;
+    }
+  };
+
+  // Function to render create AI agent form component based on nodeData.name
+  const renderCreateAIAgentForm = () => {
+    switch (nodeData?.name) {
+      case "Text/CreateAIAgent":
+        return <LLMConfigForm />;
+      case "Vision/CreateAIAgent":
+        return <LLMConfigForm />;
       default:
         return <DCPForm />;
     }
@@ -94,24 +107,49 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
           "!max-w-[32rem]",
           nodeData?.name === "ConditionalBranchActivity" && "!max-w-[40rem]",
           nodeData?.name === "LoopActivity" && "!max-w-[40rem]",
+          nodeData?.name.includes("CreateAIAgent") &&
+            "right-2 mt-[calc(var(--header-height)+2*var(--header-padding))] h-[calc(100vh-var(--header-height)-3*var(--header-padding))] !max-w-[calc((100vw-(2*var(--header-padding)))/2)] rounded-e-xl",
         )}
       >
-        <DCPDialogHeader className="border-none px-3.5 py-3 text-lg tracking-wide" />
-        <p
-          ref={infoRef}
-          className="mx-2.5 rounded-lg bg-accent px-3 py-2 text-xs"
-        >
-          ℹ️ {nodeData?.description || "No description available."}
-          {renderInfoLink()}
-        </p>
-        <ScrollArea
-          style={{
-            height: `calc(100vh - 3.8rem - ${infoHeight}px)`,
-          }}
-          className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4"
-        >
-          {renderFormComponent()}
-        </ScrollArea>
+        <>
+          <DCPDialogHeader
+            className={cn(
+              "border-none px-3.5 py-3 text-lg tracking-wide",
+              nodeData?.name.includes("CreateAIAgent") &&
+                "h-auto px-3 py-0 text-xs",
+            )}
+          />
+          <div
+            ref={infoRef}
+            className={cn(
+              "mx-2.5 rounded-lg bg-accent px-3 py-2 text-xs",
+              nodeData?.name.includes("CreateAIAgent") &&
+                "mx-0 flex gap-2 rounded-none border-b bg-transparent px-5 pt-0",
+            )}
+          >
+            <p
+              className={cn(
+                nodeData?.name.includes("CreateAIAgent") &&
+                  "inline max-w-[calc(38vw)] truncate text-muted-foreground",
+              )}
+            >
+              ℹ️ {nodeData?.description || "No description available."}
+            </p>
+            {renderInfoLink()}
+          </div>
+          {nodeData?.name.includes("CreateAIAgent") ? (
+            renderCreateAIAgentForm()
+          ) : (
+            <ScrollArea
+              style={{
+                height: `calc(100vh - 3.8rem - ${infoHeight}px)`,
+              }}
+              className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4"
+            >
+              {renderFormComponent()}
+            </ScrollArea>
+          )}
+        </>
       </DialogContent>
     </DialogWrapper>
   );

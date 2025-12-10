@@ -15,8 +15,8 @@
           {
             "type": "aiNode",
             "name": "InvokeInferenceModelWebServiceActivity",
-            "label": "Inferencing Model",
-            "description": "Perform inference tasks using a trained AI model",
+            "label": "Attach AI Model",
+            "description": "Attach an existing AI model from AI Studio to your automation workflow.",
             "docsLink": null,
             "icon": "",
             "img": "/assets/InferencingModel.svg"
@@ -38,7 +38,7 @@
             "docsLink": null,
             "icon": "",
             "img": "/assets/ConversationModel.svg",
-            "disabled":true
+            "disabled": true
           },
           {
             "type": "aiNode",
@@ -48,7 +48,7 @@
             "docsLink": null,
             "icon": "",
             "img": "/assets/GenerativeModel.svg",
-            "disabled":true
+            "disabled": true
           },
           {
             "type": "aiNode",

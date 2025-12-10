@@ -91,7 +91,9 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
 
   // Explicitly import AI Integrations module
   const aiIntegrationsModule = (await import(
-    "../features/action-selector/constants/_AIIntegrationsActionSelectorData.json"
+    import.meta.env.MODE !== "production"
+      ? "../features/action-selector/constants/_DevAIIntegrationsActionSelectorData.json"
+      : "../features/action-selector/constants/_AIIntegrationsActionSelectorData.json"
   )) as unknown as { default: PrimaryCategoryType[] };
   finalNodeList = mergeActionSelectorData(
     finalNodeList,
@@ -99,7 +101,7 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
   );
 
   // Sort finalNodeList.actionCategories by label alphabetically
-  finalNodeList.forEach(category => {
+  finalNodeList.forEach((category) => {
     category.actionCategories.sort((a, b) => a.label.localeCompare(b.label));
   });
 
