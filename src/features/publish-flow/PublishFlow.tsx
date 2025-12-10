@@ -5,7 +5,6 @@ import { useLocation } from "react-router-dom";
 import { useMemo } from "react";
 import { getFlowToLoad } from "../react-flow/apis/react-flow-apis";
 import { Loader2 } from "lucide-react";
-import { deepParse } from "../react-flow/utils/deepParse";
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
 
 const PublishFlow = () => {
@@ -14,7 +13,7 @@ const PublishFlow = () => {
     () => new URLSearchParams(location.search),
     [location.search],
   );
-  const flowId = queryParams.get("f");
+  const flowId = queryParams.get("f") || undefined;
   const versionId = queryParams.get("v") || undefined;
 
   //Get flow
@@ -30,16 +29,11 @@ const PublishFlow = () => {
   const { showCustomAlertDialog } = useShowAlertHandler();
 
   const handlePublish = () => {
-    if (flowsData?.data) {
+    if (flowId && versionId) {
       mutatePublish({
-        flowId: flowsData?.data.id,
+        flowId: flowId,
         isPublished: true,
-        reactFlowObject: JSON.stringify(
-          deepParse(flowsData?.data.reactFlowObject),
-        ),
-        id: flowsData?.data.versionId || "",
-        accessType: "TenantLevel",
-        type: flowsData?.data.type,
+        id: versionId,
       });
     }
   };

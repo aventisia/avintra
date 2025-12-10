@@ -4,13 +4,21 @@ export interface PublishFlowDto {
   flowId: string;
 
   /** Flow's nodes, edges, and viewport JSON data in string format */
-  reactFlowObject: string;
+  reactFlowObject?: string;
 
   id: string;
 
   isPublished: boolean;
 
-  accessType: string;
+  accessType?: string;
 
-  type: string;
+  type?: string;
+
+  flowVariablesObject?: string;
+
+  inputOutputObject?: string;
+
+  thumbnail?: string;
+
+  Description?: string;
 }
