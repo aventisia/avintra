@@ -49,27 +49,27 @@ public class SendGridConnectorsService : ISendGridConnectorsService
             // Extract email parameters from payload
             var payload = cloudConnectorReqDto.Payload;
 
-            if (!payload.TryGetValue("toEmail", out object? toEmailObj) || toEmailObj == null)
-                throw new ArgumentException("'toEmail' is required in payload.");
+            if (!payload.TryGetValue("To", out object? toEmailObj) || toEmailObj == null)
+                throw new ArgumentException("'To' is required in payload.");
 
-            if (!payload.TryGetValue("subject", out object? subjectObj) || subjectObj == null)
-                throw new ArgumentException("'subject' is required in payload.");
+            if (!payload.TryGetValue("Subject", out object? subjectObj) || subjectObj == null)
+                throw new ArgumentException("'Subject' is required in payload.");
 
-            if (!payload.TryGetValue("htmlContent", out object? htmlContentObj) || htmlContentObj == null)
-                throw new ArgumentException("'htmlContent' is required in payload.");
+            if (!payload.TryGetValue("Body", out object? bodyObj) || bodyObj == null)
+                throw new ArgumentException("'Body' is required in payload.");
 
             string toEmail = toEmailObj.ToString()!;
             string subject = subjectObj.ToString()!;
-            string htmlContent = htmlContentObj.ToString()!;
+            string body = bodyObj.ToString()!;
 
-            string? fromEmail = payload.TryGetValue("fromEmail", out var fromEmailObj) ? fromEmailObj?.ToString() : null;
-            string? fromName = payload.TryGetValue("fromName", out var fromNameObj) ? fromNameObj?.ToString() : null;
-            string? ccEmail = payload.TryGetValue("ccEmail", out var ccEmailObj) ? ccEmailObj?.ToString() : null;
-            string? bccEmail = payload.TryGetValue("bccEmail", out var bccEmailObj) ? bccEmailObj?.ToString() : null;
+            string? fromEmail = payload.TryGetValue("From", out var fromEmailObj) ? fromEmailObj?.ToString() : null;
+            string? fromName = payload.TryGetValue("FromName", out var fromNameObj) ? fromNameObj?.ToString() : null;
+            string? ccEmail = payload.TryGetValue("Cc", out var ccEmailObj) ? ccEmailObj?.ToString() : null;
+            string? bccEmail = payload.TryGetValue("Bcc", out var bccEmailObj) ? bccEmailObj?.ToString() : null;
 
             // Send the email using the API key
             bool sendSuccess = await SendEmailAsync(credentialId: cloudConnectorReqDto.CredentialId,
-                toEmail: toEmail, subject: subject, htmlContent: htmlContent, fromEmail: fromEmail,
+                toEmail: toEmail, subject: subject, body: body, fromEmail: fromEmail,
                 fromName: fromName, ccEmail: ccEmail, bccEmail: bccEmail);
 
             // success response
@@ -125,7 +125,7 @@ public class SendGridConnectorsService : ISendGridConnectorsService
 
 
     public async Task<bool> SendEmailAsync(Guid credentialId, string toEmail, string subject,
-       string htmlContent, string? fromEmail = null, string? fromName = null, string? ccEmail = null, string? bccEmail = null)
+       string body, string? fromEmail = null, string? fromName = null, string? ccEmail = null, string? bccEmail = null)
     {
         // 1. Get API key from vault
         var apiKey = await GetSendGridApiKeyAsync(credentialId);
@@ -141,7 +141,7 @@ public class SendGridConnectorsService : ISendGridConnectorsService
         // 3. Prepare email
         var from = new EmailAddress(fromEmail ?? "aventisia.com", fromName ?? "Your App");
         var to = new EmailAddress(toEmail);
-        var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent: "", htmlContent: htmlContent);
+        var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent: "", htmlContent: body);
 
         //  Add CC/BCC
         if (!string.IsNullOrEmpty(ccEmail))
