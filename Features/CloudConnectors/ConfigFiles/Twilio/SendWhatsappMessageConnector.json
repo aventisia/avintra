@@ -7,7 +7,7 @@
       {
         "direction": "Input",
         "type": "credentials-select",
-        "name": "__CredentialId__SendGrid",
+        "name": "__CredentialId__Twilio",
         "label": "Twilio Credential",
         "description": "The Twilio credential containing valid auth token and accountsId which is used to authenticate API requests.",
         "defaultValue": ""
