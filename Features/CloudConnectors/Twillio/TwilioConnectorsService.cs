@@ -115,12 +115,13 @@ public class TwilioConnectorsService : ITwilioConnectorsService
             return new { Error = "Invalid payload format. Expected Dictionary<string, object>." };
 
         // Extract required fields
+        
         if (!dict.TryGetValue("ToNumber", out var toObj) || toObj == null)
             return new { Error = "'ToNumber' is required in payload." };
         if (!dict.TryGetValue("MessageBody", out var bodyObj) || bodyObj == null)
             return new { Error = "'MessageBody' is required in payload." };
 
-        string toNumber = toObj.ToString() ?? string.Empty;
+        string toNumber = toObj?.ToString() ?? string.Empty;
         string messageBody = bodyObj.ToString() ?? string.Empty;
 
         // Extract optional fields
