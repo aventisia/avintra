@@ -21,6 +21,12 @@ export const useGetTenantInfoMutation = () => {
     useMutation({
       mutationFn: getTenantInfo,
       onSuccess: ({ data }) => {
+        // If data is undefined show error
+        if (!data) {
+          toast.error("Failed to get account information.");
+          return;
+        }
+        
         if (data.ssoConfigJson) {
           // TODO: if SSO enabled then route
         } else {
