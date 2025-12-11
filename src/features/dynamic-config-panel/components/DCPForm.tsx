@@ -1,11 +1,9 @@
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { Button } from "@aventisia/ui/buttons";
 import { Form } from "@aventisia/ui/form";
 import { toast } from "@aventisia/ui/sonner";
 import { SearchCodeIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
 import {
   RenderField,
   shouldRenderField,
@@ -39,13 +37,6 @@ export const DCPForm = () => {
 
   // Get handlers to update node inputs and outputs
   const { updateNodeDataIO, updateFlowVariablesObject } = useUpdateNodeDataIO();
-
-  // Get ReactFlowExt store state & actions
-  const { isPublished } = useReactFlowExtStore(
-    useShallow((state) => ({
-      isPublished: state.isPublished,
-    })),
-  );
 
   // Check if output fields should be shown based on node configuration and watched values
   useEffect(() => {
@@ -103,7 +94,6 @@ export const DCPForm = () => {
             onSubmit(form.getValues());
           }}
           className="px-2.5 pb-5"
-          disabled={isPublished}
         >
           {/* Input fields */}
           <div className="mt-1 space-y-3.5">
