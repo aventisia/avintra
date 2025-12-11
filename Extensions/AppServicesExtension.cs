@@ -48,6 +48,7 @@ public static class AppServicesExtension
         config.Apply(new BlockMappingProfile());
         config.Apply(new AppSecretMappingProfile());
         config.Apply(new TimeTriggerMappingProfile());
+        config.Apply(new AITaskMappingProfile());
 
         services.AddSingleton(config);
     }
