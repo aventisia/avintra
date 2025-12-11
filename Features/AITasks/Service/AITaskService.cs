@@ -21,6 +21,7 @@ public class AITaskService : IAITaskService
     // Method to check if the AI task name is available
     public async Task<ServiceResponse<TrueFalseResultDto>> IsAITaskNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
     {
+        // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<TrueFalseResultDto>
         {
             Data = null,
@@ -30,7 +31,7 @@ public class AITaskService : IAITaskService
         try
         {
             // Check if the provided AI task name is valid
-            if (!string.IsNullOrEmpty(checkAvailabilityDto.UserInput))
+            if (string.IsNullOrEmpty(checkAvailabilityDto.UserInput))
             {
                 _logger.LogError($"Invalid AI task name: '{checkAvailabilityDto.UserInput}'. It must start with a letter or underscore and cannot contain spaces or symbols.");
                 serviceResponse.Message = $"The name '{checkAvailabilityDto.UserInput}' is invalid. Please use a valid name.";
