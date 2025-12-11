@@ -21,7 +21,7 @@ public class AITask : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the system-level input prompt template for the task, providing context or instructions for the LLM to process.
     /// </summary>
-    public required string SystemInput { get; set; }
+    public string? SystemInput { get; set; }
 
     /// <summary>
     /// Gets or sets the user-level input prompt template, where dynamic user-provided data is injected for the task execution.
@@ -29,10 +29,10 @@ public class AITask : BaseEntity, IMustHaveTenant
     public string? UserInput { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the LLM provider (e.g., OpenAI, Anthropic, etc.) used for task execution.
+    /// Gets or sets the name of the model provider (e.g., OpenAI, Anthropic, etc.) used for task execution.
     /// </summary>
     [MaxLength(255)]
-    public required string LLMProvider { get; set; }
+    public required string ModelProvider { get; set; }
 
     /// <summary>
     /// Gets or sets the model name used by the LLM provider (e.g., GPT-4, Claude-2).
@@ -46,8 +46,7 @@ public class AITask : BaseEntity, IMustHaveTenant
     public bool IsJsonOutput { get; set; }
 
     /// <summary>
-    /// Gets or sets an optional JSON schema that defines the structure and validation rules 
-    /// for the JSON output, if applicable.
+    /// Gets or sets an optional JSON schema that defines the structure and validation rules for the JSON output, if applicable.
     /// </summary>
     public string? JsonSchema { get; set; }
 
