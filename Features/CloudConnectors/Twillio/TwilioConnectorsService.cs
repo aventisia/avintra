@@ -1,3 +1,4 @@
+using Microsoft.CSharp.RuntimeBinder;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
@@ -60,10 +61,33 @@ public class TwilioConnectorsService : ITwilioConnectorsService
                 return serviceResponse;
             }
 
-            // Task Success
-            serviceResponse.Data.Response = twilioResponse;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Twilio connector invoked successfully.";
+            // twillio response error validate
+            try
+            {
+                //Add Error and error message using dynamic
+                dynamic responseObj = twilioResponse;
+
+                if (responseObj.Error != null && !string.IsNullOrEmpty(responseObj.Error.ToString()))
+                {
+                    string errorMessage = responseObj.Error.ToString();
+                    _logger.LogError($"Twilio action return an error :{errorMessage}");
+                    serviceResponse.StatusCode = 400;
+                    serviceResponse.Message = " Twilio operation failed";
+                    serviceResponse.Data.Response = twilioResponse;
+                    return serviceResponse;
+                }
+                //  if no error ocuur show Task Success
+                serviceResponse.Data.Response = twilioResponse;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Twilio connector invoked successfully.";
+            }
+            catch (RuntimeBinderException)
+            {
+                serviceResponse.Data.Response = twilioResponse;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Twilio connector invoked successfully.";
+            }
+
         }
         catch (Exception ex)
         {
@@ -115,21 +139,21 @@ public class TwilioConnectorsService : ITwilioConnectorsService
             return new { Error = "Invalid payload format. Expected Dictionary<string, object>." };
 
         // Extract required fields
-        
-        if (!dict.TryGetValue("ToNumber", out var toObj) || toObj == null)
-            return new { Error = "'ToNumber' is required in payload." };
-        if (!dict.TryGetValue("MessageBody", out var bodyObj) || bodyObj == null)
-            return new { Error = "'MessageBody' is required in payload." };
+
+        if (!dict.TryGetValue("toNumber", out var toObj) || toObj == null)
+            return new { Error = "'toNumber' is required in payload." };
+        if (!dict.TryGetValue("messageBody", out var bodyObj) || bodyObj == null)
+            return new { Error = "'messageBody' is required in payload." };
 
         string toNumber = toObj?.ToString() ?? string.Empty;
         string messageBody = bodyObj.ToString() ?? string.Empty;
 
         // Extract optional fields
-        string? fromPhoneNumber = dict.TryGetValue("FromPhoneNumber", out var fromObj) ? fromObj?.ToString() : null;
-        string? messagingServiceSid = dict.TryGetValue("MessagingServiceSid", out var msgSvcObj) ? msgSvcObj?.ToString() : null;
-        string? templateName = dict.TryGetValue("TemplateName", out var tmplObj) ? tmplObj?.ToString() : null;
-        string? templateLanguage = dict.TryGetValue("TemplateLanguage", out var langObj) ? langObj?.ToString() : null;
-        string? templateParameters = dict.TryGetValue("TemplateParameters", out var paramsObj) ? paramsObj?.ToString() : null;
+        string? fromPhoneNumber = dict.TryGetValue("fromPhoneNumber", out var fromObj) ? fromObj?.ToString() : null;
+        string? messagingServiceSid = dict.TryGetValue("messagingServiceSid", out var msgSvcObj) ? msgSvcObj?.ToString() : null;
+        string? templateName = dict.TryGetValue("templateName", out var tmplObj) ? tmplObj?.ToString() : null;
+        string? templateLanguage = dict.TryGetValue("templateLanguage", out var langObj) ? langObj?.ToString() : null;
+        string? templateParameters = dict.TryGetValue("templateParameters", out var paramsObj) ? paramsObj?.ToString() : null;
 
         try
         {
@@ -137,7 +161,7 @@ public class TwilioConnectorsService : ITwilioConnectorsService
             {
                 case TwilioActionsEnum.SendTextSms:
                     if (string.IsNullOrEmpty(fromPhoneNumber) && string.IsNullOrEmpty(messagingServiceSid))
-                        return new { Error = "Either 'FromPhoneNumber' or 'MessagingServiceSid' is required for SMS." };
+                        return new { Error = "Either 'fromPhoneNumber' or 'messagingServiceSid' is required for SMS." };
 
                     var smsMsg = await MessageResource.CreateAsync(
                         body: messageBody,
@@ -149,7 +173,7 @@ public class TwilioConnectorsService : ITwilioConnectorsService
 
                 case TwilioActionsEnum.SendWhatsappMessage:
                     if (string.IsNullOrEmpty(fromPhoneNumber))
-                        return new { Error = "'FromPhoneNumber' is required for WhatsApp messages." };
+                        return new { Error = "'fromPhoneNumber' is required for WhatsApp messages." };
 
                     var waMsg = await MessageResource.CreateAsync(
                         body: messageBody,
@@ -160,7 +184,7 @@ public class TwilioConnectorsService : ITwilioConnectorsService
 
                 case TwilioActionsEnum.SendWhatsappTemplateMessage:
                     if (string.IsNullOrEmpty(templateName))
-                        return new { Error = "'TemplateName' is required for WhatsApp template messages." };
+                        return new { Error = "'templateName' is required for WhatsApp template messages." };
 
                     string? contentVariables = null;
                     if (!string.IsNullOrEmpty(templateParameters))
