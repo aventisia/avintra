@@ -12,18 +12,15 @@ public class SessionValidator
     // Middleware that validates the user's session for authenticated users.
     public async Task Invoke(HttpContext context, ISessionValidationService sessionService)
     {
+        // Try to retrieve the session ID from the user's claims (looking for the "sid" claim)
+        var sid = context.User.FindFirst("sid")?.Value;
+
         // Check if the user is authenticated
-        if (context.User.Identity?.IsAuthenticated == true)
+        if (context.User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(sid))
         {
-            // Try to retrieve the session ID from the user's claims (looking for the "sid" claim)
-            var sid = context.User.FindFirst("sid")?.Value;
-
-            // If the session ID is missing, empty just return since sid is not there in the jwt then we don't have to validate it
-            if (string.IsNullOrEmpty(sid)) return;
-
             // Parse the sid
             Guid.TryParse(sid, out var sessionId);
-            
+
             // If the session ID is invalid, respond with 401 Unauthorized
             if (sessionId.Equals(Guid.Empty))
             {
