@@ -264,6 +264,13 @@ public class AuthService : IAuthService
             // Insert ActiveSession
             await _unitOfWork.ActiveSessionRepo.InsertAsync(activeSession);
 
+            // ActiveSession Insert job failed
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation($"Context SaveChanges failed while creating session for {user.UserName}");
+                return serviceResponse;
+            }
+
             // User is not created in other databases yet.
             if (user.IsCreatedInOtherDbs == false && user.Tenant != null)
             {
@@ -281,18 +288,18 @@ public class AuthService : IAuthService
                     // Update user's IsCreatedInOtherDbs status
                     user.IsCreatedInOtherDbs = true;
                     _unitOfWork.AccountUserRepo.Update(user);
+
+                    // Update AccountUser job failed
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        _logger.LogInformation($"Context SaveChanges failed while updating user creation status for {user.UserName}");
+                        return serviceResponse;
+                    }
                 }
                 catch
                 {
                     // Try catch important because on create-account request AccountUserRepo.Update will throw unnecessary exception
                 }
-            }
-
-            // ActiveSession Insert job failed
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogInformation($"Context SaveChanges failed while creating session for {user.UserName}");
-                return serviceResponse;
             }
 
             // Append SessionId, Jwt/AccessToken, RefreshToken and Username to cookies
