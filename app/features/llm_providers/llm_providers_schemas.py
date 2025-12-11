@@ -25,7 +25,12 @@ class LLMRequest(BaseModel):
     credential_id: Optional[str] = None # TODO: Implement BYOK support
     temperature: Optional[float] = 1.0
     top_p: Optional[float] = 1.0
-    stream: Optional[bool] = False
+    stream: Optional[bool] = False,
+    ref_type: str # Type of the reference (e.g., "Agent", "Workflow", "AIProject")
+    ref_id: str # Identifier to link back to Agent/Workflow/AIProject
+    ref_name: str # Name of the reference (e.g., name of the Agent/Workflow/AIProject)
+    action: str # Action being performed (e.g., "AgentExecution", "AIModelExecution", "WorkflowExecution")
+    agent_name: Optional[str] = None
     
 # Chunk response schema for streaming LLM response
 class LLMChunkResponse(BaseModel):
