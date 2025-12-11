@@ -1,0 +1,11 @@
+meta {
+  name: Get ai task by id
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{WORC_APIS_BASE_URL}}/ai-task/{{AI_TASK_ID}}
+  body: none
+  auth: none
+}
