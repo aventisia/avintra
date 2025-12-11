@@ -96,6 +96,7 @@ public static class AppServicesExtension
         services.AddScoped<IAppSecretService, AppSecretService>();
         services.AddSingleton<IClientStatusStore, ClientStatusStore>();
         services.AddScoped<IJobsExecutorService, JobsExecutorService>();
+        services.AddScoped<IAITaskService, AITaskService>();
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
