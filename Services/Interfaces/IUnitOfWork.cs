@@ -30,6 +30,7 @@ public interface IUnitOfWork
     IBlockRepo BlockRepo { get; }
     IAppSecretRepo AppSecretRepo { get; }
     IEncryptedKeyValueRepo EncryptedKeyValueRepo { get; }
+    IAITaskRepo AITaskRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
