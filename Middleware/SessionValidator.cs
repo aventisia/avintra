@@ -18,8 +18,14 @@ public class SessionValidator
             // Try to retrieve the session ID from the user's claims (looking for the "sid" claim)
             var sid = context.User.FindFirst("sid")?.Value;
 
-            // If the session ID is missing, empty, or invalid, respond with 401 Unauthorized
-            if (string.IsNullOrEmpty(sid) || !Guid.TryParse(sid, out var sessionId))
+            // If the session ID is missing, empty just return since sid is not there in the jwt then we don't have to validate it
+            if (string.IsNullOrEmpty(sid)) return;
+
+            // Parse the sid
+            Guid.TryParse(sid, out var sessionId);
+            
+            // If the session ID is invalid, respond with 401 Unauthorized
+            if (sessionId.Equals(Guid.Empty))
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
