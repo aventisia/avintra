@@ -1,17 +1,18 @@
 meta {
-  name: Insert ai task
+  name: Update ai task
   type: http
-  seq: 2
+  seq: 3
 }
 
-post {
-  url: {{WORC_APIS_BASE_URL}}/ai-task
+put {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/ai-task
   body: json
   auth: none
 }
 
 body:json {
   {
+    "id": "{{AI_TASK_ID}}",
     "name": "Example AI Task",
     "systemInput": "The system-level input template for task execution.",
     "userInput": "User-specific input data for the task.",
@@ -19,22 +20,9 @@ body:json {
     "model": "GPT-4",
     "isJsonOutput": true,
     "jsonSchema": "{\"type\": \"object\", \"properties\": {\"output\": {\"type\": \"string\"}}}",
-    "maxOutputTokens": 1000,
+    "maxOutputTokens": 100,
     "temperature": 0.7,
     "topP": 0.9,
     "stream": true
-  }
-}
-
-script:post-response {
-  if(res.getStatus() == 200){
-      bru.setGlobalEnvVar(
-          "AI_TASK_ID",
-          res.getBody().data.id
-      );
-    bru.setGlobalEnvVar(
-          "SEARCH_KEY",
-          res.getBody().data.name
-      );
   }
 }
