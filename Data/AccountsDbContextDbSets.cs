@@ -26,5 +26,5 @@ public partial class AccountsDbContext
     public DbSet<CreditUsage> CreditUsages { get; set; }
     public DbSet<PaymentHistory> PaymentHistories { get; set; }
     public DbSet<PaymentMethod> PaymentMethods { get; set; }
-
+    public DbSet<AITask> AITasks { get; set; }
 }
