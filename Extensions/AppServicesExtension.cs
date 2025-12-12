@@ -48,6 +48,7 @@ public static class AppServicesExtension
         config.Apply(new BlockMappingProfile());
         config.Apply(new AppSecretMappingProfile());
         config.Apply(new TimeTriggerMappingProfile());
+        config.Apply(new AITaskMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -96,6 +97,7 @@ public static class AppServicesExtension
         services.AddScoped<IAppSecretService, AppSecretService>();
         services.AddSingleton<IClientStatusStore, ClientStatusStore>();
         services.AddScoped<IJobsExecutorService, JobsExecutorService>();
+        services.AddScoped<IAITaskService, AITaskService>();
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();

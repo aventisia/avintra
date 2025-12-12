@@ -188,4 +188,5 @@ public class WorkspaceDbContext : DbContext
     public DbSet<TimeTriggersFlowVersion> TimeTriggersFlowVersions { get; set; }
     public DbSet<AppSecret> AppSecrets { get; set; }
     public DbSet<EncryptedKeyValue> EncryptedKeyValues { get; set; }
+    public DbSet<AITask> AITasks { get; set; }
 }
