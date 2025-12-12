@@ -41,6 +41,7 @@ public static class AppServicesExtension
         config.Apply(new TenantSubscriptionMappingProfile());
         config.Apply(new CreditPlanMappingProfile());
         config.Apply(new CreditUsageMappingProfile());
+        config.Apply(new AITaskMappingProfile());
         services.AddSingleton(config);
     }
 
@@ -114,6 +115,7 @@ public static class AppServicesExtension
         services.AddScoped<ICreditUsageService, CreditUsageService>();
         services.AddScoped<ITopUpService, TopUpService>();
         services.AddScoped<IPaymentTrackerService, PaymentTrackerService>();
+        services.AddScoped<IAITaskService, AITaskService>();
 
         // Register Razorpay related services for customer, plan, and subscription management
         services.AddScoped<ICustomerService, CustomerService>();
