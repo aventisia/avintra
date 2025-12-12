@@ -6,13 +6,8 @@ namespace WorkspaceAPIs.Entities;
 /// input prompts, model settings, and output preferences.
 /// </summary>
 [Table("worc_AITasks")]
-public class AITask : BaseEntity, IMustHaveTenant
+public class AITask : BaseEntity
 {
-    /// <summary>
-    /// Gets or sets the unique identifier for the tenant, used for multi-tenancy support to filter data by tenant.
-    /// </summary>
-    public Guid TenantId { get; set; }
-
     /// <summary>
     /// Gets or sets the name of the task, used to identify and reference it within the system.
     /// </summary>
