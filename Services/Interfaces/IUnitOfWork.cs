@@ -29,7 +29,7 @@ public interface IUnitOfWork
     IPaymentMethodRepo PaymentMethodRepo { get; }
 
     IBillingDetailRepo BillingDetailRepo { get; }
-    
+
     IBillingHistoryRepo BillingHistoryRepo { get; }
 
     ISpaceRepo SpaceRepo { get; }
@@ -41,12 +41,14 @@ public interface IUnitOfWork
     ISubscriptionPlanRepo SubscriptionPlanRepo { get; }
 
     ITenantSubscriptionRepo TenantSubscriptionRepo { get; }
-    
+
     ITenantCreditRepo TenantCreditRepo { get; }
 
     ICreditPlanRepo CreditPlanRepo { get; }
 
     ICreditUsageRepo CreditUsageRepo { get; }
+
+    IAITaskRepo AITaskRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.
