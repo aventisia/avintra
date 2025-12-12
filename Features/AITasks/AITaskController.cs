@@ -2,7 +2,7 @@ namespace WorkspaceAPIs.Controllers;
 
 [Route("ai-task")]
 [ApiController]
-[Authorize]
+[Authorize(Roles = "SA")]
 public class AITaskController : BaseApiController
 {
     private readonly IAITaskService _aiTaskService;
@@ -30,6 +30,13 @@ public class AITaskController : BaseApiController
     public async Task<ActionResult<ServiceResponse<AITaskTableDto>>> GetAITask(Guid aiTaskId)
     {
         return ResultHelper(await _aiTaskService.GetAITaskAsync(aiTaskId));
+    }
+
+    // Fetch AI task by its name
+    [HttpGet("name/{aiTaskName}")]
+    public async Task<ActionResult<ServiceResponse<AITaskTableDto>>> GetAITaskByName(string aiTaskName)
+    {
+        return ResultHelper(await _aiTaskService.GetAITaskByNameAsync(aiTaskName));
     }
 
     // Create a new AI task

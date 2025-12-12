@@ -27,6 +27,13 @@ public interface IAITaskService
     Task<ServiceResponse<AITaskTableDto>> GetAITaskAsync(Guid aiTaskId);
 
     /// <summary>
+    /// Retrieves a specific AI task by its name.
+    /// </summary>
+    /// <param name="aiTaskName">The name of the AI task.</param>
+    /// <returns>A ServiceResponse containing the details of the specified AI task.</returns>
+    Task<ServiceResponse<AITaskTableDto>> GetAITaskByNameAsync(string aiTaskName);
+
+    /// <summary>
     /// Inserts a new AI task into the system.
     /// </summary>
     /// <param name="aiTaskDto">The DTO containing the AI task data to be added.</param>

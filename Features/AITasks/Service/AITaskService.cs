@@ -150,6 +150,50 @@ public class AITaskService : IAITaskService
         return serviceResponse;
     }
 
+    // Method to retrieve a specific AI task by its name.
+    public async Task<ServiceResponse<AITaskTableDto>> GetAITaskByNameAsync(string aiTaskName)
+    {
+        // Initialize ServiceResponse with a failed response by default
+        var serviceResponse = new ServiceResponse<AITaskTableDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve AI task. Please try again later."
+        };
+
+        try
+        {
+            // Fetch the AI task by its name, including related user info (created by and last modified by)
+            var aiTask = await _unitOfWork.AITaskRepo
+                .GetByConditionAsync(w => w.Name.ToLower() == aiTaskName.ToLower())
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .FirstOrDefaultAsync();
+
+            // If the task doesn't exist, log a warning and return a not-found response
+            if (aiTask == null)
+            {
+                _logger.LogWarning("AI task with name {AITaskName} not found.", aiTaskName);
+                serviceResponse.Message = "AI task not found.";
+                return serviceResponse;
+            }
+
+            // Map the fetched AI task to a DTO
+            serviceResponse.Data = aiTask.Adapt<AITaskTableDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "AI task retrieved successfully.";
+
+            // Log successful retrieval
+            _logger.LogInformation("Successfully retrieved AI task with name {AITaskName}.", aiTaskName);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while fetching AI task with name {AITaskName}.", aiTaskName);
+        }
+
+        // Return the response (either success or failure)
+        return serviceResponse;
+    }
+
     // Method to create a new AI task
     public async Task<ServiceResponse<AITaskTableDto>> InsertAITaskAsync(AITaskTableDto aiTaskDto)
     {
