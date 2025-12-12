@@ -23,6 +23,80 @@ namespace WorkspaceAPIs.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.AITask", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsJsonOutput")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("JsonSchema")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("MaxOutputTokens")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("ModelProvider")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Stream")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SystemInput")
+                        .HasColumnType("text");
+
+                    b.Property<float>("Temperature")
+                        .HasColumnType("real");
+
+                    b.Property<float>("TopP")
+                        .HasColumnType("real");
+
+                    b.Property<string>("UserInput")
+                        .HasColumnType("text");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.ToTable("worc_AITasks");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.ActionExecutionLog", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1636,6 +1710,25 @@ namespace WorkspaceAPIs.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("WorkspaceUsers");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.AITask", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.ActionExecutionLog", b =>
