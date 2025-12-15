@@ -29,9 +29,22 @@ export const useDefineDCPForm = () => {
   const outputs = nodeData?.outputs ?? [];
 
   // Local state for node config and zod schema
-  const [nodeConfig, setNodeConfig] = useState<DCPFieldSchemaType[]>([]);
+  const [nodeConfig, setNodeConfig] = useState<
+    | {
+        errorHandling?: "standard" | "none";
+        testScreenType?: "standard" | "none" | "llmGenerateRequest";
+        fields: DCPFieldSchemaType[];
+      }
+    | DCPFieldSchemaType[]
+  >({ fields: [] });
+
+  const [fields, setFields] = useState<DCPFieldSchemaType[]>();
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const [tabKeys, setTabKeys] = useState<string[]>(["Inputs"]);
+
+  const [selectedTab, setSelectedTab] = useState("");
 
   const [isFormReady, setIsFormReady] = useState(false); // Flag to check if form is ready with default values. It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled".
   const [nodeConfigZodSchema, setNodeConfigZodSchema] = useState<
@@ -49,10 +62,11 @@ export const useDefineDCPForm = () => {
     getNodeConfig(nodeUniqueName, nodeData?.type)
       .then((config) => {
         if (config) {
+          const fields = Array.isArray(config) ? config : config.fields;
+
           setNodeConfig(config);
-          setNodeConfigZodSchema(generateZodSchema(config));
+          setNodeConfigZodSchema(generateZodSchema(fields));
         }
-        setIsLoading(false);
       })
       .finally(() => {
         setIsLoading(false);
@@ -60,10 +74,15 @@ export const useDefineDCPForm = () => {
   }, [nodeUniqueName, nodeId]);
 
   // Get input and output keys (required at the time of form submission)
-  const inputKeys: string[] = nodeConfig
+  const inputKeys: string[] = (
+    Array.isArray(nodeConfig) ? nodeConfig : nodeConfig?.fields
+  )
     ?.filter((f) => f.direction === "Input")
     .map((f) => f.name);
-  const outputKeys = nodeConfig
+
+  const outputKeys: string[] = (
+    Array.isArray(nodeConfig) ? nodeConfig : nodeConfig?.fields
+  )
     ?.filter((f) => f.direction === "Output")
     .map((f) => f.name);
 
@@ -74,13 +93,29 @@ export const useDefineDCPForm = () => {
 
   // Reset form values when nodeConfig or inputs/outputs change
   useEffect(() => {
+    const fields = Array.isArray(nodeConfig) ? nodeConfig : nodeConfig?.fields;
+
     if (
-      nodeConfig.length > 0 &&
+      fields.length > 0 &&
       Object.keys(nodeConfigZodSchema.shape).length > 0
     ) {
-      form.reset(getDefaultValuesForForm(nodeConfig, inputs, outputs));
+      setFields(fields);
+
+      form.reset(getDefaultValuesForForm(fields, inputs, outputs));
       setIsFormReady(true); // Set form ready to true after resetting the form
     }
+
+    // generate tabs list form fields category
+    const uniqueTabKeys = [
+      ...new Set(fields?.map((item) => (item?.category ?? "Inputs") as string)),
+    ].filter(Boolean);
+
+    // Move "Inputs" to the front if it exists
+    uniqueTabKeys.sort((a) => (a === "Inputs" ? -1 : 1));
+
+    setTabKeys(uniqueTabKeys);
+    setSelectedTab(uniqueTabKeys[0]);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodeConfig]);
 
@@ -92,6 +127,7 @@ export const useDefineDCPForm = () => {
     form,
     watch,
     nodeConfig,
+    fields,
     isFormReady,
     nodeConfigZodSchema,
     nodeId,
@@ -101,5 +137,8 @@ export const useDefineDCPForm = () => {
     nodeLabel,
     setShowDialog,
     isLoading,
+    tabKeys,
+    selectedTab,
+    setSelectedTab,
   };
 };
