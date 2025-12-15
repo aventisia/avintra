@@ -34,8 +34,6 @@ public static class AppServicesExtension
         config.Apply(new ProjectTemplateMappingProfile());
         config.Apply(new FlowVersionMappingProfile());
         config.Apply(new SubscriptionMappingProfile());
-        config.Apply(new FlowExecutionLogMappingProfile());
-        config.Apply(new ActionExecutionLogMappingProfile());
         config.Apply(new MachinesMappingProfile());
         config.Apply(new MachineFlowMappingProfile());
         config.Apply(new AgentTableMappingProfile());
@@ -45,7 +43,6 @@ public static class AppServicesExtension
         config.Apply(new KeyStoreMappingProfile());
         config.Apply(new VaultMappingProfile());
         config.Apply(new FlowUserMappingProfile());
-        config.Apply(new BlockMappingProfile());
         config.Apply(new AppSecretMappingProfile());
         config.Apply(new TimeTriggerMappingProfile());
         config.Apply(new AITaskMappingProfile());
@@ -80,8 +77,6 @@ public static class AppServicesExtension
         services.AddScoped<IPublicTemplateService, PublicTemplateService>();
         services.AddScoped<IFlowVersionService, FlowVersionService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
-        services.AddScoped<IFlowExecutionLogService, FlowExecutionLogService>();
-        services.AddScoped<IActionExecutionLogService, ActionExecutionLogService>();
         services.AddScoped<IMachineService, MachineService>();
         services.AddScoped<IMachineFlowService, MachineFlowService>();
         services.AddScoped<IAgentTableService, AgentTableService>();
@@ -93,7 +88,6 @@ public static class AppServicesExtension
         services.AddScoped<ITimeTriggerService, TimeTriggerService>();
         services.AddScoped<IFileUploadService, FileUploadService>();
         services.AddScoped<IFlowUserService, FlowUserService>();
-        services.AddScoped<IBlockService, BlockService>();
         services.AddScoped<IAppSecretService, AppSecretService>();
         services.AddSingleton<IClientStatusStore, ClientStatusStore>();
         services.AddScoped<IJobsExecutorService, JobsExecutorService>();

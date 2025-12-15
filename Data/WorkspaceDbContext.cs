@@ -35,8 +35,6 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Plan>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Subscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<FlowExecutionLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<ActionExecutionLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Queue>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<QueueFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<QueueTransaction>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -69,7 +67,6 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<KeyStore>().Property(e => e.AccessLevel).HasConversion(new EnumToStringConverter<AccessLevelTypesEnum>());
         modelBuilder.Entity<TimeTrigger>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<TriggerFrequencyTypesEnum>());
         modelBuilder.Entity<FlowUser>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ProjectUserAccessEnum>());
-        modelBuilder.Entity<Block>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AccessTypesEnum>());
         modelBuilder.Entity<AppSecret>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AppSecretTypesEnum>());
         modelBuilder.Entity<Job>().Property(e => e.Status).HasConversion(new EnumToStringConverter<JobStatusTypesEnum>());
         modelBuilder.Entity<Job>().Property(e => e.Priority).HasConversion(new EnumToStringConverter<JobPriorityTypesEnum>());
@@ -103,16 +100,6 @@ public class WorkspaceDbContext : DbContext
 
         //Configure one-to-many relationship between Plan and Subscription
         modelBuilder.Entity<Plan>().HasMany(f => f.Subscriptions).WithOne(one => one.Plan).HasForeignKey(fKey => fKey.PlanId).IsRequired();
-
-        //Configure one-to-many relationship between Flow and Flow Execution Log
-        modelBuilder.Entity<Flow>().HasMany(f => f.FlowExecutionLogs).WithOne(one => one.Flow).HasForeignKey(fKey => fKey.FlowId).IsRequired();
-
-        //Configure one-to-many relationship between Flow Version and Flow Execution Log
-        modelBuilder.Entity<FlowVersion>().HasMany(f => f.FlowExecutionLogs).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
-
-
-        // Configure one-to-many relationship between Flow Execution Log and Action Execution Log
-        modelBuilder.Entity<FlowExecutionLog>().HasMany(f => f.ActionExecutionLogs).WithOne(one => one.FlowExecutionLog).HasForeignKey(fKey => fKey.FlowExecutionLogId).IsRequired();
 
         // Configure Many-to-Many relationship between Queue and QueueTransaction
         modelBuilder.Entity<Queue>().HasMany(many => many.QueueTransactions).WithOne(one => one.Queue).HasForeignKey(fKey => fKey.QueueId).IsRequired();
@@ -175,15 +162,12 @@ public class WorkspaceDbContext : DbContext
     public DbSet<FlowVersion> FlowVersions { get; set; }
     public DbSet<Plan> Plans { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
-    public DbSet<FlowExecutionLog> FlowExecutionLogs { get; set; }
-    public DbSet<ActionExecutionLog> ActionExecutionLogs { get; set; }
     public DbSet<Queue> Queues { get; set; }
     public DbSet<QueueTransaction> QueueTransactions { get; set; }
     public DbSet<Job> Jobs { get; set; }
     public DbSet<KeyStore> KeyStores { get; set; }
     public DbSet<Vault> Vaults { get; set; }
     public DbSet<FlowUser> FlowUsers { get; set; }
-    public DbSet<Block> Blocks { get; set; }
     public DbSet<TimeTrigger> TimeTriggers { get; set; }
     public DbSet<TimeTriggersFlowVersion> TimeTriggersFlowVersions { get; set; }
     public DbSet<AppSecret> AppSecrets { get; set; }

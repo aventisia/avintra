@@ -12,8 +12,6 @@ public interface IUnitOfWork
     IFlowLogRepo FlowLogRepo { get; }
     IFlowVersionRepo FlowVersionRepo { get; }
     ISubscriptionRepo SubscriptionRepo { get; }
-    IFlowExecutionLogRepo FlowExecutionLogRepo { get; }
-    IActionExecutionLogRepo ActionExecutionLogRepo { get; }
     IMachineRepo MachineRepo { get; }
     IMachineFlowRepo MachineFlowRepo { get; }
     IProjectTemplateRepo ProjectTemplateRepo { get; }
@@ -27,7 +25,6 @@ public interface IUnitOfWork
     ITriggerRepo TriggerRepo { get; }
     ITriggerFlowRepo TriggerFlowRepo { get; }
     IFlowUserRepo FlowUserRepo { get; }
-    IBlockRepo BlockRepo { get; }
     IAppSecretRepo AppSecretRepo { get; }
     IEncryptedKeyValueRepo EncryptedKeyValueRepo { get; }
     IAITaskRepo AITaskRepo { get; }

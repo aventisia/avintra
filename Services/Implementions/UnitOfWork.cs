@@ -21,8 +21,6 @@ public class UnitOfWork : IUnitOfWork
     public ITemplateResourceRepo TemplateResourceRepo => new TemplateResourceRepo(_workspaceDbContext);
     public IFlowVersionRepo FlowVersionRepo => new FlowVersionRepo(_workspaceDbContext);
     public ISubscriptionRepo SubscriptionRepo => new SubscriptionRepo(_workspaceDbContext);
-    public IFlowExecutionLogRepo FlowExecutionLogRepo => new FlowExecutionLogRepo(_workspaceDbContext);
-    public IActionExecutionLogRepo ActionExecutionLogRepo => new ActionExecutionLogRepo(_workspaceDbContext);
     public IMachineRepo MachineRepo => new MachineRepo(_workspaceDbContext);
     public IMachineFlowRepo MachineFlowRepo => new MachineFlowRepo(_workspaceDbContext);
     public IQueueRepo QueueRepo => new QueueRepo(_workspaceDbContext);
@@ -34,7 +32,6 @@ public class UnitOfWork : IUnitOfWork
     public ITriggerRepo TriggerRepo => new TriggerRepo(_workspaceDbContext);
     public ITriggerFlowRepo TriggerFlowRepo => new TriggerFlowRepo(_workspaceDbContext);
     public IFlowUserRepo FlowUserRepo => new FlowUserRepo(_workspaceDbContext);
-    public IBlockRepo BlockRepo => new BlockRepo(_workspaceDbContext);
     public IAppSecretRepo AppSecretRepo => new AppSecretRepo(_workspaceDbContext);
     public IEncryptedKeyValueRepo EncryptedKeyValueRepo => new EncryptedKeyValueRepo(_workspaceDbContext);
     public IAITaskRepo AITaskRepo => new AITaskRepo(_workspaceDbContext);
