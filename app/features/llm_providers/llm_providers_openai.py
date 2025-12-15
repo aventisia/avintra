@@ -39,8 +39,8 @@ class OpenAIProvider(BaseLLMProvider):
 
             if credential:
                 # Update the API URL and key from the vault credentials
-                self.api_url = credential.get("data", {}).get("Url", self.api_url)
-                self.api_key = credential.get("data", {}).get("ApiKey", self.api_key)
+                self.api_url = credential.get('data', {}).get('Url')
+                self.api_key = credential.get("data", {}).get("ApiKey")
                 logger.info("BYOK credentials successfully applied.")
             else:
                 logger.error(f"BYOK enabled but no valid credentials found for credential_id: {llm_request.credential_id}")
@@ -68,7 +68,7 @@ class OpenAIProvider(BaseLLMProvider):
         try:
             async with httpx.AsyncClient(timeout=timeout) as client:
                 response = await client.post(
-                    self.api_url,
+                    f"{self.api_url.rstrip('/')}/responses",
                     json=request_payload,
                     headers=request_headers,
                 )
@@ -111,8 +111,8 @@ class OpenAIProvider(BaseLLMProvider):
 
             if credential:
                 # Update the API URL and key from the vault credentials
-                self.api_url = credential.get("data", {}).get("Url", self.api_url)
-                self.api_key = credential.get("data", {}).get("ApiKey", self.api_key)
+                self.api_url = credential.get("data", {}).get("Url")
+                self.api_key = credential.get("data", {}).get("ApiKey")
                 logger.info("BYOK credentials successfully applied.")
             else:
                 logger.error(f"BYOK enabled but no valid credentials found for credential_id: {llm_request.credential_id}")
@@ -146,7 +146,7 @@ class OpenAIProvider(BaseLLMProvider):
             async with httpx.AsyncClient(timeout=timeout) as client:
                 async with client.stream(
                     "POST",
-                    self.api_url,
+                    f"{self.api_url.rstrip('/')}/responses",
                     json=request_payload,
                     headers=request_headers,
                 ) as response:
