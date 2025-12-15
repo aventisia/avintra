@@ -90,15 +90,28 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
   }
 
   // Explicitly import AI Integrations module
-  const aiIntegrationsModule = (await import(
-    import.meta.env.MODE !== "production"
-      ? "../features/action-selector/constants/_DevAIIntegrationsActionSelectorData.json"
-      : "../features/action-selector/constants/_AIIntegrationsActionSelectorData.json"
-  )) as unknown as { default: PrimaryCategoryType[] };
-  finalNodeList = mergeActionSelectorData(
-    finalNodeList,
-    aiIntegrationsModule.default,
-  );
+
+  let aiIntegrationsJson =
+    "../features/action-selector/constants/_AIIntegrationsActionSelectorData.json";
+
+  // Use dev data in non-production environments
+  if (import.meta.env.MODE !== "production") {
+    aiIntegrationsJson =
+      "../features/action-selector/constants/_DevAIIntegrationsActionSelectorData.json";
+  }
+
+  // Get default AI integrations automation modules
+  const AIloader = modules[aiIntegrationsJson];
+  if (!AIloader) throw new Error("Action selector data JSON not found");
+  const aiIntegrationsModule = (await AIloader()) as {
+    default: PrimaryCategoryType[];
+  };
+
+  if (aiIntegrationsModule)
+    finalNodeList = mergeActionSelectorData(
+      finalNodeList,
+      aiIntegrationsModule.default,
+    );
 
   // Sort finalNodeList.actionCategories by label alphabetically
   finalNodeList.forEach((category) => {
