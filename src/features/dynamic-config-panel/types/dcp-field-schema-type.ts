@@ -40,4 +40,7 @@ export type DCPFieldSchemaType = {
   maxLength?: number;
   renderIf?: RenderIfType; // Not a html attribute
   serviceType?: string;
+  category?: string; // By default category is value is Inputs else whatever is set
+  errorHandling?: "standard" | "none";
+  testScreenType?: "standard" | "none" | "llmGenerateRequest";
 };
