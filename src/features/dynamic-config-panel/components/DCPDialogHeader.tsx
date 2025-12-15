@@ -5,47 +5,75 @@ import {
   DialogTitle,
 } from "@aventisia/ui/dialog";
 import { cn } from "@aventisia/ui/lib";
-import { PencilIcon, X } from "lucide-react";
+import { PencilIcon, SquareArrowOutUpRightIcon, X } from "lucide-react";
 import { Input } from "@aventisia/ui";
 import { useDynamicConfigPanelStore } from "../stores/dcp-store";
 import { useShallow } from "zustand/react/shallow";
 import { useState } from "react";
 
-interface DialogDefaultHeaderProps extends React.PropsWithChildren {
-  description?: string;
-  className?: string;
-}
-
-const DCPDialogHeader = ({
-  description,
-  children,
-  className,
-}: DialogDefaultHeaderProps) => {
+const DCPDialogHeader = () => {
   const [editing, setEditing] = useState(false);
 
   // Get node unique name state (required to get config panel data)
-  const { nodeLabel = "Dynamic Config Panel", setNodeLabel } =
-    useDynamicConfigPanelStore(
-      useShallow((state) => ({
-        nodeLabel: state.nodeLabel,
-        setNodeLabel: state.setNodeLabel,
-      })),
+  const {
+    nodeData,
+    nodeLabel = "Dynamic Config Panel",
+    setNodeLabel,
+  } = useDynamicConfigPanelStore(
+    useShallow((state) => ({
+      nodeLabel: state.nodeLabel,
+      nodeData: state.nodeData,
+      setNodeLabel: state.setNodeLabel,
+    })),
+  );
+
+  // Renders the appropriate info link based on node type
+  const renderInfoLink = () => {
+    if (!nodeData) return null;
+
+    let href = "#";
+    let label = "Docs";
+
+    switch (nodeData.type) {
+      case "callAgentNode":
+        if (nodeData?.selectedAgent) {
+          href = `${import.meta.env.VITE_AGENTBUILDER_URL}/agent?f=${nodeData.selectedAgent?.flowId}&v=${nodeData.selectedAgent?.id}`;
+          label = "Open Agent";
+        } else {
+          return null; // Don't render anything if there's no agent
+        }
+        break;
+
+      default:
+        href = nodeData.docsLink || "#";
+        label = "Docs";
+    }
+
+    return (
+      <a
+        className={cn(buttonVariants({ variant: "link" }), "gap-1 text-xs")}
+        target="_blank"
+        href={href}
+      >
+        {label}
+        <SquareArrowOutUpRightIcon className="h-2.5 w-2.5 stroke-[2.5]" />
+      </a>
     );
+  };
 
   return (
     <div
       className={cn(
-        "relative flex items-center justify-between border-b p-3.5 text-lg tracking-wide",
-        className,
+        "flex h-16 items-center justify-between gap-2 border-b pl-4 pr-2 text-lg tracking-wide",
       )}
     >
       {/* Left side - Dialog Heading and description */}
-      <div className="ml-2 flex flex-col">
+      <div className="flex flex-col gap-[1px]">
         <DialogTitle className="flex items-center font-semibold text-foreground">
           {editing ? (
             <Input
               name="label"
-              className="w-[25rem] !max-w-[25rem] truncate !border-0 !border-none !p-0 !text-base !font-semibold !shadow-none !outline-none !ring-0"
+              className="h-5 w-[24rem] !max-w-[24rem] truncate !border-0 !border-none !p-0 !text-base !font-semibold !shadow-none !outline-none !ring-0"
               value={nodeLabel}
               autoFocus
               onChange={(e) => setNodeLabel(e.target.value)}
@@ -54,29 +82,43 @@ const DCPDialogHeader = ({
           ) : (
             <div
               onClick={() => setEditing(true)}
-              className="flex h-10 items-center gap-2"
+              className="flex h-5 items-center gap-2"
             >
-              <span className="max-w-[25rem] truncate">{nodeLabel}</span>
+              <span className="max-w-[24rem] overflow-hidden truncate text-[0.91rem]">
+                {nodeLabel}
+              </span>
               <PencilIcon className="h-3 w-3 text-muted-foreground" />
             </div>
           )}
         </DialogTitle>
-        <DialogDescription className="text-sm tracking-normal text-muted-foreground">
-          {description}
-        </DialogDescription>
+        <div className="flex gap-1">
+          <DialogDescription
+            className={cn(
+              "!inline !max-w-[24rem] !truncate text-xs tracking-normal text-muted-foreground",
+              nodeData?.name === "ConditionalBranchActivity" &&
+                "!max-w-[35rem]",
+              nodeData?.name === "LoopActivity" && "!max-w-[35rem]",
+              nodeData?.name.includes("CreateAIAgent") &&
+                "!max-w-[calc(((100vw-(2*var(--header-padding)))/2)-8rem)]",
+            )}
+            title={nodeData?.description}
+          >
+            {nodeData?.description
+              ? nodeData?.description +
+                (nodeData?.description?.endsWith(".") ? "" : ".")
+              : "Node Configuration."}
+          </DialogDescription>
+          {renderInfoLink()}
+        </div>
       </div>
-      {/* Right side - Dialog action buttons */}
-      <div className="flex items-center">
-        {/* Extras */}
-        {children}
-        {/* Close Dialog */}
-        <DialogClose
-          className={buttonVariants({ variant: "ghost", size: "icon8" })}
-        >
-          <X className="h-5 w-5 text-[--icon-color]" />
-          <span className="sr-only">Close</span>
-        </DialogClose>
-      </div>
+
+      {/* Right side - Close Dialog action buttons */}
+      <DialogClose
+        className={buttonVariants({ variant: "ghost", size: "icon8" })}
+      >
+        <X className="h-5 w-5 text-[--icon-color]" />
+        <span className="sr-only">Close</span>
+      </DialogClose>
     </div>
   );
 };
