@@ -30,29 +30,12 @@ public class JobsExecutorService : IJobsExecutorService
     {
         _logger.LogInformation("Fetching connection ID for user: {UserId}", _userId);
 
-        // Retrieve the user's status from the client status store
-        var clientStatusDto = await _clientStatusStore.GetStatusByClientIdAsync(_userId);
-
-        if (clientStatusDto == null)
-        {
-            _logger.LogWarning("User {UserId} status not found.", _userId);
-            return;
-        }
-
-        // If the connection ID is not found, exit early
-        if (string.IsNullOrEmpty(clientStatusDto.ConnectionId))
-        {
-            _logger.LogWarning("User {UserId} connection ID is missing.", _userId);
-            return;
-        }
-
         try
         {
             // Validate the job object
             if (job == null || job.Id == Guid.Empty)
             {
                 _logger.LogWarning("Invalid job data for Job ID: {JobId}.", job?.Id);
-                await _hubContext.Clients.User(clientStatusDto.ConnectionId).SendAsync("error", "Invalid job data", _userId);
                 return;
             }
 
@@ -65,7 +48,6 @@ public class JobsExecutorService : IJobsExecutorService
             if (jobDetails == null)
             {
                 _logger.LogWarning("Job {JobId} not found in the database.", job.Id);
-                await _hubContext.Clients.User(clientStatusDto.ConnectionId).SendAsync("error", "Job not found", _userId);
                 return;
             }
 
@@ -119,7 +101,6 @@ public class JobsExecutorService : IJobsExecutorService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error executing job {JobId}.", job?.Id);
-            await _hubContext.Clients.User(clientStatusDto.ConnectionId).SendAsync("error", "Job execution failed", _userId);
         }
     }
 
