@@ -38,21 +38,6 @@ export enum CreditServiceTypesEnum {
   AIModelExecutionTime,
 
   /**
-   * Email communication service using SendGrid.
-   */
-  SendGridEmail,
-
-  /**
-   * WhatsApp messaging service powered by Twilio.
-   */
-  TwilioWhatsApp,
-
-  /**
-   * SMS messaging service powered by Twilio.
-   */
-  TwilioSms,
-
-  /**
    * Speech-to-text service hosted on-premises.
    */
   OnPremSTT,
@@ -71,4 +56,24 @@ export enum CreditServiceTypesEnum {
    * Text-to-speech service provided by ElevenLabs.
    */
   ElevenLabsTTS,
+
+  /**
+   * Input token processing for the GPT-4o model.
+   */
+  Gpt4oInput,
+
+  /**
+   * Output token generation for the GPT-4o model.
+   */
+  Gpt4oOutput,
+
+  /**
+   * Input OCR processing for the olmOCR model.
+   */
+  OlmOcrInput,
+
+  /**
+   * Output OCR generation for the olmOCR model.
+   */
+  OlmOcrOutput,
 }
