@@ -68,7 +68,7 @@ public class AppSecretController : BaseApiController
     }
 
     // Get app secret with actual data.
-    [HttpGet("decryted-data/{appSecretId}")]
+    [HttpGet("decrypted-data/{appSecretId}")]
     public async Task<ActionResult<ServiceResponse<AppSecretDto>>> GetAppSecretDetailAsync(Guid appSecretId)
     {
         return ResultHelper(await _appSecretService.GetAppSecretDetailAsync(appSecretId));
