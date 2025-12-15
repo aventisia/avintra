@@ -48,24 +48,6 @@ public enum CreditServiceTypesEnum
     AIModelExecutionTime,
 
     /// <summary>
-    /// Email communication service using SendGrid.
-    /// </summary>
-    [Description("SendGrid-Emails")]
-    SendGridEmail,
-
-    /// <summary>
-    /// WhatsApp messaging service powered by Twilio.
-    /// </summary>
-    [Description("Twilio-Whatsapp")]
-    TwilioWhatsApp,
-
-    /// <summary>
-    /// SMS messaging service powered by Twilio.
-    /// </summary>
-    [Description("Twilio-SMS")]
-    TwilioSms,
-
-    /// <summary>
     /// Speech-to-text service hosted on-premises.
     /// </summary>
     [Description("On-prem STT")]
