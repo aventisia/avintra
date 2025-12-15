@@ -58,11 +58,6 @@ public class Job
     public JobStatusTypesEnum Status { get; set; }
 
     /// <summary>
-    /// Gets or sets the execution logs associated with the job. These logs may be stored as a string or in JSON format and contain information about the job's execution steps, errors, or outputs.
-    /// </summary>
-    public string? ExecutionLogs { get; set; }
-
-    /// <summary>
     /// Gets or sets the unique identifier of the machine where the job is running.
     /// </summary>
     public Guid? MachineId { get; set; }
@@ -73,9 +68,9 @@ public class Job
     public string? InputArguments { get; set; }
 
     /// <summary>
-    /// Gets or sets the output arguments from the job in JSON format.
+    /// Gets or sets the logs of node executions within the job's flow/agent, stored as a JSON string.
     /// </summary>
-    public string? OutputArguments { get; set; }
+    public string? NodeExecutionLogs { get; set; }
 
     /// <summary>
     /// Gets or sets the timestamp indicating when the job record was created.
