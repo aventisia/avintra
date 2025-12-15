@@ -403,27 +403,9 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             serviceResponse.Message = "Data successfully extracted.";
             _logger.LogInformation("Final cleaned LLM response: {llmResponse}", llmResponse);
 
-            // Get total execution time
-            totalExecutionTime = (DateTime.UtcNow - startTime).TotalSeconds;
-
-            // Add total execution time usage to the credits usage list
-            if (totalExecutionTime > 0)
-            {
-                creditsUsageList.Add(new
-                {
-                    serviceType = "AIModelExecutionTime",
-                    consumedUnit = totalExecutionTime,
-                    refType = refType.ToString(),
-                    refId = refId.ToString(),
-                    refName = refName,
-                    actionType = actionType.ToString(),
-                    triggeredByAgent = triggeredByAgent
-                });
-            }
-
             // Log token usage details
-            _logger.LogInformation("Token usage - Input Tokens: {inputTokens}, Input Cached Tokens: {inputCachedTokens}, Output Tokens: {outputTokens}, Output Reasoning Tokens: {outputReasoningTokens}, Total Execution Time (s): {totalExecutionTime}",
-                inputTokens, inputCachedTokens, outputTokens, outputReasoningTokens, totalExecutionTime);
+            _logger.LogInformation("Token usage - Input Tokens: {inputTokens}, Input Cached Tokens: {inputCachedTokens}, Output Tokens: {outputTokens}, Output Reasoning Tokens: {outputReasoningTokens} ",
+                inputTokens, inputCachedTokens, outputTokens, outputReasoningTokens);
             _logger.LogInformation("Credits usage details prepared: {creditsUsageList}", JsonConvert.SerializeObject(creditsUsageList));
 
             // Create credits usage in AccountsDb database
