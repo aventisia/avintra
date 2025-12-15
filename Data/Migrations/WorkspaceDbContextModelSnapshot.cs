@@ -97,46 +97,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("worc_AITasks");
                 });
 
-            modelBuilder.Entity("WorkspaceAPIs.Entities.ActionExecutionLog", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ActionName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ExecutedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("ExecutedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ExecutionType")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("FlowExecutionLogId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("InputData")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OutputData")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FlowExecutionLogId");
-
-                    b.ToTable("ActionExecutionLogs");
-                });
-
             modelBuilder.Entity("WorkspaceAPIs.Entities.AppSecret", b =>
                 {
                     b.Property<Guid>("Id")
@@ -192,70 +152,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("LastModifiedByUserId");
 
                     b.ToTable("AppSecrets");
-                });
-
-            modelBuilder.Entity("WorkspaceAPIs.Entities.Block", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("FlowVariablesObject")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("FlowVersionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("InputOutputObject")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ReactFlowObject")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("FlowVersionId");
-
-                    b.HasIndex("LastModifiedByUserId");
-
-                    b.ToTable("Blocks");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.EncryptedKeyValue", b =>
@@ -385,63 +281,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("FlowComment");
-                });
-
-            modelBuilder.Entity("WorkspaceAPIs.Entities.FlowExecutionLog", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<double?>("Duration")
-                        .HasColumnType("double precision");
-
-                    b.Property<DateTimeOffset>("EndTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ExecutedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("ExecutedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ExecutionType")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("FlowId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("FlowVersionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<int>("RetryCount")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset>("StartTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FlowId");
-
-                    b.HasIndex("FlowVersionId");
-
-                    b.ToTable("FlowExecutionLogs");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.FlowLog", b =>
@@ -615,9 +454,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset?>("EndTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ExecutionLogs")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("FlowVersionId")
                         .HasColumnType("uuid");
 
@@ -627,7 +463,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid?>("MachineId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("OutputArguments")
+                    b.Property<string>("NodeExecutionLogs")
                         .HasColumnType("text");
 
                     b.Property<string>("Priority")
@@ -1731,17 +1567,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("LastModifiedByUser");
                 });
 
-            modelBuilder.Entity("WorkspaceAPIs.Entities.ActionExecutionLog", b =>
-                {
-                    b.HasOne("WorkspaceAPIs.Entities.FlowExecutionLog", "FlowExecutionLog")
-                        .WithMany("ActionExecutionLogs")
-                        .HasForeignKey("FlowExecutionLogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("FlowExecutionLog");
-                });
-
             modelBuilder.Entity("WorkspaceAPIs.Entities.AppSecret", b =>
                 {
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
@@ -1757,33 +1582,6 @@ namespace WorkspaceAPIs.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastModifiedByUser");
-                });
-
-            modelBuilder.Entity("WorkspaceAPIs.Entities.Block", b =>
-                {
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WorkspaceAPIs.Entities.FlowVersion", "FlowVersion")
-                        .WithMany("Blocks")
-                        .HasForeignKey("FlowVersionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("FlowVersion");
 
                     b.Navigation("LastModifiedByUser");
                 });
@@ -1835,25 +1633,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("Flow");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("WorkspaceAPIs.Entities.FlowExecutionLog", b =>
-                {
-                    b.HasOne("WorkspaceAPIs.Entities.Flow", "Flow")
-                        .WithMany("FlowExecutionLogs")
-                        .HasForeignKey("FlowId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WorkspaceAPIs.Entities.FlowVersion", "FlowVersion")
-                        .WithMany("FlowExecutionLogs")
-                        .HasForeignKey("FlowVersionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Flow");
-
-                    b.Navigation("FlowVersion");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.FlowLog", b =>
@@ -2344,8 +2123,6 @@ namespace WorkspaceAPIs.Data.Migrations
                 {
                     b.Navigation("FlowComments");
 
-                    b.Navigation("FlowExecutionLogs");
-
                     b.Navigation("FlowLog");
 
                     b.Navigation("FlowUsers");
@@ -2353,17 +2130,8 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("FlowVersions");
                 });
 
-            modelBuilder.Entity("WorkspaceAPIs.Entities.FlowExecutionLog", b =>
-                {
-                    b.Navigation("ActionExecutionLogs");
-                });
-
             modelBuilder.Entity("WorkspaceAPIs.Entities.FlowVersion", b =>
                 {
-                    b.Navigation("Blocks");
-
-                    b.Navigation("FlowExecutionLogs");
-
                     b.Navigation("Jobs");
 
                     b.Navigation("MachineFlows");
