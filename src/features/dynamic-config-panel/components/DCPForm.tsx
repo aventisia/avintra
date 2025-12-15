@@ -1,7 +1,7 @@
 import { Button } from "@aventisia/ui/buttons";
 import { Form } from "@aventisia/ui/form";
 import { toast } from "@aventisia/ui/sonner";
-import { SearchCodeIcon } from "lucide-react";
+import { PlayIcon, SearchCodeIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import {
@@ -12,6 +12,14 @@ import {
 } from "..";
 import { LoadingSpinner } from "@aventisia/ui";
 import { refineSubmittedIO } from "../utils/refine-submitted-io";
+import TestContent from "@/features/create-model/components/test/Test";
+import { DCPTabsContent } from "./dcp-tabs/DCPTabsContent";
+import { DCPTabsTrigger } from "./dcp-tabs/DCPTabsTrigger";
+import { DCPTabsList } from "./dcp-tabs/DCPTabsList";
+import { cn } from "@aventisia/ui/lib";
+import { DCPTabsWrapper } from "./dcp-tabs/DCPTabsWrapper";
+import { DCPTabsFooterWrapper } from "./dcp-tabs/DCPTabsFooterWrapper";
+import { DCPTabsListWrapper } from "./dcp-tabs/DCPTabsListWrapper";
 
 export const DCPForm = () => {
   const [showOuputFields, setShowOutputFields] = useState(false);
@@ -30,6 +38,10 @@ export const DCPForm = () => {
     nodeLabel,
     setShowDialog,
     isLoading,
+    selectedTab,
+    setSelectedTab,
+    tabKeys,
+    fields,
   } = useDefineDCPForm();
 
   // Watch all form values
@@ -40,14 +52,14 @@ export const DCPForm = () => {
 
   // Check if output fields should be shown based on node configuration and watched values
   useEffect(() => {
-    const renderedOutputFields = nodeConfig.filter((field) =>
+    const renderedOutputFields = fields?.filter((field) =>
       shouldRenderField("Output", field, watchedValues),
     );
 
     setShowOutputFields(
-      renderedOutputFields.map((field) => field.name).length > 0,
+      Number(renderedOutputFields?.map((field) => field.name)?.length) > 0,
     );
-  }, [isFormReady, nodeConfig, watchedValues]);
+  }, [fields, isFormReady, nodeConfig, watchedValues]);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof nodeConfigZodSchema>) => {
@@ -87,70 +99,126 @@ export const DCPForm = () => {
           Configuration not found for this node.
         </div>
       ) : (
-        <Form
-          methods={form}
-          onSubmit={(e) => {
-            e.preventDefault();
-            onSubmit(form.getValues());
-          }}
-          className="px-2.5 pb-5"
-        >
-          {/* Input fields */}
-          <div className="mt-1 space-y-3.5">
-            {nodeConfig.map((field) => {
-              // Check if the field should be rendered based on direction and renderIf conditions
-              if (!shouldRenderField("Input", field, watchedValues)) {
-                //Remove the key from inputKeys if the field is not rendered
-                if (inputKeys.includes(field.name))
-                  inputKeys.splice(inputKeys.indexOf(field.name), 1);
-                return null;
-              }
+        <DCPTabsWrapper setTabValue={setSelectedTab} tabValue={selectedTab}>
+          <DCPTabsListWrapper>
+            <DCPTabsList>
+              {tabKeys?.map((key) => (
+                <DCPTabsTrigger tabValue={key} children={key} />
+              ))}
+              {!Array.isArray(nodeConfig) &&
+                nodeConfig?.errorHandling == "standard" && (
+                  <DCPTabsTrigger tabValue="OnError" children="On Error" />
+                )}
+            </DCPTabsList>
+            <DCPTabsList>
+              <DCPTabsTrigger
+                tabValue="Test"
+                className="flex items-center gap-1 text-primary hover:text-primary"
+              >
+                <PlayIcon className="h-3 w-3" />
+                <span> Test</span>
+              </DCPTabsTrigger>
+            </DCPTabsList>
+          </DCPTabsListWrapper>
 
-              // Add the field name to inputKeys if not already present
-              if (!inputKeys.includes(field.name)) inputKeys.push(field.name);
+          <Form
+            methods={form}
+            onSubmit={(e) => {
+              e.preventDefault();
+              onSubmit(form.getValues());
+            }}
+          >
+            {tabKeys?.map((tab, tabNo) => (
+              <DCPTabsContent tabValue={tab}>
+                {/* Input fields */}
+                <div className="space-y-3.5">
+                  {fields
+                    ?.filter((field) => (field.category ?? "Inputs") == tab)
+                    ?.map((field) => {
+                      // Check if the field should be rendered based on direction and renderIf conditions
+                      if (!shouldRenderField("Input", field, watchedValues)) {
+                        //Remove the key from inputKeys if the field is not rendered
+                        if (inputKeys.includes(field.name))
+                          inputKeys.splice(inputKeys.indexOf(field.name), 1);
+                        return null;
+                      }
 
-              // Render the field
-              return <RenderField key={field.name} {...field} />;
-            })}
-          </div>
+                      // Add the field name to inputKeys if not already present
+                      if (!inputKeys.includes(field.name))
+                        inputKeys.push(field.name);
 
-          {/* Output fields */}
-          {showOuputFields ? (
-            <>
-              <h3 className="!mt-6 flex items-center gap-1 text-sm font-medium">
-                <span className="rounded-full bg-accent px-1.5 text-indigo-600">
-                  Outputs
-                </span>
-                <span className="h-[0.06rem] flex-grow rounded bg-accent"></span>
-              </h3>
+                      // Render the field
+                      return <RenderField key={field.name} {...field} />;
+                    })}
+                </div>
+                {/* Output fields */}
+                {tabNo == 0 &&
+                showOuputFields &&
+                Number(
+                  fields?.filter((field) => field.direction == "Output")
+                    ?.length,
+                ) > 0 ? (
+                  <>
+                    <h3
+                      className={cn(
+                        "!mt-6 flex items-center gap-1 text-xs font-medium",
+                        fields?.filter(
+                          (field) =>
+                            (field.category ?? "Inputs") == tab &&
+                            field.direction == "Input",
+                        ).length == 0 && "!mt-0",
+                      )}
+                    >
+                      <span className="rounded-full bg-accent px-1.5 py-0.5 text-indigo-600">
+                        Outputs
+                      </span>
+                      <span className="h-[0.075rem] flex-grow rounded bg-accent"></span>
+                    </h3>
 
-              <div className="space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">
-                {nodeConfig.map((field) => {
-                  // Check if the field should be rendered based on direction and renderIf conditions
-                  if (!shouldRenderField("Output", field, watchedValues)) {
-                    //Remove the key from outputKeys if the field is not rendered
-                    if (outputKeys.includes(field.name))
-                      outputKeys.splice(outputKeys.indexOf(field.name), 1);
-                    return null;
-                  }
+                    <div className="mb-1 mt-3 space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">
+                      {fields?.map((field) => {
+                        // Check if the field should be rendered based on direction and renderIf conditions
+                        if (
+                          !shouldRenderField("Output", field, watchedValues)
+                        ) {
+                          //Remove the key from outputKeys if the field is not rendered
+                          if (outputKeys.includes(field.name))
+                            outputKeys.splice(
+                              outputKeys.indexOf(field.name),
+                              1,
+                            );
+                          return null;
+                        }
 
-                  // Add the field name to outputKeys if not already present
-                  if (!outputKeys.includes(field.name))
-                    outputKeys.push(field.name);
+                        // Add the field name to outputKeys if not already present
+                        if (!outputKeys.includes(field.name))
+                          outputKeys.push(field.name);
 
-                  return <RenderField key={field.name} {...field} />;
-                })}
-              </div>
-            </>
-          ) : null}
+                        return <RenderField key={field.name} {...field} />;
+                      })}
+                    </div>
+                  </>
+                ) : null}
+              </DCPTabsContent>
+            ))}
 
-          {/* Save button */}
-          <div className="!mt-5 flex w-full justify-end">
-            <Button type="submit" className="min-w-[5rem]">
-              Save
-            </Button>
-          </div>
-        </Form>
+            {!Array.isArray(nodeConfig) &&
+              nodeConfig?.errorHandling == "standard" && (
+                <DCPTabsContent tabValue="OnError">
+                  <p>On Error fields</p>
+                </DCPTabsContent>
+              )}
+            {/* Save button */}
+            {selectedTab !== "Test" && (
+              <DCPTabsFooterWrapper>
+                <Button size={"sm"} type="submit" className="min-w-[5rem]">
+                  Save
+                </Button>
+              </DCPTabsFooterWrapper>
+            )}
+          </Form>
+          <TestContent />
+        </DCPTabsWrapper>
       )}
     </>
   );
