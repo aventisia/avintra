@@ -1,22 +1,14 @@
-import { buttonVariants } from "@aventisia/ui/buttons";
 import { DialogContent, DialogWrapper } from "@aventisia/ui/dialog";
 import { cn } from "@aventisia/ui/lib";
-import { ScrollArea } from "@aventisia/ui/scroll";
-import { SquareArrowOutUpRightIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { DCPForm, useDynamicConfigPanelStore } from "..";
 import DCPDialogHeader from "./DCPDialogHeader";
-import { useLayoutEffect, useRef, useState } from "react";
 import CallAgentConfigForm from "@/features/call-agent/components/CallAgentConfigForm";
 import CallBlockConfigForm from "@/features/call-block/components/CallBlockConfigForm";
 import ModelConfigForm from "@/features/call-model/components/ModelConfigForm";
 import { LLMConfigForm } from "@/features/create-model/components/llm-config/LLMConfigForm";
 
 export const DCPDialog = ({ children }: React.PropsWithChildren) => {
-  // Ref and state for dynamic <p> height
-  const infoRef = useRef<HTMLParagraphElement>(null);
-  const [infoHeight, setInfoHeight] = useState(0);
-
   // Get state and actions from the DynamicConfigPanel store
   const { showDialog, nodeData, setShowDialog } = useDynamicConfigPanelStore(
     useShallow((state) => ({
@@ -25,12 +17,6 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
       setShowDialog: state.setShowDialog,
     })),
   );
-
-  useLayoutEffect(() => {
-    if (infoRef.current) {
-      setInfoHeight(infoRef.current.offsetHeight);
-    }
-  }, [showDialog, nodeData?.description, nodeData?.docsLink]);
 
   // Function to render correct form component based on nodeData.type
   const renderFormComponent = () => {
@@ -58,43 +44,6 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
     }
   };
 
-  // Renders the appropriate info link based on node type
-  const renderInfoLink = () => {
-    if (!nodeData) return null;
-
-    let href = "#";
-    let label = "Docs";
-
-    switch (nodeData.type) {
-      case "callAgentNode":
-        if (nodeData?.selectedAgent) {
-          href = `${import.meta.env.VITE_AGENTBUILDER_URL}/agent?f=${nodeData.selectedAgent?.flowId}&v=${nodeData.selectedAgent?.id}`;
-          label = "Open Agent";
-        } else {
-          return null; // Don't render anything if there's no agent
-        }
-        break;
-
-      default:
-        href = nodeData.docsLink || "#";
-        label = "Docs";
-    }
-
-    return (
-      <a
-        className={cn(
-          buttonVariants({ variant: "link" }),
-          "ml-1 gap-1 text-xs",
-        )}
-        target="_blank"
-        href={href}
-      >
-        {label}
-        <SquareArrowOutUpRightIcon className="h-2.5 w-2.5 stroke-[2.5]" />
-      </a>
-    );
-  };
-
   return (
     <DialogWrapper
       open={showDialog}
@@ -104,52 +53,18 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
       <DialogContent
         side={"right"}
         className={cn(
-          "!max-w-[32rem]",
+          "right-2 mt-[calc(var(--header-height)+2*var(--header-padding))] h-[calc(100vh-var(--header-height)-3*var(--header-padding))] !max-w-[32rem] rounded-e-xl",
           nodeData?.name === "ConditionalBranchActivity" && "!max-w-[40rem]",
           nodeData?.name === "LoopActivity" && "!max-w-[40rem]",
           nodeData?.name.includes("CreateAIAgent") &&
-            "right-2 mt-[calc(var(--header-height)+2*var(--header-padding))] h-[calc(100vh-var(--header-height)-3*var(--header-padding))] !max-w-[calc((100vw-(2*var(--header-padding)))/2)] rounded-e-xl",
+            "!max-w-[calc((100vw-(2*var(--header-padding)))/2)]",
         )}
       >
-        <>
-          <DCPDialogHeader
-            className={cn(
-              "border-none px-3.5 py-3 text-lg tracking-wide",
-              nodeData?.name.includes("CreateAIAgent") &&
-                "h-auto px-3 py-0 text-xs",
-            )}
-          />
-          <div
-            ref={infoRef}
-            className={cn(
-              "mx-2.5 rounded-lg bg-accent px-3 py-2 text-xs",
-              nodeData?.name.includes("CreateAIAgent") &&
-                "mx-0 flex gap-2 rounded-none border-b bg-transparent px-5 pt-0",
-            )}
-          >
-            <p
-              className={cn(
-                nodeData?.name.includes("CreateAIAgent") &&
-                  "inline max-w-[calc(38vw)] truncate text-muted-foreground",
-              )}
-            >
-              ℹ️ {nodeData?.description || "No description available."}
-            </p>
-            {renderInfoLink()}
-          </div>
-          {nodeData?.name.includes("CreateAIAgent") ? (
-            renderCreateAIAgentForm()
-          ) : (
-            <ScrollArea
-              style={{
-                height: `calc(100vh - 3.8rem - ${infoHeight}px)`,
-              }}
-              className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4"
-            >
-              {renderFormComponent()}
-            </ScrollArea>
-          )}
-        </>
+        <DCPDialogHeader />
+
+        {nodeData?.name.includes("CreateAIAgent")
+          ? renderCreateAIAgentForm()
+          : renderFormComponent()}
       </DialogContent>
     </DialogWrapper>
   );
