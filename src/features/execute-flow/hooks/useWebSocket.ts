@@ -97,6 +97,7 @@ export default function useWebSocket() {
         console.warn("WebSocket not connected");
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [setExecutionState],
   );
 
@@ -212,7 +213,7 @@ export default function useWebSocket() {
           await postCreditConsumption([
             {
               serviceType: CreditServiceTypesEnum.AgentExecutionTime,
-              consumedUnit: Number(endTime) - Number(startTime),
+              consumedUnit: (endTime.getTime() - startTime.getTime()) / 1000,
               refType: UsageSourceTypesEnum.Agent,
               refId: currentFlow.id,
               refName: currentFlow.name,
@@ -236,18 +237,8 @@ export default function useWebSocket() {
 
     // Run the function to handle both tasks
     handleExecutionData();
-  }, [
-    currExecCommand,
-    currentFlow.id,
-    currentFlow.jobId,
-    currentFlow.machineId,
-    currentFlow.name,
-    currentFlow.versionId,
-    endTime,
-    postCreditConsumption,
-    startTime,
-    status,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currExecCommand]);
 
   return { sendCommand };
 }

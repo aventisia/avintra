@@ -32,6 +32,7 @@ export default function useCheckMachineStatus(
       queryClient.invalidateQueries({ queryKey: ["select-agent"] });
       queryClient.invalidateQueries({ queryKey: ["machines-to-select"] });
       queryClient.invalidateQueries({ queryKey: ["machines"] });
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
     };
 
     // Subscribe to the machine status update event
