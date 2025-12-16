@@ -41,7 +41,6 @@ export default function useCheckJobTrigger(connection: HubConnection | null) {
         if (commandValue === "Initiate") {
           console.log("Initiated exe");
           const jobDataInitiate = await getJobById(data.jobId);
-          console.log("Job Data for Initiate:", jobDataInitiate);
 
           updateJobData({
             flowId: jobDataInitiate.data.flowId,
@@ -53,7 +52,6 @@ export default function useCheckJobTrigger(connection: HubConnection | null) {
         } else if (commandValue === "Execute") {
           console.log("Started exe");
           const jobDataExecute = await getJobById(data.jobId);
-          console.log("Job Data for Execute:", jobDataExecute);
 
           startExecution(jobDataExecute.data);
         } else if (commandValue === "Abort") {

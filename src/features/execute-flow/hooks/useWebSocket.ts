@@ -97,6 +97,7 @@ export default function useWebSocket() {
         console.warn("WebSocket not connected");
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [setExecutionState],
   );
 
