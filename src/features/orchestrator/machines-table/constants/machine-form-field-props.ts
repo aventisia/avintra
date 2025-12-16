@@ -27,26 +27,27 @@ export const osTypeProps: SelectFieldProps = {
 export const nameProps: InputFieldProps = {
   name: "name",
   label: "Name",
-  placeholder: "exampleMachine",
   isRequired: true,
+  autoFocus: true,
 };
 
 // Host Name
 export const hostnameProps: InputFieldProps = {
   name: "hostname",
-  label: "Host Name",
-  placeholder: "example.com",
+  label: "Username",
   isRequired: true,
+  description:
+    "Enter the username of the machine that needs to be registered. This can be found on the login screen of the desktop app on the machine.",
 };
 
 // Os Unique Id
 export const os_unique_idProps: InputFieldProps = {
-  name: "os_unique_id",
+  name: "osId",
   label: "OS Unique ID",
   placeholder: "",
   isRequired: true,
   description:
-    "To find your operating system's unique ID, open the desktop app and check the login screen for the os_id displayed there.",
+    "Enter the OS installation ID of the machine that needs to be registered. This can be found on the login screen of the desktop app on the machine.",
 };
 
 // IP Address

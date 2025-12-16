@@ -5,7 +5,6 @@ import {
   SidebarOnDialog,
 } from "@aventisia/ui/layout";
 
-import { IS_TAURI } from "@/constants/constants";
 import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
 import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
@@ -18,12 +17,10 @@ const AppHeader: React.FC = () => {
     <HeaderContainer>
       <Header>
         <div className="flex flex-grow items-center">
-          {!IS_TAURI && (
-            <SidebarOnDialog
-              appLogo={<AppLogo logoSrc="/app_logo_dark.svg" />}
-              className="flex md:hidden"
-            />
-          )}
+          <SidebarOnDialog
+            appLogo={<AppLogo logoSrc="/app_logo_dark.svg" />}
+            className="flex md:hidden"
+          />
           <AppLogo />
         </div>
         {import.meta.env.MODE !== "production" ? <SearchBox /> : null}

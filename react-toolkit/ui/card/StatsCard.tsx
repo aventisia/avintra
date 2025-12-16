@@ -16,27 +16,25 @@ export const StatsCard = ({
   iconContainerClassName,
 }: StatsCardProps) => {
   return (
-    <Card className="rounded-md">
-      <div className="flex flex-row items-center">
-        <div
-          className={twMerge(
-            "ms-5 rounded-md bg-primary-50 p-4 shadow-primary-100",
-            iconContainerClassName,
-          )}
-        >
-          {icon}
-        </div>
-        <div>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium tracking-wide">
-              {title}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{mainText}</div>
-            <div className="text-xs text-muted-foreground">{description}</div>
-          </CardContent>
-        </div>
+    <Card className="flex flex-row items-center rounded-md">
+      <div
+        className={twMerge(
+          "ms-5 rounded-md bg-primary-50 p-4 shadow-primary-100",
+          iconContainerClassName,
+        )}
+      >
+        {icon}
+      </div>
+      <div>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+          <CardTitle className="text-sm font-medium tracking-wide">
+            {title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{mainText}</div>
+          <div className="text-xs text-muted-foreground">{description}</div>
+        </CardContent>
       </div>
     </Card>
   );

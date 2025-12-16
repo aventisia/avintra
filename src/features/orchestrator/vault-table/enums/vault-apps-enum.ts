@@ -4,6 +4,6 @@ export enum VaultAppsEnum {
   Twilio,
   SendGrid,
   GitHub,
-  M365Excel,
+  M365,
   GeneralCredentials,
 }

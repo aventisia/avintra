@@ -14,17 +14,19 @@ import { SelectAgentTableDto } from "../../dtos/select-agent-table-dto";
 import { useFetchSelectTableAgents } from "../../hooks/useFetchSelectAgents";
 import { useAssignAgentsStore } from "../../stores/assign-agents-store";
 
-import { RemoveAgentButton } from "./RemoveAgentButton";
+import { AgentsListItemActions } from "./assign-agent-item-actions";
+import { ExecutionAction } from "./ExecutionAction";
 
 const AgentsList = () => {
-  const { machineId } = useAssignAgentsStore(
+  const { osId, machineId } = useAssignAgentsStore(
     useShallow((s) => ({
       machineId: s.machineId,
-      setMachineId: s.setMachineId,
+      osId: s.osId,
     })),
   );
 
-  const { data } = useFetchSelectTableAgents(machineId);
+  // Use OS id to only to fetch agents list for all other crud operations and query keys machine id is used
+  const { data } = useFetchSelectTableAgents({ osId, machineId });
 
   return (
     <Command>
@@ -41,7 +43,7 @@ const AgentsList = () => {
           Icon={BotIcon}
           primaryMessage="No Agent found"
         />
-      </CommandEmpty>{" "}
+      </CommandEmpty>
       <ScrollArea>
         <CommandList>
           {data?.data
@@ -59,35 +61,14 @@ const AgentsList = () => {
                     }
                   >
                     {/* Content container */}
-                    <div className="flex grow items-center gap-2">
-                      {/* Agent name */}
-                      <div className="flex flex-col">
-                        <p>
-                          {val.name} -v{val.versionNumber}
-                        </p>
-                        {/* <span className="text-2xs text-muted-foreground">
-                        {val.type}
-                      </span> */}
-                      </div>
-                    </div>
-
+                    <p className="grow">{`${val.name} -v${val.versionNumber}`}</p>
                     <div className="flex items-center gap-2">
-                      <RemoveAgentButton agentId={val.id} />
-                      {/* <Button
-                        onClick={() => {
-                          setCurrDel(val.id);
-                          //  mutate({ flowVersionId, machineIds: [val.id] });
-                        }}
-                        variant="caution"
-                        size="icon7"
-                        disabled={isPending && currDel == val.id}
-                      >
-                        {isPending && currDel == val.id ? (
-                          <LoadingSpinner className="h-4 w-4" />
-                        ) : (
-                          <Trash2Icon className="h-4 w-4" />
-                        )}
-                      </Button> */}
+                      <ExecutionAction
+                        executionState=""
+                        isDisabled={false}
+                        rowId={val.id}
+                      />
+                      <AgentsListItemActions id={val.id} />
                     </div>
                   </div>
                 </CommandItem>

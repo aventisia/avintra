@@ -1,4 +1,5 @@
 use std::process::Command;
+use serde::Serialize;
 
 #[tauri::command]
 pub fn launch_desktop_executor(
@@ -64,118 +65,89 @@ pub fn launch_ui_inspector(ws_port: u16) -> Result<(), String> {
     Ok(())
 }
 
-/// Provides functions to retrieve unique hardware and software identifiers for device fingerprinting, licensing, or system identification.
-/// Retrieves the system's hardware UUID from BIOS/UEFI firmware (Windows only).
-///
-/// - Uses PowerShell to query `Win32_ComputerSystemProduct` WMI class for the UUID.
-/// - Returns a persistent hardware identifier that survives OS reinstalls and disk replacements.
-/// - Returns `Ok(uuid)` on success, or `Err(reason)` on failure (e.g., PowerShell/WMI errors, empty UUID).
-/// - Requires PowerShell execution rights; may need elevation.
-///
-/// Example:
-/// ```
-/// match get_hardware_uuid() {
-///     Ok(uuid) => println!("Hardware UUID: {}", uuid),
-///     Err(e) => eprintln!("Failed to get hardware UUID: {}", e),
-/// }
-/// ```
-#[tauri::command]
-pub fn get_machine_hardware_uuid() -> Result<String, String> {
-    #[cfg(target_os = "windows")]
-    {
-        use std::process::Command;
-
-        // Execute PowerShell command to read hardware UUID from WMI
-        // -NoProfile: Skips loading PowerShell profile for faster execution
-        // -Command: Runs a single command and exits
-        let output = Command::new("powershell")
-            .args([
-                "-NoProfile",
-                "-Command",
-                "(Get-WmiObject Win32_ComputerSystemProduct).UUID",
-            ])
-            .output()
-            .map_err(|e| format!("Failed to run PowerShell: {}", e))?;
-
-        // Check if PowerShell command executed successfully (exit code 0)
-        if !output.status.success() {
-            return Err("PowerShell command failed".into());
-        }
-
-        // Convert stdout bytes to string and clean whitespace
-        // from_utf8_lossy handles any invalid UTF-8 gracefully
-        let uuid = String::from_utf8_lossy(&output.stdout).trim().to_string();
-
-        // Validate that we actually received data
-        if uuid.is_empty() {
-            return Err("Received empty UUID".into());
-        }
-
-        Ok(uuid)
-    }
-
-    // Placeholder for future OS support (macOS, Linux)
-    // Consider implementing:
-    // - macOS: system_profiler SPHardwareDataType or IOPlatformUUID
-    // - Linux: /sys/class/dmi/id/product_uuid (requires root)
-    #[cfg(not(target_os = "windows"))]
-    {
-        Err("Hardware UUID is only implemented for Windows".into())
-    }
+#[derive(Serialize)]
+pub struct UserMetadata {
+    pub os_id: String,
+    pub username: String,
+    pub app_version: String,
 }
 
-/// Retrieves a unique OS installation identifier for Windows and Linux.
+/// Retrieves complete user metadata for tracking and identification
 ///
-/// - Returns a system-unique identifier that persists across reboots and is specific to the OS installation.
-/// - Works with both physical machines and VMs.
+/// Returns OS installation ID, username, and app version.
 ///
-/// # Platform-specific behavior
-/// - **Windows**: Returns `MachineGuid` from the registry (GUID format).
-/// - **Linux**: Returns `machine-id` from systemd (32-char hex string).
+/// OS ID Sources:
+/// - Windows: MachineGuid from Registry (HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography)
+/// - Linux: /etc/machine-id (primary) or /var/lib/dbus/machine-id (fallback)
 ///
-/// # Returns
-/// - `Ok(String)`: The unique installation identifier.
-/// - `Err(String)`: Error message if the identifier cannot be retrieved.
+/// Username Sources:
+/// - Windows: USERNAME environment variable (e.g., "john.doe", "Administrator")
+/// - Linux: USER environment variable (e.g., "john", "root")
+///
+/// App Version: Extracted from Cargo.toml at compile time
 #[tauri::command]
-pub fn get_os_installation_id() -> Result<String, String> {
-    // Windows implementation using registry
+pub fn get_user_metadata() -> Result<UserMetadata, String> {
+    // Get unique OS installation identifier  
     #[cfg(target_os = "windows")]
-    {
+    let os_id = {
         use winreg::enums::*;
         use winreg::RegKey;
 
+        // Open registry key containing machine GUID
         let key = RegKey::predef(HKEY_LOCAL_MACHINE)
             .open_subkey("SOFTWARE\\Microsoft\\Cryptography")
             .map_err(|e| format!("Cannot open registry key: {}", e))?;
 
-        let guid: String = key
-            .get_value("MachineGuid")
-            .map_err(|e| format!("Cannot read MachineGuid: {}", e))?;
+        // Read MachineGuid value
+        key.get_value("MachineGuid")
+            .map_err(|e| format!("Cannot read MachineGuid: {}", e))?
+    };
 
-        Ok(guid)
-    }
-
-    // Linux implementation using machine-id
     #[cfg(target_os = "linux")]
-    {
+    let os_id = {
         use std::fs;
 
         // Try primary location (systemd standard)
         if let Ok(guid) = fs::read_to_string("/etc/machine-id") {
-            return Ok(guid.trim().to_string());
-        }
-
+            guid.trim().to_string()
+        } 
         // Fallback to D-Bus location
-        if let Ok(guid) = fs::read_to_string("/var/lib/dbus/machine-id") {
-            return Ok(guid.trim().to_string());
+        else if let Ok(guid) = fs::read_to_string("/var/lib/dbus/machine-id") {
+            guid.trim().to_string()
+        } else {
+            return Err("Cannot read machine-id from /etc/machine-id or /var/lib/dbus/machine-id".into());
         }
+    };
 
-        Err("Cannot read machine-id from /etc/machine-id or /var/lib/dbus/machine-id".into())
-    }
-
-    // Unsupported platforms
     #[cfg(not(any(target_os = "windows", target_os = "linux")))]
-    {
-        Err("OS installation GUID is only available on Windows and Linux".into())
-    }
+    let os_id: String = return Err("OS installation GUID is only available on Windows and Linux".into());
+
+    // Get currently logged-in username
+    
+    #[cfg(target_os = "windows")]
+    let username = {
+        // Read USERNAME environment variable (e.g., "john.doe", "Administrator")
+        std::env::var("USERNAME")
+            .map_err(|_| "Failed to get USERNAME environment variable".to_string())?
+    };
+
+    #[cfg(target_os = "linux")]
+    let username = {
+        // Read USER environment variable (e.g., "john", "root")
+        std::env::var("USER")
+            .map_err(|_| "Failed to get USER environment variable".to_string())?
+    };
+
+    #[cfg(not(any(target_os = "windows", target_os = "linux")))]
+    let username: String = return Err("Username retrieval is only available on Windows and Linux".into());
+
+    // Get app version from Cargo.toml at compile time
+
+    let app_version = env!("CARGO_PKG_VERSION").to_string();
+
+    Ok(UserMetadata {
+        os_id,
+        username,
+        app_version,
+    })
 }
