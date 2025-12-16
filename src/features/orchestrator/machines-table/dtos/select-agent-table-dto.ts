@@ -77,4 +77,6 @@ export interface SelectAgentTableDto {
    * @memberof AssignAgentDto
    */
   isAssigned: boolean;
+
+  status: string;
 }
