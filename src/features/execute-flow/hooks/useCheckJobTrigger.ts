@@ -23,66 +23,57 @@ export default function useCheckJobTrigger(connection: HubConnection | null) {
   const { startExecution, sendCommand, setExecutionState } = useExecuteFlow();
 
   useEffect(() => {
-    // Exit if no connection is provided
-    if (!connection) {
-      return;
-    }
+    if (!connection) return;
 
-    // Handler for 'trigger_agent' event received from hub
-    const handleExecuteFlow = (data: { jobId: string; command: number }) => {
+    const handleExecuteFlow = async (data: {
+      jobId: string;
+      command: number;
+    }) => {
       console.log("trigger_agent received:", data);
+
       // Lookup to get the enum value from the index
-      const commandValue =
-        ExecutionCommandTypesEnum[
-          data.command as unknown as keyof typeof ExecutionCommandTypesEnum
-        ];
+      const commandValue = ExecutionCommandTypesEnum[data.command];
 
-      switch (commandValue) {
-        case ExecutionCommandTypesEnum.Initiate:
-          getJobById(data?.jobId as string)
-            .then((data) => {
-              updateJobData({
-                flowId: data.data.flowId,
-                flowVersionId: data.data.flowVersionId,
-                id: data.data.id,
-                machineId: data.data.machineId,
-                status: JobStatusTypesEnum.Running,
-              });
-            })
-            .catch((err) => console.log("Error Fetching Job by Job Id", err));
+      // Log the value of commandValue for debugging
+      console.log("Received commandValue:", commandValue);
 
-          break;
+      try {
+        if (commandValue === "Initiate") {
+          console.log("Initiated exe");
+          const jobDataInitiate = await getJobById(data.jobId);
+          console.log("Job Data for Initiate:", jobDataInitiate);
 
-        case ExecutionCommandTypesEnum.Execute:
-          getJobById(data?.jobId as string)
-            .then((data) => {
-              startExecution(data.data);
-            })
-            .catch((err) => console.log("Error Fetching Job by Job Id", err));
-          break;
+          updateJobData({
+            flowId: jobDataInitiate.data.flowId,
+            flowVersionId: jobDataInitiate.data.flowVersionId,
+            id: jobDataInitiate.data.id,
+            machineId: jobDataInitiate.data.machineId,
+            status: JobStatusTypesEnum.Running,
+          });
+        } else if (commandValue === "Execute") {
+          console.log("Started exe");
+          const jobDataExecute = await getJobById(data.jobId);
+          console.log("Job Data for Execute:", jobDataExecute);
 
-        case ExecutionCommandTypesEnum.Abort:
-          {
-            localStorage.setItem(
-              "conditionalExecutionGroup",
-              JSON.stringify([]),
-            );
-            localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
-            setExecutionState("stopped");
-            sendCommand("abort");
-          }
-          break;
-        default:
-          break;
+          startExecution(jobDataExecute.data);
+        } else if (commandValue === "Abort") {
+          console.log("Aborted execution");
+          localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
+          localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
+          setExecutionState("stopped");
+          sendCommand("abort");
+        } else {
+          console.log("Unknown command received:", commandValue);
+        }
+      } catch (err) {
+        console.error("Error handling job trigger:", err);
       }
     };
 
-    // Subscribe to the machine status update event
     connection.on("trigger_agent", handleExecuteFlow);
 
-    // Cleanup listener on component unmount or connection change
     return () => {
       connection.off("trigger_agent", handleExecuteFlow);
     };
-  }, [connection, startExecution]);
+  }, [connection, startExecution, sendCommand, setExecutionState]);
 }
