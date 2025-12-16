@@ -1,7 +1,9 @@
 import { HubConnection } from "@microsoft/signalr";
 import { useEffect } from "react";
 
-import { getJobById } from "../apis/job-trigger-apis";
+import { JobStatusTypesEnum } from "@/features/orchestrator/executions-table/enums/job-status-type-enum";
+
+import { getJobById, updateJobData } from "../apis/job-trigger-apis";
 import { ExecutionCommandTypesEnum } from "../enums/execution-command-types-enum";
 
 import useExecuteFlow from "./useExecuteFlow";
@@ -29,21 +31,49 @@ export default function useCheckJobTrigger(connection: HubConnection | null) {
     // Handler for 'trigger_agent' event received from hub
     const handleExecuteFlow = (data: { jobId: string; command: number }) => {
       console.log("trigger_agent received:", data);
-      // Reverse lookup to get the enum value from the index
+      // Lookup to get the enum value from the index
       const commandValue =
         ExecutionCommandTypesEnum[
           data.command as unknown as keyof typeof ExecutionCommandTypesEnum
         ];
 
-      if (commandValue == ExecutionCommandTypesEnum.Execute)
-        getJobById(data?.jobId as string)
-          .then((data) => {
-            startExecution(data.data);
-          })
-          .catch((err) => console.log("Error Fetching Job by Job Id", err));
-      else if (commandValue == ExecutionCommandTypesEnum.Abort) {
-        sendCommand("abort");
-        setExecutionState("stopped");
+      switch (commandValue) {
+        case ExecutionCommandTypesEnum.Initiate:
+          getJobById(data?.jobId as string)
+            .then((data) => {
+              updateJobData({
+                flowId: data.data.flowId,
+                flowVersionId: data.data.flowVersionId,
+                id: data.data.id,
+                machineId: data.data.machineId,
+                status: JobStatusTypesEnum.Running,
+              });
+            })
+            .catch((err) => console.log("Error Fetching Job by Job Id", err));
+
+          break;
+
+        case ExecutionCommandTypesEnum.Execute:
+          getJobById(data?.jobId as string)
+            .then((data) => {
+              startExecution(data.data);
+            })
+            .catch((err) => console.log("Error Fetching Job by Job Id", err));
+          break;
+
+        case ExecutionCommandTypesEnum.Abort:
+          {
+            localStorage.setItem(
+              "conditionalExecutionGroup",
+              JSON.stringify([]),
+            );
+            localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
+            setExecutionState("stopped");
+            sendCommand("abort");
+          }
+          break;
+        default:
+          break;
       }
     };
 
@@ -54,5 +84,5 @@ export default function useCheckJobTrigger(connection: HubConnection | null) {
     return () => {
       connection.off("trigger_agent", handleExecuteFlow);
     };
-  }, [connection, sendCommand, setExecutionState, startExecution]);
+  }, [connection, startExecution]);
 }

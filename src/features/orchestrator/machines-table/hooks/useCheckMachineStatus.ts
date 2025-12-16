@@ -29,6 +29,8 @@ export default function useCheckMachineStatus(
       console.log("WebSocket Message received:", data);
 
       // Invalidate the 'machines' query to fetch the latest data
+      queryClient.invalidateQueries({ queryKey: ["select-agent"] });
+      queryClient.invalidateQueries({ queryKey: ["machines-to-select"] });
       queryClient.invalidateQueries({ queryKey: ["machines"] });
     };
 

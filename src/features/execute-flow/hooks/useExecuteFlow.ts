@@ -5,10 +5,8 @@ import { useShallow } from "zustand/react/shallow";
 
 import { IS_TAURI } from "@/constants/constants";
 import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
-import { JobStatusTypesEnum } from "@/features/orchestrator/executions-table/enums/job-status-type-enum";
 import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
 
-import { updateJobData } from "../apis/job-trigger-apis";
 import { CURRENT_VERSION_ID_KEY } from "../constants/constants";
 import { JobDetailsDto } from "../dtos/job-details-dto";
 import { useCurrentFlowStore } from "../stores/current-flow-store";
@@ -73,14 +71,6 @@ export default function useExecuteFlow() {
 
       // Open the desktop executor if the app is running in Tauri
       if (IS_TAURI) {
-        await updateJobData({
-          flowId: data.flowId,
-          flowVersionId: data.flowVersionId,
-          id: data.id,
-          machineId: data.machineId,
-          status: JobStatusTypesEnum.Running,
-        });
-
         localStorage.removeItem("flowExecutionStack"); //  Clear any previous subflow stack
         localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
         localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
