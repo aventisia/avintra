@@ -5,6 +5,7 @@ import { ACTIVITY_EVENTS, IDLE_TIMEOUT_MINUTES } from "@/constants/auto-logout";
 import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
+// TODO: Save timer in localstorage or some better place where all browser tabs can access the same value. if agent is in execution state then auto logout should not trigger
 export function useAutoLogout() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);

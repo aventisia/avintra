@@ -13,8 +13,6 @@ import { useShallow } from "zustand/react/shallow";
 import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppRedirectPage } from "./AppRedirectPage";
-import { useAutoLogout } from "@/hooks/useAutoLogout";
-// import { useGetBlockActions } from "@/features/react-flow/hooks/useGetBlockActions";
 
 export const AppLayout = () => {
   const [loading, setLoading] = useState(true);
@@ -31,8 +29,6 @@ export const AppLayout = () => {
 
   // Check for new version updates if app is inside the Tauri
   useCheckForUpdate();
-
-  useAutoLogout();
 
   // Validate user session
   const { isPending } = useValidateUserSession();
