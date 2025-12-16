@@ -17,9 +17,11 @@ import {
 } from "..";
 import { getLocalExecutionLog } from "../apis/get-version-execution-log";
 import { updateJobData } from "../apis/job-trigger-apis";
+import { ActionTypesEnum } from "../constants/action-types-enum";
+import { CreditServiceTypesEnum } from "../constants/credit-service-type-enum";
+import { UsageSourceTypesEnum } from "../constants/usage-source-types-enum";
 import { useCurrentFlowStore } from "../stores/current-flow-store";
 import { useJobDataStore } from "../stores/job-data-store";
-import { generateCreditConsumptionList } from "../utils/generateCreditConsumptionList";
 
 import { usePostCreditConsumptionMutation } from "./usePostCreditConsumptionMutation";
 
@@ -196,13 +198,6 @@ export default function useWebSocket() {
 
         // Handle Credit Consumption
         if (currExecCommand) {
-          const consumptionList = generateCreditConsumptionList(
-            executionData,
-            currentFlow.id,
-            currentFlow.name,
-            currExecCommand,
-          );
-
           await updateJobData({
             flowId: currentFlow.id,
             flowVersionId: currentFlow.versionId,
@@ -211,14 +206,21 @@ export default function useWebSocket() {
             status,
             startTime,
             endTime,
+            nodeExecutionLogs: JSON.stringify(executionData),
           });
 
-          if (consumptionList) {
-            await postCreditConsumption(consumptionList); // Post the consumption data
-            console.log("Credit consumption posted successfully.");
-          } else {
-            console.warn("No credit consumption data generated.");
-          }
+          await postCreditConsumption([
+            {
+              serviceType: CreditServiceTypesEnum.AgentExecutionTime,
+              consumedUnit: Number(endTime) - Number(startTime),
+              refType: UsageSourceTypesEnum.Agent,
+              refId: currentFlow.id,
+              refName: currentFlow.name,
+              action: ActionTypesEnum.AgentExecution,
+              triggeredByAgent: currentFlow.name,
+            },
+          ]); // Post the consumption data
+          console.log("Credit consumption posted successfully.");
         }
       } catch (error) {
         // Log any errors that occur during the process

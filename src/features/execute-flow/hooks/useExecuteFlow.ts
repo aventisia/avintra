@@ -15,6 +15,8 @@ import { useCurrentFlowStore } from "../stores/current-flow-store";
 import { deepParse } from "../utils/deepParse";
 import { clearNodeExecutionLog } from "../utils/save-node-execution-log";
 
+import useWebSocket from "./useWebSocket";
+
 export default function useExecuteFlow() {
   // Get current flow and execution state from current
   const { setExecutionState, setCurrentFlow } = useCurrentFlowStore(
@@ -24,6 +26,8 @@ export default function useExecuteFlow() {
       setCurrentFlow: state.setCurrentFlow,
     })),
   );
+
+  const { sendCommand } = useWebSocket();
 
   const minCredits = 10;
 
@@ -134,5 +138,5 @@ export default function useExecuteFlow() {
     }
   };
 
-  return { startExecution };
+  return { startExecution, sendCommand, setExecutionState };
 }

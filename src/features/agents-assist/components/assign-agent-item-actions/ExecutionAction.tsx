@@ -2,7 +2,7 @@ import { LoadingSpinner } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
 import { Tooltip } from "@aventisia/ui/tooltip";
-import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";
+import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { useShallow } from "zustand/react/shallow";
 
 import useWebSocket from "@/features/execute-flow/hooks/useWebSocket";
@@ -40,50 +40,25 @@ export const ExecutionAction = ({
 
   return (
     <div className="flex items-center gap-2">
-      {executionState === "executing" || executionState === "paused" ? (
-        <div className="group flex h-8 gap-1 rounded-lg bg-white/10">
-          {executionState === "executing" ? (
-            <Tooltip content="Pause">
-              <Button
-                variant="ghost"
-                size="icon8"
-                className="hover:bg-white/10"
-                onClick={() => sendCommand("pause")}
-              >
-                <PauseIcon className="h-[1.1rem] w-[1.1rem] text-slate-500" />
-              </Button>
-            </Tooltip>
-          ) : (
-            <Tooltip content="Resume">
-              <Button
-                variant="ghost"
-                size="icon8"
-                className="hover:bg-white/10"
-                onClick={() => sendCommand("resume")}
-              >
-                <PlayIcon className="h-[1.1rem] w-[1.1rem] text-green-500/80" />
-              </Button>
-            </Tooltip>
-          )}
-          <Tooltip content="Abort">
-            <Button
-              variant="ghost"
-              size="icon8"
-              className="hover:bg-white/10"
-              onClick={() => {
-                localStorage.setItem(
-                  "conditionalExecutionGroup",
-                  JSON.stringify([]),
-                );
-                localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
-                setExecutionState("stopped");
-                sendCommand("abort");
-              }}
-            >
-              <StopIcon className="h-[1.1rem] w-[1.1rem] text-red-500/80" />
-            </Button>
-          </Tooltip>
-        </div>
+      {executionState === "executing" ? (
+        <Tooltip content="Abort">
+          <Button
+            variant="ghost"
+            size="icon8"
+            className="hover:bg-white/10"
+            onClick={() => {
+              localStorage.setItem(
+                "conditionalExecutionGroup",
+                JSON.stringify([]),
+              );
+              localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
+              setExecutionState("stopped");
+              sendCommand("abort");
+            }}
+          >
+            <StopIcon className="h-[1.1rem] w-[1.1rem] text-red-500/80" />
+          </Button>
+        </Tooltip>
       ) : (
         <Tooltip content="Execute">
           <Button
