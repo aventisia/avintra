@@ -78,7 +78,7 @@ export interface JobTableDto {
   /**
    * Gets or sets the output arguments from the job, stored in JSON format.
    */
-  outputArguments?: string;
+  nodeExecutionLogs?: string;
 
   /**
    * Gets or sets the timestamp indicating when the job record was created.
