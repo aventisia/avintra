@@ -1,6 +1,5 @@
 import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
 import { FlowParticipantsFacePile } from "@/features/share-access/components/share-avatars/FlowParticipantsFacePile";
-import { useAutoLogout } from "@/hooks/useAutoLogout";
 import { useClearQueryParamsOutsideView } from "@/hooks/useClearQueryParamsOutsideView";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { Header } from "@/react-toolkit/layout/Header";
@@ -19,8 +18,6 @@ export const MLModelBuilderLayout = () => {
   useClearQueryParamsOutsideView();
   // Validate user session
   const { isPending } = useValidateUserSession();
-
-  useAutoLogout();
 
   return (
     <>

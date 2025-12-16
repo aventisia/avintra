@@ -5,6 +5,7 @@ import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 import { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
+// TODO: Save timer in localstorage or some better place where all browser tabs can access the same value. if agent is in execution state then auto logout should not trigger
 export function useAutoLogout() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
