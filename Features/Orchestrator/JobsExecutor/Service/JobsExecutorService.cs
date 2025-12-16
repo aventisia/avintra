@@ -231,6 +231,12 @@ public class JobsExecutorService : IJobsExecutorService
                     _logger.LogInformation("Machine {MachineId} is now idle. Notified tenant group {TenantId}.", executionCommandDto.MachineId, executionCommandDto.TenantId);
                 }
             }
+            else
+            {
+                // Notify tenant group that a machine is idle
+                await _hubContext.Clients.Group($"TENANT_{executionCommandDto.TenantId}").SendAsync("machine_status_update", "A machine is now busy.");
+                _logger.LogInformation("Machine {MachineId} is now idle. Notified tenant group {TenantId}.", executionCommandDto.MachineId, executionCommandDto.TenantId);
+            }
         }
         catch (Exception ex)
         {
