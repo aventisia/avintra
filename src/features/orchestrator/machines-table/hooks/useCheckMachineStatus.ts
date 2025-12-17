@@ -26,13 +26,14 @@ export default function useCheckMachineStatus(
 
     // Handler for 'machine_status_update' event received from backend
     const handleMachineStatusUpdate = (data: unknown) => {
-      console.log("WebSocket Message received:", data);
+      console.log("machine_status_update received:", data);
 
       // Invalidate the 'machines' query to fetch the latest data
-      queryClient.invalidateQueries({ queryKey: ["select-agent"] });
-      queryClient.invalidateQueries({ queryKey: ["machines-to-select"] });
-      queryClient.invalidateQueries({ queryKey: ["machines"] });
-      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      queryClient.invalidateQueries({ queryKey: ["machines-to-select"] }); //Assigned Machines list (on Published table)
+      queryClient.invalidateQueries({ queryKey: ["machines"] }); // Machines table list
+      queryClient.invalidateQueries({ queryKey: ["select-agent"] }); // Assigned Agents List (on Machine table)
+      queryClient.invalidateQueries({ queryKey: ["jobs"] }); // Jobs list
+      queryClient.invalidateQueries({ queryKey: ["agents-assist"] }); // Assist Agents list
     };
 
     // Subscribe to the machine status update event

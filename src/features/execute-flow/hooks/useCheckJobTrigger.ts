@@ -1,12 +1,14 @@
 import { HubConnection } from "@microsoft/signalr";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 import { JobStatusTypesEnum } from "@/features/orchestrator/executions-table/enums/job-status-type-enum";
 
-import { getJobById, updateJobData } from "../apis/job-trigger-apis";
+import { getJobById } from "../apis/job-trigger-apis";
 import { ExecutionCommandTypesEnum } from "../enums/execution-command-types-enum";
 
 import useExecuteFlow from "./useExecuteFlow";
+import { useUpdateJobMutation } from "./useUpdateJobMutation";
 
 /**
  * useCheckJobTrigger
@@ -20,6 +22,9 @@ import useExecuteFlow from "./useExecuteFlow";
  * useCheckJobTrigger(connection);
  */
 export default function useCheckJobTrigger(connection: HubConnection | null) {
+  const queryClient = useQueryClient();
+  const { updateJobMutation } = useUpdateJobMutation();
+
   const { startExecution, sendCommand, setExecutionState } = useExecuteFlow();
 
   useEffect(() => {
@@ -29,21 +34,18 @@ export default function useCheckJobTrigger(connection: HubConnection | null) {
       jobId: string;
       command: number;
     }) => {
-      console.log("trigger_agent received:", data);
-
       // Lookup to get the enum value from the index
       const commandValue = ExecutionCommandTypesEnum[data.command];
 
       // Log the value of commandValue for debugging
-      console.log("Received commandValue:", commandValue);
+      console.log("trigger_agent received commandValue:", commandValue);
 
       try {
         if (commandValue === "Initiate") {
           console.log("Initiated exe");
           const jobDataInitiate = await getJobById(data.jobId);
 
-          updateJobData({
-            flowId: jobDataInitiate.data.flowId,
+          updateJobMutation({
             flowVersionId: jobDataInitiate.data.flowVersionId,
             id: jobDataInitiate.data.id,
             machineId: jobDataInitiate.data.machineId,
@@ -65,6 +67,8 @@ export default function useCheckJobTrigger(connection: HubConnection | null) {
         }
       } catch (err) {
         console.error("Error handling job trigger:", err);
+      } finally {
+        queryClient.invalidateQueries({ queryKey: ["agents-assist"] }); // Assist Agents list
       }
     };
 
@@ -73,5 +77,6 @@ export default function useCheckJobTrigger(connection: HubConnection | null) {
     return () => {
       connection.off("trigger_agent", handleExecuteFlow);
     };
-  }, [connection, startExecution, sendCommand, setExecutionState]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connection]);
 }
