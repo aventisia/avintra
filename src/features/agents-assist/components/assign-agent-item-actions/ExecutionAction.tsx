@@ -29,7 +29,7 @@ export const ExecutionAction = ({
 
   return (
     <div className="flex items-center gap-2">
-      {executionState === "executing" ? (
+      {executionState.toLowerCase() === "executing" ? (
         <Tooltip content="Abort">
           <Button variant="ghost" size="icon8" className="hover:bg-white/10">
             <StopIcon className="h-[1.1rem] w-[1.1rem] text-red-500/80" />

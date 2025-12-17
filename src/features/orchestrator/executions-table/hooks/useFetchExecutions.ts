@@ -1,15 +1,17 @@
 import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { getExecutions } from "../apis/executions-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
+import { ExecutionsTableDto } from "../dtos/executions-table-dto";
 
 /**
  * Custom hook to fetch projects using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchExecutions = () => {
+  const [currJobs, setCurrJobs] = useState<ExecutionsTableDto[]>();
   // Get projects using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: DATA_QUERY_KEY,
@@ -21,6 +23,12 @@ export const useFetchExecutions = () => {
     if (isError) toast.error(error.toString());
   }, [error, isError]);
 
+  useEffect(() => {
+    const jobs = data?.data?.filter((job) => job.status == "Running");
+
+    if (jobs) setCurrJobs(jobs);
+  }, [data?.data]);
+
   // Return isFetching and isLoading flag
-  return { data, isFetching, isLoading };
+  return { data, isFetching, isLoading, currJobs };
 };

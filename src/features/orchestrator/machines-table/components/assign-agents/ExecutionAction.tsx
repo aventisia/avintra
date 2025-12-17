@@ -4,6 +4,7 @@ import { Tooltip } from "@aventisia/ui/tooltip";
 import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { useShallow } from "zustand/react/shallow";
 
+import { useUpdateJobMutation } from "@/features/execute-flow/hooks/useUpdateJobMutation";
 import { useCreateJobMutation } from "@/features/orchestrator/agents-table/hooks/useCreateJobMutation";
 
 import { useAssignAgentsStore } from "../../stores/assign-agents-store";
@@ -12,12 +13,14 @@ type ExecutionActionProps = {
   rowId: string;
   isDisabled: boolean;
   executionState: string;
+  jobId?: string;
 };
 
 export const ExecutionAction = ({
   rowId,
   isDisabled,
   executionState,
+  jobId,
 }: ExecutionActionProps) => {
   const { machineId } = useAssignAgentsStore(
     useShallow((s) => ({
@@ -27,11 +30,26 @@ export const ExecutionAction = ({
 
   const { createJobMutation, isPending } = useCreateJobMutation();
 
+  const { updateJobMutation } = useUpdateJobMutation();
+
   return (
     <div className="flex items-center gap-2">
-      {executionState === "executing" ? (
+      {executionState.toLowerCase() === "executing" ? (
         <Tooltip content="Abort">
-          <Button variant="ghost" size="icon7" className="hover:bg-slate-200">
+          <Button
+            variant="ghost"
+            size="icon7"
+            onClick={() => {
+              if (jobId)
+                updateJobMutation({
+                  flowVersionId: rowId,
+                  machineId: machineId,
+                  id: jobId,
+                  status: "Abort",
+                });
+            }}
+            className="hover:bg-slate-200"
+          >
             <StopIcon className="h-[1.125rem] w-[1.125rem] text-red-500/80" />
           </Button>
         </Tooltip>

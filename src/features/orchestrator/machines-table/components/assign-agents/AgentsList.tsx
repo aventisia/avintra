@@ -10,6 +10,8 @@ import { ScrollArea } from "@aventisia/ui/scroll";
 import { BotIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
+import { useFetchExecutions } from "@/features/orchestrator/executions-table/hooks/useFetchExecutions";
+
 import { SelectAgentTableDto } from "../../dtos/select-agent-table-dto";
 import { useFetchSelectTableAgents } from "../../hooks/useFetchSelectAgents";
 import { useAssignAgentsStore } from "../../stores/assign-agents-store";
@@ -27,6 +29,8 @@ const AgentsList = () => {
 
   // Use OS id to only to fetch agents list for all other crud operations and query keys machine id is used
   const { data } = useFetchSelectTableAgents({ osId, machineId });
+
+  const { currJobs } = useFetchExecutions();
 
   return (
     <Command>
@@ -67,6 +71,10 @@ const AgentsList = () => {
                         executionState={val.status}
                         isDisabled={false}
                         rowId={val.id}
+                        jobId={
+                          currJobs?.find((job) => job.flowVersionId == val.id)
+                            ?.id
+                        }
                       />
                       <AgentsListItemActions id={val.id} />
                     </div>

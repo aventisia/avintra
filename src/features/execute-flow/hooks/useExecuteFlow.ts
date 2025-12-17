@@ -42,7 +42,7 @@ export default function useExecuteFlow() {
     if (!data) return;
 
     setCurrentFlow({
-      id: data.flowId,
+      id: data?.flowId || "",
       versionId: data?.flowVersionId,
       name: data?.name || "",
       jobId: data.id,
