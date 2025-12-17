@@ -4,11 +4,10 @@ import { useEffect } from "react";
 
 import { JobStatusTypesEnum } from "@/features/orchestrator/executions-table/enums/job-status-type-enum";
 
-import { getJobById } from "../apis/job-trigger-apis";
+import { getJobById, updateJobData } from "../apis/job-trigger-apis";
 import { ExecutionCommandTypesEnum } from "../enums/execution-command-types-enum";
 
 import useExecuteFlow from "./useExecuteFlow";
-import { useUpdateJobMutation } from "./useUpdateJobMutation";
 
 /**
  * useCheckJobTrigger
@@ -23,7 +22,6 @@ import { useUpdateJobMutation } from "./useUpdateJobMutation";
  */
 export default function useCheckJobTrigger(connection: HubConnection | null) {
   const queryClient = useQueryClient();
-  const { updateJobMutation } = useUpdateJobMutation();
 
   const { startExecution, sendCommand, setExecutionState } = useExecuteFlow();
 
@@ -45,7 +43,7 @@ export default function useCheckJobTrigger(connection: HubConnection | null) {
           console.log("Initiated exe");
           const jobDataInitiate = await getJobById(data.jobId);
 
-          updateJobMutation({
+          updateJobData({
             flowVersionId: jobDataInitiate.data.flowVersionId,
             id: jobDataInitiate.data.id,
             machineId: jobDataInitiate.data.machineId,

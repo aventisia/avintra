@@ -5,6 +5,7 @@ import { Tooltip } from "@aventisia/ui/tooltip";
 import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { useShallow } from "zustand/react/shallow";
 
+import { useAbortJobExecutionMutation } from "@/features/execute-flow/hooks/useAbortJobExecutionMutation";
 import { useCreateJobMutation } from "@/features/orchestrator/agents-table/hooks/useCreateJobMutation";
 import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
 
@@ -13,12 +14,14 @@ import { useAssignMachineStore } from "../../stores/assign-machine-store";
 type ExecutionActionProps = {
   rowId: string;
   isDisabled?: boolean;
+  osId?: string;
   executionState: MachineStatusTypesEnum;
 };
 
 export const ExecutionAction = ({
   rowId,
   executionState,
+  osId,
 }: ExecutionActionProps) => {
   const { flowVersionId } = useAssignMachineStore(
     useShallow((s) => ({
@@ -29,11 +32,24 @@ export const ExecutionAction = ({
 
   const { createJobMutation, isPending } = useCreateJobMutation();
 
+  const { abortJobMutation } = useAbortJobExecutionMutation();
+
   return (
     <div className="flex items-center gap-2">
       {executionState === "Running" ? (
         <Tooltip content="Abort">
-          <Button variant="ghost" size="icon7" className="hover:bg-slate-200">
+          <Button
+            variant="ghost"
+            size="icon7"
+            className="hover:bg-slate-200"
+            onClick={() => {
+              if (osId)
+                abortJobMutation({
+                  versionId: flowVersionId,
+                  osId,
+                });
+            }}
+          >
             <StopIcon className="h-[1.125rem] w-[1.125rem] text-red-500/80" />
           </Button>
         </Tooltip>
@@ -43,7 +59,6 @@ export const ExecutionAction = ({
             variant="ghost"
             size="icon7"
             className="hover:bg-slate-200"
-            disabled={executionState === "Offline"}
             onClick={() => {
               createJobMutation({
                 flowVersionId: flowVersionId,
@@ -56,10 +71,7 @@ export const ExecutionAction = ({
             ) : (
               <>
                 <PlayIcon
-                  className={cn(
-                    "h-[1.125rem] w-[1.125rem] text-green-500/80",
-                    executionState === "Offline" && "text-gray-400",
-                  )}
+                  className={cn("h-[1.125rem] w-[1.125rem] text-green-500/80")}
                 />
               </>
             )}

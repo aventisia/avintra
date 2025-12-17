@@ -27,6 +27,7 @@ export interface AssignMachineDto {
   environment?: MachineEnvironmentTypesEnum;
   lastModifiedOn: Date;
   isAssigned: boolean;
+  osId?: string;
   /**
    * Gets or sets the status of the machine. Max-100
    */
