@@ -29,7 +29,7 @@ export default function useCheckJobTrigger(connection: HubConnection | null) {
       jobId: string;
       command: number;
     }) => {
-      console.log("trigger_agent received:", data);
+      console.log("trigger_agent received");
 
       // Lookup to get the enum value from the index
       const commandValue = ExecutionCommandTypesEnum[data.command];
@@ -73,5 +73,6 @@ export default function useCheckJobTrigger(connection: HubConnection | null) {
     return () => {
       connection.off("trigger_agent", handleExecuteFlow);
     };
-  }, [connection, startExecution, sendCommand, setExecutionState]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connection]);
 }

@@ -146,6 +146,7 @@ export default function useWebSocket() {
               sendExecutionComplete(msg.command, sendCommand);
               break;
             case "start":
+              console.log("Received start command");
               sendNextNodeToProcess(sendCommand);
               break;
             case "save-execution-log":
@@ -185,7 +186,8 @@ export default function useWebSocket() {
         socketRef.current.close(1000, "Component unmounted");
       }
     };
-  }, [sendCommand, setExecutionState]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sendCommand]);
 
   useEffect(() => {
     // Only run if one of the commands is pending
