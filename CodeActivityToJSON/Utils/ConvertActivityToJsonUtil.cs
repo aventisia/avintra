@@ -1,5 +1,4 @@
-﻿using AngleSharp.Dom;
-using CodeActivitiesLibrary.Extensions;
+﻿using CodeActivitiesLibrary.Extensions;
 using System;
 using System.Activities;
 using System.Activities.Expressions;
@@ -16,9 +15,30 @@ namespace CodeActivityToJSON.Utils
     {
         public static string ConvertActivityToJson(Type activityType)
         {
-            var props = activityType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            var items = new List<object>();
+            // Get the DisplayName and Description attributes from the activity
+            var activityMetaDataAttr = activityType.GetCustomAttributes(typeof(ActivityMetaDataAttribute), false).FirstOrDefault() as ActivityMetaDataAttribute;
+            var activityDisplayNameAttr = activityType.GetCustomAttributes(typeof(DisplayNameAttribute), false).FirstOrDefault() as DisplayNameAttribute;
+            var activityDescriptionAttr = activityType.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as DescriptionAttribute;
 
+            var supportedPlatformsList = activityMetaDataAttr?.SupportedPlatforms != null
+                ? activityMetaDataAttr.SupportedPlatforms.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList()
+                : new List<string>();
+
+            var activityJson = new Dictionary<string, object>
+            {
+                ["name"] = activityType.Name.Replace("Activity", ""),
+                ["label"] = activityDisplayNameAttr?.DisplayName,
+                ["discription"] = activityDescriptionAttr?.Description,
+                ["version"] = activityMetaDataAttr?.Version,
+                ["auther"] = activityMetaDataAttr?.Author,
+                ["supportedPlatforms"] = supportedPlatformsList,
+                ["errorHandling"] = activityMetaDataAttr?.ErrorHandling,
+                ["testScreenType"] = activityMetaDataAttr?.TestScreenType
+            };
+
+            // Get input and output arguments using reflection
+            var props = activityType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var fields = new List<object>();
             foreach (var prop in props)
             {
                 // Get direction
@@ -29,11 +49,11 @@ namespace CodeActivityToJSON.Utils
                 // Get label. If display name is not set, then don't add the argument to json
                 var displayName = prop.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? prop.Name; // TODO: we need to add meaningfull display names
                 var propNameLower = prop.Name.ToLower();
-                if (displayName == null || 
-                    propNameLower == "statusmessage" || 
-                    propNameLower == "issuccess" || 
-                    propNameLower == "accesstoken" || 
-                    propNameLower == "agentid" || 
+                if (displayName == null ||
+                    propNameLower == "statusmessage" ||
+                    propNameLower == "issuccess" ||
+                    propNameLower == "accesstoken" ||
+                    propNameLower == "agentid" ||
                     propNameLower == "agentname") continue;
 
                 // Get description
@@ -164,11 +184,14 @@ namespace CodeActivityToJSON.Utils
 
                 }
 
-                items.Add(item);
+                fields.Add(item);
             }
 
+            // Add fields to activityJson
+            activityJson["fields"] = fields;
+
             var optionsJson = new JsonSerializerOptions { WriteIndented = true };
-            return JsonSerializer.Serialize(items, optionsJson);
+            return JsonSerializer.Serialize(activityJson, optionsJson);
         }
 
         // Get the default value of an InArgument property
