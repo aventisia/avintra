@@ -10,6 +10,7 @@ import {
   getNodeConfig,
   useDynamicConfigPanelStore,
 } from "..";
+import { onErrorFieldsJson } from "../constants/OnErrorFields";
 
 export const useDefineDCPForm = () => {
   // Get node unique name state (required to get config panel data)
@@ -63,14 +64,37 @@ export const useDefineDCPForm = () => {
       .then((config) => {
         if (config) {
           const fields = Array.isArray(config) ? config : config.fields;
+          const hasOnError = !Array.isArray(config) && config?.errorHandling;
 
-          setNodeConfig(config);
-          setNodeConfigZodSchema(generateZodSchema(fields));
+          const getErrorFieldJson = (errorHandling: string) => {
+            if (errorHandling == "standard") return onErrorFieldsJson;
+            else return [];
+          };
+
+          setNodeConfig(
+            hasOnError
+              ? {
+                  ...config,
+                  fields: [
+                    ...config.fields,
+                    ...getErrorFieldJson(config.errorHandling),
+                  ],
+                }
+              : config,
+          );
+          setNodeConfigZodSchema(
+            generateZodSchema(
+              hasOnError
+                ? [...fields, ...getErrorFieldJson(config.errorHandling)]
+                : fields,
+            ),
+          );
         }
       })
       .finally(() => {
         setIsLoading(false);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodeUniqueName, nodeId]);
 
   // Get input and output keys (required at the time of form submission)

@@ -103,12 +103,11 @@ export const DCPForm = () => {
           <DCPTabsListWrapper>
             <DCPTabsList>
               {tabKeys?.map((key) => (
-                <DCPTabsTrigger tabValue={key} children={key} />
+                <DCPTabsTrigger
+                  tabValue={key}
+                  children={key.replace(/([a-z])([A-Z])/g, "$1 $2")}
+                />
               ))}
-              {!Array.isArray(nodeConfig) &&
-                nodeConfig?.errorHandling == "standard" && (
-                  <DCPTabsTrigger tabValue="OnError" children="On Error" />
-                )}
             </DCPTabsList>
             <DCPTabsList>
               <DCPTabsTrigger
@@ -202,12 +201,6 @@ export const DCPForm = () => {
               </DCPTabsContent>
             ))}
 
-            {!Array.isArray(nodeConfig) &&
-              nodeConfig?.errorHandling == "standard" && (
-                <DCPTabsContent tabValue="OnError">
-                  <p>On Error fields</p>
-                </DCPTabsContent>
-              )}
             {/* Save button */}
             {selectedTab !== "Test" && (
               <DCPTabsFooterWrapper>
