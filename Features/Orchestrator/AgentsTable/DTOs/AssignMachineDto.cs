@@ -32,6 +32,11 @@ public class AssignMachineDto
     public MachineStatusTypeEnum Status { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier that uniquely represents the operating system.
+    /// </summary>
+    public string? OSId { get; set; }
+
+    /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
     /// </summary>
     /// <remarks>

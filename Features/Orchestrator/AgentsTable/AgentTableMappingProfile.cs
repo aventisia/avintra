@@ -20,6 +20,7 @@ namespace WorkspaceAPIs.MappingProfiles
                 .Map(dest => dest.AgentId, src => src.FlowVersionId)
                 .Map(dest => dest.IsAssigned, src => true)
                 .Map(dest => dest.Name, src => src.Machine != null ? src.Machine.Name : string.Empty)
+                .Map(dest => dest.OSId, src => src.Machine != null ? src.Machine.OSId : string.Empty)
                 .Map(dest => dest.Status, src => src.Machine != null ? src.Machine.Status : MachineStatusTypeEnum.Offline)
                 .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? $"{src.CreatedByUser.FirstName} {src.CreatedByUser.LastName}" : null)
                 .Map(dest => dest.LastModifiedBy, src => src.LastModifiedByUser != null ? $"{src.LastModifiedByUser.FirstName} {src.LastModifiedByUser.LastName}" : null);
