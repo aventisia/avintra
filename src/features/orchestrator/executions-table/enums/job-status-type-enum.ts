@@ -4,4 +4,5 @@ export enum JobStatusTypesEnum {
   Completed = "Completed",
   Failed = "Failed",
   Canceled = "Canceled",
+  Abort = "Abort",
 }
