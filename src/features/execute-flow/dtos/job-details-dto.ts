@@ -9,7 +9,7 @@ export interface JobDetailsDto {
   name?: string;
 
   /** Agent Id */
-  flowId: string;
+  flowId?: string;
 
   /**Agent Version id */
   flowVersionId: string;
