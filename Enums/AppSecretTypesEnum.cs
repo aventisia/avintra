@@ -48,5 +48,6 @@ public enum AppSecretTypesEnum
     Anthropic,
     GoogleGemini,
     GoogleWorkspace,
-    AzureOpenAI
+    AzureOpenAI,
+    EmailClient
 }
