@@ -239,6 +239,9 @@ public class JobTableService : IJobTableService
                 return serviceResponse;
             }
 
+            // Checks if the job status is the same as the stored status (no change).
+            bool isStatusUnchanged = job.Status == jobTableDto.Status;
+
             // Trim the string properties in the DTO
             jobTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobTableDto);
 
@@ -255,47 +258,55 @@ public class JobTableService : IJobTableService
                 return serviceResponse;
             }
 
-            // Create a new ExecutionCommandDto to determine which action to trigger based on job status.
-            var executionCommand = new ExecutionCommandDto()
+            // If the job status has changed (i.e., it differs from the previously stored status), proceed with the action.
+            if (!isStatusUnchanged)
             {
-                JobId = job.Id,
-                MachineId = job.MachineId ?? Guid.Empty,
-                AgentId = job.FlowVersionId,
-                TenantId = job.TenantId
-            };
+                // Create a new ExecutionCommandDto to determine which action to trigger based on job status.
+                var executionCommand = new ExecutionCommandDto()
+                {
+                    JobId = job.Id,
+                    MachineId = job.MachineId ?? Guid.Empty,
+                    AgentId = job.FlowVersionId,
+                    TenantId = job.TenantId
+                };
 
-            // Switch statement to set the correct execution command based on the job's current status.
-            switch (job.Status)
-            {
-                case JobStatusTypesEnum.Completed:
-                    executionCommand.Command = ExecutionCommandTypesEnum.Cleanup;
-                    break;
+                // Switch statement to set the correct execution command based on the job's current status.
+                switch (job.Status)
+                {
+                    case JobStatusTypesEnum.Completed:
+                        executionCommand.Command = ExecutionCommandTypesEnum.Cleanup;
+                        break;
 
-                case JobStatusTypesEnum.Failed:
-                case JobStatusTypesEnum.Canceled:
-                    executionCommand.Command = ExecutionCommandTypesEnum.Cancel;
-                    break;
+                    case JobStatusTypesEnum.Failed:
+                    case JobStatusTypesEnum.Canceled:
+                        executionCommand.Command = ExecutionCommandTypesEnum.Cancel;
+                        break;
 
-                case JobStatusTypesEnum.Paused:
-                    executionCommand.Command = ExecutionCommandTypesEnum.Pause;
-                    break;
+                    case JobStatusTypesEnum.Abort:
+                        executionCommand.Command = ExecutionCommandTypesEnum.Abort;
+                        break;
 
-                case JobStatusTypesEnum.Resumed:
-                    executionCommand.Command = ExecutionCommandTypesEnum.Resume;
-                    break;
+                    case JobStatusTypesEnum.Paused:
+                        executionCommand.Command = ExecutionCommandTypesEnum.Pause;
+                        break;
 
-                case JobStatusTypesEnum.Retrying:
-                case JobStatusTypesEnum.Running:
-                    executionCommand.Command = ExecutionCommandTypesEnum.Execute;
-                    break;
+                    case JobStatusTypesEnum.Resumed:
+                        executionCommand.Command = ExecutionCommandTypesEnum.Resume;
+                        break;
 
-                default:
-                    executionCommand.Command = ExecutionCommandTypesEnum.Cleanup;
-                    break;
+                    case JobStatusTypesEnum.Retrying:
+                    case JobStatusTypesEnum.Running:
+                        executionCommand.Command = ExecutionCommandTypesEnum.Execute;
+                        break;
+
+                    default:
+                        executionCommand.Command = ExecutionCommandTypesEnum.Cleanup;
+                        break;
+                }
+
+                // Trigger the appropriate execution command for the job.
+                await _jobsExecutorService.TriggerExecutionAsync(executionCommand);
             }
-
-            // Trigger the appropriate execution command for the job.
-            await _jobsExecutorService.TriggerExecutionAsync(executionCommand);
 
             // Success - return the updated job
             serviceResponse.Data = job.Adapt<JobTableDto>();
