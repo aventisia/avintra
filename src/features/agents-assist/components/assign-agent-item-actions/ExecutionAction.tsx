@@ -5,6 +5,7 @@ import { Tooltip } from "@aventisia/ui/tooltip";
 import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { useShallow } from "zustand/react/shallow";
 
+import { useAbortJobExecutionMutation } from "@/features/execute-flow/hooks/useAbortJobExecutionMutation";
 import { useCreateJobMutation } from "@/features/orchestrator/agents-table/hooks/useCreateJobMutation";
 import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
 
@@ -27,11 +28,23 @@ export const ExecutionAction = ({
 
   const { createJobMutation, isPending } = useCreateJobMutation();
 
+  const { abortJobMutation } = useAbortJobExecutionMutation();
+
   return (
     <div className="flex items-center gap-2">
       {executionState.toLowerCase() === "executing" ? (
         <Tooltip content="Abort">
-          <Button variant="ghost" size="icon8" className="hover:bg-white/10">
+          <Button
+            variant="ghost"
+            size="icon8"
+            className="hover:bg-white/10"
+            onClick={() => {
+              abortJobMutation({
+                versionId: rowId,
+                osId: machineId,
+              });
+            }}
+          >
             <StopIcon className="h-[1.1rem] w-[1.1rem] text-red-500/80" />
           </Button>
         </Tooltip>

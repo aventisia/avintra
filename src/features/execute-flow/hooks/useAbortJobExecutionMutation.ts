@@ -1,13 +1,13 @@
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { updateJobData } from "@/features/execute-flow/apis/job-trigger-apis";
+import { abortJobExecution } from "@/features/execute-flow/apis/job-trigger-apis";
 
-export const useUpdateJobMutation = () => {
+export const useAbortJobExecutionMutation = () => {
   const queryClient = useQueryClient();
 
-  const { mutate: updateJobMutation, isPending } = useMutation({
-    mutationFn: updateJobData,
+  const { mutate: abortJobMutation, isPending } = useMutation({
+    mutationFn: abortJobExecution,
 
     onSuccess: async (res) => {
       toast.success(res.message);
@@ -19,5 +19,5 @@ export const useUpdateJobMutation = () => {
     },
   });
 
-  return { updateJobMutation, isPending };
+  return { abortJobMutation, isPending };
 };

@@ -20,3 +20,17 @@ export const updateJobData = (data: JobDetailsDto) => {
     .put<IHttpResponse<JobDetailsDto>>(`${baseAPIURL}`, data)
     .then((res) => res.data);
 };
+
+export const abortJobExecution = ({
+  osId,
+  versionId,
+}: {
+  osId: string;
+  versionId: string;
+}) => {
+  return axiosInstance
+    .post<
+      IHttpResponse<JobDetailsDto>
+    >(`${baseAPIURL}/${osId}/abort`, versionId)
+    .then((res) => res.data);
+};

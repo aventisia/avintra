@@ -82,7 +82,7 @@ export default function useWebSocket() {
             command === "complete"
               ? JobStatusTypesEnum.Completed
               : command === "abort"
-                ? JobStatusTypesEnum.Canceled
+                ? JobStatusTypesEnum.Abort
                 : JobStatusTypesEnum.Failed;
 
           updateField("endTime", endTime);
