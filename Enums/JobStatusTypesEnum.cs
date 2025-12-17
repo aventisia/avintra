@@ -21,6 +21,12 @@ public enum JobStatusTypesEnum
     Completed,
 
     /// <summary>
+    /// Immediately terminates the job and processes.
+    /// </summary>
+    [Description("Aborted")]
+    Abort,
+
+    /// <summary>
     /// Indicates that the job failed during execution.
     /// </summary>
     [Description("Failed")]
