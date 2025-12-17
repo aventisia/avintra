@@ -541,4 +541,97 @@ public class JobTableService : IJobTableService
 
         return serviceResponse;
     }
+
+    // Aborts the execution of a machine based on the OS ID and Flow Version ID.
+    public async Task<ServiceResponse<bool>> AbortExecutionAsync(string osId, Guid flowVersionId)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to abort the machine execution. Please try again."
+        };
+
+        try
+        {
+            // Check if the OS ID and Flow Version ID are valid.
+            if (string.IsNullOrEmpty(osId) || flowVersionId == Guid.Empty)
+            {
+                _logger.LogWarning("Invalid parameters received. OS ID: {OsId}, Flow Version ID: {FlowVersionId}.", osId, flowVersionId);
+                serviceResponse.Message = "OS ID or Flow Version ID cannot be null or empty.";
+                return serviceResponse;
+            }
+
+            // Retrieve the machine based on the provided OS ID (case insensitive match).
+            var machine = await _unitOfWork.MachineRepo
+                .GetByConditionAsync(w => w.OSId.ToLower() == osId.ToLower())
+                .FirstOrDefaultAsync();
+
+            if (machine == null)
+            {
+                // If the machine is not found, log the issue and return failure.
+                _logger.LogWarning("Machine with OS ID: {OsId} not found.", osId);
+                serviceResponse.Message = "The machine with the provided OS ID does not exist.";
+                return serviceResponse;
+            }
+
+            // Check if the specified flow version is assigned to the machine.
+            var job = await _unitOfWork.JobRepo
+                .GetByConditionAsync(w =>
+                    w.FlowVersionId == flowVersionId &&
+                    w.MachineId == machine.Id &&
+                    w.Status == JobStatusTypesEnum.Running
+                )
+                .FirstOrDefaultAsync();
+
+            if (job == null)
+            {
+                // Log and return failure if no running job is found.
+                _logger.LogWarning("Flow version {FlowVersionId} not running on machine {OsId}.", flowVersionId, osId);
+                serviceResponse.Message = "Agent not assigned or not running on this machine.";
+                return serviceResponse;
+            }
+
+            // Update the job status to "Abort".
+            job.Status = JobStatusTypesEnum.Abort;
+            _unitOfWork.JobRepo.Update(job);
+
+            // Attempt to save changes to the database.
+            if (!await _unitOfWork.SaveAsync())
+            {
+                // If saving changes fails, log and return failure.
+                _logger.LogError("Database save operation failed while attempting to abort machine execution for OS ID: {OsId} and FlowVersionId: {FlowVersionId}.",
+                    osId, flowVersionId);
+                return serviceResponse;
+            }
+
+            // Create a new ExecutionCommandDto to determine which action to trigger based on job status.
+            var executionCommand = new ExecutionCommandDto()
+            {
+                JobId = job.Id,
+                MachineId = job.MachineId ?? Guid.Empty,
+                AgentId = job.FlowVersionId,
+                TenantId = job.TenantId,
+                Command = ExecutionCommandTypesEnum.Abort
+            };
+
+            // Trigger the appropriate execution command for the job.
+            await _jobsExecutorService.TriggerExecutionAsync(executionCommand);
+
+            // Return success message with confirmation.
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Machine execution has been successfully aborted.";
+
+            _logger.LogInformation("Machine execution for OS ID: {OsId}, Flow Version ID: {FlowVersionId} successfully aborted.", osId, flowVersionId);
+        }
+        catch (Exception ex)
+        {
+            // Log the error details if an exception occurs during the operation.
+            _logger.LogError(ex, "An unexpected error occurred while attempting to abort the machine execution for OS ID: {OsId} and Flow Version ID: {FlowVersionId}.",
+                osId, flowVersionId);
+        }
+
+        // Return the final service response.
+        return serviceResponse;
+    }
 }
