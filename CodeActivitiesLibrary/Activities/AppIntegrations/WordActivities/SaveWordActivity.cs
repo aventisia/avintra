@@ -28,13 +28,13 @@ namespace CodeActivitiesLibrary.AppIntegrations.WordActivities
 
         [DisplayName("Save Path")]
         [Description("The file path to save the document when 'Save Document As' is selected.")]
-        [RenderIfCondition(nameof(SaveMode), (int)SaveModeEnum.SaveDocumentAs)]
+        [RenderIfCondition(nameof(SaveMode), SaveModeEnum.SaveDocumentAs)]
         public InArgument<string> SavePath { get; set; }
 
         [DisplayName("Save Format")]
         [Description("Specifies the format to save the document (.docx or .pdf).")]
         [DefaultValue(SaveFormatEnum.Docx)]
-        [RenderIfCondition(nameof(SaveMode), (int)SaveModeEnum.SaveDocumentAs)]
+        [RenderIfCondition(nameof(SaveMode), SaveModeEnum.SaveDocumentAs)]
         public InArgument<SaveFormatEnum> SaveFormat { get; set; }
 
         protected override void Execute(CodeActivityContext context)
