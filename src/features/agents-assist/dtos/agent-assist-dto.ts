@@ -52,4 +52,6 @@ export interface AgentsAssistDto {
    * Gets or sets a value indicating whether the agent version is assigned.
    */
   isAssigned: boolean;
+
+  jobId?: string;
 }

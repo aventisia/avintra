@@ -13,17 +13,19 @@ type ExecutionActionProps = {
   rowId: string;
   isDisabled: boolean;
   executionState: string;
+
+  jobId?: string;
 };
 
 export const ExecutionAction = ({
   rowId,
   isDisabled,
   executionState,
+  jobId,
 }: ExecutionActionProps) => {
-  const { machineId, osId } = useAssignAgentsStore(
+  const { machineId } = useAssignAgentsStore(
     useShallow((s) => ({
       machineId: s.machineId,
-      osId: s.osId,
     })),
   );
 
@@ -39,10 +41,7 @@ export const ExecutionAction = ({
             variant="ghost"
             size="icon7"
             onClick={() => {
-              abortJobMutation({
-                versionId: rowId,
-                osId,
-              });
+              if (jobId) abortJobMutation(jobId);
             }}
             className="hover:bg-slate-200"
           >

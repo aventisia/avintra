@@ -13,12 +13,15 @@ type ExecutionActionProps = {
   rowId: string;
   isDisabled: boolean;
   executionState: string;
+
+  jobId?: string;
 };
 
 export const ExecutionAction = ({
   rowId,
   isDisabled,
   executionState,
+  jobId,
 }: ExecutionActionProps) => {
   const { osID: machineId } = useTuariUserMetadataStore(
     useShallow((state) => ({
@@ -39,10 +42,7 @@ export const ExecutionAction = ({
             size="icon8"
             className="hover:bg-white/10"
             onClick={() => {
-              abortJobMutation({
-                versionId: rowId,
-                osId: machineId,
-              });
+              if (jobId) abortJobMutation(jobId);
             }}
           >
             <StopIcon className="h-[1.1rem] w-[1.1rem] text-red-500/80" />

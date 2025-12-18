@@ -90,6 +90,7 @@ export const AgentsAssistTable = () => {
                       executionState={row.original.status}
                       isDisabled={false}
                       rowId={row.original.id}
+                      jobId={row.original.jobId}
                     />
                     {/* Actions container */}
                     <AgentsListItemActions id={row.original.id || ""} />
