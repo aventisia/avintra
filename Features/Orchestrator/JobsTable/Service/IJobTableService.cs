@@ -71,10 +71,9 @@ public interface IJobTableService
     Task<ServiceResponse<bool>> CancelJobAsync(Guid jobId);
 
     /// <summary>
-    /// Abort the execution of a machine based on the specified OS ID and flow version ID.
+    /// Terminates the execution of a job on a machine, based on the provided job ID, operating system ID or flow version ID.
     /// </summary>
-    /// <param name="osId">The ID of the operating system associated with the machine.</param>
-    /// <param name="flowVersionId">The ID of the flow version to abort execution for.</param>
-    /// <returns>A service response indicating whether the operation was successful.</returns>
-    Task<ServiceResponse<bool>> AbortExecutionAsync(string osId, Guid flowVersionId);
+    /// <param name="jobExecutionDto">The details of the job execution, including the OS ID and flow version ID.</param>
+    /// <returns>A service response that indicates whether the job abortion was successful or not.</returns>
+    Task<ServiceResponse<bool>> AbortJobExecutionAsync(JobExecutionDto jobExecutionDto);
 }

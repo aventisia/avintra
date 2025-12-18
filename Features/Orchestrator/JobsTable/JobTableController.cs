@@ -65,10 +65,9 @@ public class JobController : BaseApiController
         return ResultHelper(await _jobTableService.CancelJobAsync(jobId));
     }
 
-    // Aborts the execution of a machine by its ID and FlowVersionId.
-    [HttpPost("{osId}/abort")]
-    public async Task<ActionResult<ServiceResponse<bool>>> AbortMachineExecution(string osId, [FromBody] Guid flowVersionId)
+    // Abort the execution of a job on the machine    [HttpPost("abort")]
+    public async Task<ActionResult<ServiceResponse<bool>>> AbortMachineExecution(JobExecutionDto jobExecutionDto)
     {
-        return ResultHelper(await _jobTableService.AbortExecutionAsync(osId, flowVersionId));
+        return ResultHelper(await _jobTableService.AbortJobExecutionAsync(jobExecutionDto));
     }
 }
