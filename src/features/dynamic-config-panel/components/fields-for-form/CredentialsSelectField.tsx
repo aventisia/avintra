@@ -27,6 +27,8 @@ interface CredentialsSelectFieldProps
 
   /** The placeholder for the select field. */
   placeholder?: string;
+
+  modelProvider?: string;
 }
 
 /**
@@ -40,6 +42,7 @@ const CredentialsSelectField = ({
   description,
   disabled,
   placeholder,
+  modelProvider,
   ...props
 }: CredentialsSelectFieldProps) => {
   // Get the form context
@@ -54,7 +57,11 @@ const CredentialsSelectField = ({
     setLoading(true);
 
     // Fetch credentials list. Note: Every credential-field should have name ending with 'Credential'
-    getCredSelectOptions(name.replace("__CredentialId__", ""))
+    getCredSelectOptions(
+      name.includes(".credentials")
+        ? modelProvider
+        : name.replace("__CredentialId__", ""),
+    )
       .then((data) => {
         setSelectOptions(data?.data);
         setLoading(false);
@@ -63,7 +70,7 @@ const CredentialsSelectField = ({
         console.error("Failed to fetch models", err);
         setLoading(false);
       });
-  }, [name]);
+  }, [modelProvider, name]);
 
   return (
     <>
