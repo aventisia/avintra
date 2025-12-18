@@ -15,16 +15,16 @@ import { SEARCH_COLUMN, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
-import { useFetchExecutions } from "../hooks/useFetchExecutions";
+import { useFetchJobsList } from "../hooks/useFetchJobsList";
 
-import { executionsTableColumns } from "./ExecutionsTableColumns";
+import { jobsTableColumns } from "./JobsTableColumns";
 
 /**
- * Renders a table of executions.
+ * Renders a table of jobs.
  *
- * @returns The rendered executionsTable component.
+ * @returns The rendered JobsTable component.
  */
-export const ExecutionsTable = () => {
+export const JobsTable = () => {
   const [tabValue, setTabValue] = useState<string>("Running");
 
   // Set the document title
@@ -36,12 +36,14 @@ export const ExecutionsTable = () => {
     columnVisibilityState,
   );
 
-  // Fetch executions data
-  const { data } = useFetchExecutions();
+  // Fetch Jobs data
+  const { data } = useFetchJobsList();
 
-  // Create a React table for executions data
+  // Create a React table for Jobs data
   const table = useDataTable(
-    executionsTableColumns,
+    jobsTableColumns.filter(
+      (col) => !(col.id === "actions" && tabValue === "History"), // Exclude "actions" when tab is "History"
+    ),
     data?.data || [],
     columnVisibility,
     sortState,
@@ -62,6 +64,7 @@ export const ExecutionsTable = () => {
         JobStatusTypesEnum.Completed,
         JobStatusTypesEnum.Failed,
         JobStatusTypesEnum.Canceled,
+        JobStatusTypesEnum.Abort,
       ]);
     }
   }, [tabValue, table]);
@@ -114,16 +117,13 @@ export const ExecutionsTable = () => {
           </div>
 
           {/* Data table to render data */}
-          <DataTable
-            table={table}
-            columnsLength={executionsTableColumns.length}
-          />
+          <DataTable table={table} columnsLength={jobsTableColumns.length} />
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />
         </div>
       ) : (
-        // Show data table skeleton while fetching the executions data
+        // Show data table skeleton while fetching the jobs data
         <DataTableSkeleton />
       )}
     </>

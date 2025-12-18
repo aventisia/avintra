@@ -26,7 +26,7 @@ import { AppIntegrationsPage } from "./pages/IntegrationsPage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { ModelsPage } from "./pages/ModelsPage";
 import MyAccountPage from "./pages/MyAccountPage";
-import { ExecutionsPage } from "./pages/orchestrator/ExecutionsPage";
+import { JobsPage } from "./pages/orchestrator/JobsPage";
 import { KeystorePage } from "./pages/orchestrator/KeystorePage";
 import { MachinesPage } from "./pages/orchestrator/MachinesPage";
 import { Orchestrator } from "./pages/orchestrator/Orchestrator";
@@ -194,7 +194,7 @@ const routerConfig: RouteObject[] = [
           {
             path: "/orchestrator/jobs/:id?/:a?",
             element: (
-              <ProtectedRoute persmissions={["OM"]} page={<ExecutionsPage />} />
+              <ProtectedRoute persmissions={["OM"]} page={<JobsPage />} />
             ),
           },
           {

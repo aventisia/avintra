@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { JobStatusTypesEnum } from "@/features/orchestrator/executions-table/enums/job-status-type-enum";
+import { JobStatusTypesEnum } from "@/features/orchestrator/jobs-table/enums/job-status-type-enum";
 
 type JobState = {
   status: JobStatusTypesEnum;

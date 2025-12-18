@@ -2,18 +2,18 @@ import { toast } from "@aventisia/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import { getExecutions } from "../apis/executions-table-apis";
+import { getJobs } from "../apis/jobs-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 
 /**
- * Custom hook to fetch projects using react query.
+ * Custom hook to fetch jobs using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
-export const useFetchExecutions = () => {
-  // Get projects using react query
+export const useFetchJobsList = () => {
+  // Get jobs using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: DATA_QUERY_KEY,
-    queryFn: () => getExecutions(),
+    queryFn: () => getJobs(),
   });
 
   // Show toast on fetch error

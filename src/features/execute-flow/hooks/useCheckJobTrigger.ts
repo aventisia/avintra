@@ -2,7 +2,7 @@ import { HubConnection } from "@microsoft/signalr";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import { JobStatusTypesEnum } from "@/features/orchestrator/executions-table/enums/job-status-type-enum";
+import { JobStatusTypesEnum } from "@/features/orchestrator/jobs-table/enums/job-status-type-enum";
 
 import { getJobById, updateJobData } from "../apis/job-trigger-apis";
 import { ExecutionCommandTypesEnum } from "../enums/execution-command-types-enum";

@@ -1,4 +1,3 @@
-// import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { dateFormatter } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
@@ -6,9 +5,11 @@ import { format } from "date-fns";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
-import { ExecutionsTableDto } from "../dtos/executions-table-dto";
+import { JobsTableDto } from "../dtos/jobs-table-dto";
 
-export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
+import { JobRowActions } from "./jobs-row-actions/JobRowActions";
+
+export const jobsTableColumns: ColumnDef<JobsTableDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
@@ -171,14 +172,14 @@ export const executionsTableColumns: ColumnDef<ExecutionsTableDto>[] = [
       </div>
     ),
   },
-  // {
-  //   id: "actions",
-  //   cell: ({ row }) => (
-  //     // Render the execution row actions component
-  //     <ExecutionRowActions
-  //       row={row.original}
-  //       rowId={row.original?.id ?? "rowid"}
-  //     />
-  //   ),
-  // },
+  {
+    id: "actions",
+    cell: ({ row }) => (
+      // Render the job row actions component
+      <JobRowActions
+        status={row.original.status}
+        rowId={row.original?.id ?? "rowid"}
+      />
+    ),
+  },
 ];
