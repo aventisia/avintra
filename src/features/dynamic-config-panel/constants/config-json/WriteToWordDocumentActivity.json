@@ -67,6 +67,28 @@
           "description": "Writes content after the specified bookmark."
         }
       ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "BookmarkName",
+      "label": "Bookmark Name",
+      "description": "The name of the bookmark to use when writing before or after a bookmark.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "op": "OR",
+        "conditions": [
+          {
+            "field": "WriteTextTo",
+            "equals": "BeforeBookmark"
+          },
+          {
+            "field": "WriteTextTo",
+            "equals": "AfterBookmark"
+          }
+        ]
+      }
     }
   ]
 }

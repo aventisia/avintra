@@ -184,6 +184,15 @@
           },
           {
             "type": "activityNode",
+            "name": "ParseFragmentedJsonListActivity",
+            "label": "Parse Fragmented JSON List",
+            "description": "Converts a list of JSON string fragments (e.g., from Add Item to List) into a list of proper objects.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/function.png"
+          },
+          {
+            "type": "activityNode",
             "name": "RemoveDuplicateItemsFromListActivity",
             "label": "Remove Duplicate Items From List",
             "description": "Removes duplicate items from a list using case-sensitive or case-insensitive comparison.",
@@ -2246,6 +2255,24 @@
             "name": "CloseWordActivity",
             "label": "Close Word",
             "description": "Closes a Word instance.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Word.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExtractTextFromDocxFileActivity",
+            "label": "Extract text from DOCX file",
+            "description": "Reads text content from a .docx document using Open XML SDK.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Word.svg"
+          },
+          {
+            "type": "activityNode",
+            "name": "FindAndReplaceInDocxFileActivity",
+            "label": "Find and Replace in DOCX file",
+            "description": "Finds text and replaces it with another in a .docx document using Open XML SDK.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Word.svg"
