@@ -1,0 +1,13 @@
+{
+  "name": "CallBlock",
+  "label": "Call Block",
+  "discription": "Use to add custom block",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": []
+}

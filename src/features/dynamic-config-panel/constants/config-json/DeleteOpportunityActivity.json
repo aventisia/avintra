@@ -1,32 +1,44 @@
-[
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "Credential",
-    "label": "Credential to connect with",
-    "description": "The credential to connect with (JSON containing InstanceUrl, AccessToken, ApiVersion).",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "OpportunityId",
-    "label": "Opportunity ID",
-    "description": "The ID of the opportunity to delete.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "Response",
-    "label": "Response",
-    "description": "The raw JSON response from Salesforce.",
-    "defaultValue": {
-      "value": "Response",
-      "enabled": true
+{
+  "name": "DeleteOpportunity",
+  "label": "Delete Opportunity",
+  "discription": "Deletes a Salesforce opportunity by its ID.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Credential",
+      "label": "Credential to connect with",
+      "description": "The credential to connect with (JSON containing InstanceUrl, AccessToken, ApiVersion).",
+      "defaultValue": "",
+      "required": true
     },
-    "required": false
-  }
-]
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "OpportunityId",
+      "label": "Opportunity ID",
+      "description": "The ID of the opportunity to delete.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Response",
+      "label": "Response",
+      "description": "The raw JSON response from Salesforce.",
+      "defaultValue": {
+        "value": "Response",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

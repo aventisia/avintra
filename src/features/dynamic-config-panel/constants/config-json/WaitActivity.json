@@ -1,11 +1,23 @@
-[
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "Seconds",
-    "label": "Duration (Seconds)",
-    "description": "The number of seconds to pause workflow execution.",
-    "defaultValue": "",
-    "required": true
-  }
-]
+{
+  "name": "Wait",
+  "label": "Wait",
+  "discription": "Pauses the workflow execution for a specified number of seconds.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Seconds",
+      "label": "Duration (Seconds)",
+      "description": "The number of seconds to pause workflow execution.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

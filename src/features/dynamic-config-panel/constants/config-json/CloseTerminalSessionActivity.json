@@ -1,11 +1,23 @@
-[
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "SessionId",
-    "label": "SessionId",
-    "description": "The session ID of the terminal session to close.",
-    "defaultValue": "",
-    "required": true
-  }
-]
+{
+  "name": "CloseTerminalSession",
+  "label": "Close Terminal Session",
+  "discription": "Close an open terminal session.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SessionId",
+      "label": "SessionId",
+      "description": "The session ID of the terminal session to close.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

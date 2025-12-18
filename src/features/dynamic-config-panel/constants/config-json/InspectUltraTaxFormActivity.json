@@ -1,38 +1,50 @@
-[
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "IdentificationObjectPath",
-    "label": "Form Element",
-    "description": "The form element to inspect.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "MaxWaitTime",
-    "label": "Max Wait Time (seconds)",
-    "description": "Maximum time to wait to find the form element (in seconds).",
-    "defaultValue": 5,
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "NoOfFieldsToInspect",
-    "label": "Number of Fields to Inspect",
-    "description": "Specify the number of fields to inspect",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
-    "type": "text",
-    "name": "InspectionOutputFilePath",
-    "label": "Inspection Output File Path",
-    "description": "The full path to the json file where the JSON content will be written.",
-    "defaultValue": "",
-    "required": true
-  }
-]
+{
+  "name": "InspectUltraTaxForm",
+  "label": "Inspect UltraTax Form",
+  "discription": "Get inspection details of a UI element in an UltraTax CS form, such as name, position etc.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "IdentificationObjectPath",
+      "label": "Form Element",
+      "description": "The form element to inspect.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MaxWaitTime",
+      "label": "Max Wait Time (seconds)",
+      "description": "Maximum time to wait to find the form element (in seconds).",
+      "defaultValue": 5,
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "NoOfFieldsToInspect",
+      "label": "Number of Fields to Inspect",
+      "description": "Specify the number of fields to inspect",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "InspectionOutputFilePath",
+      "label": "Inspection Output File Path",
+      "description": "The full path to the json file where the JSON content will be written.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

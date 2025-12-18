@@ -1,14 +1,26 @@
-[
-  {
-    "direction": "Output",
-    "type": "config-panel-output",
-    "name": "NewList",
-    "label": "New List",
-    "description": "The newly created empty list.",
-    "defaultValue": {
-      "value": "NewList",
-      "enabled": true
-    },
-    "required": false
-  }
-]
+{
+  "name": "CreateNewList",
+  "label": "Create New List",
+  "discription": "Creates a new empty list to be used in other activities.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "NewList",
+      "label": "New List",
+      "description": "The newly created empty list.",
+      "defaultValue": {
+        "value": "NewList",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

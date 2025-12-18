@@ -1,0 +1,13 @@
+{
+  "name": "BreakLoop",
+  "label": "Break Loop",
+  "discription": "Breaks out of the current loop in the workflow execution.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": [
+    "desktop"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": []
+}
