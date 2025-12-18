@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { IS_TAURI } from "@/constants/constants";
-import { JobStatusTypesEnum } from "@/features/orchestrator/executions-table/enums/job-status-type-enum";
+import { JobStatusTypesEnum } from "@/features/orchestrator/jobs-table/enums/job-status-type-enum";
 import { Execution } from "@/types/execution-types";
 
 import {

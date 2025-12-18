@@ -1,9 +1,9 @@
-import type { ExecutionStatusTypesEnum } from "@/react-toolkit/enums/execution-status-type-enum";
+import { JobStatusTypesEnum } from "../enums/job-status-type-enum";
 
 /**
- * Represents a data transfer object (DTO) for a execution.
+ * Represents a data transfer object (DTO) for a jobs.
  */
-export interface ExecutionsTableDto {
+export interface JobsTableDto {
   /**
    * Gets or sets the primary key of the execution record.
    *
@@ -38,7 +38,7 @@ export interface ExecutionsTableDto {
   /**
    * Gets or sets the status of the execution.
    */
-  status: ExecutionStatusTypesEnum;
+  status: JobStatusTypesEnum;
 
   /**
    * Gets or sets the last update time of the execution.
