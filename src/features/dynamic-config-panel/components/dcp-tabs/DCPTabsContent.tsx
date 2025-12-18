@@ -21,7 +21,7 @@ export const DCPTabsContent = ({
           className,
         )}
       >
-        <div className="px-1">{children}</div>
+        <div className="px-1 pt-1">{children}</div>
       </ScrollArea>
       {footer}
     </TabsContent>
